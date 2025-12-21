@@ -1,4 +1,5 @@
-# 🎶 Sangeetha Grantha  
+# 🎶 Sangeetha Grantha
+
 *A Digital Compendium of Carnatic Classical Music*
 
 ---
@@ -36,15 +37,18 @@ It is designed to become the **system of record** for Carnatic Krithis — suppo
 ## 🧱 System Architecture
 
 ### 📱 Clients
+
 - **Mobile App**: Android & iOS using **Kotlin Multiplatform (KMM)**
 - **Admin Web Console**: React + TypeScript + Tailwind CSS
 
 ### ⚙️ Backend
+
 - **API**: Kotlin + Ktor (REST)
 - **Database**: PostgreSQL 15+
 - **Migrations**: Rust-based SQL migration CLI (no Flyway)
 
 ### ☁️ Infrastructure
+
 - AWS or Google Cloud
 - CI/CD via GitHub Actions
 - Centralized logging and audit trails
@@ -54,6 +58,7 @@ It is designed to become the **system of record** for Carnatic Krithis — suppo
 ## ✨ Core Features
 
 ### Public (Read-only)
+
 - Browse and search Krithis
 - Structured lyrics:
   - Pallavi / Anupallavi / Charanams
@@ -65,6 +70,7 @@ It is designed to become the **system of record** for Carnatic Krithis — suppo
 - Sampradaya-aware variants
 
 ### Admin (Restricted)
+
 - CRUD for:
   - Krithis
   - Composers
@@ -99,10 +105,10 @@ It is designed to become the **system of record** for Carnatic Krithis — suppo
 
 ---
 
-## 🧩 Tech Stack (Locked)
+## 🧩 Tech Stack
 
 | Layer | Technology |
-|-----|-----------|
+|-------|------------|
 | Mobile | Kotlin Multiplatform + Compose |
 | Backend | Kotlin + Ktor |
 | ORM | Exposed |
@@ -134,18 +140,21 @@ It is designed to become the **system of record** for Carnatic Krithis — suppo
 └── gradle/libs.versions.toml    # Centralized dependency management
 ```
 
+---
 
-🚀 Getting Started (Local Development)
+## 🚀 Getting Started (Local Development)
 
-Prerequisites
-	•	JDK 21+
-	•	Gradle (wrapper included)
-	•	Bun
-	•	Rust (stable)
-	•	PostgreSQL 15+
+### Prerequisites
 
-Setup
+- JDK 21+
+- Gradle (wrapper included)
+- Bun
+- Rust (stable)
+- PostgreSQL 15+
 
+### Setup
+
+```bash
 # Clone repository
 git clone https://github.com/carnaticlabs/Sangeetha-Grantha.git
 cd Sangeetha-Grantha
@@ -161,63 +170,66 @@ cargo run migrate
 cd modules/frontend/sangita-admin-web
 npm install
 npm run dev
+```
 
 Mobile apps are built via Android Studio (Android) and Xcode (iOS).
 
-⸻
+---
 
-📜 Documentation
-	•	Product Requirements Document:
-application_documentation/requirements/Sangita_Grantha_PRD.md
-	•	OpenAPI Spec:
-openapi/sangita-grantha.openapi.yaml
-	•	Database Schema & ERDs:
-application_documentation/database/
-	•	Architecture & Blueprints:
-application_documentation/architecture/
+## 📜 Documentation
 
-⸻
+- **Product Requirements Document**: [`application_documentation/requirements/Sangita_Grantha_PRD.md`](application_documentation/requirements/Sangita_Grantha_PRD.md)
+- **OpenAPI Spec**: [`openapi/sangita-grantha.openapi.yaml`](openapi/sangita-grantha.openapi.yaml)
+- **Database Schema & ERDs**: [`application_documentation/database/`](application_documentation/database/)
+- **Architecture & Blueprints**: [`application_documentation/architecture/`](application_documentation/architecture/)
 
-🤖 AI & Copilot Usage
+---
+
+## 🤖 AI & Copilot Usage
 
 This repository is designed to work seamlessly with VS Code Copilot / Codex / Cursor / Google Antigravity.
 
-Key reference files:
-	•	PROJECT_BLUEPRINT_SANGITA_GRANTHA.md
-	•	Sangita Grantha – Product Requirements Document.md
-	•	openapi/sangita-grantha.openapi.yaml
+**Key reference files:**
+
+- `PROJECT_BLUEPRINT_SANGITA_GRANTHA.md`
+- `Sangita Grantha – Product Requirements Document.md`
+- `openapi/sangita-grantha.openapi.yaml`
 
 These documents act as the source of truth for code generation.
 
-⸻
+---
 
-🛣️ Roadmap
-	•	✅ Core schema & ingestion pipeline
-	•	✅ Admin editorial workflow
-	•	🔄 Mobile app UX refinement
-	•	🔄 Advanced lyric search & ranking
-	•	🔮 Notation & audio references (future)
-	•	🔮 Public read-only web experience
+## 🛣️ Roadmap
 
-⸻
+- ✅ Core schema & ingestion pipeline
+- ✅ Admin editorial workflow
+- 🔄 Mobile app UX refinement
+- 🔄 Advanced lyric search & ranking
+- 🔮 Notation & audio references (future)
+- 🔮 Public read-only web experience
 
-🙏 Credits & Inspiration
+---
+
+## 🙏 Credits & Inspiration
 
 This project draws inspiration from decades of Carnatic scholarship and legacy sources such as:
-	•	karnatik.com
-	•	shivkumar.org
-	•	Composer-centric archives and PDFs
 
-Sangeetha Grantha exists to preserve, structure, and respectfully modernize this knowledge for future generations.
+- [karnatik.com](https://www.karnatik.com)
+- [shivkumar.org](http://shivkumar.org)
+- Composer-centric archives and PDFs
 
-⸻
+**Sangeetha Grantha** exists to preserve, structure, and respectfully modernize this knowledge for future generations.
 
-📄 License
+---
+
+## 📄 License
 
 TBD (to be finalized — likely a permissive open-source license).
 
-⸻
-
-Sangeetha Grantha — where tradition meets thoughtful engineering.
-
 ---
+
+<div align="center">
+
+**Sangeetha Grantha** — *where tradition meets thoughtful engineering* 🎵
+
+</div>
