@@ -132,9 +132,8 @@ It is designed to become the **system of record** for Carnatic Krithis — suppo
 ├── application_documentation/   # PRDs, ERDs, architecture docs
 ├── config/                      # Environment configuration (TOML)
 └── gradle/libs.versions.toml    # Centralized dependency management
+```
 
-
-⸻
 
 🚀 Getting Started (Local Development)
 
