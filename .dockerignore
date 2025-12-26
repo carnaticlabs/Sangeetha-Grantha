@@ -1,0 +1,98 @@
+# Kailash Yatra Docker Ignore
+# Excludes files that shouldn't be included in Docker build context
+
+# Git
+.git
+.gitignore
+.github
+
+# IDE
+.idea
+.vscode
+*.iml
+
+# Documentation (not needed for runtime)
+*.md
+docs/
+application_documentation/
+
+# AI context files
+.ai-*
+.claude-*
+.copilot-*
+.gemini-*
+.chatgpt-*
+.cursorrules
+.aiderignore
+.goosehints
+.windsurf/
+AI-CONTEXT-README.md
+PROJECT_BLUEPRINT.md
+PROJECT_KNOWLEDGE.md
+knowledge/
+
+# Build outputs (will be rebuilt in container)
+build/
+*/build/
+**/build/
+out/
+target/
+
+# Node modules (will be reinstalled in container)
+node_modules/
+**/node_modules/
+
+# Gradle caches
+.gradle/
+**/.gradle/
+
+# Local configuration (should use environment variables)
+config/*.local.*
+config/db-config.env
+config/db-config.*.env
+*.local.toml
+
+# Test files
+**/src/test/
+**/test/
+**/*.test.ts
+**/*.spec.ts
+
+# iOS (not needed for backend)
+iosApp/
+iosApp-kotlin/
+
+# Android (not needed for backend)
+androidApp/
+
+# Database local data
+database/db-data/
+database/tablespaces/
+database/manual*
+
+# Local uploads
+uploads/
+
+# Temporary files
+tmp/
+*.tmp
+*.log
+*.bak
+
+# Rust target (database CLI not needed in API container)
+database/rust/target/
+
+# UI/UX assets (design files)
+ui-ux/
+
+# Tools
+tools/
+
+# Frontmatter
+.frontmatter/
+frontmatter.json
+
+# Environment files
+.env
+.env.*
+!.env.example

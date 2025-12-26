@@ -1,0 +1,11 @@
+{
+  "sampleKrithi": {
+    "title": "Vatapi Ganapatim",
+    "composerId": "00000000-0000-0000-0000-000000000000",
+    "primaryLanguage": "TA",
+    "talaId": "00000000-0000-0000-0000-000000000000",
+    "primaryRagaId": "00000000-0000-0000-0000-000000000000",
+    "isRagamalika": false,
+    "notes": "Sample payload for admin create endpoints."
+  }
+}

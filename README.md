@@ -45,7 +45,7 @@ It is designed to become the **system of record** for Carnatic Krithis — suppo
 
 - **API**: Kotlin + Ktor (REST)
 - **Database**: PostgreSQL 15+
-- **Migrations**: Rust-based SQL migration CLI (no Flyway)
+- **Migrations**: Rust-based CLI tool (`tools/sangita-cli`) for database management (no Flyway)
 
 ### ☁️ Infrastructure
 
@@ -113,7 +113,7 @@ It is designed to become the **system of record** for Carnatic Krithis — suppo
 | Backend | Kotlin + Ktor |
 | ORM | Exposed |
 | Database | PostgreSQL 15+ |
-| Migrations | Rust CLI (SQL-based) |
+| Migrations | Rust CLI (`tools/sangita-cli`) |
 | Admin Web | React + TypeScript + Tailwind |
 | CI/CD | GitHub Actions |
 | Cloud | AWS / GCP |
@@ -164,7 +164,9 @@ It is designed to become the **system of record** for Carnatic Krithis — suppo
 │   └── frontend/
 │       └── sangita-admin-web/   # Admin web (React + TS)
 ├── database/
-│   └── rust/                    # Rust CLI for DB migrations & seeds
+│   └── migrations/              # SQL migration files
+├── tools/
+│   └── sangita-cli/             # Rust CLI for DB management, dev workflow, testing
 ├── openapi/                     # OpenAPI specifications
 ├── application_documentation/   # PRDs, ERDs, architecture docs
 ├── config/                      # Environment configuration (TOML)
@@ -190,28 +192,42 @@ It is designed to become the **system of record** for Carnatic Krithis — suppo
 git clone https://github.com/carnaticlabs/Sangeetha-Grantha.git
 cd Sangeetha-Grantha
 
-# Run database migrations
-cd database/rust
-cargo run migrate
+# Run database migrations using Sangita CLI
+cd tools/sangita-cli
+cargo run -- db migrate
 
-# Run backend API
-./gradlew :modules:backend:api:runDev
+# Or reset database (drop, create, migrate, seed)
+cargo run -- db reset
 
-# Run Admin Web
-cd modules/frontend/sangita-admin-web
-bun install
-bun run dev
+# Start full development stack (DB + Backend + Frontend)
+cargo run -- dev --start-db
 ```
 
 ### Development CLI
 
-```bash
-# Start development environment
-cd tools/sangita-cli && cargo run dev
+The Sangita CLI (`tools/sangita-cli`) provides unified commands for development:
 
-# Run tests
-cd tools/sangita-cli && cargo run test
+```bash
+cd tools/sangita-cli
+
+# Database management
+cargo run -- db migrate          # Run migrations only
+cargo run -- db reset            # Reset database (drop → create → migrate → seed)
+cargo run -- db health           # Check database health
+
+# Development workflow
+cargo run -- dev                 # Start Backend + Frontend
+cargo run -- dev --start-db      # Start DB + Backend + Frontend
+
+# Testing
+cargo run -- test steel-thread   # Run end-to-end smoke tests
+
+# Setup & verification
+cargo run -- setup               # Check environment and dependencies
+cargo run -- net info            # Show local network info
 ```
+
+For more details, see [`tools/sangita-cli/README.md`](tools/sangita-cli/README.md).
 
 Mobile apps are built via Android Studio (Android) and Xcode (iOS).
 

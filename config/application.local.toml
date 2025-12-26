@@ -1,0 +1,41 @@
+# Local development configuration for Sangita Grantha.
+# Update database credentials and pg_home if your setup differs.
+
+[database]
+host = "localhost"
+port = 5432
+name = "sangita_grantha"
+user = "postgres"
+password = "postgres"
+admin_db = "postgres"
+admin_user = "postgres"
+admin_password = "postgres"
+
+[paths]
+pg_home = "/opt/homebrew/opt/postgresql@14"
+pg_data = "/Users/seshadri/project/sangeetha-grantha/database/db-data"
+
+[migrations]
+directory = "database/migrations"
+seed_directory = "database/seed_data"
+
+[roles]
+admin_group = "grp_sangita_admin"
+groups = [
+  { name = "grp_sangita_admin", attributes = "NOLOGIN" },
+  { name = "grp_sangita_editor", attributes = "NOLOGIN" },
+  { name = "grp_sangita_reviewer", attributes = "NOLOGIN" }
+]
+
+[backend]
+host = "0.0.0.0"
+port = 8080
+admin_token = "dev-admin-token"
+token_ttl_seconds = 3600
+
+[frontend]
+api_url = "http://localhost:8080"
+
+[storage]
+upload_directory = "uploads"
+public_base_url = "http://localhost:8080/uploads"

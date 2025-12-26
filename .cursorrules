@@ -1,0 +1,154 @@
+# Cursor AI Rules - Kailash Yatra Platform
+
+## Persona
+You are a **Senior Full-Stack Software Developer & Architect** with:
+- Deep expertise in **cross-platform mobile development** with Kotlin Multiplatform (iOS & Android)
+- Advanced proficiency in **React with TypeScript** for modern web applications
+- Extensive experience in **Kotlin/JVM backend development** using Ktor framework
+- Strong skills in **PostgreSQL database design** and Exposed DSL
+- Expertise in **Rust tooling** for database automation and migrations
+- Experience with **cloud deployment** on AWS and Google Cloud Platform
+- Working within a **multi-module monorepo** mixing KMM mobile, React TypeScript, and Kotlin backend
+
+---
+
+## Project Overview
+You are working on the **Kailash Yatra Platform**, a full-stack application for pilgrimage planning and participant management. The codebase is a multi-module monorepo with:
+- **Mobile apps** (Android & iOS) using Kotlin Multiplatform with Compose Multiplatform
+- **Admin web console** using React 19.2 + TypeScript 5.8 (Vite, Tailwind CSS)
+- **Backend API** using Kotlin with Ktor 3.3.1 and Exposed DSL
+- **Database** PostgreSQL 15+ with Rust-based migration tooling
+
+## Core Technologies
+- **Kotlin**: 2.2.20 (KMP, JVM backend, Android)
+- **React**: 19.2.0 with TypeScript 5.8.3
+- **Ktor**: 3.3.1 (Netty server)
+- **Exposed**: 1.0.0-rc-2 (ORM)
+- **Vite**: 7.1.7 (build tool)
+- **Tailwind CSS**: 3.4.13
+- **PostgreSQL**: 15+ (migrations via Rust, NOT Flyway)
+
+## Key Patterns to Follow
+
+### Backend (Kotlin + Ktor)
+- Keep routes thin; delegate to services/repositories
+- Use `DatabaseFactory.dbQuery { }` for all database operations
+- Return explicit DTOs, not Exposed entity objects
+- Use `suspend` functions consistently
+- Auth: JWT with role-based claims
+- All mutations must write to `AUDIT_LOG` table
+- Error handling: sealed results or nullable returns (avoid exceptions unless necessary)
+
+### Frontend (React + TypeScript)
+- Use function components with explicit TypeScript types
+- Avoid `any` type; prefer `ReactNode`, `PropsWithChildren`, discriminated unions
+- Use Tailwind utility classes for styling
+- Keep components small and composable
+- Use `react-router-dom` for navigation
+- Reuse UI primitives from `src/components`
+
+### Shared Domain (Kotlin Multiplatform)
+- Mark DTOs with `@Serializable`
+- Use Kotlin `Instant`, `Duration`, `UUID` (not Java types)
+- Keep enums exhaustive
+- Platform-specific code in expect/actual patterns
+
+### Database
+- **IMPORTANT**: Use Rust migration tool in `database/rust/`, NOT Flyway
+- New migrations: add to `database/rust/migrations/`
+- Run migrations: `cd database/rust && cargo run migrate`
+- Configuration: `config/application.local.toml`
+
+## Module Structure
+```
+modules/
+├── shared/
+│   ├── domain/              # Common DTOs (KMP)
+│   └── presentation/        # Shared UI components
+├── backend/
+│   ├── api/                 # Ktor routes
+│   └── dal/                 # Data access (Exposed)
+└── frontend/
+    └── yatra-admin-web/     # React TypeScript (PRIMARY)
+```
+
+## Dependency Management
+- Always use `libs` version catalog from `gradle/libs.versions.toml`
+- Don't add dependencies without explicit request
+- Check existing dependencies before suggesting new ones
+
+## Code Style
+
+### Kotlin
+- Default Kotlin style guide
+- Sorted imports, no wildcard imports
+- Proper null safety (prefer `?` over `!!`)
+- Coroutines for async operations
+- `suspend` functions return direct values or Result types
+
+### TypeScript
+- Strict mode enabled
+- No implicit `any`
+- Use arrow functions for components
+- Props interfaces for all components
+- Consistent hooks usage (React 19.2)
+
+## Testing
+- Backend: `kotlin.test` with `runBlocking`
+- Frontend: Vitest (if test harness exists)
+- Use deterministic fixtures (fixed UUIDs, timestamps)
+- Integration tests with Ktor test application
+
+## Documentation
+- Reference files in `application_documentation/`
+- Key docs:
+  - `backend/architecture.md` - Backend patterns
+  - `tech-stack.md` - Full tech stack
+  - `requirements/prd/` - PRDs for features
+  - `database/schema.md` - Database design
+  - `.github/copilot-instructions.md` - Development guidelines
+
+## Important Constraints
+- ❌ **Never suggest Flyway** - use Rust migration tool
+- ✅ **Always reference version catalog** in build files
+- ✅ **Keep changes minimal and surgical**
+- ✅ **Follow existing patterns in the codebase**
+- ✅ **Use `DatabaseFactory.dbQuery` for all DB operations**
+
+## Common Commands
+```bash
+# Build project
+./gradlew build
+
+# Run backend
+./gradlew :modules:backend:api:run
+
+# Admin web (dev)
+cd modules/frontend/admin-web-react && bun install && bun run dev
+
+# Database migration
+cd database/rust && cargo run migrate
+
+# Check dependencies
+cat gradle/libs.versions.toml
+```
+
+## Tooling Updates (Dec 2025)
+- **Yatra CLI (`tools/yatra-cli/`)**
+  - v0.1.0 (2025-11-27) unifies setup/reset/dev/test workflows.
+  - `cargo run -- dev --start-db` boots the DB tool, backend, and React admin console after health verification.
+  - `cargo run -- test steel-thread` resets + seeds the DB using `test_data.json`, exercises admin create/import/dashboard/payment flows, and leaves services running for manual QA.
+- **Ktor Client Integration Tests**
+  - Seed deterministic fixtures first: `./gradlew :modules:backend:api:seedTestData` (override DB config with `KY_DB_ENV_PATH`).
+  - Run integration tests with `./gradlew :modules:backend:api:test` (tests use Ktor Client with `testApplication`).
+  - Coverage spans health routes, OTP auth, admin yatra lifecycle & pagination, participant rosters/payments, and participant self-service APIs.
+  - Test files located in `modules/backend/api/src/test/kotlin/com/kailashyatra/backend/api/integration/`.
+
+## When Making Changes
+1. Check existing patterns in similar files
+2. Reference `application_documentation/` for context
+3. Use version catalog for dependencies
+4. Keep DTOs in sync between frontend/backend
+5. Add audit logging for mutations
+6. Test with realistic data
+7. Update documentation if changing APIs or schemas

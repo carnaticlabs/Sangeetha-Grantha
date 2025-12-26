@@ -1,0 +1,87 @@
+# Aider AI Ignore File
+# Files and directories that Aider should not read or modify
+
+# Tooling updates (Dec 2025):
+# - Keep `tools/yatra-cli/` in scope; v0.1.0 (2025-11-27) drives setup/dev/test flows
+#   via `cargo run -- dev --start-db` and `cargo run -- test steel-thread`.
+# - Ktor Client integration tests live under `modules/backend/api/src/test/kotlin/com/kailashyatra/backend/api/integration/` (Ktor testApplication +
+#   seeders). Do NOT ignore these paths; they validate health, OTP auth, admin yatra
+#   lifecycle, and participant flows end-to-end.
+
+# Build outputs
+**/build/
+**/target/
+**/dist/
+**/out/
+**/outputs/
+**/.gradle/
+**/.kotlin/
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+.DS_Store
+
+# Dependencies
+node_modules/
+**/kotlin-js-store/
+gradle/wrapper/gradle-wrapper.jar
+
+# Database data
+**/db-data/
+database/db-data/
+
+# Generated code
+**/generated/
+**/intermediates/
+
+# Logs
+*.log
+**/logfile*
+
+# Deprecated modules (don't modify)
+
+
+# Archive documentation (read-only reference)
+application_documentation/archive/**
+
+# Binary and compiled files
+*.class
+*.jar
+*.war
+*.ear
+*.aar
+*.apk
+*.app
+
+# iOS build artifacts
+iosApp/build/
+iosApp/DerivedData/
+iosApp/*.xcworkspace/
+iosApp/*.xcodeproj/project.xcworkspace/
+iosApp/*.xcodeproj/xcuserdata/
+
+# Android build artifacts
+androidApp/build/
+androidApp/.cxx/
+**/captures/
+
+# Rust build artifacts (keep source, ignore builds)
+database/rust/target/
+
+# Package manager locks (read but don't auto-modify)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Configuration with secrets
+config/*.toml
+!config/*.example.toml
+
+# Temporary files
+tmp/
+*.tmp
+*.bak
+*.swp
+*~
