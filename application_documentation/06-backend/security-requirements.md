@@ -1,16 +1,12 @@
----
-title: Sangita Grantha Security Requirements
-status: Draft
-version: 0.2
-last_updated: 2025-01-27
-owners:
-  - Security Team
-  - Backend Team
-related_docs:
-  - ./architecture.md
-  - ./mutation-handlers.md
-  - ../api/api-contract.md
----
+# Sangita Grantha Security Requirements
+
+> **Status**: Draft | **Version**: 0.2 | **Last Updated**: 2025-01-27
+> **Owners**: Security Team, Backend Team
+
+**Related Documents**
+- [Architecture](./architecture.md)
+- [Mutation Handlers](./mutation-handlers.md)
+- [Api Contract](../03-api/api-contract.md)
 
 # Security Requirements for Sangita Grantha
 

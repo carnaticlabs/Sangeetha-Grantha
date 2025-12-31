@@ -1,20 +1,13 @@
----
-title: Sangita Grantha Public Mobile App PRD
-status: Draft
-version: 0.1
-last_updated: 2025-12-21
-owners:
-  - Sangita Grantha Product Team
-stakeholders:
-  - Rasikas / Learners
-  - Performers / Students
-  - Editors & Reviewers (as indirect stakeholders)
-related_docs:
-  - ../../frontend/mobile/mobile-ui.md
-  - ../../api/api-contract.md
-  - ../../database/SANGITA_SCHEMA_OVERVIEW.md
-  - ../../requirements/domain-model.md
----
+# Sangita Grantha Public Mobile App PRD
+
+> **Status**: Draft | **Version**: 0.1 | **Last Updated**: 2025-12-21
+> **Owners**: Sangita Grantha Product Team
+
+**Related Documents**
+- [Mobile Ui](../../frontend/mobile/mobile-ui.md)
+- [Api Contract](../../03-api/api-contract.md)
+- [Sangita_Schema_Overview](../../04-database/schema.md)
+- [Domain Model](../domain-model.md)
 
 # 1. Executive Summary
 

@@ -1,15 +1,12 @@
----
-title: Mutation Handlers
-status: Draft
-version: 0.2
-last_updated: 2025-01-27
-owners:
-  - Sangita Grantha Backend Team
-related_docs:
-  - ../api/api-contract.md
-  - ./architecture.md
-  - ./security-requirements.md
----
+# Mutation Handlers
+
+> **Status**: Draft | **Version**: 0.2 | **Last Updated**: 2025-01-27
+> **Owners**: Sangita Grantha Backend Team
+
+**Related Documents**
+- [Api Contract](../03-api/api-contract.md)
+- [Architecture](./architecture.md)
+- [Security Requirements](./security-requirements.md)
 
 # Mutation Handlers – Sangita Grantha
 

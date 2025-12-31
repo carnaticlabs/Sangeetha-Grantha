@@ -1,11 +1,10 @@
----
-title: AI Integration Opportunities - Executive Summary
-status: Summary
-version: 1.0
-last_updated: 2025-01-27
-related_docs:
-  - integration-opportunities.md
----
+# AI Integration Opportunities - Executive Summary
+
+> **Status**: Summary | **Version**: 1.0 | **Last Updated**: 2025-01-27
+> **Owners**: 
+
+**Related Documents**
+- [Integration Opportunities](integration-opportunities.md)
 
 # AI Integration Opportunities - Executive Summary
 

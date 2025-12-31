@@ -1,11 +1,7 @@
----
-title: Database Migration Tool Choice - Rust vs Flyway
-status: Accepted
-version: 1.0
-last_updated: 2025-01-27
-owners:
-  - Platform Team
----
+# Database Migration Tool Choice - Rust vs Flyway
+
+> **Status**: Accepted | **Version**: 1.0 | **Last Updated**: 2025-01-27
+> **Owners**: Platform Team
 
 # ADR-003: Database Migration Tool Choice - Rust vs Flyway
 

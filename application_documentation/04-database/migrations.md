@@ -1,15 +1,12 @@
----
-title: Database Migrations (Sangita Grantha)
-status: Draft
-version: 0.2
-last_updated: 2025-01-27
-owners:
-  - Sangita Grantha Data/Backend Team
-related_docs:
-  - ./schema.md
-  - ./migrations-runner-rust.md
-  - ../ops/config.md
----
+# Database Migrations (Sangita Grantha)
+
+> **Status**: Draft | **Version**: 0.2 | **Last Updated**: 2025-01-27
+> **Owners**: Sangita Grantha Data/Backend Team
+
+**Related Documents**
+- [Schema](./schema.md)
+- [Migrations Runner Rust](./migrations-runner-rust.md)
+- [Config](../08-operations/config.md)
 
 # Database Migrations
 

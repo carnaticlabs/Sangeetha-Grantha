@@ -1,11 +1,7 @@
----
-title: Architectural Decision Records Index
-status: Current
-version: 2.0
-last_updated: 2025-01-27
-owners:
-  - Architecture Working Group
----
+# Architectural Decision Records Index
+
+> **Status**: Current | **Version**: 2.0 | **Last Updated**: 2025-01-27
+> **Owners**: Architecture Working Group
 
 # ADR Index
 

@@ -1,15 +1,12 @@
----
-title: Mobile UI Specification (KMP)
-status: Draft
-version: 1.0
-last_updated: 2025-01-27
-owners:
-  - Mobile Platform Team
-related_docs:
-  - ../../01-requirements/mobile/prd.md
-  - ../../03-api/integration-spec.md
-  - ../../04-database/schema.md
----
+# Mobile UI Specification (KMP)
+
+> **Status**: Draft | **Version**: 1.0 | **Last Updated**: 2025-01-27
+> **Owners**: Mobile Platform Team
+
+**Related Documents**
+- [Prd](../../01-requirements/mobile/prd.md)
+- [Integration Spec](../../03-api/integration-spec.md)
+- [Schema](../../04-database/schema.md)
 
 # Mobile UI Specification (KMP)
 

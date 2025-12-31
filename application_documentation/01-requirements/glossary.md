@@ -1,11 +1,7 @@
----
-title: Sangita Grantha Glossary
-status: Draft
-version: 0.2
-last_updated: 2025-01-27
-owners:
-  - Sangita Grantha Product Team
----
+# Sangita Grantha Glossary
+
+> **Status**: Draft | **Version**: 0.2 | **Last Updated**: 2025-01-27
+> **Owners**: Sangita Grantha Product Team
 
 # Glossary
 

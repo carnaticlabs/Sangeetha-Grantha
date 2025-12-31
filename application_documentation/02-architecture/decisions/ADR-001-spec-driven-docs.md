@@ -1,14 +1,12 @@
----
-title: ADR-001 — Spec-Driven Documentation Architecture
-status: Accepted
-date: 2025-09-15
-owners:
-  - Architecture Working Group
-related_docs:
-  - ../requirements/prd/admin-web-prd.md
-  - ../requirements/prd/mobile-app-prd.md
-  - ../README.md
----
+# ADR-001 — Spec-Driven Documentation Architecture
+
+> **Status**: Accepted | **Version**: ? | **Last Updated**: ?
+> **Owners**: Architecture Working Group
+
+**Related Documents**
+- [Admin Web Prd](../requirements/prd/admin-web-prd.md)
+- [Mobile App Prd](../requirements/prd/mobile-app-prd.md)
+- [Readme](../../archive/requirements-spec/README.md)
 
 # Context
 

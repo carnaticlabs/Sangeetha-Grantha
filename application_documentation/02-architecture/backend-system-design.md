@@ -1,16 +1,13 @@
----
-title: Sangita Grantha Backend Architecture
-status: Draft
-version: 0.2
-last_updated: 2025-01-27
-owners:
-  - Sangita Grantha Backend Team
-related_docs:
-  - ../03-api/api-contract.md
-  - ../06-backend/mutation-handlers.md
-  - ../06-backend/security-requirements.md
-  - ../04-database/schema.md
----
+# Sangita Grantha Backend Architecture
+
+> **Status**: Draft | **Version**: 0.2 | **Last Updated**: 2025-01-27
+> **Owners**: Sangita Grantha Backend Team
+
+**Related Documents**
+- [Api Contract](../03-api/api-contract.md)
+- [Mutation Handlers](../06-backend/mutation-handlers.md)
+- [Security Requirements](../06-backend/security-requirements.md)
+- [Schema](../04-database/schema.md)
 
 # Backend Architecture (Sangita Grantha)
 

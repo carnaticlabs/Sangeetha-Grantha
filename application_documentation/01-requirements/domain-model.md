@@ -1,17 +1,14 @@
----
-title: Sangita Grantha Domain Model Overview
-status: Draft
-version: 0.3
-last_updated: 2025-01-27
-owners:
-  - Sangita Grantha Shared Domain Team
-related_docs:
-  - ./prd/admin-web-prd.md
-  - ./prd/mobile-app-prd.md
-  - ./Sangita Grantha –PRD.md
-  - ../api/api-contract.md
-  - ../database/SANGITA_SCHEMA_OVERVIEW.md
----
+# Sangita Grantha Domain Model Overview
+
+> **Status**: Draft | **Version**: 0.3 | **Last Updated**: 2025-01-27
+> **Owners**: Sangita Grantha Shared Domain Team
+
+**Related Documents**
+- [Admin Web Prd](./prd/admin-web-prd.md)
+- [Mobile App Prd](./prd/mobile-app-prd.md)
+- [Sangita Grantha –Prd](product-requirements-document.md)
+- [Api Contract](../03-api/api-contract.md)
+- [Sangita_Schema_Overview](../04-database/schema.md)
 
 # 1. Purpose
 

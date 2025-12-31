@@ -1,19 +1,14 @@
----
-title: Sangita Grantha API Integration Specification
-status: Draft
-version: 0.1
-last_updated: 2025-12-21
-owners:
-  - Mobile Team
-  - Admin Web Team
-  - Backend Team
-related_docs:
-  - ./api-contract.md
-  - ./ui-to-api-mapping.md
-  - ../frontend/mobile/mobile-ui.md
-  - ../frontend/admin-web/ui-specs.md
-  - ../backend/architecture.md
----
+# Sangita Grantha API Integration Specification
+
+> **Status**: Draft | **Version**: 0.1 | **Last Updated**: 2025-12-21
+> **Owners**: Mobile Team, Admin Web Team, Backend Team
+
+**Related Documents**
+- [Api Contract](./api-contract.md)
+- [Ui To Api Mapping](./ui-to-api-mapping.md)
+- [Mobile Ui](../frontend/mobile/mobile-ui.md)
+- [Ui Specs](../05-frontend/mobile/ui-specs.md)
+- [Architecture](../backend/architecture.md)
 
 # Sangita Grantha API Integration Specification
 

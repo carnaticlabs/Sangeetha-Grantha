@@ -1,15 +1,12 @@
----
-title: Test Plan
-status: Current
-version: 2.0
-last_updated: 2025-01-27
-owners:
-  - QA & Engineering Leads
-related_docs:
-  - ../requirements/prd/admin-web-prd.md
-  - ../requirements/prd/mobile-app-prd.md
-  - ../backend/steel-thread-implementation.md
----
+# Test Plan
+
+> **Status**: Current | **Version**: 2.0 | **Last Updated**: 2025-01-27
+> **Owners**: QA & Engineering Leads
+
+**Related Documents**
+- [Admin Web Prd](../requirements/prd/admin-web-prd.md)
+- [Mobile App Prd](../requirements/prd/mobile-app-prd.md)
+- [Steel Thread Implementation](../06-backend/steel-thread-implementation.md)
 
 # 1. Scope
 

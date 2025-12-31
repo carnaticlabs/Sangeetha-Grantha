@@ -1,15 +1,12 @@
----
-title: Tech Stack
-status: Current
-version: 2.1
-last_updated: 2025-01-27
-owners:
-  - Platform Team
-related_docs:
-  - ../backend/architecture.md
-  - ../database/schema.md
-  - ../frontend/admin-web/
----
+# Tech Stack
+
+> **Status**: Current | **Version**: 2.1 | **Last Updated**: 2025-01-27
+> **Owners**: Platform Team
+
+**Related Documents**
+- [Architecture](../backend/architecture.md)
+- [Schema](../04-database/schema.md)
+- [](../frontend/admin-web/)
 
 ## Current Dependencies
 

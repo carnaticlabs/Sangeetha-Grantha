@@ -1,15 +1,12 @@
----
-title: Schema & API Alignment (Sangita Grantha)
-status: Draft
-version: 0.1
-last_updated: 2025-12-21
-owners:
-  - Sangita Grantha Backend Team
-related_docs:
-  - ./SANGITA_SCHEMA_OVERVIEW.md
-  - ../api/api-contract.md
-  - ../requirements/domain-model.md
----
+# Schema & API Alignment (Sangita Grantha)
+
+> **Status**: Draft | **Version**: 0.1 | **Last Updated**: 2025-12-21
+> **Owners**: Sangita Grantha Backend Team
+
+**Related Documents**
+- [Sangita_Schema_Overview](schema.md)
+- [Api Contract](../03-api/api-contract.md)
+- [Domain Model](../01-requirements/domain-model.md)
 
 # Schema & API Alignment
 

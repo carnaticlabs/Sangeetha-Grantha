@@ -1,17 +1,13 @@
----
-title: Neo4j Graph Database Implementation - Critical Evaluation
-status: Draft
-version: 1.0
-last_updated: 2025-01-27
-owners:
-  - Architecture Team
-  - Backend Team
-related_docs:
-  - ../database/schema.md
-  - ../database/SANGITA_SCHEMA_OVERVIEW.md
-  - ../backend/architecture.md
-  - ../neo4j-graph-evaluation.md
----
+# Neo4j Graph Database Implementation - Critical Evaluation
+
+> **Status**: Draft | **Version**: 1.0 | **Last Updated**: 2025-01-27
+> **Owners**: Architecture Team, Backend Team
+
+**Related Documents**
+- [Schema](../../04-database/schema.md)
+- [Sangita_Schema_Overview](../../04-database/schema.md)
+- [Architecture](../backend/architecture.md)
+- [Neo4J Graph Evaluation](../neo4j-graph-evaluation.md)
 
 # Neo4j Graph Database Implementation - Critical Evaluation
 

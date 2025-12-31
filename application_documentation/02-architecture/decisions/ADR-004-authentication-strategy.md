@@ -1,11 +1,7 @@
----
-title: Authentication Strategy - JWT with Role-Based Access Control
-status: Accepted
-version: 1.0
-last_updated: 2025-01-27
-owners:
-  - Platform Team
----
+# Authentication Strategy - JWT with Role-Based Access Control
+
+> **Status**: Accepted | **Version**: 1.0 | **Last Updated**: 2025-01-27
+> **Owners**: Platform Team
 
 # ADR-004: Authentication Strategy - JWT with Role-Based Access Control
 

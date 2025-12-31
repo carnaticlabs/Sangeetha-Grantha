@@ -1,15 +1,12 @@
----
-title: Audit Log Specification (Sangita Grantha)
-status: Draft
-version: 0.2
-last_updated: 2025-01-27
-owners:
-  - Sangita Grantha Backend & Curation Teams
-related_docs:
-  - ../requirements/prd/admin-web-prd.md
-  - ../backend/mutation-handlers.md
-  - ./SANGITA_SCHEMA_OVERVIEW.md
----
+# Audit Log Specification (Sangita Grantha)
+
+> **Status**: Draft | **Version**: 0.2 | **Last Updated**: 2025-01-27
+> **Owners**: Sangita Grantha Backend & Curation Teams
+
+**Related Documents**
+- [Admin Web Prd](../requirements/prd/admin-web-prd.md)
+- [Mutation Handlers](../06-backend/mutation-handlers.md)
+- [Sangita_Schema_Overview](schema.md)
 
 # 1. Purpose
 

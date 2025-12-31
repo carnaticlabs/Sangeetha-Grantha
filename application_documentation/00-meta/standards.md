@@ -1,11 +1,7 @@
----
-title: Documentation Standards
-status: Current
-version: 1.0
-last_updated: 2025-01-27
-owners:
-  - Platform Team
----
+# Documentation Standards
+
+> **Status**: Current | **Version**: 1.0 | **Last Updated**: 2025-01-27
+> **Owners**: Platform Team
 
 # Documentation Standards
 

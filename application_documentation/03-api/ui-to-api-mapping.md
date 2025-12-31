@@ -1,16 +1,13 @@
----
-title: UI to API Mapping
-status: Approved
-version: 2.1
-last_updated: 2025-01-27
-owners:
-  - Platform API Team
-related_docs:
-  - ./api-contract.md
-  - ./application_data_api_integration_spec.md
-  - ../requirements/prd/admin-web-prd.md
-  - ../frontend/admin-web/ui-specs.md
----
+# UI to API Mapping
+
+> **Status**: Approved | **Version**: 2.1 | **Last Updated**: 2025-01-27
+> **Owners**: Platform API Team
+
+**Related Documents**
+- [Api Contract](./api-contract.md)
+- [Application_Data_Api_Integration_Spec](./application_data_api_integration_spec.md)
+- [Admin Web Prd](../requirements/prd/admin-web-prd.md)
+- [Ui Specs](../05-frontend/mobile/ui-specs.md)
 
 # UI ↔ API Mapping (Canonical)
 

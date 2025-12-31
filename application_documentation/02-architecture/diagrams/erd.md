@@ -1,15 +1,12 @@
----
-title: Entity Relationship Diagram Reference
-status: Draft
-version: 1.0
-last_updated: 2025-09-15
-owners:
-  - Data Platform Team
-related_docs:
-  - ../database/schema.md
-  - ../requirements/domain-model.md
-  - ../database/differences.md
----
+# Entity Relationship Diagram Reference
+
+> **Status**: Draft | **Version**: 1.0 | **Last Updated**: 2025-09-15
+> **Owners**: Data Platform Team
+
+**Related Documents**
+- [Schema](../../04-database/schema.md)
+- [Domain Model](../../01-requirements/domain-model.md)
+- [Differences](../../archive/database-archive/differences.md)
 
 # 1. Available Assets
 

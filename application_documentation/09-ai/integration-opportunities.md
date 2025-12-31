@@ -1,17 +1,13 @@
----
-title: Google Gemini & AI Integration Opportunities
-status: Planned
-version: 1.0
-last_updated: 2025-01-27
-owners:
-  - Platform Team
-  - Product Team
-related_docs:
-  - ../requirements/prd/admin-web-prd.md
-  - ../backend/architecture.md
-  - ../database/schema.md
-  - ../api/api-contract.md
----
+# Google Gemini & AI Integration Opportunities
+
+> **Status**: Planned | **Version**: 1.0 | **Last Updated**: 2025-01-27
+> **Owners**: Platform Team, Product Team
+
+**Related Documents**
+- [Admin Web Prd](../requirements/prd/admin-web-prd.md)
+- [Architecture](../backend/architecture.md)
+- [Schema](../04-database/schema.md)
+- [Api Contract](../03-api/api-contract.md)
 
 # Google Gemini & AI Integration Opportunities for Sangita Grantha
 

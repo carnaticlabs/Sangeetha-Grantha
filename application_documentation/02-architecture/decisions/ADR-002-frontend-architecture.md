@@ -1,11 +1,7 @@
----
-title: Frontend Architecture Decision - React vs Kotlin/JS
-status: Accepted
-version: 1.0
-last_updated: 2025-01-27
-owners:
-  - Platform Team
----
+# Frontend Architecture Decision - React vs Kotlin/JS
+
+> **Status**: Accepted | **Version**: 1.0 | **Last Updated**: 2025-01-27
+> **Owners**: Platform Team
 
 # ADR-002: Frontend Architecture Decision - React vs Kotlin/JS
 

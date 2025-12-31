@@ -1,15 +1,12 @@
----
-title: Graph Database Evaluation for Music-Aware Graph Explorer
-status: Draft
-version: 0.1
-last_updated: 2025-12-29
-owners:
-  - Platform Team
-related_docs:
-  - ../neo4j-graph-evaluation.md
-  - ../requirements/domain-model.md
-  - ../database/SANGITA_SCHEMA_OVERVIEW.md
----
+# Graph Database Evaluation for Music-Aware Graph Explorer
+
+> **Status**: Draft | **Version**: 0.1 | **Last Updated**: 2025-12-29
+> **Owners**: Platform Team
+
+**Related Documents**
+- [Neo4J Graph Evaluation](../neo4j-graph-evaluation.md)
+- [Domain Model](../../01-requirements/domain-model.md)
+- [Sangita_Schema_Overview](../../04-database/schema.md)
 
 # ADR-005: Graph Database Evaluation for Music-Aware Graph Explorer
 
