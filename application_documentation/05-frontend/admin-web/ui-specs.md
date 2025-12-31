@@ -38,13 +38,15 @@ src/
 │   ├── Input.tsx
 │   ├── Badge.tsx
 │   ├── Toast.tsx
-│   └── ErrorBoundary.tsx
+│   ├── ErrorBoundary.tsx
+│   └── TransliterationModal.tsx
 ├── pages/              # Page-level components
 │   ├── KrithiList.tsx
 │   ├── KrithiDetail.tsx
 │   ├── KrithiEdit.tsx
 │   ├── NotationEditor.tsx
-│   └── ImportReview.tsx
+│   ├── ImportReview.tsx
+│   └── ImportsPage.tsx
 ├── api/                # API client and types
 │   ├── client.ts
 │   ├── krithiApi.ts
@@ -132,7 +134,23 @@ export function useKrithi(id: string) {
 
 ---
 
-## API Integration Patterns
+### 6. AI & Automation Features
+133: 
+134: **Transliteration Modal**
+135: - Triggered from "Lyric Variants" section in Krithi Editor
+136: - Inputs: Source text, Source script (optional), Target script
+137: - Preview: AI-generated transliteration
+138: - Action: Accept creates a new lyric variant
+139: 
+140: **Web Scraping Service**
+141: - Tabbed interface in `ImportsPage`
+142: - Inputs: URL (shivkumar.org, etc.)
+143: - Process: Fetches HTML, uses Gemini to extract fields
+144: - Output: Structured draft in "Import History"
+145: 
+146: ---
+147: 
+148: ## API Integration Patterns
 
 ### Authentication
 
@@ -189,6 +207,8 @@ export function useKrithi(id: string) {
 - API client setup
 - Authentication flow
 - Basic routing
+- Import review interface
+- AI Transliteration UI
 
 ### In Progress 🔄
 
@@ -196,7 +216,6 @@ export function useKrithi(id: string) {
 - Lyric variant management
 - Section editor
 - Notation editor (Varnams/Swarajathis)
-- Import review interface
 
 ### Planned 📋
 

@@ -114,10 +114,12 @@ This document provides a high-level summary of Google Gemini AI integration oppo
 ## Implementation Phases
 
 ### Phase 1: Core Transliteration (Weeks 1-4)
+- **Status:** ✅ Completed
 - Transliteration service + admin UI
 - **Success:** 100 kritis, >95% accuracy
 
 ### Phase 2: Web Scraping (Weeks 5-8)
+- **Status:** ✅ Completed
 - Scraping service + shivkumar.org handler
 - **Success:** 50+ kritis scraped, >80% accuracy
 

@@ -246,3 +246,14 @@ export interface NotationResponse {
     rowsBySectionId: Record<string, NotationRow[]>;
   }>;
 }
+
+export interface ImportedKrithi {
+  id: string;
+  sourceKey: string | null;
+  rawTitle: string | null;
+  rawComposer: string | null;
+  rawRaga: string | null;
+  rawTala: string | null;
+  importStatus: 'PENDING' | 'IMPORTED' | 'REJECTED';
+  createdAt: string;
+}

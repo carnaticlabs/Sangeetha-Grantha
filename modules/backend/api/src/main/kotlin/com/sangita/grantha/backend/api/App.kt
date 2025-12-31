@@ -14,6 +14,10 @@ import com.sangita.grantha.backend.api.services.KrithiService
 import com.sangita.grantha.backend.api.services.ReferenceDataService
 import com.sangita.grantha.backend.dal.DatabaseFactory
 import com.sangita.grantha.backend.dal.SangitaDal
+import com.sangita.grantha.backend.api.clients.GeminiApiClient
+import com.sangita.grantha.backend.api.services.TransliterationService
+import com.sangita.grantha.backend.api.services.WebScrapingService
+
 import io.ktor.server.application.ApplicationStopping
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
@@ -34,19 +38,27 @@ fun main() {
     val auditLogService = AuditLogService(dal)
     val dashboardService = com.sangita.grantha.backend.api.services.AdminDashboardService(dal)
 
+    // AI Services
+    val geminiApiClient = GeminiApiClient()
+    val transliterationService = TransliterationService(geminiApiClient)
+    val webScrapingService = WebScrapingService(geminiApiClient)
+
     embeddedServer(Netty, host = env.host, port = env.port) {
         configureSerialization()
         configureRequestLogging()
         configureCors(env)
         configureSecurity(env)
         configureStatusPages()
-        configureRouting(        krithiService,
-        notationService,
-        referenceDataService,
-        importService,
-        auditLogService,
-        dashboardService,
-    )
+        configureRouting(
+            krithiService,
+            notationService,
+            referenceDataService,
+            importService,
+            auditLogService,
+            dashboardService,
+            transliterationService,
+            webScrapingService
+        )
 
         monitor.subscribe(ApplicationStopping) {
             logger.info("Shutting down, closing database pool")

@@ -479,6 +479,47 @@ Reject an imported entry.
 
 ---
 
+## 5.5 AI & Import Operations
+
+### `POST /v1/admin/imports/scrape`
+
+Scrape metadata and content from a supported external URL (e.g., shivkumar.org).
+
+- Request: `ScrapeRequest`
+  ```json
+  { "url": "http://shivkumar.org/musical/..." }
+  ```
+- Response: `ImportedKrithiDto` (Created status `PENDING`).
+
+### `GET /v1/admin/imports`
+
+List imported records with optional filtering.
+
+- Query Params:
+  - `status`: `PENDING`, `IMPORTED`, `REJECTED`
+
+### `POST /v1/admin/krithis/{id}/transliterate`
+
+AI-powered transliteration of lyrics or notation.
+
+- Request: `TransliterationRequest`
+  ```json
+  {
+    "content": "raw text...",
+    "targetScript": "latn",
+    "sourceScript": "deva"
+  }
+  ```
+- Response: `TransliterationResponse`
+  ```json
+  {
+    "transliterated": "transliterated text...",
+    "targetScript": "latn"
+  }
+  ```
+
+---
+
 # 6. Error Model
 
 ## 6.1 Error Response Format

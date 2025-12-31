@@ -35,6 +35,11 @@ dependencies {
     implementation(libs.ktor.server.cors)
     implementation(libs.bundles.ktor.server.core.plugins)
 
+    // Ktor Client
+    implementation(libs.bundles.ktor.client)
+    implementation(libs.ktor.client.cio)
+
+
     implementation(libs.logback.classic)
     implementation(libs.logstash.logback.encoder)
 

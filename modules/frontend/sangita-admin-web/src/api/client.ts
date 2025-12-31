@@ -15,7 +15,8 @@ import {
     Sampradaya,
     AuditLog,
     DashboardStats,
-    ReferenceDataStats
+    ReferenceDataStats,
+    ImportedKrithi
 } from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/v1';
@@ -127,6 +128,29 @@ export const getAuditLogs = () => request<AuditLog[]>('/audit/logs');
 export const getKrithiAuditLogs = (krithiId: string) => request<AuditLog[]>(`/audit/logs?entityTable=krithis&entityId=${krithiId}`);
 export const getDashboardStats = () => request<DashboardStats>('/admin/dashboard/stats');
 export const getReferenceStats = () => request<ReferenceDataStats>('/reference/stats');
+
+export const transliterateContent = (krithiId: string, content: string, sourceScript: string | null, targetScript: string) => {
+    return request<{ transliterated: string, targetScript: string }>(`/admin/krithis/${krithiId}/transliterate`, {
+        method: 'POST',
+        body: JSON.stringify({ content, sourceScript, targetScript }),
+    });
+};
+
+
+// --- Imports API ---
+
+export const getImports = (status?: string) => {
+    const params = new URLSearchParams();
+    if (status) params.append('status', status);
+    return request<ImportedKrithi[]>(`/admin/imports?${params}`);
+};
+
+export const scrapeContent = (url: string) => {
+    return request<ImportedKrithi>('/admin/imports/scrape', {
+        method: 'POST',
+        body: JSON.stringify({ url }),
+    });
+};
 
 
 // --- Notation API ---

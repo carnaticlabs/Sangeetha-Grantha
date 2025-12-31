@@ -14,6 +14,9 @@ import com.sangita.grantha.backend.api.services.KrithiNotationService
 import com.sangita.grantha.backend.api.services.KrithiService
 import com.sangita.grantha.backend.api.services.ReferenceDataService
 import com.sangita.grantha.backend.api.services.AdminDashboardService
+import com.sangita.grantha.backend.api.services.TransliterationService
+import com.sangita.grantha.backend.api.services.WebScrapingService
+
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.authenticate
@@ -26,6 +29,8 @@ fun Application.configureRouting(
     importService: ImportService,
     auditLogService: AuditLogService,
     dashboardService: AdminDashboardService,
+    transliterationService: TransliterationService,
+    webScrapingService: WebScrapingService
 ) {
     install(io.ktor.server.plugins.defaultheaders.DefaultHeaders)
     routing {
@@ -33,9 +38,9 @@ fun Application.configureRouting(
         publicKrithiRoutes(krithiService, referenceDataService, notationService)
 
         authenticate("admin-auth") {
-            adminKrithiRoutes(krithiService)
+            adminKrithiRoutes(krithiService, transliterationService)
             adminNotationRoutes(notationService)
-            importRoutes(importService)
+            importRoutes(importService, webScrapingService)
             auditRoutes(auditLogService)
             referenceDataRoutes(referenceDataService)
         }

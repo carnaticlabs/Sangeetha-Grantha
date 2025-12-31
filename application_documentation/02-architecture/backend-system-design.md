@@ -188,6 +188,16 @@ Services contain business logic and orchestrate repository calls.
 - Aggregates statistics for admin dashboard
 - Counts by workflow state, musical form, etc.
 
+### 5.7 AI Services
+
+**TransliterationService:**
+- Uses `GeminiApiClient` for multi-script transliteration.
+- Preserves alignment markers and notation symbols.
+
+**WebScrapingService:**
+- Fetches HTML from external sources (e.g., shivkumar.org).
+- Uses Gemini to parse structured metadata from unstructured HTML.
+
 ---
 
 ## 6. HTTP API Design

@@ -9,6 +9,10 @@ import java.util.UUID
 import kotlin.uuid.Uuid
 
 class ImportService(private val dal: SangitaDal) {
+    suspend fun getImports(status: ImportStatus? = null): List<ImportedKrithiDto> {
+        return dal.imports.listImports(status)
+    }
+
     suspend fun submitImports(requests: List<ImportKrithiRequest>): List<ImportedKrithiDto> {
         if (requests.isEmpty()) return emptyList()
 
