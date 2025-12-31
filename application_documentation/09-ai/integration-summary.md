@@ -4,14 +4,14 @@ status: Summary
 version: 1.0
 last_updated: 2025-01-27
 related_docs:
-  - ai-integration-opportunities.md
+  - integration-opportunities.md
 ---
 
 # AI Integration Opportunities - Executive Summary
 
 ## Quick Overview
 
-This document provides a high-level summary of Google Gemini AI integration opportunities for Sangita Grantha. For detailed technical specifications, see [ai-integration-opportunities.md](./ai-integration-opportunities.md).
+This document provides a high-level summary of Google Gemini AI integration opportunities for Sangita Grantha. For detailed technical specifications, see [integration-opportunities.md](./integration-opportunities.md).
 
 ---
 
@@ -220,10 +220,10 @@ gemini_model = "gemini-2.0-flash-exp"
 
 ## Related Documentation
 
-- [Full Technical Specification](./ai-integration-opportunities.md)
-- [Admin Web PRD](./requirements/prd/admin-web-prd.md)
-- [Backend Architecture](./backend/architecture.md)
-- [API Contract](./api/api-contract.md)
+- [Full Technical Specification](./integration-opportunities.md)
+- [Admin Web PRD](../01-requirements/admin-web/prd.md)
+- [Backend Architecture](../02-architecture/backend-system-design.md)
+- [API Contract](../03-api/api-contract.md)
 
 ---
 
