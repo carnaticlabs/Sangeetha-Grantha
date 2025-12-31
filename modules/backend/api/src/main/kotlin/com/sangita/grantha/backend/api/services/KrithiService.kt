@@ -4,6 +4,7 @@ import com.sangita.grantha.backend.api.models.KrithiCreateRequest
 import com.sangita.grantha.backend.api.models.KrithiUpdateRequest
 import com.sangita.grantha.backend.dal.SangitaDal
 import com.sangita.grantha.backend.dal.enums.LanguageCode
+import com.sangita.grantha.backend.dal.enums.MusicalForm
 import com.sangita.grantha.backend.dal.enums.WorkflowState
 import com.sangita.grantha.backend.dal.repositories.KrithiSearchFilters
 import com.sangita.grantha.shared.domain.model.KrithiDto
@@ -13,7 +14,7 @@ import java.util.UUID
 import kotlin.uuid.Uuid
 
 class KrithiService(private val dal: SangitaDal) {
-    suspend fun search(request: KrithiSearchRequest): KrithiSearchResult {
+    suspend fun search(request: KrithiSearchRequest, publishedOnly: Boolean = true): KrithiSearchResult {
         val filters = KrithiSearchFilters(
             query = request.query,
             composerId = parseUuid(request.composerId, "composerId"),
@@ -24,7 +25,7 @@ class KrithiService(private val dal: SangitaDal) {
             lyric = request.lyric,
             primaryLanguage = request.language?.let { LanguageCode.valueOf(it.name) }
         )
-        return dal.krithis.search(filters, request.page, request.pageSize, publishedOnly = true)
+        return dal.krithis.search(filters, request.page, request.pageSize, publishedOnly = publishedOnly)
     }
 
     suspend fun getKrithi(id: Uuid): KrithiDto? = dal.krithis.findById(id)
@@ -45,6 +46,7 @@ class KrithiService(private val dal: SangitaDal) {
             incipit = null,
             incipitNormalized = null,
             composerId = composerId,
+            musicalForm = MusicalForm.valueOf(request.musicalForm.name),
             primaryLanguage = LanguageCode.valueOf(request.primaryLanguage.name),
             primaryRagaId = primaryRagaId ?: ragaIds.firstOrNull(),
             talaId = talaId,
@@ -80,6 +82,7 @@ class KrithiService(private val dal: SangitaDal) {
             title = request.title,
             titleNormalized = normalizedTitle,
             composerId = composerId,
+            musicalForm = request.musicalForm?.let { MusicalForm.valueOf(it.name) },
             primaryLanguage = request.primaryLanguage?.let { LanguageCode.valueOf(it.name) },
             primaryRagaId = primaryRagaId,
             talaId = talaId,

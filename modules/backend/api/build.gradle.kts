@@ -85,3 +85,11 @@ tasks.named<Jar>("jar") {
 tasks.test {
     useJUnitPlatform()
 }
+
+tasks.register<JavaExec>("seedDatabase") {
+    group = "application"
+    description = "Seed the database with initial reference data and sample content"
+    classpath = sourceSets.main.get().runtimeClasspath
+    mainClass.set("com.sangita.grantha.backend.api.tools.SeedDatabaseKt")
+    systemProperty("io.ktor.development", "true")
+}

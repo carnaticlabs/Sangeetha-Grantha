@@ -2,6 +2,7 @@ package com.sangita.grantha.backend.dal.tables
 
 import com.sangita.grantha.backend.dal.enums.ImportStatus
 import com.sangita.grantha.backend.dal.enums.LanguageCode
+import com.sangita.grantha.backend.dal.enums.MusicalForm
 import com.sangita.grantha.backend.dal.enums.RagaSection
 import com.sangita.grantha.backend.dal.enums.ScriptCode
 import com.sangita.grantha.backend.dal.enums.WorkflowState
@@ -128,6 +129,7 @@ object KrithisTable : UUIDTable("krithis") {
     val talaId = uuid("tala_id").nullable()
     val deityId = uuid("deity_id").nullable()
     val templeId = uuid("temple_id").nullable()
+    val musicalForm = pgEnum<MusicalForm>("musical_form", MusicalForm.DB_TYPE)
     val primaryLanguage = pgEnum<LanguageCode>("primary_language", LanguageCode.DB_TYPE)
     val isRagamalika = bool("is_ragamalika").default(false)
     val workflowState = pgEnum<WorkflowState>("workflow_state", WorkflowState.DB_TYPE)
@@ -180,6 +182,32 @@ object KrithiLyricSectionsTable : UUIDTable("krithi_lyric_sections") {
     val sectionId = uuid("section_id")
     val text = text("text")
     val normalizedText = text("normalized_text").nullable()
+    val createdAt = timestampWithTimeZone("created_at")
+    val updatedAt = timestampWithTimeZone("updated_at")
+}
+
+object KrithiNotationVariantsTable : UUIDTable("krithi_notation_variants") {
+    val krithiId = uuid("krithi_id")
+    val notationType = text("notation_type")
+    val talaId = uuid("tala_id").nullable()
+    val kalai = integer("kalai")
+    val eduppuOffsetBeats = integer("eduppu_offset_beats").nullable()
+    val variantLabel = text("variant_label").nullable()
+    val sourceReference = text("source_reference").nullable()
+    val isPrimary = bool("is_primary").default(false)
+    val createdByUserId = uuid("created_by_user_id").nullable()
+    val updatedByUserId = uuid("updated_by_user_id").nullable()
+    val createdAt = timestampWithTimeZone("created_at")
+    val updatedAt = timestampWithTimeZone("updated_at")
+}
+
+object KrithiNotationRowsTable : UUIDTable("krithi_notation_rows") {
+    val notationVariantId = uuid("notation_variant_id")
+    val sectionId = uuid("section_id")
+    val orderIndex = integer("order_index").default(0)
+    val swaraText = text("swara_text")
+    val sahityaText = text("sahitya_text").nullable()
+    val talaMarkers = text("tala_markers").nullable()
     val createdAt = timestampWithTimeZone("created_at")
     val updatedAt = timestampWithTimeZone("updated_at")
 }

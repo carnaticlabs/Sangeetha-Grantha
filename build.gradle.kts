@@ -19,7 +19,7 @@ allprojects {
 }
 
 subprojects {
-    // Enforce Java 25 toolchain for all Kotlin projects (matches Kailash Yatra setup)
+    // Enforce Java 25 toolchain for all Kotlin projects (matches Sangeetha Grantha setup)
     plugins.withType<org.jetbrains.kotlin.gradle.plugin.KotlinBasePluginWrapper> {
         extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension> {
             jvmToolchain(25)

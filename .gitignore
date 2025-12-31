@@ -37,3 +37,4 @@ build/
 gradlew
 **/db-data/**
 **/node_modules/**
+**/dist/**

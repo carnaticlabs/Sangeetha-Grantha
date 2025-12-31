@@ -5,6 +5,8 @@
 SET search_path TO public;
 
 -- Users (Admin / Editor / Reviewer)
+CREATE TYPE musical_form_enum AS ENUM ('KRITHI', 'VARNAM', 'SWARAJATHI');
+
 CREATE TABLE IF NOT EXISTS users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email TEXT UNIQUE,
@@ -108,7 +110,12 @@ CREATE TABLE IF NOT EXISTS krithis (
   tala_id UUID REFERENCES talas (id) ON DELETE SET NULL,
   deity_id UUID REFERENCES deities (id) ON DELETE SET NULL,
   temple_id UUID REFERENCES temples (id) ON DELETE SET NULL,
+  
   primary_language language_code_enum NOT NULL,
+
+  -- Merged from 06__musical-form-and-notation.sql
+  musical_form musical_form_enum NOT NULL DEFAULT 'KRITHI',
+
   is_ragamalika BOOLEAN NOT NULL DEFAULT FALSE,
 
   workflow_state workflow_state_enum NOT NULL DEFAULT 'draft',

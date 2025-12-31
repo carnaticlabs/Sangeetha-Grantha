@@ -55,6 +55,19 @@ CREATE INDEX IF NOT EXISTS idx_krithis_temple
 CREATE INDEX IF NOT EXISTS idx_krithis_workflow_state
   ON krithis (workflow_state);
 
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name = 'krithis'
+      AND column_name = 'musical_form'
+  ) THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_krithis_musical_form ON krithis (musical_form)';
+  END IF;
+END$$;
+
 -- Ragamalika lookup
 CREATE INDEX IF NOT EXISTS idx_krithi_ragas_krithi
   ON krithi_ragas (krithi_id, order_index);
@@ -71,6 +84,30 @@ CREATE INDEX IF NOT EXISTS idx_krithi_lyrics_trgm
 CREATE INDEX IF NOT EXISTS idx_krithi_lyrics_lang_script
   ON krithi_lyric_variants (language, script, is_primary);
 
+-- Notation lookup
+DO $$
+BEGIN
+  IF to_regclass('public.krithi_notation_variants') IS NOT NULL THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_krithi_notation_variants_krithi_type ON krithi_notation_variants (krithi_id, notation_type)';
+  END IF;
+END$$;
+
+DO $$
+BEGIN
+  IF to_regclass('public.krithi_notation_rows') IS NOT NULL THEN
+    EXECUTE 'CREATE UNIQUE INDEX IF NOT EXISTS idx_krithi_notation_rows_variant_section_order ON krithi_notation_rows (notation_variant_id, section_id, order_index)';
+  END IF;
+END$$;
+
+-- Notation search: trigram index for ILIKE '%term%' queries
+DO $$
+BEGIN
+  IF to_regclass('public.krithi_notation_rows') IS NOT NULL
+     AND EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_trgm') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_krithi_notation_rows_swara_trgm ON krithi_notation_rows USING gin (swara_text gin_trgm_ops)';
+  END IF;
+END$$;
+
 -- Users / roles
 CREATE INDEX IF NOT EXISTS idx_users_email
   ON users (email);
@@ -83,8 +120,12 @@ CREATE INDEX IF NOT EXISTS idx_role_assignments_user
 -- DROP INDEX IF EXISTS idx_users_email;
 -- DROP INDEX IF EXISTS idx_krithi_lyrics_lang_script;
 -- DROP INDEX IF EXISTS idx_krithi_lyrics_trgm;
+-- DROP INDEX IF EXISTS idx_krithi_notation_rows_swara_trgm;
+-- DROP INDEX IF EXISTS idx_krithi_notation_rows_variant_section_order;
+-- DROP INDEX IF EXISTS idx_krithi_notation_variants_krithi_type;
 -- DROP INDEX IF EXISTS idx_krithi_ragas_raga;
 -- DROP INDEX IF EXISTS idx_krithi_ragas_krithi;
+-- DROP INDEX IF EXISTS idx_krithis_musical_form;
 -- DROP INDEX IF EXISTS idx_krithis_temple;
 -- DROP INDEX IF EXISTS idx_krithis_deity;
 -- DROP INDEX IF EXISTS idx_krithis_tala;

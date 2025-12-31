@@ -2,6 +2,7 @@ package com.sangita.grantha.backend.dal.models
 
 import com.sangita.grantha.backend.dal.enums.ImportStatus
 import com.sangita.grantha.backend.dal.enums.LanguageCode
+import com.sangita.grantha.backend.dal.enums.MusicalForm
 import com.sangita.grantha.backend.dal.enums.ScriptCode
 import com.sangita.grantha.backend.dal.enums.WorkflowState
 import com.sangita.grantha.backend.dal.support.toKotlinUuid
@@ -11,6 +12,8 @@ import com.sangita.grantha.backend.dal.tables.DeitiesTable
 import com.sangita.grantha.backend.dal.tables.ImportSourcesTable
 import com.sangita.grantha.backend.dal.tables.ImportedKrithisTable
 import com.sangita.grantha.backend.dal.tables.KrithisTable
+import com.sangita.grantha.backend.dal.tables.KrithiNotationRowsTable
+import com.sangita.grantha.backend.dal.tables.KrithiNotationVariantsTable
 import com.sangita.grantha.backend.dal.tables.RagasTable
 import com.sangita.grantha.backend.dal.tables.SampradayasTable
 import com.sangita.grantha.backend.dal.tables.TagsTable
@@ -23,7 +26,11 @@ import com.sangita.grantha.shared.domain.model.ImportSourceDto
 import com.sangita.grantha.shared.domain.model.ImportStatusDto
 import com.sangita.grantha.shared.domain.model.ImportedKrithiDto
 import com.sangita.grantha.shared.domain.model.KrithiDto
+import com.sangita.grantha.shared.domain.model.KrithiNotationRowDto
+import com.sangita.grantha.shared.domain.model.KrithiNotationVariantDto
 import com.sangita.grantha.shared.domain.model.LanguageCodeDto
+import com.sangita.grantha.shared.domain.model.MusicalFormDto
+import com.sangita.grantha.shared.domain.model.NotationTypeDto
 import com.sangita.grantha.shared.domain.model.RagaDto
 import com.sangita.grantha.shared.domain.model.SampradayaDto
 import com.sangita.grantha.shared.domain.model.SampradayaTypeDto
@@ -132,6 +139,7 @@ fun ResultRow.toKrithiDto(): KrithiDto = KrithiDto(
     talaId = this[KrithisTable.talaId]?.toKotlinUuid(),
     deityId = this[KrithisTable.deityId]?.toKotlinUuid(),
     templeId = this[KrithisTable.templeId]?.toKotlinUuid(),
+    musicalForm = this[KrithisTable.musicalForm].toDto(),
     primaryLanguage = this[KrithisTable.primaryLanguage].toDto(),
     isRagamalika = this[KrithisTable.isRagamalika],
     workflowState = this[KrithisTable.workflowState].toDto(),
@@ -141,6 +149,34 @@ fun ResultRow.toKrithiDto(): KrithiDto = KrithiDto(
     updatedByUserId = this[KrithisTable.updatedByUserId]?.toKotlinUuid(),
     createdAt = this.kotlinInstant(KrithisTable.createdAt),
     updatedAt = this.kotlinInstant(KrithisTable.updatedAt)
+)
+
+@OptIn(ExperimentalUuidApi::class)
+fun ResultRow.toKrithiNotationVariantDto(): KrithiNotationVariantDto = KrithiNotationVariantDto(
+    id = this[KrithiNotationVariantsTable.id].value.toKotlinUuid(),
+    krithiId = this[KrithiNotationVariantsTable.krithiId].toKotlinUuid(),
+    notationType = NotationTypeDto.valueOf(this[KrithiNotationVariantsTable.notationType]),
+    talaId = this[KrithiNotationVariantsTable.talaId]?.toKotlinUuid(),
+    kalai = this[KrithiNotationVariantsTable.kalai],
+    eduppuOffsetBeats = this[KrithiNotationVariantsTable.eduppuOffsetBeats],
+    variantLabel = this[KrithiNotationVariantsTable.variantLabel],
+    sourceReference = this[KrithiNotationVariantsTable.sourceReference],
+    isPrimary = this[KrithiNotationVariantsTable.isPrimary],
+    createdAt = this.kotlinInstant(KrithiNotationVariantsTable.createdAt),
+    updatedAt = this.kotlinInstant(KrithiNotationVariantsTable.updatedAt)
+)
+
+@OptIn(ExperimentalUuidApi::class)
+fun ResultRow.toKrithiNotationRowDto(): KrithiNotationRowDto = KrithiNotationRowDto(
+    id = this[KrithiNotationRowsTable.id].value.toKotlinUuid(),
+    notationVariantId = this[KrithiNotationRowsTable.notationVariantId].toKotlinUuid(),
+    sectionId = this[KrithiNotationRowsTable.sectionId].toKotlinUuid(),
+    orderIndex = this[KrithiNotationRowsTable.orderIndex],
+    swaraText = this[KrithiNotationRowsTable.swaraText],
+    sahityaText = this[KrithiNotationRowsTable.sahityaText],
+    talaMarkers = this[KrithiNotationRowsTable.talaMarkers],
+    createdAt = this.kotlinInstant(KrithiNotationRowsTable.createdAt),
+    updatedAt = this.kotlinInstant(KrithiNotationRowsTable.updatedAt)
 )
 
 @OptIn(ExperimentalUuidApi::class)
@@ -195,3 +231,5 @@ fun LanguageCode.toDto(): LanguageCodeDto = LanguageCodeDto.valueOf(name)
 fun ScriptCode.toDto(): ScriptCodeDto = ScriptCodeDto.valueOf(name)
 
 fun ImportStatus.toDto(): ImportStatusDto = ImportStatusDto.valueOf(name)
+
+fun MusicalForm.toDto(): MusicalFormDto = MusicalFormDto.valueOf(name)

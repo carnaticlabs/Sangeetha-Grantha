@@ -15,4 +15,8 @@ class TagRepository {
             .orderBy(TagsTable.displayNameEn to SortOrder.ASC)
             .map { row: ResultRow -> row.toTagDto() }
     }
+
+    suspend fun countAll(): Long = DatabaseFactory.dbQuery {
+        TagsTable.selectAll().count()
+    }
 }

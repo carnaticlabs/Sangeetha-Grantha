@@ -1,13 +1,7 @@
 # Aider AI Ignore File
 # Files and directories that Aider should not read or modify
 
-# Tooling updates (Dec 2025):
-# - Keep `tools/yatra-cli/` in scope; v0.1.0 (2025-11-27) drives setup/dev/test flows
-#   via `cargo run -- dev --start-db` and `cargo run -- test steel-thread`.
-# - Ktor Client integration tests live under `modules/backend/api/src/test/kotlin/com/kailashyatra/backend/api/integration/` (Ktor testApplication +
-#   seeders). Do NOT ignore these paths; they validate health, OTP auth, admin yatra
-#   lifecycle, and participant flows end-to-end.
-
+#
 # Build outputs
 **/build/
 **/target/

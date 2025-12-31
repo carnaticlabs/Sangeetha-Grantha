@@ -273,6 +273,15 @@ impl DatabaseManager {
         }
 
         // Drop user if it exists
+        if username == admin_user || username == "postgres" {
+            info!(
+                "Skipping drop for user {} (admin/system role cannot be dropped safely)",
+                username
+            );
+            info!("Database reset completed successfully");
+            return Ok(());
+        }
+
         info!("Dropping user {}...", username);
 
         // Create SQL to drop user

@@ -9,6 +9,7 @@ import com.sangita.grantha.backend.api.plugins.configureSerialization
 import com.sangita.grantha.backend.api.plugins.configureStatusPages
 import com.sangita.grantha.backend.api.services.AuditLogService
 import com.sangita.grantha.backend.api.services.ImportService
+import com.sangita.grantha.backend.api.services.KrithiNotationService
 import com.sangita.grantha.backend.api.services.KrithiService
 import com.sangita.grantha.backend.api.services.ReferenceDataService
 import com.sangita.grantha.backend.dal.DatabaseFactory
@@ -27,9 +28,11 @@ fun main() {
     DatabaseFactory.connectFromExternal(env.databaseConfigPath)
     val dal = SangitaDal()
     val krithiService = KrithiService(dal)
+    val notationService = KrithiNotationService(dal)
     val referenceDataService = ReferenceDataService(dal)
     val importService = ImportService(dal)
     val auditLogService = AuditLogService(dal)
+    val dashboardService = com.sangita.grantha.backend.api.services.AdminDashboardService(dal)
 
     embeddedServer(Netty, host = env.host, port = env.port) {
         configureSerialization()
@@ -37,7 +40,13 @@ fun main() {
         configureCors(env)
         configureSecurity(env)
         configureStatusPages()
-        configureRouting(krithiService, referenceDataService, importService, auditLogService)
+        configureRouting(        krithiService,
+        notationService,
+        referenceDataService,
+        importService,
+        auditLogService,
+        dashboardService,
+    )
 
         monitor.subscribe(ApplicationStopping) {
             logger.info("Shutting down, closing database pool")

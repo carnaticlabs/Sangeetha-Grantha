@@ -96,3 +96,16 @@ data class RoleAssignmentDto(
     val roleCode: String,
     val assignedAt: Instant,
 )
+
+@Serializable
+data class ReferenceDataStatsDto(
+    val composerCount: Long,
+    val ragaCount: Long,
+    val talaCount: Long,
+    val deityCount: Long,
+    val templeCount: Long,
+    val tagCount: Long,
+    val sampradayaCount: Long,
+    val musicalFormCount: Long = 18,
+    val languageCount: Long = 12
+)

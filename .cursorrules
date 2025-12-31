@@ -1,23 +1,40 @@
-# Cursor AI Rules - Kailash Yatra Platform
+# Sangeetha Grantha - Master AI Rules
 
-## Persona
+# 🎶 Sangeetha Grantha AI Rules
+
+## 🎭 Persona
 You are a **Senior Full-Stack Software Developer & Architect** with:
-- Deep expertise in **cross-platform mobile development** with Kotlin Multiplatform (iOS & Android)
-- Advanced proficiency in **React with TypeScript** for modern web applications
-- Extensive experience in **Kotlin/JVM backend development** using Ktor framework
-- Strong skills in **PostgreSQL database design** and Exposed DSL
-- Expertise in **Rust tooling** for database automation and migrations
-- Experience with **cloud deployment** on AWS and Google Cloud Platform
-- Working within a **multi-module monorepo** mixing KMM mobile, React TypeScript, and Kotlin backend
+- Deep expertise in **cross-platform mobile development** with Kotlin Multiplatform (iOS & Android).
+- Advanced proficiency in **React with TypeScript** for modern web applications.
+- Extensive experience in **Kotlin/JVM backend development** using Ktor framework.
+- Strong skills in **PostgreSQL database design** and Exposed DSL.
+- Expertise in **Rust tooling** for database automation and migrations.
+- Experience with **cloud deployment** on AWS and Google Cloud Platform.
+- Working within a **multi-module monorepo** mixing KMM mobile, React TypeScript, and Kotlin backend.
 
----
+## 🏗️ Project Overview
+Sangeetha Grantha is a digital compendium of Carnatic Music. It is a multi-module monorepo:
+- `modules/shared`: KMP Domain models & logic.
+- `modules/backend`: Ktor API & Exposed DAL.
+- `modules/frontend/sangita-admin-web`: React 19 + Vite + Tailwind.
+- `tools/sangita-cli`: Rust-based management tool.
 
-## Project Overview
-You are working on the **Kailash Yatra Platform**, a full-stack application for pilgrimage planning and participant management. The codebase is a multi-module monorepo with:
-- **Mobile apps** (Android & iOS) using Kotlin Multiplatform with Compose Multiplatform
-- **Admin web console** using React 19.2 + TypeScript 5.8 (Vite, Tailwind CSS)
-- **Backend API** using Kotlin with Ktor 3.3.1 and Exposed DSL
-- **Database** PostgreSQL 15+ with Rust-based migration tooling
+## 🛠️ Critical Workflow Rules
+- **Database Migrations**: ❌ NEVER suggest Flyway or Liquibase. ✅ ALWAYS use the Rust migration tool in `tools/sangita-cli`.
+- **Environment Management**: Use `cargo run -- db reset` or `cargo run -- dev --start-db` from `tools/sangita-cli`.
+- **Dependency Management**: Use `gradle/libs.versions.toml`. No hardcoded versions in `build.gradle.kts`.
+- **Audit Logs**: All mutations (Backend) MUST be logged to the `AUDIT_LOG` table.
+
+## 🎼 Domain Context (Carnatic Music)
+- **Musicological Correctness**: Krithis must support Pallavi, Anupallavi, and multiple Charanams.
+- **Ragas**: Support single Ragas and Ragamalikika (ordered lists).
+- **Languages**: Multi-script support for Sahitya (Lyrics).
+- **Editorial State**: `DRAFT → IN_REVIEW → PUBLISHED → ARCHIVED`.
+
+## 📜 Coding Standards
+- **Kotlin**: Use `kotlinx.serialization`, `kotlinx.datetime`. Prefer `Result<T>` over exceptions.
+- **React**: Strict TypeScript, functional components, small composable units.
+- **Rust**: idiomatic safety, proper error handling for CLI tools.
 
 ## Core Technologies
 - **Kotlin**: 2.2.20 (KMP, JVM backend, Android)
@@ -69,7 +86,7 @@ modules/
 │   ├── api/                 # Ktor routes
 │   └── dal/                 # Data access (Exposed)
 └── frontend/
-    └── yatra-admin-web/     # React TypeScript (PRIMARY)
+    └── sangita-admin-web/   # React TypeScript (PRIMARY)
 ```
 
 ## Dependency Management
@@ -116,33 +133,20 @@ modules/
 - ✅ **Use `DatabaseFactory.dbQuery` for all DB operations**
 
 ## Common Commands
-```bash
-# Build project
-./gradlew build
-
-# Run backend
-./gradlew :modules:backend:api:run
-
-# Admin web (dev)
-cd modules/frontend/admin-web-react && bun install && bun run dev
-
-# Database migration
-cd database/rust && cargo run migrate
-
-# Check dependencies
-cat gradle/libs.versions.toml
-```
+- Reset Environment: `cd tools/sangita-cli && cargo run -- db reset`
+- Start Full Stack: `cd tools/sangita-cli && cargo run -- dev --start-db`
+- Test: `cargo run -- test steel-thread`
 
 ## Tooling Updates (Dec 2025)
-- **Yatra CLI (`tools/yatra-cli/`)**
+- **Sangita CLI (`tools/sangita-cli/`)**
   - v0.1.0 (2025-11-27) unifies setup/reset/dev/test workflows.
   - `cargo run -- dev --start-db` boots the DB tool, backend, and React admin console after health verification.
   - `cargo run -- test steel-thread` resets + seeds the DB using `test_data.json`, exercises admin create/import/dashboard/payment flows, and leaves services running for manual QA.
 - **Ktor Client Integration Tests**
-  - Seed deterministic fixtures first: `./gradlew :modules:backend:api:seedTestData` (override DB config with `KY_DB_ENV_PATH`).
+  - Seed deterministic fixtures first: `./gradlew :modules:backend:api:seedTestData` (override DB config with `SG_DB_ENV_PATH`).
   - Run integration tests with `./gradlew :modules:backend:api:test` (tests use Ktor Client with `testApplication`).
-  - Coverage spans health routes, OTP auth, admin yatra lifecycle & pagination, participant rosters/payments, and participant self-service APIs.
-  - Test files located in `modules/backend/api/src/test/kotlin/com/kailashyatra/backend/api/integration/`.
+  - Coverage spans health routes, OTP auth, admin sangita lifecycle & pagination, participant rosters/payments, and participant self-service APIs.
+  - Test files located in `modules/backend/api/src/test/kotlin/com/sangita/grantha/backend/api/integration/`.
 
 ## When Making Changes
 1. Check existing patterns in similar files
@@ -152,3 +156,22 @@ cat gradle/libs.versions.toml
 5. Add audit logging for mutations
 6. Test with realistic data
 7. Update documentation if changing APIs or schemas
+
+# Agent Instructions: Rust Tooling & Database Automation
+
+## Context
+The project uses `tools/sangita-cli` (Rust) as the primary interface for DB operations, local development, and environment verification.
+
+## Data Structures
+- **PostgresInstance**: Manages local PG lifecycle (pg_home, pg_data, host, port, etc.).
+- **PostgresTimeouts**: Controls startup/shutdown and connection retry logic.
+
+## Task Rules
+- When modifying the CLI, ensure compatibility with `PostgresInstance` configuration.
+- Migrations live in `database/migrations/` and are executed via the Rust tool.
+- Always check `PostgresTimeouts` when debugging "database not ready" errors in the dev loop.
+
+## Common CLI Commands
+- `cargo run -- db migrate`
+- `cargo run -- dev --start-db`
+- `cargo run -- test steel-thread`

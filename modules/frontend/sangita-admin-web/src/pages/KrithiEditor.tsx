@@ -1,80 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { GoogleGenAI } from "@google/genai";
-import { LyricVariant, AuditEvent, TagCategory, ViewState } from '../types';
+import {
+    KrithiDetail,
+    MusicalForm,
+    Composer,
+    Raga,
+    Tala,
+    Deity,
+    Temple,
+    Tag,
+    KrithiCreateRequest,
+    KrithiUpdateRequest,
+    AuditLog,
+    Sampradaya,
+    KrithiLyricVariant,
+    KrithiSection,
+    KrithiLyricSection
+} from '../types';
+import NotationTab from '../components/notation/NotationTab';
+import { formatLanguageCode, LANGUAGE_CODE_OPTIONS, formatScriptCode, SCRIPT_CODE_OPTIONS, formatSectionType, formatWorkflowState, getWorkflowStateColor } from '../utils/enums';
+import {
+    getKrithi,
+    createKrithi,
+    updateKrithi,
+    getComposers,
+    getRagas,
+    getTalas,
+    getDeities,
+    getTemples,
+    getTags,
+    getKrithiAuditLogs,
+    getSampradayas,
+    saveKrithiSections,
+    createLyricVariant,
+    updateLyricVariant,
+    saveVariantSections
+} from '../api/client';
+import { useToast, ToastContainer } from '../components/Toast';
 
-interface KrithiEditorProps {
-  krithiId: string | null;
-  onBack: () => void;
-}
-
-// --- MOCK DATA ---
-
-const MOCK_VARIANTS: LyricVariant[] = [
-  {
-    id: 'v1',
-    language: 'Telugu',
-    script: 'Telugu',
-    isPrimary: true,
-    label: 'Standard Pathanthara',
-    sampradaya: 'Walajapet',
-    source: 'T.K. Govinda Rao Book',
-    pallavi: 'ఎందరో మహానుభావులు అందరికీ వందనములు',
-    anupallavi: 'చంద్రవర్ణుని అంద చందమును హృదయార విందమున జూచి బ్రహ్మానందం అనుభవించు వా',
-    charanams: ['సామ గాన లోల మనసిజ లావణ్య ధన్య మూర్ధన్యుల్']
-  },
-  {
-    id: 'v2',
-    language: 'English',
-    script: 'ISO-15919 (Diacritics)',
-    isPrimary: false,
-    label: 'Academic Transliteration',
-    source: 'Music Academy Journal',
-    pallavi: 'Endarō mahānubhāvulu andariki vandanamulu',
-    anupallavi: 'Chandravarnuni anda chandamunu hrudayāra vindamuna jūchi brahmānandam anubhavinchu vā',
-    charanams: ['Sāma gāna lōla manasija lāvanya dhanya mūrdhanyul']
-  }
-];
-
-const MOCK_TAGS: TagCategory[] = [
-  {
-    category: 'Bhava',
-    tags: [{ label: 'Bhakti', confidence: 'High' }, { label: 'Vairagya', confidence: 'Medium' }]
-  },
-  {
-    category: 'Kshetra',
-    tags: [{ label: 'Srirangam', confidence: 'High' }]
-  },
-  {
-    category: 'Festival',
-    tags: [{ label: 'Rama Navami', confidence: 'High' }]
-  }
-];
-
-const MOCK_AUDIT: AuditEvent[] = [
-  {
-    id: 'e1',
-    timestamp: '2023-10-24 10:30 AM',
-    user: 'John Doe',
-    action: 'Workflow',
-    changes: [{ field: 'Status', before: 'Review', after: 'Published' }]
-  },
-  {
-    id: 'e2',
-    timestamp: '2023-10-23 04:15 PM',
-    user: 'Jane Smith',
-    action: 'Update',
-    changes: [{ field: 'Raga', before: 'Kapi', after: 'Sri' }]
-  },
-  {
-    id: 'e3',
-    timestamp: '2023-10-22 09:00 AM',
-    user: 'System',
-    action: 'Create',
-    changes: []
-  }
-];
-
-// --- HELPER COMPONENTS (Defined outside to prevent re-render focus loss) ---
+interface KrithiEditorProps { }
 
 const SectionHeader: React.FC<{ title: string; action?: React.ReactNode }> = ({ title, action }) => (
     <div className="flex items-center justify-between mb-6 pb-2 border-b border-border-light">
@@ -83,710 +48,1125 @@ const SectionHeader: React.FC<{ title: string; action?: React.ReactNode }> = ({ 
     </div>
 );
 
-const InputField = ({ label, field, value, onChange, placeholder = '', highlight = false }: any) => (
-  <div>
-    <label className="block text-sm font-semibold text-ink-900 mb-2 flex justify-between">
-        {label}
-        {highlight && (
-            <span className="text-[10px] text-purple-600 font-bold flex items-center gap-1 animate-pulse">
-                <span className="material-symbols-outlined text-[12px]">auto_awesome</span>
-                UPDATED
-            </span>
-        )}
-    </label>
-    <div className="relative">
-        <input 
-            type="text" 
-            value={value} 
+const InputField = ({ label, value, onChange, placeholder = '', highlight = false }: any) => (
+    <div>
+        <label className="block text-sm font-semibold text-ink-900 mb-2 flex justify-between">
+            {label}
+            {highlight && (
+                <span className="text-[10px] text-purple-600 font-bold flex items-center gap-1 animate-pulse">
+                    <span className="material-symbols-outlined text-[12px]">auto_awesome</span>
+                    UPDATED
+                </span>
+            )}
+        </label>
+        <div className="relative">
+            <input
+                type="text"
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                className={`w-full h-12 px-4 border rounded-lg text-ink-900 focus:ring-2 focus:ring-primary focus:border-transparent transition-all ${highlight ? 'border-purple-400 bg-purple-50' : 'border-border-light bg-slate-50'
+                    }`}
+                placeholder={placeholder}
+            />
+        </div>
+    </div>
+);
+
+const SelectField = ({ label, value, onChange, options, placeholder = 'Select...' }: any) => (
+    <div>
+        <label className="block text-sm font-semibold text-ink-900 mb-2">{label}</label>
+        <select
+            value={value}
             onChange={(e) => onChange(e.target.value)}
-            className={`w-full h-12 px-4 border rounded-lg text-ink-900 focus:ring-2 focus:ring-primary focus:border-transparent transition-all ${
-                highlight ? 'border-purple-400 bg-purple-50' : 'border-border-light bg-slate-50'
-            }`}
+            className="w-full h-12 px-4 rounded-lg bg-slate-50 border border-border-light text-ink-900 focus:ring-2 focus:ring-primary focus:border-transparent"
+        >
+            <option value="">{placeholder}</option>
+            {options.map((opt: any) => (
+                <option key={opt.id} value={opt.id}>{opt.name || opt.canonicalName || opt.displayName}</option>
+            ))}
+        </select>
+    </div>
+);
+
+const TextareaField = ({ label, value, onChange, placeholder = '', rows = 4 }: any) => (
+    <div>
+        <label className="block text-sm font-semibold text-ink-900 mb-2">{label}</label>
+        <textarea
+            value={value || ''}
+            onChange={(e) => onChange(e.target.value)}
+            rows={rows}
+            className="w-full px-4 py-3 rounded-lg bg-slate-50 border border-border-light text-ink-900 focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none"
             placeholder={placeholder}
         />
     </div>
-  </div>
 );
 
-const KrithiEditor: React.FC<KrithiEditorProps> = ({ krithiId, onBack }) => {
-  const [activeTab, setActiveTab] = useState<'Metadata' | 'Lyrics' | 'Tags' | 'Audit'>('Metadata');
-  
-  // Metadata State
-  const [metadata, setMetadata] = useState({
-    title: "Endaro Mahanubhavulu",
-    incipit: "Endarō mahānubhāvulu andariki vandanamulu",
-    composer: "Tyagaraja",
-    raga: "Sri",
-    tala: "Adi",
-    deity: "Rama",
-    temple: "Srirangam",
-    language: "Telugu",
-    summary: "",
-    notes: ""
-  });
+const CheckboxField = ({ label, checked, onChange }: any) => (
+    <div className="flex items-center gap-3">
+        <input
+            type="checkbox"
+            checked={checked || false}
+            onChange={(e) => onChange(e.target.checked)}
+            className="w-5 h-5 rounded border-border-light text-primary focus:ring-2 focus:ring-primary"
+        />
+        <label className="text-sm font-semibold text-ink-900 cursor-pointer">{label}</label>
+    </div>
+);
 
-  // Lyrics State
-  const [variants, setVariants] = useState<LyricVariant[]>(MOCK_VARIANTS);
-  const [isEditingLyric, setIsEditingLyric] = useState(false);
-  const [currentLyric, setCurrentLyric] = useState<LyricVariant | null>(null);
 
-  // Tags State
-  const [tags, setTags] = useState<TagCategory[]>(MOCK_TAGS);
-  const [tagInput, setTagInput] = useState('');
-  
-  // Audit State
-  const [auditFilter, setAuditFilter] = useState({ user: '', type: '' });
+const KrithiEditor: React.FC<KrithiEditorProps> = () => {
+    const { id: paramKrithiId } = useParams();
+    const isNew = paramKrithiId === 'new';
+    const krithiId = isNew ? undefined : paramKrithiId;
 
-  // AI State
-  const [aiThinking, setAiThinking] = useState(false);
-  const [aiHighlights, setAiHighlights] = useState<string[]>([]);
+    const navigate = useNavigate();
+    const onBack = () => navigate('/krithis');
+    const toast = useToast();
+    const [activeTab, setActiveTab] = useState<'Metadata' | 'Lyrics' | 'Notation' | 'Tags' | 'Audit'>('Metadata');
+    const [loading, setLoading] = useState(false);
+    const [saving, setSaving] = useState(false);
 
-  // --- ACTIONS ---
-
-  const handleEditLyric = (variant?: LyricVariant) => {
-    if (variant) {
-      setCurrentLyric({ ...variant });
-    } else {
-      setCurrentLyric({
-        id: `new_${Date.now()}`,
-        language: '',
-        script: '',
-        isPrimary: false,
-        label: '',
-        source: '',
-        pallavi: '',
-        anupallavi: '',
-        charanams: ['']
-      });
-    }
-    setIsEditingLyric(true);
-  };
-
-  const handleSaveLyric = () => {
-    if (!currentLyric) return;
-    setVariants(prev => {
-        const exists = prev.find(v => v.id === currentLyric.id);
-        if (exists) return prev.map(v => v.id === currentLyric.id ? currentLyric : v);
-        return [...prev, currentLyric];
+    // Data State
+    const [krithi, setKrithi] = useState<Partial<KrithiDetail>>({
+        title: '',
+        status: 'DRAFT',
+        primaryLanguage: 'te', // Default
+        musicalForm: MusicalForm.KRITHI,
+        ragas: [],
+        sections: [],
+        lyricVariants: [],
+        tags: []
     });
-    setIsEditingLyric(false);
-    setCurrentLyric(null);
-  };
 
-  const handleAiTransliterate = async () => {
-    if (!currentLyric || !currentLyric.language) {
-         alert("Please specify a target Language in the Language field first.");
-         return;
-    }
-    
-    // Find Primary Variant
-    const primaryVariant = variants.find(v => v.isPrimary);
-    if (!primaryVariant) {
-        alert("No Primary variant found to transliterate from. Please mark a variant as Primary first.");
-        return;
-    }
+    // Reference Data State
+    const [composers, setComposers] = useState<Composer[]>([]);
+    const [ragas, setRagas] = useState<Raga[]>([]);
+    const [talas, setTalas] = useState<Tala[]>([]);
+    const [deities, setDeities] = useState<Deity[]>([]);
+    const [temples, setTemples] = useState<Temple[]>([]);
+    const [allTags, setAllTags] = useState<Tag[]>([]);
+    const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
+    const [sampradayas, setSampradayas] = useState<Sampradaya[]>([]);
+    const [editingVariantId, setEditingVariantId] = useState<string | null>(null);
 
-    if (primaryVariant.id === currentLyric.id) {
-         alert("Cannot transliterate the Primary variant onto itself. Create a new variant.");
-         return;
-    }
-
-    setAiThinking(true);
-    
-    try {
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-        
-        const prompt = `Act as a linguistic expert in Indian languages and Carnatic music.
-        Transliterate the following Carnatic music lyrics from ${primaryVariant.language} (${primaryVariant.script}) to ${currentLyric.language}.
-        
-        Source Lyrics (Primary):
-        Pallavi: ${primaryVariant.pallavi}
-        Anupallavi: ${primaryVariant.anupallavi}
-        Charanams: ${JSON.stringify(primaryVariant.charanams)}
-
-        Output strictly in JSON format with keys: 'pallavi' (string), 'anupallavi' (string), and 'charanams' (array of strings).
-        Ensure accurate transliteration suited for singing.`;
-
-        const response = await ai.models.generateContent({
-            model: 'gemini-3-flash-preview',
-            contents: prompt,
-            config: {
-                responseMimeType: 'application/json'
+    // Load initial data
+    useEffect(() => {
+        const loadRefs = async () => {
+            try {
+                const [c, r, t, d, tm, tg, s] = await Promise.all([
+                    getComposers(), getRagas(), getTalas(), getDeities(), getTemples(), getTags(), getSampradayas()
+                ]);
+                setComposers(c);
+                setRagas(r);
+                setTalas(t);
+                setDeities(d);
+                setTemples(tm);
+                setAllTags(tg);
+                setSampradayas(s);
+            } catch (e) {
+                console.error("Failed to load reference data", e);
             }
-        });
-        
-        const jsonText = response.text;
-        if (jsonText) {
-            const data = JSON.parse(jsonText);
-            setCurrentLyric(prev => ({
-                ...prev!,
-                pallavi: data.pallavi || '',
-                anupallavi: data.anupallavi || '',
-                charanams: Array.isArray(data.charanams) ? data.charanams : [],
-                label: `AI Transliterated (${currentLyric.language})`,
-                source: `Transliterated from ${primaryVariant.language} Primary`
-            }));
+        };
+        loadRefs();
+    }, []);
+
+    useEffect(() => {
+        if (!isNew && krithiId) {
+            setLoading(true);
+            getKrithi(krithiId)
+                .then(setKrithi)
+                .catch(err => alert("Failed to load krithi: " + err.message))
+                .finally(() => setLoading(false));
+            
+            // Load audit logs for this krithi
+            getKrithiAuditLogs(krithiId)
+                .then(setAuditLogs)
+                .catch(err => console.error("Failed to load audit logs:", err));
         }
-    } catch (e) {
-        console.error("Transliteration Error", e);
-        alert("AI Transliteration failed. Please check your API configuration.");
-    } finally {
-        setAiThinking(false);
-    }
-  };
+    }, [krithiId, isNew]);
 
-  const handleAiSuggestTags = async () => {
-    setAiThinking(true);
-    try {
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-        const prompt = `Analyze the Carnatic composition "${metadata.title}" by ${metadata.composer} in Raga ${metadata.raga}.
-        Suggest appropriate tags for the following categories: Bhava (Emotion), Kshetra (Temple/Place), and Deity.
-        
-        Output strictly in JSON format:
-        {
-          "Bhava": [{"label": "string", "confidence": "High" | "Medium" | "Low"}],
-          "Kshetra": [{"label": "string", "confidence": "High" | "Medium" | "Low"}],
-          "Deity": [{"label": "string", "confidence": "High" | "Medium" | "Low"}]
-        }`;
-
-        const response = await ai.models.generateContent({
-             model: 'gemini-3-flash-preview',
-             contents: prompt,
-             config: { responseMimeType: 'application/json' }
-        });
-
-        const jsonText = response.text;
-        if (jsonText) {
-             const data = JSON.parse(jsonText);
-             const newCategories: TagCategory[] = [];
-             
-             Object.keys(data).forEach(cat => {
-                 if (Array.isArray(data[cat])) {
-                     newCategories.push({
-                         category: cat,
-                         tags: data[cat].map((t: any) => ({ ...t, source: 'Gemini AI' }))
-                     });
-                 }
-             });
-             
-             // Merge with existing tags logic could go here, for now replacing/appending
-             setTags(prev => [...prev, ...newCategories]);
+    // Helpers to handle ID-based selection for object fields
+    const handleComposerChange = (id: string) => {
+        const obj = composers.find(c => c.id === id);
+        setKrithi(prev => ({ ...prev, composer: obj }));
+    };
+    const handleTalaChange = (id: string) => {
+        const obj = talas.find(t => t.id === id);
+        setKrithi(prev => ({ ...prev, tala: obj }));
+    };
+    const handleRagaChange = (id: string) => {
+        const obj = ragas.find(r => r.id === id);
+        if (krithi.isRagamalika) {
+            // For ragamalika, add to array if not already present
+            if (obj && !krithi.ragas?.some(r => r.id === obj.id)) {
+                setKrithi(prev => ({ ...prev, ragas: [...(prev.ragas || []), obj] }));
+            }
+        } else {
+            // Single raga selection
+            setKrithi(prev => ({ ...prev, ragas: obj ? [obj] : [] }));
         }
+    };
 
-    } catch (e) {
-         console.error(e);
-         // Fallback mock
-         setTimeout(() => {
-            const newTags: TagCategory = {
-                category: 'AI Suggestions',
-                tags: [
-                    { label: 'Pancharatna Krithi', confidence: 'High', source: 'Gemini' },
-                    { label: 'Ghanaraga', confidence: 'Medium', source: 'Gemini' }
-                ]
+    const handleRemoveRaga = (ragaId: string) => {
+        setKrithi(prev => ({
+            ...prev,
+            ragas: prev.ragas?.filter(r => r.id !== ragaId) || []
+        }));
+    };
+    const handleDeityChange = (id: string) => {
+        const obj = deities.find(d => d.id === id);
+        setKrithi(prev => ({ ...prev, deity: obj }));
+    };
+    const handleTempleChange = (id: string) => {
+        const obj = temples.find(t => t.id === id);
+        setKrithi(prev => ({ ...prev, temple: obj }));
+    };
+
+    const handleSave = async () => {
+        setSaving(true);
+        try {
+            // Map types to Request Schema
+            const payload: any = {
+                title: krithi.title,
+                incipit: krithi.incipit,
+                composerId: krithi.composer?.id,
+                talaId: krithi.tala?.id,
+                primaryLanguage: krithi.primaryLanguage,
+                ragaIds: krithi.ragas?.map(r => r.id) || [],
+                deityId: krithi.deity?.id,
+                templeId: krithi.temple?.id,
+                musicalForm: krithi.musicalForm,
+                isRagamalika: krithi.isRagamalika || false,
+                sahityaSummary: krithi.sahityaSummary,
+                notes: krithi.notes,
+                tagIds: krithi.tags?.map(t => t.id) || [],
+                workflowState: krithi.status
             };
-            setTags(prev => [...prev, newTags]);
-         }, 1000);
-    } finally {
-        setAiThinking(false);
-    }
-  };
 
-  const renderWorkflowPill = (status: string) => {
-    const styles = status === 'Published' ? 'bg-green-50 text-green-700 border-green-200' :
-                   status === 'Review' ? 'bg-amber-50 text-amber-700 border-amber-200' :
-                   'bg-slate-100 text-slate-600 border-slate-200';
+            let savedKrithiId = krithiId;
+
+            // Create or update krithi
+            if (isNew) {
+                const res = await createKrithi(payload);
+                savedKrithiId = res.id;
+                navigate(`/krithis/${res.id}`, { replace: true });
+            } else if (krithiId) {
+                await updateKrithi(krithiId, payload);
+            }
+
+            // Save sections if krithi ID is available
+            if (savedKrithiId && krithi.sections && krithi.sections.length > 0) {
+                try {
+                    // Map all sections to the API format (ignore temp IDs, API will assign new ones)
+                    const sectionsToSave = krithi.sections.map(s => ({
+                        sectionType: s.sectionType,
+                        orderIndex: s.orderIndex,
+                        label: null
+                    }));
+
+                    await saveKrithiSections(savedKrithiId, sectionsToSave);
+                } catch (err: any) {
+                    console.error('Failed to save sections:', err);
+                    toast.warning('Krithi saved, but sections may not have been updated');
+                }
+            }
+
+            // Save lyric variants if krithi ID is available
+            if (savedKrithiId && krithi.lyricVariants && krithi.lyricVariants.length > 0) {
+                try {
+                    for (const variant of krithi.lyricVariants) {
+                        if (variant.id.startsWith('temp-')) {
+                            // Create new variant
+                            const variantPayload = {
+                                language: variant.language,
+                                script: variant.script,
+                                transliterationScheme: variant.transliterationScheme,
+                                sampradayaId: variant.sampradaya?.id,
+                                isPrimary: false
+                            };
+                            const createdVariant = await createLyricVariant(savedKrithiId, variantPayload);
+                            
+                            // Save sections for this variant
+                            if (variant.sections && variant.sections.length > 0) {
+                                await saveVariantSections(createdVariant.id, variant.sections);
+                            }
+                        } else {
+                            // Update existing variant
+                            const variantPayload = {
+                                language: variant.language,
+                                script: variant.script,
+                                transliterationScheme: variant.transliterationScheme,
+                                sampradayaId: variant.sampradaya?.id,
+                                isPrimary: false
+                            };
+                            await updateLyricVariant(variant.id, variantPayload);
+                            
+                            // Save sections for this variant
+                            if (variant.sections && variant.sections.length > 0) {
+                                await saveVariantSections(variant.id, variant.sections);
+                            }
+                        }
+                    }
+                } catch (err: any) {
+                    console.error('Failed to save lyric variants:', err);
+                    toast.warning('Krithi saved, but lyric variants may not have been updated');
+                }
+            }
+
+            toast.success('Changes saved successfully');
+        } catch (e: any) {
+            console.error(e);
+            toast.error('Save failed: ' + (e.message || 'Unknown error'));
+        } finally {
+            setSaving(false);
+        }
+    };
+
+
+    const renderWorkflowPill = (status: string = 'draft') => {
+        return (
+            <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border tracking-wide ${getWorkflowStateColor(status)}`}>
+                {formatWorkflowState(status)}
+            </span>
+        );
+    };
+
     return (
-      <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border tracking-wide uppercase ${styles}`}>
-        {status}
-      </span>
-    );
-  };
-
-  return (
-    <div className="max-w-7xl mx-auto animate-fadeIn pb-12 relative">
-      {/* 1. Top Header */}
-      <div className="mb-6">
-        <nav className="flex items-center gap-2 text-sm text-ink-500 mb-4">
-          <button onClick={onBack} className="hover:text-primary transition-colors">Kritis</button>
-          <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-          <span className="text-ink-900 font-medium">Edit Composition</span>
-        </nav>
-
-        <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
-          <div>
-            <div className="flex items-center gap-3 mb-2 flex-wrap">
-              <h1 className="font-display text-3xl font-bold text-ink-900 tracking-tight">{metadata.title}</h1>
-              {renderWorkflowPill('Published')}
-            </div>
-            <p className="text-ink-500 font-medium text-sm flex items-center gap-2">
-              {metadata.composer} <span className="text-ink-300">•</span> 
-              {metadata.raga} Raga <span className="text-ink-300">•</span> 
-              {metadata.tala} Tala
-            </p>
-          </div>
-          
-          <div className="flex gap-2 flex-wrap">
-             <button className="px-4 py-2.5 bg-white border border-border-light text-ink-700 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px]">save</span>
-                Save Draft
-            </button>
-            <button className="px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-dark transition-colors shadow-sm shadow-blue-500/20">
-                Publish Changes
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div className="border-b border-border-light mb-8">
-        <nav className="flex gap-8">
-          {['Metadata', 'Lyrics', 'Tags', 'Audit'].map((tab) => (
-            <button
-              key={tab}
-              onClick={() => { setActiveTab(tab as any); setIsEditingLyric(false); }}
-              className={`pb-4 text-sm font-bold border-b-2 transition-colors ${
-                activeTab === tab
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-ink-500 hover:text-ink-900 hover:border-slate-300'
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
-        </nav>
-      </div>
-
-      {/* --- TAB CONTENT --- */}
-
-      {/* 1. METADATA TAB */}
-      {activeTab === 'Metadata' && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-8">
-            {/* Identity */}
-            <div className="bg-surface-light border border-border-light rounded-xl shadow-sm p-6 relative overflow-hidden">
-              <SectionHeader title="Identity" />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="md:col-span-2">
-                   <InputField label="Title (Transliterated)" field="title" value={metadata.title} onChange={(v: string) => setMetadata({...metadata, title: v})} highlight={aiHighlights.includes('title')} />
+        <>
+            <ToastContainer toasts={toast.toasts} onRemove={toast.removeToast} />
+            <div className="max-w-7xl mx-auto animate-fadeIn pb-12 relative">
+            {loading ? (
+                <div className="p-12 text-center">
+                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
+                    <p className="text-ink-500">Loading Editor...</p>
                 </div>
-                <div className="md:col-span-2">
-                   <InputField label="Incipit (First Line)" field="incipit" value={metadata.incipit} onChange={(v: string) => setMetadata({...metadata, incipit: v})} highlight={aiHighlights.includes('incipit')} />
-                </div>
-              </div>
-            </div>
+            ) : (
+                <>
+            {/* 1. Top Header */}
+            <div className="mb-6">
+                <nav className="flex items-center gap-2 text-sm text-ink-500 mb-4">
+                    <button onClick={onBack} className="hover:text-primary transition-colors">Kritis</button>
+                    <span className="material-symbols-outlined text-[14px]">chevron_right</span>
+                    <span className="text-ink-900 font-medium">{isNew ? 'New Composition' : 'Edit Composition'}</span>
+                </nav>
 
-            {/* Canonical Links */}
-            <div className="bg-surface-light border border-border-light rounded-xl shadow-sm p-6">
-              <SectionHeader title="Canonical Links" />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <InputField label="Composer" field="composer" value={metadata.composer} onChange={(v: string) => setMetadata({...metadata, composer: v})} highlight={aiHighlights.includes('composer')} />
-                <InputField label="Raga" field="raga" value={metadata.raga} onChange={(v: string) => setMetadata({...metadata, raga: v})} highlight={aiHighlights.includes('raga')} />
-                <InputField label="Tala" field="tala" value={metadata.tala} onChange={(v: string) => setMetadata({...metadata, tala: v})} highlight={aiHighlights.includes('tala')} />
-                <InputField label="Deity" field="deity" value={metadata.deity} onChange={(v: string) => setMetadata({...metadata, deity: v})} highlight={aiHighlights.includes('deity')} />
-              </div>
-            </div>
-          </div>
-          
-           {/* Right Column */}
-           <div className="space-y-6">
-                <div className="bg-surface-light border border-border-light rounded-xl shadow-sm p-5">
-                    <h4 className="text-xs font-bold text-ink-500 uppercase tracking-wider mb-4">Status</h4>
-                    <div className="flex items-center gap-2">
-                         <span className="material-symbols-outlined text-green-600">check_circle</span>
-                         <span className="font-bold text-ink-900">Published</span>
+                <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
+                    <div>
+                        <div className="flex items-center gap-3 mb-2 flex-wrap">
+                            <h1 className="font-display text-3xl font-bold text-ink-900 tracking-tight">{krithi.title || 'Untitled Krithi'}</h1>
+                            {renderWorkflowPill(krithi.status)}
+                        </div>
+                        <p className="text-ink-500 font-medium text-sm flex items-center gap-2">
+                            {krithi.composer?.name || 'Unknown Composer'} <span className="text-ink-300">•</span>
+                            {krithi.ragas?.[0]?.name || 'Unknown Raga'} <span className="text-ink-300">•</span>
+                            {krithi.tala?.name || 'Unknown Tala'} <span className="text-ink-300">•</span>
+                            {formatLanguageCode(krithi.primaryLanguage || 'te')}
+                        </p>
                     </div>
-                </div>
-           </div>
-        </div>
-      )}
 
-      {/* 2. LYRICS TAB */}
-      {activeTab === 'Lyrics' && (
-          <div className="space-y-6">
-              {!isEditingLyric ? (
-                  // LIST VIEW
-                  <>
-                    <div className="flex justify-between items-center">
-                        <h3 className="font-display text-xl font-bold text-ink-900">Lyric Variants</h3>
-                        <button 
-                            onClick={() => handleEditLyric()}
-                            className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-dark transition-colors shadow-sm"
+                    <div className="flex gap-2 flex-wrap">
+                        <button
+                            disabled={saving}
+                            onClick={handleSave}
+                            className="px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-dark transition-colors shadow-sm shadow-blue-500/20 disabled:opacity-50"
                         >
-                            <span className="material-symbols-outlined text-[18px]">add</span>
-                            Add Variant
+                            {saving ? 'Saving...' : 'Save Changes'}
                         </button>
                     </div>
-                    <div className="grid grid-cols-1 gap-4">
-                        {variants.map(variant => (
-                            <div key={variant.id} className="bg-surface-light border border-border-light rounded-xl p-6 hover:shadow-md transition-shadow">
-                                <div className="flex justify-between items-start mb-4">
-                                    <div className="flex items-center gap-3">
-                                        <div className="p-2 bg-blue-50 text-primary rounded-lg">
-                                            <span className="material-symbols-outlined text-[24px]">description</span>
-                                        </div>
-                                        <div>
-                                            <h4 className="font-bold text-ink-900 text-lg">{variant.label || variant.language}</h4>
-                                            <p className="text-sm text-ink-500">{variant.script} • {variant.source}</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        {variant.isPrimary && (
-                                            <span className="px-2 py-1 bg-green-50 text-green-700 text-xs font-bold rounded uppercase tracking-wide border border-green-100">Primary</span>
-                                        )}
-                                        <button 
-                                            onClick={() => handleEditLyric(variant)}
-                                            className="p-2 text-ink-500 hover:text-primary hover:bg-slate-50 rounded-lg transition-colors"
-                                        >
-                                            <span className="material-symbols-outlined">edit</span>
-                                        </button>
-                                    </div>
+                </div>
+            </div>
+
+            {/* Tabs */}
+            <div className="border-b border-border-light mb-8">
+                <nav className="flex gap-8">
+                    {['Metadata', 'Lyrics', 'Tags', 'Audit'].map((tab) => {
+                        if (tab === 'Notation' && krithi.musicalForm !== MusicalForm.VARNAM && krithi.musicalForm !== MusicalForm.SWARAJATHI) return null;
+                        return (
+                            <button
+                                key={tab}
+                                onClick={() => setActiveTab(tab as any)}
+                                className={`pb-4 text-sm font-bold border-b-2 transition-colors ${activeTab === tab
+                                    ? 'border-primary text-primary'
+                                    : 'border-transparent text-ink-500 hover:text-ink-900 hover:border-slate-300'
+                                    }`}
+                            >
+                                {tab}
+                            </button>
+                        );
+                    })}
+                    {/* Dynamic Notation Tab */}
+                    {(krithi.musicalForm === MusicalForm.VARNAM || krithi.musicalForm === MusicalForm.SWARAJATHI) && (
+                        <button
+                            onClick={() => setActiveTab('Notation')}
+                            className={`pb-4 text-sm font-bold border-b-2 transition-colors ${activeTab === 'Notation'
+                                ? 'border-primary text-primary'
+                                : 'border-transparent text-ink-500 hover:text-ink-900 hover:border-slate-300'
+                                }`}
+                        >
+                            Notation
+                        </button>
+                    )}
+                </nav>
+            </div>
+
+            {/* --- TAB CONTENT --- */}
+
+            {/* 1. METADATA TAB */}
+            {activeTab === 'Metadata' && (
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div className="lg:col-span-2 space-y-8">
+                        {/* Identity */}
+                        <div className="bg-surface-light border border-border-light rounded-xl shadow-sm p-6 relative overflow-hidden">
+                            <SectionHeader title="Identity" />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="md:col-span-2">
+                                    <InputField
+                                        label="Name (Transliterated)"
+                                        value={krithi.title}
+                                        onChange={(v: string) => setKrithi({ ...krithi, title: v })}
+                                    />
                                 </div>
-                                <div className="bg-slate-50 p-4 rounded-lg font-serif text-ink-700 leading-relaxed text-sm line-clamp-3">
-                                    {variant.pallavi}
+                                <div className="md:col-span-2">
+                                    <InputField
+                                        label="Incipit"
+                                        value={krithi.incipit || ''}
+                                        onChange={(v: string) => setKrithi({ ...krithi, incipit: v })}
+                                        placeholder="First line or popular handle"
+                                    />
                                 </div>
                             </div>
-                        ))}
-                    </div>
-                  </>
-              ) : (
-                  // EDITOR VIEW
-                  <div className="flex flex-col xl:flex-row gap-8 animate-fadeIn">
-                      {/* Left: Editor Form */}
-                      <div className="flex-1 space-y-8">
-                          <div className="bg-surface-light border border-border-light rounded-xl shadow-sm p-6">
-                                <div className="flex justify-between items-center mb-6">
-                                    <h3 className="font-display text-lg font-bold text-ink-900">Variant Metadata</h3>
-                                    {aiThinking && <span className="text-xs font-bold text-purple-600 animate-pulse flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">auto_awesome</span> Processing...</span>}
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <InputField 
-                                        label="Language" 
-                                        value={currentLyric?.language} 
-                                        onChange={(v: string) => setCurrentLyric({...currentLyric!, language: v})} 
-                                        placeholder="e.g., English, Sanskrit, Tamil"
-                                    />
-                                    <InputField 
-                                        label="Script" 
-                                        value={currentLyric?.script} 
-                                        onChange={(v: string) => setCurrentLyric({...currentLyric!, script: v})} 
-                                    />
-                                    <InputField 
-                                        label="Label" 
-                                        value={currentLyric?.label} 
-                                        onChange={(v: string) => setCurrentLyric({...currentLyric!, label: v})} 
-                                    />
-                                    <InputField 
-                                        label="Source Reference" 
-                                        value={currentLyric?.source} 
-                                        onChange={(v: string) => setCurrentLyric({...currentLyric!, source: v})} 
-                                    />
-                                </div>
-                          </div>
+                        </div>
 
-                          <div className="bg-surface-light border border-border-light rounded-xl shadow-sm p-6 space-y-6">
-                                <div className="flex justify-between items-center">
-                                    <h3 className="font-display text-lg font-bold text-ink-900">Lyrics Editor</h3>
-                                    <button 
-                                        onClick={handleAiTransliterate}
-                                        className="text-xs font-bold text-purple-600 bg-purple-50 hover:bg-purple-100 px-3 py-1.5 rounded-lg border border-purple-200 transition-colors flex items-center gap-1"
-                                    >
-                                        <span className="material-symbols-outlined text-[16px]">translate</span>
-                                        AI Transliterate from Primary
-                                    </button>
-                                </div>
-                                
-                                <div className="space-y-4">
-                                    <label className="block text-sm font-bold text-ink-900">Pallavi</label>
-                                    <textarea 
-                                        rows={3}
-                                        value={currentLyric?.pallavi}
-                                        onChange={(e) => setCurrentLyric({...currentLyric!, pallavi: e.target.value})}
-                                        className="w-full p-3 bg-slate-50 border border-border-light rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent font-serif"
-                                        placeholder="Enter Pallavi..."
-                                    />
-                                </div>
-                                <div className="space-y-4">
-                                    <label className="block text-sm font-bold text-ink-900">Anupallavi</label>
-                                    <textarea 
-                                        rows={3}
-                                        value={currentLyric?.anupallavi}
-                                        onChange={(e) => setCurrentLyric({...currentLyric!, anupallavi: e.target.value})}
-                                        className="w-full p-3 bg-slate-50 border border-border-light rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent font-serif"
-                                        placeholder="Enter Anupallavi..."
-                                    />
-                                </div>
-                                <div className="space-y-4">
-                                    <div className="flex justify-between items-center">
-                                        <label className="block text-sm font-bold text-ink-900">Charanams</label>
-                                        <button 
-                                            onClick={() => setCurrentLyric({...currentLyric!, charanams: [...(currentLyric?.charanams || []), '']})}
-                                            className="text-xs font-bold text-primary hover:bg-primary-light px-2 py-1 rounded transition-colors"
-                                        >
-                                            + Add Charanam
-                                        </button>
-                                    </div>
-                                    {currentLyric?.charanams.map((charanam, idx) => (
-                                        <div key={idx} className="relative group">
-                                            <span className="absolute -left-6 top-3 text-xs text-ink-400 font-bold">{idx + 1}</span>
-                                            <textarea 
-                                                rows={4}
-                                                value={charanam}
-                                                onChange={(e) => {
-                                                    const newC = [...currentLyric!.charanams];
-                                                    newC[idx] = e.target.value;
-                                                    setCurrentLyric({...currentLyric!, charanams: newC});
-                                                }}
-                                                className="w-full p-3 bg-slate-50 border border-border-light rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent font-serif"
-                                                placeholder={`Enter Charanam ${idx + 1}...`}
-                                            />
-                                            <button 
-                                                onClick={() => {
-                                                    const newC = currentLyric!.charanams.filter((_, i) => i !== idx);
-                                                    setCurrentLyric({...currentLyric!, charanams: newC});
-                                                }}
-                                                className="absolute top-2 right-2 p-1 text-ink-400 hover:text-red-600 bg-white/80 rounded opacity-0 group-hover:opacity-100 transition-opacity"
-                                            >
-                                                <span className="material-symbols-outlined text-[18px]">delete</span>
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-                          </div>
-                          
-                          {/* Footer Actions */}
-                          <div className="flex items-center gap-4 pt-4 border-t border-border-light">
-                                <button 
-                                    onClick={() => setIsEditingLyric(false)}
-                                    className="px-6 py-2.5 border border-border-light text-ink-700 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors"
-                                >
-                                    Cancel
-                                </button>
-                                <button 
-                                    onClick={handleSaveLyric}
-                                    className="px-6 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-dark transition-colors shadow-sm"
-                                >
-                                    Save Variant
-                                </button>
-                                <div className="flex-1"></div>
-                                <div className="flex items-center gap-2">
-                                    <input 
-                                        type="checkbox" 
-                                        id="isPrimary"
-                                        checked={currentLyric?.isPrimary}
-                                        onChange={(e) => setCurrentLyric({...currentLyric!, isPrimary: e.target.checked})}
-                                        className="rounded border-gray-300 text-primary focus:ring-primary" 
-                                    />
-                                    <label htmlFor="isPrimary" className="text-sm text-ink-700 font-medium">Mark as Primary</label>
-                                </div>
-                          </div>
-                      </div>
-
-                      {/* Right: Live Preview */}
-                      <div className="w-full xl:w-96 flex-shrink-0">
-                          <div className="sticky top-24 bg-white border border-border-light rounded-xl shadow-lg overflow-hidden">
-                                <div className="bg-slate-50 border-b border-border-light p-4 flex justify-between items-center">
-                                    <h4 className="font-bold text-ink-900 text-sm uppercase tracking-wide">Live Preview</h4>
-                                    <span className="text-xs font-medium text-ink-500 bg-white border px-2 py-0.5 rounded">User View</span>
-                                </div>
-                                <div className="p-6 space-y-6 font-serif text-ink-900 leading-relaxed max-h-[80vh] overflow-y-auto">
-                                    {currentLyric?.pallavi ? (
-                                        <div>
-                                            <span className="block text-xs font-bold text-ink-400 uppercase tracking-widest mb-1">Pallavi</span>
-                                            <p>{currentLyric.pallavi}</p>
-                                        </div>
-                                    ) : <p className="text-ink-300 italic">Pallavi will appear here...</p>}
-
-                                    {currentLyric?.anupallavi && (
-                                        <div>
-                                            <span className="block text-xs font-bold text-ink-400 uppercase tracking-widest mb-1">Anupallavi</span>
-                                            <p>{currentLyric.anupallavi}</p>
+                        {/* Canonical Links */}
+                        <div className="bg-surface-light border border-border-light rounded-xl shadow-sm p-6">
+                            <SectionHeader title="Canonical Links" />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <SelectField
+                                    label="Composer"
+                                    options={composers}
+                                    value={krithi.composer?.id || ''}
+                                    onChange={handleComposerChange}
+                                />
+                                <div>
+                                    <label className="block text-sm font-semibold text-ink-900 mb-2">
+                                        {krithi.isRagamalika ? 'Ragas (Ragamalika)' : 'Raga'}
+                                    </label>
+                                    {krithi.isRagamalika && krithi.ragas && krithi.ragas.length > 0 && (
+                                        <div className="flex flex-wrap gap-2 mb-2">
+                                            {krithi.ragas.map((raga, idx) => (
+                                                <span
+                                                    key={raga.id}
+                                                    className="inline-flex items-center gap-1 px-3 py-1 bg-primary-light text-primary rounded-full text-sm border border-primary/20"
+                                                >
+                                                    {raga.name}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleRemoveRaga(raga.id)}
+                                                        className="ml-1 hover:text-primary-dark"
+                                                    >
+                                                        <span className="material-symbols-outlined text-[16px]">close</span>
+                                                    </button>
+                                                </span>
+                                            ))}
                                         </div>
                                     )}
-
-                                    {currentLyric?.charanams.map((c, i) => c && (
-                                        <div key={i}>
-                                            <span className="block text-xs font-bold text-ink-400 uppercase tracking-widest mb-1">Charanam {i+1}</span>
-                                            <p>{c}</p>
-                                        </div>
-                                    ))}
+                                    <select
+                                        value=""
+                                        onChange={(e) => {
+                                            if (e.target.value) {
+                                                handleRagaChange(e.target.value);
+                                                e.target.value = ''; // Reset after selection
+                                            }
+                                        }}
+                                        className="w-full h-12 px-4 rounded-lg bg-slate-50 border border-border-light text-ink-900 focus:ring-2 focus:ring-primary focus:border-transparent"
+                                    >
+                                        <option value="">{krithi.isRagamalika ? 'Add Raga...' : 'Select Raga...'}</option>
+                                        {ragas
+                                            .filter(r => !krithi.isRagamalika || !krithi.ragas?.some(selected => selected.id === r.id))
+                                            .map(opt => (
+                                                <option key={opt.id} value={opt.id}>{opt.name}</option>
+                                            ))}
+                                    </select>
+                                    {!krithi.isRagamalika && (
+                                        <span className="text-xs text-ink-500 mt-1 block">
+                                            {krithi.ragas?.[0]?.name || 'No raga selected'}
+                                        </span>
+                                    )}
                                 </div>
-                          </div>
-                      </div>
-                  </div>
-              )}
-          </div>
-      )}
-
-      {/* 3. TAGS TAB */}
-      {activeTab === 'Tags' && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-surface-light border border-border-light rounded-xl shadow-sm p-6">
-                        <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center mb-6">
-                             <div>
-                                <h3 className="font-display text-lg font-bold text-ink-900">Managed Tags</h3>
-                                <p className="text-sm text-ink-500">Controlled taxonomy for faceted search.</p>
-                             </div>
-                             <button 
-                                onClick={handleAiSuggestTags}
-                                disabled={aiThinking}
-                                className="flex items-center gap-2 px-4 py-2 bg-purple-50 text-purple-700 border border-purple-200 rounded-lg text-sm font-bold hover:bg-purple-100 transition-colors"
-                             >
-                                <span className={`material-symbols-outlined text-[18px] ${aiThinking ? 'animate-spin' : ''}`}>
-                                    {aiThinking ? 'sync' : 'auto_awesome'}
-                                </span>
-                                {aiThinking ? 'Analyzing...' : 'AI Suggest Tags'}
-                             </button>
+                                <SelectField
+                                    label="Tala"
+                                    options={talas}
+                                    value={krithi.tala?.id || ''}
+                                    onChange={handleTalaChange}
+                                />
+                                <SelectField
+                                    label="Deity"
+                                    options={deities}
+                                    value={krithi.deity?.id || ''}
+                                    onChange={handleDeityChange}
+                                />
+                                <SelectField
+                                    label="Temple"
+                                    options={temples}
+                                    value={krithi.temple?.id || ''}
+                                    onChange={handleTempleChange}
+                                />
+                            </div>
                         </div>
 
-                        {/* Tag Input */}
-                        <div className="relative mb-8">
-                            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-ink-400">add_circle</span>
-                            <input 
-                                type="text"
-                                value={tagInput}
-                                onChange={(e) => setTagInput(e.target.value)}
-                                placeholder="Add a tag..."
-                                className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-border-light rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
-                            />
-                        </div>
-
-                        {/* Tag Categories */}
-                        <div className="space-y-6">
-                            {tags.map((cat) => (
-                                <div key={cat.category} className="animate-fadeIn">
-                                    <h4 className="text-xs font-bold text-ink-500 uppercase tracking-wide mb-3">{cat.category}</h4>
-                                    <div className="flex flex-wrap gap-2">
-                                        {cat.tags.map((tag, i) => (
-                                            <div 
-                                                key={i} 
-                                                className={`group flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-full border text-sm transition-colors ${
-                                                    tag.source === 'Gemini AI' || tag.source === 'Gemini' ? 'bg-purple-50 border-purple-200 text-purple-900' : 
-                                                    'bg-slate-50 border-border-light text-ink-700 hover:border-slate-300'
-                                                }`}
-                                            >
-                                                <span className="font-medium">{tag.label}</span>
-                                                {/* Confidence Indicator */}
-                                                {tag.confidence && (
-                                                    <div className="flex items-center gap-1" title={`Confidence: ${tag.confidence}`}>
-                                                        <div className={`w-1.5 h-1.5 rounded-full ${
-                                                            tag.confidence === 'High' ? 'bg-green-500' : 
-                                                            tag.confidence === 'Medium' ? 'bg-yellow-500' : 'bg-red-500'
-                                                        }`}></div>
-                                                    </div>
-                                                )}
-                                                <button className="text-ink-400 hover:text-red-600 transition-colors ml-1">
-                                                    <span className="material-symbols-outlined text-[16px]">close</span>
-                                                </button>
-                                            </div>
+                        {/* Language & Form */}
+                        <div className="bg-surface-light border border-border-light rounded-xl shadow-sm p-6">
+                            <SectionHeader title="Language & Form" />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block text-sm font-semibold text-ink-900 mb-2">Primary Language</label>
+                                    <select
+                                        value={krithi.primaryLanguage}
+                                        onChange={(e) => setKrithi({ ...krithi, primaryLanguage: e.target.value })}
+                                        className="w-full h-12 px-4 rounded-lg bg-slate-50 border border-border-light text-ink-900 focus:ring-2 focus:ring-primary focus:border-transparent"
+                                    >
+                                        {LANGUAGE_CODE_OPTIONS.map(opt => (
+                                            <option key={opt.value} value={opt.value}>{opt.label}</option>
                                         ))}
-                                    </div>
+                                    </select>
                                 </div>
-                            ))}
+                                <div>
+                                    <label className="block text-sm font-semibold text-ink-900 mb-2">Musical Form</label>
+                                    <select
+                                        value={krithi.musicalForm}
+                                        onChange={(e) => setKrithi({ ...krithi, musicalForm: e.target.value as MusicalForm })}
+                                        className="w-full h-12 px-4 rounded-lg bg-slate-50 border border-border-light text-ink-900 focus:ring-2 focus:ring-primary focus:border-transparent"
+                                    >
+                                        <option value={MusicalForm.KRITHI}>Krithi</option>
+                                        <option value={MusicalForm.VARNAM}>Varnam</option>
+                                        <option value={MusicalForm.SWARAJATHI}>Swarajathi</option>
+                                    </select>
+                                    {(krithi.musicalForm === MusicalForm.VARNAM || krithi.musicalForm === MusicalForm.SWARAJATHI) && (
+                                        <p className="text-xs text-blue-600 mt-1 flex items-center gap-1">
+                                            <span className="material-symbols-outlined text-[14px]">info</span>
+                                            Enables Notation Editor
+                                        </p>
+                                    )}
+                                </div>
+                                <div className="md:col-span-2">
+                                    <CheckboxField
+                                        label="Ragamalika (Multiple Ragas)"
+                                        checked={krithi.isRagamalika}
+                                        onChange={(checked: boolean) => setKrithi({ ...krithi, isRagamalika: checked })}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Sections Management */}
+                        <div className="bg-surface-light border border-border-light rounded-xl shadow-sm p-6">
+                            <div className="flex items-center justify-between mb-6 pb-2 border-b border-border-light">
+                                <h3 className="font-display text-lg font-bold text-ink-900">Sections</h3>
+                                <button
+                                    onClick={() => {
+                                        const newSection: KrithiSection = {
+                                            id: `temp-section-${Date.now()}`,
+                                            sectionType: 'PALLAVI',
+                                            orderIndex: (krithi.sections?.length || 0) + 1
+                                        };
+                                        setKrithi(prev => ({
+                                            ...prev,
+                                            sections: [...(prev.sections || []), newSection]
+                                        }));
+                                    }}
+                                    className="flex items-center gap-2 px-3 py-1.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-dark transition-colors"
+                                >
+                                    <span className="material-symbols-outlined text-[16px]">add</span>
+                                    Add Section
+                                </button>
+                            </div>
+                            <div className="space-y-3">
+                                {krithi.sections && krithi.sections.length > 0 ? (
+                                    krithi.sections
+                                        .sort((a, b) => a.orderIndex - b.orderIndex)
+                                        .map((section, idx) => (
+                                            <div key={section.id} className="border border-border-light rounded-lg p-4 bg-white">
+                                                <div className="flex items-start justify-between mb-3">
+                                                    <div className="flex-1">
+                                                        <div className="flex items-center gap-3 mb-2">
+                                                            <span className="text-sm font-semibold text-ink-900">
+                                                                Section {idx + 1}
+                                                            </span>
+                                                            <span className="px-2 py-0.5 bg-primary-light text-primary rounded text-xs font-medium">
+                                                                {formatSectionType(section.sectionType)}
+                                                            </span>
+                                                        </div>
+                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                            <div>
+                                                                <label className="block text-xs font-semibold text-ink-700 mb-1">Section Type</label>
+                                                                <select
+                                                                    value={section.sectionType}
+                                                                    onChange={(e) => {
+                                                                        const updated = krithi.sections?.map(s =>
+                                                                            s.id === section.id ? { ...s, sectionType: e.target.value as any } : s
+                                                                        ) || [];
+                                                                        setKrithi(prev => ({ ...prev, sections: updated }));
+                                                                    }}
+                                                                    className="w-full h-10 px-3 rounded-lg bg-slate-50 border border-border-light text-ink-900 focus:ring-2 focus:ring-primary text-sm"
+                                                                >
+                                                                    <option value="PALLAVI">Pallavi</option>
+                                                                    <option value="ANUPALLAVI">Anupallavi</option>
+                                                                    <option value="CHARANAM">Charanam</option>
+                                                                    <option value="CHITTASWARAM">Chittaswaram</option>
+                                                                    <option value="OTHER">Other</option>
+                                                                </select>
+                                                            </div>
+                                                            <div>
+                                                                <label className="block text-xs font-semibold text-ink-700 mb-1">Order Index</label>
+                                                                <input
+                                                                    type="number"
+                                                                    value={section.orderIndex}
+                                                                    onChange={(e) => {
+                                                                        const order = parseInt(e.target.value) || 1;
+                                                                        const updated = krithi.sections?.map(s =>
+                                                                            s.id === section.id ? { ...s, orderIndex: order } : s
+                                                                        ) || [];
+                                                                        setKrithi(prev => ({ ...prev, sections: updated }));
+                                                                    }}
+                                                                    min="1"
+                                                                    className="w-full h-10 px-3 rounded-lg bg-slate-50 border border-border-light text-ink-900 focus:ring-2 focus:ring-primary text-sm"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <button
+                                                        onClick={() => {
+                                                            setKrithi(prev => ({
+                                                                ...prev,
+                                                                sections: prev.sections?.filter(s => s.id !== section.id) || []
+                                                            }));
+                                                        }}
+                                                        className="ml-4 p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                        title="Remove section"
+                                                    >
+                                                        <span className="material-symbols-outlined text-[20px]">delete</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))
+                                ) : (
+                                    <div className="p-4 text-center text-ink-500 text-sm bg-slate-50 rounded-lg border border-border-light">
+                                        <p>No sections defined yet. Add sections to organize the lyrics.</p>
+                                    </div>
+                                )}
+                            </div>
+                            {krithi.sections && krithi.sections.length > 0 && (
+                                <p className="text-xs text-ink-500 mt-4">
+                                    <span className="material-symbols-outlined text-[14px] align-middle mr-1">info</span>
+                                    Sections define the structure of the composition. Add lyrics for each section in the Lyrics tab.
+                                </p>
+                            )}
+                        </div>
+
+                        {/* Additional Metadata */}
+                        <div className="bg-surface-light border border-border-light rounded-xl shadow-sm p-6">
+                            <SectionHeader title="Additional Information" />
+                            <div className="space-y-6">
+                                <TextareaField
+                                    label="Sahitya Summary"
+                                    value={krithi.sahityaSummary || ''}
+                                    onChange={(v: string) => setKrithi({ ...krithi, sahityaSummary: v })}
+                                    placeholder="Short prose summary or meaning of the composition"
+                                    rows={4}
+                                />
+                                <TextareaField
+                                    label="Notes"
+                                    value={krithi.notes || ''}
+                                    onChange={(v: string) => setKrithi({ ...krithi, notes: v })}
+                                    placeholder="Additional notes, context, or metadata"
+                                    rows={3}
+                                />
+                            </div>
                         </div>
                     </div>
-              </div>
 
-              {/* Sidebar Guide */}
-              <div>
-                  <div className="bg-blue-50 border border-blue-100 rounded-xl p-5 sticky top-24">
-                      <div className="flex items-start gap-3 mb-3">
-                          <span className="material-symbols-outlined text-blue-600">info</span>
-                          <h4 className="font-bold text-blue-900 text-sm">Tagging Guidelines</h4>
-                      </div>
-                      <p className="text-sm text-blue-800 leading-relaxed mb-4">
-                          Tags are used to power the "Explore" feature. Please ensure you select tags from the approved ontology.
-                      </p>
-                      <ul className="text-sm text-blue-800 space-y-2 list-disc pl-4">
-                          <li>Use <b>Bhava</b> for emotional content.</li>
-                          <li>Use <b>Kshetra</b> for geographical references.</li>
-                          <li>Use <b>Deity</b> for the primary subject.</li>
-                      </ul>
-                  </div>
-              </div>
-          </div>
-      )}
+                    {/* Right Column */}
+                    <div className="space-y-6">
+                        <div className="bg-surface-light border border-border-light rounded-xl shadow-sm p-5">
+                            <h4 className="text-xs font-bold text-ink-500 uppercase tracking-wider mb-4">Status</h4>
+                            <select
+                                value={krithi.status}
+                                onChange={e => setKrithi({ ...krithi, status: e.target.value as any })}
+                                className="w-full p-2 border rounded"
+                            >
+                                <option value="draft">Draft</option>
+                                <option value="in_review">In Review</option>
+                                <option value="published">Published</option>
+                                <option value="archived">Archived</option>
+                            </select>
+                            <div className="mt-2">
+                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold border ${getWorkflowStateColor(krithi.status || 'draft')}`}>
+                                    {formatWorkflowState(krithi.status || 'draft')}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
-      {/* 4. AUDIT TAB */}
-      {activeTab === 'Audit' && (
-          <div className="bg-surface-light border border-border-light rounded-xl shadow-sm overflow-hidden">
-              {/* Filters */}
-              <div className="p-4 border-b border-border-light bg-slate-50/50 flex gap-4">
-                  <select 
-                    className="bg-white border border-border-light rounded-lg text-sm py-2 px-3 text-ink-700 focus:ring-primary focus:border-primary"
-                    value={auditFilter.user}
-                    onChange={(e) => setAuditFilter({...auditFilter, user: e.target.value})}
-                  >
-                      <option value="">All Users</option>
-                      <option value="John Doe">John Doe</option>
-                      <option value="System">System</option>
-                  </select>
-                  <select 
-                    className="bg-white border border-border-light rounded-lg text-sm py-2 px-3 text-ink-700 focus:ring-primary focus:border-primary"
-                    value={auditFilter.type}
-                    onChange={(e) => setAuditFilter({...auditFilter, type: e.target.value})}
-                  >
-                      <option value="">All Actions</option>
-                      <option value="Update">Update</option>
-                      <option value="Workflow">Workflow</option>
-                  </select>
-              </div>
+            {activeTab === 'Lyrics' && (
+                <div className="space-y-6">
+                    <div className="bg-surface-light border rounded-xl p-6">
+                        <div className="flex items-center justify-between mb-6">
+                            <SectionHeader title="Lyric Variants" />
+                            <button
+                                onClick={() => {
+                                    const newVariant: KrithiLyricVariant = {
+                                        id: `temp-${Date.now()}`,
+                                        language: krithi.primaryLanguage || 'te',
+                                        script: 'devanagari',
+                                        sections: []
+                                    };
+                                    setKrithi(prev => ({
+                                        ...prev,
+                                        lyricVariants: [...(prev.lyricVariants || []), newVariant]
+                                    }));
+                                    setEditingVariantId(newVariant.id);
+                                }}
+                                className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-dark transition-colors"
+                            >
+                                <span className="material-symbols-outlined text-[18px]">add</span>
+                                Add Variant
+                            </button>
+                        </div>
 
-              {/* Timeline */}
-              <div className="p-6">
-                  <div className="relative border-l-2 border-slate-200 ml-3 space-y-8">
-                      {MOCK_AUDIT
-                        .filter(e => !auditFilter.user || e.user === auditFilter.user)
-                        .filter(e => !auditFilter.type || e.action === auditFilter.type)
-                        .map((event) => (
-                          <div key={event.id} className="relative pl-8 group">
-                              {/* Dot */}
-                              <div className={`absolute -left-[9px] top-0 w-4 h-4 rounded-full border-2 border-white shadow-sm ${
-                                  event.action === 'Workflow' ? 'bg-green-500' : 
-                                  event.action === 'Create' ? 'bg-primary' : 'bg-slate-400'
-                              }`}></div>
-                              
-                              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
-                                  <div>
-                                      <span className="text-xs font-bold text-ink-500 uppercase tracking-wide">{event.action}</span>
-                                      <h4 className="font-bold text-ink-900">
-                                          {event.user} <span className="font-normal text-ink-500">performed an action</span>
-                                      </h4>
-                                  </div>
-                                  <time className="text-xs text-ink-400 font-mono bg-slate-100 px-2 py-1 rounded">{event.timestamp}</time>
-                              </div>
+                        {!krithiId && (
+                            <div className="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                                <p className="text-sm text-amber-800">
+                                    <span className="material-symbols-outlined text-[18px] align-middle mr-1">info</span>
+                                    Save the krithi first to persist lyric variants.
+                                </p>
+                            </div>
+                        )}
 
-                              {/* Changes Diff */}
-                              {event.changes && event.changes.length > 0 && (
-                                  <div className="bg-slate-50 border border-border-light rounded-lg overflow-hidden mt-2">
-                                      <table className="w-full text-sm text-left">
-                                          <thead className="bg-slate-100 text-xs font-bold text-ink-500 uppercase">
-                                              <tr>
-                                                  <th className="px-4 py-2 w-1/4">Field</th>
-                                                  <th className="px-4 py-2 w-1/3">Before</th>
-                                                  <th className="px-4 py-2 w-1/3">After</th>
-                                              </tr>
-                                          </thead>
-                                          <tbody className="divide-y divide-border-light">
-                                              {event.changes.map((change, i) => (
-                                                  <tr key={i}>
-                                                      <td className="px-4 py-2 font-medium text-ink-900">{change.field}</td>
-                                                      <td className="px-4 py-2 text-red-600 bg-red-50/50 line-through decoration-red-300">{change.before}</td>
-                                                      <td className="px-4 py-2 text-green-700 bg-green-50/50">{change.after}</td>
-                                                  </tr>
-                                              ))}
-                                          </tbody>
-                                      </table>
-                                  </div>
-                              )}
-                          </div>
-                      ))}
-                  </div>
-              </div>
-          </div>
-      )}
-    </div>
-  );
+                        {krithi.lyricVariants && krithi.lyricVariants.length > 0 ? (
+                            <div className="space-y-4">
+                                {krithi.lyricVariants.map((variant, idx) => (
+                                    <div key={variant.id} className="border border-border-light rounded-lg p-4 bg-white">
+                                        <div className="flex items-start justify-between mb-4">
+                                            <div className="flex-1">
+                                                <div className="flex items-center gap-3 mb-2">
+                                                    <span className="font-semibold text-ink-900">Variant {idx + 1}</span>
+                                                    <span className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-xs">
+                                                        {formatLanguageCode(variant.language)}
+                                                    </span>
+                                                    {variant.script && (
+                                                    <span className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-xs">
+                                                        {formatScriptCode(variant.script)}
+                                                    </span>
+                                                    )}
+                                                    {variant.transliterationScheme && (
+                                                        <span className="px-2 py-0.5 bg-purple-100 text-purple-600 rounded text-xs" title="Transliteration Scheme">
+                                                            {variant.transliterationScheme}
+                                                        </span>
+                                                    )}
+                                                    {variant.sampradaya && (
+                                                        <span className="px-2 py-0.5 bg-blue-100 text-blue-600 rounded text-xs">
+                                                            {variant.sampradaya.name}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                {editingVariantId === variant.id ? (
+                                                    <div className="space-y-4 mt-4">
+                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                            <div>
+                                                                <label className="block text-sm font-semibold text-ink-900 mb-2">Language</label>
+                                                                <select
+                                                                    value={variant.language}
+                                                                    onChange={(e) => {
+                                                                        const updated = krithi.lyricVariants?.map(v =>
+                                                                            v.id === variant.id ? { ...v, language: e.target.value } : v
+                                                                        ) || [];
+                                                                        setKrithi(prev => ({ ...prev, lyricVariants: updated }));
+                                                                    }}
+                                                                    className="w-full h-10 px-3 rounded-lg bg-slate-50 border border-border-light text-ink-900 focus:ring-2 focus:ring-primary"
+                                                                >
+                                                                    {LANGUAGE_CODE_OPTIONS.map(opt => (
+                                                                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                                                    ))}
+                                                                </select>
+                                                            </div>
+                                                            <div>
+                                                                <label className="block text-sm font-semibold text-ink-900 mb-2">Script</label>
+                                                                <select
+                                                                    value={variant.script || 'devanagari'}
+                                                                    onChange={(e) => {
+                                                                        const updated = krithi.lyricVariants?.map(v =>
+                                                                            v.id === variant.id ? { ...v, script: e.target.value } : v
+                                                                        ) || [];
+                                                                        setKrithi(prev => ({ ...prev, lyricVariants: updated }));
+                                                                    }}
+                                                                    className="w-full h-10 px-3 rounded-lg bg-slate-50 border border-border-light text-ink-900 focus:ring-2 focus:ring-primary"
+                                                                >
+                                                                    {SCRIPT_CODE_OPTIONS.map(opt => (
+                                                                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                                                    ))}
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                            <div>
+                                                                <label className="block text-sm font-semibold text-ink-900 mb-2">Transliteration Scheme</label>
+                                                                <select
+                                                                    value={variant.transliterationScheme || ''}
+                                                                    onChange={(e) => {
+                                                                        const updated = krithi.lyricVariants?.map(v =>
+                                                                            v.id === variant.id ? { ...v, transliterationScheme: e.target.value || undefined } : v
+                                                                        ) || [];
+                                                                        setKrithi(prev => ({ ...prev, lyricVariants: updated }));
+                                                                    }}
+                                                                    className="w-full h-10 px-3 rounded-lg bg-slate-50 border border-border-light text-ink-900 focus:ring-2 focus:ring-primary"
+                                                                >
+                                                                    <option value="">None (Native Script)</option>
+                                                                    <option value="IAST">IAST (International Alphabet of Sanskrit Transliteration)</option>
+                                                                    <option value="ISO-15919">ISO-15919 (ISO Standard)</option>
+                                                                    <option value="ITRANS">ITRANS</option>
+                                                                    <option value="Harvard-Kyoto">Harvard-Kyoto</option>
+                                                                    <option value="Velthuis">Velthuis</option>
+                                                                    <option value="SLP1">SLP1 (Sanskrit Library Phonetic)</option>
+                                                                    <option value="WX">WX Notation</option>
+                                                                </select>
+                                                                <p className="text-xs text-ink-500 mt-1">Select the transliteration scheme used for this variant (if applicable)</p>
+                                                            </div>
+                                                            <div>
+                                                                <label className="block text-sm font-semibold text-ink-900 mb-2">Sampradaya</label>
+                                                                <select
+                                                                    value={variant.sampradaya?.id || ''}
+                                                                    onChange={(e) => {
+                                                                        const sampradaya = sampradayas.find(s => s.id === e.target.value);
+                                                                        const updated = krithi.lyricVariants?.map(v =>
+                                                                            v.id === variant.id ? { ...v, sampradaya } : v
+                                                                        ) || [];
+                                                                        setKrithi(prev => ({ ...prev, lyricVariants: updated }));
+                                                                    }}
+                                                                    className="w-full h-10 px-3 rounded-lg bg-slate-50 border border-border-light text-ink-900 focus:ring-2 focus:ring-primary"
+                                                                >
+                                                                    <option value="">None</option>
+                                                                    {sampradayas.map(s => (
+                                                                        <option key={s.id} value={s.id}>{s.name}</option>
+                                                                    ))}
+                                                                </select>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Sections Editor */}
+                                                        <div className="space-y-3">
+                                                            <label className="block text-sm font-semibold text-ink-900">Sections</label>
+                                                            {krithi.sections && krithi.sections.length > 0 ? (
+                                                                krithi.sections.map(section => {
+                                                                    const lyricSection = variant.sections.find(s => s.sectionId === section.id);
+                                                                    return (
+                                                                        <div key={section.id} className="p-3 bg-slate-50 rounded-lg border border-border-light">
+                                                                            <div className="flex items-center justify-between mb-2">
+                                                                                <span className="text-sm font-semibold text-ink-900">
+                                                                                    {formatSectionType(section.sectionType)}
+                                                                                </span>
+                                                                                {section.label && (
+                                                                                    <span className="text-xs text-ink-500">{section.label}</span>
+                                                                                )}
+                                                                            </div>
+                                                                            <textarea
+                                                                                value={lyricSection?.text || ''}
+                                                                                onChange={(e) => {
+                                                                                    const text = e.target.value;
+                                                                                    const updatedSections = variant.sections.filter(s => s.sectionId !== section.id);
+                                                                                    if (text.trim()) {
+                                                                                        updatedSections.push({ sectionId: section.id, text });
+                                                                                    }
+                                                                                    const updatedVariants = krithi.lyricVariants?.map(v =>
+                                                                                        v.id === variant.id ? { ...v, sections: updatedSections } : v
+                                                                                    ) || [];
+                                                                                    setKrithi(prev => ({ ...prev, lyricVariants: updatedVariants }));
+                                                                                }}
+                                                                                placeholder={`Enter ${formatSectionType(section.sectionType).toLowerCase()} text...`}
+                                                                                rows={6}
+                                                                                className="w-full px-4 py-3 rounded-lg bg-white border-2 border-border-light text-ink-900 focus:ring-2 focus:ring-primary focus:border-primary transition-all resize-y font-mono text-sm leading-relaxed"
+                                                                            />
+                                                                        </div>
+                                                                    );
+                                                                })
+                                                            ) : (
+                                                                <p className="text-sm text-ink-500 italic">
+                                                                    No sections defined. Add sections in the Metadata tab first.
+                                                                </p>
+                                                            )}
+                                                        </div>
+
+                                                        <div className="flex gap-2">
+                                                            <button
+                                                                onClick={() => setEditingVariantId(null)}
+                                                                className="px-4 py-2 bg-slate-100 text-ink-700 rounded-lg text-sm font-medium hover:bg-slate-200 transition-colors"
+                                                            >
+                                                                Done
+                                                            </button>
+                                                            <button
+                                                                onClick={() => {
+                                                                    setKrithi(prev => ({
+                                                                        ...prev,
+                                                                        lyricVariants: prev.lyricVariants?.filter(v => v.id !== variant.id) || []
+                                                                    }));
+                                                                    setEditingVariantId(null);
+                                                                }}
+                                                                className="px-4 py-2 bg-red-50 text-red-700 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors"
+                                                            >
+                                                                Remove
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <div>
+                                                        {variant.sections.length > 0 ? (
+                                                            <div className="space-y-2 mt-2">
+                                                                {variant.sections.map((lyricSection, secIdx) => {
+                                                                    const section = krithi.sections?.find(s => s.id === lyricSection.sectionId);
+                                                                    return (
+                                                                        <div key={secIdx} className="p-2 bg-slate-50 rounded text-sm">
+                                                                            <span className="font-semibold text-ink-700">
+                                                                                {section ? formatSectionType(section.sectionType) : 'Section'}:
+                                                                            </span>
+                                                                            <p className="text-ink-600 mt-1 whitespace-pre-wrap">{lyricSection.text}</p>
+                                                                        </div>
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                        ) : (
+                                                            <p className="text-sm text-ink-400 italic mt-2">No sections added yet.</p>
+                                                        )}
+                                                        <button
+                                                            onClick={() => setEditingVariantId(variant.id)}
+                                                            className="mt-3 text-sm text-primary hover:text-primary-dark font-medium"
+                                                        >
+                                                            Edit Variant
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="p-8 text-center text-ink-500">
+                                <p>No lyric variants added yet. Click "Add Variant" to get started.</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {activeTab === 'Tags' && (
+                <div className="space-y-6">
+                    <div className="bg-surface-light border rounded-xl p-6">
+                        <SectionHeader title="Assigned Tags" />
+                        <div className="flex flex-wrap gap-2 mb-6">
+                            {krithi.tags && krithi.tags.length > 0 ? (
+                                krithi.tags.map(t => (
+                                    <span
+                                        key={t.id}
+                                        className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary-light text-primary rounded-full text-sm border border-primary/20"
+                                    >
+                                        <span>{t.displayName}</span>
+                                        <span className="text-xs text-ink-500">({t.category})</span>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setKrithi(prev => ({
+                                                    ...prev,
+                                                    tags: prev.tags?.filter(tag => tag.id !== t.id) || []
+                                                }));
+                                            }}
+                                            className="ml-1 hover:text-primary-dark transition-colors"
+                                        >
+                                            <span className="material-symbols-outlined text-[16px]">close</span>
+                                        </button>
+                                    </span>
+                                ))
+                            ) : (
+                                <p className="text-ink-400 text-sm">No tags assigned.</p>
+                            )}
+                        </div>
+
+                        {/* Add Tag Section */}
+                        <div className="space-y-4">
+                            <label className="block text-sm font-semibold text-ink-900">Add Tag</label>
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    placeholder="Search tags by name or category..."
+                                    className="w-full h-12 px-4 pr-10 rounded-lg bg-slate-50 border border-border-light text-ink-900 focus:ring-2 focus:ring-primary focus:border-transparent"
+                                    onFocus={(e) => {
+                                        // Show dropdown on focus
+                                        const dropdown = e.target.nextElementSibling as HTMLElement;
+                                        if (dropdown) dropdown.classList.remove('hidden');
+                                    }}
+                                    onBlur={(e) => {
+                                        // Hide dropdown after a delay to allow clicking
+                                        setTimeout(() => {
+                                            const dropdown = e.target.nextElementSibling as HTMLElement;
+                                            if (dropdown) dropdown.classList.add('hidden');
+                                        }, 200);
+                                    }}
+                                    onChange={(e) => {
+                                        const searchTerm = e.target.value.toLowerCase();
+                                        const dropdown = e.target.nextElementSibling as HTMLElement;
+                                        if (dropdown) {
+                                            const items = dropdown.querySelectorAll('[data-tag-id]');
+                                            items.forEach(item => {
+                                                const text = item.textContent?.toLowerCase() || '';
+                                                const parent = item.parentElement;
+                                                if (parent) {
+                                                    if (text.includes(searchTerm) || searchTerm === '') {
+                                                        parent.classList.remove('hidden');
+                                                    } else {
+                                                        parent.classList.add('hidden');
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    }}
+                                />
+                                <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-ink-400 text-[20px]">search</span>
+                                
+                                {/* Tag Dropdown */}
+                                <div className="absolute z-10 w-full mt-1 bg-white border border-border-light rounded-lg shadow-lg max-h-60 overflow-y-auto hidden">
+                                    {allTags
+                                        .filter(tag => !krithi.tags?.some(assigned => assigned.id === tag.id))
+                                        .map(tag => (
+                                            <button
+                                                key={tag.id}
+                                                type="button"
+                                                data-tag-id={tag.id}
+                                                onClick={() => {
+                                                    setKrithi(prev => ({
+                                                        ...prev,
+                                                        tags: [...(prev.tags || []), tag]
+                                                    }));
+                                                    // Clear search and hide dropdown
+                                                    const input = document.activeElement as HTMLInputElement;
+                                                    if (input) {
+                                                        input.value = '';
+                                                        input.blur();
+                                                    }
+                                                }}
+                                                className="w-full text-left px-4 py-2 hover:bg-slate-50 transition-colors border-b border-border-light last:border-0"
+                                            >
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="font-medium text-ink-900">{tag.displayName}</span>
+                                                        {tag.slug && (
+                                                            <span className="text-xs text-ink-400 font-mono">#{tag.slug}</span>
+                                                        )}
+                                                    </div>
+                                                    <span className="text-xs text-ink-500 bg-slate-100 px-2 py-0.5 rounded">{tag.category}</span>
+                                                </div>
+                                            </button>
+                                        ))}
+                                    {allTags.filter(tag => !krithi.tags?.some(assigned => assigned.id === tag.id)).length === 0 && (
+                                        <div className="px-4 py-2 text-sm text-ink-500">No available tags to add</div>
+                                    )}
+                                </div>
+                            </div>
+                            <p className="text-xs text-ink-500">Tags are from a controlled vocabulary. Search and select to add.</p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* 2.5 NOTATION TAB */}
+            {activeTab === 'Notation' && krithiId && (
+                <NotationTab krithiId={krithiId} musicalForm={krithi.musicalForm as MusicalForm} />
+            )}
+
+            {activeTab === 'Audit' && (
+                <div className="space-y-6">
+                    <div className="bg-surface-light border rounded-xl p-6">
+                        <SectionHeader title="Audit History" />
+                        {!krithiId ? (
+                            <div className="p-8 text-center text-ink-500">
+                                <p>Save the krithi first to view audit logs.</p>
+                            </div>
+                        ) : auditLogs.length === 0 ? (
+                            <div className="p-8 text-center text-ink-500">
+                                <p>No audit logs found for this krithi.</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                {auditLogs.map((log) => (
+                                    <div
+                                        key={log.id}
+                                        className="p-4 bg-white border border-border-light rounded-lg hover:shadow-sm transition-shadow"
+                                    >
+                                        <div className="flex items-start justify-between mb-2">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-full bg-primary-light flex items-center justify-center">
+                                                    <span className="material-symbols-outlined text-primary text-[20px]">
+                                                        {log.action === 'CREATE' ? 'add_circle' :
+                                                         log.action === 'UPDATE' ? 'edit' :
+                                                         log.action === 'DELETE' ? 'delete' : 'history'}
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="font-semibold text-ink-900">{log.action}</span>
+                                                        <span className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-xs font-medium">
+                                                            {log.entityType}
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-sm text-ink-500 mt-0.5">
+                                                        by {log.actor || 'Unknown'}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <span className="text-xs text-ink-500 font-mono">
+                                                {new Date(log.timestamp).toLocaleString()}
+                                            </span>
+                                        </div>
+                                        {log.diff && Object.keys(log.diff).length > 0 && (
+                                            <div className="mt-3 pt-3 border-t border-border-light">
+                                                <p className="text-xs font-semibold text-ink-500 mb-2 uppercase tracking-wide">Field Changes:</p>
+                                                <div className="space-y-2">
+                                                    {Object.entries(log.diff).map(([field, change]) => (
+                                                        <div key={field} className="text-xs">
+                                                            <span className="font-semibold text-ink-700">{field}:</span>
+                                                            <div className="ml-4 mt-1 space-y-1">
+                                                                {change.before !== undefined && (
+                                                                    <div className="text-red-600">
+                                                                        <span className="font-medium">Before:</span> {String(change.before || '(empty)')}
+                                                                    </div>
+                                                                )}
+                                                                {change.after !== undefined && (
+                                                                    <div className="text-green-600">
+                                                                        <span className="font-medium">After:</span> {String(change.after || '(empty)')}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                        {log.entityId && (
+                                            <div className="mt-2 text-xs text-ink-400">
+                                                Entity ID: <span className="font-mono">{log.entityId}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
+                </>
+            )}
+        </div>
+        </>
+    );
 };
 
 export default KrithiEditor;

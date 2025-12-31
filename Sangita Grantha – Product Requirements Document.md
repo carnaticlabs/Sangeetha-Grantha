@@ -1,34 +1,48 @@
 # Sangita Grantha – Product Requirements Document (PRD)
 
+**Version:** 1.1  
+**Status:** Draft  
+**Last Updated:** 2025-12-26  
+
 ---
 
 ## 1. Executive Summary
 
-**Sangita Grantha** is a multi-platform, authoritative digital compendium of Carnatic classical music compositions (Krithis). The platform consolidates scattered, semi-structured sources into a single, searchable, multilingual system with strong editorial governance and musicological correctness.
+**Sangita Grantha** is a multi-platform, authoritative digital compendium of Carnatic classical music compositions. It consolidates scattered, semi-structured sources into a single, normalized, searchable, and multilingual system with strong editorial governance and musicological correctness.
+
+The platform supports **multiple Carnatic musical forms**, including:
+
+- **Krithis** – primarily sahitya-centric  
+- **Varnams** – notation-centric pedagogical compositions  
+- **Swarajathis** – jathi + swara driven compositional forms  
+
+While Krithis emphasize lyrical structure, **Varnams and Swarajathis require detailed, section-wise swara notation aligned with tala**. Sangita Grantha models both lyrics and notation as first-class, structured entities.
 
 The system consists of:
-- **Public Mobile App** (Android & iOS via Kotlin Multiplatform)
-- **Backend API Platform** (Ktor + PostgreSQL)
-- **Restricted Admin Web Console** (React + TypeScript + Tailwind)
-- **Data Ingestion & Normalization Pipeline** for legacy sources
+- Public Mobile App (Android & iOS via Kotlin Multiplatform)
+- Backend API Platform (Ktor + PostgreSQL)
+- Restricted Admin Web Console (React + TypeScript + Tailwind)
+- Data Ingestion & Normalization Pipeline for legacy sources
 
-**Primary Objective**  
-Establish Sangita Grantha as the *system of record* for Carnatic Krithis, combining scholarly rigor with production-grade software engineering.
+**Primary Objective**
+
+Establish Sangita Grantha as the *system of record* for Carnatic compositions, combining scholarly rigor with production-grade software engineering.
 
 ---
 
 ## 2. Problem Statement
 
 Carnatic music knowledge currently exists across:
-- Static websites (karnatik.com, shivkumar.org)
-- Blogspot composer lists (Tyagaraja, Dikshitar, Syama Sastri, etc.)
-- PDFs and scanned documents
+- Static websites (karnatik.com, shivkumar.org, etc.)
+- Blogspot composer lists
+- PDFs and scanned books
 
-Key issues:
+### Key Challenges
+
 - No unified or normalized schema
 - Poor searchability (especially by lyrics)
-- No consistent multilingual representation
-- No handling of ragamalika, sampradaya, or lyric variants
+- Inconsistent multilingual representation
+- No structured handling of notation-centric forms
 - No editorial workflow or provenance tracking
 
 ---
@@ -36,23 +50,27 @@ Key issues:
 ## 3. Goals & Non-Goals
 
 ### 3.1 Goals
-- Unified, normalized Krithi catalog
+
+- Unified, normalized catalog of Carnatic compositions
+- Musical-form-aware data modeling
 - Fast, multi-field search:
-  - Krithi name / opening line
+  - Composition name / opening line
   - Lyrics substring
   - Composer
   - Raga(s)
   - Tala
   - Deity
-  - Temple / kshetram
+  - Temple / kṣetram
 - Multilingual sahitya with structured sections
-- Support for ragamalika and multiple charanams
-- Sampradaya-aware lyric variants
-- Strong admin editorial workflow
-- Cloud-ready, scalable architecture
+- Detailed swara notation for Varnams and Swarajathis
+- Support for ragamalika compositions
+- Sampradaya-aware variants
+- Strong admin editorial workflows
 
 ### 3.2 Non-Goals (v1)
-- Audio streaming or notation playback
+
+- Audio playback or notation animation
+- Cursor-synced tala visualization
 - Community edits or crowdsourcing
 - Monetization
 
@@ -61,43 +79,46 @@ Key issues:
 ## 4. Personas
 
 ### 4.1 Rasika / Learner (Public User)
-- Searches and browses Krithis
-- Reads lyrics and metadata
+
+- Searches and browses compositions
+- Reads lyrics and notation
 - Uses mobile app only
 - Read-only access
 
 ### 4.2 Editor (Admin)
-- Creates and edits Krithis
-- Fixes metadata, lyrics, sections, tags
+
+- Creates and edits compositions
+- Manages sections, lyrics, and notation
 - Cannot publish directly
 
 ### 4.3 Reviewer (Admin)
+
 - Reviews drafts
 - Publishes canonical versions
 
 ### 4.4 Admin (System)
+
 - Full access
-- Manages users, roles, taxonomies, and archival
+- Manages users, taxonomies, and archival
 
 ---
 
-## 5. High-Level Architecture
+## 5. Musical Form Awareness (Core Principle)
 
-### Clients
-- Android App (Kotlin Multiplatform)
-- iOS App (Kotlin Multiplatform)
-- Admin Web (React + TypeScript)
+Each composition in Sangita Grantha **MUST** be classified by a `musical_form`.
 
-### Backend
-- Ktor REST API
-- JWT Authentication (RBAC)
-- PostgreSQL
-- Rust-based DB migrations
+### Supported Musical Forms (v1)
 
-### Infrastructure
-- AWS or GCP
-- CI/CD via GitHub Actions
-- Centralized logging and audit trails
+- `KRITHI`
+- `VARNAM`
+- `SWARAJATHI`
+
+### Musical Form Determines
+
+- Required section types
+- Presence and structure of notation
+- Admin validation rules
+- Mobile rendering behavior
 
 ---
 
@@ -105,188 +126,234 @@ Key issues:
 
 ---
 
-### 6.1 Public Mobile App
+### 6.1 Public Mobile App (Read-Only)
 
 #### Core Features
-- Search Krithis by:
-  - Name / opening line
+
+- Search compositions by:
+  - Title / incipit
   - Lyrics substring
   - Composer
-  - Raga(s) (including ragamalika)
+  - Raga(s)
   - Tala
   - Deity
-  - Temple / kshetram
+  - Temple / kṣetram
+- Browse by:
+  - Composer
+  - Raga
+  - Deity / temple
+  - Tags (festival, bhava, etc.)
 
-- View Krithi details:
-  - Metadata:
-    - Composer
-    - Tala
-    - Primary language of composition
-    - Deity and temple
-  - Raga presentation:
-    - Single raga OR ordered ragas (ragamalika)
-  - Lyrics:
-    - Structured by sections (Pallavi / Anupallavi / Charanams)
-    - Original script
-    - Transliteration
-    - Optional meaning
-  - Multiple lyric variants (read-only)
+#### Composition Detail View
 
-#### Non-Functional
-- Read-only access
-- Offline caching (favorites)
-- Fast initial load
-- Deterministic ordering of sections and ragas
+**Metadata**
+- Title and incipit
+- Composer
+- Musical form
+- Raga(s) (ordered for ragamalika)
+- Tala
+- Deity and temple
+- Primary language
+- Sahitya summary (optional)
+
+**Lyrics & Notation**
+- Lyrics organized by sections
+- Multiple lyric variants (language/script)
+- For Varnams & Swarajathis:
+  - Swara notation displayed line-by-line
+  - Avartanam boundaries visually indicated
+  - Sahitya aligned where available
+
+#### Non-Goals (Mobile v1)
+
+- Tala animation
+- Playback cursor
+- Audio–notation synchronization
 
 ---
 
 ### 6.2 Admin Web Console
 
-#### Capabilities
-- Secure login (JWT)
-- CRUD for:
-  - Krithis
-  - Composers
-  - Ragas
-  - Talas
-  - Deities
-  - Temples (canonical + multilingual names)
-  - Tags (controlled taxonomy)
-  - Sampradaya
+---
 
-- Krithi structure management:
-  - Pallavi / Anupallavi / multiple Charanams
-  - Section ordering
+#### 6.2.1 Reference Data Management
 
-- Lyric management:
-  - Multiple languages & scripts
-  - Transliteration and translation
-  - Section-wise editing
-  - Variant tracking with sampradaya attribution
-
-- Metadata enrichment:
-  - Primary language of composition
-  - Themes / bhava / festival / philosophy tags
-
-- Workflow states:
-  - `DRAFT`
-  - `IN_REVIEW`
-  - `PUBLISHED`
-  - `ARCHIVED`
-
-- Import review queue
-- Audit log viewer
-
-#### UX Expectations
-- Explicit form-driven editing
-- Clear save / submit / publish actions
-- No implicit auto-publish
-- Destructive actions require confirmation
+CRUD for:
+- Composers
+- Ragas
+- Talas
+- Deities
+- Temples (with multilingual names)
+- Tags (controlled taxonomy)
+- Sampradayas
 
 ---
 
-### 6.3 Backend API
+#### 6.2.2 Composition (Krithi) Management
 
-#### Core REST Endpoints (v1)
-```
-GET  /health
+**Fields**
+- Title, incipit
+- Composer
+- Musical form
+- Raga(s)
+- Tala
+- Deity
+- Temple
+- Primary language
+- Sahitya summary
+- Notes
+- Workflow state
 
-GET  /v1/krithis/search
-GET  /v1/krithis/{id}
-
-POST /v1/krithis              (admin)
-PUT  /v1/krithis/{id}         (admin)
-
-GET  /v1/composers
-GET  /v1/ragas
-GET  /v1/talas
-GET  /v1/deities
-GET  /v1/temples
-GET  /v1/tags
-GET  /v1/sampradayas
-
-POST /v1/imports/krithis      (admin)
-POST /v1/imports/{id}/review  (admin)
-
-GET  /v1/audit/logs           (admin)
-```
-
-#### API Rules
-- Public endpoints are strictly read-only
-- All mutations write to `AUDIT_LOG`
-- DTOs only; ORM entities never exposed
-- Authorization enforced via role claims
+**Workflow**
+- Draft → In Review → Published → Archived
+- Explicit actions only (no auto-publish)
+- Full audit logging
 
 ---
 
-### 6.4 Data Ingestion
+#### 6.2.3 Section Structure Management
 
-#### Sources
-- karnatik.com
-- shivkumar.org
-- Blogspot composer lists
-- PDFs (Papanasam Shivan, others)
+**Supported Section Types**
+- Pallavi
+- Anupallavi
+- Charanam(s)
+- Muktaayi Swaram (Varnam only)
+- Chittaswaram(s) (Varnam only)
+- Jathi (Swarajathi only)
+- Swara–Sahitya composite sections
 
-#### Pipeline
-1. Scrape → raw structured rows
-2. Normalize:
-   - Raga names
-   - Tala names
-   - Temple names via aliases
-3. Store in staging tables (`ImportedKrithi`, `ImportedLyric`)
-4. Admin reviews & maps:
-   - Primary language
-   - Raga(s)
-   - Sections
-   - Tags
-   - Sampradaya
-5. Promote to canonical entities
+##### Musical Form Constraints
 
-#### Rules
-- Never auto-publish
-- Always retain source reference
-- Imported tags may carry confidence scores
+**VARNAM**
+- Pallavi and Anupallavi are mandatory
+- Exactly one Muktaayi Swaram is mandatory
+- At least one Chittaswaram is mandatory
+
+**SWARAJATHI**
+- Sections must alternate between Jathi and Sahitya
+- Tala alignment is mandatory
+
+---
+
+#### 6.2.4 Lyric Management
+
+- Multiple lyric variants per composition
+- Language, script, transliteration scheme
+- Optional sampradaya and variant label
+- Section-wise lyric entry
+
+> **IMPORTANT RULE**  
+> Swara notation **SHALL NOT** be stored in lyric sections.
+
+---
+
+#### 6.2.5 Notation Management (Varnams & Swarajathis)
+
+Notation is modeled **independently of lyrics**.
+
+Editors can:
+- Create multiple notation variants
+- Attribute notation to bani / school / source
+- Define tala, kalai, and eduppu offset
+- Enter ordered notation rows per section
+
+Notation supports:
+- Swara-only passages
+- Swara + sahitya alignment
+- Multiple cycles per section
+- Tala-aware grouping
+
+---
+
+#### 6.2.6 Tags & Themes
+
+- Controlled taxonomy (festival, bhava, philosophy, etc.)
+- Assign confidence and source
+- Used for discovery and filtering
+
+---
+
+#### 6.2.7 Import Review & Canonicalization
+
+- Review imported data
+- Map to canonical entities
+- Preserve source references
+- Never auto-publish imported data
 
 ---
 
 ## 7. Data Model (Conceptual)
 
 ### Core Entities
-- Composer
-- Raga
-- Tala
-- Deity
-- Temple
-- TempleName (multilingual & aliases)
-- Tag (controlled taxonomy)
-- Sampradaya
-- Krithi  
-  - Includes `primary_language` (e.g. Sanskrit, Telugu, Tamil)
-- KrithiSection
-- KrithiLyricVariant
-- KrithiLyricSection
-- ImportSource
-- AuditLog
-- User / Role
 
-### Relationships
-- Krithi → Composer (1–1)
-- Krithi → Raga (1–many) **(Ragamalika supported)**
-  - Single-raga krithis: exactly 1 raga
-  - Ragamalika: ordered list of ragas
-- Krithi → Tala (1–1)
-- Krithi → Deity (0–1)
-- Krithi → Temple (0–1)
-- Temple → TempleName (1–many)
-- Krithi → KrithiSection (1–many)
-- KrithiSection → KrithiLyricSection (1–many, via lyric variants)
-- Krithi → KrithiLyricVariant (1–many)
-- KrithiLyricVariant → Sampradaya (0–1)
-- Krithi → Tag (many–many)
+**Composition**
+- title
+- incipit
+- composer
+- musical_form
+- primary_language
+- raga(s)
+- tala
+- deity
+- temple
+- workflow_state
+
+**Section**
+- section_type
+- order_index
+
+**Lyric Variant**
+- language
+- script
+- sampradaya
+- variant_label
+
+**Lyric Section**
+- section
+- text
+
+**Notation Variant**
+- notation_type (`SWARA` | `JATHI`)
+- tala
+- kalai
+- eduppu_offset
+- source_reference
+- variant_label
+
+**Notation Row**
+- section
+- order_index
+- swara_text
+- sahitya_text (optional)
+- tala_markers
 
 ---
 
-## 8. Non-Functional Requirements
+## 8. Backend API Requirements
+
+### Public APIs
+```
+GET /v1/compositions/search
+GET /v1/compositions/{id}
+GET /v1/compositions/{id}/notation
+```
+
+### Admin APIs
+```
+POST /v1/admin/compositions
+PUT  /v1/admin/compositions/{id}
+POST /v1/admin/compositions/{id}/notation
+```
+
+### API Rules
+
+- Public APIs are read-only
+- All mutations are audited
+- DTO-only exposure (no ORM leakage)
+
+---
+
+## 9. Non-Functional Requirements
 
 ### Performance
 - Search p95 < 300 ms
@@ -300,54 +367,27 @@ GET  /v1/audit/logs           (admin)
 ### Observability
 - Request logging
 - Error tracking
-- Audit logs for all writes
-
-### Maintainability
-- Strict typing everywhere
-- Versioned migrations
-- Clear module boundaries
-- Deterministic schemas
+- Immutable audit logs
 
 ---
 
-## 9. Tech Stack (Locked)
+## 10. Technology Stack (Locked)
 
 - **Mobile:** Kotlin Multiplatform + Compose
-- **Backend:** Ktor + Exposed
+- **Backend:** Ktor + PostgreSQL
 - **Admin Web:** React + TypeScript + Tailwind
-- **Database:** PostgreSQL 15+
 - **Migrations:** Rust CLI (SQL-based)
-- **CI/CD:** GitHub Actions
 - **Cloud:** AWS or GCP
+- **CI/CD:** GitHub Actions
 
 ---
 
-## 10. Milestones (Suggested)
 
-### Phase 0 – Foundation
-- Repo + module scaffolding
-- CI/CD + migrations
-
-### Phase 1 – Core Data & API
-- Krithi, sections, tags, sampradaya schema
-- Read APIs
-
-### Phase 2 – Admin Console
-- CRUD + workflow
-- Import review + audit logs
-
-### Phase 3 – Mobile App
-- Search + browse
-- Krithi detail screens
 
 ---
 
-## 11. Codex / Copilot Instructions (Authoritative)
+## 12. Guiding Principle
 
-When generating code:
-- Follow **Sangita Grantha Blueprint** strictly
-- Use KMM shared domain models
-- Use Rust migrations (**never Flyway**)
-- Use strict TypeScript (no `any`)
-- Keep Ktor routes thin and services explicit
-- Treat this PRD as the **source of truth**
+> Sangita Grantha models Carnatic compositions **as musicians learn and perform them**, not merely as blocks of text.
+
+This PRD is the **single source of truth** for implementation.

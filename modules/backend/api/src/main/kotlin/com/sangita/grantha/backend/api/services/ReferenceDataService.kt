@@ -23,4 +23,16 @@ class ReferenceDataService(private val dal: SangitaDal) {
     suspend fun listTags(): List<TagDto> = dal.tags.listAll()
 
     suspend fun listSampradayas(): List<SampradayaDto> = dal.sampradayas.listAll()
+
+    suspend fun getStats(): com.sangita.grantha.shared.domain.model.ReferenceDataStatsDto {
+        return com.sangita.grantha.shared.domain.model.ReferenceDataStatsDto(
+            composerCount = dal.composers.countAll(),
+            ragaCount = dal.ragas.countAll(),
+            talaCount = dal.talas.countAll(),
+            deityCount = dal.deities.countAll(),
+            templeCount = dal.temples.countAll(),
+            tagCount = dal.tags.countAll(),
+            sampradayaCount = dal.sampradayas.countAll()
+        )
+    }
 }

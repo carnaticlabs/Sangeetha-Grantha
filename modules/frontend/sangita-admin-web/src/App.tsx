@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ViewState } from './types';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import TopBar from './components/TopBar';
 import Dashboard from './pages/Dashboard';
@@ -7,52 +7,47 @@ import KrithiList from './pages/KrithiList';
 import KrithiEditor from './pages/KrithiEditor';
 import ReferenceData from './pages/ReferenceData';
 
+// Default admin token for development (matches backend default)
+const DEFAULT_ADMIN_TOKEN = 'dev-admin-token';
+
 const App: React.FC = () => {
-  const [currentView, setCurrentView] = useState<ViewState>(ViewState.DASHBOARD);
-  const [selectedKrithiId, setSelectedKrithiId] = useState<string | null>(null);
-
-  const handleNavigate = (view: ViewState, id?: string) => {
-    setCurrentView(view);
-    if (id) {
-      setSelectedKrithiId(id);
-    } else if (view !== ViewState.KRITHI_DETAIL) {
-      setSelectedKrithiId(null);
+  // Automatically authenticate as admin on app load
+  useEffect(() => {
+    // Only set token if not already present (allows manual override if needed)
+    if (!localStorage.getItem('authToken')) {
+      localStorage.setItem('authToken', DEFAULT_ADMIN_TOKEN);
     }
-  };
-
-  const renderContent = () => {
-    switch (currentView) {
-      case ViewState.DASHBOARD:
-        return <Dashboard onNavigate={handleNavigate} />;
-      case ViewState.KRITHIS:
-        return <KrithiList onNavigate={handleNavigate} />;
-      case ViewState.KRITHI_DETAIL:
-        return <KrithiEditor krithiId={selectedKrithiId} onBack={() => handleNavigate(ViewState.KRITHIS)} />;
-      case ViewState.REFERENCE:
-        return <ReferenceData />;
-      default:
-        return (
-          <div className="flex flex-col items-center justify-center h-full text-ink-500">
-            <span className="material-symbols-outlined text-6xl mb-4 text-ink-200">construction</span>
-            <p className="font-serif text-xl">Module Under Development</p>
-          </div>
-        );
-    }
-  };
+  }, []);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50 font-sans text-ink-900">
-      {/* Sidebar */}
-      <Sidebar currentView={currentView} onNavigate={handleNavigate} />
+    <Router>
+      <div className="flex h-screen overflow-hidden bg-slate-50 font-sans text-ink-900">
+        {/* Sidebar */}
+        <Sidebar />
 
-      {/* Main Content Area */}
-      <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
-        <TopBar />
-        <main className="flex-1 overflow-y-auto p-6 md:p-8 lg:px-12 scroll-smooth">
-          {renderContent()}
-        </main>
+        {/* Main Content Area */}
+        <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
+          <TopBar />
+          <main className="flex-1 overflow-y-auto p-6 md:p-8 lg:px-12 scroll-smooth">
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/krithis" element={<KrithiList />} />
+              <Route path="/krithis/new" element={<KrithiEditor />} />
+              <Route path="/krithis/:id" element={<KrithiEditor />} />
+              <Route path="/reference" element={<ReferenceData />} />
+              {/* Fallback for other routes */}
+              <Route path="*" element={
+                <div className="flex flex-col items-center justify-center h-full text-ink-500">
+                  <span className="material-symbols-outlined text-6xl mb-4 text-ink-200">construction</span>
+                  <p className="font-serif text-xl">Module Under Development</p>
+                  <button onClick={() => window.history.back()} className="mt-4 text-primary hover:underline">Go Back</button>
+                </div>
+              } />
+            </Routes>
+          </main>
+        </div>
       </div>
-    </div>
+    </Router>
   );
 };
 

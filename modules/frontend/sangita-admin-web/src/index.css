@@ -1,5 +1,41 @@
 @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Work+Sans:wght@300..700&display=swap");
 
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #1b1a24;
+  --color-ink-50: #f8f8fa;
+  --color-ink-100: #efeff1;
+  --color-ink-200: #dcdde2;
+  --color-ink-300: #c0c2cb;
+  --color-ink-400: #9fa3b0;
+  --color-ink-500: #808596;
+  --color-ink-600: #64697a;
+  --color-ink-700: #525664;
+  --color-ink-800: #464954;
+  --color-ink-900: #3e4049;
+
+  --color-accent: #d94e1f;
+  --color-accent-soft: rgba(217, 78, 31, 0.12);
+
+  --color-primary: #3b82f6;
+  --color-primary-dark: #2563eb;
+  --color-primary-light: #dbeafe;
+
+  --color-surface: rgba(255, 255, 255, 0.86);
+  --color-surface-light: #ffffff;
+
+  --color-border: #e2e8f0;
+  --color-border-light: #e2e8f0;
+
+  --font-sans: "Work Sans", sans-serif;
+  --font-serif: "Fraunces", serif;
+  --font-display: "Fraunces", serif;
+
+  --shadow-soft: 0 22px 60px rgba(16, 14, 32, 0.18);
+}
+
+
 *,
 *::before,
 *::after {
@@ -192,6 +228,7 @@ body {
     opacity: 0;
     transform: translateY(12px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

@@ -26,11 +26,6 @@ const TopBar: React.FC = () => {
         </div>
 
         <div className="h-6 w-px bg-slate-200 mx-2 hidden sm:block"></div>
-
-        <button className="p-2 text-ink-500 hover:text-ink-900 hover:bg-slate-100 rounded-full transition-colors relative">
-          <span className="material-symbols-outlined text-[22px]">notifications</span>
-          <span className="absolute top-2 right-2 w-2 h-2 bg-accent rounded-full border-2 border-white"></span>
-        </button>
         
         <button className="p-2 text-ink-500 hover:text-ink-900 hover:bg-slate-100 rounded-full transition-colors md:hidden">
             <span className="material-symbols-outlined text-[22px]">menu</span>

@@ -67,3 +67,13 @@ enum class ImportStatus(override val dbValue: String) : DbEnum {
         const val DB_TYPE = "import_status_enum"
     }
 }
+
+enum class MusicalForm(override val dbValue: String) : DbEnum {
+    KRITHI("KRITHI"),
+    VARNAM("VARNAM"),
+    SWARAJATHI("SWARAJATHI");
+
+    companion object {
+        const val DB_TYPE = "musical_form_enum"
+    }
+}

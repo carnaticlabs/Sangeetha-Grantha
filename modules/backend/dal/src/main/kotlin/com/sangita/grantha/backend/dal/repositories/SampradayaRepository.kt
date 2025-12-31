@@ -15,4 +15,8 @@ class SampradayaRepository {
             .orderBy(SampradayasTable.name to SortOrder.ASC)
             .map { row: ResultRow -> row.toSampradayaDto() }
     }
+
+    suspend fun countAll(): Long = DatabaseFactory.dbQuery {
+        SampradayasTable.selectAll().count()
+    }
 }
