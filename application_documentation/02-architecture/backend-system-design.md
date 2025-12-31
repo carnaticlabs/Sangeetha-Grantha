@@ -6,10 +6,10 @@ last_updated: 2025-01-27
 owners:
   - Sangita Grantha Backend Team
 related_docs:
-  - ../api/api-contract.md
-  - ./mutation-handlers.md
-  - ./security-requirements.md
-  - ../database/SANGITA_SCHEMA_OVERVIEW.md
+  - ../03-api/api-contract.md
+  - ../06-backend/mutation-handlers.md
+  - ../06-backend/security-requirements.md
+  - ../04-database/schema.md
 ---
 
 # Backend Architecture (Sangita Grantha)
@@ -27,7 +27,7 @@ Shared domain models live in `modules/shared/domain` (Kotlin Multiplatform).
 
 ## 2. Runtime Stack
 
-For detailed versions and dependencies, see **[Tech Stack](../tech-stack.md)**.
+For detailed versions and dependencies, see **[Tech Stack](./tech-stack.md)**.
 
 - **Ktor Server**: Netty engine
 - **Exposed ORM**: Type-safe SQL
@@ -199,7 +199,7 @@ Services contain business logic and orchestrate repository calls.
 
 The comprehensive API specification, including all request/response models and route definitions, is maintained in:
 
-**[API Contract](../api/api-contract.md)**
+**[API Contract](../03-api/api-contract.md)**
 
 ### 6.1 Strategy
 
@@ -232,7 +232,7 @@ All admin routes require JWT authentication with appropriate roles.
 - **Role-based access control** (RBAC) via `roles` and `role_assignments` tables
 - **Public endpoints**: Read-only, no authentication required
 - **Admin endpoints**: Require JWT with role claims (`editor`, `reviewer`, `admin`)
-- See `security-requirements.md` for detailed security patterns
+- See `../06-backend/security-requirements.md` for detailed security patterns
 
 ---
 
