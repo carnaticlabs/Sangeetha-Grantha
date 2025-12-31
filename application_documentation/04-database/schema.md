@@ -6,11 +6,10 @@
 **Owners:** Sangita Grantha Data & Backend Team  
 
 **Related Documents**
-- [Sangita Grantha PRD](../requirements/Sangita%20Grantha%20–PRD.md)
-- [Schema](./schema.md)
+- [Sangita Grantha PRD](../01-requirements/product-requirements-document.md)
 - [Migrations](./migrations.md)
-- [Domain Model](../requirements/domain-model.md)
-- [API Contract](../api/api-contract.md)
+- [Domain Model](../01-requirements/domain-model.md)
+- [API Contract](../03-api/api-contract.md)
 
 ---
 
