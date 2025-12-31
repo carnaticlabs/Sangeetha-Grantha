@@ -6,14 +6,14 @@
 **Related Documents**
 - [Schema](../../04-database/schema.md)
 - [Sangita_Schema_Overview](../../04-database/schema.md)
-- [Architecture](../backend/architecture.md)
-- [Neo4J Graph Evaluation](../neo4j-graph-evaluation.md)
+- [Architecture](../backend-system-design.md)
+- Neo4J Graph Evaluation (Deleted)
 
 # Neo4j Graph Database Implementation - Critical Evaluation
 
 ## Executive Summary
 
-This document provides a critical evaluation of the proposal to implement a Neo4j graph database projection for the Sangeetha Grantha platform, as outlined in [`neo4j-graph-evaluation.md`](../neo4j-graph-evaluation.md). The evaluation assesses technical feasibility, architectural implications, operational costs, and alternative approaches.
+This document provides a critical evaluation of the proposal to implement a Neo4j graph database projection for the Sangeetha Grantha platform, as outlined in `neo4j-graph-evaluation.md` (Deleted). The evaluation assesses technical feasibility, architectural implications, operational costs, and alternative approaches.
 
 **Key Findings:**
 - The proposed graph explorer feature has clear value for visualizing musical relationships
@@ -97,7 +97,7 @@ Based on the schema and typical Carnatic music catalog sizes:
 
 ### 2.1 Requirements Summary
 
-From [`neo4j-graph-evaluation.md`](../neo4j-graph-evaluation.md):
+From `neo4j-graph-evaluation.md` (Deleted):
 
 **Goal:** Music-aware graph explorer (Admin Web) backed by Neo4j Community Edition as a derived projection from PostgreSQL.
 
@@ -629,9 +629,9 @@ This approach provides:
 
 ## 10. References
 
-- [Neo4j Graph Database Evaluation Proposal](../neo4j-graph-evaluation.md)
+- Neo4j Graph Database Evaluation Proposal (Deleted)
 - [Sangita Grantha Database Schema](../../04-database/schema.md)
-- [Backend Architecture](../backend/architecture.md)
+- [Backend Architecture](../backend-system-design.md)
 - [Domain Model](../../01-requirements/domain-model.md)
 - [PostgreSQL Recursive CTEs Documentation](https://www.postgresql.org/docs/current/queries-with.html#QUERIES-WITH-RECURSIVE)
 - [Cytoscape.js Documentation](https://js.cytoscape.org/)

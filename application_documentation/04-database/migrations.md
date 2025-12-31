@@ -5,7 +5,7 @@
 
 **Related Documents**
 - [Schema](./schema.md)
-- [Migrations Runner Rust](./migrations-runner-rust.md)
+- Migrations Runner Rust (Deleted)
 - [Config](../08-operations/config.md)
 
 # Database Migrations

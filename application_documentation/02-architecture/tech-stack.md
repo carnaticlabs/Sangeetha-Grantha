@@ -4,7 +4,7 @@
 > **Owners**: Platform Team
 
 **Related Documents**
-- [Architecture](../backend/architecture.md)
+- [Architecture](backend-system-design.md)
 - [Schema](../04-database/schema.md)
 - [](../frontend/admin-web/)
 

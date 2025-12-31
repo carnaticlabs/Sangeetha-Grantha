@@ -4,7 +4,7 @@
 > **Owners**: Security Team, Backend Team
 
 **Related Documents**
-- [Architecture](./architecture.md)
+- [Architecture](../02-architecture/backend-system-design.md)
 - [Mutation Handlers](./mutation-handlers.md)
 - [Api Contract](../03-api/api-contract.md)
 

@@ -5,7 +5,7 @@
 
 **Related Documents**
 - [Admin Web Prd](../01-requirements/admin-web/prd.md)
-- [Architecture](../backend/architecture.md)
+- [Architecture](../02-architecture/backend-system-design.md)
 - [Schema](../04-database/schema.md)
 - [Api Contract](../03-api/api-contract.md)
 

@@ -8,7 +8,7 @@
 - [Integration Spec](./integration-spec.md)
 - [Admin Web Prd](../01-requirements/admin-web/prd.md)
 - [Mobile App Prd](../01-requirements/mobile/prd.md)
-- [Architecture](../backend/architecture.md)
+- [Architecture](../02-architecture/backend-system-design.md)
 - [Sangita_Schema_Overview](../04-database/schema.md)
 
 # 1. Overview

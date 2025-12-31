@@ -6,9 +6,9 @@
 **Related Documents**
 - [Api Contract](./api-contract.md)
 - [Ui To Api Mapping](./ui-to-api-mapping.md)
-- [Mobile Ui](../frontend/mobile/mobile-ui.md)
+- [Mobile Ui](../05-frontend/mobile/ui-specs.md)
 - [Ui Specs](../05-frontend/mobile/ui-specs.md)
-- [Architecture](../backend/architecture.md)
+- [Architecture](../02-architecture/backend-system-design.md)
 
 # Sangita Grantha API Integration Specification
 

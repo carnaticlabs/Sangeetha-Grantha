@@ -4,7 +4,7 @@
 > **Owners**: Platform Team
 
 **Related Documents**
-- [Neo4J Graph Evaluation](../neo4j-graph-evaluation.md)
+- Neo4J Graph Evaluation (Deleted)
 - [Domain Model](../../01-requirements/domain-model.md)
 - [Sangita_Schema_Overview](../../04-database/schema.md)
 
@@ -12,7 +12,7 @@
 
 ## Context
 
-The requirement in [`neo4j-graph-evaluation.md`](../neo4j-graph-evaluation.md) proposes a Neo4j
+The requirement in `neo4j-graph-evaluation.md` (Deleted) proposes a Neo4j
 Community-backed graph projection to power an admin-only
 Music-Aware Graph Explorer. Postgres remains the system of record, and
 Neo4j is a derived read model used for traversal and visualization of
@@ -125,6 +125,6 @@ read model.
 
 ## References
 
-- [Neo4j Graph Database Evaluation Proposal](../neo4j-graph-evaluation.md)
+- Neo4j Graph Database Evaluation Proposal (Deleted)
 - [Domain Model](../../01-requirements/domain-model.md)
 - [Database Schema Overview](../../04-database/schema.md)

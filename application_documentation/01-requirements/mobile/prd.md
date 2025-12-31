@@ -4,7 +4,7 @@
 > **Owners**: Sangita Grantha Product Team
 
 **Related Documents**
-- [Mobile Ui](../../frontend/mobile/mobile-ui.md)
+- [Mobile Ui](../../05-frontend/mobile/ui-specs.md)
 - [Api Contract](../../03-api/api-contract.md)
 - [Sangita_Schema_Overview](../../04-database/schema.md)
 - [Domain Model](../domain-model.md)

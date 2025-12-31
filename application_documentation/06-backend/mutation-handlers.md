@@ -5,7 +5,7 @@
 
 **Related Documents**
 - [Api Contract](../03-api/api-contract.md)
-- [Architecture](./architecture.md)
+- [Architecture](../02-architecture/backend-system-design.md)
 - [Security Requirements](./security-requirements.md)
 
 # Mutation Handlers – Sangita Grantha

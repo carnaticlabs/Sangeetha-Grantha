@@ -5,7 +5,7 @@
 
 **Related Documents**
 - [Ui Specs](../../05-frontend/admin-web/ui-specs.md)
-- [Data Mapping](../../frontend/admin-web/data-mapping.md)
+- Data Mapping (Deleted)
 - [Api Contract](../../03-api/api-contract.md)
 - [Ui To Api Mapping](../../03-api/ui-to-api-mapping.md)
 - [Schema](../../04-database/schema.md)

@@ -14,7 +14,7 @@ This document provides essential references for AI coding assistants (VS Code Co
 
 ## Architecture & Design
 
-- [Backend Architecture](./backend/architecture.md) - Ktor patterns, service layer, DAL structure
+- [Backend Architecture](../02-architecture/backend-system-design.md) - Ktor patterns, service layer, DAL structure
 - [Mutation Handlers](../06-backend/mutation-handlers.md) - Audit logging and mutation patterns
 - [Security Requirements](../06-backend/security-requirements.md) - Auth, RBAC, and security patterns
 - [Tech Stack](../02-architecture/tech-stack.md) - Complete technology inventory
@@ -23,7 +23,7 @@ This document provides essential references for AI coding assistants (VS Code Co
 
 ## API & Integration
 
-- [OpenAPI Spec](../openapi/sangita-grantha.openapi.yaml) - Complete API contract
+- OpenAPI Spec (Deleted) - Complete API contract
 - [API Contract](../03-api/api-contract.md) - API design patterns and conventions
 - [UI ↔ API Mapping](../03-api/ui-to-api-mapping.md) - Frontend-backend integration
 
