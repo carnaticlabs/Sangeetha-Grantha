@@ -6,7 +6,7 @@
 **Related Documents**
 - [Api Contract](./api-contract.md)
 - [Application_Data_Api_Integration_Spec](./application_data_api_integration_spec.md)
-- [Admin Web Prd](../requirements/prd/admin-web-prd.md)
+- [Admin Web Prd](../01-requirements/admin-web/prd.md)
 - [Ui Specs](../05-frontend/mobile/ui-specs.md)
 
 # UI ↔ API Mapping (Canonical)

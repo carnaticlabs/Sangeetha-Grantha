@@ -630,9 +630,9 @@ This approach provides:
 ## 10. References
 
 - [Neo4j Graph Database Evaluation Proposal](../neo4j-graph-evaluation.md)
-- [Sangita Grantha Database Schema](../database/SANGITA_SCHEMA_OVERVIEW.md)
+- [Sangita Grantha Database Schema](../../04-database/schema.md)
 - [Backend Architecture](../backend/architecture.md)
-- [Domain Model](../requirements/domain-model.md)
+- [Domain Model](../../01-requirements/domain-model.md)
 - [PostgreSQL Recursive CTEs Documentation](https://www.postgresql.org/docs/current/queries-with.html#QUERIES-WITH-RECURSIVE)
 - [Cytoscape.js Documentation](https://js.cytoscape.org/)
 

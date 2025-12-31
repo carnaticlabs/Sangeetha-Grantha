@@ -6,48 +6,48 @@ This document provides essential references for AI coding assistants (VS Code Co
 
 ## Product & Requirements
 
-- [Sangita Grantha PRD](./requirements/Sangita%20Grantha%20–PRD.md) - Primary product requirements
-- [Domain Model](./requirements/domain-model.md) - Core entity relationships and data structures
-- [Glossary](./requirements/glossary.md) - Domain terminology
+- [Sangita Grantha PRD](../01-requirements/product-requirements-document.md) - Primary product requirements
+- [Domain Model](../01-requirements/domain-model.md) - Core entity relationships and data structures
+- [Glossary](../01-requirements/glossary.md) - Domain terminology
 
 ---
 
 ## Architecture & Design
 
 - [Backend Architecture](./backend/architecture.md) - Ktor patterns, service layer, DAL structure
-- [Mutation Handlers](./backend/mutation-handlers.md) - Audit logging and mutation patterns
-- [Security Requirements](./backend/security-requirements.md) - Auth, RBAC, and security patterns
-- [Tech Stack](./tech-stack.md) - Complete technology inventory
+- [Mutation Handlers](../06-backend/mutation-handlers.md) - Audit logging and mutation patterns
+- [Security Requirements](../06-backend/security-requirements.md) - Auth, RBAC, and security patterns
+- [Tech Stack](../02-architecture/tech-stack.md) - Complete technology inventory
 
 ---
 
 ## API & Integration
 
 - [OpenAPI Spec](../openapi/sangita-grantha.openapi.yaml) - Complete API contract
-- [API Contract](./api/api-contract.md) - API design patterns and conventions
-- [UI ↔ API Mapping](./api/ui-to-api-mapping.md) - Frontend-backend integration
+- [API Contract](../03-api/api-contract.md) - API design patterns and conventions
+- [UI ↔ API Mapping](../03-api/ui-to-api-mapping.md) - Frontend-backend integration
 
 ---
 
 ## Database
 
-- [Schema Overview](./database/SANGITA_SCHEMA_OVERVIEW.md) - PostgreSQL schema documentation
-- [Migrations](./database/migrations.md) - Migration strategy (Rust-based, NOT Flyway)
-- [Audit Log](./database/audit-log.md) - Audit trail requirements
+- [Schema Overview](../04-database/schema.md) - PostgreSQL schema documentation
+- [Migrations](../04-database/migrations.md) - Migration strategy (Rust-based, NOT Flyway)
+- [Audit Log](../04-database/audit-log.md) - Audit trail requirements
 
 ---
 
 ## Frontend
 
-- [Admin Web PRD](./requirements/prd/admin-web-prd.md) - Admin console requirements
-- [React Admin Web Specs](./react_admin_web_specifications.md) - Frontend architecture
+- [Admin Web PRD](../01-requirements/admin-web/prd.md) - Admin console requirements
+- [React Admin Web Specs](../archive/react_admin_web_specifications.md) - Frontend architecture
 
 ---
 
 ## Development Workflow
 
-- [Sangita CLI README](../tools/sangita-cli/README.md) - Database management and dev commands
-- [Steel-thread Implementation](./backend/steel-thread-implementation.md) - Core workflows
+- [Sangita CLI README](../README.md) - Database management and dev commands
+- [Steel-thread Implementation](../06-backend/steel-thread-implementation.md) - Core workflows
 
 ---
 
@@ -111,5 +111,5 @@ cargo run -- test steel-thread   # Run end-to-end smoke tests
 
 ---
 
-For the complete documentation index, see [README.md](./README.md).
+For the complete documentation index, see [README.md](../README.md).
 

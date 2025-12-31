@@ -4,8 +4,8 @@
 > **Owners**: Sangita Grantha Shared Domain Team
 
 **Related Documents**
-- [Admin Web Prd](./prd/admin-web-prd.md)
-- [Mobile App Prd](./prd/mobile-app-prd.md)
+- [Admin Web Prd](admin-web/prd.md)
+- [Mobile App Prd](mobile/prd.md)
 - [Sangita Grantha –Prd](product-requirements-document.md)
 - [Api Contract](../03-api/api-contract.md)
 - [Sangita_Schema_Overview](../04-database/schema.md)

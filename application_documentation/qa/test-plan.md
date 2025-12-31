@@ -4,8 +4,8 @@
 > **Owners**: QA & Engineering Leads
 
 **Related Documents**
-- [Admin Web Prd](../requirements/prd/admin-web-prd.md)
-- [Mobile App Prd](../requirements/prd/mobile-app-prd.md)
+- [Admin Web Prd](../01-requirements/admin-web/prd.md)
+- [Mobile App Prd](../01-requirements/mobile/prd.md)
 - [Steel Thread Implementation](../06-backend/steel-thread-implementation.md)
 
 # 1. Scope

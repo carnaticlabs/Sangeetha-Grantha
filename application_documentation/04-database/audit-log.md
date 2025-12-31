@@ -4,7 +4,7 @@
 > **Owners**: Sangita Grantha Backend & Curation Teams
 
 **Related Documents**
-- [Admin Web Prd](../requirements/prd/admin-web-prd.md)
+- [Admin Web Prd](../01-requirements/admin-web/prd.md)
 - [Mutation Handlers](../06-backend/mutation-handlers.md)
 - [Sangita_Schema_Overview](schema.md)
 

@@ -126,5 +126,5 @@ read model.
 ## References
 
 - [Neo4j Graph Database Evaluation Proposal](../neo4j-graph-evaluation.md)
-- [Domain Model](../requirements/domain-model.md)
-- [Database Schema Overview](../database/SANGITA_SCHEMA_OVERVIEW.md)
+- [Domain Model](../../01-requirements/domain-model.md)
+- [Database Schema Overview](../../04-database/schema.md)

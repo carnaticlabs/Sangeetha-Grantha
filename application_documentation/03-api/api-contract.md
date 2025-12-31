@@ -6,8 +6,8 @@
 **Related Documents**
 - [Ui To Api Mapping](./ui-to-api-mapping.md)
 - [Integration Spec](./integration-spec.md)
-- [Admin Web Prd](../requirements/prd/admin-web-prd.md)
-- [Mobile App Prd](../requirements/prd/mobile-app-prd.md)
+- [Admin Web Prd](../01-requirements/admin-web/prd.md)
+- [Mobile App Prd](../01-requirements/mobile/prd.md)
 - [Architecture](../backend/architecture.md)
 - [Sangita_Schema_Overview](../04-database/schema.md)
 

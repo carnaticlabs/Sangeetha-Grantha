@@ -4,7 +4,7 @@ This documentation tree is the **spec-driven source of truth** for
 Sangita Grantha.
 
 The **primary PRD** lives at the repo root:
-  [Sangita Grantha PRD](./requirements/Sangita%20Grantha%20–PRD.md)
+  [Sangita Grantha PRD](01-requirements/product-requirements-document.md)
 
 Historical / inherited drafts from earlier projects, and any future
 archival docs for Sangita Grantha, live under `./archive/`.
