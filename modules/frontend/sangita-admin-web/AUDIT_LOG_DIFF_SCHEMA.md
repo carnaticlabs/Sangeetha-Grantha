@@ -138,3 +138,4 @@ The frontend should:
 - Backend should validate diff structure before writing
 - Frontend should handle missing or malformed diffs gracefully
 
+

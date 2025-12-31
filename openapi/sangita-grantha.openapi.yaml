@@ -5,7 +5,7 @@ info:
     Sangita Grantha is an authoritative, multilingual digital compendium
     of Carnatic classical music compositions (Krithis).
     This API serves both public read-only clients and authenticated admin workflows.
-  version: 1.0.0
+  version: 1.1.0
   contact:
     name: Sangita Grantha Maintainers
 servers:
@@ -23,6 +23,7 @@ tags:
   - name: Admin
   - name: Ingestion
   - name: Audit
+  - name: Notation
 
 paths:
 
@@ -272,6 +273,127 @@ paths:
         "200":
           description: Imported krithi promoted
 
+  /v1/krithis/{id}/notation:
+    get:
+      tags: [Public, Notation]
+      summary: Get notation for a krithi
+      description: >
+        Returns notation variants for Varnam/Swarajathi compositions.
+        Public endpoint returns only published notation; admin can access all.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Notation variants
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/KrithiNotationVariant"
+        "404":
+          description: Not found
+
+  /v1/admin/krithis/{id}/notation:
+    post:
+      tags: [Admin, Notation]
+      summary: Create notation variant
+      description: >
+        Create a new notation variant for a Varnam/Swarajathi composition.
+        Requires musicalForm to be VARNAM or SWARAJATHI.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotationVariantCreateRequest"
+      responses:
+        "201":
+          description: Notation variant created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KrithiNotationVariant"
+        "400":
+          description: Validation error (e.g., wrong musicalForm)
+        "404":
+          description: Krithi not found
+
+    put:
+      tags: [Admin, Notation]
+      summary: Update notation variant
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotationVariantUpdateRequest"
+      responses:
+        "200":
+          description: Notation variant updated
+        "404":
+          description: Not found
+
+  /v1/admin/notation/{variantId}/rows:
+    post:
+      tags: [Admin, Notation]
+      summary: Update notation rows
+      description: Replaces all notation rows for a variant
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: variantId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/NotationRowCreateRequest"
+      responses:
+        "200":
+          description: Notation rows updated
+
+  /v1/admin/notation/{variantId}:
+    delete:
+      tags: [Admin, Notation]
+      summary: Delete notation variant
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: variantId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "204":
+          description: Notation variant deleted
+        "404":
+          description: Not found
+
   /v1/audit/logs:
     get:
       tags: [Audit]
@@ -300,7 +422,12 @@ components:
 
     LanguageCode:
       type: string
-      enum: [sa, te, ta, kn, ml, en]
+      enum: [sa, te, ta, kn, ml, hi, en]
+
+    MusicalForm:
+      type: string
+      enum: [KRITHI, VARNAM, SWARAJATHI]
+      description: Musical form classification
 
     KrithiStatus:
       type: string
@@ -313,6 +440,7 @@ components:
         name: { type: string }
         composerName: { type: string }
         primaryLanguage: { $ref: "#/components/schemas/LanguageCode" }
+        musicalForm: { $ref: "#/components/schemas/MusicalForm" }
         ragas:
           type: array
           items: { $ref: "#/components/schemas/RagaRef" }
@@ -324,6 +452,7 @@ components:
         name: { type: string }
         composer: { $ref: "#/components/schemas/Composer" }
         primaryLanguage: { $ref: "#/components/schemas/LanguageCode" }
+        musicalForm: { $ref: "#/components/schemas/MusicalForm" }
         tala: { $ref: "#/components/schemas/Tala" }
         ragas:
           type: array
@@ -336,6 +465,10 @@ components:
         lyricVariants:
           type: array
           items: { $ref: "#/components/schemas/KrithiLyricVariant" }
+        notationVariants:
+          type: array
+          items: { $ref: "#/components/schemas/KrithiNotationVariant" }
+          description: Only present for VARNAM/SWARAJATHI compositions
         tags:
           type: array
           items: { $ref: "#/components/schemas/Tag" }
@@ -343,12 +476,13 @@ components:
 
     KrithiCreateRequest:
       type: object
-      required: [name, composerId, talaId, primaryLanguage]
+      required: [name, composerId, talaId, primaryLanguage, musicalForm]
       properties:
         name: { type: string }
         composerId: { type: string, format: uuid }
         talaId: { type: string, format: uuid }
         primaryLanguage: { $ref: "#/components/schemas/LanguageCode" }
+        musicalForm: { $ref: "#/components/schemas/MusicalForm" }
         ragaIds:
           type: array
           items: { type: string, format: uuid }
@@ -450,6 +584,72 @@ components:
       properties:
         source: { type: string }
         rawPayload: { type: object }
+
+    KrithiNotationVariant:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        krithiId: { type: string, format: uuid }
+        notationType:
+          type: string
+          enum: [SWARA, JATHI]
+        talaId: { type: string, format: uuid }
+        kalai: { type: integer, default: 1 }
+        eduppuOffsetBeats: { type: integer }
+        variantLabel: { type: string }
+        sourceReference: { type: string }
+        isPrimary: { type: boolean }
+        notationRows:
+          type: array
+          items: { $ref: "#/components/schemas/KrithiNotationRow" }
+
+    KrithiNotationRow:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        notationVariantId: { type: string, format: uuid }
+        sectionId: { type: string, format: uuid }
+        orderIndex: { type: integer }
+        swaraText: { type: string }
+        sahityaText: { type: string }
+        talaMarkers: { type: string }
+
+    NotationVariantCreateRequest:
+      type: object
+      required: [notationType, notationRows]
+      properties:
+        notationType:
+          type: string
+          enum: [SWARA, JATHI]
+        talaId: { type: string, format: uuid }
+        kalai: { type: integer, default: 1 }
+        eduppuOffsetBeats: { type: integer }
+        variantLabel: { type: string }
+        sourceReference: { type: string }
+        isPrimary: { type: boolean, default: false }
+        notationRows:
+          type: array
+          items: { $ref: "#/components/schemas/NotationRowCreateRequest" }
+
+    NotationRowCreateRequest:
+      type: object
+      required: [sectionId, orderIndex, swaraText]
+      properties:
+        sectionId: { type: string, format: uuid }
+        orderIndex: { type: integer }
+        swaraText: { type: string }
+        sahityaText: { type: string }
+        talaMarkers: { type: string }
+
+    NotationVariantUpdateRequest:
+      type: object
+      properties:
+        talaId: { type: string, format: uuid }
+        kalai: { type: integer }
+        eduppuOffsetBeats: { type: integer }
+        variantLabel: { type: string }
+        sourceReference: { type: string }
+        isPrimary: { type: boolean }
 
     AuditLog:
       type: object

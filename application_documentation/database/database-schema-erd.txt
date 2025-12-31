@@ -1,3 +1,0 @@
-Database Schema Erd
-
-Legacy content removed. TODO: Rebuild this document for Sangita Grantha.

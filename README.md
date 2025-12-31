@@ -87,67 +87,27 @@ It is designed to become the **system of record** for Carnatic Krithis — suppo
 
 ---
 
-## 🗂️ Data Model Highlights
-
-- **Krithi**
-  - Primary language (e.g. Sanskrit, Telugu, Tamil)
-  - One or more ragas (Ragamalika)
-  - Tala, Deity, Temple
-- **Krithi Sections**
-  - Pallavi, Anupallavi, Charanams, etc.
-- **Lyric Variants**
-  - Language & script
-  - Sampradaya attribution
-- **Tags / Themes**
-  - Bhava, Festival, Philosophy, Kshetra, etc.
-- **Temple Names**
-  - Multilingual names and aliases for ingestion & search
+## 🗂️ Data Model
+ 
+For the authoritative schema definition and detailed relationship models, please refer to:
+- **[Schema Overview](./application_documentation/04-database/schema.md)**
 
 ---
 
 ## 🧩 Tech Stack
 
+For a complete and specific list of versions and dependencies, please see **[Tech Stack Documentation](./application_documentation/02-architecture/tech-stack.md)**.
+
+### Core Technologies
+
 | Layer | Technology |
 |-------|------------|
-| Mobile | Kotlin Multiplatform + Compose |
-| Backend | Kotlin + Ktor |
-| ORM | Exposed |
-| Database | PostgreSQL 15+ |
-| Migrations | Rust CLI (`tools/sangita-cli`) |
-| Admin Web | React + TypeScript + Tailwind |
-| CI/CD | GitHub Actions |
-| Cloud | AWS / GCP |
-
-### Tech Stack Versions
-
-#### Core Languages & Frameworks
-- **Kotlin**: `2.3.0`
-- **Compose Multiplatform**: `1.9.3`
-- **Android Gradle Plugin (AGP)**: `8.13.2`
-
-#### Backend Stack
-- **Ktor**: `3.3.3`
-- **Exposed**: `1.0.0-rc-4`
-- **PostgreSQL**: `42.7.8`
-- **HikariCP**: `7.0.2`
-- **Logback**: `1.5.20`
-- **Logstash Logback Encoder**: `8.0`
-- **JWT (Auth0)**: `4.5.0`
-- **Shadow Plugin**: `9.2.2`
-
-#### Kotlinx Libraries
-- **Kotlinx Coroutines**: `1.9.0`
-- **Kotlinx DateTime**: `0.6.1`
-- **Kotlinx Serialization JSON**: `1.7.3`
-
-#### AndroidX & Material
-- **Activity Compose**: `1.10.0`
-- **AndroidX Core KTX**: `1.15.0`
-- **Material**: `1.12.0`
-
-#### Cloud & Authentication
-- **AWS SDK**: `2.29.0`
-- **Google Auth Library**: `1.23.0`
+| **Mobile** | Kotlin Multiplatform (KMM) + Compose Multiplatform |
+| **Backend** | Kotlin + Ktor + Exposed |
+| **Database** | PostgreSQL 15+ |
+| **Migrations** | Rust CLI (`tools/sangita-cli`) |
+| **Admin Web** | React + TypeScript + Tailwind + Vite |
+| **Build** | Gradle (Backend/Mobile), Bun (Frontend) |
 
 ---
 
@@ -235,24 +195,27 @@ Mobile apps are built via Android Studio (Android) and Xcode (iOS).
 
 ## 📜 Documentation
 
-- **Product Requirements Document**: [`Sangita Grantha – Product Requirements Document.md`](Sangita Grantha – Product Requirements Document.md)
+- **Product Requirements Document**: [Sangita Grantha PRD](./application_documentation/01-requirements/product-requirements-document.md)
 - **OpenAPI Spec**: [`openapi/sangita-grantha.openapi.yaml`](openapi/sangita-grantha.openapi.yaml)
-- **Database Schema & ERDs**: [`application_documentation/database/`](application_documentation/database/)
-- **Architecture & Blueprints**: [`application_documentation/backend/`](application_documentation/backend/)
+- **Database Schema & ERDs**: [`application_documentation/04-database/`](application_documentation/04-database/)
+- **Architecture & Blueprints**: [`application_documentation/02-architecture/`](application_documentation/02-architecture/)
 
 ---
 
-## 🤖 AI & Copilot Usage
+## 🤖 AI & Vibe Coding Usage
 
 This repository is designed to work seamlessly with VS Code Copilot / Codex / Cursor / Google Antigravity.
 
-**Key reference files:**
+For comprehensive references and coding patterns, see: **[AI & Vibe Coding References](./application_documentation/09-ai/vibe-coding-references.md)**
 
-- `PROJECT_BLUEPRINT_SANGITA_GRANTHA.md`
-- `Sangita Grantha – Product Requirements Document.md`
-- `openapi/sangita-grantha.openapi.yaml`
-
-These documents act as the source of truth for code generation.
+This document includes:
+- Product requirements and domain model references
+- Architecture patterns and design guidelines
+- API contracts and integration specs
+- Database schema and migration strategies
+- Frontend architecture and patterns
+- Development workflow and commands
+- Key coding patterns and constraints
 
 ---
 
@@ -272,7 +235,7 @@ These documents act as the source of truth for code generation.
 This project draws inspiration from decades of Carnatic scholarship and legacy sources such as:
 
 - [karnatik.com](https://www.karnatik.com)
-- [shivkumar.org](http://shivkumar.org)
+- [shivkumar.org/music](https://www.shivkumar.org/music/)
 - Composer-centric archives and PDFs
 
 **Sangeetha Grantha** exists to preserve, structure, and respectfully modernize this knowledge for future generations.
