@@ -235,7 +235,7 @@ Mobile apps are built via Android Studio (Android) and Xcode (iOS).
 
 ## 📜 Documentation
 
-- **Product Requirements Document**: [`application_documentation/requirements/Sangita_Grantha_PRD.md`](application_documentation/requirements/Sangita_Grantha_PRD.md)
+- **Product Requirements Document**: [`Sangita Grantha – Product Requirements Document.md`](Sangita Grantha – Product Requirements Document.md)
 - **OpenAPI Spec**: [`openapi/sangita-grantha.openapi.yaml`](openapi/sangita-grantha.openapi.yaml)
 - **Database Schema & ERDs**: [`application_documentation/database/`](application_documentation/database/)
 - **Architecture & Blueprints**: [`application_documentation/backend/`](application_documentation/backend/)
