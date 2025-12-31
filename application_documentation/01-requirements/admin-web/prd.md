@@ -1,22 +1,14 @@
----
-title: Sangita Grantha Admin Web Application PRD
-status: Draft
-version: 0.2
-last_updated: 2025-01-27
-owners:
-  - Sangita Grantha Product Team
-stakeholders:
-  - Editors
-  - Reviewers
-  - System Administrators
-  - Data Ingestion / Curation Team
-related_docs:
-  - ../../frontend/admin-web/ui-specs.md
-  - ../../frontend/admin-web/data-mapping.md
-  - ../../api/api-contract.md
-  - ../../api/ui-to-api-mapping.md
-  - ../../database/SANGITA_SCHEMA_OVERVIEW.md
----
+# Sangita Grantha Admin Web Application PRD
+
+> **Status**: Draft | **Version**: 0.2 | **Last Updated**: 2025-01-27
+> **Owners**: Sangita Grantha Product Team
+
+**Related Documents**
+- [Ui Specs](../../05-frontend/admin-web/ui-specs.md)
+- [Data Mapping](../../frontend/admin-web/data-mapping.md)
+- [Api Contract](../../03-api/api-contract.md)
+- [Ui To Api Mapping](../../03-api/ui-to-api-mapping.md)
+- [Schema](../../04-database/schema.md)
 
 # 1. Executive Summary
 
