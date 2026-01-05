@@ -185,7 +185,14 @@ cargo run -- test steel-thread   # Run end-to-end smoke tests
 # Setup & verification
 cargo run -- setup               # Check environment and dependencies
 cargo run -- net info            # Show local network info
+
+# Commit guardrails (workflow enforcement)
+cargo run -- commit install-hooks    # Install Git hooks for commit validation
+cargo run -- commit check             # Validate commit message format
+cargo run -- commit scan-sensitive    # Scan staged files for sensitive data
 ```
+
+**Commit Guardrails:** All commits must reference a documentation file in `application_documentation/`. See [`tools/sangita-cli/README.md`](tools/sangita-cli/README.md#commit-guardrails) for details.
 
 For more details, see [`tools/sangita-cli/README.md`](tools/sangita-cli/README.md).
 

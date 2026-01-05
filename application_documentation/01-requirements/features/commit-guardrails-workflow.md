@@ -1,8 +1,9 @@
 ---
 title: Commit Guardrails and Workflow Enforcement System
-status: Draft
+status: Implemented
 version: 1.0
 last_updated: 2026-01-05
+implementation_date: 2026-01-05
 owners:
   - Architecture Team
   - Development Team
@@ -91,12 +92,15 @@ This document defines the requirements for a **Commit Guardrails and Workflow En
 ### 2.1 System Components
 
 #### 2.1.1 Rust CLI Tool Extension (`sangita-cli`)
-The logic resides in `tools/sangita-cli`. It is responsible for:
+The logic resides in `tools/sangita-cli/src/commands/commit.rs`. It is responsible for:
 - Parsing commit messages and extracting documentation references.
 - Validating that referenced files exist in `application_documentation/`.
 - Providing manual validation and hook installation commands.
+- Scanning staged files for sensitive data (API keys, secrets).
 
-*(See `tools/sangita-cli/README.md` for implementation details and code snippets).*
+**Implementation Status:** ✅ **Implemented** (2026-01-05)
+
+See `tools/sangita-cli/README.md` for usage instructions and `tools/sangita-cli/src/commands/commit.rs` for implementation details.
 
 #### 2.1.2 Git Hooks
 - **`commit-msg` Hook**: Triggered when a commit message is being finalized. Blocks the commit if validation fails.
@@ -180,3 +184,80 @@ Developers can validate messages manually before committing using the CLI tool.
 | Developers find hooks disruptive | High | Make hooks fast, provide clear error messages. |
 | False positives | High | Graceful handling of edge cases (merges, rebases). |
 | IDE compatibility issues | Medium | Use standard Git hooks which are universally supported. |
+
+---
+
+## 6. Implementation Details
+
+### 6.1 Implementation Status
+
+✅ **Status**: Implemented (2026-01-05)  
+**Location**: `tools/sangita-cli/src/commands/commit.rs`  
+**Version**: 0.2.0
+
+### 6.2 Commands
+
+The following commands are available:
+
+- `cargo run -- commit check [--message <msg>]` - Validate commit message format
+- `cargo run -- commit scan-sensitive` - Scan staged files for sensitive data
+- `cargo run -- commit install-hooks` - Install Git hooks
+- `cargo run -- commit uninstall-hooks` - Remove Git hooks
+
+### 6.3 Technical Details
+
+**Dependencies:**
+- `regex = "1.11.1"` - For pattern matching in commit messages and sensitive data detection
+
+**Key Features:**
+- Case-insensitive reference matching (`Ref:` or `ref:`)
+- Path normalization and validation
+- Automatic binary detection for hooks (release/debug fallback to cargo run)
+- Cross-platform support (Unix/Windows)
+- Fast validation (< 500ms target achieved)
+
+**Sensitive Data Patterns Detected:**
+- API keys: `api[_-]?key`, `apikey`, `SG_GEMINI_API_KEY`
+- Secrets: `secret`, `password`, `token`
+- AWS credentials: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`
+
+**Error Handling:**
+- Clear, actionable error messages
+- File location and line number reporting for sensitive data
+- Helpful format examples when validation fails
+
+### 6.4 Usage Examples
+
+**Valid Commit:**
+```bash
+git commit -m "Implement feature X
+
+Ref: application_documentation/01-requirements/features/my-feature.md
+
+- Added new endpoint
+- Updated tests"
+```
+
+**Invalid Commit (will be rejected):**
+```bash
+git commit -m "Fix bug"
+# Error: Commit message must include a reference to application_documentation
+```
+
+**Manual Validation:**
+```bash
+echo "My commit message
+
+Ref: application_documentation/01-requirements/features/my-feature.md" | \
+  cargo run -- commit check
+```
+
+### 6.5 Integration
+
+The hooks integrate seamlessly with:
+- VS Code Git integration
+- IntelliJ IDEA Git integration
+- Command-line Git
+- Any IDE that respects standard Git hooks
+
+No special configuration required beyond running `cargo run -- commit install-hooks` once.

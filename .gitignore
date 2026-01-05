@@ -42,3 +42,4 @@ gradlew
 build_log*.txt
 build_log_final.txt
 .gitignore
+**/Cargo.lock

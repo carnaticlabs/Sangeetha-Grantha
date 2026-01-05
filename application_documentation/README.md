@@ -17,6 +17,8 @@ archival docs for Sangita Grantha, live under `./archive/`.
   - [Glossary](./01-requirements/glossary.md)
   - [Admin Web PRD](./01-requirements/admin-web/prd.md)
   - [Mobile App PRD](./01-requirements/mobile/prd.md)
+  - [Features](./01-requirements/features/)
+    - [Commit Guardrails & Workflow Enforcement](./01-requirements/features/commit-guardrails-workflow.md) ✅ *Implemented*
 
 - **[02 Architecture](./02-architecture/)**
   - [System Design](./02-architecture/backend-system-design.md)

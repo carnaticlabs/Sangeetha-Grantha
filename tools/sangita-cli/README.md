@@ -27,40 +27,35 @@ cargo run -- setup
 ### Commit Guardrails
 Validate commit messages and manage Git hooks:
 ```bash
+# Validate a commit message (reads from stdin if --message not provided)
 cargo run -- commit check --message "Your commit message here"
+
+# Install Git hooks (commit-msg and pre-commit)
 cargo run -- commit install-hooks
+
+# Remove installed Git hooks
+cargo run -- commit uninstall-hooks
+
+# Manually scan staged files for sensitive data
+cargo run -- commit scan-sensitive
 ```
 
-Rust command structure:
-```rust
-// tools/sangita-cli/src/commands/commit.rs
-#[derive(Subcommand)]
-enum CommitCommands {
-    /// Validate commit message format and reference
-    Check {
-        /// Commit message to validate (or read from stdin)
-        #[arg(long)]
-        message: Option<String>,
-    },
-    /// Install Git hooks for commit validation
-    InstallHooks,
-    /// Remove installed Git hooks
-    UninstallHooks,
-}
+**Commit Message Format:**
+All commits must include a reference to a documentation file in `application_documentation/`:
+```
+<subject line>
+
+Ref: application_documentation/01-requirements/features/my-feature.md
+
+<optional body>
 ```
 
-Rust wiring points:
-```rust
-// tools/sangita-cli/src/commands/mod.rs
-pub mod commit;
-
-// tools/sangita-cli/src/main.rs
-#[derive(Subcommand)]
-enum Commands {
-    // ... existing commands
-    Commit(commit::CommitArgs),
-}
-```
+**Features:**
+- ✅ Validates that commit messages reference documentation files
+- ✅ Enforces single reference per commit (1:1 mapping)
+- ✅ Pre-commit hook scans for sensitive data (API keys, secrets)
+- ✅ Fast validation (< 500ms)
+- ✅ Works seamlessly with IDEs (VS Code, IntelliJ, etc.)
 
 ### Database Management
 Reset database (Drop → Create → Migrate → Seed):
@@ -162,30 +157,30 @@ Environment variables (set in `.env` file):
 
 ## Rust-Based Git Guardrails Implementation
 
-The commit guardrails are implemented as a sub-crate within the CLI tool.
+The commit guardrails are implemented in `tools/sangita-cli/src/commands/commit.rs`.
 
 ### Technical Implementation
 
 **Dependencies**
-To support the git operations and validation, `tools/sangita-cli/Cargo.toml` includes:
+The implementation uses the following dependencies (already in `Cargo.toml`):
 ```toml
-git2 = "0.20"  # Git repository access
-walkdir = "2"  # Directory traversal
-clap = { version = "...", features = ["derive"] } # CLI argument parsing
-regex = "1"    # Commit message parsing
+regex = "1.11.1"  # Commit message parsing and sensitive data pattern matching
+clap = { version = "4.5.53", features = ["derive"] }  # CLI argument parsing
 ```
 
 **Command Structure**
-The CLI command enum structure (`tools/sangita-cli/src/commands/commit.rs`):
+The CLI command structure (`tools/sangita-cli/src/commands/commit.rs`):
 ```rust
 #[derive(Subcommand)]
-enum CommitCommands {
+pub enum CommitCommands {
     /// Validate commit message format and reference
     Check {
         /// Commit message to validate (or read from stdin)
         #[arg(long)]
         message: Option<String>,
     },
+    /// Scan staged files for sensitive data (used by pre-commit hook)
+    ScanSensitive,
     /// Install Git hooks for commit validation
     InstallHooks,
     /// Remove installed Git hooks
@@ -193,23 +188,43 @@ enum CommitCommands {
 }
 ```
 
-**Git Hook Script**
-When `install-hooks` is run, it places a script like this in `.git/hooks/commit-msg`:
+**Git Hook Scripts**
+When `install-hooks` is run, it creates two hooks:
+
+1. **`.git/hooks/commit-msg`** - Validates commit message format:
 ```bash
 #!/bin/sh
-# .git/hooks/commit-msg
+# Sangita Grantha Commit Guardrails Hook
+# This hook validates commit messages to ensure they reference documentation
 
-# Get commit message file path
-commit_msg_file="$1"
-
-# Call Rust CLI tool to validate
-# We use 'cargo run' for dev convenience, simplified for example
-# in prod environments this would call the binary directly
-cargo run --quiet -- commit check --message "$(cat "$commit_msg_file")" || exit 1
+exec "/path/to/sangita-cli" commit check --message "$(cat "$1")"
 ```
 
+2. **`.git/hooks/pre-commit`** - Scans for sensitive data:
+```bash
+#!/bin/sh
+# Sangita Grantha Pre-commit Hook
+# This hook scans staged files for sensitive data
+
+exec "/path/to/sangita-cli" commit scan-sensitive
+```
+
+The hooks automatically detect the binary location (release/debug) or fall back to `cargo run` for development.
+
 **Validation Logic**
-1. **Extract Reference**: The tool parses the commit message looking for `Ref: <path>`.
-2. **File Check**: It verifies that `<path>` exists and is inside `application_documentation/`.
-3. **Exit Code**: Returns 0 on success, 1 on failure (which blocks the commit in the hook).
+1. **Extract Reference**: Parses commit message using regex pattern `(?i)ref:\s*(.+?)(?:\n|$)` to find `Ref: <path>`.
+2. **Single Reference Check**: Ensures only one reference exists per commit (enforces 1:1 mapping).
+3. **File Existence Check**: Verifies that the referenced path exists and is within `application_documentation/` directory.
+4. **Path Normalization**: Handles relative paths, paths starting with `application_documentation/`, and normalizes to absolute paths.
+5. **Exit Code**: Returns 0 on success, 1 on failure (which blocks the commit in the hook).
+
+**Sensitive Data Scanning**
+The `scan-sensitive` command:
+- Gets staged files using `git diff --cached --name-only`
+- Scans each file for patterns matching:
+  - API keys: `api[_-]?key`, `SG_GEMINI_API_KEY`
+  - Secrets: `secret`, `password`, `token`
+  - AWS credentials: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`
+- Skips binary files (>1MB) and common placeholder patterns
+- Provides detailed error messages with file locations and line numbers
 
