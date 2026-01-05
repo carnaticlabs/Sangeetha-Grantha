@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { getImports, scrapeContent } from '../api/client';
-import { ImportedKrithi } from '../types';
+import { getImports, scrapeContent, reviewImport } from '../api/client';
+import { ImportedKrithi, ImportReviewRequest } from '../types';
 import { useToast, ToastContainer } from '../components/Toast';
+import { ReviewImportModal } from '../components/ReviewImportModal';
 
 const ImportsPage: React.FC = () => {
     const { toasts, removeToast, success, error } = useToast();
@@ -14,6 +15,8 @@ const ImportsPage: React.FC = () => {
 
     const [imports, setImports] = useState<ImportedKrithi[]>([]);
     const [loadingImports, setLoadingImports] = useState(false);
+    const [reviewModalOpen, setReviewModalOpen] = useState(false);
+    const [selectedImport, setSelectedImport] = useState<ImportedKrithi | null>(null);
 
     useEffect(() => {
         if (activeTab === 'LIST') {
@@ -48,9 +51,38 @@ const ImportsPage: React.FC = () => {
         }
     };
 
+    const handleReviewClick = (importItem: ImportedKrithi) => {
+        setSelectedImport(importItem);
+        setReviewModalOpen(true);
+    };
+
+    const handleReviewSubmit = async (id: string, request: ImportReviewRequest) => {
+        try {
+            const updated = await reviewImport(id, request);
+            // Update the import in the list
+            setImports(prev => prev.map(imp => imp.id === id ? updated : imp));
+            toast.success('Import reviewed successfully!');
+            setReviewModalOpen(false);
+            setSelectedImport(null);
+        } catch (e) {
+            const errorMessage = e instanceof Error ? e.message : 'Failed to review import. Please try again.';
+            toast.error(errorMessage);
+            throw e;
+        }
+    };
+
     return (
         <div className="max-w-7xl mx-auto space-y-6">
             <ToastContainer toasts={toasts} onRemove={removeToast} />
+            <ReviewImportModal
+                isOpen={reviewModalOpen}
+                onClose={() => {
+                    setReviewModalOpen(false);
+                    setSelectedImport(null);
+                }}
+                importItem={selectedImport}
+                onReview={handleReviewSubmit}
+            />
             <div className="flex flex-col gap-1">
                 <h1 className="text-2xl font-display font-bold text-ink-900">Imports & Ingestion</h1>
                 <p className="text-sm text-ink-500">Scrape content from external sources or review pending imports.</p>
@@ -174,11 +206,15 @@ const ImportsPage: React.FC = () => {
                                             <td className="px-6 py-4 font-medium text-ink-900">{imp.rawTitle || '-'}</td>
                                             <td className="px-6 py-4 text-ink-600">{imp.rawComposer || '-'}</td>
                                             <td className="px-6 py-4">
-                                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold ring-1 ring-inset ${imp.importStatus === 'IMPORTED' ? 'bg-green-50 text-green-700 ring-green-600/20' :
+                                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold ring-1 ring-inset ${
+                                                    imp.importStatus === 'APPROVED' ? 'bg-emerald-50 text-emerald-700 ring-emerald-600/20' :
+                                                    imp.importStatus === 'MAPPED' ? 'bg-green-50 text-green-700 ring-green-600/20' :
                                                     imp.importStatus === 'REJECTED' ? 'bg-red-50 text-red-700 ring-red-600/20' :
-                                                        'bg-blue-50 text-blue-700 ring-blue-700/10'
-                                                    }`}>
-                                                    {imp.importStatus}
+                                                    imp.importStatus === 'DISCARDED' ? 'bg-gray-50 text-gray-700 ring-gray-600/20' :
+                                                    imp.importStatus === 'IN_REVIEW' ? 'bg-yellow-50 text-yellow-700 ring-yellow-600/20' :
+                                                    'bg-blue-50 text-blue-700 ring-blue-700/10'
+                                                }`}>
+                                                    {imp.importStatus.replace(/_/g, ' ')}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 text-ink-500 font-mono text-xs">
@@ -186,7 +222,7 @@ const ImportsPage: React.FC = () => {
                                             </td>
                                             <td className="px-6 py-4 text-right">
                                                 <button
-                                                    onClick={() => alert('Review functionality coming soon. Check exported JSON.')}
+                                                    onClick={() => handleReviewClick(imp)}
                                                     className="text-primary hover:text-primary-dark font-medium opacity-0 group-hover:opacity-100 transition-opacity"
                                                 >
                                                     Review

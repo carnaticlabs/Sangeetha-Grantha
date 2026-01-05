@@ -14,6 +14,9 @@ import com.sangita.grantha.backend.dal.tables.ImportedKrithisTable
 import com.sangita.grantha.backend.dal.tables.KrithisTable
 import com.sangita.grantha.backend.dal.tables.KrithiNotationRowsTable
 import com.sangita.grantha.backend.dal.tables.KrithiNotationVariantsTable
+import com.sangita.grantha.backend.dal.tables.KrithiSectionsTable
+import com.sangita.grantha.backend.dal.tables.KrithiLyricVariantsTable
+import com.sangita.grantha.backend.dal.tables.KrithiLyricSectionsTable
 import com.sangita.grantha.backend.dal.tables.RagasTable
 import com.sangita.grantha.backend.dal.tables.SampradayasTable
 import com.sangita.grantha.backend.dal.tables.TagsTable
@@ -28,6 +31,9 @@ import com.sangita.grantha.shared.domain.model.ImportedKrithiDto
 import com.sangita.grantha.shared.domain.model.KrithiDto
 import com.sangita.grantha.shared.domain.model.KrithiNotationRowDto
 import com.sangita.grantha.shared.domain.model.KrithiNotationVariantDto
+import com.sangita.grantha.shared.domain.model.KrithiSectionDto
+import com.sangita.grantha.shared.domain.model.KrithiLyricVariantDto
+import com.sangita.grantha.shared.domain.model.KrithiLyricSectionDto
 import com.sangita.grantha.shared.domain.model.LanguageCodeDto
 import com.sangita.grantha.shared.domain.model.MusicalFormDto
 import com.sangita.grantha.shared.domain.model.NotationTypeDto
@@ -177,6 +183,46 @@ fun ResultRow.toKrithiNotationRowDto(): KrithiNotationRowDto = KrithiNotationRow
     talaMarkers = this[KrithiNotationRowsTable.talaMarkers],
     createdAt = this.kotlinInstant(KrithiNotationRowsTable.createdAt),
     updatedAt = this.kotlinInstant(KrithiNotationRowsTable.updatedAt)
+)
+
+@OptIn(ExperimentalUuidApi::class)
+fun ResultRow.toKrithiSectionDto(): KrithiSectionDto = KrithiSectionDto(
+    id = this[KrithiSectionsTable.id].value.toKotlinUuid(),
+    krithiId = this[KrithiSectionsTable.krithiId].toKotlinUuid(),
+    sectionType = this[KrithiSectionsTable.sectionType],
+    orderIndex = this[KrithiSectionsTable.orderIndex],
+    label = this[KrithiSectionsTable.label],
+    notes = this[KrithiSectionsTable.notes],
+    createdAt = this.kotlinInstant(KrithiSectionsTable.createdAt),
+    updatedAt = this.kotlinInstant(KrithiSectionsTable.updatedAt)
+)
+
+@OptIn(ExperimentalUuidApi::class)
+fun ResultRow.toKrithiLyricVariantDto(): KrithiLyricVariantDto = KrithiLyricVariantDto(
+    id = this[KrithiLyricVariantsTable.id].value.toKotlinUuid(),
+    krithiId = this[KrithiLyricVariantsTable.krithiId].toKotlinUuid(),
+    language = this[KrithiLyricVariantsTable.language].toDto(),
+    script = this[KrithiLyricVariantsTable.script].toDto(),
+    transliterationScheme = this[KrithiLyricVariantsTable.transliterationScheme],
+    isPrimary = this[KrithiLyricVariantsTable.isPrimary],
+    variantLabel = this[KrithiLyricVariantsTable.variantLabel],
+    sourceReference = this[KrithiLyricVariantsTable.sourceReference],
+    lyrics = this[KrithiLyricVariantsTable.lyrics],
+    createdByUserId = this[KrithiLyricVariantsTable.createdByUserId]?.toKotlinUuid(),
+    updatedByUserId = this[KrithiLyricVariantsTable.updatedByUserId]?.toKotlinUuid(),
+    createdAt = this.kotlinInstant(KrithiLyricVariantsTable.createdAt),
+    updatedAt = this.kotlinInstant(KrithiLyricVariantsTable.updatedAt)
+)
+
+@OptIn(ExperimentalUuidApi::class)
+fun ResultRow.toKrithiLyricSectionDto(): KrithiLyricSectionDto = KrithiLyricSectionDto(
+    id = this[KrithiLyricSectionsTable.id].value.toKotlinUuid(),
+    lyricVariantId = this[KrithiLyricSectionsTable.lyricVariantId].toKotlinUuid(),
+    sectionId = this[KrithiLyricSectionsTable.sectionId].toKotlinUuid(),
+    text = this[KrithiLyricSectionsTable.text],
+    normalizedText = this[KrithiLyricSectionsTable.normalizedText],
+    createdAt = this.kotlinInstant(KrithiLyricSectionsTable.createdAt),
+    updatedAt = this.kotlinInstant(KrithiLyricSectionsTable.updatedAt)
 )
 
 @OptIn(ExperimentalUuidApi::class)

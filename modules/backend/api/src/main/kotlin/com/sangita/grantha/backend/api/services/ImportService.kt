@@ -4,11 +4,20 @@ import com.sangita.grantha.backend.api.models.ImportKrithiRequest
 import com.sangita.grantha.backend.api.models.ImportReviewRequest
 import com.sangita.grantha.backend.dal.SangitaDal
 import com.sangita.grantha.backend.dal.enums.ImportStatus
+import com.sangita.grantha.backend.dal.enums.LanguageCode
+import com.sangita.grantha.backend.dal.enums.MusicalForm
+import com.sangita.grantha.backend.dal.enums.WorkflowState
+import com.sangita.grantha.backend.dal.support.toJavaUuid
 import com.sangita.grantha.shared.domain.model.ImportedKrithiDto
 import java.util.UUID
 import kotlin.uuid.Uuid
 
 class ImportService(private val dal: SangitaDal) {
+    private fun normalize(value: String): String =
+        value.trim()
+            .lowercase()
+            .replace(Regex("\\s+"), " ")
+            .replace(Regex("[^a-z0-9\\s]"), "")
     suspend fun getImports(status: ImportStatus? = null): List<ImportedKrithiDto> {
         return dal.imports.listImports(status)
     }
@@ -49,10 +58,109 @@ class ImportService(private val dal: SangitaDal) {
     suspend fun reviewImport(id: Uuid, request: ImportReviewRequest): ImportedKrithiDto {
         val mappedId = request.mappedKrithiId?.let { parseUuidOrThrow(it, "mappedKrithiId") }
         val status = ImportStatus.valueOf(request.status.name)
+        
+        // If status is APPROVED and no mappedKrithiId is provided, create a new krithi
+        var createdKrithiId: UUID? = null
+        if (status == ImportStatus.APPROVED && mappedId == null) {
+            // Get the import to extract data
+            val importData = dal.imports.findById(id) ?: throw NoSuchElementException("Import not found")
+            
+            // Extract nullable values to local variables for smart casting
+            val rawComposer = importData.rawComposer
+            val rawRaga = importData.rawRaga
+            val rawTala = importData.rawTala
+            val rawTitle = importData.rawTitle
+            val rawLanguage = importData.rawLanguage
+            val rawLyrics = importData.rawLyrics
+            val sourceKey = importData.sourceKey
+            
+            // Find or create composer
+            val composerId = if (rawComposer != null) {
+                dal.composers.findByName(rawComposer)?.id?.toJavaUuid()
+                    ?: dal.composers.create(
+                        name = rawComposer,
+                        nameNormalized = null, // Will be auto-normalized
+                        birthYear = null,
+                        deathYear = null,
+                        place = null,
+                        notes = null
+                    ).id.toJavaUuid()
+            } else {
+                throw IllegalArgumentException("Composer is required to create krithi from import")
+            }
+            
+            // Find or create raga (if provided)
+            val ragaId = rawRaga?.let { ragaName ->
+                dal.ragas.findByName(ragaName)?.id?.toJavaUuid()
+                    ?: dal.ragas.create(
+                        name = ragaName,
+                        nameNormalized = null, // Will be auto-normalized
+                        melakartaNumber = null,
+                        parentRagaId = null,
+                        arohanam = null,
+                        avarohanam = null,
+                        notes = null
+                    ).id.toJavaUuid()
+            }
+            
+            // Find or create tala (if provided)
+            val talaId = rawTala?.let { talaName ->
+                dal.talas.findByName(talaName)?.id?.toJavaUuid()
+                    ?: dal.talas.create(
+                        name = talaName,
+                        nameNormalized = null, // Will be auto-normalized
+                        beatCount = null,
+                        angaStructure = null,
+                        notes = null
+                    ).id.toJavaUuid()
+            }
+            
+            // Determine language code (default to TE if not provided)
+            val languageCode = when (rawLanguage?.lowercase()) {
+                "sanskrit", "sa" -> LanguageCode.SA
+                "tamil", "ta" -> LanguageCode.TA
+                "telugu", "te" -> LanguageCode.TE
+                "kannada", "kn" -> LanguageCode.KN
+                "malayalam", "ml" -> LanguageCode.ML
+                "hindi", "hi" -> LanguageCode.HI
+                "english", "en" -> LanguageCode.EN
+                else -> LanguageCode.TE // Default
+            }
+            
+            // Create the krithi
+            val title = rawTitle ?: "Untitled"
+            val createdKrithi = dal.krithis.create(
+                title = title,
+                titleNormalized = normalize(title),
+                incipit = null,
+                incipitNormalized = null,
+                composerId = composerId,
+                musicalForm = MusicalForm.KRITHI,
+                primaryLanguage = languageCode,
+                primaryRagaId = ragaId,
+                talaId = talaId,
+                deityId = null, // Deity/temple can be added later in editor
+                templeId = null,
+                isRagamalika = false,
+                ragaIds = if (ragaId != null) listOf(ragaId) else emptyList(),
+                workflowState = WorkflowState.DRAFT,
+                sahityaSummary = rawLyrics?.take(500), // First 500 chars as summary
+                notes = "Created from import: ${sourceKey ?: "unknown"}"
+            )
+            
+            createdKrithiId = createdKrithi.id.toJavaUuid()
+            
+            dal.auditLogs.append(
+                action = "CREATE_KRITHI_FROM_IMPORT",
+                entityTable = "krithis",
+                entityId = createdKrithi.id
+            )
+        }
+        
         val updated = dal.imports.reviewImport(
             id = id,
             status = status,
-            mappedKrithiId = mappedId,
+            mappedKrithiId = createdKrithiId ?: mappedId,
             reviewerNotes = request.reviewerNotes
         ) ?: throw NoSuchElementException("Import not found")
 

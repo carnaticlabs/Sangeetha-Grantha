@@ -32,7 +32,10 @@ import {
     getTags,
     getKrithiAuditLogs,
     getSampradayas,
+    getKrithiSections,
     saveKrithiSections,
+    getKrithiLyricVariants,
+    getKrithiTags,
     createLyricVariant,
     updateLyricVariant,
     saveVariantSections
@@ -124,9 +127,14 @@ const KrithiEditor: React.FC<KrithiEditorProps> = () => {
     const navigate = useNavigate();
     const onBack = () => navigate('/krithis');
     const toast = useToast();
-    const [activeTab, setActiveTab] = useState<'Metadata' | 'Lyrics' | 'Notation' | 'Tags' | 'Audit'>('Metadata');
+    const [activeTab, setActiveTab] = useState<'Metadata' | 'Structure' | 'Lyrics' | 'Notation' | 'Tags' | 'Audit'>('Metadata');
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
+    const [sectionsLoading, setSectionsLoading] = useState(false);
+    const [lyricVariantsLoading, setLyricVariantsLoading] = useState(false);
+    const [tagsLoading, setTagsLoading] = useState(false);
+    const [tagSearchTerm, setTagSearchTerm] = useState('');
+    const [showTagDropdown, setShowTagDropdown] = useState(false);
 
     // Data State
     const [krithi, setKrithi] = useState<Partial<KrithiDetail>>({
@@ -155,20 +163,20 @@ const KrithiEditor: React.FC<KrithiEditorProps> = () => {
     const [isTransliterationModalOpen, setIsTransliterationModalOpen] = useState(false);
     const [transliterationInitialContent, setTransliterationInitialContent] = useState('');
 
-    // Load initial data
+    // Load initial reference data (tags will be loaded when Tags tab is clicked)
     useEffect(() => {
         const loadRefs = async () => {
             try {
-                const [c, r, t, d, tm, tg, s] = await Promise.all([
-                    getComposers(), getRagas(), getTalas(), getDeities(), getTemples(), getTags(), getSampradayas()
+                const [c, r, t, d, tm, s] = await Promise.all([
+                    getComposers(), getRagas(), getTalas(), getDeities(), getTemples(), getSampradayas()
                 ]);
                 setComposers(c);
                 setRagas(r);
                 setTalas(t);
                 setDeities(d);
                 setTemples(tm);
-                setAllTags(tg);
                 setSampradayas(s);
+                // Tags will be loaded when Tags tab is clicked
             } catch (e) {
                 console.error("Failed to load reference data", e);
             }
@@ -176,11 +184,68 @@ const KrithiEditor: React.FC<KrithiEditorProps> = () => {
         loadRefs();
     }, []);
 
+    // Helper to map backend DTO (with IDs) to frontend format (with objects)
+    const mapKrithiDtoToDetail = (dto: any): Partial<KrithiDetail> => {
+        // Handle workflowState: backend uses DRAFT/IN_REVIEW/PUBLISHED/ARCHIVED (uppercase)
+        // Frontend expects same format but ensure it's uppercase
+        let workflowState = 'DRAFT';
+        if (dto.workflowState) {
+            workflowState = typeof dto.workflowState === 'string' 
+                ? dto.workflowState.toUpperCase().replace(/-/g, '_')
+                : dto.workflowState;
+        }
+
+        // Map ragas - backend may have primaryRagaId or ragaIds array
+        let ragaList: Raga[] = [];
+        if (dto.ragas && Array.isArray(dto.ragas)) {
+            // If backend returns full raga objects
+            ragaList = dto.ragas;
+        } else if (dto.ragaIds && Array.isArray(dto.ragaIds)) {
+            // If backend returns raga IDs array
+            ragaList = dto.ragaIds.map((id: string) => ragas.find(r => r.id === id)).filter(Boolean) as Raga[];
+        } else if (dto.primaryRagaId) {
+            // Fallback to primaryRagaId
+            const primaryRaga = ragas.find(r => r.id === dto.primaryRagaId);
+            if (primaryRaga) ragaList = [primaryRaga];
+        }
+
+        return {
+            id: dto.id,
+            title: dto.title || '',
+            incipit: dto.incipit,
+            composer: dto.composer ? dto.composer : (dto.composerId ? composers.find(c => c.id === dto.composerId) : undefined),
+            tala: dto.tala ? dto.tala : (dto.talaId ? talas.find(t => t.id === dto.talaId) : undefined),
+            ragas: ragaList,
+            deity: dto.deity ? dto.deity : (dto.deityId ? deities.find(d => d.id === dto.deityId) : undefined),
+            temple: dto.temple ? dto.temple : (dto.templeId ? temples.find(t => t.id === dto.templeId) : undefined),
+            primaryLanguage: dto.primaryLanguage?.toLowerCase() || dto.primaryLanguage || 'te',
+            musicalForm: dto.musicalForm || MusicalForm.KRITHI,
+            isRagamalika: dto.isRagamalika || false,
+            status: workflowState as any,
+            sahityaSummary: dto.sahityaSummary,
+            notes: dto.notes,
+            sections: dto.sections || [],
+            lyricVariants: dto.lyricVariants || [],
+            tags: dto.tags || []
+        };
+    };
+
+    // Store the raw DTO to remap when reference data loads
+    const [rawKrithiDto, setRawKrithiDto] = useState<any>(null);
+
     useEffect(() => {
         if (!isNew && krithiId) {
             setLoading(true);
             getKrithi(krithiId)
-                .then(setKrithi)
+                .then((dto) => {
+                    setRawKrithiDto(dto);
+                    // Map immediately if reference data is available
+                    if (composers.length > 0 && ragas.length > 0 && talas.length > 0) {
+                        const mapped = mapKrithiDtoToDetail(dto);
+                        // Sections will be loaded when Structure tab is clicked
+                        setKrithi(mapped);
+                    }
+                })
                 .catch(err => alert("Failed to load krithi: " + err.message))
                 .finally(() => setLoading(false));
 
@@ -190,6 +255,14 @@ const KrithiEditor: React.FC<KrithiEditorProps> = () => {
                 .catch(err => console.error("Failed to load audit logs:", err));
         }
     }, [krithiId, isNew]);
+
+    // Remap krithi when reference data becomes available
+    useEffect(() => {
+        if (rawKrithiDto && composers.length > 0 && ragas.length > 0 && talas.length > 0) {
+            const mapped = mapKrithiDtoToDetail(rawKrithiDto);
+            setKrithi(mapped);
+        }
+    }, [rawKrithiDto, composers, ragas, talas, deities, temples]);
 
     // Helpers to handle ID-based selection for object fields
     const handleComposerChange = (id: string) => {
@@ -232,39 +305,81 @@ const KrithiEditor: React.FC<KrithiEditorProps> = () => {
         setSaving(true);
         try {
             // Map types to Request Schema
-            const payload: any = {
-                title: krithi.title,
-                incipit: krithi.incipit,
-                composerId: krithi.composer?.id,
-                talaId: krithi.tala?.id,
-                primaryLanguage: krithi.primaryLanguage,
-                ragaIds: krithi.ragas?.map(r => r.id) || [],
-                deityId: krithi.deity?.id,
-                templeId: krithi.temple?.id,
-                musicalForm: krithi.musicalForm,
-                isRagamalika: krithi.isRagamalika || false,
-                sahityaSummary: krithi.sahityaSummary,
-                notes: krithi.notes,
-                tagIds: krithi.tags?.map(t => t.id) || [],
-                workflowState: krithi.status
-            };
+            const payload: any = {};
+            
+            // Only include fields that have values
+            if (krithi.title) payload.title = krithi.title;
+            if (krithi.incipit !== undefined) payload.incipit = krithi.incipit || null;
+            if (krithi.composer?.id) payload.composerId = krithi.composer.id;
+            if (krithi.tala?.id) payload.talaId = krithi.tala.id;
+            if (krithi.primaryLanguage) {
+                // Convert to uppercase enum value (e.g., 'te' -> 'TE')
+                payload.primaryLanguage = krithi.primaryLanguage.toUpperCase();
+            }
+            if (krithi.ragas && krithi.ragas.length > 0) {
+                payload.ragaIds = krithi.ragas.map(r => r.id);
+            }
+            if (krithi.deity?.id) payload.deityId = krithi.deity.id;
+            if (krithi.temple?.id) payload.templeId = krithi.temple.id;
+            if (krithi.musicalForm) {
+                // Ensure enum value is uppercase
+                payload.musicalForm = typeof krithi.musicalForm === 'string' 
+                    ? krithi.musicalForm.toUpperCase() 
+                    : krithi.musicalForm;
+            }
+            if (krithi.isRagamalika !== undefined) payload.isRagamalika = krithi.isRagamalika;
+            if (krithi.sahityaSummary) payload.sahityaSummary = krithi.sahityaSummary;
+            if (krithi.notes) payload.notes = krithi.notes;
+            if (krithi.status) {
+                // Convert status to uppercase enum value (e.g., 'DRAFT', 'IN_REVIEW')
+                const statusValue = typeof krithi.status === 'string' 
+                    ? krithi.status.toUpperCase().replace(/-/g, '_') 
+                    : krithi.status;
+                payload.workflowState = statusValue;
+            }
+            // Include tagIds if tags array exists (even if empty, to clear tags)
+            if (krithi.tags !== undefined) {
+                payload.tagIds = krithi.tags.map(t => t.id);
+            }
 
             let savedKrithiId = krithiId;
 
             // Create or update krithi
             if (isNew) {
-                const res = await createKrithi(payload);
+                // For create, ensure required fields are present
+                if (!payload.title || !payload.composerId || !payload.primaryLanguage) {
+                    toast.error('Title, Composer, and Primary Language are required');
+                    setSaving(false);
+                    return;
+                }
+                // Create request requires non-null values
+                const createPayload = {
+                    title: payload.title,
+                    incipit: payload.incipit || null,
+                    composerId: payload.composerId,
+                    primaryLanguage: payload.primaryLanguage,
+                    musicalForm: payload.musicalForm || 'KRITHI',
+                    talaId: payload.talaId || null,
+                    primaryRagaId: payload.ragaIds?.[0] || null,
+                    deityId: payload.deityId || null,
+                    templeId: payload.templeId || null,
+                    isRagamalika: payload.isRagamalika || false,
+                    ragaIds: payload.ragaIds || [],
+                    sahityaSummary: payload.sahityaSummary || null,
+                    notes: payload.notes || null,
+                };
+                const res = await createKrithi(createPayload);
                 savedKrithiId = res.id;
                 navigate(`/krithis/${res.id}`, { replace: true });
             } else if (krithiId) {
                 await updateKrithi(krithiId, payload);
             }
 
-            // Save sections if krithi ID is available
-            if (savedKrithiId && krithi.sections && krithi.sections.length > 0) {
+            // Save sections if krithi ID is available (even if empty, to clear existing sections)
+            if (savedKrithiId && krithi.sections !== undefined) {
                 try {
                     // Map all sections to the API format (ignore temp IDs, API will assign new ones)
-                    const sectionsToSave = krithi.sections.map(s => ({
+                    const sectionsToSave = (krithi.sections || []).map(s => ({
                         sectionType: s.sectionType,
                         orderIndex: s.orderIndex,
                         label: null
@@ -273,7 +388,44 @@ const KrithiEditor: React.FC<KrithiEditorProps> = () => {
                     await saveKrithiSections(savedKrithiId, sectionsToSave);
                 } catch (err: any) {
                     console.error('Failed to save sections:', err);
-                    toast.warning('Krithi saved, but sections may not have been updated');
+                    toast.warning('Krithi saved, but sections may not have been updated: ' + (err.message || 'Unknown error'));
+                }
+            }
+
+            // Reload the krithi to get updated data with full objects
+            if (savedKrithiId) {
+                try {
+                    const reloaded = await getKrithi(savedKrithiId);
+                    const mapped = mapKrithiDtoToDetail(reloaded);
+                    // Load sections from the dedicated endpoint
+                    try {
+                        const sections = await getKrithiSections(savedKrithiId);
+                        mapped.sections = sections.map(s => ({
+                            id: s.id,
+                            sectionType: s.sectionType as any,
+                            orderIndex: s.orderIndex
+                        }));
+                    } catch (err: any) {
+                        console.warn('Failed to reload sections after save:', err);
+                        // Keep existing sections if reload fails
+                        if (krithi.sections && krithi.sections.length > 0) {
+                            mapped.sections = krithi.sections;
+                        }
+                    }
+                    // Load tags from the dedicated endpoint
+                    try {
+                        const tags = await getKrithiTags(savedKrithiId);
+                        mapped.tags = tags;
+                    } catch (err: any) {
+                        console.warn('Failed to reload tags after save:', err);
+                        // Keep existing tags if reload fails
+                        if (krithi.tags && krithi.tags.length > 0) {
+                            mapped.tags = krithi.tags;
+                        }
+                    }
+                    setKrithi(mapped);
+                } catch (err: any) {
+                    console.error('Failed to reload krithi after save:', err);
                 }
             }
 
@@ -385,12 +537,34 @@ const KrithiEditor: React.FC<KrithiEditorProps> = () => {
                         {/* Tabs */}
                         <div className="border-b border-border-light mb-8">
                             <nav className="flex gap-8">
-                                {['Metadata', 'Lyrics', 'Tags', 'Audit'].map((tab) => {
+                                {['Metadata', 'Structure', 'Lyrics', 'Tags', 'Audit'].map((tab) => {
                                     if (tab === 'Notation' && krithi.musicalForm !== MusicalForm.VARNAM && krithi.musicalForm !== MusicalForm.SWARAJATHI) return null;
                                     return (
                                         <button
                                             key={tab}
-                                            onClick={() => setActiveTab(tab as any)}
+                                            onClick={async () => {
+                                                setActiveTab(tab as any);
+                                                // Load sections when Structure tab is clicked
+                                                if (tab === 'Structure' && krithiId && (!krithi.sections || krithi.sections.length === 0)) {
+                                                    setSectionsLoading(true);
+                                                    try {
+                                                        const sections = await getKrithiSections(krithiId);
+                                                        setKrithi(prev => ({
+                                                            ...prev,
+                                                            sections: sections.map(s => ({
+                                                                id: s.id,
+                                                                sectionType: s.sectionType as any,
+                                                                orderIndex: s.orderIndex
+                                                            }))
+                                                        }));
+                                                    } catch (err: any) {
+                                                        console.error('Failed to load sections:', err);
+                                                        toast.error('Failed to load sections: ' + (err.message || 'Unknown error'));
+                                                    } finally {
+                                                        setSectionsLoading(false);
+                                                    }
+                                                }
+                                            }}
                                             className={`pb-4 text-sm font-bold border-b-2 transition-colors ${activeTab === tab
                                                 ? 'border-primary text-primary'
                                                 : 'border-transparent text-ink-500 hover:text-ink-900 hover:border-slate-300'
@@ -564,111 +738,6 @@ const KrithiEditor: React.FC<KrithiEditorProps> = () => {
                                         </div>
                                     </div>
 
-                                    {/* Sections Management */}
-                                    <div className="bg-surface-light border border-border-light rounded-xl shadow-sm p-6">
-                                        <div className="flex items-center justify-between mb-6 pb-2 border-b border-border-light">
-                                            <h3 className="font-display text-lg font-bold text-ink-900">Sections</h3>
-                                            <button
-                                                onClick={() => {
-                                                    const newSection: KrithiSection = {
-                                                        id: `temp-section-${Date.now()}`,
-                                                        sectionType: 'PALLAVI',
-                                                        orderIndex: (krithi.sections?.length || 0) + 1
-                                                    };
-                                                    setKrithi(prev => ({
-                                                        ...prev,
-                                                        sections: [...(prev.sections || []), newSection]
-                                                    }));
-                                                }}
-                                                className="flex items-center gap-2 px-3 py-1.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-dark transition-colors"
-                                            >
-                                                <span className="material-symbols-outlined text-[16px]">add</span>
-                                                Add Section
-                                            </button>
-                                        </div>
-                                        <div className="space-y-3">
-                                            {krithi.sections && krithi.sections.length > 0 ? (
-                                                krithi.sections
-                                                    .sort((a, b) => a.orderIndex - b.orderIndex)
-                                                    .map((section, idx) => (
-                                                        <div key={section.id} className="border border-border-light rounded-lg p-4 bg-white">
-                                                            <div className="flex items-start justify-between mb-3">
-                                                                <div className="flex-1">
-                                                                    <div className="flex items-center gap-3 mb-2">
-                                                                        <span className="text-sm font-semibold text-ink-900">
-                                                                            Section {idx + 1}
-                                                                        </span>
-                                                                        <span className="px-2 py-0.5 bg-primary-light text-primary rounded text-xs font-medium">
-                                                                            {formatSectionType(section.sectionType)}
-                                                                        </span>
-                                                                    </div>
-                                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                                        <div>
-                                                                            <label className="block text-xs font-semibold text-ink-700 mb-1">Section Type</label>
-                                                                            <select
-                                                                                value={section.sectionType}
-                                                                                onChange={(e) => {
-                                                                                    const updated = krithi.sections?.map(s =>
-                                                                                        s.id === section.id ? { ...s, sectionType: e.target.value as any } : s
-                                                                                    ) || [];
-                                                                                    setKrithi(prev => ({ ...prev, sections: updated }));
-                                                                                }}
-                                                                                className="w-full h-10 px-3 rounded-lg bg-slate-50 border border-border-light text-ink-900 focus:ring-2 focus:ring-primary text-sm"
-                                                                            >
-                                                                                <option value="PALLAVI">Pallavi</option>
-                                                                                <option value="ANUPALLAVI">Anupallavi</option>
-                                                                                <option value="CHARANAM">Charanam</option>
-                                                                                <option value="CHITTASWARAM">Chittaswaram</option>
-                                                                                <option value="OTHER">Other</option>
-                                                                            </select>
-                                                                        </div>
-                                                                        <div>
-                                                                            <label className="block text-xs font-semibold text-ink-700 mb-1">Order Index</label>
-                                                                            <input
-                                                                                type="number"
-                                                                                value={section.orderIndex}
-                                                                                onChange={(e) => {
-                                                                                    const order = parseInt(e.target.value) || 1;
-                                                                                    const updated = krithi.sections?.map(s =>
-                                                                                        s.id === section.id ? { ...s, orderIndex: order } : s
-                                                                                    ) || [];
-                                                                                    setKrithi(prev => ({ ...prev, sections: updated }));
-                                                                                }}
-                                                                                min="1"
-                                                                                className="w-full h-10 px-3 rounded-lg bg-slate-50 border border-border-light text-ink-900 focus:ring-2 focus:ring-primary text-sm"
-                                                                            />
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <button
-                                                                    onClick={() => {
-                                                                        setKrithi(prev => ({
-                                                                            ...prev,
-                                                                            sections: prev.sections?.filter(s => s.id !== section.id) || []
-                                                                        }));
-                                                                    }}
-                                                                    className="ml-4 p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                                    title="Remove section"
-                                                                >
-                                                                    <span className="material-symbols-outlined text-[20px]">delete</span>
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    ))
-                                            ) : (
-                                                <div className="p-4 text-center text-ink-500 text-sm bg-slate-50 rounded-lg border border-border-light">
-                                                    <p>No sections defined yet. Add sections to organize the lyrics.</p>
-                                                </div>
-                                            )}
-                                        </div>
-                                        {krithi.sections && krithi.sections.length > 0 && (
-                                            <p className="text-xs text-ink-500 mt-4">
-                                                <span className="material-symbols-outlined text-[14px] align-middle mr-1">info</span>
-                                                Sections define the structure of the composition. Add lyrics for each section in the Lyrics tab.
-                                            </p>
-                                        )}
-                                    </div>
-
                                     {/* Additional Metadata */}
                                     <div className="bg-surface-light border border-border-light rounded-xl shadow-sm p-6">
                                         <SectionHeader title="Additional Information" />
@@ -696,14 +765,14 @@ const KrithiEditor: React.FC<KrithiEditorProps> = () => {
                                     <div className="bg-surface-light border border-border-light rounded-xl shadow-sm p-5">
                                         <h4 className="text-xs font-bold text-ink-500 uppercase tracking-wider mb-4">Status</h4>
                                         <select
-                                            value={krithi.status}
+                                            value={krithi.status || 'DRAFT'}
                                             onChange={e => setKrithi({ ...krithi, status: e.target.value as any })}
                                             className="w-full p-2 border rounded"
                                         >
-                                            <option value="draft">Draft</option>
-                                            <option value="in_review">In Review</option>
-                                            <option value="published">Published</option>
-                                            <option value="archived">Archived</option>
+                                            <option value="DRAFT">Draft</option>
+                                            <option value="IN_REVIEW">In Review</option>
+                                            <option value="PUBLISHED">Published</option>
+                                            <option value="ARCHIVED">Archived</option>
                                         </select>
                                         <div className="mt-2">
                                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold border ${getWorkflowStateColor(krithi.status || 'draft')}`}>
@@ -715,11 +784,153 @@ const KrithiEditor: React.FC<KrithiEditorProps> = () => {
                             </div>
                         )}
 
+                        {/* 2. STRUCTURE TAB */}
+                        {activeTab === 'Structure' && (
+                            <div className="space-y-6">
+                                <div className="bg-surface-light border border-border-light rounded-xl shadow-sm p-6">
+                                    <SectionHeader title="Section Structure" />
+                                    <p className="text-sm text-ink-600 mb-6">
+                                        Define the structure of your composition by adding sections (Pallavi, Anupallavi, Charanam, etc.). 
+                                        Once sections are defined, you can add lyrics for each section in the Lyrics tab.
+                                    </p>
+
+                                    {sectionsLoading && (
+                                        <div className="p-8 text-center">
+                                            <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-primary mb-2"></div>
+                                            <p className="text-ink-500 text-sm">Loading sections...</p>
+                                        </div>
+                                    )}
+
+                                    {!sectionsLoading && (
+                                        <>
+                                    <div className="flex items-center justify-between mb-6 pb-2 border-b border-border-light">
+                                        <h4 className="text-sm font-semibold text-ink-700">Sections</h4>
+                                        <button
+                                            onClick={() => {
+                                                const newSection: KrithiSection = {
+                                                    id: `temp-section-${Date.now()}`,
+                                                    sectionType: 'PALLAVI',
+                                                    orderIndex: (krithi.sections?.length || 0) + 1
+                                                };
+                                                setKrithi(prev => ({
+                                                    ...prev,
+                                                    sections: [...(prev.sections || []), newSection]
+                                                }));
+                                            }}
+                                            className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-dark transition-colors"
+                                        >
+                                            <span className="material-symbols-outlined text-[18px]">add</span>
+                                            Add Section
+                                        </button>
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        {krithi.sections && krithi.sections.length > 0 ? (
+                                            krithi.sections
+                                                .sort((a, b) => a.orderIndex - b.orderIndex)
+                                                .map((section, idx) => (
+                                                    <div key={section.id} className="border border-border-light rounded-lg p-4 bg-white hover:shadow-sm transition-shadow">
+                                                        <div className="flex items-start justify-between mb-3">
+                                                            <div className="flex-1">
+                                                                <div className="flex items-center gap-3 mb-3">
+                                                                    <span className="text-sm font-semibold text-ink-900">
+                                                                        Section {idx + 1}
+                                                                    </span>
+                                                                    <span className="px-2.5 py-1 bg-primary-light text-primary rounded-full text-xs font-medium">
+                                                                        {formatSectionType(section.sectionType)}
+                                                                    </span>
+                                                                </div>
+                                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                                    <div>
+                                                                        <label className="block text-xs font-semibold text-ink-700 mb-2">Section Type</label>
+                                                                        <select
+                                                                            value={section.sectionType}
+                                                                            onChange={(e) => {
+                                                                                const updated = krithi.sections?.map(s =>
+                                                                                    s.id === section.id ? { ...s, sectionType: e.target.value as any } : s
+                                                                                ) || [];
+                                                                                setKrithi(prev => ({ ...prev, sections: updated }));
+                                                                            }}
+                                                                            className="w-full h-10 px-3 rounded-lg bg-slate-50 border border-border-light text-ink-900 focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
+                                                                        >
+                                                                            <option value="PALLAVI">Pallavi</option>
+                                                                            <option value="ANUPALLAVI">Anupallavi</option>
+                                                                            <option value="CHARANAM">Charanam</option>
+                                                                            <option value="CHITTASWARAM">Chittaswaram</option>
+                                                                            <option value="OTHER">Other</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div>
+                                                                        <label className="block text-xs font-semibold text-ink-700 mb-2">Order Index</label>
+                                                                        <input
+                                                                            type="number"
+                                                                            value={section.orderIndex}
+                                                                            onChange={(e) => {
+                                                                                const order = parseInt(e.target.value) || 1;
+                                                                                const updated = krithi.sections?.map(s =>
+                                                                                    s.id === section.id ? { ...s, orderIndex: order } : s
+                                                                                ) || [];
+                                                                                setKrithi(prev => ({ ...prev, sections: updated }));
+                                                                            }}
+                                                                            min="1"
+                                                                            className="w-full h-10 px-3 rounded-lg bg-slate-50 border border-border-light text-ink-900 focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <button
+                                                                onClick={() => {
+                                                                    setKrithi(prev => ({
+                                                                        ...prev,
+                                                                        sections: prev.sections?.filter(s => s.id !== section.id) || []
+                                                                    }));
+                                                                }}
+                                                                className="ml-4 p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                                title="Remove section"
+                                                            >
+                                                                <span className="material-symbols-outlined text-[20px]">delete</span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ))
+                                        ) : (
+                                            <div className="p-8 text-center bg-slate-50 rounded-lg border-2 border-dashed border-border-light">
+                                                <span className="material-symbols-outlined text-[48px] text-ink-300 mb-3 block">article</span>
+                                                <p className="text-ink-500 text-sm font-medium mb-1">No sections defined yet</p>
+                                                <p className="text-ink-400 text-xs">Add sections to define the structure of your composition</p>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {krithi.sections && krithi.sections.length > 0 && (
+                                        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                                            <p className="text-sm text-blue-800 flex items-start gap-2">
+                                                <span className="material-symbols-outlined text-[18px] mt-0.5">info</span>
+                                                <span>
+                                                    <strong>Next step:</strong> Once your section structure is defined, navigate to the <strong>Lyrics</strong> tab to add content for each section.
+                                                </span>
+                                            </p>
+                                        </div>
+                                    )}
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* 3. LYRICS TAB */}
                         {activeTab === 'Lyrics' && (
                             <div className="space-y-6">
                                 <div className="bg-surface-light border rounded-xl p-6">
                                     <div className="flex items-center justify-between mb-6">
                                         <SectionHeader title="Lyric Variants" />
+                                        
+                                        {lyricVariantsLoading ? (
+                                            <div className="flex items-center gap-2 text-sm text-ink-500">
+                                                <div className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                                                <span>Loading variants...</span>
+                                            </div>
+                                        ) : (
                                         <div className="flex gap-2">
                                             {/* AI Generation Button */}
                                             <button
@@ -762,6 +973,7 @@ const KrithiEditor: React.FC<KrithiEditorProps> = () => {
                                                 Add Variant
                                             </button>
                                         </div>
+                                        )}
                                     </div>
 
                                     {/* AI Transliteration Modal */}
@@ -1043,6 +1255,16 @@ const KrithiEditor: React.FC<KrithiEditorProps> = () => {
                             <div className="space-y-6">
                                 <div className="bg-surface-light border rounded-xl p-6">
                                     <SectionHeader title="Assigned Tags" />
+                                    
+                                    {tagsLoading && (
+                                        <div className="p-8 text-center">
+                                            <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-primary mb-2"></div>
+                                            <p className="text-ink-500 text-sm">Loading tags...</p>
+                                        </div>
+                                    )}
+
+                                    {!tagsLoading && (
+                                        <>
                                     <div className="flex flex-wrap gap-2 mb-6">
                                         {krithi.tags && krithi.tags.length > 0 ? (
                                             krithi.tags.map(t => (
@@ -1050,7 +1272,7 @@ const KrithiEditor: React.FC<KrithiEditorProps> = () => {
                                                     key={t.id}
                                                     className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary-light text-primary rounded-full text-sm border border-primary/20"
                                                 >
-                                                    <span>{t.displayName}</span>
+                                                    <span>{t.displayNameEn || t.displayName}</span>
                                                     <span className="text-xs text-ink-500">({t.category})</span>
                                                     <button
                                                         type="button"
@@ -1077,87 +1299,91 @@ const KrithiEditor: React.FC<KrithiEditorProps> = () => {
                                         <div className="relative">
                                             <input
                                                 type="text"
+                                                value={tagSearchTerm}
                                                 placeholder="Search tags by name or category..."
                                                 className="w-full h-12 px-4 pr-10 rounded-lg bg-slate-50 border border-border-light text-ink-900 focus:ring-2 focus:ring-primary focus:border-transparent"
-                                                onFocus={(e) => {
-                                                    // Show dropdown on focus
-                                                    const dropdown = e.target.nextElementSibling as HTMLElement;
-                                                    if (dropdown) dropdown.classList.remove('hidden');
+                                                onFocus={() => setShowTagDropdown(true)}
+                                                onBlur={() => {
+                                                    // Delay to allow clicking on dropdown items
+                                                    setTimeout(() => setShowTagDropdown(false), 200);
                                                 }}
-                                                onBlur={(e) => {
-                                                    // Hide dropdown after a delay to allow clicking
-                                                    setTimeout(() => {
-                                                        const dropdown = e.target.nextElementSibling as HTMLElement;
-                                                        if (dropdown) dropdown.classList.add('hidden');
-                                                    }, 200);
-                                                }}
-                                                onChange={(e) => {
-                                                    const searchTerm = e.target.value.toLowerCase();
-                                                    const dropdown = e.target.nextElementSibling as HTMLElement;
-                                                    if (dropdown) {
-                                                        const items = dropdown.querySelectorAll('[data-tag-id]');
-                                                        items.forEach(item => {
-                                                            const text = item.textContent?.toLowerCase() || '';
-                                                            const parent = item.parentElement;
-                                                            if (parent) {
-                                                                if (text.includes(searchTerm) || searchTerm === '') {
-                                                                    parent.classList.remove('hidden');
-                                                                } else {
-                                                                    parent.classList.add('hidden');
-                                                                }
-                                                            }
-                                                        });
-                                                    }
-                                                }}
+                                                onChange={(e) => setTagSearchTerm(e.target.value)}
                                             />
                                             <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-ink-400 text-[20px]">search</span>
 
                                             {/* Tag Dropdown */}
-                                            <div className="absolute z-10 w-full mt-1 bg-white border border-border-light rounded-lg shadow-lg max-h-60 overflow-y-auto hidden">
-                                                {allTags
-                                                    .filter(tag => !krithi.tags?.some(assigned => assigned.id === tag.id))
-                                                    .map(tag => (
-                                                        <button
-                                                            key={tag.id}
-                                                            type="button"
-                                                            data-tag-id={tag.id}
-                                                            onClick={() => {
-                                                                setKrithi(prev => ({
-                                                                    ...prev,
-                                                                    tags: [...(prev.tags || []), tag]
-                                                                }));
-                                                                // Clear search and hide dropdown
-                                                                const input = document.activeElement as HTMLInputElement;
-                                                                if (input) {
-                                                                    input.value = '';
-                                                                    input.blur();
-                                                                }
-                                                            }}
-                                                            className="w-full text-left px-4 py-2 hover:bg-slate-50 transition-colors border-b border-border-light last:border-0"
-                                                        >
-                                                            <div className="flex items-center justify-between">
-                                                                <div className="flex items-center gap-2">
-                                                                    <span className="font-medium text-ink-900">{tag.displayName}</span>
-                                                                    {tag.slug && (
-                                                                        <span className="text-xs text-ink-400 font-mono">#{tag.slug}</span>
-                                                                    )}
+                                            {showTagDropdown && (
+                                                <div className="absolute z-10 w-full mt-1 bg-white border border-border-light rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                                                    {allTags
+                                                        .filter(tag => {
+                                                            // Filter out already assigned tags
+                                                            if (krithi.tags?.some(assigned => assigned.id === tag.id)) {
+                                                                return false;
+                                                            }
+                                                            // Filter by search term
+                                                            if (tagSearchTerm) {
+                                                                const searchLower = tagSearchTerm.toLowerCase();
+                                                                const displayName = tag.displayNameEn || tag.displayName;
+                                                                return displayName.toLowerCase().includes(searchLower) ||
+                                                                       tag.category.toLowerCase().includes(searchLower) ||
+                                                                       (tag.slug && tag.slug.toLowerCase().includes(searchLower));
+                                                            }
+                                                            return true;
+                                                        })
+                                                        .map(tag => (
+                                                            <button
+                                                                key={tag.id}
+                                                                type="button"
+                                                                onMouseDown={(e) => {
+                                                                    // Prevent onBlur from firing before onClick
+                                                                    e.preventDefault();
+                                                                }}
+                                                                onClick={() => {
+                                                                    setKrithi(prev => ({
+                                                                        ...prev,
+                                                                        tags: [...(prev.tags || []), tag]
+                                                                    }));
+                                                                    setTagSearchTerm('');
+                                                                    setShowTagDropdown(false);
+                                                                }}
+                                                                className="w-full text-left px-4 py-2 hover:bg-slate-50 transition-colors border-b border-border-light last:border-0"
+                                                            >
+                                                                <div className="flex items-center justify-between">
+                                                                    <div className="flex items-center gap-2">
+                                                                        <span className="font-medium text-ink-900">{tag.displayNameEn || tag.displayName}</span>
+                                                                        {tag.slug && (
+                                                                            <span className="text-xs text-ink-400 font-mono">#{tag.slug}</span>
+                                                                        )}
+                                                                    </div>
+                                                                    <span className="text-xs text-ink-500 bg-slate-100 px-2 py-0.5 rounded">{tag.category}</span>
                                                                 </div>
-                                                                <span className="text-xs text-ink-500 bg-slate-100 px-2 py-0.5 rounded">{tag.category}</span>
-                                                            </div>
-                                                        </button>
-                                                    ))}
-                                                {allTags.filter(tag => !krithi.tags?.some(assigned => assigned.id === tag.id)).length === 0 && (
-                                                    <div className="px-4 py-2 text-sm text-ink-500">No available tags to add</div>
-                                                )}
-                                            </div>
+                                                            </button>
+                                                        ))}
+                                                    {allTags.filter(tag => {
+                                                        if (krithi.tags?.some(assigned => assigned.id === tag.id)) return false;
+                                                        if (tagSearchTerm) {
+                                                            const searchLower = tagSearchTerm.toLowerCase();
+                                                            const displayName = tag.displayNameEn || tag.displayName;
+                                                            return displayName.toLowerCase().includes(searchLower) ||
+                                                                   tag.category.toLowerCase().includes(searchLower) ||
+                                                                   (tag.slug && tag.slug.toLowerCase().includes(searchLower));
+                                                        }
+                                                        return true;
+                                                    }).length === 0 && (
+                                                        <div className="px-4 py-2 text-sm text-ink-500">No available tags to add</div>
+                                                    )}
+                                                </div>
+                                            )}
                                         </div>
                                         <p className="text-xs text-ink-500">Tags are from a controlled vocabulary. Search and select to add.</p>
                                     </div>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         )}
 
-                        {/* 2.5 NOTATION TAB */}
+                        {/* 4. NOTATION TAB (conditional) */}
                         {activeTab === 'Notation' && krithiId && (
                             <NotationTab krithiId={krithiId} musicalForm={krithi.musicalForm as MusicalForm} />
                         )}

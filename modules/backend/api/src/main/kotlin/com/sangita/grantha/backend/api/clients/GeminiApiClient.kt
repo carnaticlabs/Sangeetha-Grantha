@@ -9,6 +9,7 @@ import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
@@ -21,33 +22,37 @@ import kotlinx.serialization.json.put
 import org.slf4j.LoggerFactory
 import java.nio.file.Paths
 
-class GeminiApiClient {
+class GeminiApiClient(
+    private val apiKey: String
+) {
     @PublishedApi
     internal val logger = LoggerFactory.getLogger(javaClass)
-    private val apiKey: String
     private val client: HttpClient
+    
+    // Reusable Json instance to avoid redundant creation
+    @PublishedApi
+    internal val json = Json {
+        ignoreUnknownKeys = true
+        encodeDefaults = true
+        prettyPrint = true
+    }
 
     init {
-        // Simple loading strategy similar to DatabaseConfigLoader
-        // In a real app we might want to extend ConfigLoader to support generic keys,
-        // but for now we look for env var or fallback.
-        val env = System.getenv()
-        apiKey = env["SG_GEMINI_API_KEY"]
-            ?: env["GEMINI_API_KEY"]
-            ?: throw IllegalStateException("GEMINI_API_KEY not configured")
+        logger.info("Initializing GeminiApiClient with key: '${apiKey.take(4)}...' (Length: ${apiKey.length})")
+        if (apiKey.isBlank()) {
+           logger.warn("GEMINI_API_KEY is not configured or blank. Gemini features will fail.")
+        }
 
         client = HttpClient(CIO) {
             install(ContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                    encodeDefaults = true
-                    prettyPrint = true
-                })
+                json(this@GeminiApiClient.json)
             }
             defaultRequest {
-                url("https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=$apiKey")
+                // Using gemini-2.0-flash as confirmed by available models list
+                url("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$apiKey")
                 contentType(ContentType.Application.Json)
             }
+            expectSuccess = false // We handle errors manually to log the body
         }
     }
 
@@ -59,10 +64,18 @@ class GeminiApiClient {
         )
 
         try {
-            val response: GeminiResponse = client.post("") {
+            val response = client.post("") {
                 setBody(request)
-            }.body()
-            return response.candidates.firstOrNull()?.content?.parts?.firstOrNull()?.text.orEmpty()
+            }
+            val bodyText = response.bodyAsText()
+
+            if (response.status.value >= 400) {
+                logger.error("Gemini API Error: Status ${response.status}, Body: $bodyText")
+                throw RuntimeException("Gemini API request failed with status ${response.status}: $bodyText")
+            }
+
+            val parsedResponse = json.decodeFromString<GeminiResponse>(bodyText)
+            return parsedResponse.candidates.firstOrNull()?.content?.parts?.firstOrNull()?.text.orEmpty()
         } catch (e: Exception) {
             logger.error("Failed to generate content from Gemini", e)
             throw e
@@ -87,7 +100,7 @@ class GeminiApiClient {
         val cleanedJson = rawJson.replace("```json", "").replace("```", "").trim()
 
         return try {
-            Json { ignoreUnknownKeys = true }.decodeFromString<T>(cleanedJson)
+            json.decodeFromString<T>(cleanedJson)
         } catch (e: Exception) {
             logger.error("Failed to parse structured response. Raw content: $cleanedJson", e)
             throw e
@@ -120,5 +133,5 @@ data class GeminiResponse(
 data class Candidate(
     val content: Content,
     val finishReason: String? = null,
-    val index: Int
+    val index: Int = 0
 )

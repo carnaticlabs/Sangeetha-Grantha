@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
 @Serializable
-enum class ImportStatusDto { PENDING, IN_REVIEW, MAPPED, REJECTED, DISCARDED }
+enum class ImportStatusDto { PENDING, IN_REVIEW, APPROVED, MAPPED, REJECTED, DISCARDED }
 
 @Serializable
 data class ImportSourceDto(

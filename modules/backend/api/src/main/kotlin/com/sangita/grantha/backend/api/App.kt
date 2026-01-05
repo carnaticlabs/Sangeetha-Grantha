@@ -1,6 +1,7 @@
 package com.sangita.grantha.backend.api
 
 import com.sangita.grantha.backend.api.config.ApiEnvironmentLoader
+import com.sangita.grantha.backend.api.config.LogbackConfig
 import com.sangita.grantha.backend.api.plugins.configureCors
 import com.sangita.grantha.backend.api.plugins.configureRequestLogging
 import com.sangita.grantha.backend.api.plugins.configureRouting
@@ -27,9 +28,14 @@ private val logger = LoggerFactory.getLogger("SangitaAPI")
 
 fun main() {
     val env = ApiEnvironmentLoader.load()
+    LogbackConfig.configure(env)
     logger.info("Starting Sangita Grantha API (env: {})", env.environment)
-
-    DatabaseFactory.connectFromExternal(env.databaseConfigPath)
+    logger.info("Loaded Gemini API Key: ${env.geminiApiKey?.take(4)}... (Length: ${env.geminiApiKey?.length ?: 0})")
+    
+    if (env.database == null) {
+        throw IllegalStateException("Database configuration is missing")
+    }
+    DatabaseFactory.connect(env.database)
     val dal = SangitaDal()
     val krithiService = KrithiService(dal)
     val notationService = KrithiNotationService(dal)
@@ -39,7 +45,7 @@ fun main() {
     val dashboardService = com.sangita.grantha.backend.api.services.AdminDashboardService(dal)
 
     // AI Services
-    val geminiApiClient = GeminiApiClient()
+    val geminiApiClient = GeminiApiClient(env.geminiApiKey ?: "")
     val transliterationService = TransliterationService(geminiApiClient)
     val webScrapingService = WebScrapingService(geminiApiClient)
 

@@ -59,6 +59,7 @@ enum class RagaSection(override val dbValue: String) : DbEnum {
 enum class ImportStatus(override val dbValue: String) : DbEnum {
     PENDING("pending"),
     IN_REVIEW("in_review"),
+    APPROVED("approved"),
     MAPPED("mapped"),
     REJECTED("rejected"),
     DISCARDED("discarded");

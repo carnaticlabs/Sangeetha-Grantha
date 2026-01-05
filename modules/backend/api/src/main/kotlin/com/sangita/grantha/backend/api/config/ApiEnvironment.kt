@@ -1,9 +1,14 @@
 package com.sangita.grantha.backend.api.config
 
-import com.sangita.grantha.backend.dal.support.TomlConfig
+import com.sangita.grantha.backend.dal.support.DatabaseConfig
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+
+data class StorageConfig(
+    val uploadDirectory: String,
+    val publicBaseUrl: String
+)
 
 data class ApiEnvironment(
     val environment: Environment = Environment.DEV,
@@ -11,7 +16,9 @@ data class ApiEnvironment(
     val port: Int = 8080,
     val adminToken: String = "dev-admin-token",
     val tokenTtlSeconds: Long = 3600,
-    val databaseConfigPath: Path? = null,
+    val geminiApiKey: String? = null,
+    val database: DatabaseConfig? = null,
+    val storage: StorageConfig? = null,
     val corsAllowedOrigins: List<String> = listOf(
         "http://localhost:5173",
         "http://localhost:5001"
@@ -25,28 +32,72 @@ enum class Environment {
 }
 
 object ApiEnvironmentLoader {
-    private val defaultConfigPath = Paths.get("config/application.local.toml")
 
-    fun load(env: Map<String, String> = System.getenv()): ApiEnvironment {
-        val environment = parseEnvironment(env)
-        val configPath = resolveConfigPath(env)
+    fun load(sysEnv: Map<String, String> = System.getenv()): ApiEnvironment {
+        val environment = parseEnvironment(sysEnv)
 
-        val backendSettings = configPath?.let { TomlConfig.readSection(it, "backend") } ?: emptyMap()
+        // Load .env using idiomatic Kotlin API
+        val filename = when (environment) {
+            Environment.DEV -> ".env.development"
+            Environment.TEST -> ".env.test"
+            Environment.PROD -> ".env.production"
+        }
 
-        val host = env["API_HOST"]?.takeUnless { it.isBlank() }
-            ?: backendSettings["host"]
-            ?: "0.0.0.0"
-        val port = env["API_PORT"]?.toIntOrNull()
-            ?: backendSettings["port"]?.toIntOrNull()
-            ?: 8080
-        val adminToken = env["ADMIN_TOKEN"]?.takeUnless { it.isBlank() }
-            ?: backendSettings["admin_token"]
-            ?: "dev-admin-token"
-        val tokenTtlSeconds = env["TOKEN_TTL_SECONDS"]?.toLongOrNull()
-            ?: backendSettings["token_ttl_seconds"]?.toLongOrNull()
-            ?: 3600L
-        val corsAllowedOrigins = parseCorsOrigins(env["CORS_ALLOWED_ORIGINS"])
-        val frontendPort = env["FRONTEND_PORT"]?.toIntOrNull() ?: 5001
+        val dotenv = io.github.cdimascio.dotenv.dotenv {
+            directory = "./config"
+            this.filename = filename
+            ignoreIfMissing = true
+        }
+
+        // We will create a map merging strategies:
+        // System Env > .env.development > TOML (legacy/fallback)
+        val combinedEnv = HashMap<String, String>()
+
+        // 2. Add from Dotenv (middle priority)
+        // 2. Add from Dotenv (middle priority)
+        dotenv.entries().forEach { combinedEnv[it.key] = it.value }
+
+        // 3. Add System Env (highest priority)
+        sysEnv.forEach { (k, v) -> combinedEnv[k] = v }
+        
+        // Helper to get value
+        fun get(key: String, fallback: String? = null): String? {
+             return combinedEnv[key]?.takeIf { it.isNotBlank() } ?: fallback
+        }
+
+        val host = get("API_HOST", "0.0.0.0")!!
+        val port = get("API_PORT", "8080")?.toIntOrNull() ?: 8080
+        val adminToken = get("ADMIN_TOKEN", "dev-admin-token")!!
+        val tokenTtlSeconds = get("TOKEN_TTL_SECONDS", "3600")?.toLongOrNull() ?: 3600L
+        
+        // Gemini API Key lookup
+        val geminiApiKey = get("SG_GEMINI_API_KEY") ?: get("GEMINI_API_KEY")
+
+        val corsAllowedOrigins = parseCorsOrigins(get("CORS_ALLOWED_ORIGINS"))
+        val frontendPort = get("FRONTEND_PORT", "5173")?.toIntOrNull() ?: 5173
+
+        // Database Config
+        val dbHost = get("DB_HOST", "localhost")!!
+        val dbPort = get("DB_PORT", "5432")?.toIntOrNull() ?: 5432
+        val dbName = get("DB_NAME", "sangita_grantha")!!
+        val dbUser = get("DB_USER", "postgres")!!
+        val dbPassword = get("DB_PASSWORD", "postgres")!!
+        val dbSchema = get("DB_SCHEMA")
+
+        val jdbcUrl = "jdbc:postgresql://$dbHost:$dbPort/$dbName"
+
+        val databaseConfig = DatabaseConfig(
+            jdbcUrl = jdbcUrl,
+            username = dbUser,
+            password = dbPassword,
+            schema = dbSchema
+        )
+
+        // Storage Config
+        val storageConfig = StorageConfig(
+            uploadDirectory = get("STORAGE_UPLOAD_DIR", "uploads")!!,
+            publicBaseUrl = get("STORAGE_PUBLIC_URL", "http://localhost:$port/uploads")!!
+        )
 
         return ApiEnvironment(
             environment = environment,
@@ -54,7 +105,9 @@ object ApiEnvironmentLoader {
             port = port,
             adminToken = adminToken,
             tokenTtlSeconds = tokenTtlSeconds,
-            databaseConfigPath = configPath,
+            geminiApiKey = geminiApiKey,
+            database = databaseConfig,
+            storage = storageConfig,
             corsAllowedOrigins = corsAllowedOrigins,
             frontendPort = frontendPort,
             backendPort = port
@@ -72,16 +125,8 @@ object ApiEnvironmentLoader {
             else -> Environment.DEV
         }
     }
-
-    private fun resolveConfigPath(env: Map<String, String>): Path? {
-        val explicit = env["SG_APP_CONFIG_PATH"]
-            ?.takeIf { it.isNotBlank() }
-            ?.let { Paths.get(it) }
-        if (explicit != null && Files.exists(explicit)) return explicit
-
-        val fallback = TomlConfig.findConfigFile(defaultConfigPath)
-        return fallback?.takeIf { Files.exists(it) }
-    }
+    
+    // Config path resolver removed as we strictly use .env now
 
     private fun parseCorsOrigins(origins: String?): List<String> {
         if (origins.isNullOrBlank()) {
@@ -92,5 +137,5 @@ object ApiEnvironmentLoader {
         }
         return origins.split(",").map { it.trim() }.filter { it.isNotBlank() }
     }
-
 }
+

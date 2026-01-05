@@ -156,7 +156,15 @@ export interface Deity {
   updatedAt: string;
 }
 
-export interface Tag { id: string; category: string; displayName: string; slug?: string; }
+export interface Tag { 
+    id: string; 
+    category: string; 
+    displayName: string; 
+    displayNameEn: string; // Backend field name
+    slug: string; 
+    descriptionEn?: string | null;
+    createdAt: string;
+}
 export interface Sampradaya { id: string; name: string; type: string; }
 
 export interface Temple {
@@ -249,11 +257,27 @@ export interface NotationResponse {
 
 export interface ImportedKrithi {
   id: string;
+  importSourceId: string;
   sourceKey: string | null;
   rawTitle: string | null;
+  rawLyrics: string | null;
   rawComposer: string | null;
   rawRaga: string | null;
   rawTala: string | null;
-  importStatus: 'PENDING' | 'IMPORTED' | 'REJECTED';
+  rawDeity: string | null;
+  rawTemple: string | null;
+  rawLanguage: string | null;
+  parsedPayload: string | null;
+  importStatus: 'PENDING' | 'IN_REVIEW' | 'APPROVED' | 'MAPPED' | 'REJECTED' | 'DISCARDED';
+  mappedKrithiId: string | null;
+  reviewerUserId: string | null;
+  reviewerNotes: string | null;
+  reviewedAt: string | null;
   createdAt: string;
+}
+
+export interface ImportReviewRequest {
+  status: 'PENDING' | 'IN_REVIEW' | 'MAPPED' | 'REJECTED' | 'DISCARDED';
+  mappedKrithiId?: string | null;
+  reviewerNotes?: string | null;
 }
