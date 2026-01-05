@@ -2,15 +2,20 @@ package com.sangita.grantha.backend.api.services
 
 import com.sangita.grantha.backend.api.models.KrithiCreateRequest
 import com.sangita.grantha.backend.api.models.KrithiUpdateRequest
+import com.sangita.grantha.backend.api.models.LyricVariantCreateRequest
+import com.sangita.grantha.backend.api.models.LyricVariantUpdateRequest
+import com.sangita.grantha.backend.api.models.LyricVariantSectionRequest
 import com.sangita.grantha.backend.dal.SangitaDal
 import com.sangita.grantha.backend.dal.enums.LanguageCode
 import com.sangita.grantha.backend.dal.enums.MusicalForm
+import com.sangita.grantha.backend.dal.enums.ScriptCode
 import com.sangita.grantha.backend.dal.enums.WorkflowState
 import com.sangita.grantha.backend.dal.repositories.KrithiSearchFilters
 import com.sangita.grantha.shared.domain.model.KrithiDto
 import com.sangita.grantha.shared.domain.model.KrithiSearchRequest
 import com.sangita.grantha.shared.domain.model.KrithiSearchResult
 import com.sangita.grantha.shared.domain.model.KrithiSectionDto
+import com.sangita.grantha.shared.domain.model.KrithiLyricVariantDto
 import com.sangita.grantha.shared.domain.model.KrithiLyricVariantWithSectionsDto
 import com.sangita.grantha.shared.domain.model.TagDto
 import java.util.UUID
@@ -131,6 +136,88 @@ class KrithiService(private val dal: SangitaDal) {
             action = "UPDATE_KRITHI_SECTIONS",
             entityTable = "krithi_sections",
             entityId = id
+        )
+    }
+
+    suspend fun createLyricVariant(
+        krithiId: Uuid,
+        request: LyricVariantCreateRequest
+    ): KrithiLyricVariantDto {
+        // Verify krithi exists
+        val krithi = dal.krithis.findById(krithiId) 
+            ?: throw NoSuchElementException("Krithi not found")
+        
+        val sampradayaId = request.sampradayaId?.let { parseUuidOrThrow(it, "sampradayaId") }
+        
+        val created = dal.krithis.createLyricVariant(
+            krithiId = krithiId,
+            language = LanguageCode.valueOf(request.language.name),
+            script = ScriptCode.valueOf(request.script.name),
+            transliterationScheme = request.transliterationScheme,
+            sampradayaId = sampradayaId,
+            variantLabel = request.variantLabel,
+            sourceReference = request.sourceReference,
+            lyrics = request.lyrics,
+            isPrimary = request.isPrimary,
+            createdByUserId = null, // TODO: Extract from auth context
+            updatedByUserId = null
+        )
+        
+        dal.auditLogs.append(
+            action = "CREATE_LYRIC_VARIANT",
+            entityTable = "krithi_lyric_variants",
+            entityId = created.id
+        )
+        
+        return created
+    }
+
+    suspend fun updateLyricVariant(
+        variantId: Uuid,
+        request: LyricVariantUpdateRequest
+    ): KrithiLyricVariantDto {
+        val sampradayaId = request.sampradayaId?.let { parseUuidOrThrow(it, "sampradayaId") }
+        
+        val updated = dal.krithis.updateLyricVariant(
+            variantId = variantId,
+            language = request.language?.let { LanguageCode.valueOf(it.name) },
+            script = request.script?.let { ScriptCode.valueOf(it.name) },
+            transliterationScheme = request.transliterationScheme,
+            sampradayaId = sampradayaId,
+            variantLabel = request.variantLabel,
+            sourceReference = request.sourceReference,
+            lyrics = request.lyrics,
+            isPrimary = request.isPrimary,
+            updatedByUserId = null // TODO: Extract from auth context
+        ) ?: throw NoSuchElementException("Lyric variant not found")
+        
+        dal.auditLogs.append(
+            action = "UPDATE_LYRIC_VARIANT",
+            entityTable = "krithi_lyric_variants",
+            entityId = updated.id
+        )
+        
+        return updated
+    }
+
+    suspend fun saveLyricVariantSections(
+        variantId: Uuid,
+        sections: List<LyricVariantSectionRequest>
+    ) {
+        // Verify variant exists
+        val variant = dal.krithis.findLyricVariantById(variantId)
+            ?: throw NoSuchElementException("Lyric variant not found")
+        
+        val sectionsData = sections.map { 
+            parseUuidOrThrow(it.sectionId, "sectionId") to it.text 
+        }
+        
+        dal.krithis.saveLyricVariantSections(variantId, sectionsData)
+        
+        dal.auditLogs.append(
+            action = "UPDATE_LYRIC_VARIANT_SECTIONS",
+            entityTable = "krithi_lyric_sections",
+            entityId = variantId
         )
     }
 

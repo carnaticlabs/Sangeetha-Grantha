@@ -17,7 +17,7 @@ import io.ktor.server.routing.put
 import io.ktor.server.routing.route
 
 fun Route.adminNotationRoutes(notationService: KrithiNotationService) {
-    route("/v1") {
+    route("/v1/admin") {
         post("/krithis/{id}/notation/variants") {
             val id = parseUuidParam(call.parameters["id"], "krithiId")
                 ?: return@post call.respondText("Missing krithi ID", status = HttpStatusCode.BadRequest)

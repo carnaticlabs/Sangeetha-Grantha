@@ -1,0 +1,113 @@
+package com.sangita.grantha.backend.api.services
+
+import com.sangita.grantha.backend.api.models.UserCreateRequest
+import com.sangita.grantha.backend.api.models.UserUpdateRequest
+import com.sangita.grantha.backend.dal.SangitaDal
+import com.sangita.grantha.shared.domain.model.UserDto
+import com.sangita.grantha.shared.domain.model.RoleAssignmentDto
+import java.util.UUID
+import kotlin.uuid.Uuid
+
+class UserManagementService(private val dal: SangitaDal) {
+    suspend fun listUsers(): List<UserDto> = dal.users.listAll()
+
+    suspend fun getUser(id: Uuid): UserDto? = dal.users.findById(id)
+
+    suspend fun createUser(request: UserCreateRequest): UserDto {
+        // TODO: Implement password hashing (e.g., using bcrypt)
+        val passwordHash = request.password?.let { hashPassword(it) }
+        
+        val created = dal.users.create(
+            email = request.email,
+            fullName = request.fullName,
+            displayName = request.displayName,
+            passwordHash = passwordHash,
+            isActive = request.isActive
+        )
+        
+        // Assign initial roles
+        if (request.roleCodes.isNotEmpty()) {
+            request.roleCodes.forEach { roleCode ->
+                dal.users.assignRole(created.id, roleCode)
+            }
+        }
+        
+        dal.auditLogs.append(
+            action = "CREATE_USER",
+            entityTable = "users",
+            entityId = created.id
+        )
+        
+        return created
+    }
+
+    suspend fun updateUser(id: Uuid, request: UserUpdateRequest): UserDto? {
+        // TODO: Implement password hashing (e.g., using bcrypt)
+        val passwordHash = request.password?.let { hashPassword(it) }
+        
+        val updated = dal.users.update(
+            id = id,
+            email = request.email,
+            fullName = request.fullName,
+            displayName = request.displayName,
+            passwordHash = passwordHash,
+            isActive = request.isActive
+        )
+        
+        if (updated != null) {
+            dal.auditLogs.append(
+                action = "UPDATE_USER",
+                entityTable = "users",
+                entityId = updated.id
+            )
+        }
+        
+        return updated
+    }
+
+    suspend fun deleteUser(id: Uuid): Boolean {
+        val deleted = dal.users.delete(id)
+        
+        if (deleted) {
+            dal.auditLogs.append(
+                action = "DELETE_USER",
+                entityTable = "users",
+                entityId = id
+            )
+        }
+        
+        return deleted
+    }
+
+    suspend fun assignRole(userId: Uuid, roleCode: String) {
+        val assigned = dal.users.assignRole(userId, roleCode)
+        if (assigned) {
+            dal.auditLogs.append(
+                action = "ASSIGN_ROLE",
+                entityTable = "role_assignments",
+                entityId = userId
+            )
+        }
+    }
+
+    suspend fun removeRole(userId: Uuid, roleCode: String): Boolean {
+        val removed = dal.users.removeRole(userId, roleCode)
+        if (removed) {
+            dal.auditLogs.append(
+                action = "REMOVE_ROLE",
+                entityTable = "role_assignments",
+                entityId = userId
+            )
+        }
+        return removed
+    }
+
+    suspend fun getUserRoles(userId: Uuid): List<RoleAssignmentDto> = dal.users.getUserRoles(userId)
+
+    private fun hashPassword(password: String): String {
+        // TODO: Implement proper password hashing (e.g., bcrypt)
+        // For now, return as-is (NOT SECURE - must be implemented before production)
+        return password
+    }
+}
+

@@ -8,6 +8,8 @@ import KrithiEditor from './pages/KrithiEditor';
 import ReferenceData from './pages/ReferenceData';
 import ImportsPage from './pages/ImportsPage';
 import TagsPage from './pages/TagsPage';
+import UsersPage from './pages/UsersPage';
+import RolesPage from './pages/RolesPage';
 
 // Default admin token for development (matches backend default)
 const DEFAULT_ADMIN_TOKEN = 'dev-admin-token';
@@ -39,6 +41,8 @@ const App: React.FC = () => {
               <Route path="/reference" element={<ReferenceData />} />
               <Route path="/imports" element={<ImportsPage />} />
               <Route path="/tags" element={<TagsPage />} />
+              <Route path="/users" element={<UsersPage />} />
+              <Route path="/roles" element={<RolesPage />} />
               {/* Fallback for other routes */}
               <Route path="*" element={
                 <div className="flex flex-col items-center justify-center h-full text-ink-500">

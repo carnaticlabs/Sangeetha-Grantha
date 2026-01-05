@@ -3,6 +3,7 @@ package com.sangita.grantha.backend.dal.repositories
 import com.sangita.grantha.backend.dal.DatabaseFactory
 import com.sangita.grantha.backend.dal.enums.LanguageCode
 import com.sangita.grantha.backend.dal.enums.MusicalForm
+import com.sangita.grantha.backend.dal.enums.ScriptCode
 import com.sangita.grantha.backend.dal.enums.WorkflowState
 import com.sangita.grantha.backend.dal.models.toKrithiDto
 import com.sangita.grantha.backend.dal.models.toKrithiSectionDto
@@ -233,6 +234,118 @@ class KrithiRepository {
                 variant = variant,
                 sections = sections[variant.id] ?: emptyList()
             )
+        }
+    }
+
+    suspend fun findLyricVariantById(variantId: Uuid): KrithiLyricVariantDto? = DatabaseFactory.dbQuery {
+        KrithiLyricVariantsTable
+            .selectAll()
+            .where { KrithiLyricVariantsTable.id eq variantId.toJavaUuid() }
+            .map { it.toKrithiLyricVariantDto() }
+            .singleOrNull()
+    }
+
+    suspend fun createLyricVariant(
+        krithiId: Uuid,
+        language: LanguageCode,
+        script: ScriptCode,
+        transliterationScheme: String? = null,
+        sampradayaId: UUID? = null,
+        variantLabel: String? = null,
+        sourceReference: String? = null,
+        lyrics: String,
+        isPrimary: Boolean = false,
+        createdByUserId: UUID? = null,
+        updatedByUserId: UUID? = null
+    ): KrithiLyricVariantDto = DatabaseFactory.dbQuery {
+        val now = OffsetDateTime.now(ZoneOffset.UTC)
+        val variantId = UUID.randomUUID()
+        
+        KrithiLyricVariantsTable.insert {
+            it[id] = variantId
+            it[KrithiLyricVariantsTable.krithiId] = krithiId.toJavaUuid()
+            it[KrithiLyricVariantsTable.language] = language
+            it[KrithiLyricVariantsTable.script] = script
+            it[KrithiLyricVariantsTable.transliterationScheme] = transliterationScheme
+            it[KrithiLyricVariantsTable.sampradayaId] = sampradayaId
+            it[KrithiLyricVariantsTable.variantLabel] = variantLabel
+            it[KrithiLyricVariantsTable.sourceReference] = sourceReference
+            it[KrithiLyricVariantsTable.lyrics] = lyrics
+            it[KrithiLyricVariantsTable.isPrimary] = isPrimary
+            it[KrithiLyricVariantsTable.createdByUserId] = createdByUserId
+            it[KrithiLyricVariantsTable.updatedByUserId] = updatedByUserId
+            it[KrithiLyricVariantsTable.createdAt] = now
+            it[KrithiLyricVariantsTable.updatedAt] = now
+        }
+        
+        KrithiLyricVariantsTable
+            .selectAll()
+            .where { KrithiLyricVariantsTable.id eq variantId }
+            .map { it.toKrithiLyricVariantDto() }
+            .single()
+    }
+
+    suspend fun updateLyricVariant(
+        variantId: Uuid,
+        language: LanguageCode? = null,
+        script: ScriptCode? = null,
+        transliterationScheme: String? = null,
+        sampradayaId: UUID? = null,
+        variantLabel: String? = null,
+        sourceReference: String? = null,
+        lyrics: String? = null,
+        isPrimary: Boolean? = null,
+        updatedByUserId: UUID? = null
+    ): KrithiLyricVariantDto? = DatabaseFactory.dbQuery {
+        val now = OffsetDateTime.now(ZoneOffset.UTC)
+        val javaVariantId = variantId.toJavaUuid()
+        val updated = KrithiLyricVariantsTable.update({ KrithiLyricVariantsTable.id eq javaVariantId }) {
+            language?.let { value -> it[KrithiLyricVariantsTable.language] = value }
+            script?.let { value -> it[KrithiLyricVariantsTable.script] = value }
+            transliterationScheme?.let { value -> it[KrithiLyricVariantsTable.transliterationScheme] = value }
+            sampradayaId?.let { value -> it[KrithiLyricVariantsTable.sampradayaId] = value }
+            variantLabel?.let { value -> it[KrithiLyricVariantsTable.variantLabel] = value }
+            sourceReference?.let { value -> it[KrithiLyricVariantsTable.sourceReference] = value }
+            lyrics?.let { value -> it[KrithiLyricVariantsTable.lyrics] = value }
+            isPrimary?.let { value -> it[KrithiLyricVariantsTable.isPrimary] = value }
+            updatedByUserId?.let { value -> it[KrithiLyricVariantsTable.updatedByUserId] = value }
+            it[KrithiLyricVariantsTable.updatedAt] = now
+        }
+        
+        if (updated == 0) {
+            return@dbQuery null
+        }
+        
+        KrithiLyricVariantsTable
+            .selectAll()
+            .where { KrithiLyricVariantsTable.id eq javaVariantId }
+            .map { it.toKrithiLyricVariantDto() }
+            .singleOrNull()
+    }
+
+    suspend fun saveLyricVariantSections(
+        variantId: Uuid,
+        sections: List<Pair<UUID, String>> // (sectionId, text)
+    ) = DatabaseFactory.dbQuery {
+        val now = OffsetDateTime.now(ZoneOffset.UTC)
+        val javaVariantId = variantId.toJavaUuid()
+        
+        // Delete existing sections for this variant
+        KrithiLyricSectionsTable.deleteWhere { 
+            KrithiLyricSectionsTable.lyricVariantId eq javaVariantId 
+        }
+        
+        // Insert new sections
+        if (sections.isNotEmpty()) {
+            KrithiLyricSectionsTable.batchInsert(sections) { (sectionId, text) ->
+                this[KrithiLyricSectionsTable.id] = UUID.randomUUID()
+                this[KrithiLyricSectionsTable.lyricVariantId] = javaVariantId
+                this[KrithiLyricSectionsTable.sectionId] = sectionId
+                this[KrithiLyricSectionsTable.text] = text
+                this[KrithiLyricSectionsTable.normalizedText] = null // Can be computed later if needed
+                this[KrithiLyricSectionsTable.createdAt] = now
+                this[KrithiLyricSectionsTable.updatedAt] = now
+            }
         }
     }
 

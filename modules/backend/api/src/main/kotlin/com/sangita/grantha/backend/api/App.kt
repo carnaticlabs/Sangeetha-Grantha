@@ -43,6 +43,7 @@ fun main() {
     val importService = ImportService(dal)
     val auditLogService = AuditLogService(dal)
     val dashboardService = com.sangita.grantha.backend.api.services.AdminDashboardService(dal)
+    val userManagementService = com.sangita.grantha.backend.api.services.UserManagementService(dal)
 
     // AI Services
     val geminiApiClient = GeminiApiClient(env.geminiApiKey ?: "")
@@ -63,7 +64,8 @@ fun main() {
             auditLogService,
             dashboardService,
             transliterationService,
-            webScrapingService
+            webScrapingService,
+            userManagementService
         )
 
         monitor.subscribe(ApplicationStopping) {

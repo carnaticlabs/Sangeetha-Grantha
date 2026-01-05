@@ -22,6 +22,8 @@ import com.sangita.grantha.backend.dal.tables.SampradayasTable
 import com.sangita.grantha.backend.dal.tables.TagsTable
 import com.sangita.grantha.backend.dal.tables.TalasTable
 import com.sangita.grantha.backend.dal.tables.TemplesTable
+import com.sangita.grantha.backend.dal.tables.UsersTable
+import com.sangita.grantha.backend.dal.tables.RoleAssignmentsTable
 import com.sangita.grantha.shared.domain.model.ComposerDto
 import com.sangita.grantha.shared.domain.model.DeityDto
 import com.sangita.grantha.shared.domain.model.AuditLogDto
@@ -45,6 +47,8 @@ import com.sangita.grantha.shared.domain.model.TagCategoryDto
 import com.sangita.grantha.shared.domain.model.TagDto
 import com.sangita.grantha.shared.domain.model.TalaDto
 import com.sangita.grantha.shared.domain.model.TempleDto
+import com.sangita.grantha.shared.domain.model.UserDto
+import com.sangita.grantha.shared.domain.model.RoleAssignmentDto
 import com.sangita.grantha.shared.domain.model.WorkflowStateDto
 import kotlin.uuid.ExperimentalUuidApi
 import org.jetbrains.exposed.v1.core.ResultRow
@@ -279,3 +283,21 @@ fun ScriptCode.toDto(): ScriptCodeDto = ScriptCodeDto.valueOf(name)
 fun ImportStatus.toDto(): ImportStatusDto = ImportStatusDto.valueOf(name)
 
 fun MusicalForm.toDto(): MusicalFormDto = MusicalFormDto.valueOf(name)
+
+@OptIn(ExperimentalUuidApi::class)
+fun ResultRow.toUserDto(): UserDto = UserDto(
+    id = this[UsersTable.id].value.toKotlinUuid(),
+    email = this[UsersTable.email],
+    fullName = this[UsersTable.fullName],
+    displayName = this[UsersTable.displayName],
+    isActive = this[UsersTable.isActive],
+    createdAt = this.kotlinInstant(UsersTable.createdAt),
+    updatedAt = this.kotlinInstant(UsersTable.updatedAt)
+)
+
+@OptIn(ExperimentalUuidApi::class)
+fun ResultRow.toRoleAssignmentDto(): RoleAssignmentDto = RoleAssignmentDto(
+    userId = this[RoleAssignmentsTable.userId].toKotlinUuid(),
+    roleCode = this[RoleAssignmentsTable.roleCode],
+    assignedAt = this.kotlinInstant(RoleAssignmentsTable.assignedAt)
+)

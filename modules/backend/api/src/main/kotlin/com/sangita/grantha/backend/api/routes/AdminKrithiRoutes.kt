@@ -3,6 +3,9 @@ package com.sangita.grantha.backend.api.routes
 import com.sangita.grantha.backend.api.models.KrithiCreateRequest
 import com.sangita.grantha.backend.api.models.KrithiUpdateRequest
 import com.sangita.grantha.backend.api.models.SaveKrithiSectionsRequest
+import com.sangita.grantha.backend.api.models.LyricVariantCreateRequest
+import com.sangita.grantha.backend.api.models.LyricVariantUpdateRequest
+import com.sangita.grantha.backend.api.models.SaveLyricVariantSectionsRequest
 import com.sangita.grantha.backend.api.services.KrithiService
 import com.sangita.grantha.backend.api.services.TransliterationService
 import com.sangita.grantha.shared.domain.model.TransliterationRequest
@@ -25,15 +28,14 @@ fun Route.adminKrithiRoutes(
     krithiService: KrithiService,
     transliterationService: TransliterationService
 ) {
-    route("/v1") {
-        // Existing routes (keeping them to avoid breaking changes, assuming they are used)
-        post("/krithis") {
+    route("/v1/admin/krithis") {
+        post {
             val request = call.receive<KrithiCreateRequest>()
             val created = krithiService.createKrithi(request)
             call.respond(HttpStatusCode.Created, created)
         }
 
-        put("/krithis/{id}") {
+        put("/{id}") {
             val id = parseUuidParam(call.parameters["id"], "krithiId")
                 ?: return@put call.respondText("Missing krithi ID", status = HttpStatusCode.BadRequest)
             val request = call.receive<KrithiUpdateRequest>()
@@ -41,9 +43,8 @@ fun Route.adminKrithiRoutes(
             call.respond(updated)
         }
 
-        // New AI-powered admin routes
-        route("/admin/krithis") {
-             post("/{id}/transliterate") {
+        // AI-powered admin routes
+        post("/{id}/transliterate") {
                  val id = parseUuidParam(call.parameters["id"], "krithiId")
                  // We expect the client to send the content to be transliterated.
                  // If the client sends empty content, we could fetch from DB (future enhancement),
@@ -59,7 +60,7 @@ fun Route.adminKrithiRoutes(
                  call.respond(TransliterationResponse(result, request.targetScript))
              }
 
-             post("/{id}/validate") {
+        post("/{id}/validate") {
                  val id = parseUuidParam(call.parameters["id"], "krithiId")
                  val request = call.receiveNullable<ValidateKrithiRequest>() ?: ValidateKrithiRequest()
                  
@@ -68,34 +69,59 @@ fun Route.adminKrithiRoutes(
                  call.respond(ValidationResult(isValid = true, issues = listOf("Validation service not yet fully implemented")))
              }
 
-             get("/{id}/sections") {
+        get("/{id}/sections") {
                  val id = parseUuidParam(call.parameters["id"], "krithiId")
                      ?: return@get call.respondText("Missing krithi ID", status = HttpStatusCode.BadRequest)
                  val sections = krithiService.getKrithiSections(id)
                  call.respond(sections)
              }
 
-             get("/{id}/variants") {
+        get("/{id}/variants") {
                  val id = parseUuidParam(call.parameters["id"], "krithiId")
                      ?: return@get call.respondText("Missing krithi ID", status = HttpStatusCode.BadRequest)
                  val variants = krithiService.getKrithiLyricVariants(id)
                  call.respond(variants)
              }
 
-             get("/{id}/tags") {
+        post("/{id}/variants") {
+                 val id = parseUuidParam(call.parameters["id"], "krithiId")
+                     ?: return@post call.respondText("Missing krithi ID", status = HttpStatusCode.BadRequest)
+                 val request = call.receive<LyricVariantCreateRequest>()
+                 val created = krithiService.createLyricVariant(id, request)
+                 call.respond(HttpStatusCode.Created, created)
+             }
+
+        get("/{id}/tags") {
                  val id = parseUuidParam(call.parameters["id"], "krithiId")
                      ?: return@get call.respondText("Missing krithi ID", status = HttpStatusCode.BadRequest)
                  val tags = krithiService.getKrithiTags(id)
                  call.respond(tags)
              }
 
-             post("/{id}/sections") {
+        post("/{id}/sections") {
                  val id = parseUuidParam(call.parameters["id"], "krithiId")
                      ?: return@post call.respondText("Missing krithi ID", status = HttpStatusCode.BadRequest)
                  val request = call.receive<SaveKrithiSectionsRequest>()
                  krithiService.saveKrithiSections(id, request.sections)
-                 call.respond(HttpStatusCode.NoContent)
-             }
+            call.respond(HttpStatusCode.NoContent)
+        }
+    }
+
+    route("/v1/admin/variants") {
+        put("/{id}") {
+            val id = parseUuidParam(call.parameters["id"], "variantId")
+                ?: return@put call.respondText("Missing variant ID", status = HttpStatusCode.BadRequest)
+            val request = call.receive<LyricVariantUpdateRequest>()
+            val updated = krithiService.updateLyricVariant(id, request)
+            call.respond(updated)
+        }
+
+        post("/{id}/sections") {
+            val id = parseUuidParam(call.parameters["id"], "variantId")
+                ?: return@post call.respondText("Missing variant ID", status = HttpStatusCode.BadRequest)
+            val request = call.receive<SaveLyricVariantSectionsRequest>()
+            krithiService.saveLyricVariantSections(id, request.sections)
+            call.respond(HttpStatusCode.NoContent)
         }
     }
 }

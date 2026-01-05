@@ -70,10 +70,34 @@ const Sidebar: React.FC<SidebarProps> = () => {
           <span className="material-symbols-outlined text-2xl group-hover:text-primary transition-colors">settings</span>
           Settings
         </button>
-        <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-ink-500 hover:bg-slate-100 hover:text-ink-900 transition-colors group">
-          <span className="material-symbols-outlined text-2xl group-hover:text-primary transition-colors">group</span>
-          Users
-        </button>
+        <NavLink
+          to="/users"
+          className={({ isActive }) => `w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${isActive
+            ? 'bg-primary-light text-primary'
+            : 'text-ink-500 hover:bg-slate-100 hover:text-ink-900'
+          }`}
+        >
+          {({ isActive }) => (
+            <>
+              <span className={`material-symbols-outlined text-2xl ${isActive ? 'text-primary' : 'text-ink-500'}`}>group</span>
+              Users
+            </>
+          )}
+        </NavLink>
+        <NavLink
+          to="/roles"
+          className={({ isActive }) => `w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${isActive
+            ? 'bg-primary-light text-primary'
+            : 'text-ink-500 hover:bg-slate-100 hover:text-ink-900'
+          }`}
+        >
+          {({ isActive }) => (
+            <>
+              <span className={`material-symbols-outlined text-2xl ${isActive ? 'text-primary' : 'text-ink-500'}`}>admin_panel_settings</span>
+              Roles
+            </>
+          )}
+        </NavLink>
       </nav>
 
       {/* Footer / Logout */}

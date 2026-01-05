@@ -69,14 +69,14 @@ export const getKrithi = (id: string, admin = false) => {
 // --- Admin Krithi Management ---
 
 export const createKrithi = (payload: any) => {
-    return request<KrithiDetail>(`/krithis`, {
+    return request<KrithiDetail>(`/admin/krithis`, {
         method: 'POST',
         body: JSON.stringify(payload),
     });
 };
 
 export const updateKrithi = (id: string, payload: any) => {
-    return request<KrithiDetail>(`/krithis/${id}`, {
+    return request<KrithiDetail>(`/admin/krithis/${id}`, {
         method: 'PUT',
         body: JSON.stringify(payload),
     });
@@ -387,7 +387,7 @@ export const scrapeContent = (url: string) => {
 };
 
 export const reviewImport = (id: string, reviewRequest: { status: string; mappedKrithiId?: string | null; reviewerNotes?: string | null }) => {
-    return request<ImportedKrithi>(`/imports/${id}/review`, {
+    return request<ImportedKrithi>(`/admin/imports/${id}/review`, {
         method: 'POST',
         body: JSON.stringify(reviewRequest),
     });

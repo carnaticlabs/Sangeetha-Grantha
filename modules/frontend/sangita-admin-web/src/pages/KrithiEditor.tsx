@@ -393,6 +393,7 @@ const KrithiEditor: React.FC<KrithiEditorProps> = () => {
             }
 
             // Reload the krithi to get updated data with full objects
+            let reloadedSections: Array<{ id: string; sectionType: string; orderIndex: number }> = [];
             if (savedKrithiId) {
                 try {
                     const reloaded = await getKrithi(savedKrithiId);
@@ -400,7 +401,12 @@ const KrithiEditor: React.FC<KrithiEditorProps> = () => {
                     // Load sections from the dedicated endpoint
                     try {
                         const sections = await getKrithiSections(savedKrithiId);
-                        mapped.sections = sections.map(s => ({
+                        reloadedSections = sections.map(s => ({
+                            id: s.id,
+                            sectionType: s.sectionType,
+                            orderIndex: s.orderIndex
+                        }));
+                        mapped.sections = reloadedSections.map(s => ({
                             id: s.id,
                             sectionType: s.sectionType as any,
                             orderIndex: s.orderIndex
@@ -409,6 +415,11 @@ const KrithiEditor: React.FC<KrithiEditorProps> = () => {
                         console.warn('Failed to reload sections after save:', err);
                         // Keep existing sections if reload fails
                         if (krithi.sections && krithi.sections.length > 0) {
+                            reloadedSections = krithi.sections.map(s => ({
+                                id: s.id,
+                                sectionType: s.sectionType,
+                                orderIndex: s.orderIndex
+                            }));
                             mapped.sections = krithi.sections;
                         }
                     }
@@ -423,51 +434,145 @@ const KrithiEditor: React.FC<KrithiEditorProps> = () => {
                             mapped.tags = krithi.tags;
                         }
                     }
+                    // Load lyric variants from the dedicated endpoint
+                    try {
+                        const variantsData = await getKrithiLyricVariants(savedKrithiId);
+                        mapped.lyricVariants = variantsData.map(v => ({
+                            id: v.variant.id,
+                            language: v.variant.language.toLowerCase(),
+                            script: v.variant.script.toLowerCase(),
+                            transliterationScheme: v.variant.transliterationScheme,
+                            sampradaya: v.variant.sampradayaId ? sampradayas.find(s => s.id === v.variant.sampradayaId) : undefined,
+                            sections: v.sections.map(s => ({
+                                sectionId: s.sectionId,
+                                text: s.text
+                            }))
+                        }));
+                    } catch (err: any) {
+                        console.warn('Failed to reload lyric variants after save:', err);
+                        // Keep existing variants if reload fails
+                        if (krithi.lyricVariants && krithi.lyricVariants.length > 0) {
+                            mapped.lyricVariants = krithi.lyricVariants;
+                        }
+                    }
                     setKrithi(mapped);
                 } catch (err: any) {
                     console.error('Failed to reload krithi after save:', err);
+                    // Fallback to existing sections if reload fails
+                    if (krithi.sections && krithi.sections.length > 0) {
+                        reloadedSections = krithi.sections.map(s => ({
+                            id: s.id,
+                            sectionType: s.sectionType,
+                            orderIndex: s.orderIndex
+                        }));
+                    }
                 }
             }
 
             // Save lyric variants if krithi ID is available
             if (savedKrithiId && krithi.lyricVariants && krithi.lyricVariants.length > 0) {
                 try {
+                    // Create a mapping from old section IDs to new section IDs
+                    // Map by sectionType and orderIndex since those are stable identifiers
+                    const sectionIdMap = new Map<string, string>();
+                    if (krithi.sections && reloadedSections.length > 0) {
+                        for (const oldSection of krithi.sections) {
+                            const newSection = reloadedSections.find(
+                                s => s.sectionType === oldSection.sectionType && s.orderIndex === oldSection.orderIndex
+                            );
+                            if (newSection) {
+                                sectionIdMap.set(oldSection.id, newSection.id);
+                            }
+                        }
+                    }
+                    
+                    // Get valid section IDs from the reloaded sections (sections that were just saved)
+                    const validSectionIds = new Set(
+                        reloadedSections.map(s => s.id).filter(id => !id.startsWith('temp-'))
+                    );
+
                     for (const variant of krithi.lyricVariants) {
                         if (variant.id.startsWith('temp-')) {
                             // Create new variant
+                            // Convert language and script to uppercase enum values
+                            const languageEnum = typeof variant.language === 'string' 
+                                ? variant.language.toUpperCase() 
+                                : variant.language;
+                            const scriptEnum = typeof variant.script === 'string' 
+                                ? variant.script.toUpperCase() 
+                                : variant.script;
+                            
                             const variantPayload = {
-                                language: variant.language,
-                                script: variant.script,
+                                language: languageEnum,
+                                script: scriptEnum,
                                 transliterationScheme: variant.transliterationScheme,
                                 sampradayaId: variant.sampradaya?.id,
                                 isPrimary: false
                             };
                             const createdVariant = await createLyricVariant(savedKrithiId, variantPayload);
 
-                            // Save sections for this variant
+                            // Save sections for this variant (filter out empty text and map to new section IDs)
                             if (variant.sections && variant.sections.length > 0) {
-                                await saveVariantSections(createdVariant.id, variant.sections);
+                                const validSections = variant.sections
+                                    .filter(s => s.text && s.text.trim())
+                                    .map(s => {
+                                        // Map old section ID to new section ID if needed
+                                        const newSectionId = sectionIdMap.get(s.sectionId) || s.sectionId;
+                                        return { sectionId: newSectionId, text: s.text };
+                                    })
+                                    .filter(s => validSectionIds.has(s.sectionId));
+                                
+                                if (validSections.length > 0) {
+                                    console.log('Saving variant sections:', validSections);
+                                    await saveVariantSections(createdVariant.id, validSections);
+                                } else {
+                                    console.warn('No valid sections to save for variant:', variant.id, 'Original sections:', variant.sections, 'Valid IDs:', Array.from(validSectionIds));
+                                }
                             }
                         } else {
                             // Update existing variant
+                            // Convert language and script to uppercase enum values
+                            const languageEnum = typeof variant.language === 'string' 
+                                ? variant.language.toUpperCase() 
+                                : variant.language;
+                            const scriptEnum = typeof variant.script === 'string' 
+                                ? variant.script.toUpperCase() 
+                                : variant.script;
+                            
                             const variantPayload = {
-                                language: variant.language,
-                                script: variant.script,
+                                language: languageEnum,
+                                script: scriptEnum,
                                 transliterationScheme: variant.transliterationScheme,
                                 sampradayaId: variant.sampradaya?.id,
                                 isPrimary: false
                             };
                             await updateLyricVariant(variant.id, variantPayload);
 
-                            // Save sections for this variant
+                            // Save sections for this variant (filter out empty text and map to new section IDs)
                             if (variant.sections && variant.sections.length > 0) {
-                                await saveVariantSections(variant.id, variant.sections);
+                                const validSections = variant.sections
+                                    .filter(s => s.text && s.text.trim())
+                                    .map(s => {
+                                        // Map old section ID to new section ID if needed
+                                        const newSectionId = sectionIdMap.get(s.sectionId) || s.sectionId;
+                                        return { sectionId: newSectionId, text: s.text };
+                                    })
+                                    .filter(s => validSectionIds.has(s.sectionId));
+                                
+                                if (validSections.length > 0) {
+                                    console.log('Saving variant sections:', validSections);
+                                    await saveVariantSections(variant.id, validSections);
+                                } else {
+                                    console.warn('No valid sections to save for variant:', variant.id, 'Original sections:', variant.sections, 'Valid IDs:', Array.from(validSectionIds));
+                                }
                             }
                         }
                     }
                 } catch (err: any) {
                     console.error('Failed to save lyric variants:', err);
-                    toast.warning('Krithi saved, but lyric variants may not have been updated');
+                    const errorMessage = err.message || err.toString();
+                    console.error('Error details:', errorMessage);
+                    toast.warning(`Krithi saved, but lyric variants may not have been updated: ${errorMessage}`);
                 }
             }
 
@@ -562,6 +667,32 @@ const KrithiEditor: React.FC<KrithiEditorProps> = () => {
                                                         toast.error('Failed to load sections: ' + (err.message || 'Unknown error'));
                                                     } finally {
                                                         setSectionsLoading(false);
+                                                    }
+                                                }
+                                                // Load lyric variants when Lyrics tab is clicked
+                                                if (tab === 'Lyrics' && krithiId && (!krithi.lyricVariants || krithi.lyricVariants.length === 0)) {
+                                                    setLyricVariantsLoading(true);
+                                                    try {
+                                                        const variantsData = await getKrithiLyricVariants(krithiId);
+                                                        setKrithi(prev => ({
+                                                            ...prev,
+                                                            lyricVariants: variantsData.map(v => ({
+                                                                id: v.variant.id,
+                                                                language: v.variant.language.toLowerCase(),
+                                                                script: v.variant.script.toLowerCase(),
+                                                                transliterationScheme: v.variant.transliterationScheme,
+                                                                sampradaya: v.variant.sampradayaId ? sampradayas.find(s => s.id === v.variant.sampradayaId) : undefined,
+                                                                sections: v.sections.map(s => ({
+                                                                    sectionId: s.sectionId,
+                                                                    text: s.text
+                                                                }))
+                                                            }))
+                                                        }));
+                                                    } catch (err: any) {
+                                                        console.error('Failed to load lyric variants:', err);
+                                                        toast.error('Failed to load lyric variants: ' + (err.message || 'Unknown error'));
+                                                    } finally {
+                                                        setLyricVariantsLoading(false);
                                                     }
                                                 }
                                             }}
