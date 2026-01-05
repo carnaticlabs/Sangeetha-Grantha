@@ -1,7 +1,22 @@
-#Implement Neo4j Graph Projection + Music-Aware Graph Explorer (Cytoscape.js)
+---
+title: Graph Explorer Requirement (Original Neo4j Proposal)
+status: Superseded
+version: 1.0
+last_updated: 2025-01-27
+note: This document was the original requirement specifying Neo4j. After evaluation, the architecture team approved PostgreSQL + Cytoscape.js instead. See [Graph Explorer Feature Requirements](./graph-explorer.md) for the approved implementation.
+---
 
-You are working inside the existing repo:
-`/Users/seshadri/project/sangeetha-grantha`
+# Graph Explorer Requirement (Original Neo4j Proposal)
+
+**⚠️ STATUS: SUPERSEDED**
+
+This document was the original requirement specifying Neo4j implementation. After critical evaluation (see [Graph Database Evaluation](./graph-database-evaluation.md)), the architecture team approved the **PostgreSQL + Cytoscape.js** approach instead.
+
+**For current requirements and implementation strategy, see:** [Graph Explorer Feature Requirements](./graph-explorer.md)
+
+---
+
+## Original Requirement (Historical Reference)
 
 Goal: implement a **Music-Aware Graph Explorer** (Admin Web) backed by **Neo4j Community** (graph projection). Postgres remains the system-of-record; Neo4j is a derived projection for traversal + visualization.
 
@@ -31,8 +46,8 @@ B) Frontend (admin-web) additions:
 5. A right-side details panel showing selected node properties and related links
 
 C) Docs:
-- Add/update docs: `docs/architecture/graph-explorer.md`
-- Add local dev notes: `docs/dev/neo4j-local.md` (if missing)
+- Add/update docs: `application_documentation/02-architecture/graph-explorer.md`
+- Add local dev notes: `application_documentation/08-operations/runbooks/graph-explorer-dev.md` (if missing)
 
 ## 2) Neo4j graph model (assume these labels/edges exist)
 Node labels:
