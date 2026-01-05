@@ -42,4 +42,5 @@ gradlew
 build_log*.txt
 build_log_final.txt
 .gitignore
-**/Cargo.lock
+**/*Cargo.lock
+tools/sangita-cli/Cargo.lock
