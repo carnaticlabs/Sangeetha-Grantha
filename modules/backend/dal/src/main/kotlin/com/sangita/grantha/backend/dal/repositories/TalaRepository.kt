@@ -4,17 +4,36 @@ import com.sangita.grantha.backend.dal.DatabaseFactory
 import com.sangita.grantha.backend.dal.models.toTalaDto
 import com.sangita.grantha.backend.dal.tables.TalasTable
 import com.sangita.grantha.shared.domain.model.TalaDto
+import com.sangita.grantha.backend.dal.support.toJavaUuid
+import com.sangita.grantha.backend.dal.support.toKotlinUuid
 import org.jetbrains.exposed.v1.jdbc.*
 import org.jetbrains.exposed.v1.core.*
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import java.util.UUID
+import kotlin.uuid.Uuid
 
 class TalaRepository {
+    private fun normalize(value: String): String =
+        value.trim()
+            .lowercase()
+            .replace(Regex("\\s+"), " ")
+
     suspend fun listAll(): List<TalaDto> = DatabaseFactory.dbQuery {
         TalasTable
             .selectAll()
             .orderBy(TalasTable.nameNormalized to SortOrder.ASC)
             .map { row: ResultRow -> row.toTalaDto() }
     }
+
+    suspend fun findById(id: Uuid): TalaDto? = DatabaseFactory.dbQuery {
+        TalasTable
+            .selectAll()
+            .where { TalasTable.id eq id.toJavaUuid() }
+            .map { it.toTalaDto() }
+            .singleOrNull()
+    }
+
     suspend fun findByName(name: String): TalaDto? = DatabaseFactory.dbQuery {
         TalasTable
             .selectAll()
@@ -23,18 +42,70 @@ class TalaRepository {
             .singleOrNull()
     }
 
-    suspend fun create(name: String, normalized: String, beats: Int?, structure: String?): UUID = DatabaseFactory.dbQuery {
-        val newId = UUID.randomUUID()
+    suspend fun create(
+        name: String,
+        nameNormalized: String? = null,
+        beatCount: Int? = null,
+        angaStructure: String? = null,
+        notes: String? = null
+    ): TalaDto = DatabaseFactory.dbQuery {
+        val now = OffsetDateTime.now(ZoneOffset.UTC)
+        val talaId = UUID.randomUUID()
+        val normalized = nameNormalized ?: normalize(name)
+
         TalasTable.insert {
-            it[id] = newId
+            it[id] = talaId
             it[TalasTable.name] = name
-            it[nameNormalized] = normalized
-            it[beatCount] = beats
-            it[angaStructure] = structure
-            it[createdAt] = java.time.OffsetDateTime.now(java.time.ZoneOffset.UTC)
-            it[updatedAt] = java.time.OffsetDateTime.now(java.time.ZoneOffset.UTC)
+            it[TalasTable.nameNormalized] = normalized
+            it[TalasTable.beatCount] = beatCount
+            it[TalasTable.angaStructure] = angaStructure
+            it[TalasTable.notes] = notes
+            it[TalasTable.createdAt] = now
+            it[TalasTable.updatedAt] = now
         }
-        newId
+
+        TalasTable
+            .selectAll()
+            .where { TalasTable.id eq talaId }
+            .map { it.toTalaDto() }
+            .single()
+    }
+
+    suspend fun update(
+        id: Uuid,
+        name: String? = null,
+        nameNormalized: String? = null,
+        beatCount: Int? = null,
+        angaStructure: String? = null,
+        notes: String? = null
+    ): TalaDto? = DatabaseFactory.dbQuery {
+        val now = OffsetDateTime.now(ZoneOffset.UTC)
+        val updated = TalasTable.update({ TalasTable.id eq id.toJavaUuid() }) {
+            name?.let { value -> 
+                it[TalasTable.name] = value
+                it[TalasTable.nameNormalized] = nameNormalized ?: normalize(value)
+            }
+            nameNormalized?.let { value -> it[TalasTable.nameNormalized] = value }
+            beatCount?.let { value -> it[TalasTable.beatCount] = value }
+            angaStructure?.let { value -> it[TalasTable.angaStructure] = value }
+            notes?.let { value -> it[TalasTable.notes] = value }
+            it[TalasTable.updatedAt] = now
+        }
+
+        if (updated == 0) {
+            return@dbQuery null
+        }
+
+        TalasTable
+            .selectAll()
+            .where { TalasTable.id eq id.toJavaUuid() }
+            .map { it.toTalaDto() }
+            .singleOrNull()
+    }
+
+    suspend fun delete(id: Uuid): Boolean = DatabaseFactory.dbQuery {
+        val deleted = TalasTable.deleteWhere { TalasTable.id eq id.toJavaUuid() }
+        deleted > 0
     }
 
     suspend fun countAll(): Long = DatabaseFactory.dbQuery {
