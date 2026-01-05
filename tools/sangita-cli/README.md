@@ -24,6 +24,44 @@ Check environment and dependencies:
 cargo run -- setup
 ```
 
+### Commit Guardrails
+Validate commit messages and manage Git hooks:
+```bash
+cargo run -- commit check --message "Your commit message here"
+cargo run -- commit install-hooks
+```
+
+Rust command structure:
+```rust
+// tools/sangita-cli/src/commands/commit.rs
+#[derive(Subcommand)]
+enum CommitCommands {
+    /// Validate commit message format and reference
+    Check {
+        /// Commit message to validate (or read from stdin)
+        #[arg(long)]
+        message: Option<String>,
+    },
+    /// Install Git hooks for commit validation
+    InstallHooks,
+    /// Remove installed Git hooks
+    UninstallHooks,
+}
+```
+
+Rust wiring points:
+```rust
+// tools/sangita-cli/src/commands/mod.rs
+pub mod commit;
+
+// tools/sangita-cli/src/main.rs
+#[derive(Subcommand)]
+enum Commands {
+    // ... existing commands
+    Commit(commit::CommitArgs),
+}
+```
+
 ### Database Management
 Reset database (Drop → Create → Migrate → Seed):
 ```bash
@@ -116,7 +154,62 @@ Environment variables (set in `.env` file):
 3. Try starting database: `cargo run -- db start`
 4. Review PostgreSQL logs in the configured pg_data directory
 
+
 ### Frontend fails to start
 1. Ensure Bun dependencies are installed: `cd modules/frontend/sangita-admin-web && bun install`
 2. Check if port 5001 is available: `lsof -i :5001`
 3. Try starting frontend manually: `cd modules/frontend/sangita-admin-web && bun run dev`
+
+## Rust-Based Git Guardrails Implementation
+
+The commit guardrails are implemented as a sub-crate within the CLI tool.
+
+### Technical Implementation
+
+**Dependencies**
+To support the git operations and validation, `tools/sangita-cli/Cargo.toml` includes:
+```toml
+git2 = "0.20"  # Git repository access
+walkdir = "2"  # Directory traversal
+clap = { version = "...", features = ["derive"] } # CLI argument parsing
+regex = "1"    # Commit message parsing
+```
+
+**Command Structure**
+The CLI command enum structure (`tools/sangita-cli/src/commands/commit.rs`):
+```rust
+#[derive(Subcommand)]
+enum CommitCommands {
+    /// Validate commit message format and reference
+    Check {
+        /// Commit message to validate (or read from stdin)
+        #[arg(long)]
+        message: Option<String>,
+    },
+    /// Install Git hooks for commit validation
+    InstallHooks,
+    /// Remove installed Git hooks
+    UninstallHooks,
+}
+```
+
+**Git Hook Script**
+When `install-hooks` is run, it places a script like this in `.git/hooks/commit-msg`:
+```bash
+#!/bin/sh
+# .git/hooks/commit-msg
+
+# Get commit message file path
+commit_msg_file="$1"
+
+# Call Rust CLI tool to validate
+# We use 'cargo run' for dev convenience, simplified for example
+# in prod environments this would call the binary directly
+cargo run --quiet -- commit check --message "$(cat "$commit_msg_file")" || exit 1
+```
+
+**Validation Logic**
+1. **Extract Reference**: The tool parses the commit message looking for `Ref: <path>`.
+2. **File Check**: It verifies that `<path>` exists and is inside `application_documentation/`.
+3. **Exit Code**: Returns 0 on success, 1 on failure (which blocks the commit in the hook).
+
