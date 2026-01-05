@@ -1,7 +1,6 @@
 package com.sangita.grantha.backend.dal
 
 import com.sangita.grantha.backend.dal.support.DatabaseConfig
-import com.sangita.grantha.backend.dal.support.DatabaseConfigLoader
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import java.nio.file.Path
@@ -21,11 +20,9 @@ object DatabaseFactory {
     private var dispatcher: CoroutineDispatcher = Dispatchers.IO
     private val dataSourceRef = AtomicReference<HikariDataSource?>()
 
-    fun connectFromExternal(configPath: Path? = null, env: Map<String, String> = System.getenv()) {
-        val config = DatabaseConfigLoader.load(configPath, env)
-        connect(config)
-    }
-
+    /**
+     * Connects using the provided DatabaseConfig.
+     */
     fun connect(config: DatabaseConfig) = connect(
         databaseUrl = config.jdbcUrl,
         username = config.username,

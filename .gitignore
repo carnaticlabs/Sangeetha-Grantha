@@ -38,3 +38,7 @@ gradlew
 **/db-data/**
 **/node_modules/**
 **/dist/**
+
+build_log*.txt
+build_log_final.txt
+.gitignore

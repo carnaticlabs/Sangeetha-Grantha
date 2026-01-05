@@ -16,8 +16,9 @@ application {
     mainClass.set("com.sangita.grantha.backend.api.AppKt")
 }
 
-repositories {
-    mavenCentral()
+tasks.named<JavaExec>("run") {
+    workingDir = rootProject.projectDir
+    systemProperty("io.ktor.development", "true")
 }
 
 dependencies {
@@ -42,6 +43,7 @@ dependencies {
 
     implementation(libs.logback.classic)
     implementation(libs.logstash.logback.encoder)
+    implementation(libs.dotenv.kotlin)
 
     implementation(libs.kotlinx.datetime)
     implementation(libs.kotlinx.serialization.json)
@@ -59,6 +61,7 @@ tasks.register<JavaExec>("runDev") {
     classpath = sourceSets.main.get().runtimeClasspath
     mainClass.set("com.sangita.grantha.backend.api.AppKt")
     systemProperty("io.ktor.development", "true")
+    workingDir = rootProject.projectDir
 }
 
 // Configure Shadow plugin to create a fat JAR with all dependencies
@@ -79,6 +82,13 @@ tasks.withType<ShadowJar> {
 // Make build depend on shadowJar
 tasks.named("build") {
     dependsOn("shadowJar")
+    dependsOn("copyConfig")
+}
+
+tasks.register<Copy>("copyConfig") {
+    from(rootProject.file("config"))
+    into(layout.buildDirectory.dir("libs/config"))
+    exclude("**/*.toml")
 }
 
 // Disable default jar task
@@ -89,6 +99,7 @@ tasks.named<Jar>("jar") {
 
 tasks.test {
     useJUnitPlatform()
+    workingDir = rootProject.projectDir
 }
 
 tasks.register<JavaExec>("seedDatabase") {
@@ -97,4 +108,5 @@ tasks.register<JavaExec>("seedDatabase") {
     classpath = sourceSets.main.get().runtimeClasspath
     mainClass.set("com.sangita.grantha.backend.api.tools.SeedDatabaseKt")
     systemProperty("io.ktor.development", "true")
+    workingDir = rootProject.projectDir
 }

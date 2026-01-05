@@ -1,7 +1,27 @@
 import React, { useState, useEffect } from 'react';
 
 import { ReferenceDataStats, Deity, Composer, Raga, Tala, Temple } from '../types';
-import { getReferenceStats, getDeities, getComposers, getRagas, getTalas, getTemples } from '../api/client';
+import { 
+    getReferenceStats, 
+    getDeities, 
+    getComposers, 
+    getRagas, 
+    getTalas, 
+    getTemples,
+    createComposer,
+    updateComposer,
+    deleteComposer,
+    createRaga,
+    updateRaga,
+    deleteRaga,
+    createTala,
+    updateTala,
+    deleteTala,
+    createTemple,
+    updateTemple,
+    deleteTemple
+} from '../api/client';
+import { useToast } from '../components/Toast';
 
 // --- Types & Mocks ---
 
@@ -102,39 +122,49 @@ const mapTempleToItem = (t: Temple): Temple => ({
 // --- Sub-Components ---
 
 // Reusable styled input components matching the reference design
-const FormInput = ({ label, placeholder, defaultValue, required = false, type = "text", help, className = "" }: any) => (
-    <div className={`space-y-2 ${className}`}>
-        <label className="block text-sm font-semibold text-ink-900">
-            {label} {required && <span className="text-red-500">*</span>}
-        </label>
-        <div className="relative">
-            <input
-                type={type}
-                defaultValue={defaultValue}
-                placeholder={placeholder}
-                className="w-full h-12 px-4 rounded-lg bg-slate-50 border border-border-light text-ink-900 placeholder-ink-400 focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-            />
-            {type === 'number' && (
-                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-ink-400">
-                    <span className="material-symbols-outlined text-lg">tag</span>
-                </div>
-            )}
+const FormInput = ({ label, placeholder, defaultValue, value, onChange, required = false, type = "text", help, className = "", name }: any) => {
+    const inputValue = value !== undefined ? value : defaultValue;
+    return (
+        <div className={`space-y-2 ${className}`}>
+            <label className="block text-sm font-semibold text-ink-900">
+                {label} {required && <span className="text-red-500">*</span>}
+            </label>
+            <div className="relative">
+                <input
+                    type={type}
+                    name={name}
+                    value={inputValue || ''}
+                    onChange={onChange}
+                    placeholder={placeholder}
+                    className="w-full h-12 px-4 rounded-lg bg-slate-50 border border-border-light text-ink-900 placeholder-ink-400 focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                />
+                {type === 'number' && (
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-ink-400">
+                        <span className="material-symbols-outlined text-lg">tag</span>
+                    </div>
+                )}
+            </div>
+            {help && <p className="text-xs text-ink-500">{help}</p>}
         </div>
-        {help && <p className="text-xs text-ink-500">{help}</p>}
-    </div>
-);
+    );
+};
 
-const FormTextarea = ({ label, placeholder, defaultValue, rows = 4, className = "" }: any) => (
-    <div className={`space-y-2 ${className}`}>
-        <label className="block text-sm font-semibold text-ink-900">{label}</label>
-        <textarea
-            rows={rows}
-            defaultValue={defaultValue}
-            placeholder={placeholder}
-            className="w-full p-4 rounded-lg bg-slate-50 border border-border-light text-ink-900 placeholder-ink-400 focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none"
-        ></textarea>
-    </div>
-);
+const FormTextarea = ({ label, placeholder, defaultValue, value, onChange, rows = 4, className = "", name }: any) => {
+    const textareaValue = value !== undefined ? value : defaultValue;
+    return (
+        <div className={`space-y-2 ${className}`}>
+            <label className="block text-sm font-semibold text-ink-900">{label}</label>
+            <textarea
+                name={name}
+                rows={rows}
+                value={textareaValue || ''}
+                onChange={onChange}
+                placeholder={placeholder}
+                className="w-full p-4 rounded-lg bg-slate-50 border border-border-light text-ink-900 placeholder-ink-400 focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none"
+            ></textarea>
+        </div>
+    );
+};
 
 const FormSelect = ({ label, options, defaultValue, className = "" }: any) => (
     <div className={`space-y-2 ${className}`}>
@@ -157,13 +187,238 @@ const EntityForm: React.FC<{
     onSave: () => void;
     onCancel: () => void;
 }> = ({ entityType, initialData, onSave, onCancel }) => {
+    const { toast } = useToast();
     const [deities, setDeities] = useState<Deity[]>([]);
+    const [formData, setFormData] = useState<Record<string, any>>({});
+    const [saving, setSaving] = useState(false);
 
     useEffect(() => {
         if (entityType === 'Temples') {
             getDeities().then(setDeities).catch(console.error);
         }
-    }, [entityType]);
+        
+        // Initialize form data from initialData or set defaults for new entities
+        if (initialData) {
+            if (entityType === 'Composers') {
+                const c = initialData as Composer;
+                setFormData({
+                    name: c.name || '',
+                    normalizedName: c.normalizedName || '',
+                    birthYear: c.birthYear || '',
+                    deathYear: c.deathYear || '',
+                    place: c.place || '',
+                    notes: c.notes || '',
+                });
+            } else if (entityType === 'Ragas') {
+                const r = initialData as Raga;
+                setFormData({
+                    name: r.name || '',
+                    normalizedName: r.normalizedName || '',
+                    melakartaNumber: r.melakartaNumber || '',
+                    parentRaga: r.parentRaga || '',
+                    arohanam: r.arohanam || '',
+                    avarohanam: r.avarohanam || '',
+                    notes: r.notes || '',
+                });
+            } else if (entityType === 'Talas') {
+                const t = initialData as Tala;
+                setFormData({
+                    name: t.name || '',
+                    normalizedName: t.normalizedName || '',
+                    beatCount: t.beatCount || '',
+                    angaStructure: t.angaStructure || '',
+                    notes: t.notes || '',
+                });
+            } else if (entityType === 'Temples') {
+                const tm = initialData as Temple;
+                const locationParts = tm.location?.split(',') || [];
+                const coordParts = tm.coordinates?.split(',') || [];
+                setFormData({
+                    name: tm.name || '',
+                    normalizedName: tm.normalizedName || '',
+                    city: locationParts[0] || '',
+                    state: locationParts[1] || '',
+                    country: locationParts[2] || '',
+                    primaryDeity: tm.primaryDeity || '',
+                    latitude: coordParts[0] || '',
+                    longitude: coordParts[1] || '',
+                    notes: tm.notes || '',
+                });
+            }
+        } else {
+            // Initialize empty form for new entities
+            if (entityType === 'Composers') {
+                setFormData({
+                    name: '',
+                    normalizedName: '',
+                    birthYear: '',
+                    deathYear: '',
+                    place: '',
+                    notes: '',
+                });
+            } else if (entityType === 'Ragas') {
+                setFormData({
+                    name: '',
+                    normalizedName: '',
+                    melakartaNumber: '',
+                    parentRaga: '',
+                    arohanam: '',
+                    avarohanam: '',
+                    notes: '',
+                });
+            } else if (entityType === 'Talas') {
+                setFormData({
+                    name: '',
+                    normalizedName: '',
+                    beatCount: '',
+                    angaStructure: '',
+                    notes: '',
+                });
+            } else if (entityType === 'Temples') {
+                setFormData({
+                    name: '',
+                    normalizedName: '',
+                    city: '',
+                    state: '',
+                    country: '',
+                    primaryDeity: '',
+                    latitude: '',
+                    longitude: '',
+                    notes: '',
+                });
+            }
+        }
+    }, [entityType, initialData]);
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleSave = async (e?: React.MouseEvent) => {
+        e?.preventDefault();
+        e?.stopPropagation();
+        
+        setSaving(true);
+        try {
+            // Validate required fields
+            if (entityType === 'Composers' && !formData.name) {
+                toast.error('Name is required');
+                setSaving(false);
+                return;
+            }
+            if (entityType === 'Ragas' && !formData.name) {
+                toast.error('Name is required');
+                setSaving(false);
+                return;
+            }
+            if (entityType === 'Talas' && !formData.name) {
+                toast.error('Name is required');
+                setSaving(false);
+                return;
+            }
+            if (entityType === 'Temples' && !formData.name) {
+                toast.error('Name is required');
+                setSaving(false);
+                return;
+            }
+
+            if (initialData) {
+                // Update existing entity
+                if (entityType === 'Composers') {
+                    await updateComposer(initialData.id, {
+                        name: formData.name || null,
+                        nameNormalized: formData.normalizedName || null,
+                        birthYear: formData.birthYear && formData.birthYear.trim() ? parseInt(formData.birthYear) : null,
+                        deathYear: formData.deathYear && formData.deathYear.trim() ? parseInt(formData.deathYear) : null,
+                        place: formData.place || null,
+                        notes: formData.notes || null,
+                    });
+                } else if (entityType === 'Ragas') {
+                    await updateRaga(initialData.id, {
+                        name: formData.name || null,
+                        nameNormalized: formData.normalizedName || null,
+                        melakartaNumber: formData.melakartaNumber && formData.melakartaNumber.trim() ? parseInt(formData.melakartaNumber) : null,
+                        parentRagaId: formData.parentRaga || null,
+                        arohanam: formData.arohanam || null,
+                        avarohanam: formData.avarohanam || null,
+                        notes: formData.notes || null,
+                    });
+                } else if (entityType === 'Talas') {
+                    await updateTala(initialData.id, {
+                        name: formData.name || null,
+                        nameNormalized: formData.normalizedName || null,
+                        beatCount: formData.beatCount && formData.beatCount.trim() ? parseInt(formData.beatCount) : null,
+                        angaStructure: formData.angaStructure || null,
+                        notes: formData.notes || null,
+                    });
+                } else if (entityType === 'Temples') {
+                    await updateTemple(initialData.id, {
+                        name: formData.name || null,
+                        nameNormalized: formData.normalizedName || null,
+                        city: formData.city || null,
+                        state: formData.state || null,
+                        country: formData.country || null,
+                        primaryDeityId: formData.primaryDeity || null,
+                        latitude: formData.latitude && formData.latitude.trim() ? parseFloat(formData.latitude) : null,
+                        longitude: formData.longitude && formData.longitude.trim() ? parseFloat(formData.longitude) : null,
+                        notes: formData.notes || null,
+                    });
+                }
+                toast.success('Entity updated successfully');
+            } else {
+                // Create new entity
+                if (entityType === 'Composers') {
+                    await createComposer({
+                        name: formData.name!,
+                        nameNormalized: formData.normalizedName || null,
+                        birthYear: formData.birthYear && formData.birthYear.trim() ? parseInt(formData.birthYear) : null,
+                        deathYear: formData.deathYear && formData.deathYear.trim() ? parseInt(formData.deathYear) : null,
+                        place: formData.place || null,
+                        notes: formData.notes || null,
+                    });
+                } else if (entityType === 'Ragas') {
+                    await createRaga({
+                        name: formData.name!,
+                        nameNormalized: formData.normalizedName || null,
+                        melakartaNumber: formData.melakartaNumber && formData.melakartaNumber.trim() ? parseInt(formData.melakartaNumber) : null,
+                        parentRagaId: formData.parentRaga || null,
+                        arohanam: formData.arohanam || null,
+                        avarohanam: formData.avarohanam || null,
+                        notes: formData.notes || null,
+                    });
+                } else if (entityType === 'Talas') {
+                    await createTala({
+                        name: formData.name!,
+                        nameNormalized: formData.normalizedName || null,
+                        beatCount: formData.beatCount && formData.beatCount.trim() ? parseInt(formData.beatCount) : null,
+                        angaStructure: formData.angaStructure || null,
+                        notes: formData.notes || null,
+                    });
+                } else if (entityType === 'Temples') {
+                    await createTemple({
+                        name: formData.name!,
+                        nameNormalized: formData.normalizedName || null,
+                        city: formData.city || null,
+                        state: formData.state || null,
+                        country: formData.country || null,
+                        primaryDeityId: formData.primaryDeity || null,
+                        latitude: formData.latitude && formData.latitude.trim() ? parseFloat(formData.latitude) : null,
+                        longitude: formData.longitude && formData.longitude.trim() ? parseFloat(formData.longitude) : null,
+                        notes: formData.notes || null,
+                    });
+                }
+                toast.success('Entity created successfully');
+            }
+            
+            onSave(); // Navigate back to list
+        } catch (err: any) {
+            console.error('Failed to save:', err);
+            toast.error('Failed to save: ' + (err.message || 'Unknown error'));
+        } finally {
+            setSaving(false);
+        }
+    };
 
     // Layout Structure
     return (
@@ -194,81 +449,83 @@ const EntityForm: React.FC<{
                     {entityType === 'Talas' && (
                         <div className="space-y-8">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                                <FormInput label="Name" placeholder="e.g. Adi Tala" defaultValue={(initialData as Tala)?.name} required />
+                                <FormInput name="name" label="Name" placeholder="e.g. Adi Tala" value={formData.name} onChange={handleInputChange} required />
                                 <div className="space-y-2">
                                     <div className="flex items-center justify-between">
                                         <label className="block text-sm font-semibold text-ink-900">Normalized Name</label>
                                         <span className="text-xs text-ink-400">Auto-generated</span>
                                     </div>
-                                    <input className="w-full h-12 px-4 rounded-lg bg-slate-100 border border-border-light text-ink-500 focus:outline-none cursor-not-allowed" readOnly placeholder="e.g. adi_tala" defaultValue={(initialData as Tala)?.normalizedName} />
+                                    <input className="w-full h-12 px-4 rounded-lg bg-slate-100 border border-border-light text-ink-500 focus:outline-none cursor-not-allowed" readOnly placeholder="e.g. adi_tala" value={formData.normalizedName || ''} />
                                 </div>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8">
-                                <FormInput label="Beat Count (Aksharas)" placeholder="e.g. 8" type="number" defaultValue={(initialData as Tala)?.beatCount} className="md:col-span-4" />
-                                <FormInput label="Anga Structure" placeholder="e.g. I4 O O" help="Example: I4 O O for Adi Tala" defaultValue={(initialData as Tala)?.angaStructure} className="md:col-span-8" />
+                                <FormInput name="beatCount" label="Beat Count (Aksharas)" placeholder="e.g. 8" type="number" value={formData.beatCount} onChange={handleInputChange} className="md:col-span-4" />
+                                <FormInput name="angaStructure" label="Anga Structure" placeholder="e.g. I4 O O" help="Example: I4 O O for Adi Tala" value={formData.angaStructure} onChange={handleInputChange} className="md:col-span-8" />
                             </div>
-                            <FormTextarea label="Notes" placeholder="Add any additional context, historical details, or usage notes..." defaultValue={(initialData as Tala)?.notes} />
+                            <FormTextarea name="notes" label="Notes" placeholder="Add any additional context, historical details, or usage notes..." value={formData.notes} onChange={handleInputChange} />
                         </div>
                     )}
 
                     {entityType === 'Ragas' && (
                         <div className="space-y-8">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                                <FormInput label="Name" placeholder="e.g. Mayamalavagowla" defaultValue={(initialData as Raga)?.name} required />
+                                <FormInput name="name" label="Name" placeholder="e.g. Mayamalavagowla" value={formData.name} onChange={handleInputChange} required />
                                 <div className="space-y-2">
                                     <label className="block text-sm font-semibold text-ink-900">Parent Raga</label>
-                                    <select className="w-full h-12 px-4 rounded-lg bg-slate-50 border border-border-light text-ink-900 focus:ring-2 focus:ring-primary focus:border-transparent">
-                                        <option>Select Parent...</option>
-                                        <option>Melakarta</option>
-                                        <option>Janya</option>
+                                    <select name="parentRaga" value={formData.parentRaga || ''} onChange={handleInputChange} className="w-full h-12 px-4 rounded-lg bg-slate-50 border border-border-light text-ink-900 focus:ring-2 focus:ring-primary focus:border-transparent">
+                                        <option value="">Select Parent...</option>
+                                        <option value="Melakarta">Melakarta</option>
+                                        <option value="Janya">Janya</option>
                                     </select>
                                 </div>
-                                <FormInput label="Melakarta Number" placeholder="1-72" defaultValue={(initialData as Raga)?.melakartaNumber} />
-                                <FormInput label="Normalized Name" placeholder="e.g. mayamulavagowla" defaultValue={(initialData as Raga)?.normalizedName} />
+                                <FormInput name="melakartaNumber" label="Melakarta Number" placeholder="1-72" value={formData.melakartaNumber} onChange={handleInputChange} />
+                                <FormInput name="normalizedName" label="Normalized Name" placeholder="e.g. mayamulavagowla" value={formData.normalizedName} onChange={handleInputChange} />
                             </div>
                             <div className="space-y-6">
-                                <FormInput label="Arohanam" placeholder="Format: S R1 G3 M1 P D1 N3 S" defaultValue={(initialData as Raga)?.arohanam} />
-                                <FormInput label="Avarohanam" placeholder="Format: S N3 D1 P M1 G3 R1 S" defaultValue={(initialData as Raga)?.avarohanam} />
+                                <FormInput name="arohanam" label="Arohanam" placeholder="Format: S R1 G3 M1 P D1 N3 S" value={formData.arohanam} onChange={handleInputChange} />
+                                <FormInput name="avarohanam" label="Avarohanam" placeholder="Format: S N3 D1 P M1 G3 R1 S" value={formData.avarohanam} onChange={handleInputChange} />
                             </div>
-                            <FormTextarea label="Musicological Notes" defaultValue={(initialData as Raga)?.notes} />
+                            <FormTextarea name="notes" label="Musicological Notes" value={formData.notes} onChange={handleInputChange} />
                         </div>
                     )}
 
                     {entityType === 'Composers' && (
                         <div className="space-y-8">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                                <FormInput label="Name" placeholder="e.g. Tyagaraja" defaultValue={(initialData as Composer)?.name} required />
-                                <FormInput label="Normalized Name" placeholder="e.g. Tyāgarāja" defaultValue={(initialData as Composer)?.normalizedName} />
-                                <FormInput label="Birth Year" placeholder="YYYY" defaultValue={(initialData as Composer)?.birthYear} />
-                                <FormInput label="Death Year" placeholder="YYYY" defaultValue={(initialData as Composer)?.deathYear} />
-                                <FormInput label="Place of Origin" placeholder="City/Village" defaultValue={(initialData as Composer)?.place} className="md:col-span-2" />
+                                <FormInput name="name" label="Name" placeholder="e.g. Tyagaraja" value={formData.name} onChange={handleInputChange} required />
+                                <FormInput name="normalizedName" label="Normalized Name" placeholder="e.g. Tyāgarāja" value={formData.normalizedName} onChange={handleInputChange} />
+                                <FormInput name="birthYear" label="Birth Year" placeholder="YYYY" value={formData.birthYear} onChange={handleInputChange} />
+                                <FormInput name="deathYear" label="Death Year" placeholder="YYYY" value={formData.deathYear} onChange={handleInputChange} />
+                                <FormInput name="place" label="Place of Origin" placeholder="City/Village" value={formData.place} onChange={handleInputChange} className="md:col-span-2" />
                             </div>
-                            <FormTextarea label="Biographical Notes" defaultValue={(initialData as Composer)?.notes} />
+                            <FormTextarea name="notes" label="Biographical Notes" value={formData.notes} onChange={handleInputChange} />
                         </div>
                     )}
 
                     {entityType === 'Temples' && (
                         <div className="space-y-8">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                                <FormInput label="Name" placeholder="e.g. Srirangam" defaultValue={(initialData as Temple)?.name} required />
+                                <FormInput name="name" label="Name" placeholder="e.g. Srirangam" value={formData.name} onChange={handleInputChange} required />
                                 <div className="space-y-2">
                                     <div className="flex items-center justify-between">
                                         <label className="block text-sm font-semibold text-ink-900">Normalized Name</label>
                                         <span className="text-xs text-ink-400">Auto-generated</span>
                                     </div>
-                                    <input className="w-full h-12 px-4 rounded-lg bg-slate-100 border border-border-light text-ink-500 focus:outline-none cursor-not-allowed" readOnly placeholder="e.g. srirangam" defaultValue={(initialData as Temple)?.normalizedName} />
+                                    <input className="w-full h-12 px-4 rounded-lg bg-slate-100 border border-border-light text-ink-500 focus:outline-none cursor-not-allowed" readOnly placeholder="e.g. srirangam" value={formData.normalizedName || ''} />
                                 </div>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-                                <FormInput label="City" placeholder="e.g. Trichy" defaultValue={(initialData as Temple)?.location?.split(',')[0]} />
-                                <FormInput label="State" placeholder="e.g. Tamil Nadu" defaultValue={(initialData as Temple)?.location?.split(',')[1]} />
-                                <FormInput label="Country" placeholder="e.g. India" defaultValue={(initialData as Temple)?.location?.split(',')[2]} />
+                                <FormInput name="city" label="City" placeholder="e.g. Trichy" value={formData.city} onChange={handleInputChange} />
+                                <FormInput name="state" label="State" placeholder="e.g. Tamil Nadu" value={formData.state} onChange={handleInputChange} />
+                                <FormInput name="country" label="Country" placeholder="e.g. India" value={formData.country} onChange={handleInputChange} />
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                                 <div className="space-y-2">
                                     <label className="block text-sm font-semibold text-ink-900">Primary Deity</label>
                                     <select
-                                        defaultValue={(initialData as Temple)?.primaryDeity}
+                                        name="primaryDeity"
+                                        value={formData.primaryDeity || ''}
+                                        onChange={handleInputChange}
                                         className="w-full h-12 px-4 rounded-lg bg-slate-50 border border-border-light text-ink-900 focus:ring-2 focus:ring-primary focus:border-transparent appearance-none"
                                     >
                                         <option value="">Select Deity...</option>
@@ -278,11 +535,11 @@ const EntityForm: React.FC<{
                                     </select>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
-                                    <FormInput label="Latitude" placeholder="e.g. 10.8635" type="number" step="any" defaultValue={(initialData as Temple)?.coordinates?.split(',')[0]} />
-                                    <FormInput label="Longitude" placeholder="e.g. 78.6864" type="number" step="any" defaultValue={(initialData as Temple)?.coordinates?.split(',')[1]} />
+                                    <FormInput name="latitude" label="Latitude" placeholder="e.g. 10.8635" type="number" step="any" value={formData.latitude} onChange={handleInputChange} />
+                                    <FormInput name="longitude" label="Longitude" placeholder="e.g. 78.6864" type="number" step="any" value={formData.longitude} onChange={handleInputChange} />
                                 </div>
                             </div>
-                            <FormTextarea label="Notes" placeholder="Add any additional context, historical details, or usage notes..." defaultValue={(initialData as Temple)?.notes} />
+                            <FormTextarea name="notes" label="Notes" placeholder="Add any additional context, historical details, or usage notes..." value={formData.notes} onChange={handleInputChange} />
                             {(initialData as Temple)?.aliases && (initialData as Temple)!.aliases!.length > 0 && (
                                 <div className="space-y-2">
                                     <label className="block text-sm font-semibold text-ink-900">Temple Names (Aliases)</label>
@@ -301,12 +558,21 @@ const EntityForm: React.FC<{
 
                     {/* Footer Actions */}
                     <div className="pt-6 border-t border-border-light flex flex-col-reverse sm:flex-row items-center justify-end gap-4">
-                        <button onClick={onCancel} className="w-full sm:w-auto px-6 py-2.5 rounded-lg border border-border-light text-ink-700 bg-white hover:bg-slate-50 text-sm font-medium transition-colors">
+                        <button 
+                            type="button"
+                            onClick={onCancel} 
+                            className="w-full sm:w-auto px-6 py-2.5 rounded-lg border border-border-light text-ink-700 bg-white hover:bg-slate-50 text-sm font-medium transition-colors"
+                        >
                             Cancel
                         </button>
-                        <button onClick={onSave} className="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-primary hover:bg-primary-dark text-white text-sm font-medium shadow-md shadow-blue-500/20 transition-all flex items-center justify-center gap-2">
+                        <button 
+                            type="button"
+                            onClick={handleSave} 
+                            disabled={saving}
+                            className="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-primary hover:bg-primary-dark text-white text-sm font-medium shadow-md shadow-blue-500/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
                             <span className="material-symbols-outlined text-lg">save</span>
-                            Save Changes
+                            {saving ? 'Saving...' : 'Save Changes'}
                         </button>
                     </div>
                 </div>
@@ -366,6 +632,42 @@ const ReferenceData: React.FC = () => {
     const handleEdit = (item: ReferenceItem) => {
         setSelectedItem(item);
         setViewMode('FORM');
+    };
+
+    const handleSave = async () => {
+        // Reload the list data after save
+        if (activeEntity) {
+            setLoading(true);
+            try {
+                switch (activeEntity) {
+                    case 'Composers':
+                        const composersData = await getComposers();
+                        setComposers(composersData);
+                        break;
+                    case 'Ragas':
+                        const ragasData = await getRagas();
+                        setRagas(ragasData);
+                        break;
+                    case 'Talas':
+                        const talasData = await getTalas();
+                        setTalas(talasData);
+                        break;
+                    case 'Temples':
+                        const templesData = await getTemples();
+                        setTemples(templesData);
+                        break;
+                }
+                // Also reload stats
+                const statsData = await getReferenceStats();
+                setStats(statsData);
+            } catch (err: any) {
+                console.error('Failed to reload data after save:', err);
+            } finally {
+                setLoading(false);
+            }
+        }
+        setViewMode('LIST');
+        setSelectedItem(null);
     };
 
     // Load reference stats on mount
@@ -556,7 +858,7 @@ const ReferenceData: React.FC = () => {
     // --- MAIN RENDER ---
 
     if (viewMode === 'FORM' && activeEntity) {
-        return <EntityForm entityType={activeEntity} initialData={selectedItem} onSave={() => setViewMode('LIST')} onCancel={handleBack} />;
+        return <EntityForm entityType={activeEntity} initialData={selectedItem} onSave={handleSave} onCancel={handleBack} />;
     }
 
     if (viewMode === 'LIST') {

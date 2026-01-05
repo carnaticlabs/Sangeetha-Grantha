@@ -1,6 +1,6 @@
 # Architectural Decision Records Index
 
-> **Status**: Current | **Version**: 2.0 | **Last Updated**: 2025-01-27
+> **Status**: Current | **Version**: 2.1 | **Last Updated**: 2026-01-05
 > **Owners**: Architecture Working Group
 
 # ADR Index
@@ -12,6 +12,7 @@
 | ADR-003 | Database Migration Tool Choice - Rust vs Flyway | Accepted | 2025-01-27 | [ADR-003-database-migrations.md](./ADR-003-database-migrations.md) |
 | ADR-004 | Authentication Strategy - JWT with Role-Based Access Control | Accepted | 2025-01-27 | [ADR-004-authentication-strategy.md](./ADR-004-authentication-strategy.md) |
 | ADR-005 | Graph Database Evaluation for Music-Aware Graph Explorer | Draft | 2025-12-29 | [ADR-005-graph-database-evaluation.md](./ADR-005-graph-database-evaluation.md) |
+| ADR-006 | Integration of Google Gemini for Content Ingestion and Validation | Accepted | 2026-01-05 | [ADR-006-gemini-integration.md](./ADR-006-gemini-integration.md) |
 
 ## How to Propose a New ADR
 

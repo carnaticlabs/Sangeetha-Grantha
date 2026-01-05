@@ -100,3 +100,11 @@ data class TempleNameDto(
     val source: String = "manual",    // manual | import
     val createdAt: Instant,
 )
+
+// --- Lyric Variants with Sections ---
+
+@Serializable
+data class KrithiLyricVariantWithSectionsDto(
+    val variant: KrithiLyricVariantDto,
+    val sections: List<KrithiLyricSectionDto>,
+)

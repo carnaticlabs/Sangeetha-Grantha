@@ -8,6 +8,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class KrithiCreateRequest(
     val title: String,
+    val incipit: String? = null,
     val composerId: String,
     val musicalForm: MusicalFormDto = MusicalFormDto.KRITHI,
     val primaryLanguage: LanguageCodeDto,
@@ -24,6 +25,7 @@ data class KrithiCreateRequest(
 @Serializable
 data class KrithiUpdateRequest(
     val title: String? = null,
+    val incipit: String? = null,
     val composerId: String? = null,
     val musicalForm: MusicalFormDto? = null,
     val primaryLanguage: LanguageCodeDto? = null,
@@ -36,4 +38,17 @@ data class KrithiUpdateRequest(
     val sahityaSummary: String? = null,
     val notes: String? = null,
     val workflowState: WorkflowStateDto? = null,
+    val tagIds: List<String>? = null,
+)
+
+@Serializable
+data class KrithiSectionRequest(
+    val sectionType: String,
+    val orderIndex: Int,
+    val label: String? = null,
+)
+
+@Serializable
+data class SaveKrithiSectionsRequest(
+    val sections: List<KrithiSectionRequest>
 )
