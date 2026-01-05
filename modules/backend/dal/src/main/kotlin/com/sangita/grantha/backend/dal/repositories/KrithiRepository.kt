@@ -5,7 +5,11 @@ import com.sangita.grantha.backend.dal.enums.LanguageCode
 import com.sangita.grantha.backend.dal.enums.MusicalForm
 import com.sangita.grantha.backend.dal.enums.WorkflowState
 import com.sangita.grantha.backend.dal.models.toKrithiDto
+import com.sangita.grantha.backend.dal.models.toKrithiSectionDto
+import com.sangita.grantha.backend.dal.models.toKrithiLyricVariantDto
+import com.sangita.grantha.backend.dal.models.toKrithiLyricSectionDto
 import com.sangita.grantha.backend.dal.models.toRagaDto
+import com.sangita.grantha.backend.dal.models.toTagDto
 import com.sangita.grantha.shared.domain.model.KrithiSummary
 import com.sangita.grantha.shared.domain.model.RagaRefDto
 import com.sangita.grantha.backend.dal.support.toJavaUuid
@@ -13,10 +17,19 @@ import com.sangita.grantha.backend.dal.support.toKotlinUuid
 import com.sangita.grantha.backend.dal.tables.ComposersTable
 import com.sangita.grantha.backend.dal.tables.KrithisTable
 import com.sangita.grantha.backend.dal.tables.KrithiLyricVariantsTable
+import com.sangita.grantha.backend.dal.tables.KrithiLyricSectionsTable
 import com.sangita.grantha.backend.dal.tables.KrithiRagasTable
+import com.sangita.grantha.backend.dal.tables.KrithiSectionsTable
+import com.sangita.grantha.backend.dal.tables.KrithiTagsTable
 import com.sangita.grantha.backend.dal.tables.RagasTable
+import com.sangita.grantha.backend.dal.tables.TagsTable
 import com.sangita.grantha.shared.domain.model.KrithiDto
 import com.sangita.grantha.shared.domain.model.KrithiSearchResult
+import com.sangita.grantha.shared.domain.model.KrithiSectionDto
+import com.sangita.grantha.shared.domain.model.KrithiLyricVariantDto
+import com.sangita.grantha.shared.domain.model.KrithiLyricSectionDto
+import com.sangita.grantha.shared.domain.model.KrithiLyricVariantWithSectionsDto
+import com.sangita.grantha.shared.domain.model.TagDto
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.UUID
@@ -106,6 +119,8 @@ class KrithiRepository {
         id: Uuid,
         title: String? = null,
         titleNormalized: String? = null,
+        incipit: String? = null,
+        incipitNormalized: String? = null,
         composerId: UUID? = null,
         musicalForm: MusicalForm? = null,
         primaryLanguage: LanguageCode? = null,
@@ -123,6 +138,8 @@ class KrithiRepository {
         val updated = KrithisTable.update({ KrithisTable.id eq id.toJavaUuid() }) {
             title?.let { value -> it[KrithisTable.title] = value }
             titleNormalized?.let { value -> it[KrithisTable.titleNormalized] = value }
+            incipit?.let { value -> it[KrithisTable.incipit] = value }
+            incipitNormalized?.let { value -> it[KrithisTable.incipitNormalized] = value }
             composerId?.let { value -> it[KrithisTable.composerId] = value }
             musicalForm?.let { value -> it[KrithisTable.musicalForm] = value }
             primaryLanguage?.let { value -> it[KrithisTable.primaryLanguage] = value }
@@ -157,6 +174,89 @@ class KrithiRepository {
             .where { KrithisTable.id eq id.toJavaUuid() }
             .map { it.toKrithiDto() }
             .singleOrNull()
+    }
+
+    suspend fun getTags(krithiId: Uuid): List<TagDto> = DatabaseFactory.dbQuery {
+        val javaKrithiId = krithiId.toJavaUuid()
+        (KrithiTagsTable innerJoin TagsTable)
+            .selectAll()
+            .where { KrithiTagsTable.krithiId eq javaKrithiId }
+            .map { it.toTagDto() }
+    }
+
+    suspend fun updateTags(krithiId: Uuid, tagIds: List<UUID>) = DatabaseFactory.dbQuery {
+        // Delete existing tags
+        KrithiTagsTable.deleteWhere { KrithiTagsTable.krithiId eq krithiId.toJavaUuid() }
+        
+        // Insert new tags
+        if (tagIds.isNotEmpty()) {
+            KrithiTagsTable.batchInsert(tagIds) { tagId ->
+                this[KrithiTagsTable.krithiId] = krithiId.toJavaUuid()
+                this[KrithiTagsTable.tagId] = tagId
+                this[KrithiTagsTable.sourceInfo] = "manual"
+            }
+        }
+    }
+
+    suspend fun getSections(krithiId: Uuid): List<KrithiSectionDto> = DatabaseFactory.dbQuery {
+        KrithiSectionsTable
+            .selectAll()
+            .where { KrithiSectionsTable.krithiId eq krithiId.toJavaUuid() }
+            .orderBy(KrithiSectionsTable.orderIndex)
+            .map { it.toKrithiSectionDto() }
+    }
+
+    suspend fun getLyricVariants(krithiId: Uuid): List<KrithiLyricVariantWithSectionsDto> = DatabaseFactory.dbQuery {
+        val javaKrithiId = krithiId.toJavaUuid()
+        
+        // Get all variants for this krithi
+        val variants = KrithiLyricVariantsTable
+            .selectAll()
+            .where { KrithiLyricVariantsTable.krithiId eq javaKrithiId }
+            .map { it.toKrithiLyricVariantDto() }
+        
+        // Get all sections for these variants
+        val variantIds = variants.map { it.id.toJavaUuid() }
+        val sections = if (variantIds.isNotEmpty()) {
+            KrithiLyricSectionsTable
+                .selectAll()
+                .where { KrithiLyricSectionsTable.lyricVariantId inList variantIds }
+                .map { it.toKrithiLyricSectionDto() }
+                .groupBy { it.lyricVariantId }
+        } else {
+            emptyMap()
+        }
+        
+        // Combine variants with their sections
+        variants.map { variant ->
+            KrithiLyricVariantWithSectionsDto(
+                variant = variant,
+                sections = sections[variant.id] ?: emptyList()
+            )
+        }
+    }
+
+    suspend fun saveSections(krithiId: Uuid, sections: List<Pair<String, Int>>) = DatabaseFactory.dbQuery {
+        val now = OffsetDateTime.now(ZoneOffset.UTC)
+        val javaKrithiId = krithiId.toJavaUuid()
+        
+        // Delete existing sections
+        KrithiSectionsTable.deleteWhere { KrithiSectionsTable.krithiId eq javaKrithiId }
+        
+        // Insert new sections
+        if (sections.isNotEmpty()) {
+            KrithiSectionsTable.batchInsert(sections.withIndex()) { (index, section) ->
+                val (sectionType, orderIndex) = section
+                this[KrithiSectionsTable.id] = UUID.randomUUID()
+                this[KrithiSectionsTable.krithiId] = javaKrithiId
+                this[KrithiSectionsTable.sectionType] = sectionType
+                this[KrithiSectionsTable.orderIndex] = orderIndex
+                this[KrithiSectionsTable.label] = null
+                this[KrithiSectionsTable.notes] = null
+                this[KrithiSectionsTable.createdAt] = now
+                this[KrithiSectionsTable.updatedAt] = now
+            }
+        }
     }
 
     suspend fun search(
