@@ -1,3 +1,4 @@
+pub mod commit;
 pub mod db;
 pub mod dev;
 pub mod mobile;
