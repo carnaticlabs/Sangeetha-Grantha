@@ -1,17 +1,3 @@
----
-title: Commit Guardrails and Workflow Enforcement System
-status: Implemented
-version: 1.0
-last_updated: 2026-01-05
-implementation_date: 2026-01-05
-owners:
-  - Architecture Team
-  - Development Team
-related_docs:
-  - ../../00-meta/standards.md
-  - ../../02-architecture/tech-stack.md
----
-
 # Commit Guardrails and Workflow Enforcement System
 
 ## Executive Summary
@@ -261,3 +247,10 @@ The hooks integrate seamlessly with:
 - Any IDE that respects standard Git hooks
 
 No special configuration required beyond running `cargo run -- commit install-hooks` once.
+
+---
+
+## 7. References
+
+- [Standards Documentation](../../00-meta/standards.md) - Development standards and guidelines
+- [Tech Stack Documentation](../../02-architecture/tech-stack.md) - Technology stack overview

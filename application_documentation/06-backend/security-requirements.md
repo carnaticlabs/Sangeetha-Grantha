@@ -34,10 +34,18 @@ The public API is read-only in v1 and exposes only published Krithis.
   - Accounts must support lockout after repeated failures.
   - Login attempts (success and failure) should be audit logged.
 
-### 1.2 JWT Tokens (Admin)
+### 1.2 Bearer Token Authentication (Current Implementation)
 
-- Access tokens are JWTs signed with HMAC secret from env.
-- Claims should include:
+**Current Status (v1)**: The system uses a simplified bearer token authentication mechanism.
+
+- Admin endpoints require `Authorization: Bearer <token>` header.
+- Token is configured via `config/application.local.toml` or `ADMIN_TOKEN` environment variable.
+- Default development token: `dev-admin-token` (must be changed in production).
+- Token validation is performed by Ktor's bearer authentication plugin.
+
+**Future Enhancement (Planned)**:
+- JWT-based authentication with HMAC signing.
+- Claims will include:
   - `userId` (UUID).
   - `email`.
   - `roles[]` (e.g. `admin`, `editor`, `reviewer`).

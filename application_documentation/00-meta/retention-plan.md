@@ -1,195 +1,165 @@
 # Documentation Retention and Archiving Plan
 
-TODO: Update this document for Sangita Grantha.
+> **Status**: Current | **Version**: 1.0 | **Last Updated**: 2025-01-27
+> **Owners**: Platform Team
 
-## Executive Summary
+**Related Documents**
+- [Documentation Standards](./standards.md)
+- [Documentation Index](../README.md)
 
-TODO: Update this section.
+## Overview
 
-## Part 1: Files to RETAIN (Keep Active)
+This document outlines the retention and archiving strategy for Sangita Grantha documentation. The goal is to maintain a clean, current documentation tree while preserving historical context.
 
-TODO: Update this section.
+## Archive Location
 
-### Core Documentation (Root)
+All archived documentation is stored in `application_documentation/archive/` with the following structure:
 
-TODO: Update this section.
+```
+archive/
+├── database-archive/      # Legacy database schemas and migrations
+├── graph-explorer/        # Archived graph database evaluation docs
+├── requirements-spec/     # Legacy requirement specifications
+├── ui-ux/                 # Archived UI/UX documentation
+└── [feature-name]/        # Feature-specific archived docs
+```
 
-### Requirements
+## When to Archive
 
-TODO: Update this section.
+Documentation should be archived when:
 
-### API Documentation
+1. **Superseded**: Replaced by newer, canonical documentation
+2. **Obsolete**: No longer reflects current implementation or plans
+3. **Historical**: Preserved for reference but not actively maintained
+4. **Experimental**: From features that were evaluated but not implemented
 
-TODO: Update this section.
+## Archiving Process
 
-### Database Documentation
+### Step 1: Create Archive Directory
 
-TODO: Update this section.
+If archiving a feature or topic, create a subdirectory in `archive/`:
 
-### Backend Documentation
+```bash
+mkdir -p application_documentation/archive/[feature-name]
+```
 
-TODO: Update this section.
+### Step 2: Add README
 
-### Frontend Documentation
+Create a `README.md` in the archive directory explaining:
+- What was archived and why
+- Date of archival
+- Link to canonical replacement (if applicable)
+- Brief summary of contents
 
-TODO: Update this section.
+Example:
+```markdown
+# [Feature Name] Archive
 
-### Operations
+> **Status**: Archived | **Date Archived**: YYYY-MM-DD
 
-TODO: Update this section.
+## Overview
 
-### QA & Testing
+[Brief description of what was archived]
 
-TODO: Update this section.
+## Contents
 
-### Architecture Decisions
+- [List of files and their purpose]
 
-TODO: Update this section.
+## Archive Rationale
 
-### Diagrams
+[Why these documents were archived]
 
-TODO: Update this section.
+## Canonical Replacement
 
-### UI/UX
+[Link to current documentation, if applicable]
+```
 
-TODO: Update this section.
+### Step 3: Move Files
 
-### Recent Work Summaries (Keep for Reference)
+Move files to the archive directory:
 
-TODO: Update this section.
+```bash
+mv application_documentation/[path]/[file].md \
+   application_documentation/archive/[feature-name]/
+```
 
-## Part 2: Files to ARCHIVE
+### Step 4: Update References
 
-TODO: Update this section.
+- Update any cross-references in active documentation
+- Add tombstone notes in original locations if needed
+- Update the main documentation index if the file was listed
 
-### 2.1 Completed Task Documentation (Move to archive/)
+### Step 5: Update Status
 
-TODO: Update this section.
+Set the document status to "Archived" in front matter:
 
-### 2.2 Documentation Planning/Meta Files
+```markdown
+> **Status**: Archived | **Date Archived**: YYYY-MM-DD
+```
 
-TODO: Update this section.
+## Current Archive Contents
 
-### 2.3 Obsolete or Superseded Documentation
+### Database Archive (`archive/database-archive/`)
 
-TODO: Update this section.
+Legacy database schemas, DDL scripts, and design documents from earlier iterations.
 
-### 2.4 Old Task Documentation
+### Graph Explorer Archive (`archive/graph-explorer/`)
 
-TODO: Update this section.
+Documentation from the Neo4j graph database evaluation phase. The feature was not implemented, but the evaluation documents are preserved for reference.
 
-### 2.5 Screenshots Directory
+### Requirements Spec Archive (`archive/requirements-spec/`)
 
-TODO: Update this section.
+Legacy requirement specifications that have been superseded by the current PRD structure.
 
-### 2.6 Deprecated Requirements Spec Directory
+### UI/UX Archive (`archive/ui-ux/`)
 
-TODO: Update this section.
+Archived UI/UX documentation and specifications.
 
-## Part 3: Files Requiring REVIEW Before Decision
+## Retention Guidelines
 
-TODO: Update this section.
+### Keep Active
 
-### Review for Currency
+- Current PRDs and requirements
+- Active architecture documentation
+- Current API contracts
+- Database schema documentation (current)
+- Backend and frontend implementation guides
+- Operations runbooks
+- Test plans and quality reports
 
-TODO: Update this section.
+### Archive
 
-## Part 4: Archiving Actions
+- Superseded specifications
+- Experimental feature evaluations (not implemented)
+- Legacy database schemas
+- Obsolete UI mockups or designs
+- Historical planning documents
 
-TODO: Update this section.
+### Delete (Rare)
 
-### Create Archive Structure (if not exists)
+Only delete documentation if:
+- It contains sensitive information that should not be preserved
+- It's a duplicate with no historical value
+- It's a temporary scratch file
 
-TODO: Update this section.
+**Note**: When in doubt, archive rather than delete.
 
-### Move Commands
+## Maintenance
 
-TODO: Update this section.
+### Quarterly Review
 
-# Completed fixes
+Review the documentation tree quarterly to:
+- Identify obsolete documents for archiving
+- Verify archive READMEs are accurate
+- Check for broken cross-references
+- Update retention plan if needed
 
-TODO: Update this document for Sangita Grantha.
+### Archive Index
 
-# Steel thread documentation
+The main documentation index (`application_documentation/README.md`) references the retention plan but does not list all archived documents. Archive directories should maintain their own README files for discoverability.
 
-TODO: Update this document for Sangita Grantha.
+## References
 
-# Documentation meta files
-
-TODO: Update this document for Sangita Grantha.
-
-# Obsolete/superseded
-
-TODO: Update this document for Sangita Grantha.
-
-# Task files
-
-TODO: Update this document for Sangita Grantha.
-
-# Then remove empty directory
-
-TODO: Update this document for Sangita Grantha.
-
-# Screenshots (evaluate if needed)
-
-TODO: Update this document for Sangita Grantha.
-
-# Option 1: Archive old screenshots
-
-TODO: Update this document for Sangita Grantha.
-
-# mv __screenshots/* archive/screenshots-old/
-
-TODO: Update this document for Sangita Grantha.
-
-# rmdir __screenshots
-
-TODO: Update this document for Sangita Grantha.
-
-# Option 2: Consolidate to diagrams/screenshots
-
-TODO: Update this document for Sangita Grantha.
-
-# mv __screenshots/* diagrams/screenshots/
-
-TODO: Update this document for Sangita Grantha.
-
-# rmdir __screenshots
-
-TODO: Update this document for Sangita Grantha.
-
-## Part 5: Post-Archival Actions
-
-TODO: Update this section.
-
-### 2. Create Archive Index
-
-TODO: Update this section.
-
-# Archived Documentation
-
-TODO: Update this document for Sangita Grantha.
-
-## Archive Structure
-
-TODO: Update this section.
-
-## Recently Archived (2025-11-29)
-
-TODO: Update this section.
-
-### 3. Verify Links
-
-TODO: Update this section.
-
-## Summary Statistics
-
-TODO: Update this section.
-
-## Notes
-
-TODO: Update this section.
-
-## Validation Checklist
-
-TODO: Update this section.
+- [Documentation Standards](./standards.md)
+- [Documentation Index](../README.md)
+- [ADR-001: Spec-Driven Documentation](../02-architecture/decisions/ADR-001-spec-driven-docs.md)
