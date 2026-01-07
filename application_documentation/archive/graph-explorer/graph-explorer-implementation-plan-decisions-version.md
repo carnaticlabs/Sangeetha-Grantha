@@ -7,7 +7,7 @@
 - [Graph Database Evaluation](./graph-database-evaluation.md)
 - Neo4J Graph Evaluation (Deleted)
 - [Sangita_Schema_Overview](../../04-database/schema.md)
-- [Architecture](../backend-system-design.md)
+- [Architecture](../../02-architecture/backend-system-design.md)
 
 # Graph Explorer Implementation Plan
 ## PostgreSQL + Cytoscape.js Approach

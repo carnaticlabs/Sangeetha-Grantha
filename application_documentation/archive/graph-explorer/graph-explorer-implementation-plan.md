@@ -21,7 +21,8 @@ related_docs:
 
 This document provides a comprehensive implementation plan for building a **Music-Aware Graph Explorer** using **PostgreSQL** (as the single source of truth) and **Cytoscape.js** (for client-side visualization). This approach avoids the operational complexity of Neo4j while delivering the required graph visualization functionality.
 
-**Note:** This is a detailed implementation plan. For the complete feature requirements and architecture decision, see [Graph Explorer Feature Requirements](./graph-explorer.md).
+**Note:** This is a detailed implementation plan. For the complete feature requirements and architecture decision, see- [Graph Explorer Feature Requirements](../../01-requirements/features/graph-explorer.md)
+.
 
 **Key Design Decisions:**
 - PostgreSQL recursive CTEs for graph traversal queries

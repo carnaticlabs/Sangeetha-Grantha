@@ -49,5 +49,5 @@ The decision to choose Google Gemini is driven by several key factors:
 *   **Human-in-the-Loop**: AI outputs (especially imported data) must be stored in a staging area (`imported_krithis`) and require human approval before becoming canonical.
 
 ## References
-*   [Feature Requirements](../01-requirements/features/intelligent-content-ingestion.md)
+*  - [Feature Requirements](../../01-requirements/features/intelligent-content-ingestion.md)
 *   [Gemini Selection Rationale](../../09-ai/gemini-selection-rationale.md)

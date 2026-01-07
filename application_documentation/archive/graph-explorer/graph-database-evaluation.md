@@ -15,13 +15,14 @@ related_docs:
 
 # Neo4j Graph Database Implementation - Critical Evaluation
 
-**Note:** This evaluation led to the decision to use PostgreSQL + Cytoscape.js instead of Neo4j. For the complete feature requirements and approved implementation strategy, see [Graph Explorer Feature Requirements](./graph-explorer.md).
+**Note:** This evaluation led to the decision to use PostgreSQL + Cytoscape.js instead of Neo4j. For the complete feature requirements and approved implementation strategy, see [Graph Explorer Feature Requirements](../../01-requirements/features/graph-explorer.md).
 
 ## Executive Summary
 
 This document provides a critical evaluation of the proposal to implement a Neo4j graph database projection for the Sangeetha Grantha platform. The evaluation assesses technical feasibility, architectural implications, operational costs, and alternative approaches.
 
-**Note:** This evaluation led to the decision to use PostgreSQL + Cytoscape.js instead of Neo4j. See [Graph Explorer Feature Requirements](./graph-explorer.md) for the approved implementation strategy.
+**Note:** This document evaluates graph database options for implementing the [Graph Explorer Feature Requirements](../../01-requirements/features/graph-explorer.md) in Sangeetha Grantha.
+pproved implementation strategy.
 
 **Key Findings:**
 - The proposed graph explorer feature has clear value for visualizing musical relationships
@@ -637,10 +638,10 @@ This approach provides:
 
 ## 10. References
 
-- [Graph Explorer Feature Requirements](./graph-explorer.md)
+- [Graph Explorer Feature Requirements](../../01-requirements/features/graph-explorer.md)
 - [Database Schema](../../04-database/schema.md)
-- [Backend Architecture](../../06-backend/backend-system-design.md)
-- [Domain Model](../domain-model.md)
+- [Backend Architecture](../../02-architecture/backend-system-design.md)
+- [Domain Model](../../01-requirements/domain-model.md)
 - [PostgreSQL Recursive CTEs Documentation](https://www.postgresql.org/docs/current/queries-with.html#QUERIES-WITH-RECURSIVE)
 - [Cytoscape.js Documentation](https://js.cytoscape.org/)
 

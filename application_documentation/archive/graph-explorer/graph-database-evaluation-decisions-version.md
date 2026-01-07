@@ -6,7 +6,7 @@
 **Related Documents**
 - [Schema](../../04-database/schema.md)
 - [Sangita_Schema_Overview](../../04-database/schema.md)
-- [Architecture](../backend-system-design.md)
+- [Architecture](../../02-architecture/backend-system-design.md)
 - Neo4J Graph Evaluation (Deleted)
 
 # Neo4j Graph Database Implementation - Critical Evaluation
@@ -631,7 +631,7 @@ This approach provides:
 
 - Neo4j Graph Database Evaluation Proposal (Deleted)
 - [Sangita Grantha Database Schema](../../04-database/schema.md)
-- [Backend Architecture](../backend-system-design.md)
+- [Backend Architecture](../../02-architecture/backend-system-design.md)
 - [Domain Model](../../01-requirements/domain-model.md)
 - [PostgreSQL Recursive CTEs Documentation](https://www.postgresql.org/docs/current/queries-with.html#QUERIES-WITH-RECURSIVE)
 - [Cytoscape.js Documentation](https://js.cytoscape.org/)
