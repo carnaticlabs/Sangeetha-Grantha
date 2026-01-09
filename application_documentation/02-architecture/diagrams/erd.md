@@ -1,6 +1,6 @@
 # Entity Relationship Diagram Reference
 
-> **Status**: Draft | **Version**: 1.0 | **Last Updated**: 2025-09-15
+> **Status**: Draft | **Version**: 1.0 | **Last Updated**: 2026-01-09
 > **Owners**: Data Platform Team
 
 **Related Documents**

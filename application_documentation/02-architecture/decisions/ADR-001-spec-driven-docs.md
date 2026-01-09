@@ -1,6 +1,6 @@
 # ADR-001: Spec-Driven Documentation Architecture
 
-> **Status**: Accepted | **Version**: 1.0 | **Last Updated**: 2026-01-27
+> **Status**: Accepted | **Version**: 1.0 | **Last Updated**: 2026-01-09
 > **Owners**: Architecture Working Group
 
 **Related Documents**

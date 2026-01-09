@@ -1,6 +1,6 @@
 # Test Plan
 
-> **Status**: Current | **Version**: 2.0 | **Last Updated**: 2025-01-27
+> **Status**: Current | **Version**: 2.0 | **Last Updated**: 2026-01-09
 > **Owners**: QA & Engineering Leads
 
 **Related Documents**

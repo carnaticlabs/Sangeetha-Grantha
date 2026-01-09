@@ -1,6 +1,6 @@
 # Quick Reference: Admin Authentication
 
-> **Status**: Current | **Version**: 1.0 | **Last Updated**: 2025-01-27
+> **Status**: Current | **Version**: 1.0 | **Last Updated**: 2026-01-09
 > **Owners**: Backend Team
 
 **Related Documents**

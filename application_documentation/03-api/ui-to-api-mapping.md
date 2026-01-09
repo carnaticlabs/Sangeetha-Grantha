@@ -1,6 +1,6 @@
 # UI to API Mapping
 
-> **Status**: Approved | **Version**: 2.1 | **Last Updated**: 2025-01-27
+> **Status**: Approved | **Version**: 2.1 | **Last Updated**: 2026-01-09
 > **Owners**: Platform API Team
 
 **Related Documents**

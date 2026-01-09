@@ -1,6 +1,6 @@
 # Google Gemini & AI Integration Opportunities
 
-> **Status**: Planned | **Version**: 1.0 | **Last Updated**: 2025-01-27
+> **Status**: Planned | **Version**: 1.0 | **Last Updated**: 2026-01-09
 > **Owners**: Platform Team, Product Team
 
 **Related Documents**
@@ -711,7 +711,7 @@ class GeminiApiClient(
 ```toml
 # config/application.local.toml
 [ai]
-gemini_api_key = "${SG_GEMINI_API_KEY}"
+gemini_auth_token = "${SG_GEMINI_AUTH_TOKEN}"
 gemini_model = "gemini-2.0-flash-exp"
 gemini_embedding_model = "text-embedding-004"
 ```
@@ -964,7 +964,7 @@ dependencies {
 
 ```bash
 # .env or application.local.toml
-SG_GEMINI_API_KEY=your_api_key_here
+SG_GEMINI_AUTH_TOKEN=your_token_here
 SG_GEMINI_MODEL=gemini-2.0-flash-exp
 SG_GEMINI_ENABLED=true
 ```
@@ -1070,7 +1070,7 @@ This checklist tracks the granular tasks required to implement the AI features.
 ### Phase 1: Core Transliteration (Weeks 1-4)
 - [ ] **Infrastructure Setup**
     - [ ] Create GCP Project and obtain Gemini API Key
-    - [ ] Configure `GEMINI_API_KEY` in local and production environments
+    - [ ] Configure `GEMINI_AUTH_TOKEN` in local and production environments
     - [ ] Create `GeminiApiClient` module with `ktor-client`
     - [ ] Implement `rate_limiter` middleware (Token Bucket) using Redis
 - [ ] **TransliterationService**

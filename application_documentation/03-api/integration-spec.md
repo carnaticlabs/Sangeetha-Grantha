@@ -1,6 +1,6 @@
 # Sangita Grantha API Integration Specification
 
-> **Status**: Draft | **Version**: 0.1 | **Last Updated**: 2025-12-21
+> **Status**: Draft | **Version**: 0.1 | **Last Updated**: 2026-01-09
 > **Owners**: Mobile Team, Admin Web Team, Backend Team
 
 **Related Documents**

@@ -1,6 +1,6 @@
 # Audit Log Specification (Sangita Grantha)
 
-> **Status**: Draft | **Version**: 0.2 | **Last Updated**: 2025-01-27
+> **Status**: Draft | **Version**: 0.2 | **Last Updated**: 2026-01-09
 > **Owners**: Sangita Grantha Backend & Curation Teams
 
 **Related Documents**

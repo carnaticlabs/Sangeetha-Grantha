@@ -1,6 +1,6 @@
 # Sangita Grantha Security Requirements
 
-> **Status**: Draft | **Version**: 0.2 | **Last Updated**: 2025-01-27
+> **Status**: Draft | **Version**: 0.2 | **Last Updated**: 2026-01-09
 > **Owners**: Security Team, Backend Team
 
 **Related Documents**

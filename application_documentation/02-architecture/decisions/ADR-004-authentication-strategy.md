@@ -1,6 +1,6 @@
 # ADR-004: Authentication Strategy - Bearer Token with Role-Based Access Control
 
-> **Status**: Accepted | **Version**: 1.0 | **Last Updated**: 2026-01-27
+> **Status**: Accepted | **Version**: 1.0 | **Last Updated**: 2026-01-09
 > **Owners**: Platform Team
 
 **Related Documents**

@@ -1,6 +1,6 @@
 # AI Integration Opportunities - Executive Summary
 
-> **Status**: Summary | **Version**: 1.0 | **Last Updated**: 2025-01-27
+> **Status**: Summary | **Version**: 1.0 | **Last Updated**: 2026-01-09
 > **Owners**: 
 
 **Related Documents**
@@ -156,7 +156,7 @@ This document provides a high-level summary of Google Gemini AI integration oppo
 ### Configuration
 ```toml
 [ai]
-gemini_api_key = "${SG_GEMINI_API_KEY}"
+gemini_auth_token = "${SG_GEMINI_AUTH_TOKEN}"
 gemini_model = "gemini-2.0-flash-exp"
 ```
 

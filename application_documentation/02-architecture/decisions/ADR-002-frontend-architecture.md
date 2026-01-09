@@ -1,6 +1,6 @@
 # ADR-002: Frontend Architecture Decision - React vs Kotlin/JS
 
-> **Status**: Accepted | **Version**: 1.0 | **Last Updated**: 2026-01-27
+> **Status**: Accepted | **Version**: 1.0 | **Last Updated**: 2026-01-09
 > **Owners**: Platform Team
 
 **Related Documents**
