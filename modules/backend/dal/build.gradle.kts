@@ -21,6 +21,9 @@ dependencies {
     implementation(libs.postgresql)
 
     testImplementation(kotlin("test"))
+    testImplementation(libs.kotlinx.coroutines.test)
+    // H2 for in-memory testing (PostgreSQL-compatible mode)
+    testImplementation("com.h2database:h2:2.2.224")
 }
 
 tasks.test {

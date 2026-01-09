@@ -67,12 +67,10 @@ class RagaRepository {
             it[RagasTable.createdAt] = now
             it[RagasTable.updatedAt] = now
         }
-
-        RagasTable
-            .selectAll()
-            .where { RagasTable.id eq ragaId }
-            .map { it.toRagaDto() }
-            .single()
+            .resultedValues
+            ?.single()
+            ?.toRagaDto()
+            ?: error("Failed to insert raga")
     }
 
     suspend fun update(
@@ -86,29 +84,27 @@ class RagaRepository {
         notes: String? = null
     ): RagaDto? = DatabaseFactory.dbQuery {
         val now = OffsetDateTime.now(ZoneOffset.UTC)
-        val updated = RagasTable.update({ RagasTable.id eq id.toJavaUuid() }) {
-            name?.let { value -> 
-                it[RagasTable.name] = value
-                it[RagasTable.nameNormalized] = nameNormalized ?: normalize(value)
-            }
-            nameNormalized?.let { value -> it[RagasTable.nameNormalized] = value }
-            melakartaNumber?.let { value -> it[RagasTable.melakartaNumber] = value }
-            parentRagaId?.let { value -> it[RagasTable.parentRagaId] = value }
-            arohanam?.let { value -> it[RagasTable.arohanam] = value }
-            avarohanam?.let { value -> it[RagasTable.avarohanam] = value }
-            notes?.let { value -> it[RagasTable.notes] = value }
-            it[RagasTable.updatedAt] = now
-        }
-
-        if (updated == 0) {
-            return@dbQuery null
-        }
-
+        val javaId = id.toJavaUuid()
+        
+        // Use Exposed 1.0.0-rc-4 updateReturning to update and fetch the row in one round-trip
         RagasTable
-            .selectAll()
-            .where { RagasTable.id eq id.toJavaUuid() }
-            .map { it.toRagaDto() }
+            .updateReturning(
+                where = { RagasTable.id eq javaId }
+            ) {
+                name?.let { value -> 
+                    it[RagasTable.name] = value
+                    it[RagasTable.nameNormalized] = nameNormalized ?: normalize(value)
+                }
+                nameNormalized?.let { value -> it[RagasTable.nameNormalized] = value }
+                melakartaNumber?.let { value -> it[RagasTable.melakartaNumber] = value }
+                parentRagaId?.let { value -> it[RagasTable.parentRagaId] = value }
+                arohanam?.let { value -> it[RagasTable.arohanam] = value }
+                avarohanam?.let { value -> it[RagasTable.avarohanam] = value }
+                notes?.let { value -> it[RagasTable.notes] = value }
+                it[RagasTable.updatedAt] = now
+            }
             .singleOrNull()
+            ?.toRagaDto()
     }
 
     suspend fun delete(id: Uuid): Boolean = DatabaseFactory.dbQuery {

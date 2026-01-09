@@ -63,12 +63,10 @@ class TalaRepository {
             it[TalasTable.createdAt] = now
             it[TalasTable.updatedAt] = now
         }
-
-        TalasTable
-            .selectAll()
-            .where { TalasTable.id eq talaId }
-            .map { it.toTalaDto() }
-            .single()
+            .resultedValues
+            ?.single()
+            ?.toTalaDto()
+            ?: error("Failed to insert tala")
     }
 
     suspend fun update(
@@ -80,27 +78,25 @@ class TalaRepository {
         notes: String? = null
     ): TalaDto? = DatabaseFactory.dbQuery {
         val now = OffsetDateTime.now(ZoneOffset.UTC)
-        val updated = TalasTable.update({ TalasTable.id eq id.toJavaUuid() }) {
-            name?.let { value -> 
-                it[TalasTable.name] = value
-                it[TalasTable.nameNormalized] = nameNormalized ?: normalize(value)
-            }
-            nameNormalized?.let { value -> it[TalasTable.nameNormalized] = value }
-            beatCount?.let { value -> it[TalasTable.beatCount] = value }
-            angaStructure?.let { value -> it[TalasTable.angaStructure] = value }
-            notes?.let { value -> it[TalasTable.notes] = value }
-            it[TalasTable.updatedAt] = now
-        }
-
-        if (updated == 0) {
-            return@dbQuery null
-        }
-
+        val javaId = id.toJavaUuid()
+        
+        // Use Exposed 1.0.0-rc-4 updateReturning to update and fetch the row in one round-trip
         TalasTable
-            .selectAll()
-            .where { TalasTable.id eq id.toJavaUuid() }
-            .map { it.toTalaDto() }
+            .updateReturning(
+                where = { TalasTable.id eq javaId }
+            ) {
+                name?.let { value -> 
+                    it[TalasTable.name] = value
+                    it[TalasTable.nameNormalized] = nameNormalized ?: normalize(value)
+                }
+                nameNormalized?.let { value -> it[TalasTable.nameNormalized] = value }
+                beatCount?.let { value -> it[TalasTable.beatCount] = value }
+                angaStructure?.let { value -> it[TalasTable.angaStructure] = value }
+                notes?.let { value -> it[TalasTable.notes] = value }
+                it[TalasTable.updatedAt] = now
+            }
             .singleOrNull()
+            ?.toTalaDto()
     }
 
     suspend fun delete(id: Uuid): Boolean = DatabaseFactory.dbQuery {

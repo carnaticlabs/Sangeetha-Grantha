@@ -13,15 +13,8 @@ import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.UUID
 import kotlin.uuid.Uuid
-import org.jetbrains.exposed.v1.core.JoinType
-import org.jetbrains.exposed.v1.core.SortOrder
-import org.jetbrains.exposed.v1.core.and
-import org.jetbrains.exposed.v1.core.eq
-import org.jetbrains.exposed.v1.core.inList
-import org.jetbrains.exposed.v1.jdbc.insert
-import org.jetbrains.exposed.v1.jdbc.selectAll
-import org.jetbrains.exposed.v1.jdbc.update
-import org.jetbrains.exposed.v1.jdbc.deleteWhere
+import org.jetbrains.exposed.v1.core.*
+import org.jetbrains.exposed.v1.jdbc.*
 
 data class NotationRowWithSectionOrder(
     val row: KrithiNotationRowDto,
@@ -115,12 +108,10 @@ class KrithiNotationRepository {
             it[KrithiNotationVariantsTable.createdAt] = now
             it[KrithiNotationVariantsTable.updatedAt] = now
         }
-
-        KrithiNotationVariantsTable
-            .selectAll()
-            .where { KrithiNotationVariantsTable.id eq variantId }
-            .single()
-            .toKrithiNotationVariantDto()
+            .resultedValues
+            ?.single()
+            ?.toKrithiNotationVariantDto()
+            ?: error("Failed to insert notation variant")
     }
 
     suspend fun updateVariant(
@@ -153,25 +144,26 @@ class KrithiNotationRepository {
             }
         }
 
-        KrithiNotationVariantsTable.update({ KrithiNotationVariantsTable.id eq variantId.toJavaUuid() }) {
-            notationType?.let { value -> it[KrithiNotationVariantsTable.notationType] = value }
-            it[KrithiNotationVariantsTable.talaId] = talaId ?: existing[KrithiNotationVariantsTable.talaId]
-            kalai?.let { value -> it[KrithiNotationVariantsTable.kalai] = value }
-            it[KrithiNotationVariantsTable.eduppuOffsetBeats] =
-                eduppuOffsetBeats ?: existing[KrithiNotationVariantsTable.eduppuOffsetBeats]
-            it[KrithiNotationVariantsTable.variantLabel] = variantLabel ?: existing[KrithiNotationVariantsTable.variantLabel]
-            it[KrithiNotationVariantsTable.sourceReference] =
-                sourceReference ?: existing[KrithiNotationVariantsTable.sourceReference]
-            it[KrithiNotationVariantsTable.isPrimary] = effectiveIsPrimary
-            it[KrithiNotationVariantsTable.updatedByUserId] = updatedByUserId
-            it[KrithiNotationVariantsTable.updatedAt] = now
-        }
-
+        // Use Exposed 1.0.0-rc-4 updateReturning to update and fetch the row in one round-trip
         KrithiNotationVariantsTable
-            .selectAll()
-            .where { KrithiNotationVariantsTable.id eq variantId.toJavaUuid() }
-            .single()
-            .toKrithiNotationVariantDto()
+            .updateReturning(
+                where = { KrithiNotationVariantsTable.id eq variantId.toJavaUuid() }
+            ) { updateStmt ->
+                notationType?.let { value -> updateStmt[KrithiNotationVariantsTable.notationType] = value }
+                updateStmt[KrithiNotationVariantsTable.talaId] = talaId ?: existing[KrithiNotationVariantsTable.talaId]
+                kalai?.let { value -> updateStmt[KrithiNotationVariantsTable.kalai] = value }
+                updateStmt[KrithiNotationVariantsTable.eduppuOffsetBeats] =
+                    eduppuOffsetBeats ?: existing[KrithiNotationVariantsTable.eduppuOffsetBeats]
+                updateStmt[KrithiNotationVariantsTable.variantLabel] = variantLabel ?: existing[KrithiNotationVariantsTable.variantLabel]
+                updateStmt[KrithiNotationVariantsTable.sourceReference] =
+                    sourceReference ?: existing[KrithiNotationVariantsTable.sourceReference]
+                updateStmt[KrithiNotationVariantsTable.isPrimary] = effectiveIsPrimary
+                updateStmt[KrithiNotationVariantsTable.updatedByUserId] = updatedByUserId
+                updateStmt[KrithiNotationVariantsTable.updatedAt] = now
+            }
+            .singleOrNull()
+            ?.toKrithiNotationVariantDto()
+            ?: error("Failed to update notation variant")
     }
 
     suspend fun deleteVariant(variantId: Uuid): Boolean = DatabaseFactory.dbQuery {
@@ -200,12 +192,10 @@ class KrithiNotationRepository {
             it[KrithiNotationRowsTable.createdAt] = now
             it[KrithiNotationRowsTable.updatedAt] = now
         }
-
-        KrithiNotationRowsTable
-            .selectAll()
-            .where { KrithiNotationRowsTable.id eq rowId }
-            .single()
-            .toKrithiNotationRowDto()
+            .resultedValues
+            ?.single()
+            ?.toKrithiNotationRowDto()
+            ?: error("Failed to insert notation row")
     }
 
     suspend fun updateRow(
@@ -222,20 +212,23 @@ class KrithiNotationRepository {
             .singleOrNull() ?: return@dbQuery null
 
         val now = OffsetDateTime.now(ZoneOffset.UTC)
-        KrithiNotationRowsTable.update({ KrithiNotationRowsTable.id eq rowId.toJavaUuid() }) {
-            it[KrithiNotationRowsTable.sectionId] = sectionId ?: existing[KrithiNotationRowsTable.sectionId]
-            it[KrithiNotationRowsTable.orderIndex] = orderIndex ?: existing[KrithiNotationRowsTable.orderIndex]
-            it[KrithiNotationRowsTable.swaraText] = swaraText ?: existing[KrithiNotationRowsTable.swaraText]
-            it[KrithiNotationRowsTable.sahityaText] = sahityaText ?: existing[KrithiNotationRowsTable.sahityaText]
-            it[KrithiNotationRowsTable.talaMarkers] = talaMarkers ?: existing[KrithiNotationRowsTable.talaMarkers]
-            it[KrithiNotationRowsTable.updatedAt] = now
-        }
-
+        val javaRowId = rowId.toJavaUuid()
+        
+        // Use Exposed 1.0.0-rc-4 updateReturning to update and fetch the row in one round-trip
         KrithiNotationRowsTable
-            .selectAll()
-            .where { KrithiNotationRowsTable.id eq rowId.toJavaUuid() }
-            .single()
-            .toKrithiNotationRowDto()
+            .updateReturning(
+                where = { KrithiNotationRowsTable.id eq javaRowId }
+            ) { updateStmt ->
+                updateStmt[KrithiNotationRowsTable.sectionId] = sectionId ?: existing[KrithiNotationRowsTable.sectionId]
+                updateStmt[KrithiNotationRowsTable.orderIndex] = orderIndex ?: existing[KrithiNotationRowsTable.orderIndex]
+                updateStmt[KrithiNotationRowsTable.swaraText] = swaraText ?: existing[KrithiNotationRowsTable.swaraText]
+                updateStmt[KrithiNotationRowsTable.sahityaText] = sahityaText ?: existing[KrithiNotationRowsTable.sahityaText]
+                updateStmt[KrithiNotationRowsTable.talaMarkers] = talaMarkers ?: existing[KrithiNotationRowsTable.talaMarkers]
+                updateStmt[KrithiNotationRowsTable.updatedAt] = now
+            }
+            .singleOrNull()
+            ?.toKrithiNotationRowDto()
+            ?: error("Failed to update notation row")
     }
 
     suspend fun deleteRow(rowId: Uuid): Boolean = DatabaseFactory.dbQuery {

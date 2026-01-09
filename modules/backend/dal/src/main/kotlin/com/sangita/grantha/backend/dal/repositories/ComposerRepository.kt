@@ -65,12 +65,10 @@ class ComposerRepository {
             it[ComposersTable.createdAt] = now
             it[ComposersTable.updatedAt] = now
         }
-
-        ComposersTable
-            .selectAll()
-            .where { ComposersTable.id eq composerId }
-            .map { it.toComposerDto() }
-            .single()
+            .resultedValues
+            ?.single()
+            ?.toComposerDto()
+            ?: error("Failed to insert composer")
     }
 
     suspend fun update(
@@ -83,28 +81,26 @@ class ComposerRepository {
         notes: String? = null
     ): ComposerDto? = DatabaseFactory.dbQuery {
         val now = OffsetDateTime.now(ZoneOffset.UTC)
-        val updated = ComposersTable.update({ ComposersTable.id eq id.toJavaUuid() }) {
-            name?.let { value -> 
-                it[ComposersTable.name] = value
-                it[ComposersTable.nameNormalized] = nameNormalized ?: normalize(value)
-            }
-            nameNormalized?.let { value -> it[ComposersTable.nameNormalized] = value }
-            birthYear?.let { value -> it[ComposersTable.birthYear] = value }
-            deathYear?.let { value -> it[ComposersTable.deathYear] = value }
-            place?.let { value -> it[ComposersTable.place] = value }
-            notes?.let { value -> it[ComposersTable.notes] = value }
-            it[ComposersTable.updatedAt] = now
-        }
-
-        if (updated == 0) {
-            return@dbQuery null
-        }
-
+        val javaId = id.toJavaUuid()
+        
+        // Use Exposed 1.0.0-rc-4 updateReturning to update and fetch the row in one round-trip
         ComposersTable
-            .selectAll()
-            .where { ComposersTable.id eq id.toJavaUuid() }
-            .map { it.toComposerDto() }
+            .updateReturning(
+                where = { ComposersTable.id eq javaId }
+            ) {
+                name?.let { value -> 
+                    it[ComposersTable.name] = value
+                    it[ComposersTable.nameNormalized] = nameNormalized ?: normalize(value)
+                }
+                nameNormalized?.let { value -> it[ComposersTable.nameNormalized] = value }
+                birthYear?.let { value -> it[ComposersTable.birthYear] = value }
+                deathYear?.let { value -> it[ComposersTable.deathYear] = value }
+                place?.let { value -> it[ComposersTable.place] = value }
+                notes?.let { value -> it[ComposersTable.notes] = value }
+                it[ComposersTable.updatedAt] = now
+            }
             .singleOrNull()
+            ?.toComposerDto()
     }
 
     suspend fun delete(id: Uuid): Boolean = DatabaseFactory.dbQuery {

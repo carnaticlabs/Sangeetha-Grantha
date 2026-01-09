@@ -71,12 +71,10 @@ class TempleRepository {
             it[TemplesTable.createdAt] = now
             it[TemplesTable.updatedAt] = now
         }
-
-        TemplesTable
-            .selectAll()
-            .where { TemplesTable.id eq templeId }
-            .map { it.toTempleDto() }
-            .single()
+            .resultedValues
+            ?.single()
+            ?.toTempleDto()
+            ?: error("Failed to insert temple")
     }
 
     suspend fun update(
@@ -92,31 +90,29 @@ class TempleRepository {
         notes: String? = null
     ): TempleDto? = DatabaseFactory.dbQuery {
         val now = OffsetDateTime.now(ZoneOffset.UTC)
-        val updated = TemplesTable.update({ TemplesTable.id eq id.toJavaUuid() }) {
-            name?.let { value -> 
-                it[TemplesTable.name] = value
-                it[TemplesTable.nameNormalized] = nameNormalized ?: normalize(value)
-            }
-            nameNormalized?.let { value -> it[TemplesTable.nameNormalized] = value }
-            city?.let { value -> it[TemplesTable.city] = value }
-            state?.let { value -> it[TemplesTable.state] = value }
-            country?.let { value -> it[TemplesTable.country] = value }
-            primaryDeityId?.let { value -> it[TemplesTable.primaryDeityId] = value }
-            latitude?.let { value -> it[TemplesTable.latitude] = value }
-            longitude?.let { value -> it[TemplesTable.longitude] = value }
-            notes?.let { value -> it[TemplesTable.notes] = value }
-            it[TemplesTable.updatedAt] = now
-        }
-
-        if (updated == 0) {
-            return@dbQuery null
-        }
-
+        val javaId = id.toJavaUuid()
+        
+        // Use Exposed 1.0.0-rc-4 updateReturning to update and fetch the row in one round-trip
         TemplesTable
-            .selectAll()
-            .where { TemplesTable.id eq id.toJavaUuid() }
-            .map { it.toTempleDto() }
+            .updateReturning(
+                where = { TemplesTable.id eq javaId }
+            ) {
+                name?.let { value -> 
+                    it[TemplesTable.name] = value
+                    it[TemplesTable.nameNormalized] = nameNormalized ?: normalize(value)
+                }
+                nameNormalized?.let { value -> it[TemplesTable.nameNormalized] = value }
+                city?.let { value -> it[TemplesTable.city] = value }
+                state?.let { value -> it[TemplesTable.state] = value }
+                country?.let { value -> it[TemplesTable.country] = value }
+                primaryDeityId?.let { value -> it[TemplesTable.primaryDeityId] = value }
+                latitude?.let { value -> it[TemplesTable.latitude] = value }
+                longitude?.let { value -> it[TemplesTable.longitude] = value }
+                notes?.let { value -> it[TemplesTable.notes] = value }
+                it[TemplesTable.updatedAt] = now
+            }
             .singleOrNull()
+            ?.toTempleDto()
     }
 
     suspend fun delete(id: Uuid): Boolean = DatabaseFactory.dbQuery {

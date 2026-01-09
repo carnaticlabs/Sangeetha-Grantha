@@ -53,12 +53,10 @@ class TagRepository {
             it[TagsTable.descriptionEn] = descriptionEn
             it[TagsTable.createdAt] = now
         }
-
-        TagsTable
-            .selectAll()
-            .where { TagsTable.id eq tagId }
-            .map { it.toTagDto() }
-            .single()
+            .resultedValues
+            ?.single()
+            ?.toTagDto()
+            ?: error("Failed to insert tag")
     }
 
     suspend fun update(
@@ -68,22 +66,20 @@ class TagRepository {
         displayNameEn: String? = null,
         descriptionEn: String? = null
     ): TagDto? = DatabaseFactory.dbQuery {
-        val updated = TagsTable.update({ TagsTable.id eq id.toJavaUuid() }) {
-            category?.let { value -> it[TagsTable.category] = value.name }
-            slug?.let { value -> it[TagsTable.slug] = value }
-            displayNameEn?.let { value -> it[TagsTable.displayNameEn] = value }
-            descriptionEn?.let { value -> it[TagsTable.descriptionEn] = value }
-        }
-
-        if (updated == 0) {
-            return@dbQuery null
-        }
-
+        val javaId = id.toJavaUuid()
+        
+        // Use Exposed 1.0.0-rc-4 updateReturning to update and fetch the row in one round-trip
         TagsTable
-            .selectAll()
-            .where { TagsTable.id eq id.toJavaUuid() }
-            .map { it.toTagDto() }
+            .updateReturning(
+                where = { TagsTable.id eq javaId }
+            ) {
+                category?.let { value -> it[TagsTable.category] = value.name }
+                slug?.let { value -> it[TagsTable.slug] = value }
+                displayNameEn?.let { value -> it[TagsTable.displayNameEn] = value }
+                descriptionEn?.let { value -> it[TagsTable.descriptionEn] = value }
+            }
             .singleOrNull()
+            ?.toTagDto()
     }
 
     suspend fun delete(id: Uuid): Boolean = DatabaseFactory.dbQuery {

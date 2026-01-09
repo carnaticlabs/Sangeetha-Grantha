@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { GoogleGenAI } from "@google/genai";
 import {
@@ -135,6 +135,7 @@ const KrithiEditor: React.FC<KrithiEditorProps> = () => {
     const [tagsLoading, setTagsLoading] = useState(false);
     const [tagSearchTerm, setTagSearchTerm] = useState('');
     const [showTagDropdown, setShowTagDropdown] = useState(false);
+    const sectionsLoadedRef = useRef(false);
 
     // Data State
     const [krithi, setKrithi] = useState<Partial<KrithiDetail>>({
@@ -257,12 +258,57 @@ const KrithiEditor: React.FC<KrithiEditorProps> = () => {
     }, [krithiId, isNew]);
 
     // Remap krithi when reference data becomes available
+    // Preserve sections and lyricVariants if they've already been loaded (these come from separate endpoints)
     useEffect(() => {
         if (rawKrithiDto && composers.length > 0 && ragas.length > 0 && talas.length > 0) {
             const mapped = mapKrithiDtoToDetail(rawKrithiDto);
-            setKrithi(mapped);
+            setKrithi(prev => ({
+                ...mapped,
+                // Preserve sections if they've already been loaded from the sections endpoint
+                // (either they have content, or the ref flag indicates they were loaded - even if empty)
+                sections: sectionsLoadedRef.current || (prev.sections && prev.sections.length > 0) ? prev.sections : mapped.sections,
+                // Preserve lyricVariants if they've already been loaded from the variants endpoint
+                lyricVariants: prev.lyricVariants && prev.lyricVariants.length > 0 ? prev.lyricVariants : mapped.lyricVariants
+            }));
         }
     }, [rawKrithiDto, composers, ragas, talas, deities, temples]);
+
+    // Load sections automatically when krithi is loaded (if not a new krithi)
+    useEffect(() => {
+        if (!isNew && krithiId && !sectionsLoadedRef.current && !sectionsLoading) {
+            // Load sections after a short delay to ensure krithi state is set
+            const timer = setTimeout(async () => {
+                // Check again in case sections were loaded during the delay
+                if (sectionsLoadedRef.current) return;
+                
+                setSectionsLoading(true);
+                try {
+                    const sections = await getKrithiSections(krithiId);
+                    sectionsLoadedRef.current = true;
+                    setKrithi(prev => ({
+                        ...prev,
+                        sections: sections.map(s => ({
+                            id: s.id,
+                            sectionType: s.sectionType as any,
+                            orderIndex: s.orderIndex,
+                            label: s.label || undefined
+                        }))
+                    }));
+                } catch (err: any) {
+                    console.error('Failed to load sections:', err);
+                    // Don't show error toast on initial load - sections might not exist yet
+                } finally {
+                    setSectionsLoading(false);
+                }
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+    }, [krithiId, isNew]);
+
+    // Reset sections loaded flag when krithiId changes
+    useEffect(() => {
+        sectionsLoadedRef.current = false;
+    }, [krithiId]);
 
     // Helpers to handle ID-based selection for object fields
     const handleComposerChange = (id: string) => {
@@ -649,17 +695,19 @@ const KrithiEditor: React.FC<KrithiEditorProps> = () => {
                                             key={tab}
                                             onClick={async () => {
                                                 setActiveTab(tab as any);
-                                                // Load sections when Structure tab is clicked
-                                                if (tab === 'Structure' && krithiId && (!krithi.sections || krithi.sections.length === 0)) {
+                                                // Load sections when Structure tab is clicked (if not already loaded)
+                                                if (tab === 'Structure' && krithiId && !sectionsLoadedRef.current && !sectionsLoading) {
                                                     setSectionsLoading(true);
                                                     try {
                                                         const sections = await getKrithiSections(krithiId);
+                                                        sectionsLoadedRef.current = true;
                                                         setKrithi(prev => ({
                                                             ...prev,
                                                             sections: sections.map(s => ({
                                                                 id: s.id,
                                                                 sectionType: s.sectionType as any,
-                                                                orderIndex: s.orderIndex
+                                                                orderIndex: s.orderIndex,
+                                                                label: s.label || undefined
                                                             }))
                                                         }));
                                                     } catch (err: any) {

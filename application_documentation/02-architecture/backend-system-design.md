@@ -144,6 +144,12 @@ class SangitaDal {
 - All operations use `DatabaseFactory.dbQuery { }`
 - Repositories are injected into services
 
+**Optimization Patterns:**
+- **Create Operations**: Use `insert { ... }.resultedValues` to return inserted row in single query
+- **Update Operations**: Use `Table.updateReturning()` to return updated row in single query
+- **Collection Updates**: Use smart diffing algorithms to preserve metadata and minimize writes
+- See [Database Layer Optimization](../01-requirements/features/database-layer-optimization.md) for details
+
 ---
 
 ## 5. Service Layer
@@ -267,6 +273,9 @@ All admin routes require JWT authentication with appropriate roles.
 - ✅ Always use `DatabaseFactory.dbQuery { }` for database access
 - ✅ Return DTOs, never Exposed entity objects
 - ✅ Use transactions for multi-step operations
+- ✅ **Use `insert().resultedValues` for create operations** - Eliminates post-insert SELECT queries
+- ✅ **Use `updateReturning()` for update operations** - Eliminates post-update SELECT queries
+- ✅ **Use smart diffing for collection updates** - Preserves metadata and minimizes writes
 
 ### Service Layer
 - ✅ Keep routes thin; delegate to services

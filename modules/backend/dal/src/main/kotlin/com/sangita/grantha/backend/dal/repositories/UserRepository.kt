@@ -49,23 +49,22 @@ class UserRepository {
     ): UserDto = DatabaseFactory.dbQuery {
         val now = OffsetDateTime.now(ZoneOffset.UTC)
         val newId = UUID.randomUUID()
-        
-        UsersTable.insert {
-            it[id] = newId
-            it[UsersTable.email] = email
-            it[UsersTable.fullName] = fullName
-            it[UsersTable.displayName] = displayName
-            it[UsersTable.passwordHash] = passwordHash
-            it[UsersTable.isActive] = isActive
-            it[UsersTable.createdAt] = now
-            it[UsersTable.updatedAt] = now
-        }
-        
+
         UsersTable
-            .selectAll()
-            .where { UsersTable.id eq newId }
-            .map { it.toUserDto() }
-            .single()
+            .insert {
+                it[id] = newId
+                it[UsersTable.email] = email
+                it[UsersTable.fullName] = fullName
+                it[UsersTable.displayName] = displayName
+                it[UsersTable.passwordHash] = passwordHash
+                it[UsersTable.isActive] = isActive
+                it[UsersTable.createdAt] = now
+                it[UsersTable.updatedAt] = now
+            }
+            .resultedValues
+            ?.single()
+            ?.toUserDto()
+            ?: error("Failed to insert user")
     }
 
     suspend fun update(
@@ -78,25 +77,21 @@ class UserRepository {
     ): UserDto? = DatabaseFactory.dbQuery {
         val now = OffsetDateTime.now(ZoneOffset.UTC)
         val javaId = id.toJavaUuid()
-        
-        val updated = UsersTable.update({ UsersTable.id eq javaId }) {
-            email?.let { value -> it[UsersTable.email] = value }
-            fullName?.let { value -> it[UsersTable.fullName] = value }
-            displayName?.let { value -> it[UsersTable.displayName] = value }
-            passwordHash?.let { value -> it[UsersTable.passwordHash] = value }
-            isActive?.let { value -> it[UsersTable.isActive] = value }
-            it[UsersTable.updatedAt] = now
-        }
-        
-        if (updated == 0) {
-            return@dbQuery null
-        }
-        
+
+        // Use Exposed 1.0.0-rc-4 updateReturning to update and fetch the row in one round-trip
         UsersTable
-            .selectAll()
-            .where { UsersTable.id eq javaId }
-            .map { it.toUserDto() }
+            .updateReturning(
+                where = { UsersTable.id eq javaId }
+            ) {
+                email?.let { value -> it[UsersTable.email] = value }
+                fullName?.let { value -> it[UsersTable.fullName] = value }
+                displayName?.let { value -> it[UsersTable.displayName] = value }
+                passwordHash?.let { value -> it[UsersTable.passwordHash] = value }
+                isActive?.let { value -> it[UsersTable.isActive] = value }
+                it[UsersTable.updatedAt] = now
+            }
             .singleOrNull()
+            ?.toUserDto()
     }
 
     suspend fun delete(id: Uuid): Boolean = DatabaseFactory.dbQuery {

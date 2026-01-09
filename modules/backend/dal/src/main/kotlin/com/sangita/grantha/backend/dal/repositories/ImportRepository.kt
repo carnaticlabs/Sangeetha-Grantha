@@ -80,12 +80,10 @@ class ImportRepository {
             it[ImportedKrithisTable.importStatus] = ImportStatus.PENDING
             it[ImportedKrithisTable.createdAt] = now
         }
-
-        ImportedKrithisTable
-            .selectAll()
-            .andWhere { ImportedKrithisTable.id eq importId }
-            .map { it.toImportedKrithiDto() }
-            .single()
+            .resultedValues
+            ?.single()
+            ?.toImportedKrithiDto()
+            ?: error("Failed to insert imported krithi")
     }
 
     suspend fun reviewImport(
@@ -95,21 +93,19 @@ class ImportRepository {
         reviewerNotes: String?,
     ): ImportedKrithiDto? = DatabaseFactory.dbQuery {
         val now = OffsetDateTime.now(ZoneOffset.UTC)
-        val updated = ImportedKrithisTable.update({ ImportedKrithisTable.id eq id.toJavaUuid() }) {
-            it[ImportedKrithisTable.importStatus] = status
-            it[ImportedKrithisTable.mappedKrithiId] = mappedKrithiId
-            it[ImportedKrithisTable.reviewerNotes] = reviewerNotes
-            it[ImportedKrithisTable.reviewedAt] = now
-        }
-
-        if (updated == 0) {
-            return@dbQuery null
-        }
-
+        val javaId = id.toJavaUuid()
+        
+        // Use Exposed 1.0.0-rc-4 updateReturning to update and fetch the row in one round-trip
         ImportedKrithisTable
-            .selectAll()
-            .andWhere { ImportedKrithisTable.id eq id.toJavaUuid() }
-            .map { it.toImportedKrithiDto() }
+            .updateReturning(
+                where = { ImportedKrithisTable.id eq javaId }
+            ) {
+                it[ImportedKrithisTable.importStatus] = status
+                it[ImportedKrithisTable.mappedKrithiId] = mappedKrithiId
+                it[ImportedKrithisTable.reviewerNotes] = reviewerNotes
+                it[ImportedKrithisTable.reviewedAt] = now
+            }
             .singleOrNull()
+            ?.toImportedKrithiDto()
     }
 }

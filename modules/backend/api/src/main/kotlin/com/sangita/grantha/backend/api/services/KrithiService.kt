@@ -129,7 +129,10 @@ class KrithiService(private val dal: SangitaDal) {
     suspend fun getKrithiTags(id: Uuid): List<TagDto> = dal.krithis.getTags(id)
 
     suspend fun saveKrithiSections(id: Uuid, sections: List<com.sangita.grantha.backend.api.models.KrithiSectionRequest>) {
-        val sectionsData = sections.map { it.sectionType to it.orderIndex }
+        // Pass full section data including label for efficient updates
+        val sectionsData = sections.map { 
+            Triple(it.sectionType, it.orderIndex, it.label) 
+        }
         dal.krithis.saveSections(id, sectionsData)
         
         dal.auditLogs.append(
