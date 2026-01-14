@@ -10,8 +10,6 @@ import {
     Deity,
     Temple,
     Tag,
-    KrithiCreateRequest,
-    KrithiUpdateRequest,
     AuditLog,
     Sampradaya,
     KrithiLyricVariant,
