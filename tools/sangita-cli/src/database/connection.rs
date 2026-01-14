@@ -1,5 +1,6 @@
 use crate::app_config::AppConfig;
 use std::fmt;
+use urlencoding::encode;
 
 #[derive(Debug, Clone)]
 pub struct ConnectionString {
@@ -24,10 +25,15 @@ impl ConnectionString {
 
 impl fmt::Display for ConnectionString {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        // URL-encode user, password, and database name to handle special characters
         write!(
             f,
             "postgres://{}:{}@{}:{}/{}",
-            self.user, self.password, self.host, self.port, self.database
+            encode(&self.user),
+            encode(&self.password),
+            self.host,
+            self.port,
+            encode(&self.database)
         )
     }
 }

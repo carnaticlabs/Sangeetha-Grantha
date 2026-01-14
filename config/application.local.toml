@@ -12,8 +12,12 @@ admin_user = "postgres"
 admin_password = "postgres"
 
 [paths]
-pg_home = "/opt/homebrew/opt/postgresql@14"
-pg_data = "/Users/seshadri/project/sangeetha-grantha/database/db-data"
+# pg_home is only required when using the CLI in "local" Postgres mode (pg_ctl/initdb).
+# Default local dev uses Docker Compose (Postgres 15) and does not require pg_home.
+pg_home = "/opt/homebrew/opt/postgresql@15"
+# Use a repo-relative path so this file can be shared across developers/OSes.
+# (Only used for local Postgres mode; Docker Compose is the default.)
+pg_data = "database/db-data"
 
 [migrations]
 directory = "database/migrations"

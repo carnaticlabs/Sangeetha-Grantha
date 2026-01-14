@@ -44,7 +44,7 @@ It is designed to become the **system of record** for Carnatic Krithis — suppo
 ### ⚙️ Backend
 
 - **API**: Kotlin + Ktor (REST)
-- **Database**: PostgreSQL 15+
+- **Database**: PostgreSQL 15 (dev pinned via Docker Compose) / 15+ (prod)
 - **Migrations**: Rust-based CLI tool (`tools/sangita-cli`) for database management (no Flyway)
 
 ### ☁️ Infrastructure
@@ -104,10 +104,11 @@ For a complete and specific list of versions and dependencies, please see **[Tec
 |-------|------------|
 | **Mobile** | Kotlin Multiplatform (KMM) + Compose Multiplatform |
 | **Backend** | Kotlin + Ktor + Exposed |
-| **Database** | PostgreSQL 15+ |
+| **Database** | PostgreSQL 15 (dev pinned via Docker Compose) / 15+ (prod) |
 | **Migrations** | Rust CLI (`tools/sangita-cli`) |
 | **Admin Web** | React + TypeScript + Tailwind + Vite |
 | **Build** | Gradle (Backend/Mobile), Bun (Frontend) |
+| **Toolchain** | Managed via [mise](https://mise.jdx.dev/): Java 25, Rust 1.92.0, Bun 1.3.0, Docker Compose |
 
 ---
 
@@ -135,74 +136,45 @@ For a complete and specific list of versions and dependencies, please see **[Tec
 
 ---
 
-## 🚀 Getting Started (Local Development)
+## 🚀 Getting Started
 
-### Prerequisites
+> **💡 Quick Setup**: For complete setup instructions, see [Cross-Platform Development Environment Standardisation](./application_documentation/01-requirements/features/cross-platform-development-environment-standardisation.md).
 
-- JDK 25+ (JVM Toolchain)
-- Gradle (wrapper included)
-- Bun
-- Rust (stable)
-- PostgreSQL 15+
+**Prerequisites**:
+- [mise](https://mise.jdx.dev/) (toolchain version manager)
+- Docker Desktop (macOS/Windows) or Docker Engine (Linux)
 
-### Setup
-
+**One-command setup** (after installing mise):
 ```bash
-# Clone repository
-git clone https://github.com/carnaticlabs/Sangeetha-Grantha.git
-cd Sangeetha-Grantha
+# Unix/Linux/macOS
+./tools/bootstrap
 
-# Run database migrations using Sangita CLI
+# Windows
+powershell -ExecutionPolicy Bypass -File .\tools\bootstrap.ps1
+```
+
+This will install all required tools via mise (Java 25, Rust 1.92.0, Bun 1.3.0, Docker Compose) and set up the development environment.
+
+**Start development stack** (recommended via mise):
+```bash
+# Via mise (ensures correct tool versions)
+mise exec cargo run --manifest-path tools/sangita-cli/Cargo.toml -- dev --start-db
+
+# Or without mise (requires tools to be installed manually)
 cd tools/sangita-cli
-cargo run -- db migrate
-
-# Or reset database (drop, create, migrate, seed)
-cargo run -- db reset
-
-# Start full development stack (DB + Backend + Frontend)
 cargo run -- dev --start-db
 ```
 
-### Development CLI
-
-The Sangita CLI (`tools/sangita-cli`) provides unified commands for development:
-
-```bash
-cd tools/sangita-cli
-
-# Database management
-cargo run -- db migrate          # Run migrations only
-cargo run -- db reset            # Reset database (drop → create → migrate → seed)
-cargo run -- db health           # Check database health
-
-# Development workflow
-cargo run -- dev                 # Start Backend + Frontend
-cargo run -- dev --start-db      # Start DB + Backend + Frontend
-
-# Testing
-cargo run -- test steel-thread   # Run end-to-end smoke tests
-
-# Setup & verification
-cargo run -- setup               # Check environment and dependencies
-cargo run -- net info            # Show local network info
-
-# Commit guardrails (workflow enforcement)
-cargo run -- commit install-hooks    # Install Git hooks for commit validation
-cargo run -- commit check             # Validate commit message format
-cargo run -- commit scan-sensitive    # Scan staged files for sensitive data
-```
-
-**Commit Guardrails:** All commits must reference a documentation file in `application_documentation/`. See [`tools/sangita-cli/README.md`](tools/sangita-cli/README.md#commit-guardrails) for details.
-
-For more details, see [`tools/sangita-cli/README.md`](tools/sangita-cli/README.md).
-
-Mobile apps are built via Android Studio (Android) and Xcode (iOS).
+For detailed setup, usage guides, troubleshooting, and CLI commands, see:
+- **[Cross-Platform Development Environment Standardisation](./application_documentation/01-requirements/features/cross-platform-development-environment-standardisation.md)** — Complete setup guide
+- **[Sangita CLI README](./tools/sangita-cli/README.md)** — Development workflow and commands
 
 ---
 
 ## 📜 Documentation
 
 - **Product Requirements Document**: [Sangita Grantha PRD](./application_documentation/01-requirements/product-requirements-document.md)
+- **Development Environment Setup**: [Cross-Platform Development Environment Standardisation](./application_documentation/01-requirements/features/cross-platform-development-environment-standardisation.md)
 - **OpenAPI Spec**: [`openapi/sangita-grantha.openapi.yaml`](openapi/sangita-grantha.openapi.yaml)
 - **Database Schema & ERDs**: [`application_documentation/04-database/`](application_documentation/04-database/)
 - **Architecture & Blueprints**: [`application_documentation/02-architecture/`](application_documentation/02-architecture/)

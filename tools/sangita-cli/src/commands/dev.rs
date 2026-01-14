@@ -26,6 +26,7 @@ pub async fn run(args: DevArgs) -> Result<()> {
 
     if args.start_db {
         // Load app config for database operations
+        // NOTE: DB defaults to Docker Compose (Postgres 15) if available (see `db start --mode auto`).
         let app_config = AppConfig::from_file(&root.join("config/application.local.toml"))?;
         ensure_database_running(&app_config).await?;
     }

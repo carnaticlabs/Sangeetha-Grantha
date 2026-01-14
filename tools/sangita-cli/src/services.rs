@@ -1,5 +1,5 @@
 use crate::config::Config;
-use crate::utils::{check_command_exists, is_windows, print_step, print_success};
+use crate::utils::{check_command_exists, docker_compose_available, is_windows, print_step, print_success, run_docker_compose};
 use crate::{AppConfig, PostgresInstance};
 use anyhow::{Context, Result};
 use console;
@@ -9,26 +9,52 @@ use std::process::{Child, Command, Stdio};
 use std::time::Duration;
 use tokio::time::sleep;
 
-/// Ensure database is running using integrated database module
+/// Ensure database is running.
+///
+/// Default behavior:
+/// - If Docker Compose is available, start `postgres` via compose.yaml at repo root.
+/// - Otherwise, fall back to local Postgres binaries (pg_ctl/initdb) using `pg_home`/`pg_data`.
 pub async fn ensure_database_running(config: &AppConfig) -> Result<()> {
     print_step("Ensuring database is running...");
-    
+
+    let root = crate::utils::project_root()?;
+
+    if docker_compose_available() {
+        print_step("Starting Postgres via Docker Compose (dev default)...");
+        run_docker_compose(&root, &["up", "-d", "postgres"]).context("Failed to start postgres via Docker Compose")?;
+        print_success("Database is running (docker compose)");
+        return Ok(());
+    }
+
+    // Local fallback
     let instance = PostgresInstance::new(config);
     instance.ensure_running().await?;
-    
-    print_success("Database is running");
+
+    print_success("Database is running (local postgres)");
     Ok(())
 }
 
-/// Stop the database using integrated database module
+/// Stop the database.
+///
+/// Default behavior mirrors [ensure_database_running]:
+/// - If Docker Compose is available, stop `postgres` via compose.
+/// - Otherwise stop local Postgres via pg_ctl.
 pub async fn stop_database(config: &AppConfig) -> Result<()> {
     print_step("Stopping database...");
-    
+
+    let root = crate::utils::project_root()?;
+
+    if docker_compose_available() {
+        run_docker_compose(&root, &["stop", "postgres"]).context("Failed to stop postgres via Docker Compose")?;
+        print_success("Database stopped (docker compose)");
+        return Ok(());
+    }
+
     let instance = PostgresInstance::new(config);
-    
+
     match instance.stop().await {
         Ok(_) => {
-            print_success("Database stopped");
+            print_success("Database stopped (local postgres)");
             Ok(())
         }
         Err(err) => {
@@ -42,6 +68,11 @@ pub async fn stop_database(config: &AppConfig) -> Result<()> {
     }
 }
 
+/// Spawns the backend server using Gradle.
+///
+/// **Toolchain Management**: Assumes correct Java version (25) is provided by mise.
+/// Developers should run this CLI via `mise exec cargo run -- dev` to ensure
+/// correct tool versions. See `.mise.toml` in project root for version requirements.
 pub fn spawn_backend(config: &Config, root: &Path, environment: Option<&str>) -> Result<Child> {
     println!("Starting backend with Gradle (this may take 2-3 minutes on first run)...");
     println!("Backend logs will appear below:");
@@ -170,8 +201,22 @@ pub fn ensure_process_alive(process: &mut Child, name: &str) -> Result<()> {
     Ok(())
 }
 
+/// Spawns the frontend development server using Bun.
+///
+/// **Toolchain Management**: Assumes correct Bun version (1.3.0) is provided by mise.
+/// Developers should run this CLI via `mise exec cargo run -- dev` to ensure
+/// correct tool versions. See `.mise.toml` in project root for version requirements.
 pub fn spawn_frontend(config: &Config, root: &Path, silent: bool) -> Result<Child> {
     let frontend_dir = root.join("modules/frontend/sangita-admin-web");
+    
+    // Check if bun is available
+    if !crate::utils::check_command_exists("bun") {
+        anyhow::bail!(
+            "Bun not found on PATH. Install via mise: 'mise install' (recommended) or install manually.\n\
+            See .mise.toml for required version (1.3.0)."
+        );
+    }
+    
     let mut command = Command::new("bun");
     command
         .arg("run")
@@ -183,7 +228,9 @@ pub fn spawn_frontend(config: &Config, root: &Path, silent: bool) -> Result<Chil
         command.stdout(Stdio::null()).stderr(Stdio::null());
     }
 
-    command.spawn().context("Failed to start frontend")
+    command
+        .spawn()
+        .context("Failed to start frontend. Ensure Bun 1.3.0 is installed via mise (see .mise.toml)")
 }
 
 /// Kill any processes using the specified port.

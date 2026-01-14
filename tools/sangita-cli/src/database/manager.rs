@@ -3,12 +3,13 @@ use crate::utils::{get_postgres_bin_path, run_command_with_env};
 use anyhow::{Context, Result};
 use log::{info, warn};
 use sqlx::{
-    Executor, Pool, Postgres, Transaction, migrate::MigrateDatabase, postgres::PgPoolOptions,
+    Executor, Pool, Postgres, Transaction, postgres::PgPoolOptions,
 };
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use tokio::sync::Mutex;
 use tokio::time::sleep;
+use urlencoding::encode;
 
 pub struct DatabaseConfig {
     pub connection_string: String,
@@ -69,14 +70,136 @@ impl DatabaseManager {
     }
 
     pub async fn ensure_database_exists(&self) -> Result<()> {
-        let conn_str = &self.config.connection_string;
+        // Extract database name from target connection string
+        let target_conn_str = &self.config.connection_string;
+        let db_name = self.extract_database_name(target_conn_str)?;
 
-        if !Postgres::database_exists(conn_str).await? {
-            info!("Creating database...");
-            Postgres::create_database(conn_str).await?;
-            info!("Database created successfully");
+        info!("Checking if database '{}' exists...", db_name);
+        
+        // Use manual methods directly for better reliability, especially with Docker
+        // This explicitly connects to the admin database and checks/creates the target database
+        if !self.manual_database_exists(&db_name).await? {
+            info!("Creating database '{}'...", db_name);
+            self.manual_create_database(&db_name).await
+                .with_context(|| format!("Failed to create database '{}'", db_name))?;
+            info!("Database '{}' created successfully", db_name);
+        } else {
+            info!("Database '{}' already exists", db_name);
         }
+        
         Ok(())
+    }
+
+    async fn manual_database_exists(&self, db_name: &str) -> Result<bool> {
+        let admin_conn_str = self.build_admin_connection_string();
+        let pool = self.config.pool_options.clone()
+            .connect(&admin_conn_str)
+            .await
+            .with_context(|| format!(
+                "Failed to connect to admin database '{}' at {}:{} for existence check. \
+                 Verify that PostgreSQL is running and credentials are correct.",
+                self.config.admin_db,
+                self.extract_host_port(&self.config.connection_string).0,
+                self.extract_host_port(&self.config.connection_string).1
+            ))?;
+        
+        let result: Option<(i32,)> = sqlx::query_as(
+            "SELECT 1 FROM pg_database WHERE datname = $1"
+        )
+        .bind(db_name)
+        .fetch_optional(&pool)
+        .await
+        .context("Failed to query database existence")?;
+        
+        // Pool will be dropped and connections closed automatically
+        drop(pool);
+        Ok(result.is_some())
+    }
+
+    async fn manual_create_database(&self, db_name: &str) -> Result<()> {
+        let admin_conn_str = self.build_admin_connection_string();
+        let pool = self.config.pool_options.clone()
+            .connect(&admin_conn_str)
+            .await
+            .with_context(|| format!(
+                "Failed to connect to admin database '{}' at {}:{} for database creation. \
+                 Verify that PostgreSQL is running and credentials are correct.",
+                self.config.admin_db,
+                self.extract_host_port(&self.config.connection_string).0,
+                self.extract_host_port(&self.config.connection_string).1
+            ))?;
+        
+        // Validate db_name to prevent SQL injection
+        // PostgreSQL identifiers can contain letters, digits, and underscores
+        // We also allow hyphens but need to quote them
+        if !db_name.chars().all(|c| c.is_alphanumeric() || c == '_' || c == '-') {
+            anyhow::bail!("Invalid database name: {}", db_name);
+        }
+        
+        // Quote the database name to handle special characters safely
+        let query = format!("CREATE DATABASE \"{}\"", db_name.replace('"', "\"\""));
+        sqlx::query(&query)
+            .execute(&pool)
+            .await
+            .with_context(|| format!("Failed to create database '{}'", db_name))?;
+        
+        // Pool will be dropped and connections closed automatically
+        drop(pool);
+        Ok(())
+    }
+
+    fn build_admin_connection_string(&self) -> String {
+        // Build connection string to admin database (postgres)
+        let conn_str = &self.config.connection_string;
+        let (host, port) = self.extract_host_port(conn_str);
+        
+        format!(
+            "postgres://{}:{}@{}:{}/{}",
+            encode(&self.config.admin_user),
+            encode(&self.config.admin_password),
+            host,
+            port,
+            self.config.admin_db
+        )
+    }
+
+    fn extract_database_name(&self, conn_str: &str) -> Result<String> {
+        if let Some(slash_pos) = conn_str.rfind('/') {
+            let db_part = &conn_str[slash_pos + 1..];
+            // Remove query parameters if any
+            let db_name = if let Some(q_pos) = db_part.find('?') {
+                &db_part[..q_pos]
+            } else {
+                db_part
+            };
+            // Decode URL-encoded database name (in case it was encoded)
+            Ok(urlencoding::decode(db_name)
+                .map(|s| s.to_string())
+                .unwrap_or_else(|_| db_name.to_string()))
+        } else {
+            anyhow::bail!("Invalid connection string format: {}", conn_str)
+        }
+    }
+
+    fn extract_host_port(&self, conn_str: &str) -> (String, u16) {
+        // Extract host and port from postgres://user:password@host:port/database
+        if let Some(at_pos) = conn_str.find('@') {
+            let after_at = &conn_str[at_pos + 1..];
+            if let Some(slash_pos) = after_at.find('/') {
+                let host_port = &after_at[..slash_pos];
+                if let Some(colon_pos) = host_port.find(':') {
+                    let host = host_port[..colon_pos].to_string();
+                    let port = host_port[colon_pos + 1..].parse().unwrap_or(5432);
+                    (host, port)
+                } else {
+                    (host_port.to_string(), 5432)
+                }
+            } else {
+                ("localhost".to_string(), 5432)
+            }
+        } else {
+            ("localhost".to_string(), 5432)
+        }
     }
 
     pub async fn setup_connection_pool(&self) -> Result<()> {

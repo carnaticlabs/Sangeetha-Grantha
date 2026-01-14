@@ -1,5 +1,6 @@
 use anyhow::Result;
 use config::{Config, ConfigError, File};
+use dotenvy::dotenv;
 use serde::Deserialize;
 use std::path::{Path, PathBuf};
 
@@ -114,6 +115,10 @@ impl AppConfig {
 
 // Extracted common loading logic into a private helper function
 fn load_config_from_path<T: for<'de> Deserialize<'de>>(path: &Path) -> Result<T, ConfigError> {
+    // Load root `.env` if present (tools/sangita-cli/.env) and repo config `.env.*` if present.
+    // This is intentionally best-effort: missing files are OK.
+    dotenv().ok();
+
     let config = Config::builder().add_source(File::from(path)).build()?;
     config.try_deserialize()
 }

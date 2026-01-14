@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: sangita_postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: sangita_grantha
+    volumes:
+      - sangita_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d sangita_grantha"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  sangita_postgres_data:
+    name: sangita_postgres_data

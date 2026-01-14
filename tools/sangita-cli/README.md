@@ -3,12 +3,20 @@
 A unified command-line tool for the Sangita Grantha project.
 
 ## Prerequisites
-- Rust (cargo)
-- Java 21+
-- Bun 1.3+
-- Docker (for Postgres)
+
+**Recommended**: Use [mise](https://mise.jdx.dev/) for toolchain management (see `.mise.toml` in project root).
+
+Tools managed by mise:
+- Rust 1.92.0
+- Java 25 (Temurin)
+- Bun 1.3.0
+- Docker Compose (latest)
+
+System requirements (not managed by mise):
+- Docker Desktop (macOS/Windows) or Docker Engine (Linux)
 
 ## Installation
+
 Build the tool from source:
 ```bash
 cd tools/sangita-cli
@@ -18,9 +26,48 @@ The binary will be at `target/release/sangita-cli`.
 
 ## Usage
 
+### Running via mise (Recommended)
+
+Since Rust and other tools are managed by mise, run sangita-cli through mise:
+
+```bash
+# Development workflow
+mise exec cargo run --manifest-path tools/sangita-cli/Cargo.toml -- dev --start-db
+
+# Database management
+mise exec cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db reset
+
+# Testing
+mise exec cargo run --manifest-path tools/sangita-cli/Cargo.toml -- test steel-thread
+
+# Setup check
+mise exec cargo run --manifest-path tools/sangita-cli/Cargo.toml -- setup
+```
+
+This ensures:
+- ✅ Correct Rust version (1.92.0)
+- ✅ Correct Java version (25)
+- ✅ Correct Bun version (1.3.0)
+- ✅ Correct Docker Compose version (latest)
+
+### Without mise (Fallback)
+
+If mise is not available, ensure tools are installed manually with correct versions:
+```bash
+cd tools/sangita-cli
+cargo run -- dev --start-db
+```
+
+**Note**: You must ensure tool versions match `.mise.toml` requirements manually.
+
 ### Setup
 Check environment and dependencies:
 ```bash
+# Via mise (recommended)
+mise exec cargo run --manifest-path tools/sangita-cli/Cargo.toml -- setup
+
+# Or without mise
+cd tools/sangita-cli
 cargo run -- setup
 ```
 

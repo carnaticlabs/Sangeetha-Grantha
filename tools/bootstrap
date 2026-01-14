@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+step() {
+  printf "\n==> %s\n" "$1"
+}
+
+warn() {
+  printf "\n!! %s\n" "$1"
+}
+
+need_cmd() {
+  if ! command -v "$1" >/dev/null 2>&1; then
+    warn "Missing '$1'. $2"
+    return 1
+  fi
+}
+
+step "Sangita Grantha bootstrap (Docker Postgres + host-run backend/frontend)"
+
+# 1) Toolchain via mise (recommended)
+if command -v mise >/dev/null 2>&1; then
+  step "Installing pinned toolchain via mise (.mise.toml)"
+  mise install
+  # shellcheck disable=SC1090
+  eval "$(mise activate bash)"
+else
+  warn "mise not found. Recommended: https://mise.jdx.dev/"
+  warn "Continuing with system tools (ensure Java 25+, Rust 1.92.0, Bun 1.3.x)."
+fi
+
+# 2) Ensure Docker is available
+step "Checking Docker + Compose"
+need_cmd docker "Install Docker Desktop (macOS/Windows) or Docker Engine (Linux)." || exit 1
+
+if ! docker compose version >/dev/null 2>&1 && ! command -v docker-compose >/dev/null 2>&1; then
+  warn "Docker Compose not found (need 'docker compose' or 'docker-compose')."
+  exit 1
+fi
+
+# 3) Canonical config files
+step "Ensuring config/.env.development exists"
+mkdir -p "$ROOT_DIR/config"
+
+# NOTE: Goose tool restrictions may block committing .env templates.
+# We keep a template path under tools/bootstrap-assets/ for source control.
+TEMPLATE="$ROOT_DIR/tools/bootstrap-assets/env/env.development.example"
+TARGET="$ROOT_DIR/config/.env.development"
+
+if [[ -f "$TARGET" ]]; then
+  printf "config/.env.development already exists (leaving as-is)\n"
+else
+  if [[ -f "$TEMPLATE" ]]; then
+    cp "$TEMPLATE" "$TARGET"
+    printf "Created config/.env.development from template\n"
+  else
+    warn "Template not found at $TEMPLATE"
+    warn "Create config/.env.development manually (see docs)"
+  fi
+fi
+
+# 4) Start Postgres 15 via Docker Compose
+step "Starting Postgres 15 via Docker Compose"
+cd "$ROOT_DIR"
+docker compose up -d postgres 2>/dev/null || docker-compose up -d postgres
+
+# 5) Build Rust CLI
+step "Building sangita-cli"
+cd "$ROOT_DIR"
+cargo build --manifest-path tools/sangita-cli/Cargo.toml
+
+# 6) Migrate + seed
+step "Running DB reset (drop/create/migrate/seed) via sangita-cli"
+cd "$ROOT_DIR"
+cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db reset --mode docker
+
+# 7) Frontend deps (optional)
+step "Installing frontend dependencies (bun install)"
+cd "$ROOT_DIR/modules/frontend/sangita-admin-web"
+if command -v bun >/dev/null 2>&1; then
+  bun install
+else
+  warn "bun not found; skipping frontend install"
+fi
+
+step "Bootstrap complete"
+cat <<EOF
+
+Next commands:
+
+  # Start full dev stack (DB + backend + frontend)
+  cargo run --manifest-path tools/sangita-cli/Cargo.toml -- dev --start-db
+
+  # Or run services separately:
+  ./gradlew :modules:backend:api:run
+  (cd modules/frontend/sangita-admin-web && bun run dev)
+
+Notes:
+- DB dev version is pinned to Postgres 15 via compose.yaml
+- Local Postgres binary mode is still available (advanced):
+    cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db start --mode local
+EOF
