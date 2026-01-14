@@ -114,7 +114,10 @@ flowchart LR
     OBJ_B[(Object Storage)]
   end
 
-  Clients["Mobile / Web / Admin"] --> DNS --> CDN --> WAF
+  Clients["Mobile / Web / Admin"] --> DNS
+  DNS --> CDN
+  CDN --> WAF
+
   WAF --> LB_A
   WAF --> LB_B
 
@@ -135,6 +138,7 @@ flowchart LR
 
   ADMIN_A --> DB_A
   ADMIN_A --> Q_A
+
   WORKERS_A --> Q_A
   WORKERS_A --> DB_A
   WORKERS_A --> SEARCH_A
