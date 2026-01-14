@@ -23,6 +23,7 @@ archival docs for Sangita Grantha, live under `./archive/`.
 - **[02 Architecture](./02-architecture/)**
   - [System Design](./02-architecture/backend-system-design.md)
   - [Tech Stack](./02-architecture/tech-stack.md)
+  - [Target Scale Architecture](./02-architecture/scale-target-architecture.md)
   - [Decisions (ADRs)](./02-architecture/decisions/adr-index.md)
   - [Flow Diagrams](./02-architecture/diagrams/flows.md)
 
