@@ -35,7 +35,7 @@ cargo run -- test steel-thread
 
 **Prerequisites:**
 - Rust (stable)
-- PostgreSQL 15+ (or Docker)
+- PostgreSQL 15 (dev pinned via Docker Compose) / 15+ (prod)
 - JDK 25+
 - Bun 1.3+
 

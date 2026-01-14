@@ -38,7 +38,7 @@ pproved implementation strategy.
 ### 1.1 Architecture Overview
 
 The Sangeetha Grantha platform uses:
-- **Primary Database**: PostgreSQL 15+ (system of record)
+- **Primary Database**: PostgreSQL 15 (dev pinned via Docker Compose) / 15+ (prod) (system of record)
 - **Backend**: Kotlin + Ktor 3.3.1 with Exposed ORM
 - **Frontend**: React 19.2 + TypeScript (Admin Web)
 - **Data Model**: Normalized relational schema with strong referential integrity
