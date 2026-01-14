@@ -85,17 +85,68 @@ flowchart LR
 ## 2) Data Indexing Flow (Search + Cache)
 
 ```mermaid
-flowchart TD
-  Admin[Admin API: Mutations] --> DB[(PostgreSQL Primary)]
-  DB --> CDC[CDC / Outbox]
-  CDC --> Queue[Queue/Stream]
-  Queue --> Worker[Indexer Worker]
-  Worker --> Search[(Search Cluster)]
-  Worker --> Cache[Cache Warmer]
-  Cache --> Redis[(Redis)]
-  PublicAPI[Public API] --> Redis
-  PublicAPI --> Search
-  PublicAPI --> ReadReplicas[(PostgreSQL Read Replicas)]
+flowchart LR
+  subgraph Global_Edge["Global Edge"]
+    DNS["Geo DNS - Anycast"]
+    CDN["CDN + Edge Cache"]
+    WAF["WAF + Rate Limiting"]
+  end
+
+  subgraph Region_A["Region A - Primary"]
+    LB_A["Global or Regional Load Balancer"]
+    API_A["Public API - Ktor"]
+    ADMIN_A["Admin API - Ktor"]
+    WORKERS_A["Async Workers - Import/AI/Index"]
+    REDIS_A["Redis Cache"]
+    DB_A[(PostgreSQL Primary)]
+    DB_A_R[(PostgreSQL Read Replicas)]
+    Q_A["Queue or Stream"]
+    SEARCH_A[(Search Cluster)]
+    OBJ_A[(Object Storage)]
+  end
+
+  subgraph Region_B["Region B - Secondary"]
+    LB_B["Regional Load Balancer"]
+    API_B["Public API - Ktor"]
+    REDIS_B["Redis Cache"]
+    DB_B_R[(PostgreSQL Read Replicas)]
+    SEARCH_B[(Search Cluster)]
+    OBJ_B[(Object Storage)]
+  end
+
+  Clients["Mobile / Web / Admin"] --> DNS --> CDN --> WAF
+  WAF --> LB_A
+  WAF --> LB_B
+
+  LB_A --> API_A
+  LB_A --> ADMIN_A
+  LB_A --> WORKERS_A
+  LB_B --> API_B
+
+  API_A --> REDIS_A
+  API_A --> DB_A_R
+  API_A --> SEARCH_A
+  API_A --> OBJ_A
+
+  API_B --> REDIS_B
+  API_B --> DB_B_R
+  API_B --> SEARCH_B
+  API_B --> OBJ_B
+
+  ADMIN_A --> DB_A
+  ADMIN_A --> Q_A
+  WORKERS_A --> Q_A
+  WORKERS_A --> DB_A
+  WORKERS_A --> SEARCH_A
+
+  DB_A --> DB_A_R
+  DB_A --> DB_B_R
+
+  SEARCH_A --> SEARCH_B
+  SEARCH_B --> SEARCH_A
+
+  OBJ_A --> OBJ_B
+  OBJ_B --> OBJ_A
 ```
 
 **Notes**
