@@ -22,16 +22,16 @@ flowchart LR
   end
 
   subgraph Region_A["Region A - Primary"]
-    LB_A["Global or Regional Load Balancer"]
-    API_A["Public API - Ktor"]
-    ADMIN_A["Admin API - Ktor"]
-    WORKERS_A["Async Workers - Import/AI/Index"]
-    REDIS_A["Redis Cache"]
-    DB_A[(PostgreSQL Primary)]
-    DB_A_R[(PostgreSQL Read Replicas)]
-    Q_A["Queue or Stream"]
-    SEARCH_A[(Search Cluster)]
-    OBJ_A[(Object Storage)]
+    LB_A["Global or Regional Load Balancer"];
+    API_A["Public API (Ktor)"];
+    ADMIN_A["Admin API (Ktor)"];
+    WORKERS_A["Async Workers (Import/AI/Index)"];
+    REDIS_A["Redis Cache"];
+    DB_A[(PostgreSQL Primary)];
+    DB_A_R[(PostgreSQL Read Replicas)];
+    Q_A["Queue or Stream"];
+    SEARCH_A[(Search Cluster)];
+    OBJ_A[(Object Storage)];
   end
 
   subgraph Region_B["Region B - Secondary"]
@@ -93,16 +93,16 @@ flowchart LR
   end
 
   subgraph Region_A["Region A - Primary"]
-    LB_A["Global or Regional Load Balancer"]
-    API_A["Public API - Ktor"]
-    ADMIN_A["Admin API - Ktor"]
-    WORKERS_A["Async Workers - Import/AI/Index"]
-    REDIS_A["Redis Cache"]
-    DB_A[(PostgreSQL Primary)]
-    DB_A_R[(PostgreSQL Read Replicas)]
-    Q_A["Queue or Stream"]
-    SEARCH_A[(Search Cluster)]
-    OBJ_A[(Object Storage)]
+    LB_A["Global or Regional Load Balancer"];
+    API_A["Public API (Ktor)"];
+    ADMIN_A["Admin API (Ktor)"];
+    WORKERS_A["Async Workers (Import/AI/Index)"];
+    REDIS_A["Redis Cache"];
+    DB_A[(PostgreSQL Primary)];
+    DB_A_R[(PostgreSQL Read Replicas)];
+    Q_A["Queue or Stream"];
+    SEARCH_A[(Search Cluster)];
+    OBJ_A[(Object Storage)];
   end
 
   subgraph Region_B["Region B - Secondary"]
