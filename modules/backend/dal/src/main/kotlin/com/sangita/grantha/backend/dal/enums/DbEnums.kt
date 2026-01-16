@@ -49,6 +49,16 @@ enum class RagaSection(override val dbValue: String) : DbEnum {
     PALLAVI("pallavi"),
     ANUPALLAVI("anupallavi"),
     CHARANAM("charanam"),
+    SAMASHTI_CHARANAM("samashti_charanam"),
+    CHITTASWARAM("chittaswaram"),
+    SWARA_SAHITYA("swara_sahitya"),
+    MADHYAMA_KALA("madhyama_kala"),
+    SOLKATTU_SWARA("solkattu_swara"),
+    ANUBANDHA("anubandha"),
+    MUKTAYI_SWARA("muktayi_swara"),
+    ETTUGADA_SWARA("ettugada_swara"),
+    ETTUGADA_SAHITYA("ettugada_sahitya"),
+    VILOMA_CHITTASWARAM("viloma_chittaswaram"),
     OTHER("other");
 
     companion object {

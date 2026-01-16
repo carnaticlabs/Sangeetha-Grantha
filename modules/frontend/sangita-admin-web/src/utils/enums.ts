@@ -79,9 +79,16 @@ export const SECTION_TYPE_LABELS: Record<string, string> = {
   'PALLAVI': 'Pallavi',
   'ANUPALLAVI': 'Anupallavi',
   'CHARANAM': 'Charanam',
+  'SAMASHTI_CHARANAM': 'Samashti Charanam',
   'CHITTASWARAM': 'Chittaswaram',
   'SWARA_SAHITYA': 'Swara Sahitya',
   'MADHYAMA_KALA': 'Madhyama Kala',
+  'SOLKATTU_SWARA': 'Solkattu Swara',
+  'ANUBANDHA': 'Anubandha',
+  'MUKTAYI_SWARA': 'Muktayi Swara',
+  'ETTUGADA_SWARA': 'Ettugada Swara',
+  'ETTUGADA_SAHITYA': 'Ettugada Sahitya',
+  'VILOMA_CHITTASWARAM': 'Viloma Chittaswaram',
   'OTHER': 'Other',
 };
 

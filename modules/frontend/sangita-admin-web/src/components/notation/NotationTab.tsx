@@ -28,7 +28,7 @@ const NotationTab: React.FC<NotationTabProps> = ({ krithiId, musicalForm }) => {
     const [editingVariant, setEditingVariant] = useState<NotationVariant | undefined>(undefined);
 
     // Fetch Data
-    const fetchData = async () => {
+    const fetchData = async (): Promise<NotationResponse | null> => {
         setLoading(true);
         setError(null);
         try {
@@ -39,9 +39,11 @@ const NotationTab: React.FC<NotationTabProps> = ({ krithiId, musicalForm }) => {
             if (response.variants.length > 0 && !selectedVariantId) {
                 setSelectedVariantId(response.variants[0].variant.id);
             }
+            return response;
         } catch (err: any) {
             console.error("API Call failed", err);
             setError(err.message || 'Failed to load notation');
+            return null;
         } finally {
             setLoading(false);
         }
@@ -100,21 +102,60 @@ const NotationTab: React.FC<NotationTabProps> = ({ krithiId, musicalForm }) => {
     const handleAddRow = async (sectionId: string) => {
         if (!selectedVariantId) return;
         try {
-            // Calculate max order index
-            const rows = data?.variants.find(v => v.variant.id === selectedVariantId)?.rowsBySectionId[sectionId] || [];
-            const maxIndex = rows.length > 0 ? Math.max(...rows.map(r => r.orderIndex)) : 0;
+            // Refresh data first to ensure we have the latest state
+            // This prevents duplicate key errors from stale data
+            const freshData = await fetchData();
+            if (!freshData) {
+                alert('Failed to load current notation data');
+                return;
+            }
+            
+            // Calculate next available order index with fresh data
+            const variantData = freshData.variants.find(v => v.variant.id === selectedVariantId);
+            if (!variantData) {
+                alert('Variant not found');
+                return;
+            }
+            
+            const rowsBySectionId = variantData.rowsBySectionId || {};
+            const rows = rowsBySectionId[sectionId] || [];
+            
+            // Debug: log what we're seeing
+            console.log('Section ID:', sectionId);
+            console.log('Rows for section:', rows);
+            console.log('RowsBySectionId:', rowsBySectionId);
+            
+            // Get all existing order_index values for this section (filter out null/undefined/0)
+            const existingOrderIndices = new Set(
+                rows
+                    .map(r => r?.orderIndex)
+                    .filter((idx): idx is number => idx != null && typeof idx === 'number' && idx > 0)
+            );
+            
+            console.log('Existing order indices:', Array.from(existingOrderIndices));
+            
+            // Find the next available order_index
+            // Start from 1 and find the first number that doesn't exist
+            let nextOrderIndex = 1;
+            while (existingOrderIndices.has(nextOrderIndex)) {
+                nextOrderIndex++;
+            }
+            
+            console.log('Next order index to use:', nextOrderIndex);
 
             await createNotationRow(selectedVariantId, {
                 sectionId,
-                orderIndex: maxIndex + 1,
+                orderIndex: nextOrderIndex,
                 swaraText: '',
                 sahityaText: ''
             });
-            // Ideally optimistic update, but simple refetch for now
-            // For smoother UX we might want to just update local state then background fetch
-            fetchData();
+            // Refresh data to get the new row
+            await fetchData();
         } catch (err: any) {
+            console.error('Failed to add row:', err);
             alert(`Failed to add row: ${err.message}`);
+            // Refresh data on error to sync state
+            fetchData();
         }
     };
 
@@ -125,14 +166,20 @@ const NotationTab: React.FC<NotationTabProps> = ({ krithiId, musicalForm }) => {
             const vIdx = newData.variants.findIndex(v => v.variant.id === selectedVariantId);
             if (vIdx >= 0) {
                 const variantData = newData.variants[vIdx];
+                // Ensure rowsBySectionId exists
+                if (!variantData.rowsBySectionId) {
+                    variantData.rowsBySectionId = {};
+                }
                 // Find section and row
                 for (const secId in variantData.rowsBySectionId) {
                     const rows = variantData.rowsBySectionId[secId];
-                    const rIdx = rows.findIndex(r => r.id === rowId);
-                    if (rIdx >= 0) {
-                        rows[rIdx] = { ...rows[rIdx], ...payload };
-                        setData(newData);
-                        break;
+                    if (Array.isArray(rows)) {
+                        const rIdx = rows.findIndex(r => r.id === rowId);
+                        if (rIdx >= 0) {
+                            rows[rIdx] = { ...rows[rIdx], ...payload };
+                            setData(newData);
+                            break;
+                        }
                     }
                 }
             }
@@ -185,7 +232,7 @@ const NotationTab: React.FC<NotationTabProps> = ({ krithiId, musicalForm }) => {
                     <NotationRowsEditor
                         variantId={selectedVariantId}
                         sections={data.sections}
-                        rowsBySectionId={activeVariantData.rowsBySectionId}
+                        rowsBySectionId={activeVariantData.rowsBySectionId || {}}
                         onAddRow={handleAddRow}
                         onUpdateRow={handleUpdateRow}
                         onDeleteRow={handleDeleteRow}

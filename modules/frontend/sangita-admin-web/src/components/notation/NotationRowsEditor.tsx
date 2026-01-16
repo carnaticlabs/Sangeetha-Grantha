@@ -23,7 +23,15 @@ const NotationRowsEditor: React.FC<NotationRowsEditorProps> = ({
 
     // Helper to sort rows
     const getRows = (sectionId: string) => {
-        return (rowsBySectionId[sectionId] || []).sort((a, b) => a.orderIndex - b.orderIndex);
+        // Ensure rowsBySectionId is an object and sectionId exists
+        if (!rowsBySectionId || typeof rowsBySectionId !== 'object') {
+            return [];
+        }
+        const rows = rowsBySectionId[sectionId];
+        if (!Array.isArray(rows)) {
+            return [];
+        }
+        return rows.sort((a, b) => a.orderIndex - b.orderIndex);
     };
 
     return (

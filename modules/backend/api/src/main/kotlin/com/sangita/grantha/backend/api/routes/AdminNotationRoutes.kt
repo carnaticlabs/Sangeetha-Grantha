@@ -11,6 +11,7 @@ import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.Route
+import io.ktor.server.routing.get
 import io.ktor.server.routing.delete
 import io.ktor.server.routing.post
 import io.ktor.server.routing.put
@@ -24,6 +25,22 @@ fun Route.adminNotationRoutes(notationService: KrithiNotationService) {
             val request = call.receive<NotationVariantCreateRequest>()
             val created = notationService.createVariant(id, request)
             call.respond(HttpStatusCode.Created, created)
+        }
+
+        get("/krithis/{id}/notation") {
+            val id = parseUuidParam(call.parameters["id"], "krithiId")
+                ?: return@get call.respondText("Missing krithi ID", status = HttpStatusCode.BadRequest)
+            val notation = notationService.getAdminNotation(id)
+            // Even if empty, we might want to return the structure with 0 variants?
+            // Service usually returns a DTO with empty lists if nothing exists but the Krithi exists.
+            // If the Krithi doesn't exist, it might be null?
+            // Assuming getAdminNotation returns null if Krithi not found.
+             if (notation == null) {
+                // Check if Krithi exists? Or just return 404.
+                call.respondText("Not found", status = HttpStatusCode.NotFound)
+            } else {
+                call.respond(notation)
+            }
         }
 
         put("/notation/variants/{variantId}") {

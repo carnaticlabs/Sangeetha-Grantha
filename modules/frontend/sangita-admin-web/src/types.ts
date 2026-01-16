@@ -156,14 +156,14 @@ export interface Deity {
   updatedAt: string;
 }
 
-export interface Tag { 
-    id: string; 
-    category: string; 
-    displayName: string; 
-    displayNameEn: string; // Backend field name
-    slug: string; 
-    descriptionEn?: string | null;
-    createdAt: string;
+export interface Tag {
+  id: string;
+  category: string;
+  displayName: string;
+  displayNameEn: string; // Backend field name
+  slug: string;
+  descriptionEn?: string | null;
+  createdAt: string;
 }
 export interface Sampradaya { id: string; name: string; type: string; }
 
@@ -187,8 +187,9 @@ export interface Temple {
 
 export interface KrithiSection {
   id: string;
-  sectionType: 'PALLAVI' | 'ANUPALLAVI' | 'CHARANAM' | 'CHITTASWARAM' | 'OTHER';
+  sectionType: string;
   orderIndex: number;
+  label?: string;
 }
 
 export interface KrithiLyricSection {

@@ -9,6 +9,7 @@ import com.sangita.grantha.backend.dal.repositories.NotationRowWithSectionOrder
 import com.sangita.grantha.backend.dal.support.toJavaUuid
 import com.sangita.grantha.shared.domain.model.KrithiNotationResponseDto
 import com.sangita.grantha.shared.domain.model.KrithiNotationSectionGroupDto
+import com.sangita.grantha.shared.domain.model.KrithiSectionDto
 import com.sangita.grantha.shared.domain.model.KrithiNotationVariantWithRowsDto
 import com.sangita.grantha.shared.domain.model.KrithiNotationRowDto
 import com.sangita.grantha.shared.domain.model.KrithiNotationVariantDto
@@ -162,10 +163,12 @@ class KrithiNotationService(private val dal: SangitaDal) {
         }
 
         val talaId = variants.firstOrNull { it.isPrimary }?.talaId ?: variants.firstOrNull()?.talaId
+        val sections = dal.krithis.getSections(krithiId)
 
         return KrithiNotationResponseDto(
             krithiId = krithi.id,
             musicalForm = krithi.musicalForm,
+            sections = sections,
             talaId = talaId,
             variants = groupedVariants
         )
