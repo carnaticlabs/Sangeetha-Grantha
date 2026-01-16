@@ -1,5 +1,14 @@
 # 🎶 Sangeetha Grantha
 
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 1.0.0 |
+| **Last Updated** | 2026-01-16 |
+| **Author** | Sangeetha Grantha Team |
+
+---
+
 *A Digital Compendium of Carnatic Classical Music*
 
 ---
@@ -158,7 +167,15 @@ This will install all required tools via mise (Java 25, Rust 1.92.0, Bun 1.3.0, 
 **Start development stack** (recommended via mise):
 ```bash
 # Via mise (ensures correct tool versions)
-mise exec cargo run --manifest-path tools/sangita-cli/Cargo.toml -- dev --start-db
+
+# Initialize Database
+mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db init
+
+# Migrate / Set up seed Database
+mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db migrate
+
+# Start development stack with database
+mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- dev --start-db
 
 # Or without mise (requires tools to be installed manually)
 cd tools/sangita-cli
