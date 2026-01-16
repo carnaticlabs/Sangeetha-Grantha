@@ -9,6 +9,9 @@ import com.sangita.grantha.backend.dal.enums.MusicalForm
 import com.sangita.grantha.backend.dal.enums.WorkflowState
 import com.sangita.grantha.backend.dal.support.toJavaUuid
 import com.sangita.grantha.shared.domain.model.ImportedKrithiDto
+import com.sangita.grantha.backend.dal.enums.ScriptCode
+import com.sangita.grantha.backend.dal.enums.RagaSection
+import kotlinx.serialization.json.Json
 import java.util.UUID
 import kotlin.uuid.Uuid
 
@@ -155,6 +158,64 @@ class ImportService(private val dal: SangitaDal) {
                 entityTable = "krithis",
                 entityId = createdKrithi.id
             )
+
+            // Process sections and lyrics from scraped metadata
+            if (importData.parsedPayload != null) {
+                try {
+                    val metadata = Json.decodeFromString<ScrapedKrithiMetadata>(importData.parsedPayload!!)
+                    
+                    // 1. Save Structure (Sections)
+                    if (!metadata.sections.isNullOrEmpty()) {
+                        val sectionsToSave = metadata.sections.mapIndexed { index, section ->
+                            Triple(section.type.name, index + 1, null as String?)
+                        }
+                        
+                        dal.krithis.saveSections(createdKrithi.id, sectionsToSave)
+                        
+                        // 2. Get the saved sections to get their IDs
+                        val savedSections = dal.krithis.getSections(createdKrithi.id)
+                        
+                        // 3. Create Lyric Variant
+                        val lyricVariant = dal.krithis.createLyricVariant(
+                            krithiId = createdKrithi.id,
+                            language = LanguageCode.valueOf(createdKrithi.primaryLanguage.name),
+                            script = ScriptCode.LATIN, // Defaulting to Latin/Diacritic for scraped content
+                            lyrics = metadata.lyrics ?: "",
+                            isPrimary = true,
+                            sourceReference = sourceKey
+                        )
+                        
+                        // 4. Map text to section IDs and save content
+                        val lyricSections = savedSections.mapNotNull { savedSection ->
+                            val originalSection = metadata.sections.getOrNull(savedSection.orderIndex - 1)
+                            if (originalSection != null && !originalSection.text.isBlank()) {
+                                savedSection.id.toJavaUuid() to originalSection.text
+                            } else {
+                                null
+                            }
+                        }
+                        
+                        if (lyricSections.isNotEmpty()) {
+                            dal.krithis.saveLyricVariantSections(lyricVariant.id, lyricSections)
+                        }
+                    } else if (!metadata.lyrics.isNullOrBlank()) {
+                         // Fallback if no sections but we have lyrics
+                         dal.krithis.createLyricVariant(
+                            krithiId = createdKrithi.id,
+                            language = LanguageCode.valueOf(createdKrithi.primaryLanguage.name),
+                            script = ScriptCode.LATIN,
+                            lyrics = metadata.lyrics,
+                            isPrimary = true,
+                            sourceReference = sourceKey
+                        )
+                    }
+                } catch (e: Exception) {
+                    // Log error but don't fail the whole import
+                    // This creates a krithi but maybe without full details
+                    println("Error processing scraped metadata: ${e.message}")
+                    e.printStackTrace()
+                }
+            }
         }
         
         val updated = dal.imports.reviewImport(

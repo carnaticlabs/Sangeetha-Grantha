@@ -4,6 +4,7 @@ import com.sangita.grantha.backend.api.models.ImportKrithiRequest
 import com.sangita.grantha.backend.api.models.ImportReviewRequest
 import com.sangita.grantha.backend.api.services.ImportService
 import com.sangita.grantha.backend.api.services.WebScrapingService
+import com.sangita.grantha.backend.api.services.ScrapedKrithiMetadata
 import com.sangita.grantha.backend.dal.enums.ImportStatus
 import com.sangita.grantha.shared.domain.model.ScrapeRequest
 
@@ -52,7 +53,7 @@ fun Route.importRoutes(
             val request = call.receive<ScrapeRequest>()
             
             // 1. Scrape the content
-            val scraped = webScrapingService.scrapeShivkumarKrithi(request.url)
+            val scraped: ScrapedKrithiMetadata = webScrapingService.scrapeKrithi(request.url)
 
             // 2. Prepare the import request
             val importRequest = ImportKrithiRequest(
