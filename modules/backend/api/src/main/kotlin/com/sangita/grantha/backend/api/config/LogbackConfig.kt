@@ -49,7 +49,8 @@ object LogbackConfig {
             // Less chatty Netty/Exposed if needed, or keep them debug
             context.getLogger("io.netty").level = Level.INFO
             context.getLogger("org.jetbrains.exposed").level = Level.INFO
-            context.getLogger("com.zaxxer.hikari").level = Level.INFO  
+            context.getLogger("com.zaxxer.hikari").level = Level.INFO 
+            context.getLogger("io.ktor.server.Application").level = Level.INFO 
         }
         
         // Internal logger for this config
