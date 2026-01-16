@@ -245,8 +245,55 @@ class ReferenceDataService(private val dal: SangitaDal) {
         return deleted
     }
 
-    // Other reference data
+    // Deities
     suspend fun listDeities(): List<DeityDto> = dal.deities.listAll()
+
+    suspend fun getDeity(id: Uuid): DeityDto? = dal.deities.findById(id)
+
+    suspend fun createDeity(request: DeityCreateRequest): DeityDto {
+        val created = dal.deities.create(
+            name = request.name,
+            nameNormalized = request.nameNormalized,
+            description = request.description
+        )
+        dal.auditLogs.append(
+            action = "CREATE_DEITY",
+            entityTable = "deities",
+            entityId = created.id
+        )
+        return created
+    }
+
+    suspend fun updateDeity(id: Uuid, request: DeityUpdateRequest): DeityDto? {
+        val updated = dal.deities.update(
+            id = id,
+            name = request.name,
+            nameNormalized = request.nameNormalized,
+            description = request.description
+        )
+        if (updated != null) {
+            dal.auditLogs.append(
+                action = "UPDATE_DEITY",
+                entityTable = "deities",
+                entityId = id
+            )
+        }
+        return updated
+    }
+
+    suspend fun deleteDeity(id: Uuid): Boolean {
+        val deleted = dal.deities.delete(id)
+        if (deleted) {
+            dal.auditLogs.append(
+                action = "DELETE_DEITY",
+                entityTable = "deities",
+                entityId = id
+            )
+        }
+        return deleted
+    }
+
+    // Other reference data
 
     suspend fun listTags(): List<TagDto> = dal.tags.listAll()
 

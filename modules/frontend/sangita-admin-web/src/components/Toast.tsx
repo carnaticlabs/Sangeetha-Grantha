@@ -37,9 +37,8 @@ const Toast: React.FC<ToastProps> = ({ message, type, duration = 3000, onClose }
 
   return (
     <div
-      className={`fixed top-4 right-4 z-50 min-w-[300px] max-w-md rounded-lg border shadow-lg p-4 flex items-start gap-3 transition-all duration-300 ${
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'
-      } ${typeStyles[type]}`}
+      className={`fixed top-4 right-4 z-50 min-w-[300px] max-w-md rounded-lg border shadow-lg p-4 flex items-start gap-3 transition-all duration-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'
+        } ${typeStyles[type]}`}
     >
       <span className={`material-symbols-outlined text-[24px] ${type === 'success' ? 'text-green-600' : type === 'error' ? 'text-red-600' : type === 'info' ? 'text-blue-600' : 'text-amber-600'}`}>
         {iconMap[type]}
@@ -103,5 +102,7 @@ export const useToast = () => {
     warning: (message: string) => showToast(message, 'warning'),
   };
 };
+
+export type ToastService = ReturnType<typeof useToast>;
 
 

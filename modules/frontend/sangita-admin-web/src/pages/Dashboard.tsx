@@ -207,7 +207,7 @@ const Dashboard: React.FC = () => {
           <div className="bg-primary rounded-xl shadow-lg shadow-blue-900/20 p-6 text-white relative overflow-hidden">
             <div className="relative z-10">
               <h3 className="font-display text-lg font-bold mb-2">Reference Library</h3>
-              <p className="text-blue-100 text-sm mb-4">Manage the taxonomy of Ragas, Talas, and Composers.</p>
+              <p className="text-blue-100 text-sm mb-4">Manage the taxonomy of Ragas, Talas, Composers, Temples, and Deities.</p>
               <button
                 onClick={() => navigate('/reference')}
                 className="text-xs font-bold uppercase tracking-wider bg-white/10 hover:bg-white/20 px-4 py-2 rounded border border-white/20 transition-colors"

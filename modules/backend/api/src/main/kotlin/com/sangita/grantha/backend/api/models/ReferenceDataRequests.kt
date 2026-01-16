@@ -88,3 +88,17 @@ data class TempleUpdateRequest(
     val notes: String? = null,
 )
 
+@Serializable
+data class DeityCreateRequest(
+    val name: String,
+    val nameNormalized: String? = null,
+    val description: String? = null,
+)
+
+@Serializable
+data class DeityUpdateRequest(
+    val name: String? = null,
+    val nameNormalized: String? = null,
+    val description: String? = null,
+)
+

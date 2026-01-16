@@ -356,6 +356,39 @@ export const deleteTemple = (id: string) => {
     });
 };
 
+// --- Deities API ---
+export const getDeity = (id: string) => {
+    return request<Deity>(`/admin/deities/${id}`);
+};
+
+export const createDeity = (payload: {
+    name: string;
+    nameNormalized?: string | null;
+    description?: string | null;
+}) => {
+    return request<Deity>('/admin/deities', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+    });
+};
+
+export const updateDeity = (id: string, payload: {
+    name?: string | null;
+    nameNormalized?: string | null;
+    description?: string | null;
+}) => {
+    return request<Deity>(`/admin/deities/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(payload),
+    });
+};
+
+export const deleteDeity = (id: string) => {
+    return request<void>(`/admin/deities/${id}`, {
+        method: 'DELETE',
+    });
+};
+
 // --- Audit ---
 
 export const getAuditLogs = () => request<AuditLog[]>('/audit/logs');
@@ -396,8 +429,34 @@ export const reviewImport = (id: string, reviewRequest: { status: string; mapped
 
 // --- Notation API ---
 
-export const getAdminKrithiNotation = (krithiId: string, form: MusicalForm) => {
-    return request<NotationResponse>(`/admin/krithis/${krithiId}/notation?musicalForm=${form}`);
+export const getAdminKrithiNotation = async (krithiId: string, form: MusicalForm): Promise<NotationResponse> => {
+    // Backend returns sections as array, but frontend expects rowsBySectionId as object
+    // Transform the response to match frontend expectations
+    const response = await request<any>(`/admin/krithis/${krithiId}/notation?musicalForm=${form}`);
+    
+    // Transform variants: convert sections array to rowsBySectionId object
+    const transformedVariants = response.variants.map((v: any) => {
+        const rowsBySectionId: Record<string, NotationRow[]> = {};
+        
+        // Backend sends sections as array of { sectionId, rows }
+        if (v.sections && Array.isArray(v.sections)) {
+            v.sections.forEach((section: any) => {
+                if (section.sectionId && section.rows) {
+                    rowsBySectionId[section.sectionId] = section.rows;
+                }
+            });
+        }
+        
+        return {
+            variant: v.variant,
+            rowsBySectionId
+        };
+    });
+    
+    return {
+        ...response,
+        variants: transformedVariants
+    };
 };
 
 export const createNotationVariant = (krithiId: string, payload: Partial<NotationVariant>) => {

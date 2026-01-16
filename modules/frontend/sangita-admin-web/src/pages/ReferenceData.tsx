@@ -19,13 +19,16 @@ import {
     deleteTala,
     createTemple,
     updateTemple,
-    deleteTemple
+    deleteTemple,
+    createDeity,
+    updateDeity,
+    deleteDeity
 } from '../api/client';
 import { useToast } from '../components/Toast';
 
 // --- Types & Mocks ---
 
-type EntityType = 'Ragas' | 'Talas' | 'Composers' | 'Temples' | null;
+type EntityType = 'Ragas' | 'Talas' | 'Composers' | 'Temples' | 'Deities' | null;
 type ViewMode = 'HOME' | 'LIST' | 'FORM';
 
 interface BaseEntity {
@@ -69,8 +72,13 @@ interface Temple extends BaseEntity {
     notes?: string;
 }
 
+interface DeityItem extends BaseEntity {
+    type: 'Deities';
+    description?: string;
+}
+
 // Union type for selected item
-type ReferenceItem = Composer | Raga | Tala | Temple;
+type ReferenceItem = Composer | Raga | Tala | Temple | DeityItem;
 
 // Helper function to map API types to local ReferenceItem types
 // API returns camelCase fields matching the DTOs
@@ -116,6 +124,15 @@ const mapTempleToItem = (t: Temple): Temple => ({
     coordinates: t.latitude && t.longitude ? `${t.latitude},${t.longitude}` : undefined,
     aliases: t.names || [],
     updatedAt: t.updatedAt ? new Date(t.updatedAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+    updatedBy: 'System'
+});
+
+const mapDeityToItem = (d: Deity): DeityItem => ({
+    ...d,
+    type: 'Deities' as const,
+    normalizedName: d.nameNormalized,
+    description: d.description,
+    updatedAt: d.updatedAt ? new Date(d.updatedAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
     updatedBy: 'System'
 });
 
@@ -244,6 +261,13 @@ const EntityForm: React.FC<{
                     longitude: coordParts[1] || '',
                     notes: tm.notes || '',
                 });
+            } else if (entityType === 'Deities') {
+                const d = initialData as DeityItem;
+                setFormData({
+                    name: d.name || '',
+                    normalizedName: d.normalizedName || '',
+                    description: d.description || '',
+                });
             }
         } else {
             // Initialize empty form for new entities
@@ -286,6 +310,12 @@ const EntityForm: React.FC<{
                     longitude: '',
                     notes: '',
                 });
+            } else if (entityType === 'Deities') {
+                setFormData({
+                    name: '',
+                    normalizedName: '',
+                    description: '',
+                });
             }
         }
     }, [entityType, initialData]);
@@ -318,6 +348,11 @@ const EntityForm: React.FC<{
                 return;
             }
             if (entityType === 'Temples' && !formData.name) {
+                toast.error('Name is required');
+                setSaving(false);
+                return;
+            }
+            if (entityType === 'Deities' && !formData.name) {
                 toast.error('Name is required');
                 setSaving(false);
                 return;
@@ -364,6 +399,12 @@ const EntityForm: React.FC<{
                         longitude: formData.longitude && formData.longitude.trim() ? parseFloat(formData.longitude) : null,
                         notes: formData.notes || null,
                     });
+                } else if (entityType === 'Deities') {
+                    await updateDeity(initialData.id, {
+                        name: formData.name || null,
+                        nameNormalized: formData.normalizedName || null,
+                        description: formData.description || null,
+                    });
                 }
                 toast.success('Entity updated successfully');
             } else {
@@ -406,6 +447,12 @@ const EntityForm: React.FC<{
                         latitude: formData.latitude && formData.latitude.trim() ? parseFloat(formData.latitude) : null,
                         longitude: formData.longitude && formData.longitude.trim() ? parseFloat(formData.longitude) : null,
                         notes: formData.notes || null,
+                    });
+                } else if (entityType === 'Deities') {
+                    await createDeity({
+                        name: formData.name!,
+                        nameNormalized: formData.normalizedName || null,
+                        description: formData.description || null,
                     });
                 }
                 toast.success('Entity created successfully');
@@ -556,6 +603,16 @@ const EntityForm: React.FC<{
                         </div>
                     )}
 
+                    {entityType === 'Deities' && (
+                        <div className="space-y-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                                <FormInput name="name" label="Name" placeholder="e.g. Venkateswara" value={formData.name} onChange={handleInputChange} required />
+                                <FormInput name="normalizedName" label="Normalized Name" placeholder="e.g. venkateswara" value={formData.normalizedName} onChange={handleInputChange} />
+                            </div>
+                            <FormTextarea name="description" label="Description" placeholder="Optional description or notes about the deity..." value={formData.description} onChange={handleInputChange} />
+                        </div>
+                    )}
+
                     {/* Footer Actions */}
                     <div className="pt-6 border-t border-border-light flex flex-col-reverse sm:flex-row items-center justify-end gap-4">
                         <button 
@@ -604,6 +661,7 @@ const ReferenceData: React.FC = () => {
     const [ragas, setRagas] = useState<Raga[]>([]);
     const [talas, setTalas] = useState<Tala[]>([]);
     const [temples, setTemples] = useState<Temple[]>([]);
+    const [deities, setDeities] = useState<Deity[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [stats, setStats] = useState<ReferenceDataStats | null>(null);
@@ -655,6 +713,10 @@ const ReferenceData: React.FC = () => {
                     case 'Temples':
                         const templesData = await getTemples();
                         setTemples(templesData);
+                        break;
+                    case 'Deities':
+                        const deitiesData = await getDeities();
+                        setDeities(deitiesData);
                         break;
                 }
                 // Also reload stats
@@ -708,6 +770,10 @@ const ReferenceData: React.FC = () => {
                             const templesData = await getTemples();
                             setTemples(templesData);
                             break;
+                        case 'Deities':
+                            const deitiesData = await getDeities();
+                            setDeities(deitiesData);
+                            break;
                     }
                 } catch (err: any) {
                     console.error(`Failed to load ${activeEntity}:`, err);
@@ -751,6 +817,8 @@ const ReferenceData: React.FC = () => {
             data = talas.map(mapTalaToItem);
         } else if (activeEntity === 'Temples') {
             data = temples.map(mapTempleToItem);
+        } else if (activeEntity === 'Deities') {
+            data = deities.map(mapDeityToItem);
         }
 
         return (
@@ -814,6 +882,7 @@ const ReferenceData: React.FC = () => {
                                         {activeEntity === 'Composers' && <th className="px-6 py-4">Period</th>}
                                         {activeEntity === 'Ragas' && <th className="px-6 py-4">Structure</th>}
                                         {activeEntity === 'Talas' && <th className="px-6 py-4">Beats</th>}
+                                        {activeEntity === 'Deities' && <th className="px-6 py-4">Description</th>}
                                         <th className="px-6 py-4 text-right">Updated</th>
                                     </tr>
                                 </thead>
@@ -840,6 +909,7 @@ const ReferenceData: React.FC = () => {
                                         {item.type === 'Ragas' && <td className="px-6 py-4 text-sm text-ink-500">{(item as Raga).arohanam?.substring(0, 15)}...</td>}
                                         {item.type === 'Talas' && <td className="px-6 py-4 text-sm text-ink-500">{(item as Tala).beatCount}</td>}
                                         {item.type === 'Temples' && <td className="px-6 py-4 text-sm text-ink-500">{(item as Temple).location}</td>}
+                                        {item.type === 'Deities' && <td className="px-6 py-4 text-sm text-ink-500">{(item as DeityItem).description?.substring(0, 30) || '-'}...</td>}
                                             <td className="px-6 py-4 text-right text-xs text-ink-500">
                                                 {item.updatedAt}
                                             </td>
@@ -878,6 +948,7 @@ const ReferenceData: React.FC = () => {
                 {renderCard('Talas', stats?.talaCount || 0, 'Suladi Sapta talas, Chapu talas, and rhythmic cycles.', 'bg-teal-500', 'Talas')}
                 {renderCard('Composers', stats?.composerCount || 0, 'Biographical data, periods, and lineages of vaggeyakaras.', 'bg-purple-500', 'Composers')}
                 {renderCard('Temples', stats?.templeCount || 0, 'Geographical locations associated with specific compositions.', 'bg-orange-500', 'Temples')}
+                {renderCard('Deities', stats?.deityCount || 0, 'Canonical deity registry for compositions and temples.', 'bg-amber-500', 'Deities')}
             </div>
 
             <div className="p-6 rounded-xl border border-blue-100 bg-blue-50/50 flex gap-4">

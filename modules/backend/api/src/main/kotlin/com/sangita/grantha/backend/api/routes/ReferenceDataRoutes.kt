@@ -213,6 +213,54 @@ fun Route.referenceDataRoutes(service: ReferenceDataService) {
         }
     }
 
+    // Admin Deities CRUD
+    route("/v1/admin/deities") {
+        get {
+            val deities = service.listDeities()
+            call.respond(deities)
+        }
+
+        get("/{id}") {
+            val id = parseUuidParam(call.parameters["id"], "deityId")
+                ?: return@get call.respondText("Missing deity ID", status = HttpStatusCode.BadRequest)
+            val deity = service.getDeity(id)
+            if (deity == null) {
+                call.respondText("Deity not found", status = HttpStatusCode.NotFound)
+            } else {
+                call.respond(deity)
+            }
+        }
+
+        post {
+            val request = call.receive<DeityCreateRequest>()
+            val created = service.createDeity(request)
+            call.respond(HttpStatusCode.Created, created)
+        }
+
+        put("/{id}") {
+            val id = parseUuidParam(call.parameters["id"], "deityId")
+                ?: return@put call.respondText("Missing deity ID", status = HttpStatusCode.BadRequest)
+            val request = call.receive<DeityUpdateRequest>()
+            val updated = service.updateDeity(id, request)
+            if (updated == null) {
+                call.respondText("Deity not found", status = HttpStatusCode.NotFound)
+            } else {
+                call.respond(updated)
+            }
+        }
+
+        delete("/{id}") {
+            val id = parseUuidParam(call.parameters["id"], "deityId")
+                ?: return@delete call.respondText("Missing deity ID", status = HttpStatusCode.BadRequest)
+            val deleted = service.deleteDeity(id)
+            if (deleted) {
+                call.respond(HttpStatusCode.NoContent)
+            } else {
+                call.respondText("Deity not found", status = HttpStatusCode.NotFound)
+            }
+        }
+    }
+
     // Admin tag management routes
     route("/v1/admin/tags") {
         get {
