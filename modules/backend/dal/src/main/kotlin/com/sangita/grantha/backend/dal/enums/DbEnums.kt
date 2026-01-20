@@ -88,3 +88,42 @@ enum class MusicalForm(override val dbValue: String) : DbEnum {
         const val DB_TYPE = "musical_form_enum"
     }
 }
+
+enum class BatchStatus(override val dbValue: String) : DbEnum {
+    PENDING("pending"),
+    RUNNING("running"),
+    PAUSED("paused"),
+    SUCCEEDED("succeeded"),
+    FAILED("failed"),
+    CANCELLED("cancelled");
+
+    companion object {
+        const val DB_TYPE = "batch_status_enum"
+    }
+}
+
+enum class JobType(override val dbValue: String) : DbEnum {
+    MANIFEST_INGEST("manifest_ingest"),
+    SCRAPE("scrape"),
+    ENRICH("enrich"),
+    ENTITY_RESOLUTION("entity_resolution"),
+    REVIEW_PREP("review_prep");
+
+    companion object {
+        const val DB_TYPE = "job_type_enum"
+    }
+}
+
+enum class TaskStatus(override val dbValue: String) : DbEnum {
+    PENDING("pending"),
+    RUNNING("running"),
+    SUCCEEDED("succeeded"),
+    FAILED("failed"),
+    RETRYABLE("retryable"),
+    BLOCKED("blocked"),
+    CANCELLED("cancelled");
+
+    companion object {
+        const val DB_TYPE = "task_status_enum"
+    }
+}

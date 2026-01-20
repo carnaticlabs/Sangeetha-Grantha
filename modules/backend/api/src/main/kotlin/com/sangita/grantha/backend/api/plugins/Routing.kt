@@ -5,6 +5,7 @@ import com.sangita.grantha.backend.api.routes.adminNotationRoutes
 import com.sangita.grantha.backend.api.routes.auditRoutes
 import com.sangita.grantha.backend.api.routes.healthRoutes
 import com.sangita.grantha.backend.api.routes.importRoutes
+import com.sangita.grantha.backend.api.routes.bulkImportRoutes
 import com.sangita.grantha.backend.api.routes.publicKrithiRoutes
 import com.sangita.grantha.backend.api.routes.adminDashboardRoutes
 import com.sangita.grantha.backend.api.routes.referenceDataRoutes
@@ -18,6 +19,7 @@ import com.sangita.grantha.backend.api.services.AdminDashboardService
 import com.sangita.grantha.backend.api.services.TransliterationService
 import com.sangita.grantha.backend.api.services.WebScrapingService
 import com.sangita.grantha.backend.api.services.UserManagementService
+import com.sangita.grantha.backend.api.services.BulkImportOrchestrationService
 
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
@@ -33,7 +35,8 @@ fun Application.configureRouting(
     dashboardService: AdminDashboardService,
     transliterationService: TransliterationService,
     webScrapingService: WebScrapingService,
-    userManagementService: UserManagementService
+    userManagementService: UserManagementService,
+    bulkImportService: BulkImportOrchestrationService,
 ) {
     install(io.ktor.server.plugins.defaultheaders.DefaultHeaders)
     routing {
@@ -44,6 +47,7 @@ fun Application.configureRouting(
             adminKrithiRoutes(krithiService, transliterationService)
             adminNotationRoutes(notationService)
             importRoutes(importService, webScrapingService)
+            bulkImportRoutes(bulkImportService)
             auditRoutes(auditLogService)
             referenceDataRoutes(referenceDataService)
             userManagementRoutes(userManagementService)

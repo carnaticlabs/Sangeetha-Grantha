@@ -44,3 +44,81 @@ data class ImportedKrithiDto(
     val reviewedAt: Instant? = null,
     val createdAt: Instant,
 )
+
+// Bulk Import Orchestration DTOs
+@Serializable
+enum class BatchStatusDto { PENDING, RUNNING, PAUSED, SUCCEEDED, FAILED, CANCELLED }
+
+@Serializable
+enum class JobTypeDto { MANIFEST_INGEST, SCRAPE, ENRICH, ENTITY_RESOLUTION, REVIEW_PREP }
+
+@Serializable
+enum class TaskStatusDto { PENDING, RUNNING, SUCCEEDED, FAILED, RETRYABLE, BLOCKED, CANCELLED }
+
+@Serializable
+data class ImportBatchDto(
+    @Serializable(with = UuidSerializer::class)
+    val id: Uuid,
+    val sourceManifest: String,
+    @Serializable(with = UuidSerializer::class)
+    val createdByUserId: Uuid? = null,
+    val status: BatchStatusDto,
+    val totalTasks: Int,
+    val processedTasks: Int,
+    val succeededTasks: Int,
+    val failedTasks: Int,
+    val blockedTasks: Int,
+    val startedAt: Instant? = null,
+    val completedAt: Instant? = null,
+    val createdAt: Instant,
+    val updatedAt: Instant,
+)
+
+@Serializable
+data class ImportJobDto(
+    @Serializable(with = UuidSerializer::class)
+    val id: Uuid,
+    @Serializable(with = UuidSerializer::class)
+    val batchId: Uuid,
+    val jobType: JobTypeDto,
+    val status: TaskStatusDto,
+    val retryCount: Int,
+    val payload: String? = null, // JSON string
+    val result: String? = null, // JSON string
+    val startedAt: Instant? = null,
+    val completedAt: Instant? = null,
+    val createdAt: Instant,
+    val updatedAt: Instant,
+)
+
+@Serializable
+data class ImportTaskRunDto(
+    @Serializable(with = UuidSerializer::class)
+    val id: Uuid,
+    @Serializable(with = UuidSerializer::class)
+    val jobId: Uuid,
+    val krithiKey: String? = null,
+    val status: TaskStatusDto,
+    val attempt: Int,
+    val sourceUrl: String? = null,
+    val error: String? = null, // JSON string
+    val durationMs: Int? = null,
+    val checksum: String? = null,
+    val evidencePath: String? = null,
+    val startedAt: Instant? = null,
+    val completedAt: Instant? = null,
+    val createdAt: Instant,
+    val updatedAt: Instant,
+)
+
+@Serializable
+data class ImportEventDto(
+    @Serializable(with = UuidSerializer::class)
+    val id: Uuid,
+    val refType: String,
+    @Serializable(with = UuidSerializer::class)
+    val refId: Uuid,
+    val eventType: String,
+    val data: String? = null, // JSON string
+    val createdAt: Instant,
+)

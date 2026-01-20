@@ -1,6 +1,7 @@
 package com.sangita.grantha.backend.dal
 
 import com.sangita.grantha.backend.dal.repositories.AuditLogRepository
+import com.sangita.grantha.backend.dal.repositories.BulkImportRepository
 import com.sangita.grantha.backend.dal.repositories.ComposerRepository
 import com.sangita.grantha.backend.dal.repositories.DeityRepository
 import com.sangita.grantha.backend.dal.repositories.ImportRepository
@@ -24,6 +25,7 @@ class SangitaDal(
     val krithis: KrithiRepository = KrithiRepository(),
     val krithiNotation: KrithiNotationRepository = KrithiNotationRepository(),
     val imports: ImportRepository = ImportRepository(),
+    val bulkImport: BulkImportRepository = BulkImportRepository(),
     val auditLogs: AuditLogRepository = AuditLogRepository(),
     val users: UserRepository = UserRepository(),
 )

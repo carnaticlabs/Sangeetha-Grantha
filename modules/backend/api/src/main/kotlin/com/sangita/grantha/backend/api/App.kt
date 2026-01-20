@@ -9,6 +9,8 @@ import com.sangita.grantha.backend.api.plugins.configureSecurity
 import com.sangita.grantha.backend.api.plugins.configureSerialization
 import com.sangita.grantha.backend.api.plugins.configureStatusPages
 import com.sangita.grantha.backend.api.services.AuditLogService
+import com.sangita.grantha.backend.api.services.BulkImportOrchestrationService
+import com.sangita.grantha.backend.api.services.BulkImportWorkerService
 import com.sangita.grantha.backend.api.services.ImportService
 import com.sangita.grantha.backend.api.services.KrithiNotationService
 import com.sangita.grantha.backend.api.services.KrithiService
@@ -44,11 +46,17 @@ fun main() {
     val auditLogService = AuditLogService(dal)
     val dashboardService = com.sangita.grantha.backend.api.services.AdminDashboardService(dal)
     val userManagementService = com.sangita.grantha.backend.api.services.UserManagementService(dal)
+    val bulkImportService = BulkImportOrchestrationService(dal)
 
     // AI Services
     val geminiApiClient = GeminiApiClient(env.geminiApiKey ?: "")
     val transliterationService = TransliterationService(geminiApiClient)
     val webScrapingService = WebScrapingService(geminiApiClient)
+    val bulkImportWorkerService = BulkImportWorkerService(
+        dal = dal,
+        importService = importService,
+        webScrapingService = webScrapingService
+    )
 
     embeddedServer(Netty, host = env.host, port = env.port) {
         configureSerialization()
@@ -65,11 +73,16 @@ fun main() {
             dashboardService,
             transliterationService,
             webScrapingService,
-            userManagementService
+            userManagementService,
+            bulkImportService
         )
+
+        // Start background workers (bulk import orchestration)
+        bulkImportWorkerService.start()
 
         monitor.subscribe(ApplicationStopping) {
             logger.info("Shutting down, closing database pool")
+            bulkImportWorkerService.stop()
             DatabaseFactory.close()
         }
     }.start(wait = true)

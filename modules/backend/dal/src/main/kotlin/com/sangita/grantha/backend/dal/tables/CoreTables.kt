@@ -1,10 +1,13 @@
 package com.sangita.grantha.backend.dal.tables
 
+import com.sangita.grantha.backend.dal.enums.BatchStatus
 import com.sangita.grantha.backend.dal.enums.ImportStatus
+import com.sangita.grantha.backend.dal.enums.JobType
 import com.sangita.grantha.backend.dal.enums.LanguageCode
 import com.sangita.grantha.backend.dal.enums.MusicalForm
 import com.sangita.grantha.backend.dal.enums.RagaSection
 import com.sangita.grantha.backend.dal.enums.ScriptCode
+import com.sangita.grantha.backend.dal.enums.TaskStatus
 import com.sangita.grantha.backend.dal.enums.WorkflowState
 import com.sangita.grantha.backend.dal.support.jsonbText
 import com.sangita.grantha.backend.dal.support.pgEnum
@@ -258,4 +261,57 @@ object AuditLogTable : UUIDTable("audit_log") {
     val changedAt = timestampWithTimeZone("changed_at")
     val diff = jsonbText("diff").nullable()
     val metadata = jsonbText("metadata").nullable()
+}
+
+// Bulk Import Orchestration Tables
+object ImportBatchTable : UUIDTable("import_batch") {
+    val sourceManifest = text("source_manifest")
+    val createdByUserId = uuid("created_by_user_id").nullable()
+    val status = pgEnum<BatchStatus>("status", BatchStatus.DB_TYPE)
+    val totalTasks = integer("total_tasks").default(0)
+    val processedTasks = integer("processed_tasks").default(0)
+    val succeededTasks = integer("succeeded_tasks").default(0)
+    val failedTasks = integer("failed_tasks").default(0)
+    val blockedTasks = integer("blocked_tasks").default(0)
+    val startedAt = timestampWithTimeZone("started_at").nullable()
+    val completedAt = timestampWithTimeZone("completed_at").nullable()
+    val createdAt = timestampWithTimeZone("created_at")
+    val updatedAt = timestampWithTimeZone("updated_at")
+}
+
+object ImportJobTable : UUIDTable("import_job") {
+    val batchId = uuid("batch_id")
+    val jobType = pgEnum<JobType>("job_type", JobType.DB_TYPE)
+    val status = pgEnum<TaskStatus>("status", TaskStatus.DB_TYPE)
+    val retryCount = integer("retry_count").default(0)
+    val payload = jsonbText("payload").nullable()
+    val result = jsonbText("result").nullable()
+    val startedAt = timestampWithTimeZone("started_at").nullable()
+    val completedAt = timestampWithTimeZone("completed_at").nullable()
+    val createdAt = timestampWithTimeZone("created_at")
+    val updatedAt = timestampWithTimeZone("updated_at")
+}
+
+object ImportTaskRunTable : UUIDTable("import_task_run") {
+    val jobId = uuid("job_id")
+    val krithiKey = text("krithi_key").nullable()
+    val status = pgEnum<TaskStatus>("status", TaskStatus.DB_TYPE)
+    val attempt = integer("attempt").default(0)
+    val sourceUrl = text("source_url").nullable()
+    val error = jsonbText("error").nullable()
+    val durationMs = integer("duration_ms").nullable()
+    val checksum = text("checksum").nullable()
+    val evidencePath = text("evidence_path").nullable()
+    val startedAt = timestampWithTimeZone("started_at").nullable()
+    val completedAt = timestampWithTimeZone("completed_at").nullable()
+    val createdAt = timestampWithTimeZone("created_at")
+    val updatedAt = timestampWithTimeZone("updated_at")
+}
+
+object ImportEventTable : UUIDTable("import_event") {
+    val refType = text("ref_type")
+    val refId = uuid("ref_id")
+    val eventType = text("event_type")
+    val data = jsonbText("data").nullable()
+    val createdAt = timestampWithTimeZone("created_at")
 }
