@@ -60,3 +60,18 @@ Since our infrastructure is likely grounded in Google Cloud (or easily compatibl
 ## 5. Conclusion
 
 Google Gemini offers the "sweet spot" of **domain-relevant accuracy** (Indic languages) and **operational viability** (Flash model costs). It enables features that were previously too expensive or unreliable to automate, positioning Sangita Grantha to scale from a manual curated list to a comprehensive, AI-assisted digital archive.
+
+---
+
+## Conductor Tracking for Gemini-Related Work
+
+This rationale informs multiple implementation tracks (transliteration, scraping, validation, search). To keep design and execution aligned:
+
+- **Every new Gemini-backed feature or major enhancement MUST be tracked via Conductor**:
+  - Register or update a `TRACK-XXX` row in `conductor/tracks.md`.
+  - Create or update `conductor/tracks/TRACK-XXX-*.md` describing the specific Gemini usage, architecture, and rollout plan (see `TRACK-001-bulk-import-krithis.md` for structure).
+- **When this document is used as justification for implementation**:
+  - Reference the relevant `TRACK-XXX` from the implementation PRD / feature spec.
+  - Ensure the TRACK file’s **Progress Log** is updated as the Gemini capability moves from evaluation → POC → production.
+
+Conductor thus captures **how** and **where** Gemini is used operationally, while this document captures **why** it was chosen.

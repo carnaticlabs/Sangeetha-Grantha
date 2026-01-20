@@ -231,3 +231,21 @@ gemini_model = "gemini-2.0-flash-exp"
 **Status:** Ready for Review  
 **Contact:** Platform Team  
 Last Updated: 2026-01-20
+
+---
+
+## Conductor & Tracking for AI/Gemini Work
+
+All work derived from or related to this AI integration summary **must** be tracked via Conductor:
+
+- **Track Registration**
+  - For each new AI/Gemini initiative (e.g., Transliteration Phase 2, Web Scraping Enhancements, Validation Hardening), register a `TRACK-XXX` entry in `conductor/tracks.md`.
+  - Keep status (`Planned`, `In Progress`, `Completed`) up to date.
+- **Track Detail Files**
+  - Create `conductor/tracks/TRACK-XXX-some-slug.md` using `TRACK-001-bulk-import-krithis.md` as the template.
+  - Include at minimum: **Goal, Context, Architecture Overview, Implementation Plan (Phases), Progress Log, Technical Details**.
+- **Linking Docs and Tracks**
+  - When a section of this summary moves from plan → implementation, reference the corresponding `TRACK-XXX` in that section or its change notes.
+  - When implementation milestones are reached, update the TRACK file’s **Progress Log** alongside any changes to this document.
+
+Conductor is the system of record for **AI feature execution**; `application_documentation/09-ai/` remains the system of record for **AI design and rationale**.

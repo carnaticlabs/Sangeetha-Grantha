@@ -1002,6 +1002,26 @@ These features align with the platform's goals of establishing Sangita Grantha a
 
 ---
 
+## 13. Conductor & Track Requirements for AI Work
+
+This document defines **what** we plan to build with Gemini. Conductor tracks define **how** those plans are executed and sequenced.
+
+- **For every AI feature/phase described here (e.g., Phase 1 Transliteration, Phase 2 Web Scraping, Phase 3 Metadata Extraction, Phase 4 Validation):**
+  - Register a `TRACK-XXX` row in `conductor/tracks.md` with a descriptive name and status.
+  - Create `conductor/tracks/TRACK-XXX-some-slug.md` capturing:
+    - Goal and success metrics
+    - Context and dependencies
+    - Architecture overview (services, tables, routes)
+    - Phased implementation plan
+    - Progress log and operational notes
+- **When updating this document:**
+  - Reference the relevant `TRACK-XXX` in the section(s) being updated (for example, “Tracked in TRACK-003-gemini-transliteration-phase-2”).
+  - Ensure that corresponding TRACK files are updated to reflect the latest design or scope.
+
+Conductor and this document must stay in lockstep so that **design intent** (here) and **execution tracking** (`conductor/tracks/*.md`) remain consistent.
+
+---
+
 ## Appendix A: Example Prompts
 
 ### Transliteration Prompt

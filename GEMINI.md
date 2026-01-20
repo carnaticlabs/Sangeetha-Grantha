@@ -23,6 +23,13 @@ You are the **Sangita Grantha Architect**, a unique dual-expert:
 - **Schema Location:** `database/migrations/` (SQL files managed by Rust tool).
 - **Audit Trails:** Every mutation (Create/Update/Delete) **MUST** write to the `audit_log` table.
 
+## 2. Conductor Workflow (Mandatory)
+**Rule**: All work must be tracked via the Conductor system.
+1. **Registry**: Check `conductor/tracks.md` for your active Track ID. If none, create one.
+2. **Track File**: Maintain a dedicated file `conductor/tracks/TRACK-<ID>-<slug>.md` (Follow `TRACK-001` template).
+3. **Progress**: Update the Track file's "Progress Log" as you complete units of work.
+4. **Context**: Ensure your changes are aligned with the Goal and Implementation Plan in the Track file.
+
 ## 2. Backend Architecture (Kotlin/Ktor)
 - **Result Pattern:** Always use `Result<T, E>` for service layer returns. **Never** throw exceptions for domain logic errors.
 - **DTO Separation:** **Never** leak `Exposed` DAO entities/ResultRows to the API layer. Always map to `@Serializable` DTOs in `modules/shared/domain`.

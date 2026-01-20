@@ -92,6 +92,26 @@ This document provides essential references for AI coding assistants (VS Code Co
 
 ---
 
+## Conductor & AI Change Tracking (For Assistants)
+
+When proposing or implementing **any changes** to the codebase, assistants **must follow Conductor tracking rules**:
+
+- **Always register a Track** for any new AI feature or significant enhancement:
+  - Add/ensure a row exists in `conductor/tracks.md` with a unique `Track ID`, name, and status.
+  - Example: `TRACK-002 | Gemini Transliteration Hardening | In Progress`.
+- **Always create or update a Track detail file**:
+  - File path: `conductor/tracks/TRACK-XXX-some-slug.md`.
+  - Use `TRACK-001-bulk-import-krithis.md` as the canonical template (Goal, Context, Architecture Overview, Phased Plan, Progress Log, Technical Details).
+- **Tie code/docs changes to Tracks**:
+  - When editing AI-related code or docs (anything under `application_documentation/09-ai/` or Gemini-related services), update the corresponding TRACK file’s **Progress Log**.
+  - Ensure the work described in AI docs (e.g., new service, endpoint, or workflow) cites the relevant `TRACK-XXX` where appropriate.
+
+Conductor resources:
+
+- `conductor/index.md`
+- `conductor/tracks.md`
+- `conductor/tracks/TRACK-001-bulk-import-krithis.md`
+
 ## Quick Reference Commands
 
 ```bash

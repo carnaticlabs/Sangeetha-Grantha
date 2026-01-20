@@ -67,3 +67,27 @@ TODO: Update this section.
 ## 6. Operations
 
 TODO: Update this section.
+
+---
+
+## Conductor Tracking for AI Knowledge Work
+
+This knowledge base underpins AI/Gemini usage across the project. Any change that:
+
+- Introduces or modifies **AI/Gemini services**, **prompts**, or **pipelines** (for example, `TransliterationService`, `WebScrapingService`, `MetadataExtractionService`, `SectionDetectionService`, `ValidationService`), or
+- Adjusts **AI-related configuration**, **governance policies**, or other behaviour described in `application_documentation/09-ai/`
+
+must be tracked via **Conductor**:
+
+- **Create/Update a Track**
+  - Add or update an entry in `conductor/tracks.md` with a unique `TRACK-XXX` ID, name, and status.
+  - For substantial changes, create or update `conductor/tracks/TRACK-XXX-*.md` (see `conductor/tracks/TRACK-001-bulk-import-krithis.md` for the canonical template).
+- **Reflect the Track in Documentation**
+  - When updating this knowledge base with new AI patterns, models, or constraints, reference the relevant `TRACK-XXX` in the document (for example, in a \"Related Tracks\" or \"Change Log\" subsection).
+  - Ensure that the corresponding TRACK file’s **Progress Log** is updated whenever a documented AI capability moves from idea → implemented → refined.
+
+See also:
+
+- `conductor/index.md`
+- `conductor/tracks.md`
+- `application_documentation/09-ai/integration-summary.md` (for the AI roadmap and tracked phases)

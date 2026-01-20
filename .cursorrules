@@ -25,6 +25,13 @@ Sangeetha Grantha is a digital compendium of Carnatic Music. It is a multi-modul
 - **Dependency Management**: Use `gradle/libs.versions.toml`. No hardcoded versions in `build.gradle.kts`.
 - **Audit Logs**: All mutations (Backend) MUST be logged to the `AUDIT_LOG` table.
 
+## 🚂 Conductor Workflow (Mandatory)
+**Rule**: All work must be tracked via the Conductor system.
+1. **Registry**: Check `conductor/tracks.md` for your active Track ID. If none, create one.
+2. **Track File**: Maintain a dedicated file `conductor/tracks/TRACK-<ID>-<slug>.md` (Follow `TRACK-001` template).
+3. **Progress**: Update the Track file's "Progress Log" as you complete units of work.
+4. **Context**: Ensure your changes are aligned with the Goal and Implementation Plan in the Track file.
+
 ## 🎼 Domain Context (Carnatic Music)
 - **Musicological Correctness**: Krithis must support Pallavi, Anupallavi, and multiple Charanams.
 - **Ragas**: Support single Ragas and Ragamalikika (ordered lists).
