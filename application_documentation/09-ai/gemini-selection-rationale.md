@@ -1,8 +1,8 @@
 # Google Gemini Selection Rationale
 
-> **Status**: Accepted
-> **Version**: 1.0
-> **Last Updated**: 2026-01-05
+> **Status**: Accepted  
+> **Version**: 1.1  
+> **Last Updated**: 2026-01-20  
 > **Related**: [ADR-006](../02-architecture/decisions/ADR-006-gemini-integration.md)
 
 ## 1. Executive Summary
