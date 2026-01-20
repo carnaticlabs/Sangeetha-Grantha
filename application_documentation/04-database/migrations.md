@@ -1,10 +1,13 @@
 # Database Migrations (Sangita Grantha)
 
-> **Status**: Draft | **Version**: 0.2 | **Last Updated**: 2026-01-09
-> **Owners**: Sangita Grantha Data/Backend Team
+| Metadata | Value |
+|:---|:---|
+| **Status** | Draft |
+| **Version** | 0.2 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | Engineering Team |
+| **Related Documents** | - [Schema](./schema.md) |
 
-**Related Documents**
-- [Schema](./schema.md)
 - Migrations Runner Rust (Deleted)
 - [Config](../08-operations/config.md)
 

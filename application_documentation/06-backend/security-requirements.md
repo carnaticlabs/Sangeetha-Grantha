@@ -1,12 +1,12 @@
 # Sangita Grantha Security Requirements
 
-> **Status**: Draft | **Version**: 0.2 | **Last Updated**: 2026-01-09
-> **Owners**: Security Team, Backend Team
-
-**Related Documents**
-- [Architecture](../02-architecture/backend-system-design.md)
-- [Mutation Handlers](./mutation-handlers.md)
-- [Api Contract](../03-api/api-contract.md)
+| Metadata | Value |
+|:---|:---|
+| **Status** | Draft |
+| **Version** | 0.2 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | Engineering Team |
+| **Related Documents** | - [Architecture](../02-architecture/backend-system-design.md)<br>- [Mutation Handlers](./mutation-handlers.md)<br>- [Api Contract](../03-api/api-contract.md) |
 
 # Security Requirements for Sangita Grantha
 

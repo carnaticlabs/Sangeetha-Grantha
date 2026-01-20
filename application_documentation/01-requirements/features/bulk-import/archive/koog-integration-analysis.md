@@ -1,8 +1,12 @@
 # Koog Integration Analysis and Options
 
-> **Status**: Analysis | **Version**: 1.1
-> **Last Updated**: 2026-01-16
-> **Related Documents**:
+| Metadata | Value |
+|:---|:---|
+| **Status** | Analysis |
+| **Version** | 1.1 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | Engineering Team |
+
 > - [Intelligent Content Ingestion](../../intelligent-content-ingestion.md)
 > - [Gemini Integration ADR](../../../../02-architecture/decisions/ADR-006-gemini-integration.md)
 > - [AI Integration Opportunities](../../../../09-ai/integration-opportunities.md)

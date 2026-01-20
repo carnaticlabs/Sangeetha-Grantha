@@ -1,12 +1,12 @@
 # Steel Thread Implementation
 
-> **Status**: Current | **Version**: 1.0 | **Last Updated**: 2026-01-09
-> **Owners**: Backend Team, QA Team
-
-**Related Documents**
-- [Steel Thread Runbook](../08-operations/runbooks/steel-thread-runbook.md)
-- [Steel Thread Report](../07-quality/reports/steel-thread.md)
-- [Sangita CLI README](../../tools/sangita-cli/README.md)
+| Metadata | Value |
+|:---|:---|
+| **Status** | Current |
+| **Version** | 1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | Engineering Team |
+| **Related Documents** | - [Steel Thread Runbook](../08-operations/runbooks/steel-thread-runbook.md)<br>- [Steel Thread Report](../07-quality/reports/steel-thread.md)<br>- [Sangita CLI README](../../tools/sangita-cli/README.md) |
 
 ## Overview
 

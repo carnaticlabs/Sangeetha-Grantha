@@ -1,12 +1,12 @@
 # AI Integration Opportunities - Executive Summary
 
-> **Status**: Summary | **Version**: 1.1 | **Last Updated**: 2026-01-20
-> **Owners**: Platform Team
-
-**Related Documents**
-- [Integration Opportunities](integration-opportunities.md)
-
-# AI Integration Opportunities - Executive Summary
+| Metadata | Value |
+|:---|:---|
+| **Status** | Summary |
+| **Version** | 1.1 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | Engineering Team |
+| **Related Documents** | - [Integration Opportunities](integration-opportunities.md) |
 
 ## Quick Overview
 
@@ -230,7 +230,6 @@ gemini_model = "gemini-2.0-flash-exp"
 
 **Status:** Ready for Review  
 **Contact:** Platform Team  
-Last Updated: 2026-01-20
 
 ---
 

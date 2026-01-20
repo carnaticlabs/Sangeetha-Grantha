@@ -1,10 +1,13 @@
 # Graph Explorer Implementation Plan - PostgreSQL + Cytoscape.js
 
-> **Status**: Draft | **Version**: 1.0 | **Last Updated**: 2026-01-09
-> **Owners**: Backend Team, Frontend Team
+| Metadata | Value |
+|:---|:---|
+| **Status** | Draft |
+| **Version** | 1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | Engineering Team |
+| **Related Documents** | - [Graph Database Evaluation](./graph-database-evaluation.md) |
 
-**Related Documents**
-- [Graph Database Evaluation](./graph-database-evaluation.md)
 - Neo4J Graph Evaluation (Deleted)
 - [Sangita_Schema_Overview](../../04-database/schema.md)
 - [Architecture](../../02-architecture/backend-system-design.md)

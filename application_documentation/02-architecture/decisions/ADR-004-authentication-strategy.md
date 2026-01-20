@@ -1,12 +1,12 @@
 # ADR-004: Authentication Strategy - Bearer Token with Role-Based Access Control
 
-> **Status**: Accepted | **Version**: 1.0 | **Last Updated**: 2026-01-09
-> **Owners**: Platform Team
-
-**Related Documents**
-- [API Coverage Implementation Plan](../../07-quality/api-coverage-implementation-plan.md)
-- [Security Requirements](../../06-backend/security-requirements.md)
-- [Tech Stack](../tech-stack.md)
+| Metadata | Value |
+|:---|:---|
+| **Status** | Accepted |
+| **Version** | 1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | Engineering Team |
+| **Related Documents** | - [API Coverage Implementation Plan](../../07-quality/api-coverage-implementation-plan.md)<br>- [Security Requirements](../../06-backend/security-requirements.md)<br>- [Tech Stack](../tech-stack.md) |
 
 ## Context
 

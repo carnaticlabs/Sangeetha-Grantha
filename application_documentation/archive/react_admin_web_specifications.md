@@ -1,8 +1,14 @@
 # React Admin Web Specifications
 
+| Metadata | Value |
+|:---|:---|
+| **Status** | Draft |
+| **Version** | 1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | Engineering Team |
+
 **Status:** Draft  
 **Version:** 1.1  
-Last Updated: 2026-01-20
 
 ---
 

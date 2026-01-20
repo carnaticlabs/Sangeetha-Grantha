@@ -1,13 +1,12 @@
 # Sangita Grantha Backend Architecture
 
-> **Status**: Draft | **Version**: 0.2 | **Last Updated**: 2026-01-09
-> **Owners**: Sangita Grantha Backend Team
-
-**Related Documents**
-- [Api Contract](../03-api/api-contract.md)
-- [Mutation Handlers](../06-backend/mutation-handlers.md)
-- [Security Requirements](../06-backend/security-requirements.md)
-- [Schema](../04-database/schema.md)
+| Metadata | Value |
+|:---|:---|
+| **Status** | Draft |
+| **Version** | 0.2 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | Engineering Team |
+| **Related Documents** | - [Api Contract](../03-api/api-contract.md)<br>- [Mutation Handlers](../06-backend/mutation-handlers.md)<br>- [Security Requirements](../06-backend/security-requirements.md)<br>- [Schema](../04-database/schema.md) |
 
 # Backend Architecture (Sangita Grantha)
 

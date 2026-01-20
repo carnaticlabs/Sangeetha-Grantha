@@ -1,15 +1,16 @@
 # Sangita Grantha – Schema Overview
 
+| Metadata | Value |
+|:---|:---|
+| **Status** | Draft |
+| **Version** | 1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | Engineering Team |
+| **Related Documents** | - [Sangita Grantha PRD](../01-requirements/product-requirements-document.md)<br>- [Migrations](./migrations.md)<br>- [Domain Model](../01-requirements/domain-model.md)<br>- [API Contract](../03-api/api-contract.md) |
+
 **Status:** Draft  
 **Version:** 0.4  
-Last Updated: 2026-01-20
 **Owners:** Sangita Grantha Data & Backend Team  
-
-**Related Documents**
-- [Sangita Grantha PRD](../01-requirements/product-requirements-document.md)
-- [Migrations](./migrations.md)
-- [Domain Model](../01-requirements/domain-model.md)
-- [API Contract](../03-api/api-contract.md)
 
 ---
 

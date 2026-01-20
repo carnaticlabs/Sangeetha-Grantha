@@ -1,12 +1,12 @@
 # Test Plan
 
-> **Status**: Current | **Version**: 2.0 | **Last Updated**: 2026-01-09
-> **Owners**: QA & Engineering Leads
-
-**Related Documents**
-- [Admin Web PRD](../../01-requirements/admin-web/prd.md)
-- [Mobile PRD](../../01-requirements/mobile/prd.md)
-- [Steel Thread Implementation](../../06-backend/steel-thread-implementation.md)
+| Metadata | Value |
+|:---|:---|
+| **Status** | Current |
+| **Version** | 2.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | Engineering Team |
+| **Related Documents** | - [Admin Web PRD](../../01-requirements/admin-web/prd.md)<br>- [Mobile PRD](../../01-requirements/mobile/prd.md)<br>- [Steel Thread Implementation](../../06-backend/steel-thread-implementation.md) |
 
 # 1. Scope
 

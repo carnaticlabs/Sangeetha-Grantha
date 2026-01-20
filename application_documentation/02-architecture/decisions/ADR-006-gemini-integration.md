@@ -1,9 +1,11 @@
 # ADR-006: Integration of Google Gemini for Content Ingestion and Validation
 
-> **Status**: Accepted
-> **Version**: 1.0
-> **Last Updated**: 2026-01-05
-> **Owners**: Platform Team
+| Metadata | Value |
+|:---|:---|
+| **Status** | Accepted |
+| **Version** | 1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | Engineering Team |
 
 ## Context
 

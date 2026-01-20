@@ -1,15 +1,12 @@
 # Sangita Grantha API Contract
 
-> **Status**: Draft | **Version**: 0.2 | **Last Updated**: 2026-01-09
-> **Owners**: Sangita Grantha Backend Team
-
-**Related Documents**
-- [Ui To Api Mapping](./ui-to-api-mapping.md)
-- [Integration Spec](./integration-spec.md)
-- [Admin Web Prd](../01-requirements/admin-web/prd.md)
-- [Mobile App Prd](../01-requirements/mobile/prd.md)
-- [Architecture](../02-architecture/backend-system-design.md)
-- [Sangita_Schema_Overview](../04-database/schema.md)
+| Metadata | Value |
+|:---|:---|
+| **Status** | Draft |
+| **Version** | 0.2 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | Engineering Team |
+| **Related Documents** | - [Ui To Api Mapping](./ui-to-api-mapping.md)<br>- [Integration Spec](./integration-spec.md)<br>- [Admin Web Prd](../01-requirements/admin-web/prd.md)<br>- [Mobile App Prd](../01-requirements/mobile/prd.md)<br>- [Architecture](../02-architecture/backend-system-design.md)<br>- [Sangita_Schema_Overview](../04-database/schema.md) |
 
 # 1. Overview
 

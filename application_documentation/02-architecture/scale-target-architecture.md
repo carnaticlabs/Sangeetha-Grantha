@@ -1,13 +1,12 @@
 # Target Scale Architecture (Multi-Region) — Roadmap-Focused
 
-> **Status**: Draft | **Version**: 0.1 | **Last Updated**: 2026-01-09  
-> **Owners**: Platform + Backend Teams
-
-**Related Documents**
-- [Backend Architecture](./backend-system-design.md)
-- [Tech Stack](./tech-stack.md)
-- [Schema Overview](../04-database/schema.md)
-- [Security Requirements](../06-backend/security-requirements.md)
+| Metadata | Value |
+|:---|:---|
+| **Status** | Draft |
+| **Version** | 0.1 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | Engineering Team |
+| **Related Documents** | - [Backend Architecture](./backend-system-design.md)<br>- [Tech Stack](./tech-stack.md)<br>- [Schema Overview](../04-database/schema.md)<br>- [Security Requirements](../06-backend/security-requirements.md) |
 
 ---
 

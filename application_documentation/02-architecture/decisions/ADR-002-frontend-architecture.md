@@ -1,12 +1,12 @@
 # ADR-002: Frontend Architecture Decision - React vs Kotlin/JS
 
-> **Status**: Accepted | **Version**: 1.0 | **Last Updated**: 2026-01-09
-> **Owners**: Platform Team
-
-**Related Documents**
-- [Admin Web PRD](../../01-requirements/admin-web/prd.md)
-- [Admin Web UI Specs](../../05-frontend/admin-web/ui-specs.md)
-- [Tech Stack](../tech-stack.md)
+| Metadata | Value |
+|:---|:---|
+| **Status** | Accepted |
+| **Version** | 1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | Engineering Team |
+| **Related Documents** | - [Admin Web PRD](../../01-requirements/admin-web/prd.md)<br>- [Admin Web UI Specs](../../05-frontend/admin-web/ui-specs.md)<br>- [Tech Stack](../tech-stack.md) |
 
 ## Context
 

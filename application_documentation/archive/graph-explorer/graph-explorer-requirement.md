@@ -1,3 +1,12 @@
+# Graph Explorer Requirement (Original Neo4j Proposal)
+
+| Metadata | Value |
+|:---|:---|
+| **Status** | Draft |
+| **Version** | 1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | Engineering Team |
+
 ---
 title: Graph Explorer Requirement (Original Neo4j Proposal)
 status: Superseded
@@ -6,7 +15,6 @@ last_updated: 2025-01-27
 note: This document outlines the detailed requirements for the Graph Explorer feature in Sangeetha Grantha. This feature will enable users to visualize and navigate the relationships between various entities in Carnatic music. This document is a refinement of the high-level requirements in the [Graph Explorer Feature Requirements](../../01-requirements/features/graph-explorer.md). for the approved implementation.
 ---
 
-# Graph Explorer Requirement (Original Neo4j Proposal)
 
 | Metadata | Value |
 |:---|:---|

@@ -1,10 +1,13 @@
 # Sangita Grantha Admin Web Application PRD
 
-> **Status**: Draft | **Version**: 0.2 | **Last Updated**: 2026-01-09
-> **Owners**: Sangita Grantha Product Team
+| Metadata | Value |
+|:---|:---|
+| **Status** | Draft |
+| **Version** | 0.2 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | Engineering Team |
+| **Related Documents** | - [Ui Specs](../../05-frontend/admin-web/ui-specs.md) |
 
-**Related Documents**
-- [Ui Specs](../../05-frontend/admin-web/ui-specs.md)
 - Data Mapping (Deleted)
 - [Api Contract](../../03-api/api-contract.md)
 - [Ui To Api Mapping](../../03-api/ui-to-api-mapping.md)

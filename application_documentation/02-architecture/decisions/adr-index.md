@@ -1,7 +1,11 @@
 # Architectural Decision Records Index
 
-> **Status**: Current | **Version**: 2.1 | **Last Updated**: 2026-01-09
-> **Owners**: Architecture Working Group
+| Metadata | Value |
+|:---|:---|
+| **Status** | Current |
+| **Version** | 2.1 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | Engineering Team |
 
 # ADR Index
 

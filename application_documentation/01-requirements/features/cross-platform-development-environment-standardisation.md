@@ -1,6 +1,12 @@
 # Cross-Platform Development Environment Standardisation
 
-> **Status**: Implemented | **Version**: 1.0 | **Last Updated**: 2026-01-14  
+| Metadata | Value |
+|:---|:---|
+| **Status** | Implemented |
+| **Version** | 1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | Engineering Team |
+
 > **Target**: Consistent, reproducible development environments across macOS, Linux, and Windows  
 > **Philosophy**: "One command to rule them all" — eliminate environment setup friction
 
@@ -856,7 +862,6 @@ After running bootstrap, verify:
 
 ## 11. Approval & Status
 
-**Status**: ✅ **Implemented**
 
 **Implementation Date**: 2026-01-14
 

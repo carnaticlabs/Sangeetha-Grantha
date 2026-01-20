@@ -1,8 +1,11 @@
 # Sangita Grantha – Product Requirements Document (PRD)
 
-**Version:** 1.1  
-**Status:** Draft  
-Last Updated: 2026-01-20
+| Metadata | Value |
+|:---|:---|
+| **Status** | Draft |
+| **Version** | 1.1 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | Engineering Team |  
 
 ---
 

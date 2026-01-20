@@ -1,13 +1,12 @@
 # UI to API Mapping
 
-> **Status**: Approved | **Version**: 2.1 | **Last Updated**: 2026-01-09
-> **Owners**: Platform API Team
-
-**Related Documents**
-- [Api Contract](./api-contract.md)
-- [Application_Data_Api_Integration_Spec](integration-spec.md)
-- [Admin Web Prd](../01-requirements/admin-web/prd.md)
-- [Ui Specs](../05-frontend/mobile/ui-specs.md)
+| Metadata | Value |
+|:---|:---|
+| **Status** | Approved |
+| **Version** | 2.1 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | Engineering Team |
+| **Related Documents** | - [Api Contract](./api-contract.md)<br>- [Application_Data_Api_Integration_Spec](integration-spec.md)<br>- [Admin Web Prd](../01-requirements/admin-web/prd.md)<br>- [Ui Specs](../05-frontend/mobile/ui-specs.md) |
 
 # UI ↔ API Mapping (Canonical)
 

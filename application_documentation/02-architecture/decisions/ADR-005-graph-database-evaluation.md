@@ -1,9 +1,12 @@
 # ADR-005: Graph Database Strategy (PostgreSQL vs Neo4j)
 
-> **Status**: Accepted
-> **Version**: 1.0
-> **Last Updated**: 2026-01-05
-> **Owners**: Architecture Team
+| Metadata | Value |
+|:---|:---|
+| **Status** | Accepted |
+| **Version** | 1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | Engineering Team |
+
 > **Deciders**: Platform Team, Backend Team
 
 ## Context

@@ -1,11 +1,12 @@
 # Documentation Retention and Archiving Plan
 
-> **Status**: Current | **Version**: 1.0 | **Last Updated**: 2026-01-09
-> **Owners**: Platform Team
-
-**Related Documents**
-- [Documentation Standards](./standards.md)
-- [Documentation Index](../README.md)
+| Metadata | Value |
+|:---|:---|
+| **Status** | Current |
+| **Version** | 1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | Engineering Team |
+| **Related Documents** | - [Documentation Standards](./standards.md)<br>- [Documentation Index](../README.md) |
 
 ## Overview
 
@@ -55,7 +56,6 @@ Example:
 ```markdown
 # [Feature Name] Archive
 
-> **Status**: Archived | **Date Archived**: YYYY-MM-DD
 
 ## Overview
 
@@ -94,7 +94,6 @@ mv application_documentation/[path]/[file].md \
 Set the document status to "Archived" in front matter:
 
 ```markdown
-> **Status**: Archived | **Date Archived**: YYYY-MM-DD
 ```
 
 ## Current Archive Contents

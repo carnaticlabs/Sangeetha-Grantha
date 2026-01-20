@@ -1,16 +1,12 @@
 # Sangita Grantha API Integration Specification
 
-> **Status**: Draft | **Version**: 0.1 | **Last Updated**: 2026-01-09
-> **Owners**: Mobile Team, Admin Web Team, Backend Team
-
-**Related Documents**
-- [Api Contract](./api-contract.md)
-- [Ui To Api Mapping](./ui-to-api-mapping.md)
-- [Mobile Ui](../05-frontend/mobile/ui-specs.md)
-- [Ui Specs](../05-frontend/mobile/ui-specs.md)
-- [Architecture](../02-architecture/backend-system-design.md)
-
-# Sangita Grantha API Integration Specification
+| Metadata | Value |
+|:---|:---|
+| **Status** | Draft |
+| **Version** | 0.1 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | Engineering Team |
+| **Related Documents** | - [Api Contract](./api-contract.md)<br>- [Ui To Api Mapping](./ui-to-api-mapping.md)<br>- [Mobile Ui](../05-frontend/mobile/ui-specs.md)<br>- [Ui Specs](../05-frontend/mobile/ui-specs.md)<br>- [Architecture](../02-architecture/backend-system-design.md) |
 
 This document focuses on **client integration patterns** and
 **screen-level API usage** for:

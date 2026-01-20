@@ -1,11 +1,12 @@
 # Quick Reference: Admin Authentication
 
-> **Status**: Current | **Version**: 1.0 | **Last Updated**: 2026-01-09
-> **Owners**: Backend Team
-
-**Related Documents**
-- [Security Requirements](../06-backend/security-requirements.md)
-- [API Contract](../03-api/api-contract.md)
+| Metadata | Value |
+|:---|:---|
+| **Status** | Current |
+| **Version** | 1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | Engineering Team |
+| **Related Documents** | - [Security Requirements](../06-backend/security-requirements.md)<br>- [API Contract](../03-api/api-contract.md) |
 
 ## Overview
 

@@ -1,12 +1,12 @@
 # ADR-001: Spec-Driven Documentation Architecture
 
-> **Status**: Accepted | **Version**: 1.0 | **Last Updated**: 2026-01-09
-> **Owners**: Architecture Working Group
-
-**Related Documents**
-- [Documentation Index](../../README.md)
-- [Admin Web Prd](../../01-requirements/admin-web/prd.md)
-- [Mobile App Prd](../../01-requirements/mobile/prd.md)
+| Metadata | Value |
+|:---|:---|
+| **Status** | Accepted |
+| **Version** | 1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | Engineering Team |
+| **Related Documents** | - [Documentation Index](../../README.md)<br>- [Admin Web Prd](../../01-requirements/admin-web/prd.md)<br>- [Mobile App Prd](../../01-requirements/mobile/prd.md) |
 
 ## Context
 

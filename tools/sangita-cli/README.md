@@ -1,5 +1,12 @@
 # Sangita CLI
 
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 1.0.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | Sangeetha Grantha Team |
+
 A unified command-line tool for the Sangita Grantha project.
 
 ## Prerequisites
@@ -274,4 +281,3 @@ The `scan-sensitive` command:
   - AWS credentials: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`
 - Skips binary files (>1MB) and common placeholder patterns
 - Provides detailed error messages with file locations and line numbers
-

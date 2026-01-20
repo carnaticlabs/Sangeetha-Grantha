@@ -1,13 +1,12 @@
 # Google Gemini & AI Integration Opportunities
 
-> **Status**: Planned | **Version**: 1.1 | **Last Updated**: 2026-01-20  
-> **Owners**: Platform Team, Product Team
-
-**Related Documents**
-- [Admin Web Prd](../01-requirements/admin-web/prd.md)
-- [Architecture](../02-architecture/backend-system-design.md)
-- [Schema](../04-database/schema.md)
-- [Api Contract](../03-api/api-contract.md)
+| Metadata | Value |
+|:---|:---|
+| **Status** | Planned |
+| **Version** | 1.1 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | Engineering Team |
+| **Related Documents** | - [Admin Web Prd](../01-requirements/admin-web/prd.md)<br>- [Architecture](../02-architecture/backend-system-design.md)<br>- [Schema](../04-database/schema.md)<br>- [Api Contract](../03-api/api-contract.md) |
 
 # Google Gemini & AI Integration Opportunities for Sangita Grantha
 
@@ -1078,7 +1077,6 @@ Return JSON:
 ---
 
 **Document Status:** Draft for Review  
-Last Updated: 2026-01-20
 **Next Review:** After Phase 1 implementation
 
 ---
@@ -1152,4 +1150,3 @@ This checklist tracks the granular tasks required to implement the AI features.
     - [ ] Add `ValidationStatus` component to `KrithiEditor` header
     - [ ] Display inline validation warnings in `KrithiEditor` (Lyrics and Metadata tabs)
     - [ ] Block "Publish" action if critical validation errors exist
-
