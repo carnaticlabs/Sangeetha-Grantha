@@ -3,8 +3,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-16 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-01-20 |
 
 ---
 
@@ -21,3 +21,8 @@
 - [graph-explorer.md](./graph-explorer.md)
 - [intelligent-content-ingestion.md](./intelligent-content-ingestion.md)
 - [searchable-deity-temple-management.md](./searchable-deity-temple-management.md)
+- **[bulk-import/](./bulk-import/README.md)** - Bulk import feature documentation (consolidated)
+  - Strategy documents (master analysis, CSV import, Koog evaluation)
+  - Technical implementation guide
+  - Web source analysis
+  - **Status**: Ready for Phase 1 implementation (CSV manifest ingestion)

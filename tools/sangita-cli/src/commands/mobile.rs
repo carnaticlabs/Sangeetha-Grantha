@@ -24,9 +24,9 @@ pub async fn run(args: MobileArgs) -> Result<()> {
 fn show_guide() -> Result<()> {
     print_step("Mobile testing resources");
     let root = project_root()?;
-    let guide = root.join("application_documentation/qa/testing-readme.md");
+    let guide = root.join("application_documentation/07-quality/qa/testing-readme.md");
     let checklist =
-        root.join("application_documentation/qa/mobile-upload-test-checklist.md");
+        root.join("application_documentation/07-quality/qa/mobile-upload-test-checklist.md");
 
     emit_doc("Comprehensive guide", guide);
     emit_doc("Checklist", checklist);

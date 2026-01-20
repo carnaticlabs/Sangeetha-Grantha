@@ -1,5 +1,15 @@
 # Sangita Grantha Documentation Index
 
+| Metadata | Value |
+|:---|:---|
+| **Status** | Draft |
+| **Version** | 0.1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | System |
+
+---
+
+
 This documentation tree is the **spec-driven source of truth** for
 Sangita Grantha.
 
@@ -46,6 +56,7 @@ archival docs for Sangita Grantha, live under `./archive/`.
   - [Security](./06-backend/security-requirements.md)
 
 - **[07 Quality](./07-quality/)**
+  - [Testing Guides & Checklists](./07-quality/qa/)
   - [Steel Thread Report](./07-quality/reports/steel-thread.md)
 
 - **[08 Operations](./08-operations/)**
