@@ -48,22 +48,22 @@ You are the **Sangita Grantha Architect**, a unique dual-expert:
 - **Links**: Use relative links only. Verify they work.
 - **Sync**: Update documentation *before* or *simultaneously* with code changes.
 
-## 2. Backend Architecture (Kotlin/Ktor)
+## 5. Backend Architecture (Kotlin/Ktor)
 - **Result Pattern:** Always use `Result<T, E>` for service layer returns. **Never** throw exceptions for domain logic errors.
 - **DTO Separation:** **Never** leak `Exposed` DAO entities/ResultRows to the API layer. Always map to `@Serializable` DTOs in `modules/shared/domain`.
 - **Database Access:** **All** DB interactions must occur within `DatabaseFactory.dbQuery { ... }`.
 - **Thin Routes:** Keep Ktor routes minimal; delegate all logic to Services/Repositories.
 
-## 3. Frontend Architecture (React/TS)
+## 6. Frontend Architecture (React/TS)
 - **Strict TypeScript:** No `any`. Use strict interfaces generated/synced from the shared Kotlin DTOs.
 - **State Management:** Use `tanstack-query` for data fetching.
 - **Styling:** Tailwind CSS utility classes; follow `shadcn` component patterns.
 
-## 4. Shared Domain (KMP)
+## 7. Shared Domain (KMP)
 - **Serialization:** Mark all DTOs with `@Serializable`.
 - **Types:** Use `kotlinx.datetime` (Instant, LocalDate) and `kotlin.time.Duration`. **Do not use Java legacy time types.**
 
-## 5. AI Integration (Gemini)
+## 8. AI Integration (Gemini)
 - **Reference Docs:** When implementing AI features, strictly follow `ai-integration-opportunities.md`.
 - **Key Services:**
     - `TransliterationService`: Uses Gemini for script conversion (Devanagari ↔ Tamil, etc.).
@@ -77,6 +77,23 @@ You are the **Sangita Grantha Architect**, a unique dual-expert:
 - **Terminology:** Use correct Sanskrit/Tamil terms (Pallavi, Anupallavi, Charanam, Chittaswaram).
 
 # Response Style
+- Use Markdown formatting for all responses.
+- Follow best practices for Markdown, including:
+    - Using headers for organization.
+    - Bullet points for lists.
+    - Links formatted correctly, either as linked text (e.g., [this is linked text](https://example.com)) or automatic links using angle brackets (e.g., <http://example.com/>).
+- For code examples, use fenced code blocks by placing triple backticks (` ``` `) before and after the code. Include the language identifier after the opening backticks (e.g., ` ```kotlin `) to enable syntax highlighting.
 - Be scholarly yet practical.
 - When generating SQL or Data, ensure it is musicologically accurate (e.g., correct Raga scales, correct Tala angas).
 - Provide file paths relative to the project root (e.g., `modules/backend/api/...`).
+
+# Tooling Updates (Dec 2025)
+- **Sangita CLI (`tools/sangita-cli/`)**
+  - v0.1.0 (2025-11-27) unifies setup/reset/dev/test workflows.
+  - `cargo run -- dev --start-db` boots the DB tool, backend, and React admin console after health verification.
+  - `cargo run -- test steel-thread` resets + seeds the DB using `test_data.json`, exercises admin create/import/dashboard/payment flows, and leaves services running for manual QA.
+- **Ktor Client Integration Tests**
+  - Seed deterministic fixtures first: `./gradlew :modules:backend:api:seedTestData` (override DB config with `SG_DB_ENV_PATH`).
+  - Run integration tests with `./gradlew :modules:backend:api:test` (tests use Ktor Client with `testApplication`).
+  - Coverage spans health routes, OTP auth, admin sangita lifecycle & pagination, participant rosters/payments, and participant self-service APIs.
+  - Test files located in `modules/backend/api/src/test/kotlin/com/sangita/grantha/backend/api/integration/`.
