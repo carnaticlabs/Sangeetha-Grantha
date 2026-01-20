@@ -1,5 +1,15 @@
 # Exposed ORM: DAO vs DSL Approach - Comprehensive Comparison
 
+| Metadata | Value |
+|:---|:---|
+| **Status** | Draft |
+| **Version** | 0.1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | System |
+
+---
+
+
 ## Executive Summary
 
 This document provides a detailed comparison between Exposed ORM's **DAO (Data Access Object)** and **DSL (Domain-Specific Language)** approaches to persistence. Our codebase currently uses the **DSL approach**, which provides type-safe SQL generation but requires careful implementation to avoid inefficient operations like DELETE+INSERT when UPDATE would suffice.
@@ -587,4 +597,3 @@ Our codebase can benefit from a **hybrid approach**:
 ### Key Takeaway
 
 The DSL approach is powerful and flexible, but requires **careful implementation** to avoid inefficient patterns. The DELETE+INSERT anti-pattern is common but can be avoided with proper diff logic. For our use case, improving the DSL implementation is the most pragmatic solution that maintains our current architecture while fixing the performance issue.
-

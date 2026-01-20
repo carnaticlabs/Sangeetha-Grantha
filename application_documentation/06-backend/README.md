@@ -1,5 +1,15 @@
 # 06 Backend
 
+| Metadata | Value |
+|:---|:---|
+| **Status** | Draft |
+| **Version** | 0.1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | System |
+
+---
+
+
 ## Contents
 
 - [exposed-rc4-features-testing.md](./exposed-rc4-features-testing.md) ✅ **Completed**

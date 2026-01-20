@@ -1,5 +1,15 @@
 # Global Scale Architecture Proposal: Sangeetha Grantha
 
+| Metadata | Value |
+|:---|:---|
+| **Status** | Draft |
+| **Version** | 0.1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | System |
+
+---
+
+
 > **Status**: Proposal | **Version**: 1.0 | **Date**: 2026-01-14
 > **Target Scale**: 5M+ Monthly Active Users (MAU), Distributed Globally
 

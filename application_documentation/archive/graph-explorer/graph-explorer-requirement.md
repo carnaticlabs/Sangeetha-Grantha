@@ -8,6 +8,16 @@ note: This document outlines the detailed requirements for the Graph Explorer fe
 
 # Graph Explorer Requirement (Original Neo4j Proposal)
 
+| Metadata | Value |
+|:---|:---|
+| **Status** | Draft |
+| **Version** | 0.1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | System |
+
+---
+
+
 **⚠️ STATUS: SUPERSEDED**
 
 This document was the original requirement specifying Neo4j implementation. After critical evaluation (see [Graph Database Evaluation](./graph-database-evaluation.md)), the architecture team approved the **PostgreSQL + Cytoscape.js** approach instead.

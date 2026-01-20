@@ -1,5 +1,15 @@
 # GCP Implementation Strategy: Serverless & Scalable
 
+| Metadata | Value |
+|:---|:---|
+| **Status** | Draft |
+| **Version** | 0.1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | System |
+
+---
+
+
 > **Status**: Recommended | **Version**: 1.0 | **Date**: 2026-01-14
 > **Target**: Cost-effective scaling from 0 to 5M+ MAU
 > **Philosophy**: "Serverless First" (Pay per use, minimal ops)

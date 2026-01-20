@@ -1,5 +1,15 @@
 # Graph Explorer Archive
 
+| Metadata | Value |
+|:---|:---|
+| **Status** | Draft |
+| **Version** | 0.1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | System |
+
+---
+
+
 > **Status**: Archived | **Date Archived**: 2026-01-27
 > **Reason**: Historical evaluation and implementation planning documents for graph explorer feature
 
@@ -58,5 +68,4 @@ These documents were archived to:
 ## Note on Duplicates
 
 Some documents exist in multiple versions (from `01-requirements/features/` and `02-architecture/decisions/`). Both versions are preserved here for completeness. The versions from `01-requirements/features/` are considered the primary versions as they contain more complete context and references.
-
 

@@ -1,5 +1,15 @@
 # Frontend UI Libraries
 
+| Metadata | Value |
+|:---|:---|
+| **Status** | Draft |
+| **Version** | 0.1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | System |
+
+---
+
+
 ## 1. Admin Web
 **Stack**: React 19, TypeScript, Tailwind CSS v4, Vite.
 

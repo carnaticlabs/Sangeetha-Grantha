@@ -6,7 +6,7 @@
 **Related Documents**
 - [Architecture](backend-system-design.md)
 - [Schema](../04-database/schema.md)
-- [](../frontend/admin-web/)
+- [Frontend Admin Web](../05-frontend/admin-web/)
 
 ## Current Dependencies
 

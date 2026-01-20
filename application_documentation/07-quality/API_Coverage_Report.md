@@ -1,5 +1,15 @@
 # API Coverage Report
 
+| Metadata | Value |
+|:---|:---|
+| **Status** | Draft |
+| **Version** | 0.1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | System |
+
+---
+
+
 **Date:** 2026-01-02
 **Scope:** `modules/frontend/sangita-admin-web` vs `modules/backend/api`
 

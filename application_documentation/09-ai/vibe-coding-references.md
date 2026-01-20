@@ -1,5 +1,15 @@
 # 🤖 AI & Vibe Coding References
 
+| Metadata | Value |
+|:---|:---|
+| **Status** | Draft |
+| **Version** | 0.1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | System |
+
+---
+
+
 This document provides essential references for AI coding assistants (VS Code Copilot, Codex, Cursor, Google Antigravity) working with the Sangeetha Grantha codebase.
 
 ---
@@ -112,4 +122,3 @@ cargo run -- test steel-thread   # Run end-to-end smoke tests
 ---
 
 For the complete documentation index, see [README.md](../README.md).
-

@@ -1,5 +1,15 @@
 # Query Optimization Evaluation: Krithi UPDATE Operations
 
+| Metadata | Value |
+|:---|:---|
+| **Status** | Draft |
+| **Version** | 0.1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | System |
+
+---
+
+
 ## Current Query Pattern Analysis
 
 ### Observed Query Sequence (from logs)
@@ -327,4 +337,3 @@ suspend fun update(
 **Related Documentation**:
 - [Database Layer Optimization](../01-requirements/features/database-layer-optimization.md)
 - [Exposed RC-4 Features Testing](./exposed-rc4-features-testing.md)
-

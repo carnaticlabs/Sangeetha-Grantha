@@ -1,5 +1,15 @@
 # Feature: Graph Explorer
 
+| Metadata | Value |
+|:---|:---|
+| **Status** | Draft |
+| **Version** | 0.1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | System |
+
+---
+
+
 ## 1. Executive Summary
 
 The Graph Explorer provides a visual, interactive interface for administrators to explore and understand the rich network of relationships between musical entities in the Sangeetha Grantha database. This feature enables users to discover connections between Krithis, Composers, Ragas, Talas, Deities, Kshetras, and Tags through an intuitive graph visualization, making it easier to understand the interconnected nature of Carnatic music knowledge.

@@ -1,5 +1,15 @@
 # Commit Guardrails and Workflow Enforcement System
 
+| Metadata | Value |
+|:---|:---|
+| **Status** | Draft |
+| **Version** | 0.1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | System |
+
+---
+
+
 ## Executive Summary
 
 This document defines the requirements for a **Commit Guardrails and Workflow Enforcement System** that ensures all code changes are properly documented, logically grouped, and traceable to specific feature requests, bug fixes, or change requests. The system leverages Rust's capabilities to create robust, fast, and cross-platform tooling that integrates seamlessly with Git hooks and modern IDEs.

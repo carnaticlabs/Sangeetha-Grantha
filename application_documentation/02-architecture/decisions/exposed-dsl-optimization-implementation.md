@@ -1,5 +1,15 @@
 # Exposed DSL Optimization: Fixing DELETE+INSERT Anti-Pattern
 
+| Metadata | Value |
+|:---|:---|
+| **Status** | Draft |
+| **Version** | 0.1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | System |
+
+---
+
+
 ## Problem Statement
 
 The `KrithiRepository.saveSections()` method was using an inefficient DELETE+INSERT pattern that:
@@ -316,4 +326,3 @@ All identified DELETE+INSERT patterns have been successfully optimized. The impl
 - ✅ Provide templates for future optimizations
 
 The codebase now uses efficient UPDATE/INSERT/DELETE operations that only process what actually changed, resulting in significant performance improvements and better data integrity.
-

@@ -1,5 +1,15 @@
 # Decisions
 
+| Metadata | Value |
+|:---|:---|
+| **Status** | Draft |
+| **Version** | 0.1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | System |
+
+---
+
+
 ## Contents
 
 - [ADR-001-spec-driven-docs.md](./ADR-001-spec-driven-docs.md)

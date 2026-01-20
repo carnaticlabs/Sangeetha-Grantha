@@ -1,5 +1,15 @@
 # Feature Request: Intelligent Content Ingestion & Musicological Validation Suite
 
+| Metadata | Value |
+|:---|:---|
+| **Status** | Draft |
+| **Version** | 0.1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | System |
+
+---
+
+
 ## 1. Executive Summary
 
 This feature request outlines the integration of **Google Gemini AI** and **Google Cloud Services** into the Sangita Grantha platform to automate the ingestion, normalization, and validation of Carnatic music compositions. The primary objective is to transform the platform into an authoritative "system of record" by leveraging AI for multi-script transliteration, intelligent web scraping, and automated metadata extraction.

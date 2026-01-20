@@ -1,5 +1,15 @@
 # Exposed 1.0.0-rc-4 Features Testing
 
+| Metadata | Value |
+|:---|:---|
+| **Status** | Draft |
+| **Version** | 0.1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | System |
+
+---
+
+
 ## Summary
 
 This document tracks the testing and implementation of new Exposed 1.0.0-rc-4 features in the Sangeetha Grantha codebase.
@@ -198,4 +208,3 @@ testImplementation(libs.kotlinx.coroutines.test)
 - ✅ All changes maintain backward compatibility with existing code
 - ✅ All optimizations follow consistent patterns for maintainability
 - ✅ Smart collection updates (delta updates) implemented for sections, tags, and ragas
-

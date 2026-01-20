@@ -4,7 +4,7 @@
 |:---|:---|
 | **Status** | Implemented |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-16 |
+| **Last Updated** | 2026-01-20 |
 
 ---
 
@@ -323,9 +323,9 @@ This feature enhances the user experience for managing Deity and Temple entities
 
 ### 10.1 Related Documentation
 
-- [Database Schema](../04-database/schema.md) - Deity and Temple table structures
-- [API Documentation](../03-api/ui-to-api-mapping.md) - API endpoint specifications
-- [Frontend UI Specs](../05-frontend/admin-web/ui-specs.md) - Admin web interface patterns
+- [Database Schema](../../04-database/schema.md) - Deity and Temple table structures
+- [UI to API Mapping](../../03-api/ui-to-api-mapping.md) - API endpoint specifications
+- [Admin Web UI Specs](../../05-frontend/admin-web/ui-specs.md) - Admin web interface patterns
 
 ### 10.2 Implementation Files
 

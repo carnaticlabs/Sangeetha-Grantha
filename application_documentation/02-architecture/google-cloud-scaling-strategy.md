@@ -1,5 +1,15 @@
 # Google Cloud Scaling Strategy (Cost-Effective, Global)
 
+| Metadata | Value |
+|:---|:---|
+| **Status** | Draft |
+| **Version** | 0.1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | System |
+
+---
+
+
 > **Status**: Proposal | **Version**: 1.0 | **Date**: 2026-01-14  
 > **Scope**: Google Cloud deployment architecture for scaling Sangeetha Grantha to millions of global users  
 > **Related**: [Scaling Evaluation](./scaling-evaluation.md), [Tech Stack](./tech-stack.md), [Backend Architecture](./backend-system-design.md)
@@ -256,4 +266,3 @@ If starting today on GCP, the most cost-effective, scalable baseline is:
 - **Cloud Logging/Monitoring/Trace** (ops)
 
 Then add: **read replicas**, **Pub/Sub workers**, and **dedicated search** as traffic grows.
-

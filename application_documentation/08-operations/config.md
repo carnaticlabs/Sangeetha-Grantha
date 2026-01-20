@@ -1,5 +1,15 @@
 # Configuration – Canonical
 
+| Metadata | Value |
+|:---|:---|
+| **Status** | Draft |
+| **Version** | 0.1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | System |
+
+---
+
+
 > NOTE: Canonical configuration documentation now lives here. Module-local `config/README.md` remains for local context.
 
 ---

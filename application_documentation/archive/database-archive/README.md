@@ -1,5 +1,15 @@
 # Database Archive
 
+| Metadata | Value |
+|:---|:---|
+| **Status** | Draft |
+| **Version** | 0.1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | System |
+
+---
+
+
 ## Contents
 
 - [00_tablespace_and_users.sql](./00_tablespace_and_users.sql)

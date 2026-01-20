@@ -1,5 +1,15 @@
 # API Coverage Gap Implementation Plan
 
+| Metadata | Value |
+|:---|:---|
+| **Status** | Draft |
+| **Version** | 0.1.0 |
+| **Last Updated** | 2026-01-20 |
+| **Author** | System |
+
+---
+
+
 **Date:** 2026-01-27  
 **Status:** Implementation Plan  
 **Priority:** High - Blocking Critical Functionality
@@ -1195,4 +1205,3 @@ GET    /v1/admin/roles/{code}/users
 1. Begin Phase 1.1 (Create Request DTOs for lyric variants)
 2. Begin Phase 2.1 (Standardize notation routes)
 3. Plan Phase 4 (RBAC architecture design)
-
