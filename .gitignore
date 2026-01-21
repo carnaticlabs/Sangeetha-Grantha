@@ -45,3 +45,4 @@ build_log_final.txt
 **/*Cargo.lock
 tools/sangita-cli/Cargo.lock
 config/.env.development
+config/postgres-local.env

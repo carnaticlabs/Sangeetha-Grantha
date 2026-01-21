@@ -36,4 +36,4 @@ bun = "1.3.0"
 docker-compose = "latest"
 
 [env]
-_.file = "postgres.env"
+_.file = "./config/postgres-local.env"
