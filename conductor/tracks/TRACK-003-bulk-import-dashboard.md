@@ -38,6 +38,7 @@ Implement the core Admin Dashboard pages for the Bulk Import system. This allows
 - Batch list table with progress bars, status chips, and create-batch form (manifest path input).
 - Batch detail panel with tasks filter, events feed, job statuses, and pause/resume/cancel/retry controls.
 - Connected to backend orchestration endpoints with toasts and error parsing.
+- Integrated Review Queue navigation and updated types/client for manual intervention support.
 
 ## Dependencies
 - TRACK-001 (Backend APIs) must be partially ready (Foundation Phase) to start Phase 1.

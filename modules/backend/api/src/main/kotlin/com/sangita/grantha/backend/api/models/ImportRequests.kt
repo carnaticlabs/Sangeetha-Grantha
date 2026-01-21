@@ -20,8 +20,19 @@ data class ImportKrithiRequest(
 )
 
 @Serializable
+data class ImportOverridesDto(
+    val title: String? = null,
+    val raga: String? = null,
+    val composer: String? = null,
+    val tala: String? = null,
+    val language: String? = null,
+    val lyrics: String? = null
+)
+
+@Serializable
 data class ImportReviewRequest(
     val status: ImportStatusDto,
     val mappedKrithiId: String? = null,
     val reviewerNotes: String? = null,
+    val overrides: ImportOverridesDto? = null
 )

@@ -471,7 +471,7 @@ export const scrapeContent = (url: string) => {
     });
 };
 
-export const reviewImport = (id: string, reviewRequest: { status: string; mappedKrithiId?: string | null; reviewerNotes?: string | null }) => {
+export const reviewImport = (id: string, reviewRequest: { status: string; mappedKrithiId?: string | null; reviewerNotes?: string | null; overrides?: any | null }) => {
     return request<ImportedKrithi>(`/admin/imports/${id}/review`, {
         method: 'POST',
         body: JSON.stringify(reviewRequest),

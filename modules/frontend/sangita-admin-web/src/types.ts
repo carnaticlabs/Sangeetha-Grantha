@@ -5,6 +5,7 @@ export enum ViewState {
   REFERENCE = 'REFERENCE',
   IMPORTS = 'IMPORTS',
   BULK_IMPORT = 'BULK_IMPORT',
+  IMPORT_REVIEW = 'IMPORT_REVIEW',
   TAGS = 'TAGS',
 }
 
@@ -270,6 +271,7 @@ export interface ImportedKrithi {
   rawTemple: string | null;
   rawLanguage: string | null;
   parsedPayload: string | null;
+  resolutionData?: string | null;
   importStatus: 'PENDING' | 'IN_REVIEW' | 'APPROVED' | 'MAPPED' | 'REJECTED' | 'DISCARDED';
   mappedKrithiId: string | null;
   reviewerUserId: string | null;
@@ -279,9 +281,17 @@ export interface ImportedKrithi {
 }
 
 export interface ImportReviewRequest {
-  status: 'PENDING' | 'IN_REVIEW' | 'MAPPED' | 'REJECTED' | 'DISCARDED';
+  status: 'PENDING' | 'IN_REVIEW' | 'APPROVED' | 'MAPPED' | 'REJECTED' | 'DISCARDED';
   mappedKrithiId?: string | null;
   reviewerNotes?: string | null;
+  overrides?: {
+    title?: string | null;
+    composer?: string | null;
+    raga?: string | null;
+    tala?: string | null;
+    language?: string | null;
+    lyrics?: string | null;
+  } | null;
 }
 
 // Bulk Import Orchestration

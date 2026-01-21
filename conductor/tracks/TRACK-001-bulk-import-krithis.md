@@ -40,7 +40,7 @@ Build the backend orchestration engine for bulk importing Krithis. This includes
 ### Phase D: Review Workflow APIs
 - [x] Implement APIs for fetching tasks ready for review (`GET /imports?status=PENDING`)
 - [x] Implement APIs for approving/rejecting tasks (`POST /imports/{id}/review`)
-- [ ] Implement APIs for manual entity resolution (overrides) (Currently partial support)
+- [x] Implement APIs for manual entity resolution (overrides) (Supported via `overrides` in `ImportReviewRequest`)
 
 ### Phase E: Hardening & Performance
 - [ ] Stuck task detector

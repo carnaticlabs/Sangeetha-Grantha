@@ -67,21 +67,22 @@ class ImportService(private val dal: SangitaDal) {
         if (status == ImportStatus.APPROVED && mappedId == null) {
             // Get the import to extract data
             val importData = dal.imports.findById(id) ?: throw NoSuchElementException("Import not found")
+            val overrides = request.overrides
             
-            // Extract nullable values to local variables for smart casting
-            val rawComposer = importData.rawComposer
-            val rawRaga = importData.rawRaga
-            val rawTala = importData.rawTala
-            val rawTitle = importData.rawTitle
-            val rawLanguage = importData.rawLanguage
-            val rawLyrics = importData.rawLyrics
+            // Extract values, prioritizing overrides
+            val effectiveComposer = overrides?.composer ?: importData.rawComposer
+            val effectiveRaga = overrides?.raga ?: importData.rawRaga
+            val effectiveTala = overrides?.tala ?: importData.rawTala
+            val effectiveTitle = overrides?.title ?: importData.rawTitle ?: "Untitled"
+            val effectiveLanguage = overrides?.language ?: importData.rawLanguage
+            val effectiveLyrics = overrides?.lyrics ?: importData.rawLyrics
             val sourceKey = importData.sourceKey
             
             // Find or create composer
-            val composerId = if (rawComposer != null) {
-                dal.composers.findByName(rawComposer)?.id?.toJavaUuid()
+            val composerId = if (effectiveComposer != null) {
+                dal.composers.findByName(effectiveComposer)?.id?.toJavaUuid()
                     ?: dal.composers.create(
-                        name = rawComposer,
+                        name = effectiveComposer,
                         nameNormalized = null, // Will be auto-normalized
                         birthYear = null,
                         deathYear = null,
@@ -93,7 +94,7 @@ class ImportService(private val dal: SangitaDal) {
             }
             
             // Find or create raga (if provided)
-            val ragaId = rawRaga?.let { ragaName ->
+            val ragaId = effectiveRaga?.let { ragaName ->
                 dal.ragas.findByName(ragaName)?.id?.toJavaUuid()
                     ?: dal.ragas.create(
                         name = ragaName,
@@ -107,7 +108,7 @@ class ImportService(private val dal: SangitaDal) {
             }
             
             // Find or create tala (if provided)
-            val talaId = rawTala?.let { talaName ->
+            val talaId = effectiveTala?.let { talaName ->
                 dal.talas.findByName(talaName)?.id?.toJavaUuid()
                     ?: dal.talas.create(
                         name = talaName,
@@ -119,7 +120,7 @@ class ImportService(private val dal: SangitaDal) {
             }
             
             // Determine language code (default to TE if not provided)
-            val languageCode = when (rawLanguage?.lowercase()) {
+            val languageCode = when (effectiveLanguage?.lowercase()) {
                 "sanskrit", "sa" -> LanguageCode.SA
                 "tamil", "ta" -> LanguageCode.TA
                 "telugu", "te" -> LanguageCode.TE
@@ -131,10 +132,9 @@ class ImportService(private val dal: SangitaDal) {
             }
             
             // Create the krithi
-            val title = rawTitle ?: "Untitled"
             val createdKrithi = dal.krithis.create(
-                title = title,
-                titleNormalized = normalize(title),
+                title = effectiveTitle,
+                titleNormalized = normalize(effectiveTitle),
                 incipit = null,
                 incipitNormalized = null,
                 composerId = composerId,
@@ -147,7 +147,7 @@ class ImportService(private val dal: SangitaDal) {
                 isRagamalika = false,
                 ragaIds = if (ragaId != null) listOf(ragaId) else emptyList(),
                 workflowState = WorkflowState.DRAFT,
-                sahityaSummary = rawLyrics?.take(500), // First 500 chars as summary
+                sahityaSummary = effectiveLyrics?.take(500), // First 500 chars as summary
                 notes = "Created from import: ${sourceKey ?: "unknown"}"
             )
             
@@ -159,8 +159,20 @@ class ImportService(private val dal: SangitaDal) {
                 entityId = createdKrithi.id
             )
 
-            // Process sections and lyrics from scraped metadata
-            if (importData.parsedPayload != null) {
+            // Process sections and lyrics
+            // If overrides.lyrics is present, we use it as the primary lyric variant content (unstructured)
+            // If overrides.lyrics is NOT present, we try to use the structured metadata from scrape
+            
+            if (overrides?.lyrics != null) {
+                 dal.krithis.createLyricVariant(
+                    krithiId = createdKrithi.id,
+                    language = LanguageCode.valueOf(createdKrithi.primaryLanguage.name),
+                    script = ScriptCode.LATIN,
+                    lyrics = overrides.lyrics,
+                    isPrimary = true,
+                    sourceReference = sourceKey
+                )
+            } else if (importData.parsedPayload != null) {
                 try {
                     val metadata = Json.decodeFromString<ScrapedKrithiMetadata>(importData.parsedPayload!!)
                     
@@ -211,7 +223,6 @@ class ImportService(private val dal: SangitaDal) {
                     }
                 } catch (e: Exception) {
                     // Log error but don't fail the whole import
-                    // This creates a krithi but maybe without full details
                     println("Error processing scraped metadata: ${e.message}")
                     e.printStackTrace()
                 }

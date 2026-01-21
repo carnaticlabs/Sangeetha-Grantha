@@ -11,6 +11,7 @@ import TagsPage from './pages/TagsPage';
 import UsersPage from './pages/UsersPage';
 import RolesPage from './pages/RolesPage';
 import BulkImportPage from './pages/BulkImport';
+import ImportReviewPage from './pages/ImportReview';
 
 // Default admin token for development (matches backend default)
 const DEFAULT_ADMIN_TOKEN = 'dev-admin-token';
@@ -42,6 +43,7 @@ const App: React.FC = () => {
               <Route path="/reference" element={<ReferenceData />} />
               <Route path="/imports" element={<ImportsPage />} />
               <Route path="/bulk-import" element={<BulkImportPage />} />
+              <Route path="/bulk-import/review" element={<ImportReviewPage />} />
               <Route path="/tags" element={<TagsPage />} />
               <Route path="/users" element={<UsersPage />} />
               <Route path="/roles" element={<RolesPage />} />
