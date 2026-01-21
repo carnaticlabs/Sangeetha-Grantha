@@ -26,6 +26,28 @@ import org.jetbrains.exposed.v1.jdbc.*
 import org.jetbrains.exposed.v1.core.*
 
 class BulkImportRepository {
+
+    private fun buildIdempotencyKey(
+        batchId: UUID,
+        krithiKey: String?,
+        sourceUrl: String?,
+        fallbackId: UUID,
+    ): String {
+        val base = sourceUrl?.takeIf { it.isNotBlank() }
+            ?: krithiKey?.takeIf { it.isNotBlank() }
+            ?: fallbackId.toString()
+        return "${batchId}::${base}"
+    }
+
+    private fun resolveBatchIdForJob(jobId: Uuid): UUID {
+        return ImportJobTable
+            .selectAll()
+            .andWhere { ImportJobTable.id eq jobId.toJavaUuid() }
+            .limit(1)
+            .singleOrNull()
+            ?.get(ImportJobTable.batchId)
+            ?: error("Unable to resolve batchId for job $jobId")
+    }
     
     // Batch Operations
     suspend fun createBatch(
@@ -208,16 +230,36 @@ class BulkImportRepository {
     // Task Operations
     suspend fun createTask(
         jobId: Uuid,
+        batchId: Uuid? = null,
         krithiKey: String? = null,
-        sourceUrl: String? = null
+        sourceUrl: String? = null,
+        idempotencyKey: String? = null
     ): ImportTaskRunDto = DatabaseFactory.dbQuery {
         val now = OffsetDateTime.now(ZoneOffset.UTC)
         val taskId = UUID.randomUUID()
-        
+        val javaJobId = jobId.toJavaUuid()
+        val javaBatchId = batchId?.toJavaUuid() ?: resolveBatchIdForJob(jobId)
+        val finalIdempotencyKey = idempotencyKey ?: buildIdempotencyKey(
+            batchId = javaBatchId,
+            krithiKey = krithiKey,
+            sourceUrl = sourceUrl,
+            fallbackId = taskId
+        )
+
+        // Idempotent insert: if a task already exists for this key, return it instead of erroring
+        ImportTaskRunTable
+            .selectAll()
+            .andWhere { ImportTaskRunTable.idempotencyKey eq finalIdempotencyKey }
+            .limit(1)
+            .singleOrNull()
+            ?.toImportTaskRunDto()
+            ?.let { return@dbQuery it }
+
         ImportTaskRunTable.insert {
             it[id] = taskId
-            it[ImportTaskRunTable.jobId] = jobId.toJavaUuid()
+            it[ImportTaskRunTable.jobId] = javaJobId
             it[ImportTaskRunTable.krithiKey] = krithiKey
+            it[ImportTaskRunTable.idempotencyKey] = finalIdempotencyKey
             it[ImportTaskRunTable.status] = TaskStatus.PENDING
             it[ImportTaskRunTable.attempt] = 0
             it[ImportTaskRunTable.sourceUrl] = sourceUrl
@@ -232,19 +274,56 @@ class BulkImportRepository {
     
     suspend fun createTasks(
         jobId: Uuid,
+        batchId: Uuid,
         tasks: List<Pair<String?, String?>> // List of (krithiKey, sourceUrl) pairs
     ): List<ImportTaskRunDto> = DatabaseFactory.dbQuery {
         val now = OffsetDateTime.now(ZoneOffset.UTC)
-        
-        tasks.map { (krithiKey, sourceUrl) ->
+        val javaJobId = jobId.toJavaUuid()
+        val javaBatchId = batchId.toJavaUuid()
+
+        data class PreparedTask(
+            val taskId: UUID,
+            val krithiKey: String?,
+            val sourceUrl: String?,
+            val idempotencyKey: String,
+        )
+
+        val preparedTasks = tasks.map { (krithiKey, sourceUrl) ->
             val taskId = UUID.randomUUID()
+            PreparedTask(
+                taskId = taskId,
+                krithiKey = krithiKey,
+                sourceUrl = sourceUrl,
+                idempotencyKey = buildIdempotencyKey(
+                    batchId = javaBatchId,
+                    krithiKey = krithiKey,
+                    sourceUrl = sourceUrl,
+                    fallbackId = taskId
+                )
+            )
+        }.distinctBy { it.idempotencyKey }
+
+        if (preparedTasks.isEmpty()) return@dbQuery emptyList()
+
+        val idempotencyKeys: List<String?> = preparedTasks.map { it.idempotencyKey }
+        val existingKeys = ImportTaskRunTable
+            .selectAll()
+            .andWhere { ImportTaskRunTable.idempotencyKey inList idempotencyKeys }
+            .mapNotNull { it[ImportTaskRunTable.idempotencyKey] }
+            .toSet()
+
+        val toInsert = preparedTasks.filterNot { it.idempotencyKey in existingKeys }
+        if (toInsert.isEmpty()) return@dbQuery emptyList()
+
+        toInsert.map { task ->
             ImportTaskRunTable.insert {
-                it[id] = taskId
-                it[ImportTaskRunTable.jobId] = jobId.toJavaUuid()
-                it[ImportTaskRunTable.krithiKey] = krithiKey
+                it[id] = task.taskId
+                it[ImportTaskRunTable.jobId] = javaJobId
+                it[ImportTaskRunTable.krithiKey] = task.krithiKey
+                it[ImportTaskRunTable.idempotencyKey] = task.idempotencyKey
                 it[ImportTaskRunTable.status] = TaskStatus.PENDING
                 it[ImportTaskRunTable.attempt] = 0
-                it[ImportTaskRunTable.sourceUrl] = sourceUrl
+                it[ImportTaskRunTable.sourceUrl] = task.sourceUrl
                 it[ImportTaskRunTable.createdAt] = now
                 it[ImportTaskRunTable.updatedAt] = now
             }
@@ -271,7 +350,7 @@ class BulkImportRepository {
             .innerJoin(ImportJobTable, { ImportTaskRunTable.jobId }, { ImportJobTable.id })
             .innerJoin(ImportBatchTable, { ImportJobTable.batchId }, { ImportBatchTable.id })
             .selectAll()
-            .andWhere { ImportTaskRunTable.status eq TaskStatus.PENDING }
+            .andWhere { ImportTaskRunTable.status inList listOf(TaskStatus.PENDING, TaskStatus.RETRYABLE) }
             .andWhere { ImportJobTable.jobType eq jobType }
             .andWhere { ImportBatchTable.status inList allowedBatchStatuses.toList() }
             .orderBy(ImportTaskRunTable.createdAt to SortOrder.ASC)
@@ -428,10 +507,51 @@ class BulkImportRepository {
                 }
             ) {
                 it[ImportTaskRunTable.status] = TaskStatus.PENDING
+                it[ImportTaskRunTable.startedAt] = null
+                it[ImportTaskRunTable.completedAt] = null
+                it[ImportTaskRunTable.error] = null
+                it[ImportTaskRunTable.durationMs] = null
                 it[ImportTaskRunTable.updatedAt] = now
             }
     }
-    
+
+    suspend fun markStuckRunningTasks(
+        threshold: OffsetDateTime,
+        maxAttempts: Int,
+        limit: Int = 200,
+    ): List<ImportTaskRunDto> = DatabaseFactory.dbQuery {
+        val now = OffsetDateTime.now(ZoneOffset.UTC)
+
+        val candidates = ImportTaskRunTable
+            .innerJoin(ImportJobTable, { ImportTaskRunTable.jobId }, { ImportJobTable.id })
+            .innerJoin(ImportBatchTable, { ImportJobTable.batchId }, { ImportBatchTable.id })
+            .selectAll()
+            .andWhere { ImportTaskRunTable.status eq TaskStatus.RUNNING }
+            .andWhere { ImportTaskRunTable.startedAt less threshold }
+            .andWhere { ImportTaskRunTable.attempt less maxAttempts }
+            .andWhere { ImportBatchTable.status inList listOf(BatchStatus.RUNNING, BatchStatus.PAUSED) }
+            .orderBy(ImportTaskRunTable.startedAt to SortOrder.ASC)
+            .limit(limit)
+            .toList()
+
+        if (candidates.isEmpty()) return@dbQuery emptyList()
+
+        val taskIds = candidates.map { it[ImportTaskRunTable.id].value }
+
+        ImportTaskRunTable.update(where = { ImportTaskRunTable.id inList taskIds }) { stmt ->
+            stmt[ImportTaskRunTable.status] = TaskStatus.RETRYABLE
+            stmt[ImportTaskRunTable.error] = """{"code":"stuck_timeout","message":"Task exceeded watchdog threshold"}"""
+            stmt[ImportTaskRunTable.startedAt] = null
+            stmt[ImportTaskRunTable.completedAt] = null
+            stmt[ImportTaskRunTable.updatedAt] = now
+        }
+
+        ImportTaskRunTable
+            .selectAll()
+            .andWhere { ImportTaskRunTable.id inList taskIds }
+            .map { it.toImportTaskRunDto() }
+    }
+
     // Event Operations
     suspend fun createEvent(
         refType: String,

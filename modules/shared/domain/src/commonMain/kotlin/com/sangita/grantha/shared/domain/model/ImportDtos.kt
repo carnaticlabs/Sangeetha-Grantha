@@ -35,6 +35,7 @@ data class ImportedKrithiDto(
     val rawTemple: String? = null,
     val rawLanguage: String? = null,
     val parsedPayload: String? = null, // JSON string; services can parse as needed
+    val resolutionData: String? = null, // JSON string; entity resolution candidates
     val importStatus: ImportStatusDto,
     @Serializable(with = UuidSerializer::class)
     val mappedKrithiId: Uuid? = null,
@@ -98,6 +99,7 @@ data class ImportTaskRunDto(
     @Serializable(with = UuidSerializer::class)
     val jobId: Uuid,
     val krithiKey: String? = null,
+    val idempotencyKey: String? = null,
     val status: TaskStatusDto,
     val attempt: Int,
     val sourceUrl: String? = null,

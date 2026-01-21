@@ -4,6 +4,7 @@ export enum ViewState {
   KRITHI_DETAIL = 'KRITHI_DETAIL',
   REFERENCE = 'REFERENCE',
   IMPORTS = 'IMPORTS',
+  BULK_IMPORT = 'BULK_IMPORT',
   TAGS = 'TAGS',
 }
 
@@ -281,4 +282,66 @@ export interface ImportReviewRequest {
   status: 'PENDING' | 'IN_REVIEW' | 'MAPPED' | 'REJECTED' | 'DISCARDED';
   mappedKrithiId?: string | null;
   reviewerNotes?: string | null;
+}
+
+// Bulk Import Orchestration
+export type BulkBatchStatus = 'PENDING' | 'RUNNING' | 'PAUSED' | 'SUCCEEDED' | 'FAILED' | 'CANCELLED';
+export type BulkJobType = 'MANIFEST_INGEST' | 'SCRAPE' | 'ENRICH' | 'ENTITY_RESOLUTION' | 'REVIEW_PREP';
+export type BulkTaskStatus = 'PENDING' | 'RUNNING' | 'SUCCEEDED' | 'FAILED' | 'RETRYABLE' | 'BLOCKED' | 'CANCELLED';
+
+export interface ImportBatch {
+  id: string;
+  sourceManifest: string;
+  createdByUserId?: string | null;
+  status: BulkBatchStatus;
+  totalTasks: number;
+  processedTasks: number;
+  succeededTasks: number;
+  failedTasks: number;
+  blockedTasks: number;
+  startedAt?: string | null;
+  completedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ImportJob {
+  id: string;
+  batchId: string;
+  jobType: BulkJobType;
+  status: BulkTaskStatus;
+  retryCount: number;
+  payload?: string | null;
+  result?: string | null;
+  startedAt?: string | null;
+  completedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ImportTaskRun {
+  id: string;
+  jobId: string;
+  krithiKey?: string | null;
+  idempotencyKey?: string | null;
+  status: BulkTaskStatus;
+  attempt: number;
+  sourceUrl?: string | null;
+  error?: string | null;
+  durationMs?: number | null;
+  checksum?: string | null;
+  evidencePath?: string | null;
+  startedAt?: string | null;
+  completedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ImportEvent {
+  id: string;
+  refType: string;
+  refId: string;
+  eventType: string;
+  data?: string | null;
+  createdAt: string;
 }

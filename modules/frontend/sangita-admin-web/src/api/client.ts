@@ -16,7 +16,13 @@ import {
     AuditLog,
     DashboardStats,
     ReferenceDataStats,
-    ImportedKrithi
+    ImportedKrithi,
+    ImportBatch,
+    ImportJob,
+    ImportTaskRun,
+    ImportEvent,
+    BulkBatchStatus,
+    BulkTaskStatus
 } from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/v1';
@@ -355,6 +361,52 @@ export const deleteTemple = (id: string) => {
         method: 'DELETE',
     });
 };
+
+// --- Bulk Import Orchestration ---
+export const createBulkImportBatch = (sourceManifestPath: string) => {
+    return request<ImportBatch>('/admin/bulk-import/batches', {
+        method: 'POST',
+        body: JSON.stringify({ sourceManifestPath }),
+    });
+};
+
+export const listBulkImportBatches = (status?: BulkBatchStatus, limit = 20, offset = 0) => {
+    const params = new URLSearchParams();
+    if (status) params.append('status', status);
+    params.append('limit', String(limit));
+    params.append('offset', String(offset));
+    const qs = params.toString();
+    return request<ImportBatch[]>(`/admin/bulk-import/batches${qs ? `?${qs}` : ''}`);
+};
+
+export const getBulkImportBatch = (id: string) => request<ImportBatch>(`/admin/bulk-import/batches/${id}`);
+export const getBulkImportJobs = (id: string) => request<ImportJob[]>(`/admin/bulk-import/batches/${id}/jobs`);
+export const getBulkImportTasks = (id: string, status?: BulkTaskStatus, limit = 200, offset = 0) => {
+    const params = new URLSearchParams();
+    if (status) params.append('status', status);
+    params.append('limit', String(limit));
+    params.append('offset', String(offset));
+    const qs = params.toString();
+    return request<ImportTaskRun[]>(`/admin/bulk-import/batches/${id}/tasks${qs ? `?${qs}` : ''}`);
+};
+export const getBulkImportEvents = (id: string, limit = 200) => {
+    const params = new URLSearchParams();
+    params.append('limit', String(limit));
+    const qs = params.toString();
+    return request<ImportEvent[]>(`/admin/bulk-import/batches/${id}/events${qs ? `?${qs}` : ''}`);
+};
+
+export const pauseBulkImportBatch = (id: string) =>
+    request<ImportBatch>(`/admin/bulk-import/batches/${id}/pause`, { method: 'POST' });
+export const resumeBulkImportBatch = (id: string) =>
+    request<ImportBatch>(`/admin/bulk-import/batches/${id}/resume`, { method: 'POST' });
+export const cancelBulkImportBatch = (id: string) =>
+    request<ImportBatch>(`/admin/bulk-import/batches/${id}/cancel`, { method: 'POST' });
+export const retryBulkImportBatch = (id: string, includeFailed = true) =>
+    request<{ requeuedTasks: number }>(`/admin/bulk-import/batches/${id}/retry`, {
+        method: 'POST',
+        body: JSON.stringify({ includeFailed }),
+    });
 
 // --- Deities API ---
 export const getDeity = (id: string) => {

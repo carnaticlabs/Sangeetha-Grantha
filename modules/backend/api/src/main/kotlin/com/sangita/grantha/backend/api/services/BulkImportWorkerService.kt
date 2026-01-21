@@ -7,11 +7,15 @@ import com.sangita.grantha.backend.dal.enums.JobType
 import com.sangita.grantha.backend.dal.enums.TaskStatus
 import com.sangita.grantha.shared.domain.model.ImportJobDto
 import com.sangita.grantha.shared.domain.model.ImportTaskRunDto
+import com.sangita.grantha.shared.domain.model.JobTypeDto
+import java.net.URI
 import java.nio.file.Files
 import java.nio.file.Path
+import java.time.Duration
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import kotlin.io.path.exists
+import kotlin.math.max
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -20,6 +24,8 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -30,15 +36,28 @@ class BulkImportWorkerService(
     private val dal: SangitaDal,
     private val importService: ImportService,
     private val webScrapingService: WebScrapingService,
+    private val entityResolutionService: EntityResolutionService,
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
     data class WorkerConfig(
         val manifestWorkerCount: Int = 1,
         val scrapeWorkerCount: Int = 3,
+        val resolutionWorkerCount: Int = 2,
         val pollIntervalMs: Long = 750,
         val maxAttempts: Int = 3,
+        val perDomainRateLimitPerMinute: Int = 12,
+        val globalRateLimitPerMinute: Int = 50,
+        val stuckTaskThresholdMs: Long = 10 * 60 * 1000, // 10 minutes
+        val watchdogIntervalMs: Long = 60_000, // 1 minute
     )
+
+    private data class RateWindow(var windowStartedAtMs: Long = 0, var count: Int = 0)
+
+    private val rateLimiterMutex = Mutex()
+    private var globalWindow = RateWindow()
+    private val perDomainWindows = mutableMapOf<String, RateWindow>()
+
 
     private var scope: CoroutineScope? = null
 
@@ -57,8 +76,18 @@ class BulkImportWorkerService(
                 runScrapeLoop(config)
             }
         }
+        repeat(config.resolutionWorkerCount) { idx ->
+            workerScope.launch(CoroutineName("BulkImportResolutionWorker-$idx")) {
+                runEntityResolutionLoop(config)
+            }
+        }
 
-        logger.info("Bulk import workers started (manifest={}, scrape={})", config.manifestWorkerCount, config.scrapeWorkerCount)
+        workerScope.launch(CoroutineName("BulkImportWatchdog")) {
+            runWatchdogLoop(config)
+        }
+
+        logger.info("Bulk import workers started (manifest={}, scrape={}, resolution={})", 
+            config.manifestWorkerCount, config.scrapeWorkerCount, config.resolutionWorkerCount)
     }
 
     fun stop() {
@@ -70,6 +99,15 @@ class BulkImportWorkerService(
     @Serializable
     private data class ManifestJobPayload(
         val sourceManifestPath: String,
+    )
+
+    @Serializable
+    private data class TaskErrorPayload(
+        val code: String,
+        val message: String,
+        val url: String? = null,
+        val attempt: Int? = null,
+        val cause: String? = null,
     )
 
     @Serializable
@@ -114,7 +152,11 @@ class BulkImportWorkerService(
             dal.bulkImport.updateTaskStatus(
                 id = task.id,
                 status = TaskStatus.FAILED,
-                error = """{"message":"Max attempts exceeded"}""",
+                error = buildErrorPayload(
+                    code = "max_attempts_exceeded",
+                    message = "Manifest ingest exceeded max attempts",
+                    attempt = attempt
+                ),
                 completedAt = OffsetDateTime.now(ZoneOffset.UTC)
             )
             dal.bulkImport.updateJobStatus(id = job.id, status = TaskStatus.FAILED, completedAt = OffsetDateTime.now(ZoneOffset.UTC))
@@ -122,51 +164,77 @@ class BulkImportWorkerService(
         }
 
         val payload = job.payload ?: run {
-            failManifestTask(task, job, startedAt, """{"message":"Missing job payload"}""")
+            failManifestTask(task, job, startedAt, buildErrorPayload(code = "missing_payload", message = "Missing job payload"))
             return
         }
 
         val manifestPath = try {
             Json.decodeFromString<ManifestJobPayload>(payload).sourceManifestPath
         } catch (e: Exception) {
-            failManifestTask(task, job, startedAt, Json.encodeToString(mapOf("message" to "Invalid payload", "error" to (e.message ?: ""))))
+            failManifestTask(
+                task,
+                job,
+                startedAt,
+                buildErrorPayload(code = "invalid_payload", message = "Invalid manifest payload", cause = e.message)
+            )
             return
         }
 
         val csvPath = Path.of(manifestPath)
         if (!csvPath.exists()) {
-            failManifestTask(task, job, startedAt, Json.encodeToString(mapOf("message" to "Manifest not found", "path" to manifestPath)))
+            failManifestTask(
+                task,
+                job,
+                startedAt,
+                buildErrorPayload(code = "manifest_missing", message = "Manifest not found", cause = manifestPath)
+            )
             return
         }
 
         try {
             val rows = parseCsvManifest(csvPath)
             if (rows.isEmpty()) {
-                failManifestTask(task, job, startedAt, Json.encodeToString(mapOf("message" to "Manifest contained no rows", "path" to manifestPath)))
+                failManifestTask(
+                    task,
+                    job,
+                    startedAt,
+                    buildErrorPayload(code = "manifest_empty", message = "Manifest contained no rows", cause = manifestPath)
+                )
                 return
             }
 
-            // Create SCRAPE job + per-row tasks
-            val scrapeJob = dal.bulkImport.createJob(
+            val dedupedRows = rows.distinctBy { it.hyperlink.trim().lowercase() }
+
+            val existingScrapeJob = dal.bulkImport.listJobsByBatch(batchId).firstOrNull { it.jobType == JobTypeDto.SCRAPE }
+            val scrapeJob = existingScrapeJob ?: dal.bulkImport.createJob(
                 batchId = batchId,
                 jobType = JobType.SCRAPE,
                 payload = Json.encodeToString(mapOf("sourceManifestPath" to manifestPath))
             )
 
-            dal.bulkImport.createTasks(
+            val createdTasks = dal.bulkImport.createTasks(
                 jobId = scrapeJob.id,
-                tasks = rows.map { row ->
+                batchId = batchId,
+                tasks = dedupedRows.map { row ->
                     val key = "${row.krithi}|${row.raga ?: ""}".trim()
                     key to row.hyperlink
                 }
             )
 
-            dal.bulkImport.setBatchTotals(id = batchId, totalTasks = rows.size)
+            val totalTasks = dal.bulkImport.listTasksByJob(scrapeJob.id).size
+            dal.bulkImport.setBatchTotals(id = batchId, totalTasks = totalTasks)
             dal.bulkImport.createEvent(
                 refType = "batch",
                 refId = batchId,
                 eventType = "MANIFEST_INGEST_SUCCEEDED",
-                data = Json.encodeToString(mapOf("rows" to rows.size, "manifestPath" to manifestPath))
+                data = Json.encodeToString(
+                    mapOf(
+                        "rows" to dedupedRows.size,
+                        "newTasks" to createdTasks.size,
+                        "totalTasks" to totalTasks,
+                        "manifestPath" to manifestPath
+                    )
+                )
             )
 
             dal.bulkImport.updateTaskStatus(
@@ -178,11 +246,16 @@ class BulkImportWorkerService(
             dal.bulkImport.updateJobStatus(
                 id = job.id,
                 status = TaskStatus.SUCCEEDED,
-                result = Json.encodeToString(mapOf("rows" to rows.size)),
+                result = Json.encodeToString(mapOf("rows" to dedupedRows.size, "newTasks" to createdTasks.size, "totalTasks" to totalTasks)),
                 completedAt = OffsetDateTime.now(ZoneOffset.UTC)
             )
         } catch (e: Exception) {
-            failManifestTask(task, job, startedAt, Json.encodeToString(mapOf("message" to "Manifest ingest failed", "error" to (e.message ?: ""))))
+            failManifestTask(
+                task,
+                job,
+                startedAt,
+                buildErrorPayload(code = "manifest_ingest_failed", message = "Manifest ingest failed", cause = e.message)
+            )
         }
     }
 
@@ -228,32 +301,43 @@ class BulkImportWorkerService(
 
         val attemptRow = dal.bulkImport.incrementTaskAttempt(task.id)
         val attempt = attemptRow?.attempt ?: task.attempt
-        if (attempt > config.maxAttempts) {
-            dal.bulkImport.updateTaskStatus(
-                id = task.id,
-                status = TaskStatus.FAILED,
-                error = """{"message":"Max attempts exceeded"}""",
-                completedAt = OffsetDateTime.now(ZoneOffset.UTC)
-            )
-            dal.bulkImport.incrementBatchCounters(id = batchId, processedDelta = 1, failedDelta = 1)
-            maybeCompleteBatch(batchId)
-            return
-        }
 
         val url = task.sourceUrl
         if (url.isNullOrBlank()) {
             dal.bulkImport.updateTaskStatus(
                 id = task.id,
                 status = TaskStatus.FAILED,
-                error = """{"message":"Missing sourceUrl"}""",
+                error = buildErrorPayload(code = "missing_source_url", message = "Task missing sourceUrl", attempt = attempt),
                 completedAt = OffsetDateTime.now(ZoneOffset.UTC)
             )
             dal.bulkImport.incrementBatchCounters(id = batchId, processedDelta = 1, failedDelta = 1)
-            maybeCompleteBatch(batchId)
+            checkAndTriggerNextStage(job.id)
             return
         }
 
+        if (attempt > config.maxAttempts) {
+            dal.bulkImport.updateTaskStatus(
+                id = task.id,
+                status = TaskStatus.FAILED,
+                error = buildErrorPayload(
+                    code = "max_attempts_exceeded",
+                    message = "Task exceeded max attempts",
+                    url = url,
+                    attempt = attempt
+                ),
+                completedAt = OffsetDateTime.now(ZoneOffset.UTC)
+            )
+            dal.bulkImport.incrementBatchCounters(id = batchId, processedDelta = 1, failedDelta = 1)
+            checkAndTriggerNextStage(job.id)
+            return
+        }
+
+        if (TaskStatus.valueOf(job.status.name) != TaskStatus.RUNNING) {
+            dal.bulkImport.updateJobStatus(id = job.id, status = TaskStatus.RUNNING, startedAt = startedAt)
+        }
+
         try {
+            throttleForRateLimit(url, config)
             val scraped = webScrapingService.scrapeKrithi(url)
             val importRequest = ImportKrithiRequest(
                 source = "BulkImportCSV",
@@ -278,18 +362,160 @@ class BulkImportWorkerService(
                 completedAt = OffsetDateTime.now(ZoneOffset.UTC)
             )
             dal.bulkImport.incrementBatchCounters(id = batchId, processedDelta = 1, succeededDelta = 1)
+            checkAndTriggerNextStage(job.id)
         } catch (e: Exception) {
-            val errorJson = Json.encodeToString(mapOf("message" to "Scrape/import failed", "url" to url, "error" to (e.message ?: "")))
+            val errorJson = buildErrorPayload(
+                code = "scrape_failed",
+                message = "Scrape/import failed",
+                url = url,
+                attempt = attempt,
+                cause = e.message
+            )
+            val finalAttempt = attempt >= config.maxAttempts
             dal.bulkImport.updateTaskStatus(
                 id = task.id,
-                status = TaskStatus.FAILED,
+                status = if (finalAttempt) TaskStatus.FAILED else TaskStatus.RETRYABLE,
                 error = errorJson,
+                durationMs = elapsedMsSince(startedAt),
+                completedAt = if (finalAttempt) OffsetDateTime.now(ZoneOffset.UTC) else null
+            )
+
+            if (finalAttempt) {
+                dal.bulkImport.incrementBatchCounters(id = batchId, processedDelta = 1, failedDelta = 1)
+                checkAndTriggerNextStage(job.id)
+            } else {
+                dal.bulkImport.createEvent(
+                    refType = "batch",
+                    refId = batchId,
+                    eventType = "TASK_RETRY_SCHEDULED",
+                    data = errorJson
+                )
+            }
+        }
+    }
+
+    private suspend fun runEntityResolutionLoop(config: WorkerConfig) {
+        while (scope?.isActive == true) {
+            val task = dal.bulkImport.claimNextPendingTask(
+                jobType = JobType.ENTITY_RESOLUTION,
+                allowedBatchStatuses = setOf(BatchStatus.RUNNING)
+            )
+
+            if (task == null) {
+                delay(config.pollIntervalMs)
+                continue
+            }
+
+            processEntityResolutionTask(task, config)
+        }
+    }
+
+    private suspend fun processEntityResolutionTask(task: ImportTaskRunDto, config: WorkerConfig) {
+        val startedAt = OffsetDateTime.now(ZoneOffset.UTC)
+        val job = dal.bulkImport.findJobById(task.jobId)
+            ?: run {
+                dal.bulkImport.updateTaskStatus(id = task.id, status = TaskStatus.FAILED, error = """{"message":"Missing job"}""")
+                return
+            }
+        val batchId = job.batchId
+
+        if (TaskStatus.valueOf(job.status.name) != TaskStatus.RUNNING) {
+            dal.bulkImport.updateJobStatus(id = job.id, status = TaskStatus.RUNNING, startedAt = startedAt)
+        }
+
+        try {
+            val sourceId = dal.imports.findOrCreateSource("BulkImportCSV")
+            val importedKrithi = dal.imports.findBySourceAndKey(sourceId, task.sourceUrl ?: "")
+            
+            if (importedKrithi == null) {
+                 dal.bulkImport.updateTaskStatus(
+                    id = task.id,
+                    status = TaskStatus.FAILED,
+                    error = buildErrorPayload(code = "import_missing", message = "ImportedKrithi not found", url = task.sourceUrl),
+                    completedAt = OffsetDateTime.now(ZoneOffset.UTC)
+                )
+                dal.bulkImport.incrementBatchCounters(id = batchId, processedDelta = 1, failedDelta = 1)
+                checkAndTriggerNextStage(job.id)
+                return
+            }
+            
+            val resolution = entityResolutionService.resolve(importedKrithi)
+            val resolutionJson = Json.encodeToString(resolution)
+            
+            dal.imports.saveResolution(importedKrithi.id, resolutionJson)
+            
+            dal.bulkImport.updateTaskStatus(
+                id = task.id,
+                status = TaskStatus.SUCCEEDED,
                 durationMs = elapsedMsSince(startedAt),
                 completedAt = OffsetDateTime.now(ZoneOffset.UTC)
             )
+            dal.bulkImport.incrementBatchCounters(id = batchId, processedDelta = 1, succeededDelta = 1)
+            checkAndTriggerNextStage(job.id)
+            
+        } catch (e: Exception) {
+             dal.bulkImport.updateTaskStatus(
+                id = task.id,
+                status = TaskStatus.FAILED,
+                error = buildErrorPayload(code = "resolution_failed", message = "Resolution failed", cause = e.message),
+                completedAt = OffsetDateTime.now(ZoneOffset.UTC)
+            )
             dal.bulkImport.incrementBatchCounters(id = batchId, processedDelta = 1, failedDelta = 1)
-        } finally {
-            maybeCompleteBatch(batchId)
+            checkAndTriggerNextStage(job.id)
+        }
+    }
+
+    private suspend fun checkAndTriggerNextStage(jobId: kotlin.uuid.Uuid) {
+        val job = dal.bulkImport.findJobById(jobId) ?: return
+        val tasks = dal.bulkImport.listTasksByJob(jobId)
+        val isComplete = tasks.all { 
+            val s = TaskStatus.valueOf(it.status.name)
+            s == TaskStatus.SUCCEEDED || s == TaskStatus.FAILED || s == TaskStatus.BLOCKED || s == TaskStatus.CANCELLED
+        }
+
+        if (isComplete) {
+            if (TaskStatus.valueOf(job.status.name) != TaskStatus.SUCCEEDED) {
+                 dal.bulkImport.updateJobStatus(
+                    id = jobId, 
+                    status = TaskStatus.SUCCEEDED, 
+                    completedAt = OffsetDateTime.now(ZoneOffset.UTC)
+                )
+            }
+
+            if (job.jobType == JobTypeDto.SCRAPE) {
+                val existing = dal.bulkImport.listJobsByBatch(job.batchId).find { it.jobType == JobTypeDto.ENTITY_RESOLUTION }
+                if (existing == null) {
+                    val resolutionJob = dal.bulkImport.createJob(
+                        batchId = job.batchId,
+                        jobType = JobType.ENTITY_RESOLUTION,
+                        payload = null
+                    )
+                    
+                    val succeededTasks = tasks.filter { TaskStatus.valueOf(it.status.name) == TaskStatus.SUCCEEDED }
+                    val newTasks = succeededTasks.mapNotNull { t ->
+                        if (t.krithiKey != null && t.sourceUrl != null) {
+                            t.krithiKey to t.sourceUrl!!
+                        } else null
+                    }
+                    
+                    if (newTasks.isNotEmpty()) {
+                         dal.bulkImport.createTasks(
+                            jobId = resolutionJob.id,
+                            batchId = job.batchId,
+                            tasks = newTasks
+                         )
+                         
+                         val batch = dal.bulkImport.findBatchById(job.batchId)
+                         if (batch != null) {
+                             dal.bulkImport.setBatchTotals(batch.id, batch.totalTasks + newTasks.size)
+                         }
+                    } else {
+                         maybeCompleteBatch(job.batchId)
+                    }
+                }
+            } else if (job.jobType == JobTypeDto.ENTITY_RESOLUTION) {
+                maybeCompleteBatch(job.batchId)
+            }
         }
     }
 
@@ -315,6 +541,82 @@ class BulkImportWorkerService(
                 )
             )
         )
+    }
+
+    private fun buildErrorPayload(code: String, message: String, url: String? = null, attempt: Int? = null, cause: String? = null): String =
+        Json.encodeToString(TaskErrorPayload(code = code, message = message, url = url, attempt = attempt, cause = cause))
+
+    private suspend fun throttleForRateLimit(url: String, config: WorkerConfig) {
+        val host = runCatching { URI(url).host ?: "unknown" }.getOrDefault("unknown")
+        while (scope?.isActive == true) {
+            val waitMs = rateLimiterMutex.withLock {
+                val now = System.currentTimeMillis()
+                val globalWait = computeWait(globalWindow, now, config.globalRateLimitPerMinute)
+                val domainWindow = perDomainWindows.getOrPut(host) { RateWindow(windowStartedAtMs = now, count = 0) }
+                val domainWait = computeWait(domainWindow, now, config.perDomainRateLimitPerMinute)
+                val maxWait = max(globalWait, domainWait)
+                if (maxWait <= 0) {
+                    incrementWindow(globalWindow, now)
+                    incrementWindow(domainWindow, now)
+                    perDomainWindows[host] = domainWindow
+                    return
+                }
+                maxWait
+            }
+
+            if (waitMs <= 0) return
+            delay(waitMs)
+        }
+    }
+
+    private fun computeWait(window: RateWindow, now: Long, limitPerMinute: Int): Long {
+        if (limitPerMinute <= 0) return 0
+        val windowMs = 60_000L
+        if (now - window.windowStartedAtMs >= windowMs) {
+            window.windowStartedAtMs = now
+            window.count = 0
+            return 0
+        }
+        return if (window.count >= limitPerMinute) windowMs - (now - window.windowStartedAtMs) else 0
+    }
+
+    private fun incrementWindow(window: RateWindow, now: Long) {
+        val windowMs = 60_000L
+        if (now - window.windowStartedAtMs >= windowMs) {
+            window.windowStartedAtMs = now
+            window.count = 0
+        }
+        window.count += 1
+    }
+
+    private suspend fun runWatchdogLoop(config: WorkerConfig) {
+        while (scope?.isActive == true) {
+            val threshold = OffsetDateTime.now(ZoneOffset.UTC).minus(Duration.ofMillis(config.stuckTaskThresholdMs))
+            val stuckTasks = dal.bulkImport.markStuckRunningTasks(threshold, config.maxAttempts)
+            if (stuckTasks.isNotEmpty()) {
+                logger.warn("Watchdog marked {} stuck tasks as retryable (threshold={}ms)", stuckTasks.size, config.stuckTaskThresholdMs)
+                stuckTasks.forEach { task ->
+                    val job = dal.bulkImport.findJobById(task.jobId)
+                    val batchId = job?.batchId
+                    if (batchId != null) {
+                        runCatching {
+                            dal.bulkImport.createEvent(
+                                refType = "batch",
+                                refId = batchId,
+                                eventType = "TASK_MARKED_RETRYABLE",
+                                data = buildErrorPayload(
+                                    code = "stuck_timeout",
+                                    message = "Task exceeded watchdog threshold",
+                                    url = task.sourceUrl,
+                                    attempt = task.attempt
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+            delay(config.watchdogIntervalMs)
+        }
     }
 
     private fun elapsedMsSince(startedAt: OffsetDateTime): Int {
@@ -378,4 +680,3 @@ class BulkImportWorkerService(
         return out
     }
 }
-

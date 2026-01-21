@@ -33,6 +33,7 @@ class BulkImportOrchestrationService(
         )
         dal.bulkImport.createTask(
             jobId = manifestJob.id,
+            batchId = batch.id,
             krithiKey = "manifest:${sourceManifestPath.substringAfterLast('/')}",
             sourceUrl = null
         )

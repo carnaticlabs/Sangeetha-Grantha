@@ -244,6 +244,7 @@ object ImportedKrithisTable : UUIDTable("imported_krithis") {
     val rawTemple = text("raw_temple").nullable()
     val rawLanguage = text("raw_language").nullable()
     val parsedPayload = jsonbText("parsed_payload").nullable()
+    val resolutionData = jsonbText("resolution_data").nullable()
     val importStatus = pgEnum<ImportStatus>("import_status", ImportStatus.DB_TYPE)
     val mappedKrithiId = uuid("mapped_krithi_id").nullable()
     val reviewerUserId = uuid("reviewer_user_id").nullable()
@@ -295,6 +296,7 @@ object ImportJobTable : UUIDTable("import_job") {
 object ImportTaskRunTable : UUIDTable("import_task_run") {
     val jobId = uuid("job_id")
     val krithiKey = text("krithi_key").nullable()
+    val idempotencyKey = text("idempotency_key").nullable()
     val status = pgEnum<TaskStatus>("status", TaskStatus.DB_TYPE)
     val attempt = integer("attempt").default(0)
     val sourceUrl = text("source_url").nullable()

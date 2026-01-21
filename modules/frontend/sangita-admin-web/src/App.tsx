@@ -10,6 +10,7 @@ import ImportsPage from './pages/ImportsPage';
 import TagsPage from './pages/TagsPage';
 import UsersPage from './pages/UsersPage';
 import RolesPage from './pages/RolesPage';
+import BulkImportPage from './pages/BulkImport';
 
 // Default admin token for development (matches backend default)
 const DEFAULT_ADMIN_TOKEN = 'dev-admin-token';
@@ -40,6 +41,7 @@ const App: React.FC = () => {
               <Route path="/krithis/:id" element={<KrithiEditor />} />
               <Route path="/reference" element={<ReferenceData />} />
               <Route path="/imports" element={<ImportsPage />} />
+              <Route path="/bulk-import" element={<BulkImportPage />} />
               <Route path="/tags" element={<TagsPage />} />
               <Route path="/users" element={<UsersPage />} />
               <Route path="/roles" element={<RolesPage />} />

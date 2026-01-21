@@ -62,6 +62,16 @@ class ImportRepository {
         parsedPayload: String?,
     ): ImportedKrithiDto = DatabaseFactory.dbQuery {
         val now = OffsetDateTime.now(ZoneOffset.UTC)
+
+        if (!sourceKey.isNullOrBlank()) {
+            ImportedKrithisTable
+                .selectAll()
+                .andWhere { (ImportedKrithisTable.importSourceId eq sourceId) and (ImportedKrithisTable.sourceKey eq sourceKey) }
+                .singleOrNull()
+                ?.toImportedKrithiDto()
+                ?.let { return@dbQuery it }
+        }
+
         val importId = UUID.randomUUID()
 
         ImportedKrithisTable.insert {
@@ -104,6 +114,29 @@ class ImportRepository {
                 it[ImportedKrithisTable.mappedKrithiId] = mappedKrithiId
                 it[ImportedKrithisTable.reviewerNotes] = reviewerNotes
                 it[ImportedKrithisTable.reviewedAt] = now
+            }
+            .singleOrNull()
+            ?.toImportedKrithiDto()
+    }
+
+    suspend fun findBySourceAndKey(sourceId: UUID, sourceKey: String): ImportedKrithiDto? = DatabaseFactory.dbQuery {
+        ImportedKrithisTable
+            .selectAll()
+            .where { (ImportedKrithisTable.importSourceId eq sourceId) and (ImportedKrithisTable.sourceKey eq sourceKey) }
+            .map { it.toImportedKrithiDto() }
+            .singleOrNull()
+    }
+
+    suspend fun saveResolution(
+        id: Uuid,
+        resolutionData: String,
+    ): ImportedKrithiDto? = DatabaseFactory.dbQuery {
+        val javaId = id.toJavaUuid()
+        ImportedKrithisTable
+            .updateReturning(
+                where = { ImportedKrithisTable.id eq javaId }
+            ) {
+                it[ImportedKrithisTable.resolutionData] = resolutionData
             }
             .singleOrNull()
             ?.toImportedKrithiDto()

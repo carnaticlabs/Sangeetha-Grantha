@@ -52,10 +52,12 @@ fun main() {
     val geminiApiClient = GeminiApiClient(env.geminiApiKey ?: "")
     val transliterationService = TransliterationService(geminiApiClient)
     val webScrapingService = WebScrapingService(geminiApiClient)
+    val entityResolutionService = com.sangita.grantha.backend.api.services.EntityResolutionService(dal)
     val bulkImportWorkerService = BulkImportWorkerService(
         dal = dal,
         importService = importService,
-        webScrapingService = webScrapingService
+        webScrapingService = webScrapingService,
+        entityResolutionService = entityResolutionService
     )
 
     embeddedServer(Netty, host = env.host, port = env.port) {
