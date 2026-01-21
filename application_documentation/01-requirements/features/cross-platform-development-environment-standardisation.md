@@ -779,7 +779,7 @@ cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db health
 **Start Development Stack**:
 ```bash
 # Option 1: Via mise (recommended - ensures correct tool versions)
-mise exec cargo run --manifest-path tools/sangita-cli/Cargo.toml -- dev --start-db
+mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- dev --start-db
 
 # Option 2: Direct (requires tools to be installed manually)
 cargo run --manifest-path tools/sangita-cli/Cargo.toml -- dev --start-db
@@ -793,7 +793,7 @@ cd modules/frontend/sangita-admin-web && bun run dev
 **Reset Database**:
 ```bash
 # Via mise (recommended)
-mise exec cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db reset --mode docker
+mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db reset --mode docker
 
 # Or direct
 cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db reset --mode docker

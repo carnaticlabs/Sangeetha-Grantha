@@ -301,15 +301,10 @@ pub fn kill_processes_on_port(port: &str, service_name: &str) -> Result<()> {
     Ok(())
 }
 
-/// Kill processes on all configured ports (database, backend, frontend).
+/// Kill processes on configured backend/frontend ports.
 /// This ensures a clean start by clearing ports before starting services.
-pub fn cleanup_ports(config: &Config, start_db: bool) -> Result<()> {
-    print_step("Cleaning up existing processes on configured ports...");
-
-    if start_db {
-        // Database port (PostgreSQL default)
-        kill_processes_on_port("5432", "database")?;
-    }
+pub fn cleanup_ports(config: &Config) -> Result<()> {
+    print_step("Cleaning up existing processes on backend/frontend ports...");
 
     // Backend port
     kill_processes_on_port(&config.api_port, "backend")?;

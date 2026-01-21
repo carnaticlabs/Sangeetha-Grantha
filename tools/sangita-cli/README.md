@@ -39,16 +39,16 @@ Since Rust and other tools are managed by mise, run sangita-cli through mise:
 
 ```bash
 # Development workflow
-mise exec cargo run --manifest-path tools/sangita-cli/Cargo.toml -- dev --start-db
+mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- dev --start-db
 
 # Database management
-mise exec cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db reset
+mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db reset
 
 # Testing
-mise exec cargo run --manifest-path tools/sangita-cli/Cargo.toml -- test steel-thread
+mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- test steel-thread
 
 # Setup check
-mise exec cargo run --manifest-path tools/sangita-cli/Cargo.toml -- setup
+mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- setup
 ```
 
 This ensures:
@@ -71,7 +71,7 @@ cargo run -- dev --start-db
 Check environment and dependencies:
 ```bash
 # Via mise (recommended)
-mise exec cargo run --manifest-path tools/sangita-cli/Cargo.toml -- setup
+mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- setup
 
 # Or without mise
 cd tools/sangita-cli

@@ -21,14 +21,24 @@ pub async fn run(args: DevArgs) -> Result<()> {
     let config = Config::load()?;
     let root = project_root()?;
 
-    // Clean up any existing processes on configured ports
-    cleanup_ports(&config, args.start_db)?;
+    let app_config = if args.start_db {
+        Some(AppConfig::from_file(&root.join("config/application.local.toml"))?)
+    } else {
+        None
+    };
 
-    if args.start_db {
-        // Load app config for database operations
+    if let Some(app_config) = &app_config {
+        if let Err(e) = stop_database(app_config).await {
+            eprintln!("Warning: failed to stop existing database: {e}");
+        }
+    }
+
+    // Clean up any existing processes on configured ports
+    cleanup_ports(&config)?;
+
+    if let Some(app_config) = &app_config {
         // NOTE: DB defaults to Docker Compose (Postgres 15) if available (see `db start --mode auto`).
-        let app_config = AppConfig::from_file(&root.join("config/application.local.toml"))?;
-        ensure_database_running(&app_config).await?;
+        ensure_database_running(app_config).await?;
     }
 
     print_step("Starting development environment...");
@@ -65,9 +75,8 @@ pub async fn run(args: DevArgs) -> Result<()> {
     let _ = frontend.kill();
 
     // If we started the database for this session, attempt to stop it as well
-    if args.start_db {
-        let app_config = AppConfig::from_file(&root.join("config/application.local.toml"))?;
-        if let Err(e) = stop_database(&app_config).await {
+    if let Some(app_config) = &app_config {
+        if let Err(e) = stop_database(app_config).await {
             eprintln!("Failed to stop database: {e}");
         }
     }
