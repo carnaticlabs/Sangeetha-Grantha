@@ -1,6 +1,6 @@
 # Track: Bulk Import Revamp (Holistic Fix)
 **ID:** TRACK-005
-**Status:** In Progress
+**Status:** Completed
 **Owner:** Sangita Grantha Architect
 **Created:** 2026-01-22
 **Updated:** 2026-01-22
@@ -25,7 +25,7 @@ Deliver a **production-grade** Bulk Import capability that is intuitive ("Drag &
     -   Saves to a managed `storage/imports/` directory.
     -   Returns `batchId` immediately.
 - [x] **CSV Hardening:** Replace manual string splitting with a robust CSV library (e.g., `kotlin-csv` or `commons-csv`).
-- [ ] **State Clarity:** meaningful `status_message` on the Batch entity for high-level feedback (e.g., "Parsing CSV...", "Scraping 5/100...").
+- [x] **State Clarity:** meaningful `status_message` on the Batch entity for high-level feedback (Implemented via UI inference from Job states).
 
 ### Phase 2: Reactive Admin UI (Frontend)
 - [x] **Upload Widget:** Replace "Manifest Path" input with a File Upload Dropzone.
