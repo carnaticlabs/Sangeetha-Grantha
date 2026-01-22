@@ -30,7 +30,7 @@ Deliver a **production-grade** Bulk Import capability that is intuitive ("Drag &
 ### Phase 2: Reactive Admin UI (Frontend)
 - [x] **Upload Widget:** Replace "Manifest Path" input with a File Upload Dropzone.
 - [x] **Live Polling:** Implement `useInterval` or `tanstack-query` polling (2s interval) for running batches.
-- [ ] **Stage Visualization:** Show clear visual steps:
+- [x] **Stage Visualization:** Show clear visual steps:
     1.  **Uploading** (Client -> Server)
     2.  **Analyzing** (Manifest Ingest)
     3.  **Processing** (Scraping & Resolution)

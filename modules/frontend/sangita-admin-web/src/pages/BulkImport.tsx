@@ -72,6 +72,16 @@ const BulkImportPage: React.FC = () => {
     return Math.round((selectedBatch.processedTasks / selectedBatch.totalTasks) * 100);
   }, [selectedBatch]);
 
+  const currentStage = useMemo(() => {
+    if (!jobs.length) return 'Initializing';
+    if (jobs.some(j => j.jobType === 'ENTITY_RESOLUTION' && j.status === 'RUNNING')) return 'Resolving Entities';
+    if (jobs.some(j => j.jobType === 'SCRAPE' && j.status === 'RUNNING')) return 'Scraping Content';
+    if (jobs.some(j => j.jobType === 'MANIFEST_INGEST' && j.status === 'RUNNING')) return 'Analyzing Manifest';
+    if (selectedBatch?.status === 'SUCCEEDED') return 'Completed';
+    if (selectedBatch?.status === 'FAILED') return 'Failed';
+    return 'Processing';
+  }, [jobs, selectedBatch]);
+
   // Polling for active batches
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -349,10 +359,15 @@ const BulkImportPage: React.FC = () => {
               <div className="grid grid-cols-2 gap-3 text-xs">
                 <div className="p-3 rounded-lg bg-slate-50">
                   <div className="text-ink-500 font-semibold">Status</div>
-                  <div className="mt-1">
+                  <div className="mt-1 flex items-center gap-2">
                     <span className={`px-2 py-1 rounded-full text-[11px] font-semibold ${statusChip[selectedBatch.status]}`}>
                       {selectedBatch.status}
                     </span>
+                    {selectedBatch.status === 'RUNNING' && (
+                        <span className="text-xs text-ink-600 font-medium border border-border-light bg-white px-2 py-0.5 rounded-full">
+                            {currentStage}
+                        </span>
+                    )}
                   </div>
                 </div>
                 <div className="p-3 rounded-lg bg-slate-50">
