@@ -28,8 +28,8 @@ Deliver a **production-grade** Bulk Import capability that is intuitive ("Drag &
 - [ ] **State Clarity:** meaningful `status_message` on the Batch entity for high-level feedback (e.g., "Parsing CSV...", "Scraping 5/100...").
 
 ### Phase 2: Reactive Admin UI (Frontend)
-- [ ] **Upload Widget:** Replace "Manifest Path" input with a File Upload Dropzone.
-- [ ] **Live Polling:** Implement `useInterval` or `tanstack-query` polling (2s interval) for running batches.
+- [x] **Upload Widget:** Replace "Manifest Path" input with a File Upload Dropzone.
+- [x] **Live Polling:** Implement `useInterval` or `tanstack-query` polling (2s interval) for running batches.
 - [ ] **Stage Visualization:** Show clear visual steps:
     1.  **Uploading** (Client -> Server)
     2.  **Analyzing** (Manifest Ingest)

@@ -17,12 +17,10 @@ import {
   listBulkImportBatches,
   pauseBulkImportBatch,
   resumeBulkImportBatch,
-  retryBulkImportBatch
+  retryBulkImportBatch,
+  uploadBulkImportFile
 } from '../api/client';
 import { ToastContainer, useToast } from '../components/Toast';
-
-const DEFAULT_MANIFEST_PATH =
-  '/Users/seshadri/project/sangeetha-grantha/database/for_import/Dikshitar-Krithi-For-Import.csv';
 
 const statusChip: Record<BulkBatchStatus, string> = {
   PENDING: 'bg-slate-100 text-slate-700 border border-slate-200',
@@ -57,7 +55,7 @@ const parseError = (value?: string | null) => {
 
 const BulkImportPage: React.FC = () => {
   const { toasts, removeToast, success, error } = useToast();
-  const [manifestPath, setManifestPath] = useState(DEFAULT_MANIFEST_PATH);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [batches, setBatches] = useState<ImportBatch[]>([]);
   const [selectedBatchId, setSelectedBatchId] = useState<string | null>(null);
   const [selectedBatch, setSelectedBatch] = useState<ImportBatch | null>(null);
@@ -74,23 +72,45 @@ const BulkImportPage: React.FC = () => {
     return Math.round((selectedBatch.processedTasks / selectedBatch.totalTasks) * 100);
   }, [selectedBatch]);
 
+  // Polling for active batches
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    const isRunning = selectedBatch?.status === 'RUNNING' || selectedBatch?.status === 'PENDING';
+    
+    if (isRunning && selectedBatchId) {
+        interval = setInterval(() => {
+            void loadBatchDetail(selectedBatchId);
+            void refreshBatches();
+        }, 2000);
+    }
+    return () => clearInterval(interval);
+  }, [selectedBatch?.status, selectedBatchId]);
+
   const refreshBatches = async () => {
-    setLoadingList(true);
+    // Silent refresh if already have data, otherwise show loader (handled by caller or initial state)
     try {
       const items = await listBulkImportBatches(undefined, 25, 0);
       setBatches(items);
-      if (!selectedBatchId && items.length > 0) {
-        setSelectedBatchId(items[0].id);
-      }
+      // Don't auto-select if we have one selected
     } catch (e) {
-      error('Failed to load batches');
+      console.error('Failed to load batches', e);
     } finally {
       setLoadingList(false);
     }
   };
-
+  
+  // Initial load
   useEffect(() => {
-    refreshBatches();
+    setLoadingList(true);
+    refreshBatches().then(() => {
+        // Auto-select first if none selected
+        setBatches(prev => {
+            if (prev.length > 0 && !selectedBatchId) {
+                setSelectedBatchId(prev[0].id);
+            }
+            return prev;
+        });
+    });
   }, []);
 
   useEffect(() => {
@@ -105,7 +125,7 @@ const BulkImportPage: React.FC = () => {
   }, [selectedBatchId, taskStatusFilter]);
 
   const loadBatchDetail = async (batchId: string) => {
-    setLoadingDetail(true);
+    // Don't set loadingDetail on every poll to avoid UI flicker
     try {
       const [batch, jobsResponse, tasksResponse, eventsResponse] = await Promise.all([
         getBulkImportBatch(batchId),
@@ -118,25 +138,24 @@ const BulkImportPage: React.FC = () => {
       setTasks(tasksResponse);
       setEvents(eventsResponse);
     } catch (e) {
-      error('Failed to load batch detail');
-    } finally {
-      setLoadingDetail(false);
+      console.error('Failed to load batch detail', e);
     }
   };
 
   const handleCreate = async () => {
-    if (!manifestPath.trim()) {
-      error('Provide a manifest path');
+    if (!selectedFile) {
+      error('Select a CSV file first');
       return;
     }
     setCreating(true);
     try {
-      const created = await createBulkImportBatch(manifestPath.trim());
-      success('Batch created');
+      const created = await uploadBulkImportFile(selectedFile);
+      success('Batch created from upload');
       await refreshBatches();
       setSelectedBatchId(created.id);
+      setSelectedFile(null); // Reset input
     } catch (e) {
-      error('Failed to create batch');
+      error('Failed to create batch: ' + (e as Error).message);
     } finally {
       setCreating(false);
     }
@@ -174,23 +193,23 @@ const BulkImportPage: React.FC = () => {
       <div className="bg-white border border-border-light rounded-xl shadow-sm p-4 md:p-6 flex flex-col gap-4">
         <div className="flex flex-col md:flex-row md:items-end gap-3">
           <div className="flex-1">
-            <label className="text-xs font-semibold text-ink-600 mb-1 block">Manifest Path</label>
+            <label className="text-xs font-semibold text-ink-600 mb-1 block">Upload CSV Manifest</label>
             <input
-              value={manifestPath}
-              onChange={e => setManifestPath(e.target.value)}
-              placeholder={DEFAULT_MANIFEST_PATH}
-              className="w-full px-3 py-2 rounded-lg border border-border-light focus:ring-2 focus:ring-primary focus:border-transparent"
+              type="file"
+              accept=".csv"
+              onChange={e => setSelectedFile(e.target.files?.[0] || null)}
+              className="w-full px-3 py-2 rounded-lg border border-border-light text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary-light file:text-primary hover:file:bg-primary-light/80"
             />
             <p className="text-[11px] text-ink-400 mt-1">
-              Example: database/for_import/*.csv — tasks will be generated per row.
+              Select a CSV file with columns: Krithi, Raga, Hyperlink.
             </p>
           </div>
           <button
             onClick={handleCreate}
-            disabled={creating}
+            disabled={creating || !selectedFile}
             className="px-4 py-2.5 bg-primary text-white rounded-lg font-medium shadow-sm hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {creating ? 'Starting…' : 'Start Batch'}
+            {creating ? 'Uploading…' : 'Start Import'}
           </button>
         </div>
       </div>

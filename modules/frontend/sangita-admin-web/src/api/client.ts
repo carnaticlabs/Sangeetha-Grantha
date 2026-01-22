@@ -370,6 +370,28 @@ export const createBulkImportBatch = (sourceManifestPath: string) => {
     });
 };
 
+export const uploadBulkImportFile = async (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const token = getAuthToken();
+    const headers: Record<string, string> = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    const response = await fetch(`${API_BASE_URL}/admin/bulk-import/upload`, {
+        method: 'POST',
+        headers,
+        body: formData,
+    });
+
+    if (!response.ok) {
+        const errorBody = await response.text();
+        throw new Error(`Upload Error ${response.status}: ${errorBody || response.statusText}`);
+    }
+
+    return response.json() as Promise<ImportBatch>;
+};
+
 export const listBulkImportBatches = (status?: BulkBatchStatus, limit = 20, offset = 0) => {
     const params = new URLSearchParams();
     if (status) params.append('status', status);
