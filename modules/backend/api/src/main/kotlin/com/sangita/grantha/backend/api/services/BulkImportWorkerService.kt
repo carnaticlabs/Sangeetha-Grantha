@@ -22,6 +22,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -70,6 +71,10 @@ class BulkImportWorkerService(
     private var globalWindow = RateWindow()
     private val perDomainWindows = mutableMapOf<String, RateWindow>()
 
+    // Channels for push-based architecture
+    private val manifestChannel = Channel<ImportTaskRunDto>(capacity = 5)
+    private val scrapeChannel = Channel<ImportTaskRunDto>(capacity = 20)
+    private val resolutionChannel = Channel<ImportTaskRunDto>(capacity = 20)
 
     private var scope: CoroutineScope? = null
 
@@ -78,19 +83,24 @@ class BulkImportWorkerService(
         val workerScope = CoroutineScope(SupervisorJob() + Dispatchers.IO + CoroutineName("BulkImportWorkers"))
         scope = workerScope
 
+        // Start single Unified Dispatcher
+        workerScope.launch(CoroutineName("BulkImportDispatcher")) {
+            runDispatcherLoop(config)
+        }
+
         repeat(config.manifestWorkerCount) { idx ->
             workerScope.launch(CoroutineName("BulkImportManifestWorker-$idx")) {
-                runManifestIngestLoop(config)
+                processManifestLoop(config)
             }
         }
         repeat(config.scrapeWorkerCount) { idx ->
             workerScope.launch(CoroutineName("BulkImportScrapeWorker-$idx")) {
-                runScrapeLoop(config)
+                processScrapeLoop(config)
             }
         }
         repeat(config.resolutionWorkerCount) { idx ->
             workerScope.launch(CoroutineName("BulkImportResolutionWorker-$idx")) {
-                runEntityResolutionLoop(config)
+                processEntityResolutionLoop(config)
             }
         }
 
@@ -129,23 +139,61 @@ class BulkImportWorkerService(
         val hyperlink: String,
     )
 
-    private suspend fun runManifestIngestLoop(config: WorkerConfig) {
+    private suspend fun runDispatcherLoop(config: WorkerConfig) {
         var currentDelay = config.pollIntervalMs
         while (scope?.isActive == true) {
-            val tasks = dal.bulkImport.claimNextPendingTasks(
+            var anyTaskFound = false
+
+            // 1. Manifest
+            val manifestTasks = dal.bulkImport.claimNextPendingTasks(
                 jobType = JobType.MANIFEST_INGEST,
                 allowedBatchStatuses = setOf(BatchStatus.PENDING, BatchStatus.RUNNING),
-                limit = 1 // Manifest jobs are rare and heavy, keep at 1
+                limit = 1
             )
-
-            if (tasks.isEmpty()) {
-                delay(currentDelay)
-                currentDelay = computeBackoff(currentDelay, false, config)
-                continue
+            if (manifestTasks.isNotEmpty()) {
+                anyTaskFound = true
+                manifestTasks.forEach { manifestChannel.send(it) }
             }
 
-            currentDelay = config.pollIntervalMs
-            tasks.forEach { processManifestTask(it, config) }
+            // 2. Scrape
+            val scrapeTasks = dal.bulkImport.claimNextPendingTasks(
+                jobType = JobType.SCRAPE,
+                allowedBatchStatuses = setOf(BatchStatus.RUNNING),
+                limit = config.batchClaimSize
+            )
+            if (scrapeTasks.isNotEmpty()) {
+                anyTaskFound = true
+                scrapeTasks.forEach { scrapeChannel.send(it) }
+            }
+
+            // 3. Resolution
+            val resolutionTasks = dal.bulkImport.claimNextPendingTasks(
+                jobType = JobType.ENTITY_RESOLUTION,
+                allowedBatchStatuses = setOf(BatchStatus.RUNNING),
+                limit = config.batchClaimSize
+            )
+            if (resolutionTasks.isNotEmpty()) {
+                anyTaskFound = true
+                resolutionTasks.forEach { resolutionChannel.send(it) }
+            }
+
+            // Adaptive Backoff
+            if (anyTaskFound) {
+                currentDelay = config.pollIntervalMs
+                // Don't delay if we found work? Or small delay to yield?
+                // If we found work, we might want to poll again immediately (burst).
+                // But we must respect `pollIntervalMs` to not hammer DB if channels drain fast.
+                delay(config.pollIntervalMs)
+            } else {
+                delay(currentDelay)
+                currentDelay = computeBackoff(currentDelay, false, config)
+            }
+        }
+    }
+
+    private suspend fun processManifestLoop(config: WorkerConfig) {
+        for (task in manifestChannel) {
+            processManifestTask(task, config)
         }
     }
 
@@ -288,23 +336,9 @@ class BulkImportWorkerService(
         dal.bulkImport.createEvent(refType = "batch", refId = job.batchId, eventType = "MANIFEST_INGEST_FAILED", data = errorJson)
     }
 
-    private suspend fun runScrapeLoop(config: WorkerConfig) {
-        var currentDelay = config.pollIntervalMs
-        while (scope?.isActive == true) {
-            val tasks = dal.bulkImport.claimNextPendingTasks(
-                jobType = JobType.SCRAPE,
-                allowedBatchStatuses = setOf(BatchStatus.RUNNING),
-                limit = config.batchClaimSize
-            )
-
-            if (tasks.isEmpty()) {
-                delay(currentDelay)
-                currentDelay = computeBackoff(currentDelay, false, config)
-                continue
-            }
-
-            currentDelay = config.pollIntervalMs
-            tasks.forEach { processScrapeTask(it, config) }
+    private suspend fun processScrapeLoop(config: WorkerConfig) {
+        for (task in scrapeChannel) {
+            processScrapeTask(task, config)
         }
     }
 
@@ -414,23 +448,9 @@ class BulkImportWorkerService(
         }
     }
 
-    private suspend fun runEntityResolutionLoop(config: WorkerConfig) {
-        var currentDelay = config.pollIntervalMs
-        while (scope?.isActive == true) {
-            val tasks = dal.bulkImport.claimNextPendingTasks(
-                jobType = JobType.ENTITY_RESOLUTION,
-                allowedBatchStatuses = setOf(BatchStatus.RUNNING),
-                limit = config.batchClaimSize
-            )
-
-            if (tasks.isEmpty()) {
-                delay(currentDelay)
-                currentDelay = computeBackoff(currentDelay, false, config)
-                continue
-            }
-
-            currentDelay = config.pollIntervalMs
-            tasks.forEach { processEntityResolutionTask(it, config) }
+    private suspend fun processEntityResolutionLoop(config: WorkerConfig) {
+        for (task in resolutionChannel) {
+            processEntityResolutionTask(task, config)
         }
     }
 
