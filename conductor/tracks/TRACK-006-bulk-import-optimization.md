@@ -21,7 +21,7 @@ Reduce database load by optimizing the worker polling mechanism while maintainin
 
 ### Phase 2: Architectural Improvements (Refactoring)
 - [x] **Unified Polling:** Replace individual worker polling loops with a single "Task Dispatcher" coroutine that queries the DB and distributes tasks to worker channels. (Completed via **TRACK-007**).
-- [ ] **Event-Driven Wakeup:** (Optional) Use Postgres `LISTEN/NOTIFY` or an in-memory signal to wake up the dispatcher immediately when a batch is created/resumed. (Deferred as Adaptive Polling is sufficient).
+- [x] **Event-Driven Wakeup:** (Optional) Use Postgres `LISTEN/NOTIFY` or an in-memory signal to wake up the dispatcher immediately when a batch is created/resumed. (Implemented in-memory signal).
 
 ## Technical Approach
 1.  **Backoff:** Simple `delay(currentInterval)` where `currentInterval` doubles on empty result, resets on success.

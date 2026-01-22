@@ -16,6 +16,7 @@ import kotlinx.serialization.json.Json
 
 class BulkImportOrchestrationService(
     private val dal: SangitaDal,
+    private val workerService: BulkImportWorkerService? = null,
 ) {
     @Serializable
     private data class ManifestJobPayload(
@@ -49,6 +50,8 @@ class BulkImportOrchestrationService(
             entityTable = "import_batch",
             entityId = batch.id
         )
+        
+        workerService?.wakeUp()
 
         return batch
     }
@@ -85,6 +88,9 @@ class BulkImportOrchestrationService(
 
         dal.bulkImport.createEvent(refType = "batch", refId = id, eventType = "BATCH_RESUMED")
         dal.auditLogs.append(action = "BULK_IMPORT_BATCH_RESUME", entityTable = "import_batch", entityId = id)
+        
+        workerService?.wakeUp()
+        
         return updated
     }
 
@@ -115,6 +121,11 @@ class BulkImportOrchestrationService(
             data = Json.encodeToString(mapOf("includeFailed" to includeFailed, "requeuedTasks" to updatedCount))
         )
         dal.auditLogs.append(action = "BULK_IMPORT_BATCH_RETRY", entityTable = "import_batch", entityId = id)
+        
+        if (updatedCount > 0) {
+            workerService?.wakeUp()
+        }
+        
         return updatedCount
     }
 }

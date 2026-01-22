@@ -46,19 +46,21 @@ fun main() {
     val auditLogService = AuditLogService(dal)
     val dashboardService = com.sangita.grantha.backend.api.services.AdminDashboardService(dal)
     val userManagementService = com.sangita.grantha.backend.api.services.UserManagementService(dal)
-    val bulkImportService = BulkImportOrchestrationService(dal)
 
     // AI Services
     val geminiApiClient = GeminiApiClient(env.geminiApiKey ?: "")
     val transliterationService = TransliterationService(geminiApiClient)
     val webScrapingService = WebScrapingService(geminiApiClient)
     val entityResolutionService = com.sangita.grantha.backend.api.services.EntityResolutionService(dal)
+    
     val bulkImportWorkerService = BulkImportWorkerService(
         dal = dal,
         importService = importService,
         webScrapingService = webScrapingService,
         entityResolutionService = entityResolutionService
     )
+    
+    val bulkImportService = BulkImportOrchestrationService(dal, bulkImportWorkerService)
 
     embeddedServer(Netty, host = env.host, port = env.port) {
         configureSerialization()

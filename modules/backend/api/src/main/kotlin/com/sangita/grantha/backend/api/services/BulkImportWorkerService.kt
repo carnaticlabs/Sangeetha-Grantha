@@ -28,6 +28,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -78,8 +79,15 @@ class BulkImportWorkerService(
     private var manifestChannel: Channel<ImportTaskRunDto>? = null
     private var scrapeChannel: Channel<ImportTaskRunDto>? = null
     private var resolutionChannel: Channel<ImportTaskRunDto>? = null
+    
+    // Signal channel for immediate wakeup (Conflated so we don't buffer multiple signals)
+    private val wakeUpChannel = Channel<Unit>(Channel.CONFLATED)
 
     private var scope: CoroutineScope? = null
+
+    fun wakeUp() {
+        wakeUpChannel.trySend(Unit)
+    }
 
     fun start(config: WorkerConfig = WorkerConfig()) {
         if (scope != null) return
@@ -203,16 +211,21 @@ class BulkImportWorkerService(
                 resolutionTasks.forEach { resolutionChannel.send(it) }
             }
 
-            // Adaptive Backoff
+            // Adaptive Backoff with Wakeup Support
             if (anyTaskFound) {
                 currentDelay = config.pollIntervalMs
-                // Don't delay if we found work? Or small delay to yield?
-                // If we found work, we might want to poll again immediately (burst).
-                // But we must respect `pollIntervalMs` to not hammer DB if channels drain fast.
                 delay(config.pollIntervalMs)
             } else {
-                delay(currentDelay)
-                currentDelay = computeBackoff(currentDelay, false, config)
+                val signal = withTimeoutOrNull(currentDelay) {
+                    wakeUpChannel.receive()
+                }
+                
+                if (signal != null) {
+                    currentDelay = config.pollIntervalMs // Reset backoff
+                    logger.debug("Dispatcher woke up by signal")
+                } else {
+                    currentDelay = computeBackoff(currentDelay, false, config)
+                }
             }
         }
     }
