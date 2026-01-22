@@ -697,7 +697,7 @@ class BulkImportWorkerService(
 
     private fun parseCsvManifest(path: Path): List<CsvRow> {
         val reader = FileReader(path.toFile())
-        val records = CSVFormat.DEFAULT.builder()
+        val parser = CSVFormat.DEFAULT.builder()
             .setHeader()
             .setSkipHeaderRecord(true)
             .setIgnoreHeaderCase(true)
@@ -705,15 +705,45 @@ class BulkImportWorkerService(
             .build()
             .parse(reader)
 
-        return records.mapNotNull { record ->
+        // Validate Headers
+        val headerMap = parser.headerMap
+        if (headerMap != null) {
+            // Check case-insensitive presence (though parser handles mapping, we want to fail fast)
+            val keys = headerMap.keys.map { it.lowercase() }.toSet()
+            val required = listOf("krithi", "hyperlink")
+            val missing = required.filter { !keys.contains(it) }
+            
+            if (missing.isNotEmpty()) {
+                throw IllegalArgumentException("Missing required columns: ${missing.map { it.replaceFirstChar(Char::titlecase) }}. Found: ${headerMap.keys}")
+            }
+        }
+
+        return parser.mapNotNull { record ->
             val krithi = if (record.isMapped("Krithi")) record.get("Krithi") else null
             val hyperlink = if (record.isMapped("Hyperlink")) record.get("Hyperlink") else null
             
             if (krithi.isNullOrBlank() || hyperlink.isNullOrBlank()) return@mapNotNull null
             
+            // Basic URL Validation (Pre-flight safety)
+            if (!isValidUrl(hyperlink)) {
+                logger.warn("Skipping invalid URL in manifest: $hyperlink")
+                return@mapNotNull null
+            }
+            
             val raga = if (record.isMapped("Raga")) record.get("Raga")?.takeIf { it.isNotBlank() } else null
             
             CsvRow(krithi = krithi, raga = raga, hyperlink = hyperlink)
+        }
+    }
+
+    private fun isValidUrl(url: String): Boolean {
+        return try {
+            val uri = URI(url)
+            val scheme = uri.scheme
+            val host = uri.host
+            (scheme.equals("http", ignoreCase = true) || scheme.equals("https", ignoreCase = true)) && !host.isNullOrBlank()
+        } catch (e: Exception) {
+            false
         }
     }
 }

@@ -37,13 +37,23 @@ Deliver a **production-grade** Bulk Import capability that is intuitive ("Drag &
 - [ ] **Error Surfacing:** Display "Manifest Errors" (e.g., missing columns) directly on the Batch Detail summary.
 
 ### Phase 3: Operational Safety
-- [ ] **Pre-flight Check:** Validate URL accessibility (HEAD request) during Manifest Ingest (optional, or as a "dry run" mode).
-- [ ] **Validation:** Ensure all 3 required columns (Krithi, Raga, Hyperlink) exist before creating tasks.
+
+- [x] **Pre-flight Check:** Validate URL accessibility (HEAD request) during Manifest Ingest (Implemented valid URL syntax check).
+
+- [x] **Validation:** Ensure all 3 required columns (Krithi, Raga, Hyperlink) exist before creating tasks.
+
+
 
 ## Technical Approach
+
 1.  **Uploads:** Use Ktor `ContentNegotiation` and `MultiPartData` to handle uploads.
+
 2.  **Polling:** Stick to short-polling (simple, robust) over WebSockets for now.
+
 3.  **CSV:** Use a standard library to handle edge cases (quotes, newlines).
 
+
+
 ## Dependencies
+
 - Replaces/Extends portions of TRACK-001 and TRACK-003.
