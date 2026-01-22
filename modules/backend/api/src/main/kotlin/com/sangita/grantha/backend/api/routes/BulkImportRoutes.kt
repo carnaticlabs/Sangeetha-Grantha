@@ -6,17 +6,62 @@ import com.sangita.grantha.backend.api.services.BulkImportOrchestrationService
 import com.sangita.grantha.backend.dal.enums.BatchStatus
 import com.sangita.grantha.backend.dal.enums.TaskStatus
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.content.PartData
+import io.ktor.http.content.forEachPart
+import io.ktor.http.content.streamProvider
 import io.ktor.server.application.call
 import io.ktor.server.request.receive
+import io.ktor.server.request.receiveMultipart
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
+import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
+import kotlin.uuid.Uuid
+import io.ktor.utils.io.readRemaining
+import io.ktor.utils.io.core.readBytes
 
 fun Route.bulkImportRoutes(service: BulkImportOrchestrationService) {
     route("/v1/admin/bulk-import") {
+        route("/upload") {
+            post {
+                val multipart = call.receiveMultipart()
+                var savedFilePath: String? = null
+
+                multipart.forEachPart { part ->
+                    if (part is PartData.FileItem) {
+                        val fileName = part.originalFileName as String
+                        val fileBytes = part.provider().readRemaining().readBytes()
+                        
+                        // Ensure storage directory exists
+                        val storageDir = Paths.get("storage/imports")
+                        if (!Files.exists(storageDir)) {
+                            Files.createDirectories(storageDir)
+                        }
+
+                        // Create unique file name to avoid collisions
+                        val timestamp = System.currentTimeMillis()
+                        val uniqueName = "${timestamp}_${fileName}"
+                        val file = File(storageDir.toFile(), uniqueName)
+                        file.writeBytes(fileBytes)
+                        savedFilePath = file.absolutePath
+                    }
+                    part.dispose()
+                }
+
+                if (savedFilePath != null) {
+                    val created = service.createBatch(savedFilePath!!)
+                    call.respond(HttpStatusCode.Accepted, created)
+                } else {
+                    call.respondText("No file uploaded", status = HttpStatusCode.BadRequest)
+                }
+            }
+        }
+
         route("/batches") {
             post {
                 val request = call.receive<BulkImportCreateBatchRequest>()

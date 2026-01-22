@@ -17,6 +17,7 @@ hikaricp = "7.0.2"
 logback = "1.5.20"
 logstashLogbackEncoder = "8.0"
 jwt = "4.5.0"
+commonsCsv = "1.10.0"
 
 shadow = "9.2.2"
 awsSdk = "2.29.0"
@@ -82,6 +83,7 @@ hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikaricp" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 logstash-logback-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version.ref = "logstashLogbackEncoder" }
 jwt-core = { module = "com.auth0:java-jwt", version.ref = "jwt" }
+commons-csv = { module = "org.apache.commons:commons-csv", version.ref = "commonsCsv" }
 
 google-auth = { module = "com.google.auth:google-auth-library-oauth2-http", version.ref = "googleAuth" }
 aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "awsSdk" }

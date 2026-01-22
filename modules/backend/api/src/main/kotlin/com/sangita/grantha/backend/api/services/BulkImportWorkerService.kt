@@ -8,6 +8,7 @@ import com.sangita.grantha.backend.dal.enums.TaskStatus
 import com.sangita.grantha.shared.domain.model.ImportJobDto
 import com.sangita.grantha.shared.domain.model.ImportTaskRunDto
 import com.sangita.grantha.shared.domain.model.JobTypeDto
+import java.io.FileReader
 import java.net.URI
 import java.nio.file.Files
 import java.nio.file.Path
@@ -30,6 +31,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.encodeToJsonElement
+import org.apache.commons.csv.CSVFormat
 import org.slf4j.LoggerFactory
 
 class BulkImportWorkerService(
@@ -626,57 +628,24 @@ class BulkImportWorkerService(
     }
 
     private fun parseCsvManifest(path: Path): List<CsvRow> {
-        val lines = Files.readAllLines(path)
-        if (lines.isEmpty()) return emptyList()
+        val reader = FileReader(path.toFile())
+        val records = CSVFormat.DEFAULT.builder()
+            .setHeader()
+            .setSkipHeaderRecord(true)
+            .setIgnoreHeaderCase(true)
+            .setTrim(true)
+            .build()
+            .parse(reader)
 
-        val header = parseCsvLine(lines.first())
-        val krithiIdx = header.indexOfFirst { it.equals("Krithi", ignoreCase = true) }.takeIf { it >= 0 } ?: 0
-        val ragaIdx = header.indexOfFirst { it.equals("Raga", ignoreCase = true) }.takeIf { it >= 0 } ?: 1
-        val hyperlinkIdx = header.indexOfFirst { it.equals("Hyperlink", ignoreCase = true) }.takeIf { it >= 0 } ?: 2
-
-        return lines.drop(1)
-            .asSequence()
-            .mapNotNull { line ->
-                if (line.isBlank()) return@mapNotNull null
-                val cols = parseCsvLine(line)
-                val krithi = cols.getOrNull(krithiIdx)?.trim().orEmpty()
-                val hyperlink = cols.getOrNull(hyperlinkIdx)?.trim().orEmpty()
-                if (krithi.isBlank() || hyperlink.isBlank()) return@mapNotNull null
-                val raga = cols.getOrNull(ragaIdx)?.trim()?.takeIf { it.isNotBlank() }
-                CsvRow(krithi = krithi, raga = raga, hyperlink = hyperlink)
-            }
-            .toList()
-    }
-
-    /**
-     * Minimal CSV parsing with support for quoted fields.
-     */
-    private fun parseCsvLine(line: String): List<String> {
-        val out = mutableListOf<String>()
-        val sb = StringBuilder()
-        var inQuotes = false
-        var i = 0
-        while (i < line.length) {
-            val c = line[i]
-            when {
-                c == '"' -> {
-                    // Escaped quote ("")
-                    if (inQuotes && i + 1 < line.length && line[i + 1] == '"') {
-                        sb.append('"')
-                        i++
-                    } else {
-                        inQuotes = !inQuotes
-                    }
-                }
-                c == ',' && !inQuotes -> {
-                    out.add(sb.toString())
-                    sb.setLength(0)
-                }
-                else -> sb.append(c)
-            }
-            i++
+        return records.mapNotNull { record ->
+            val krithi = if (record.isMapped("Krithi")) record.get("Krithi") else null
+            val hyperlink = if (record.isMapped("Hyperlink")) record.get("Hyperlink") else null
+            
+            if (krithi.isNullOrBlank() || hyperlink.isNullOrBlank()) return@mapNotNull null
+            
+            val raga = if (record.isMapped("Raga")) record.get("Raga")?.takeIf { it.isNotBlank() } else null
+            
+            CsvRow(krithi = krithi, raga = raga, hyperlink = hyperlink)
         }
-        out.add(sb.toString())
-        return out
     }
 }
