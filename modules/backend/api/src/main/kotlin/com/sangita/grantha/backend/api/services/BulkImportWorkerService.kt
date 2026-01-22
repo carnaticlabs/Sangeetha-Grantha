@@ -47,12 +47,21 @@ class BulkImportWorkerService(
         val scrapeWorkerCount: Int = 3,
         val resolutionWorkerCount: Int = 2,
         val pollIntervalMs: Long = 750,
+        val backoffMaxIntervalMs: Long = 15_000,
         val maxAttempts: Int = 3,
         val perDomainRateLimitPerMinute: Int = 12,
         val globalRateLimitPerMinute: Int = 50,
         val stuckTaskThresholdMs: Long = 10 * 60 * 1000, // 10 minutes
         val watchdogIntervalMs: Long = 60_000, // 1 minute
     )
+
+    private fun computeBackoff(currentDelay: Long, taskFound: Boolean, config: WorkerConfig): Long {
+        return if (taskFound) {
+            config.pollIntervalMs
+        } else {
+            (currentDelay * 2).coerceAtMost(config.backoffMaxIntervalMs)
+        }
+    }
 
     private data class RateWindow(var windowStartedAtMs: Long = 0, var count: Int = 0)
 
@@ -120,6 +129,7 @@ class BulkImportWorkerService(
     )
 
     private suspend fun runManifestIngestLoop(config: WorkerConfig) {
+        var currentDelay = config.pollIntervalMs
         while (scope?.isActive == true) {
             val task = dal.bulkImport.claimNextPendingTask(
                 jobType = JobType.MANIFEST_INGEST,
@@ -127,10 +137,12 @@ class BulkImportWorkerService(
             )
 
             if (task == null) {
-                delay(config.pollIntervalMs)
+                delay(currentDelay)
+                currentDelay = computeBackoff(currentDelay, false, config)
                 continue
             }
 
+            currentDelay = config.pollIntervalMs
             processManifestTask(task, config)
         }
     }
@@ -275,6 +287,7 @@ class BulkImportWorkerService(
     }
 
     private suspend fun runScrapeLoop(config: WorkerConfig) {
+        var currentDelay = config.pollIntervalMs
         while (scope?.isActive == true) {
             val task = dal.bulkImport.claimNextPendingTask(
                 jobType = JobType.SCRAPE,
@@ -282,10 +295,12 @@ class BulkImportWorkerService(
             )
 
             if (task == null) {
-                delay(config.pollIntervalMs)
+                delay(currentDelay)
+                currentDelay = computeBackoff(currentDelay, false, config)
                 continue
             }
 
+            currentDelay = config.pollIntervalMs
             processScrapeTask(task, config)
         }
     }
@@ -397,6 +412,7 @@ class BulkImportWorkerService(
     }
 
     private suspend fun runEntityResolutionLoop(config: WorkerConfig) {
+        var currentDelay = config.pollIntervalMs
         while (scope?.isActive == true) {
             val task = dal.bulkImport.claimNextPendingTask(
                 jobType = JobType.ENTITY_RESOLUTION,
@@ -404,10 +420,12 @@ class BulkImportWorkerService(
             )
 
             if (task == null) {
-                delay(config.pollIntervalMs)
+                delay(currentDelay)
+                currentDelay = computeBackoff(currentDelay, false, config)
                 continue
             }
 
+            currentDelay = config.pollIntervalMs
             processEntityResolutionTask(task, config)
         }
     }
