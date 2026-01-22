@@ -27,8 +27,8 @@ Transition to a **"Push-based" architecture** (Unified Polling) where a single *
 - [x] **Worker Refactor:** Convert worker loops to simply consume from their respective channels (`for (task in channel)`).
 
 ### Phase 2: Tuning & Safety
-- [ ] **Graceful Shutdown:** Ensure channels are closed and drained properly on stop.
-- [ ] **Capacity Management:** Tune channel buffer sizes (e.g., 20) to prevent memory bloat while keeping workers fed.
+- [x] **Graceful Shutdown:** Ensure channels are closed and drained properly on stop.
+- [x] **Capacity Management:** Tune channel buffer sizes (e.g., 20) to prevent memory bloat while keeping workers fed.
 
 ## Architecture Change
 **Before:**

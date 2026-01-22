@@ -50,6 +50,9 @@ class BulkImportWorkerService(
         val pollIntervalMs: Long = 750,
         val backoffMaxIntervalMs: Long = 15_000,
         val batchClaimSize: Int = 5,
+        val manifestChannelCapacity: Int = 5,
+        val scrapeChannelCapacity: Int = 20,
+        val resolutionChannelCapacity: Int = 20,
         val maxAttempts: Int = 3,
         val perDomainRateLimitPerMinute: Int = 12,
         val globalRateLimitPerMinute: Int = 50,
@@ -72,35 +75,44 @@ class BulkImportWorkerService(
     private val perDomainWindows = mutableMapOf<String, RateWindow>()
 
     // Channels for push-based architecture
-    private val manifestChannel = Channel<ImportTaskRunDto>(capacity = 5)
-    private val scrapeChannel = Channel<ImportTaskRunDto>(capacity = 20)
-    private val resolutionChannel = Channel<ImportTaskRunDto>(capacity = 20)
+    private var manifestChannel: Channel<ImportTaskRunDto>? = null
+    private var scrapeChannel: Channel<ImportTaskRunDto>? = null
+    private var resolutionChannel: Channel<ImportTaskRunDto>? = null
 
     private var scope: CoroutineScope? = null
 
     fun start(config: WorkerConfig = WorkerConfig()) {
         if (scope != null) return
+        
+        val mChannel = Channel<ImportTaskRunDto>(config.manifestChannelCapacity)
+        val sChannel = Channel<ImportTaskRunDto>(config.scrapeChannelCapacity)
+        val rChannel = Channel<ImportTaskRunDto>(config.resolutionChannelCapacity)
+        
+        manifestChannel = mChannel
+        scrapeChannel = sChannel
+        resolutionChannel = rChannel
+
         val workerScope = CoroutineScope(SupervisorJob() + Dispatchers.IO + CoroutineName("BulkImportWorkers"))
         scope = workerScope
 
         // Start single Unified Dispatcher
         workerScope.launch(CoroutineName("BulkImportDispatcher")) {
-            runDispatcherLoop(config)
+            runDispatcherLoop(config, mChannel, sChannel, rChannel)
         }
 
         repeat(config.manifestWorkerCount) { idx ->
             workerScope.launch(CoroutineName("BulkImportManifestWorker-$idx")) {
-                processManifestLoop(config)
+                processManifestLoop(config, mChannel)
             }
         }
         repeat(config.scrapeWorkerCount) { idx ->
             workerScope.launch(CoroutineName("BulkImportScrapeWorker-$idx")) {
-                processScrapeLoop(config)
+                processScrapeLoop(config, sChannel)
             }
         }
         repeat(config.resolutionWorkerCount) { idx ->
             workerScope.launch(CoroutineName("BulkImportResolutionWorker-$idx")) {
-                processEntityResolutionLoop(config)
+                processEntityResolutionLoop(config, rChannel)
             }
         }
 
@@ -115,6 +127,15 @@ class BulkImportWorkerService(
     fun stop() {
         scope?.cancel("Stopping bulk import workers")
         scope = null
+        
+        manifestChannel?.close()
+        scrapeChannel?.close()
+        resolutionChannel?.close()
+        
+        manifestChannel = null
+        scrapeChannel = null
+        resolutionChannel = null
+        
         logger.info("Bulk import workers stopped")
     }
 
@@ -139,7 +160,12 @@ class BulkImportWorkerService(
         val hyperlink: String,
     )
 
-    private suspend fun runDispatcherLoop(config: WorkerConfig) {
+    private suspend fun runDispatcherLoop(
+        config: WorkerConfig,
+        manifestChannel: Channel<ImportTaskRunDto>,
+        scrapeChannel: Channel<ImportTaskRunDto>,
+        resolutionChannel: Channel<ImportTaskRunDto>
+    ) {
         var currentDelay = config.pollIntervalMs
         while (scope?.isActive == true) {
             var anyTaskFound = false
@@ -191,8 +217,8 @@ class BulkImportWorkerService(
         }
     }
 
-    private suspend fun processManifestLoop(config: WorkerConfig) {
-        for (task in manifestChannel) {
+    private suspend fun processManifestLoop(config: WorkerConfig, channel: Channel<ImportTaskRunDto>) {
+        for (task in channel) {
             processManifestTask(task, config)
         }
     }
@@ -336,8 +362,8 @@ class BulkImportWorkerService(
         dal.bulkImport.createEvent(refType = "batch", refId = job.batchId, eventType = "MANIFEST_INGEST_FAILED", data = errorJson)
     }
 
-    private suspend fun processScrapeLoop(config: WorkerConfig) {
-        for (task in scrapeChannel) {
+    private suspend fun processScrapeLoop(config: WorkerConfig, channel: Channel<ImportTaskRunDto>) {
+        for (task in channel) {
             processScrapeTask(task, config)
         }
     }
@@ -448,8 +474,8 @@ class BulkImportWorkerService(
         }
     }
 
-    private suspend fun processEntityResolutionLoop(config: WorkerConfig) {
-        for (task in resolutionChannel) {
+    private suspend fun processEntityResolutionLoop(config: WorkerConfig, channel: Channel<ImportTaskRunDto>) {
+        for (task in channel) {
             processEntityResolutionTask(task, config)
         }
     }
