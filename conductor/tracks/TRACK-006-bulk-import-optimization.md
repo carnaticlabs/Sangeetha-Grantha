@@ -1,6 +1,6 @@
 # Track: Bulk Import - Performance Optimization
 **ID:** TRACK-006
-**Status:** In Progress
+**Status:** Completed
 **Owner:** Sangita Grantha Architect
 **Created:** 2026-01-22
 **Updated:** 2026-01-22
@@ -17,7 +17,7 @@ Reduce database load by optimizing the worker polling mechanism while maintainin
 ### Phase 1: Immediate Relief (Config & Indexing)
 - [x] **Adaptive Polling:** Implement exponential backoff for workers when no tasks are found (e.g., 750ms -> 1.5s -> 3s ... -> 15s max).
 - [x] **Batch Claiming:** Update `claimNextPendingTask` to claim multiple tasks (e.g., 5 or 10) in a single transaction if available.
-- [ ] **Index Verification:** Ensure optimal indices exist for the claim query: `(status, job_type, created_at)` on `import_task_run`.
+- [x] **Index Verification:** Ensure optimal indices exist for the claim query: `(status, job_type, created_at)` on `import_task_run`.
 
 ### Phase 2: Architectural Improvements (Refactoring)
 - [ ] **Unified Polling:** Replace individual worker polling loops with a single "Task Dispatcher" coroutine that queries the DB and distributes tasks to worker channels.
