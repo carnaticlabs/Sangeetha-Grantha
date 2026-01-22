@@ -48,6 +48,7 @@ class BulkImportWorkerService(
         val resolutionWorkerCount: Int = 2,
         val pollIntervalMs: Long = 750,
         val backoffMaxIntervalMs: Long = 15_000,
+        val batchClaimSize: Int = 5,
         val maxAttempts: Int = 3,
         val perDomainRateLimitPerMinute: Int = 12,
         val globalRateLimitPerMinute: Int = 50,
@@ -131,19 +132,20 @@ class BulkImportWorkerService(
     private suspend fun runManifestIngestLoop(config: WorkerConfig) {
         var currentDelay = config.pollIntervalMs
         while (scope?.isActive == true) {
-            val task = dal.bulkImport.claimNextPendingTask(
+            val tasks = dal.bulkImport.claimNextPendingTasks(
                 jobType = JobType.MANIFEST_INGEST,
-                allowedBatchStatuses = setOf(BatchStatus.PENDING, BatchStatus.RUNNING)
+                allowedBatchStatuses = setOf(BatchStatus.PENDING, BatchStatus.RUNNING),
+                limit = 1 // Manifest jobs are rare and heavy, keep at 1
             )
 
-            if (task == null) {
+            if (tasks.isEmpty()) {
                 delay(currentDelay)
                 currentDelay = computeBackoff(currentDelay, false, config)
                 continue
             }
 
             currentDelay = config.pollIntervalMs
-            processManifestTask(task, config)
+            tasks.forEach { processManifestTask(it, config) }
         }
     }
 
@@ -289,19 +291,20 @@ class BulkImportWorkerService(
     private suspend fun runScrapeLoop(config: WorkerConfig) {
         var currentDelay = config.pollIntervalMs
         while (scope?.isActive == true) {
-            val task = dal.bulkImport.claimNextPendingTask(
+            val tasks = dal.bulkImport.claimNextPendingTasks(
                 jobType = JobType.SCRAPE,
-                allowedBatchStatuses = setOf(BatchStatus.RUNNING)
+                allowedBatchStatuses = setOf(BatchStatus.RUNNING),
+                limit = config.batchClaimSize
             )
 
-            if (task == null) {
+            if (tasks.isEmpty()) {
                 delay(currentDelay)
                 currentDelay = computeBackoff(currentDelay, false, config)
                 continue
             }
 
             currentDelay = config.pollIntervalMs
-            processScrapeTask(task, config)
+            tasks.forEach { processScrapeTask(it, config) }
         }
     }
 
@@ -414,19 +417,20 @@ class BulkImportWorkerService(
     private suspend fun runEntityResolutionLoop(config: WorkerConfig) {
         var currentDelay = config.pollIntervalMs
         while (scope?.isActive == true) {
-            val task = dal.bulkImport.claimNextPendingTask(
+            val tasks = dal.bulkImport.claimNextPendingTasks(
                 jobType = JobType.ENTITY_RESOLUTION,
-                allowedBatchStatuses = setOf(BatchStatus.RUNNING)
+                allowedBatchStatuses = setOf(BatchStatus.RUNNING),
+                limit = config.batchClaimSize
             )
 
-            if (task == null) {
+            if (tasks.isEmpty()) {
                 delay(currentDelay)
                 currentDelay = computeBackoff(currentDelay, false, config)
                 continue
             }
 
             currentDelay = config.pollIntervalMs
-            processEntityResolutionTask(task, config)
+            tasks.forEach { processEntityResolutionTask(it, config) }
         }
     }
 

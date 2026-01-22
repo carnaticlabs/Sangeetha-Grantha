@@ -335,18 +335,16 @@ class BulkImportRepository {
     }
     
     /**
-     * Atomically claims the next pending task (sets it to RUNNING) and returns it.
-     *
-     * Implemented as "SELECT ... FOR UPDATE SKIP LOCKED" + "UPDATE" inside one DB transaction,
-     * to prevent multiple workers from taking the same task.
+     * Atomically claims the next batch of pending tasks (sets them to RUNNING) and returns them.
      */
-    suspend fun claimNextPendingTask(
+    suspend fun claimNextPendingTasks(
         jobType: JobType,
         allowedBatchStatuses: Set<BatchStatus> = setOf(BatchStatus.RUNNING),
-    ): ImportTaskRunDto? = DatabaseFactory.dbQuery {
+        limit: Int = 1,
+    ): List<ImportTaskRunDto> = DatabaseFactory.dbQuery {
         val now = OffsetDateTime.now(ZoneOffset.UTC)
 
-        val row = ImportTaskRunTable
+        val rows = ImportTaskRunTable
             .innerJoin(ImportJobTable, { ImportTaskRunTable.jobId }, { ImportJobTable.id })
             .innerJoin(ImportBatchTable, { ImportJobTable.batchId }, { ImportBatchTable.id })
             .selectAll()
@@ -354,14 +352,15 @@ class BulkImportRepository {
             .andWhere { ImportJobTable.jobType eq jobType }
             .andWhere { ImportBatchTable.status inList allowedBatchStatuses.toList() }
             .orderBy(ImportTaskRunTable.createdAt to SortOrder.ASC)
-            .limit(1)
+            .limit(limit)
             .forUpdate()
-            .singleOrNull()
-            ?: return@dbQuery null
+            .toList()
 
-        val taskId: Uuid = row[ImportTaskRunTable.id].value.toKotlinUuid()
+        if (rows.isEmpty()) return@dbQuery emptyList()
 
-        ImportTaskRunTable.update(where = { ImportTaskRunTable.id eq taskId.toJavaUuid() }) {
+        val taskIds = rows.map { it[ImportTaskRunTable.id].value }
+
+        ImportTaskRunTable.update(where = { ImportTaskRunTable.id inList taskIds }) {
             it[ImportTaskRunTable.status] = TaskStatus.RUNNING
             it[ImportTaskRunTable.startedAt] = now
             it[ImportTaskRunTable.updatedAt] = now
@@ -369,9 +368,8 @@ class BulkImportRepository {
 
         ImportTaskRunTable
             .selectAll()
-            .andWhere { ImportTaskRunTable.id eq taskId.toJavaUuid() }
+            .andWhere { ImportTaskRunTable.id inList taskIds }
             .map { it.toImportTaskRunDto() }
-            .singleOrNull()
     }
     
     suspend fun findTaskById(id: Uuid): ImportTaskRunDto? = DatabaseFactory.dbQuery {

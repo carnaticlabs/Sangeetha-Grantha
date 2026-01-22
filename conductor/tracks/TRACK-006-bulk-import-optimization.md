@@ -16,7 +16,7 @@ Reduce database load by optimizing the worker polling mechanism while maintainin
 
 ### Phase 1: Immediate Relief (Config & Indexing)
 - [x] **Adaptive Polling:** Implement exponential backoff for workers when no tasks are found (e.g., 750ms -> 1.5s -> 3s ... -> 15s max).
-- [ ] **Batch Claiming:** Update `claimNextPendingTask` to claim multiple tasks (e.g., 5 or 10) in a single transaction if available.
+- [x] **Batch Claiming:** Update `claimNextPendingTask` to claim multiple tasks (e.g., 5 or 10) in a single transaction if available.
 - [ ] **Index Verification:** Ensure optimal indices exist for the claim query: `(status, job_type, created_at)` on `import_task_run`.
 
 ### Phase 2: Architectural Improvements (Refactoring)
