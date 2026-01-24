@@ -42,7 +42,6 @@ fun main() {
     val krithiService = KrithiService(dal)
     val notationService = KrithiNotationService(dal)
     val referenceDataService = ReferenceDataService(dal)
-    val importService = ImportService(dal)
     val auditLogService = AuditLogService(dal)
     val dashboardService = com.sangita.grantha.backend.api.services.AdminDashboardService(dal)
     val userManagementService = com.sangita.grantha.backend.api.services.UserManagementService(dal)
@@ -51,13 +50,27 @@ fun main() {
     val geminiApiClient = GeminiApiClient(env.geminiApiKey ?: "")
     val transliterationService = TransliterationService(geminiApiClient)
     val webScrapingService = WebScrapingService(geminiApiClient)
-    val entityResolutionService = com.sangita.grantha.backend.api.services.EntityResolutionService(dal)
+    
+    val nameNormalizationService = com.sangita.grantha.backend.api.services.NameNormalizationService()
+    val entityResolutionService = com.sangita.grantha.backend.api.services.EntityResolutionService(dal, nameNormalizationService)
+    val deduplicationService = com.sangita.grantha.backend.api.services.DeduplicationService(dal, nameNormalizationService)
+    
+    // Create ImportService first (implements ImportReviewer interface)
+    val importService = ImportService(dal)
+    
+    // Create AutoApprovalService with ImportService as ImportReviewer (breaks circular dependency)
+    val autoApprovalService = com.sangita.grantha.backend.api.services.AutoApprovalService(importService)
+    
+    // Wire AutoApprovalService back into ImportService for getAutoApproveQueue filtering
+    importService.setAutoApprovalService(autoApprovalService)
     
     val bulkImportWorkerService = BulkImportWorkerService(
         dal = dal,
         importService = importService,
         webScrapingService = webScrapingService,
-        entityResolutionService = entityResolutionService
+        entityResolutionService = entityResolutionService,
+        deduplicationService = deduplicationService,
+        autoApprovalService = autoApprovalService
     )
     
     val bulkImportService = BulkImportOrchestrationService(dal, bulkImportWorkerService)

@@ -424,11 +424,48 @@ export const resumeBulkImportBatch = (id: string) =>
     request<ImportBatch>(`/admin/bulk-import/batches/${id}/resume`, { method: 'POST' });
 export const cancelBulkImportBatch = (id: string) =>
     request<ImportBatch>(`/admin/bulk-import/batches/${id}/cancel`, { method: 'POST' });
-export const retryBulkImportBatch = (id: string, includeFailed = true) =>
+export const retryBulkImportBatch = (id: String, includeFailed = true) =>
     request<{ requeuedTasks: number }>(`/admin/bulk-import/batches/${id}/retry`, {
         method: 'POST',
         body: JSON.stringify({ includeFailed }),
     });
+export const deleteBulkImportBatch = (id: String) =>
+    request<void>(`/admin/bulk-import/batches/${id}`, { method: 'DELETE' });
+export const approveAllInBulkImportBatch = (id: String) =>
+    request<void>(`/admin/bulk-import/batches/${id}/approve-all`, { method: 'POST' });
+export const rejectAllInBulkImportBatch = (id: String) =>
+    request<void>(`/admin/bulk-import/batches/${id}/reject-all`, { method: 'POST' });
+
+// TRACK-004: Finalize batch
+export const finalizeBulkImportBatch = (id: string) =>
+    request<{
+        batchId: string;
+        total: number;
+        approved: number;
+        rejected: number;
+        pending: number;
+        canFinalize: boolean;
+        avgQualityScore: number;
+        qualityTierCounts: Record<string, number>;
+        message: string;
+    }>(`/admin/bulk-import/batches/${id}/finalize`, { method: 'POST' });
+
+// TRACK-004: Export QA report
+export const exportBulkImportReport = async (id: string, format: 'json' | 'csv' = 'json'): Promise<Blob> => {
+    const token = getAuthToken();
+    const headers: Record<string, string> = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    const response = await fetch(`${API_BASE_URL}/admin/bulk-import/batches/${id}/export?format=${format}`, {
+        headers
+    });
+
+    if (!response.ok) {
+        throw new Error(`Export failed: ${response.statusText}`);
+    }
+
+    return response.blob();
+};
 
 // --- Deities API ---
 export const getDeity = (id: string) => {
@@ -498,6 +535,38 @@ export const reviewImport = (id: string, reviewRequest: { status: string; mapped
         method: 'POST',
         body: JSON.stringify(reviewRequest),
     });
+};
+
+// TRACK-012: Bulk review endpoint
+export const bulkReviewImports = (importIds: string[], action: 'APPROVE' | 'REJECT', overrides?: any | null, reason?: string | null) => {
+    return request<{
+        total: number;
+        succeeded: number;
+        failed: number;
+        results: Array<{ importId: string; status: string; error: string | null }>;
+    }>('/admin/imports/bulk-review', {
+        method: 'POST',
+        body: JSON.stringify({ importIds, action, overrides, reason }),
+    });
+};
+
+// TRACK-012: Auto-approve queue endpoint
+export const getAutoApproveQueue = (params?: {
+    batchId?: string;
+    qualityTier?: string;
+    confidenceMin?: number;
+    limit?: number;
+    offset?: number;
+}) => {
+    const searchParams = new URLSearchParams();
+    if (params?.batchId) searchParams.append('batchId', params.batchId);
+    if (params?.qualityTier) searchParams.append('qualityTier', params.qualityTier);
+    if (params?.confidenceMin !== undefined) searchParams.append('confidenceMin', String(params.confidenceMin));
+    if (params?.limit) searchParams.append('limit', String(params.limit));
+    if (params?.offset) searchParams.append('offset', String(params.offset));
+
+    const qs = searchParams.toString();
+    return request<ImportedKrithi[]>(`/admin/imports/auto-approve-queue${qs ? `?${qs}` : ''}`);
 };
 
 

@@ -742,4 +742,17 @@ class KrithiRepository {
     suspend fun countByState(state: WorkflowState): Long = DatabaseFactory.dbQuery {
         KrithisTable.selectAll().where { KrithisTable.workflowState eq state }.count()
     }
+
+    suspend fun findDuplicateCandidates(
+        titleNormalized: String,
+        composerId: UUID? = null,
+        ragaId: UUID? = null
+    ): List<KrithiDto> = DatabaseFactory.dbQuery {
+        val query = KrithisTable.selectAll()
+        query.andWhere { KrithisTable.titleNormalized eq titleNormalized }
+        composerId?.let { query.andWhere { KrithisTable.composerId eq it } }
+        ragaId?.let { query.andWhere { KrithisTable.primaryRagaId eq it } }
+        
+        query.map { it.toKrithiDto() }
+    }
 }

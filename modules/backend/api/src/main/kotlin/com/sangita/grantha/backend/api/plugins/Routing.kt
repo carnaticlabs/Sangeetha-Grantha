@@ -47,7 +47,7 @@ fun Application.configureRouting(
             adminKrithiRoutes(krithiService, transliterationService)
             adminNotationRoutes(notationService)
             importRoutes(importService, webScrapingService)
-            bulkImportRoutes(bulkImportService)
+            bulkImportRoutes(bulkImportService, importService)
             auditRoutes(auditLogService)
             referenceDataRoutes(referenceDataService)
             userManagementRoutes(userManagementService)

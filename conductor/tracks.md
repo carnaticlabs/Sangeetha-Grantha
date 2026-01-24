@@ -1,9 +1,20 @@
 # Conductor Tracks Registry
 
-| ID | Name | Status | Owner | Link |
-|:---|:---|:---|:---|:---|
-| TRACK-001 | Bulk Import - Backend Orchestration | In Progress | Sangita Grantha Architect | [Link](./tracks/TRACK-001-bulk-import-krithis.md) |
-| TRACK-002 | Doc Header Standardizations | Planned | Documentation Guardian | [Link](./tracks/TRACK-002-doc-header-standardizations.md) |
-| TRACK-003 | Bulk Import - Admin Dashboard | In Progress | Sangita Frontend Lead | [Link](./tracks/TRACK-003-bulk-import-dashboard.md) |
-| TRACK-004 | Bulk Import - Review UI | In Progress | Sangita Frontend Lead | [Link](./tracks/TRACK-004-bulk-import-review-ui.md) |
-| TRACK-005 | Bulk Import Revamp (Holistic Fix) | Planned | Sangita Grantha Architect | [Link](./tracks/TRACK-005-bulk-import-revamp.md) |
+| ID | Name | Status |
+|:---|:---|:---|
+| [TRACK-001](./tracks/TRACK-001-bulk-import-krithis.md) | Bulk Import - Backend Orchestration | In Progress |
+| [TRACK-002](./tracks/TRACK-002-doc-header-standardizations.md) | Doc Header Standardizations | Planned |
+| [TRACK-003](./tracks/TRACK-003-bulk-import-dashboard.md) | Bulk Import - Admin Dashboard | Completed |
+| [TRACK-004](./tracks/TRACK-004-bulk-import-review-ui.md) | Bulk Import - Review UI | Completed |
+| [TRACK-005](./tracks/TRACK-005-bulk-import-revamp.md) | Bulk Import Revamp (Holistic Fix) | Completed |
+| [TRACK-006](./tracks/TRACK-006-bulk-import-optimization.md) | Bulk Import - Performance Optimization | Completed |
+| [TRACK-007](./tracks/TRACK-007-bulk-import-architecture-refactor.md) | Bulk Import Architecture Refactor (Unified Dispatcher) | Completed |
+| [TRACK-008](./tracks/TRACK-008-entity-resolution-hardening.md) | Entity Resolution Hardening & Deduplication | Completed |
+| [TRACK-009](./tracks/TRACK-009-bulk-import-review-workflow.md) | Bulk Import Review Workflow & Auto-Approval | Completed |
+| [TRACK-010](./tracks/TRACK-010-bulk-import-critical-fixes-security.md) | Bulk Import Critical Fixes & Security Hardening | Completed |
+| [TRACK-011](./tracks/TRACK-011-bulk-import-quality-scoring-system.md) | Bulk Import Quality Scoring System | Completed |
+| [TRACK-012](./tracks/TRACK-012-bulk-import-review-workflow-completion.md) | Bulk Import Review Workflow Completion | Completed |
+| [TRACK-013](./tracks/TRACK-013-bulk-import-performance-scalability.md) | Bulk Import Performance & Scalability Improvements | Completed |
+| [TRACK-014](./tracks/TRACK-014-bulk-import-testing-quality-assurance.md) | Bulk Import Testing & Quality Assurance | Proposed |
+
+## 3. Deprecated Tracks

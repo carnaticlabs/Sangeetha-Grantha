@@ -47,9 +47,18 @@ Build the backend orchestration engine for bulk importing Krithis. This includes
 - [ ] SLO monitoring and alerts
 - [ ] Performance tuning
 - [ ] Load test on ~1,240 entries
+- [x] **Duplicate Entity Fix:** Implemented `findOrCreate` for Composers, Ragas, and Talas to prevent race conditions during review.
+- [x] **Batch Cleanup:** Added `DELETE /batches/{id}` endpoint and UI control for managing stuck/test batches.
+- [x] **Error Handling:** Improved error reporting in `reviewImport` to return meaningful messages instead of 500s.
 
 ## Progress Log
 *(Previous logs preserved)*
+
+### 2026-01-22: Hardening & Cleanup
+- ✅ Investigated `talas_name_normalized_uq` error in logs.
+- ✅ Implemented `findOrCreate` in `TalaRepository`, `RagaRepository`, `ComposerRepository` to handle race conditions safely.
+- ✅ Wrapped `ImportService.reviewImport` in try-catch to provide user-friendly error messages.
+- ✅ Added `DELETE /v1/admin/bulk-import/batches/{id}` endpoint and corresponding "Delete" button in Admin UI.
 
 ### 2026-01-21: Entity Resolution & Workers
 - ✅ Implemented `EntityResolutionService` with fuzzy matching (Levenshtein) for Composers, Ragas, Talas.

@@ -33,6 +33,8 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.encodeToJsonElement
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import org.apache.commons.csv.CSVFormat
 import org.slf4j.LoggerFactory
 
@@ -41,6 +43,9 @@ class BulkImportWorkerService(
     private val importService: ImportService,
     private val webScrapingService: WebScrapingService,
     private val entityResolutionService: EntityResolutionService,
+    private val deduplicationService: DeduplicationService,
+    private val autoApprovalService: AutoApprovalService,
+    private val qualityScoringService: QualityScoringService = QualityScoringService(),
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
@@ -55,8 +60,9 @@ class BulkImportWorkerService(
         val scrapeChannelCapacity: Int = 20,
         val resolutionChannelCapacity: Int = 20,
         val maxAttempts: Int = 3,
-        val perDomainRateLimitPerMinute: Int = 12,
-        val globalRateLimitPerMinute: Int = 50,
+        // TRACK-013: Tuned rate limits (was 12/50, now 60/120 for better throughput)
+        val perDomainRateLimitPerMinute: Int = 60,  // 1 req/sec per domain
+        val globalRateLimitPerMinute: Int = 120,    // 2 req/sec global
         val stuckTaskThresholdMs: Long = 10 * 60 * 1000, // 10 minutes
         val watchdogIntervalMs: Long = 60_000, // 1 minute
     )
@@ -73,7 +79,15 @@ class BulkImportWorkerService(
 
     private val rateLimiterMutex = Mutex()
     private var globalWindow = RateWindow()
-    private val perDomainWindows = mutableMapOf<String, RateWindow>()
+    // Fix: Use LRU cache with bounded size and TTL to prevent memory leak
+    // Max 100 entries or 1 hour TTL per domain window
+    private val perDomainWindows = object : LinkedHashMap<String, RateWindow>(100, 0.75f, true) {
+        override fun removeEldestEntry(eldest: Map.Entry<String, RateWindow>): Boolean {
+            val now = System.currentTimeMillis()
+            val age = now - eldest.value.windowStartedAtMs
+            return size > 100 || age > 3600_000 // Max 100 entries or 1 hour TTL
+        }
+    }
 
     // Channels for push-based architecture
     private var manifestChannel: Channel<ImportTaskRunDto>? = null
@@ -238,6 +252,8 @@ class BulkImportWorkerService(
 
     private suspend fun processManifestTask(task: ImportTaskRunDto, config: WorkerConfig) {
         val startedAt = OffsetDateTime.now(ZoneOffset.UTC)
+        // Mark execution start when the worker actually begins processing
+        dal.bulkImport.markTaskStarted(task.id, startedAt)
         val job: ImportJobDto = dal.bulkImport.findJobById(task.jobId)
             ?: run {
                 logger.warn("Manifest task {} has missing job {}", task.id, task.jobId)
@@ -330,14 +346,12 @@ class BulkImportWorkerService(
                 refType = "batch",
                 refId = batchId,
                 eventType = "MANIFEST_INGEST_SUCCEEDED",
-                data = Json.encodeToString(
-                    mapOf(
-                        "rows" to dedupedRows.size,
-                        "newTasks" to createdTasks.size,
-                        "totalTasks" to totalTasks,
-                        "manifestPath" to manifestPath
-                    )
-                )
+                data = kotlinx.serialization.json.buildJsonObject {
+                    put("rows", dedupedRows.size)
+                    put("newTasks", createdTasks.size)
+                    put("totalTasks", totalTasks)
+                    put("manifestPath", manifestPath)
+                }.toString()
             )
 
             dal.bulkImport.updateTaskStatus(
@@ -349,7 +363,11 @@ class BulkImportWorkerService(
             dal.bulkImport.updateJobStatus(
                 id = job.id,
                 status = TaskStatus.SUCCEEDED,
-                result = Json.encodeToString(mapOf("rows" to dedupedRows.size, "newTasks" to createdTasks.size, "totalTasks" to totalTasks)),
+                result = kotlinx.serialization.json.buildJsonObject {
+                    put("rows", dedupedRows.size)
+                    put("newTasks", createdTasks.size)
+                    put("totalTasks", totalTasks)
+                }.toString(),
                 completedAt = OffsetDateTime.now(ZoneOffset.UTC)
             )
         } catch (e: Exception) {
@@ -373,6 +391,9 @@ class BulkImportWorkerService(
         )
         dal.bulkImport.updateJobStatus(id = job.id, status = TaskStatus.FAILED, result = errorJson, completedAt = now)
         dal.bulkImport.createEvent(refType = "batch", refId = job.batchId, eventType = "MANIFEST_INGEST_FAILED", data = errorJson)
+        // If manifest ingest fails (including zero-task scenarios), the whole batch
+        // must be marked FAILED to satisfy the clarified requirements.
+        dal.bulkImport.updateBatchStatus(id = job.batchId, status = BatchStatus.FAILED, completedAt = now)
     }
 
     private suspend fun processScrapeLoop(config: WorkerConfig, channel: Channel<ImportTaskRunDto>) {
@@ -383,6 +404,8 @@ class BulkImportWorkerService(
 
     private suspend fun processScrapeTask(task: ImportTaskRunDto, config: WorkerConfig) {
         val startedAt = OffsetDateTime.now(ZoneOffset.UTC)
+        // Mark execution start when the worker actually begins processing
+        dal.bulkImport.markTaskStarted(task.id, startedAt)
 
         val job = dal.bulkImport.findJobById(task.jobId)
             ?: run {
@@ -435,6 +458,7 @@ class BulkImportWorkerService(
             val importRequest = ImportKrithiRequest(
                 source = "BulkImportCSV",
                 sourceKey = url,
+                batchId = batchId.toString(),
                 rawTitle = scraped.title,
                 rawLyrics = scraped.lyrics,
                 rawComposer = scraped.composer,
@@ -495,6 +519,8 @@ class BulkImportWorkerService(
 
     private suspend fun processEntityResolutionTask(task: ImportTaskRunDto, config: WorkerConfig) {
         val startedAt = OffsetDateTime.now(ZoneOffset.UTC)
+        // Mark execution start when the worker actually begins processing
+        dal.bulkImport.markTaskStarted(task.id, startedAt)
         val job = dal.bulkImport.findJobById(task.jobId)
             ?: run {
                 dal.bulkImport.updateTaskStatus(id = task.id, status = TaskStatus.FAILED, error = """{"message":"Missing job"}""")
@@ -526,6 +552,45 @@ class BulkImportWorkerService(
             val resolutionJson = Json.encodeToString(resolution)
             
             dal.imports.saveResolution(importedKrithi.id, resolutionJson)
+
+            // Step 2: Deduplication
+            val composerId = resolution.composerCandidates.firstOrNull { it.confidence == "HIGH" }?.entity?.id
+            val ragaId = resolution.ragaCandidates.firstOrNull { it.confidence == "HIGH" }?.entity?.id
+            
+            val duplicates = deduplicationService.findDuplicates(
+                imported = importedKrithi,
+                resolvedComposerId = composerId,
+                resolvedRagaId = ragaId
+            )
+            
+            if (duplicates.matches.isNotEmpty()) {
+                val duplicatesJson = Json.encodeToString(duplicates)
+                dal.imports.saveDuplicates(importedKrithi.id, duplicatesJson)
+            }
+
+            // Step 3: Quality Scoring (TRACK-011)
+            val updatedImported = dal.imports.findById(importedKrithi.id)
+            if (updatedImported != null) {
+                val qualityScore = qualityScoringService.calculateQualityScore(
+                    imported = updatedImported,
+                    resolutionDataJson = resolutionJson
+                )
+                dal.imports.updateQualityScores(
+                    id = updatedImported.id,
+                    qualityScore = qualityScore.overall,
+                    qualityTier = qualityScore.tier.name,
+                    completenessScore = qualityScore.completeness,
+                    resolutionConfidence = qualityScore.resolutionConfidence,
+                    sourceQuality = qualityScore.sourceQuality,
+                    validationScore = qualityScore.validationScore
+                )
+            }
+
+            // Step 4: Auto-Approval
+            val finalImported = dal.imports.findById(importedKrithi.id)
+            if (finalImported != null) {
+                autoApprovalService.autoApproveIfHighConfidence(finalImported)
+            }
             
             dal.bulkImport.updateTaskStatus(
                 id = task.id,
@@ -550,6 +615,15 @@ class BulkImportWorkerService(
 
     private suspend fun checkAndTriggerNextStage(jobId: kotlin.uuid.Uuid) {
         val job = dal.bulkImport.findJobById(jobId) ?: return
+        val batch = dal.bulkImport.findBatchById(job.batchId) ?: return
+        
+        // TRACK-013: Use batch counters instead of loading all tasks (O(1) instead of O(N))
+        // Only verify completion if counters suggest it's possible
+        if (batch.processedTasks < batch.totalTasks) {
+            return // Not complete yet, skip expensive task loading
+        }
+        
+        // Only load tasks if counters suggest completion (defensive check)
         val tasks = dal.bulkImport.listTasksByJob(jobId)
         val isComplete = tasks.all { 
             val s = TaskStatus.valueOf(it.status.name)
@@ -635,13 +709,18 @@ class BulkImportWorkerService(
             val waitMs = rateLimiterMutex.withLock {
                 val now = System.currentTimeMillis()
                 val globalWait = computeWait(globalWindow, now, config.globalRateLimitPerMinute)
-                val domainWindow = perDomainWindows.getOrPut(host) { RateWindow(windowStartedAtMs = now, count = 0) }
+                // Fix: Synchronized access to LRU map
+                val domainWindow = synchronized(perDomainWindows) {
+                    perDomainWindows.getOrPut(host) { RateWindow(windowStartedAtMs = now, count = 0) }
+                }
                 val domainWait = computeWait(domainWindow, now, config.perDomainRateLimitPerMinute)
                 val maxWait = max(globalWait, domainWait)
                 if (maxWait <= 0) {
                     incrementWindow(globalWindow, now)
                     incrementWindow(domainWindow, now)
-                    perDomainWindows[host] = domainWindow
+                    synchronized(perDomainWindows) {
+                        perDomainWindows[host] = domainWindow
+                    }
                     return
                 }
                 maxWait
@@ -709,43 +788,49 @@ class BulkImportWorkerService(
     }
 
     private fun parseCsvManifest(path: Path): List<CsvRow> {
-        val reader = FileReader(path.toFile())
-        val parser = CSVFormat.DEFAULT.builder()
-            .setHeader()
-            .setSkipHeaderRecord(true)
-            .setIgnoreHeaderCase(true)
-            .setTrim(true)
-            .build()
-            .parse(reader)
+        // Use explicit UTF-8 charset and ensure the file handle is always closed.
+        path.toFile().bufferedReader(Charsets.UTF_8).use { reader ->
+            val parser = CSVFormat.DEFAULT.builder()
+                .setHeader()
+                .setSkipHeaderRecord(true)
+                .setIgnoreHeaderCase(true)
+                .setTrim(true)
+                .build()
+                .parse(reader)
 
-        // Validate Headers
-        val headerMap = parser.headerMap
-        if (headerMap != null) {
-            // Check case-insensitive presence (though parser handles mapping, we want to fail fast)
-            val keys = headerMap.keys.map { it.lowercase() }.toSet()
-            val required = listOf("krithi", "hyperlink")
-            val missing = required.filter { !keys.contains(it) }
-            
-            if (missing.isNotEmpty()) {
-                throw IllegalArgumentException("Missing required columns: ${missing.map { it.replaceFirstChar(Char::titlecase) }}. Found: ${headerMap.keys}")
-            }
-        }
+            // Validate Headers
+            val headerMap = parser.headerMap
+            if (headerMap != null) {
+                // Check case-insensitive presence (though parser handles mapping, we want to fail fast)
+                val keys = headerMap.keys.map { it.lowercase() }.toSet()
+                val required = listOf("krithi", "hyperlink")
+                val missing = required.filter { !keys.contains(it) }
 
-        return parser.mapNotNull { record ->
-            val krithi = if (record.isMapped("Krithi")) record.get("Krithi") else null
-            val hyperlink = if (record.isMapped("Hyperlink")) record.get("Hyperlink") else null
-            
-            if (krithi.isNullOrBlank() || hyperlink.isNullOrBlank()) return@mapNotNull null
-            
-            // Basic URL Validation (Pre-flight safety)
-            if (!isValidUrl(hyperlink)) {
-                logger.warn("Skipping invalid URL in manifest: $hyperlink")
-                return@mapNotNull null
+                if (missing.isNotEmpty()) {
+                    throw IllegalArgumentException(
+                        "Missing required columns: ${
+                            missing.map { it.replaceFirstChar(Char::titlecase) }
+                        }. Found: ${headerMap.keys}"
+                    )
+                }
             }
-            
-            val raga = if (record.isMapped("Raga")) record.get("Raga")?.takeIf { it.isNotBlank() } else null
-            
-            CsvRow(krithi = krithi, raga = raga, hyperlink = hyperlink)
+
+            return parser.mapNotNull { record ->
+                val krithi = if (record.isMapped("Krithi")) record.get("Krithi") else null
+                val hyperlink = if (record.isMapped("Hyperlink")) record.get("Hyperlink") else null
+
+                if (krithi.isNullOrBlank() || hyperlink.isNullOrBlank()) return@mapNotNull null
+
+                // Basic URL Validation (Pre-flight safety)
+                if (!isValidUrl(hyperlink)) {
+                    logger.warn("Skipping invalid URL in manifest: $hyperlink")
+                    return@mapNotNull null
+                }
+
+                val raga = if (record.isMapped("Raga")) record.get("Raga")?.takeIf { it.isNotBlank() } else null
+
+                CsvRow(krithi = krithi, raga = raga, hyperlink = hyperlink)
+            }
         }
     }
 

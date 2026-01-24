@@ -42,6 +42,35 @@ class RagaRepository {
             .singleOrNull()
     }
 
+    suspend fun findByNameNormalized(nameNormalized: String): RagaDto? = DatabaseFactory.dbQuery {
+        RagasTable
+            .selectAll()
+            .where { RagasTable.nameNormalized eq nameNormalized }
+            .map { it.toRagaDto() }
+            .singleOrNull()
+    }
+
+    suspend fun findOrCreate(
+        name: String,
+        nameNormalized: String? = null,
+        melakartaNumber: Int? = null,
+        parentRagaId: UUID? = null,
+        arohanam: String? = null,
+        avarohanam: String? = null,
+        notes: String? = null
+    ): RagaDto {
+        val normalized = nameNormalized ?: normalize(name)
+        
+        findByNameNormalized(normalized)?.let { return it }
+        findByName(name)?.let { return it }
+
+        return try {
+            create(name, normalized, melakartaNumber, parentRagaId, arohanam, avarohanam, notes)
+        } catch (e: Exception) {
+            findByNameNormalized(normalized) ?: findByName(name) ?: throw e
+        }
+    }
+
     suspend fun create(
         name: String,
         nameNormalized: String? = null,

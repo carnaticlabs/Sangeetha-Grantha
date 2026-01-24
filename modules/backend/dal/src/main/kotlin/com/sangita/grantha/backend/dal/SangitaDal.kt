@@ -4,6 +4,7 @@ import com.sangita.grantha.backend.dal.repositories.AuditLogRepository
 import com.sangita.grantha.backend.dal.repositories.BulkImportRepository
 import com.sangita.grantha.backend.dal.repositories.ComposerRepository
 import com.sangita.grantha.backend.dal.repositories.DeityRepository
+import com.sangita.grantha.backend.dal.repositories.EntityResolutionCacheRepository
 import com.sangita.grantha.backend.dal.repositories.ImportRepository
 import com.sangita.grantha.backend.dal.repositories.KrithiNotationRepository
 import com.sangita.grantha.backend.dal.repositories.KrithiRepository
@@ -28,4 +29,5 @@ class SangitaDal(
     val bulkImport: BulkImportRepository = BulkImportRepository(),
     val auditLogs: AuditLogRepository = AuditLogRepository(),
     val users: UserRepository = UserRepository(),
+    val entityResolutionCache: EntityResolutionCacheRepository = EntityResolutionCacheRepository(), // TRACK-013
 )

@@ -18,6 +18,7 @@ import com.sangita.grantha.backend.dal.tables.ImportJobTable
 import com.sangita.grantha.backend.dal.tables.ImportSourcesTable
 import com.sangita.grantha.backend.dal.tables.ImportTaskRunTable
 import com.sangita.grantha.backend.dal.tables.ImportedKrithisTable
+import com.sangita.grantha.backend.dal.tables.EntityResolutionCacheTable
 import com.sangita.grantha.backend.dal.tables.KrithisTable
 import com.sangita.grantha.backend.dal.tables.KrithiNotationRowsTable
 import com.sangita.grantha.backend.dal.tables.KrithiNotationVariantsTable
@@ -42,6 +43,7 @@ import com.sangita.grantha.shared.domain.model.ImportSourceDto
 import com.sangita.grantha.shared.domain.model.ImportStatusDto
 import com.sangita.grantha.shared.domain.model.ImportTaskRunDto
 import com.sangita.grantha.shared.domain.model.ImportedKrithiDto
+import com.sangita.grantha.shared.domain.model.EntityResolutionCacheDto
 import com.sangita.grantha.shared.domain.model.JobTypeDto
 import com.sangita.grantha.shared.domain.model.TaskStatusDto
 import com.sangita.grantha.shared.domain.model.KrithiDto
@@ -257,6 +259,7 @@ fun ResultRow.toImportSourceDto(): ImportSourceDto = ImportSourceDto(
 fun ResultRow.toImportedKrithiDto(): ImportedKrithiDto = ImportedKrithiDto(
     id = this[ImportedKrithisTable.id].value.toKotlinUuid(),
     importSourceId = this[ImportedKrithisTable.importSourceId].toKotlinUuid(),
+    importBatchId = this[ImportedKrithisTable.importBatchId]?.toKotlinUuid(),
     sourceKey = this[ImportedKrithisTable.sourceKey],
     rawTitle = this[ImportedKrithisTable.rawTitle],
     rawLyrics = this[ImportedKrithisTable.rawLyrics],
@@ -268,12 +271,20 @@ fun ResultRow.toImportedKrithiDto(): ImportedKrithiDto = ImportedKrithiDto(
     rawLanguage = this[ImportedKrithisTable.rawLanguage],
     parsedPayload = this[ImportedKrithisTable.parsedPayload],
     resolutionData = this[ImportedKrithisTable.resolutionData],
+    duplicateCandidates = this[ImportedKrithisTable.duplicateCandidates],
     importStatus = this[ImportedKrithisTable.importStatus].toDto(),
     mappedKrithiId = this[ImportedKrithisTable.mappedKrithiId]?.toKotlinUuid(),
     reviewerUserId = this[ImportedKrithisTable.reviewerUserId]?.toKotlinUuid(),
     reviewerNotes = this[ImportedKrithisTable.reviewerNotes],
     reviewedAt = this.kotlinInstantOrNull(ImportedKrithisTable.reviewedAt),
-    createdAt = this.kotlinInstant(ImportedKrithisTable.createdAt)
+    createdAt = this.kotlinInstant(ImportedKrithisTable.createdAt),
+    // TRACK-011: Quality scoring fields
+    qualityScore = this[ImportedKrithisTable.qualityScore]?.toDouble(),
+    qualityTier = this[ImportedKrithisTable.qualityTier],
+    completenessScore = this[ImportedKrithisTable.completenessScore]?.toDouble(),
+    resolutionConfidence = this[ImportedKrithisTable.resolutionConfidence]?.toDouble(),
+    sourceQuality = this[ImportedKrithisTable.sourceQuality]?.toDouble(),
+    validationScore = this[ImportedKrithisTable.validationScore]?.toDouble()
 )
 
 @OptIn(ExperimentalUuidApi::class)
@@ -383,4 +394,17 @@ fun ResultRow.toImportEventDto(): ImportEventDto = ImportEventDto(
     eventType = this[ImportEventTable.eventType],
     data = this[ImportEventTable.data],
     createdAt = this.kotlinInstant(ImportEventTable.createdAt)
+)
+
+// TRACK-013: Entity Resolution Cache Mapper
+@OptIn(ExperimentalUuidApi::class)
+fun ResultRow.toEntityResolutionCacheDto(): EntityResolutionCacheDto = EntityResolutionCacheDto(
+    id = this[EntityResolutionCacheTable.id].value.toKotlinUuid(),
+    entityType = this[EntityResolutionCacheTable.entityType],
+    rawName = this[EntityResolutionCacheTable.rawName],
+    normalizedName = this[EntityResolutionCacheTable.normalizedName],
+    resolvedEntityId = this[EntityResolutionCacheTable.resolvedEntityId].toKotlinUuid(),
+    confidence = this[EntityResolutionCacheTable.confidence],
+    createdAt = this.kotlinInstant(EntityResolutionCacheTable.createdAt),
+    updatedAt = this.kotlinInstant(EntityResolutionCacheTable.updatedAt)
 )

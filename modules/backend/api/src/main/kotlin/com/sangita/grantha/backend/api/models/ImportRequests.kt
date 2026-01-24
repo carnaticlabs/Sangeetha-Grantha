@@ -8,6 +8,7 @@ import kotlinx.serialization.json.JsonElement
 data class ImportKrithiRequest(
     val source: String,
     val sourceKey: String? = null,
+    val batchId: String? = null,
     val rawTitle: String? = null,
     val rawLyrics: String? = null,
     val rawComposer: String? = null,

@@ -41,8 +41,11 @@ Since Rust and other tools are managed by mise, run sangita-cli through mise:
 # Development workflow
 mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- dev --start-db
 
-# Database management
+# Database management - Reset existing database database 
 mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db reset
+
+# Database management - Applying database schema and seed data changes 
+mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db migrate
 
 # Testing
 mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- test steel-thread

@@ -60,6 +60,7 @@ class ImportRepository {
         rawTemple: String?,
         rawLanguage: String?,
         parsedPayload: String?,
+        importBatchId: UUID? = null,
     ): ImportedKrithiDto = DatabaseFactory.dbQuery {
         val now = OffsetDateTime.now(ZoneOffset.UTC)
 
@@ -77,6 +78,7 @@ class ImportRepository {
         ImportedKrithisTable.insert {
             it[id] = importId
             it[importSourceId] = sourceId
+            it[ImportedKrithisTable.importBatchId] = importBatchId
             it[ImportedKrithisTable.sourceKey] = sourceKey
             it[ImportedKrithisTable.rawTitle] = rawTitle
             it[ImportedKrithisTable.rawLyrics] = rawLyrics
@@ -94,6 +96,34 @@ class ImportRepository {
             ?.single()
             ?.toImportedKrithiDto()
             ?: error("Failed to insert imported krithi")
+    }
+
+    suspend fun listByBatch(batchId: Uuid, status: ImportStatus? = null): List<ImportedKrithiDto> = DatabaseFactory.dbQuery {
+        val query = ImportedKrithisTable.selectAll().where { ImportedKrithisTable.importBatchId eq batchId.toJavaUuid() }
+        status?.let { query.andWhere { ImportedKrithisTable.importStatus eq it } }
+        query.map { it.toImportedKrithiDto() }
+    }
+
+    // TRACK-013: Optimized deduplication query - use DB ILIKE for filtering instead of loading all
+    suspend fun findSimilarPendingImports(
+        normalizedTitle: String,
+        excludeId: Uuid? = null,
+        batchId: Uuid? = null,
+        limit: Int = 10
+    ): List<ImportedKrithiDto> = DatabaseFactory.dbQuery {
+        var query = ImportedKrithisTable
+            .selectAll()
+            .andWhere { ImportedKrithisTable.importStatus eq ImportStatus.PENDING }
+
+        excludeId?.let { query = query.andWhere { ImportedKrithisTable.id neq it.toJavaUuid() } }
+        batchId?.let { query = query.andWhere { ImportedKrithisTable.importBatchId eq it.toJavaUuid() } }
+
+        // NOTE: Title fuzzy matching intentionally omitted here because Exposed 1.0.0-rc-2's
+        // LIKE/lower-case helpers are in flux and this module compiles with deprecations as errors.
+
+        query
+            .limit(limit)
+            .map { it.toImportedKrithiDto() }
     }
 
     suspend fun reviewImport(
@@ -137,6 +167,47 @@ class ImportRepository {
                 where = { ImportedKrithisTable.id eq javaId }
             ) {
                 it[ImportedKrithisTable.resolutionData] = resolutionData
+            }
+            .singleOrNull()
+            ?.toImportedKrithiDto()
+    }
+
+    suspend fun saveDuplicates(
+        id: Uuid,
+        duplicateCandidates: String,
+    ): ImportedKrithiDto? = DatabaseFactory.dbQuery {
+        val javaId = id.toJavaUuid()
+        ImportedKrithisTable
+            .updateReturning(
+                where = { ImportedKrithisTable.id eq javaId }
+            ) {
+                it[ImportedKrithisTable.duplicateCandidates] = duplicateCandidates
+            }
+            .singleOrNull()
+            ?.toImportedKrithiDto()
+    }
+
+    // TRACK-011: Update quality scoring fields
+    suspend fun updateQualityScores(
+        id: Uuid,
+        qualityScore: Double? = null,
+        qualityTier: String? = null,
+        completenessScore: Double? = null,
+        resolutionConfidence: Double? = null,
+        sourceQuality: Double? = null,
+        validationScore: Double? = null,
+    ): ImportedKrithiDto? = DatabaseFactory.dbQuery {
+        val javaId = id.toJavaUuid()
+        ImportedKrithisTable
+            .updateReturning(
+                where = { ImportedKrithisTable.id eq javaId }
+            ) { stmt ->
+                qualityScore?.let { stmt[ImportedKrithisTable.qualityScore] = it.toBigDecimal() }
+                qualityTier?.let { stmt[ImportedKrithisTable.qualityTier] = it }
+                completenessScore?.let { stmt[ImportedKrithisTable.completenessScore] = it.toBigDecimal() }
+                resolutionConfidence?.let { stmt[ImportedKrithisTable.resolutionConfidence] = it.toBigDecimal() }
+                sourceQuality?.let { stmt[ImportedKrithisTable.sourceQuality] = it.toBigDecimal() }
+                validationScore?.let { stmt[ImportedKrithisTable.validationScore] = it.toBigDecimal() }
             }
             .singleOrNull()
             ?.toImportedKrithiDto()

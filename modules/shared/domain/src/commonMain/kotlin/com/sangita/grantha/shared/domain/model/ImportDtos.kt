@@ -25,6 +25,8 @@ data class ImportedKrithiDto(
     val id: Uuid,
     @Serializable(with = UuidSerializer::class)
     val importSourceId: Uuid,
+    @Serializable(with = UuidSerializer::class)
+    val importBatchId: Uuid? = null,
     val sourceKey: String? = null,
     val rawTitle: String? = null,
     val rawLyrics: String? = null,
@@ -36,6 +38,7 @@ data class ImportedKrithiDto(
     val rawLanguage: String? = null,
     val parsedPayload: String? = null, // JSON string; services can parse as needed
     val resolutionData: String? = null, // JSON string; entity resolution candidates
+    val duplicateCandidates: String? = null, // JSON string; duplicate detection results
     val importStatus: ImportStatusDto,
     @Serializable(with = UuidSerializer::class)
     val mappedKrithiId: Uuid? = null,
@@ -44,6 +47,13 @@ data class ImportedKrithiDto(
     val reviewerNotes: String? = null,
     val reviewedAt: Instant? = null,
     val createdAt: Instant,
+    // TRACK-011: Quality scoring fields
+    val qualityScore: Double? = null,
+    val qualityTier: String? = null,
+    val completenessScore: Double? = null,
+    val resolutionConfidence: Double? = null,
+    val sourceQuality: Double? = null,
+    val validationScore: Double? = null,
 )
 
 // Bulk Import Orchestration DTOs
@@ -123,4 +133,19 @@ data class ImportEventDto(
     val eventType: String,
     val data: String? = null, // JSON string
     val createdAt: Instant,
+)
+
+// TRACK-013: Entity Resolution Cache DTO
+@Serializable
+data class EntityResolutionCacheDto(
+    @Serializable(with = UuidSerializer::class)
+    val id: Uuid,
+    val entityType: String,
+    val rawName: String,
+    val normalizedName: String,
+    @Serializable(with = UuidSerializer::class)
+    val resolvedEntityId: Uuid,
+    val confidence: Int,
+    val createdAt: Instant,
+    val updatedAt: Instant,
 )

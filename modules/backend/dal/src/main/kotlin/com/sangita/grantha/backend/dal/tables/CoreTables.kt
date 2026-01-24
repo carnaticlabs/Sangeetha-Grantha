@@ -234,6 +234,7 @@ object ImportSourcesTable : UUIDTable("import_sources") {
 
 object ImportedKrithisTable : UUIDTable("imported_krithis") {
     val importSourceId = uuid("import_source_id")
+    val importBatchId = uuid("import_batch_id").nullable()
     val sourceKey = text("source_key").nullable()
     val rawTitle = text("raw_title").nullable()
     val rawLyrics = text("raw_lyrics").nullable()
@@ -245,11 +246,19 @@ object ImportedKrithisTable : UUIDTable("imported_krithis") {
     val rawLanguage = text("raw_language").nullable()
     val parsedPayload = jsonbText("parsed_payload").nullable()
     val resolutionData = jsonbText("resolution_data").nullable()
+    val duplicateCandidates = jsonbText("duplicate_candidates").nullable()
     val importStatus = pgEnum<ImportStatus>("import_status", ImportStatus.DB_TYPE)
     val mappedKrithiId = uuid("mapped_krithi_id").nullable()
     val reviewerUserId = uuid("reviewer_user_id").nullable()
     val reviewerNotes = text("reviewer_notes").nullable()
     val reviewedAt = timestampWithTimeZone("reviewed_at").nullable()
+    // TRACK-011: Quality scoring columns
+    val qualityScore = decimal("quality_score", 3, 2).nullable()
+    val qualityTier = varchar("quality_tier", 20).nullable()
+    val completenessScore = decimal("completeness_score", 3, 2).nullable()
+    val resolutionConfidence = decimal("resolution_confidence", 3, 2).nullable()
+    val sourceQuality = decimal("source_quality", 3, 2).nullable()
+    val validationScore = decimal("validation_score", 3, 2).nullable()
     val createdAt = timestampWithTimeZone("created_at")
 }
 
@@ -316,4 +325,15 @@ object ImportEventTable : UUIDTable("import_event") {
     val eventType = text("event_type")
     val data = jsonbText("data").nullable()
     val createdAt = timestampWithTimeZone("created_at")
+}
+
+// TRACK-013: Entity Resolution Cache Table
+object EntityResolutionCacheTable : UUIDTable("entity_resolution_cache") {
+    val entityType = varchar("entity_type", 50)
+    val rawName = text("raw_name")
+    val normalizedName = text("normalized_name")
+    val resolvedEntityId = uuid("resolved_entity_id")
+    val confidence = integer("confidence")
+    val createdAt = timestampWithTimeZone("created_at")
+    val updatedAt = timestampWithTimeZone("updated_at")
 }

@@ -1,7 +1,9 @@
----
-name: commit-policy
-description: Enforces commit guardrails ensuring traceability and security.
----
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 1.0.0 |
+| **Last Updated** | 2026-01-24 |
+| **Author** | Sangeetha Grantha Team |
 
 # Commit Policy
 

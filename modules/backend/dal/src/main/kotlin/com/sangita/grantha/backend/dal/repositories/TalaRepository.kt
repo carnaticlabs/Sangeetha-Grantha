@@ -42,6 +42,38 @@ class TalaRepository {
             .singleOrNull()
     }
 
+    suspend fun findByNameNormalized(nameNormalized: String): TalaDto? = DatabaseFactory.dbQuery {
+        TalasTable
+            .selectAll()
+            .where { TalasTable.nameNormalized eq nameNormalized }
+            .map { it.toTalaDto() }
+            .singleOrNull()
+    }
+
+    suspend fun findOrCreate(
+        name: String,
+        nameNormalized: String? = null,
+        beatCount: Int? = null,
+        angaStructure: String? = null,
+        notes: String? = null
+    ): TalaDto {
+        val normalized = nameNormalized ?: normalize(name)
+        
+        // Try finding by normalized name first (most robust)
+        findByNameNormalized(normalized)?.let { return it }
+        
+        // Try finding by exact name as fallback
+        findByName(name)?.let { return it }
+
+        // Attempt create, handling potential race condition
+        return try {
+            create(name, normalized, beatCount, angaStructure, notes)
+        } catch (e: Exception) {
+            // If duplicate violation, try finding again
+            findByNameNormalized(normalized) ?: findByName(name) ?: throw e
+        }
+    }
+
     suspend fun create(
         name: String,
         nameNormalized: String? = null,

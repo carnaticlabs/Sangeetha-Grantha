@@ -42,6 +42,34 @@ class ComposerRepository {
             .singleOrNull()
     }
 
+    suspend fun findByNameNormalized(nameNormalized: String): ComposerDto? = DatabaseFactory.dbQuery {
+        ComposersTable
+            .selectAll()
+            .where { ComposersTable.nameNormalized eq nameNormalized }
+            .map { it.toComposerDto() }
+            .singleOrNull()
+    }
+
+    suspend fun findOrCreate(
+        name: String,
+        nameNormalized: String? = null,
+        birthYear: Int? = null,
+        deathYear: Int? = null,
+        place: String? = null,
+        notes: String? = null
+    ): ComposerDto {
+        val normalized = nameNormalized ?: normalize(name)
+        
+        findByNameNormalized(normalized)?.let { return it }
+        findByName(name)?.let { return it }
+
+        return try {
+            create(name, normalized, birthYear, deathYear, place, notes)
+        } catch (e: Exception) {
+            findByNameNormalized(normalized) ?: findByName(name) ?: throw e
+        }
+    }
+
     suspend fun create(
         name: String,
         nameNormalized: String? = null,
