@@ -1,3 +1,10 @@
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 1.0.0 |
+| **Last Updated** | 2026-01-24 |
+| **Author** | Sangeetha Grantha Team |
+
 # Import Pipeline Technical Implementation Guide
 
 | Metadata | Value |
@@ -17,205 +24,122 @@
 
 This document provides concrete technical implementation guidance for building the Krithi import pipeline. It includes code examples, architecture patterns, and step-by-step implementation recommendations.
 
+### 1.1 Clarified Requirements (2026-01)
+
+- The CSV `Raga` column is optional at ingest; scraped raga values are authoritative. CSV raga is only for authoring-time validation.
+- URL validation during manifest ingest is syntax-only (no HEAD/GET requirement).
+- If scraping fails after data is presented to the user, discard CSV-seeded metadata and require a new batch.
+- Manifest ingest failures must mark the batch as `FAILED`, even if zero tasks were created.
+
 ---
 
 ## 2. Architecture Overview
 
-### 2.1 Service Layer Architecture
+### 2.1 Service Layer Architecture (v2 - Unified Dispatcher)
+
+The architecture has evolved to a **Push-based Unified Dispatcher** pattern (TRACK-007) to optimize database load and scalability.
 
 ```
 ┌─────────────────────────────────────────────────────┐
 │              Import API Routes                        │
-│  POST /v1/admin/imports/sources/{id}/scrape         │
-│  POST /v1/admin/imports/batch                        │
-│  GET  /v1/admin/imports/batches/{id}/status         │
+│  POST /v1/admin/bulk-import/upload                  │
+│  POST /v1/admin/bulk-import/batches/{id}/retry      │
 └──────────────────────┬──────────────────────────────┘
                        │
 ┌──────────────────────▼──────────────────────────────┐
-│         ImportPipelineService                       │
-│  (Orchestrates import workflow)                     │
-└──────┬──────────┬──────────┬──────────┬───────────┘
-       │          │          │          │
-       ▼          ▼          ▼          ▼
-┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐
-│ Scraping│ │Extraction│ │  Entity  │ │Validation│
-│ Service │ │ Service  │ │Resolver  │ │ Service  │
-└─────────┘ └──────────┘ └──────────┘ └──────────┘
-       │          │          │          │
-       └──────────┴──────────┴──────────┘
-                   │
-       ┌───────────▼───────────┐
-       │    Repositories       │
-       │  (DAL Layer)          │
-       └───────────────────────┘
+│       BulkImportOrchestrationService                │
+│  (Batch Lifecycle, State Management)                │
+└──────────────────────┬──────────────────────────────┘
+                       │ (Signals)
+┌──────────────────────▼──────────────────────────────┐
+│         BulkImportWorkerService                     │
+│  (Background Workers)                               │
+│                                                     │
+│  ┌───────────────────────────────────────────────┐  │
+│  │           Unified Dispatcher Loop             │  │
+│  │ (Polls DB -> Pushes to Channels)              │  │
+│  └──────┬──────────────┬──────────────┬──────────┘  │
+│         │              │              │             │
+│         ▼              ▼              ▼             │
+│  ┌────────────┐  ┌────────────┐  ┌────────────┐     │
+│  │ Manifest   │  │ Scrape     │  │ Resolution │     │
+│  │ Channel    │  │ Channel    │  │ Channel    │     │
+│  └──────┬─────┘  └─────┬──────┘  └─────┬──────┘     │
+│         │              │               │            │
+│         ▼              ▼               ▼            │
+│  [ManifestWorker] [ScrapeWorker]  [Res.Worker]      │
+└─────────────────────────────────────────────────────┘
 ```
+
+**Key Optimizations (TRACK-006):**
+- **Adaptive Polling**: Dispatcher sleeps exponentially longer (up to 15s) when idle.
+- **Event-Driven Wakeup**: API actions trigger immediate dispatcher wakeup.
+- **Batch Claiming**: Workers claim multiple tasks (e.g., 5) per transaction.
+- **Optimized Indices**: `idx_import_task_run_polling_optimization` for fast task pickup.
 
 ### 2.2 Module Structure
 
 ```
 modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/
-├── imports/
-│   ├── ImportRoutes.kt              # API endpoints
-│   ├── ImportRequests.kt            # Request DTOs
-│   ├── ImportService.kt             # Main orchestration
-│   ├── ImportPipelineService.kt     # Pipeline workflow
-│   ├── scraping/
-│   │   ├── SourceHandler.kt         # Interface
-│   │   ├── KarnatikSourceHandler.kt
-│   │   ├── BlogspotSourceHandler.kt
-│   │   └── TempleNetSourceHandler.kt
-│   ├── extraction/
-│   │   ├── ExtractionService.kt
-│   │   └── ExtractionPrompts.kt
-│   ├── resolution/
-│   │   ├── EntityResolutionService.kt
-│   │   ├── ComposerResolver.kt
-│   │   ├── RagaResolver.kt
-│   │   ├── DeityResolver.kt
-│   │   └── TempleResolver.kt
-│   ├── cleansing/
-│   │   └── DataCleansingService.kt
-│   ├── deduplication/
-│   │   └── DeduplicationService.kt
-│   └── validation/
-│       └── ValidationService.kt
+├── services/
+│   ├── BulkImportOrchestrationService.kt  # Batch management
+│   ├── BulkImportWorkerService.kt         # Dispatcher & Workers
+│   ├── WebScrapingService.kt              # Content extraction
+│   └── EntityResolutionService.kt         # Mapping logic
+├── routes/
+│   └── BulkImportRoutes.kt                # Admin endpoints
 ```
 
 ---
 
 ## 3. Core Service Implementations
 
-### 3.1 ImportPipelineService
+### 3.1 BulkImportWorkerService (Unified Dispatcher)
 
-**Purpose**: Orchestrate multi-stage import workflow
+**Purpose**: Efficiently process background tasks with minimal DB load.
 
-**Implementation:**
+**Implementation Highlights:**
 
 ```kotlin
-package com.sangita.grantha.backend.api.imports
-
-import com.sangita.grantha.backend.dal.DatabaseFactory
-import com.sangita.grantha.backend.dal.imports.ImportRepository
-import com.sangita.grantha.shared.domain.model.ImportSourceDto
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
-import java.util.UUID
-
-class ImportPipelineService(
-    private val importRepository: ImportRepository,
-    private val scrapingService: ScrapingService,
-    private val extractionService: ExtractionService,
-    private val entityResolutionService: EntityResolutionService,
-    private val cleansingService: DataCleansingService,
-    private val deduplicationService: DeduplicationService,
-    private val validationService: ValidationService
-) {
-    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+class BulkImportWorkerService(...) {
+    // Buffered channels decoupling polling from processing
+    private val scrapeChannel = Channel<ImportTaskRunDto>(capacity = 20)
     
-    suspend fun importFromSource(
-        sourceId: UUID,
-        urls: List<String>,
-        options: ImportOptions = ImportOptions.default()
-    ): ImportBatchResult = DatabaseFactory.dbQuery {
-        // Create batch record
-        val batchId = importRepository.createImportBatch(
-            sourceId = sourceId,
-            totalUrls = urls.size,
-            options = options
-        )
-        
-        // Process URLs in parallel (with concurrency limit)
-        val results = urls
-            .asFlow()
-            .flatMapMerge(concurrency = options.maxConcurrency) { url ->
-                flow {
-                    emit(processUrl(batchId, sourceId, url, options))
-                }
+    // Unified Dispatcher Loop
+    private suspend fun runDispatcherLoop(config: WorkerConfig) {
+        var currentDelay = config.pollIntervalMs
+        while (isActive) {
+            // Poll DB for tasks
+            val tasks = dal.claimNextPendingTasks(..., limit = 5)
+            
+            if (tasks.isNotEmpty()) {
+                tasks.forEach { scrapeChannel.send(it) }
+                currentDelay = config.pollIntervalMs // Reset backoff
+            } else {
+                // Adaptive Backoff with Signal interrupt
+                withTimeoutOrNull(currentDelay) { wakeUpChannel.receive() }
+                currentDelay = min(currentDelay * 2, config.maxDelay)
             }
-            .toList()
-        
-        // Update batch status
-        val successCount = results.count { it is ImportResult.Success }
-        val failureCount = results.count { it is ImportResult.Failure }
-        
-        importRepository.updateImportBatch(
-            batchId = batchId,
-            processedUrls = results.size,
-            successfulImports = successCount,
-            failedImports = failureCount,
-            status = if (failureCount == 0) BatchStatus.COMPLETED else BatchStatus.PARTIAL
-        )
-        
-        ImportBatchResult(
-            batchId = batchId,
-            totalUrls = urls.size,
-            successful = successCount,
-            failed = failureCount,
-            results = results
-        )
+        }
     }
     
-    private suspend fun processUrl(
-        batchId: UUID,
-        sourceId: UUID,
-        url: String,
-        options: ImportOptions
-    ): ImportResult = withContext(Dispatchers.IO) {
-        try {
-            // Stage 1: Scraping
-            val html = scrapingService.scrape(url, retries = options.maxRetries)
-            
-            // Stage 2: Extraction
-            val extracted = extractionService.extract(html, sourceId)
-            
-            // Stage 3: Entity Resolution
-            val resolved = entityResolutionService.resolve(extracted)
-            
-            // Stage 4: Data Cleansing
-            val cleaned = cleansingService.cleanse(resolved)
-            
-            // Stage 5: De-duplication
-            val duplicates = deduplicationService.findDuplicates(cleaned)
-            
-            // Stage 6: Validation
-            val validationResult = validationService.validate(cleaned, duplicates)
-            
-            // Stage 7: Staging
-            val importedKrithiId = DatabaseFactory.dbQuery {
-                importRepository.createImportedKrithi(
-                    sourceId = sourceId,
-                    sourceKey = url,
-                    extracted = cleaned,
-                    validationResult = validationResult,
-                    duplicateCandidates = duplicates.map { it.id }
-                )
-            }
-            
-            ImportResult.Success(importedKrithiId)
-        } catch (e: Exception) {
-            // Log error and return failure
-            importRepository.recordImportError(batchId, url, e)
-            ImportResult.Failure(url, e)
+    // Worker Consumer
+    private suspend fun processScrapeLoop() {
+        for (task in scrapeChannel) {
+            processScrapeTask(task)
         }
     }
 }
-
-data class ImportOptions(
-    val maxConcurrency: Int = 5,
-    val maxRetries: Int = 3,
-    val retryDelayMs: Long = 1000,
-    val autoApproveThreshold: Double = 0.95
-) {
-    companion object {
-        fun default() = ImportOptions()
-    }
-}
-
-sealed class ImportResult {
-    data class Success(val importedKrithiId: UUID) : ImportResult()
-    data class Failure(val url: String, val error: Exception) : ImportResult()
-}
 ```
+
+### 3.2 BulkImportOrchestrationService
+
+**Purpose**: Manage batch lifecycle and trigger workers.
+
+**Implementation Highlights:**
+- **Create Batch**: Handles file upload, saves to `storage/`, creates `MANIFEST_INGEST` job.
+- **Wakeup**: Calls `workerService.wakeUp()` on new batches or retries to bypass polling delay.
+- **Audit**: Logs all state transitions to `AUDIT_LOG`.
 
 ---
 
@@ -373,11 +297,19 @@ class EntityResolutionService(
     }
     
     private fun normalizeComposerName(name: String): String {
-        return name
+        val normalized = name
             .lowercase()
             .replace(Regex("\\b(saint|sri|swami|sir)\\b"), "")
             .trim()
             .replace(Regex("\\s+"), " ")
+
+        return when {
+            normalized == "thyagaraja" -> "tyagaraja"
+            normalized == "dikshitar" -> "muthuswami dikshitar"
+            normalized.contains("syama") && normalized.contains("sastry") -> "syama sastri"
+            normalized.contains("shyama") -> "syama sastri"
+            else -> normalized
+        }
     }
     
     private fun normalizeRagaName(name: String): String {

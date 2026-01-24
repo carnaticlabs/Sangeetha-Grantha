@@ -1,6 +1,19 @@
----
-name: documentation-guardian
-description: Enforces documentation standards including header updates, link validity, and style guidelines.
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 1.0.0 |
+| **Last Updated** | 2026-01-24 |
+| **Author** | Sangeetha Grantha Team |
+
+# Documentation Guardian Skill
+
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 1.0.0 |
+| **Last Updated** | 2026-01-24 |
+| **Author** | Sangeetha Grantha Team |
+
 ---
 
 # Documentation Guardian

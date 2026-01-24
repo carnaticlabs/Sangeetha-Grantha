@@ -1,3 +1,10 @@
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 1.0.0 |
+| **Last Updated** | 2026-01-24 |
+| **Author** | Sangeetha Grantha Team |
+
 # UI to API Mapping
 
 | Metadata | Value |

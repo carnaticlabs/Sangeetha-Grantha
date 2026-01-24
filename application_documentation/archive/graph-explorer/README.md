@@ -1,3 +1,10 @@
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 1.0.0 |
+| **Last Updated** | 2026-01-24 |
+| **Author** | Sangeetha Grantha Team |
+
 # Graph Explorer Archive
 
 | Metadata | Value |
@@ -68,4 +75,3 @@ These documents were archived to:
 ## Note on Duplicates
 
 Some documents exist in multiple versions (from `01-requirements/features/` and `02-architecture/decisions/`). Both versions are preserved here for completeness. The versions from `01-requirements/features/` are considered the primary versions as they contain more complete context and references.
-

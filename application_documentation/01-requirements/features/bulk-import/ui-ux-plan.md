@@ -1,3 +1,10 @@
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 1.0.0 |
+| **Last Updated** | 2026-01-24 |
+| **Author** | Sangeetha Grantha Team |
+
 # Bulk Import UI/UX Plan
 
 | Metadata | Value |
@@ -46,23 +53,26 @@ The Bulk Import module will be located within the existing Admin Console.
 - Clicking a row navigates to **Batch Detail**.
 - Hovering over progress bar shows tooltips with exact counts per stage.
 
-### 4.2. New Batch Wizard
+### 4.2. New Batch Wizard (Implemented)
 **Goal**: Simple, safe initiation of a new batch.
 
 **UX Flow:**
-1.  **Upload**: Drag & drop CSV file.
-2.  **Preview**: Show first 5 rows to confirm parsing is correct.
-3.  **Config**: Optional settings (e.g., "Skip Scrape" for re-processing, "Priority").
-4.  **Confirmation**: "Start Import" button.
+1.  **Upload**: File input/Dropzone for CSV files (replaces manual path entry).
+2.  **Validation**: Client-side check for `.csv` extension.
+3.  **Process**:
+    - User selects file.
+    - User clicks "Start Import".
+    - File uploads via Multipart API.
+    - System creates Batch and redirects to Detail view.
 
 ### 4.3. Batch Detail View (The "Command Center")
 **Goal**: Deep technical monitoring and control.
 
 **Layout:**
 - **Header**:
-    - Batch ID & Name.
-    - **Global Controls**: Big buttons for `PAUSE`, `RESUME`, `CANCEL`, `RETRY FAILED`.
-    - **Status Banner**: Prominent status indicator.
+    - Batch ID & Name (Manifest filename).
+    - **Global Controls**: Buttons for `PAUSE`, `RESUME`, `CANCEL`, `RETRY FAILED`.
+    - **Stage Indicator**: Visual badge showing "Analyzing", "Scraping", or "Resolving".
 
 - **Section A: Metrics & Health (Top Row)**
     - **Progress**: Circular or Linear progress of the current active job.

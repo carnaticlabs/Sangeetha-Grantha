@@ -1,3 +1,10 @@
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 1.0.0 |
+| **Last Updated** | 2026-01-24 |
+| **Author** | Sangeetha Grantha Team |
+
 # Bulk Import Feature - Master Index
 
 | Metadata | Value |
@@ -65,92 +72,57 @@ This directory contains comprehensive analysis, strategy, and implementation gui
 
 ## Feature Implementation Roadmap
 
-### ✅ Phase 1: CSV Manifest Ingestion (Week 1)
-**Priority**: HIGH | **Complexity**: LOW | **Status**: Ready to start
+### ✅ Phase 1: CSV Manifest Ingestion (Completed & Revamped)
+**Priority**: HIGH | **Status**: **Complete** (See TRACK-005)
 
 **Objective**: Parse CSV files and load into `imported_krithis` staging table
 
+**Implementation Details**:
+- **Mechanism**: Runtime API Upload (`POST /v1/admin/bulk-import/upload`)
+- **Parsing**: Robust `Apache Commons CSV` parsing with header validation
+- **Validation**: Pre-flight URL syntax checks
+- **Architecture**: Part of the Unified Dispatcher pipeline
+
 **Key Documents**:
-- [CSV Import Strategy - Phase 1](./01-strategy/csv-import-strategy.md#phase-1-csv-parsing--validation-week-1)
-- [Technical Implementation - CSV Parser](./02-implementation/technical-implementation-guide.md#41-phase-1-csv-parsing--validation-week-1)
-
-**Deliverables**:
-- CSV parser service
-- URL validator
-- Import batch tracking
-- SQL seed file generation
-
-**Success Criteria**:
-- All 3 CSV files parse successfully
-- ~1,240 entries loaded into staging table
-- Validation report generated
+- [CSV Import Strategy - Phase 1](./01-strategy/csv-import-strategy.md#41-phase-1-csv-parsing--validation-week-1)
+- [Technical Implementation](./02-implementation/technical-implementation-guide.md)
 
 ---
 
-### 🔄 Phase 2: Web Scraping & Enrichment (Weeks 2-3)
-**Priority**: HIGH | **Complexity**: MEDIUM | **Status**: After Phase 1
+### 🔄 Phase 2: Web Scraping & Enrichment (In Progress)
+**Priority**: HIGH | **Status**: **In Progress** (Backend Complete, Optimization Complete)
 
 **Objective**: Scrape URLs from CSV and extract full metadata
 
+**Status**:
+- **Backend**: Scrape workers implemented and integrated with Dispatcher (TRACK-007).
+- **Optimization**: Adaptive polling and batch claiming implemented (TRACK-006).
+- **UI**: Stage visualization added (TRACK-005).
+
 **Key Documents**:
-- [CSV Import Strategy - Phase 2](./01-strategy/csv-import-strategy.md#42-phase-2-batch-scraping-week-2)
 - [Web Source Analysis](./03-sources/web-source-analysis.md)
-- [Technical Implementation - Scraping](./02-implementation/technical-implementation-guide.md#42-phase-2-batch-scraping-week-2)
-
-**Deliverables**:
-- Batch scraping service with rate limiting
-- Source-specific handlers (Blogspot)
-- Progress tracking
-- Retry logic
-
-**Success Criteria**:
-- 90%+ of valid URLs successfully scraped
-- Rate limiting prevents IP blocking
-- Progress tracking functional
 
 ---
 
-### 🎯 Phase 3: Entity Resolution (Week 4)
-**Priority**: HIGH | **Complexity**: MEDIUM-HIGH | **Status**: After Phase 2
+### 🎯 Phase 3: Entity Resolution (In Progress)
+**Priority**: HIGH | **Status**: **In Progress**
 
 **Objective**: Map raw text to canonical entities
 
-**Key Documents**:
-- [Master Analysis - Entity Resolution](./01-strategy/master-analysis.md#4-entity-resolution-deep-dive)
-- [Technical Implementation - Entity Resolution](./02-implementation/technical-implementation-guide.md#32-entityresolutionservice)
-
-**Deliverables**:
-- EntityResolutionService (composer, raga, deity, temple)
-- Name normalization
-- Fuzzy matching with PostgreSQL trigrams
-- Confidence scoring
-
-**Success Criteria**:
-- 85%+ entity resolution accuracy
-- Confidence scores assigned
-- Ambiguous cases flagged for review
+**Status**:
+- **Backend**: Resolution workers implemented (Levenshtein based).
+- **Architecture**: Integrated into Unified Dispatcher pipeline (TRACK-007).
 
 ---
 
-### 👥 Phase 4: Review Workflow (Week 5)
-**Priority**: MEDIUM | **Complexity**: MEDIUM | **Status**: After Phase 3
+### 👥 Phase 4: Review Workflow (In Progress)
+**Priority**: MEDIUM | **Status**: **In Progress**
 
 **Objective**: Admin interface for reviewing and approving imports
 
-**Key Documents**:
-- [CSV Import Strategy - Phase 4](./01-strategy/csv-import-strategy.md#44-phase-4-review-workflow-integration-week-4)
-- [Technical Implementation - Review UI](./02-implementation/technical-implementation-guide.md#74-phase-4-review-workflow-weeks-7-8)
-
-**Deliverables**:
-- Enhanced import review UI
-- Batch operations
-- Auto-approval for high-confidence imports
-- Quality metrics dashboard
-
-**Success Criteria**:
-- Batch imports visible in review UI
-- Auto-approval working
-- Bulk operations functional
+**Status**:
+- **UI**: Review queue and diff viewer implemented (TRACK-004).
+- **Backend**: Approval/Rejection APIs active.
 
 ---
 

@@ -1,3 +1,10 @@
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 1.0.0 |
+| **Last Updated** | 2026-01-24 |
+| **Author** | Sangeetha Grantha Team |
+
 # Sangita Grantha Documentation Index
 
 | Metadata | Value |
@@ -20,6 +27,10 @@ Historical / inherited drafts from earlier projects, and any future
 archival docs for Sangita Grantha, live under `./archive/`.
 
 ---
+
+- **[00 Onboarding](./00-onboarding/)**
+  - [Getting Started](./00-onboarding/getting-started.md)
+  - [Overview](./00-onboarding/README.md)
 
 - **[01 Requirements](./01-requirements/)**
   - [Product Requirements](./01-requirements/product-requirements-document.md)

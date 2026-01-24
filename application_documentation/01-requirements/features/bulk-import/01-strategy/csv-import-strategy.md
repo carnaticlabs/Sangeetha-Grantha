@@ -1,3 +1,10 @@
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 1.0.0 |
+| **Last Updated** | 2026-01-24 |
+| **Author** | Sangeetha Grantha Team |
+
 # Krithi Bulk Import from CSV - Comprehensive Strategy & Design
 
 | Metadata | Value |
@@ -16,7 +23,7 @@
 
 ## 1. Executive Summary
 
-This document provides a comprehensive strategy and detailed design for bulk importing Krithis from CSV files located in `/database/for_import/`. The CSV files contain Krithi names, Ragas, and hyperlinks to source pages where full details can be scraped. This strategy builds upon existing research and leverages the current import infrastructure.
+This document provides a comprehensive strategy and detailed design for bulk importing Krithis from CSV files located in `/database/for_import/`. The CSV files contain Krithi names, optional Raga values for authoring validation, and hyperlinks to source pages where full details can be scraped. This strategy builds upon existing research and leverages the current import infrastructure.
 
 ### Key Findings
 
@@ -27,7 +34,7 @@ This document provides a comprehensive strategy and detailed design for bulk imp
 
 ### Strategic Recommendations
 
-- **Phase 1**: CSV parsing and URL validation (Week 1)
+- **Phase 1**: CSV parsing and URL syntax validation (Week 1)
 - **Phase 2**: Batch scraping with rate limiting (Week 2)
 - **Phase 3**: Entity resolution and de-duplication (Week 3)
 - **Phase 4**: Review workflow integration (Week 4)
@@ -55,7 +62,7 @@ abhimAnamennaDu,kunjari,http://thyagaraja-vaibhavam.blogspot.com/2007/11/thyagar
 
 **Fields**:
 - **Krithi**: Composition name (transliterated, may have variations)
-- **Raga**: Raga name (transliterated, may have variations)
+- **Raga**: Optional at ingest; used only for CSV authoring validation. Scraped values are the source of truth.
 - **Hyperlink**: Direct URL to source page with full details
 
 ### 2.3 Data Quality Observations
@@ -204,11 +211,15 @@ class DeduplicationService(
 
 ## 4. Implementation Plan
 
-### 4.1 Phase 1: CSV Parsing & Validation (Week 1)
+### 4.1 Phase 1: CSV Parsing & Validation (Completed)
 
-**Objective**: Parse CSV files and load into `imported_krithis` staging table as "Pending" records
+**Objective**: Parse CSV files via Admin UI and load into `imported_krithis` staging table.
 
-**Approach**: We will use a **Python script** (`tools/scripts/ingest_csv_manifest.py`) to generate SQL seed files. This approach is preferred over runtime parsing for the initial seed because it's reproducible, version-controllable, and uses our existing `sangita-cli` seed mechanism.
+**Approach**: 
+Implemented as a **Runtime API Upload** mechanism (see `TRACK-005`).
+- **Endpoint**: `POST /v1/admin/bulk-import/upload` (Multipart)
+- **Parser**: `Apache Commons CSV` for robust handling of quotes and delimiters.
+- **Validation**: Header check ("Krithi", "Hyperlink" required; "Raga" optional) and URL syntax validation only.
 
 #### 4.1.1 Data Mapping
 
@@ -216,75 +227,26 @@ class DeduplicationService(
 |:---|:---|:---|
 | `Hyperlink` | `source_key` | Primary Identifier. Must be unique per source. |
 | `Krithi` | `raw_title` | Direct map. |
-| `Raga` | `raw_raga` | Direct map. |
-| *Derived* | `import_source_id` | Lookup based on filename (e.g., Dikshitar -> Guru Guha ID). |
-| *Derived* | `raw_composer` | Constant based on file (e.g., "Muthuswami Dikshitar"). |
+| `Raga` | `raw_raga` | Optional; stored for provenance only. Scraped raga is authoritative. |
+| *Derived* | `import_source_id` | Mapped to "BulkImportCSV" source. |
 
-#### 4.1.2 Source Registry (`import_sources`)
+#### 4.1.2 Deliverables (Implemented)
 
-We need to define stable UUIDs for these sources to ensure idempotency.
+1. **Backend API**: 
+   - Handles multipart file uploads.
+   - Saves file to `storage/imports/`.
+   - Creates `import_batch` and `MANIFEST_INGEST` job.
 
-```sql
--- database/seed_data/03_import_sources.sql
-INSERT INTO import_sources (id, name, base_url, description) VALUES
-('...uuid-1...', 'Guru Guha Vaibhavam', 'http://guru-guha.blogspot.com', 'Archive of Dikshitar Krithis'),
-('...uuid-2...', 'Syama Krishna Vaibhavam', 'http://syamakrishnavaibhavam.blogspot.com', 'Archive of Syama Sastri Krithis'),
-('...uuid-3...', 'Thyagaraja Vaibhavam', 'http://thyagaraja-vaibhavam.blogspot.com', 'Archive of Thyagaraja Krithis')
-ON CONFLICT (id) DO NOTHING;
-```
+2. **Manifest Worker**:
+   - Asynchronous processing of the uploaded CSV.
+   - Header validation (fails fast if invalid).
+   - Row-by-row task creation (`SCRAPE` tasks).
 
-#### 4.1.3 Script Logic
+3. **Frontend UI**:
+   - File Upload Widget (Drag & Drop).
+   - Real-time progress polling.
 
-The script will:
-1. Read each CSV.
-2. Clean data (strip whitespace, handle encoding).
-3. Escape SQL strings (critical for titles with quotes).
-4. Generate `04_initial_manifest_load.sql` containing `INSERT` statements.
-
-#### 4.1.4 Deliverables
-
-1. **CSV Parser Script** (`tools/scripts/ingest_csv_manifest.py`)
-   - Parse CSV files from `/database/for_import/`
-   - Generate SQL seed files
-   - Handle data cleaning and SQL escaping
-
-2. **URL Validator** (optional for Phase 1, recommended for Phase 2)
-```kotlin
-class UrlValidator {
-    suspend fun validateUrl(url: String): UrlValidationResult
-    suspend fun checkAccessibility(url: String): Boolean
-    suspend fun detectSourceType(url: String): SourceType
-}
-```
-
-3. **CSV Import API Endpoint** (for future runtime imports)
-```kotlin
-POST /v1/admin/imports/csv/upload
-POST /v1/admin/imports/csv/validate
-POST /v1/admin/imports/csv/process
-```
-
-**Implementation Steps**:
-
-1. **Preparation**:
-   - Verify `import_sources` table exists (Migration `04__import-pipeline.sql` is already applied?)
-   - Generate UUIDs for the 3 sources
-   
-2. **Development**:
-   - Create `tools/scripts/ingest_csv_manifest.py`
-   - Run script to generate SQL files in `database/seed_data/`
-   
-3. **Verification**:
-   - Run `tools/sangita-cli -- db seed`
-   - Check `imported_krithis` count
-   - Verify a sample record (e.g., "Vatapi Ganapatim") matches CSV
-
-**Success Criteria**:
-- ✅ All 3 CSV files parse successfully
-- ✅ ~1,240 entries loaded into `imported_krithis` table
-- ✅ All records have `import_status = 'pending'`
-- ✅ Source attribution correctly mapped
-- ✅ Validation report generated (if URL validation implemented)
+**Status**: ✅ Complete (TRACK-005)
 
 ---
 
@@ -355,48 +317,87 @@ data class BulkImportBatch(
 
 ### 4.3 Phase 3: Entity Resolution & De-duplication (Week 3)
 
-**Objective**: Resolve entities and detect duplicates
+**Objective**: Resolve entities and detect duplicates with strict normalization.
+
+**Analysis Finding**: Preliminary analysis of `imported_krithis` shows significant Raga duplication due to transliteration variations (e.g., "Kalyani" vs "Kalyaani", "Kedaara Gaula" vs "Kedara Gaula").
 
 **Deliverables**:
 
-1. **Entity Resolution Service** (as described in Section 3.3)
+1. **Entity Resolution Service**
+   - Enhanced with aggressive normalization rules.
 
-2. **Name Normalization**
-```kotlin
-class NameNormalizationService {
-    fun normalizeComposerName(name: String): String
-    fun normalizeRagaName(name: String): String
-    fun normalizeDeityName(name: String): String
-    fun normalizeTempleName(name: String): String
-}
-```
+2. **Name Normalization Logic**
+   ```kotlin
+   class NameNormalizationService {
+       fun normalizeRagaName(name: String): String {
+           return name.lowercase()
+               .replace(Regex("\\s+"), "") // Remove all spaces: "kedara gaula" -> "kedaragaula"
+               .replace("aa", "a")         // Vowel reduction: "kalyaani" -> "kalyani"
+               .replace("ee", "i")
+               .replace("oo", "o")
+               .replace("uu", "u")
+               .replace(Regex("[^a-z]"), "") // Remove special chars
+       }
+       // ... other normalizers
+   }
+   ```
 
-3. **Fuzzy Matching**
-```kotlin
-class FuzzyMatchingService {
-    fun similarityScore(str1: String, str2: String): Double
-    fun findBestMatch(
-        query: String,
-        candidates: List<String>,
-        threshold: Double = 0.85
-    ): MatchResult?
-}
-```
+3. **Fuzzy Matching Strategy**
+   - **Step 1**: Exact match on *Normalized Name*.
+   - **Step 2**: Levenshtein Distance on *Normalized Name* (threshold 0.90).
+   - **Step 3**: Manual Alias Table (e.g., "Sankarabharanam" = "Sankaraabharanam").
 
-4. **De-duplication Service** (as described in Section 3.3)
+4. **De-duplication Service**
+   - Must check against *both* `ragas` table (canonical) and `imported_krithis` (staging) to prevent race conditions during batch processing.
 
 **Implementation Steps**:
 
-1. Implement name normalization (handle transliteration variations)
-2. Add PostgreSQL trigram indexes for fuzzy matching
-3. Create entity resolution service with confidence scoring
-4. Implement de-duplication (exact match, fuzzy match, semantic match)
-5. Add confidence thresholds for auto-mapping vs manual review
+1. Implement `NameNormalizationService` with specific rules for Ragas (vowel reduction, space removal).
+2. Update `EntityResolutionService` to use normalization before DB lookup.
+3. Add `name_normalized` column to `ragas` table (if not present) and backfill.
+4. Create a "Raga Alias" configuration for known exceptions.
+5. Implement de-duplication logic that merges duplicate Raga candidates in memory before DB insertion.
+
+#### 4.3.1 Specific Logic for Talas (New Findings)
+
+**Observation**: The database contains variations like "Rupaka"/"Rupakam" and "Misra Chapu"/"miSra cApu".
+
+**Tala Normalization Rules**:
+1. **Suffix Removal**: Handle common endings.
+   - "rupakam" -> "rupaka"
+   - "ekam" -> "eka"
+   - "tripuTa" -> "triputa"
+2. **Transliteration Standardization**:
+   - "cApu" -> "chapu"
+   - "miSra" -> "misra"
+   - "khaNDa" -> "khanda"
+   - "tiSra" -> "tisra"
+3. **Alias Mapping**:
+   - "Desadi" -> "Adi" (Context dependent, but often mapped)
+   - "Madhyadi" -> "Adi"
+
+#### 4.3.2 Specific Logic for Composers (New Findings)
+
+**Observation**: Database contains duplicates like "Dikshitar"/"Muthuswami Dikshitar" and "Syama Sastri"/"Syama Sastry".
+
+**Composer Normalization Rules**:
+1. **Canonical Mapping**:
+   - "dikshitar" -> "Muthuswami Dikshitar"
+   - "muthuswami dikshitar" -> "Muthuswami Dikshitar"
+   - "thyagaraja" -> "Tyagaraja"
+   - "tyagaraja" -> "Tyagaraja"
+   - "syama sastri" -> "Syama Sastri"
+   - "syama sastry" -> "Syama Sastri"
+   - "shyama sastri" -> "Syama Sastri"
+2. **Suffix Standardization**:
+   - "sastry" -> "sastri"
+   - "shastri" -> "sastri"
 
 **Success Criteria**:
-- ✅ 85%+ entity resolution accuracy (composer, raga)
-- ✅ Duplicate detection accuracy >90%
-- ✅ Confidence scores assigned to all resolutions
+- ✅ "Kalyaani" and "Kalyani" resolve to the same Raga entity.
+- ✅ "Kedaara Gaula" and "Kedara Gaula" resolve to the same Raga entity.
+- ✅ >95% reduction in duplicate Raga creation.
+- ✅ Confidence scores assigned to all resolutions.
 
 ---
 
@@ -454,7 +455,8 @@ POST /v1/admin/imports/batch/{id}/bulk-review
    ↓
 2. CSV Parsing & Validation
    ├─ Parse entries
-   ├─ Validate URLs
+   ├─ Validate URL syntax only
+   ├─ If manifest parse fails or zero valid rows -> mark batch FAILED and stop
    └─ Generate validation report
    ↓
 3. Batch Creation
@@ -472,7 +474,7 @@ POST /v1/admin/imports/batch/{id}/bulk-review
 5. Entity Resolution
    ├─ For each scraped entry:
    │  ├─ Resolve composer (from CSV context + scraped)
-   │  ├─ Resolve raga (from CSV + scraped)
+   │  ├─ Resolve raga (scraped; CSV raga optional for validation only)
    │  ├─ Resolve deity (from scraped)
    │  ├─ Resolve temple (from scraped)
    │  └─ Assign confidence scores
@@ -521,6 +523,7 @@ POST /v1/admin/imports/batch/{id}/bulk-review
 - 404/403 errors → Mark as failed, log URL
 - Timeout → Retry up to 3 times
 - Invalid HTML → Log and skip
+- If scrape fails after preview, discard CSV-seeded metadata and require a new batch
 
 **Entity Resolution Errors**:
 - Ambiguous matches → Flag for manual review
@@ -538,7 +541,7 @@ POST /v1/admin/imports/batch/{id}/bulk-review
 ### 6.1 Import Batch Tracking
 
 ```sql
-CREATE TABLE import_batches (
+CREATE TABLE import_batch (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   source_file TEXT NOT NULL, -- CSV filename
   composer_context TEXT, -- Implicit composer from filename
@@ -555,8 +558,8 @@ CREATE TABLE import_batches (
   created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('UTC', now())
 );
 
-CREATE INDEX idx_import_batches_status ON import_batches(status);
-CREATE INDEX idx_import_batches_source_file ON import_batches(source_file);
+CREATE INDEX idx_import_batch_status ON import_batch(status);
+CREATE INDEX idx_import_batch_source_file ON import_batch(source_file);
 ```
 
 ### 6.2 Enhanced Imported Krithis
@@ -564,7 +567,7 @@ CREATE INDEX idx_import_batches_source_file ON import_batches(source_file);
 ```sql
 -- Add columns to existing imported_krithis table
 ALTER TABLE imported_krithis
-  ADD COLUMN IF NOT EXISTS import_batch_id UUID REFERENCES import_batches(id),
+  ADD COLUMN IF NOT EXISTS import_batch_id UUID REFERENCES import_batch(id),
   ADD COLUMN IF NOT EXISTS csv_row_number INT,
   ADD COLUMN IF NOT EXISTS csv_krithi_name TEXT,
   ADD COLUMN IF NOT EXISTS csv_raga TEXT,
@@ -698,10 +701,10 @@ Request: {
 ### 8.1 Validation Rules
 
 **CSV Validation**:
-- ✅ All required columns present (Krithi, Raga, Hyperlink)
+- ✅ Required columns present (Krithi, Hyperlink). Raga optional if provided.
 - ✅ No empty rows
 - ✅ URLs are valid HTTP/HTTPS
-- ✅ URLs are accessible (not 404)
+- ✅ URL validation is syntax-only (no HEAD/GET)
 
 **Scraping Validation**:
 - ✅ Metadata extraction successful (title, composer, raga)
@@ -763,7 +766,7 @@ enum class QualityTier {
 
 ---
 
-## 9. Performance Considerations
+## 9. Performance & Data Quality Considerations
 
 ### 9.1 Rate Limiting
 
@@ -777,7 +780,17 @@ enum class QualityTier {
 - 1,240 entries × 0.5 seconds = ~620 seconds = ~10 minutes
 - With retries and errors: ~15-20 minutes per CSV file
 
-### 9.2 Caching Strategy
+### 9.2 Data Quality & Normalization Overhead
+
+**Normalization Cost**:
+- Aggressive normalization (regex, string manipulation) adds negligible CPU overhead compared to DB IO.
+- **Critical**: Doing it *synchronously* during import prevents "pollution" of the canonical Raga database.
+
+**Strategy**:
+- **Pre-load Canonical Ragas**: Cache the `id` -> `normalized_name` map of all existing Ragas (small dataset, <5000 entries) in memory during the batch job to avoid N+1 DB lookups.
+- **Batch Resolution**: Resolve all unique scraped Raga names once per batch (CSV Raga values are optional and not authoritative).
+
+### 9.3 Caching Strategy
 
 **Entity Resolution Cache**:
 - Cache resolved entities (composer, raga) to avoid repeated lookups
@@ -809,7 +822,7 @@ enum class QualityTier {
 
 | Risk | Probability | Impact | Mitigation |
 |:---|:---|:---|:---|
-| **Broken URLs** | High | Medium | Validate URLs before scraping, skip broken ones, log for manual review |
+| **Broken URLs** | High | Medium | Validate URL syntax before scraping; handle 404/403 during scrape and log for review |
 | **Rate Limiting/IP Blocking** | Medium | High | Conservative rate limiting, exponential backoff, user-agent rotation |
 | **HTML Structure Changes** | Low | High | Use AI extraction (Gemini) which is more resilient, version scrapers |
 | **Entity Resolution Accuracy** | Medium | High | Confidence thresholds, manual review for ambiguous cases, cache resolutions |
@@ -877,7 +890,7 @@ enum class QualityTier {
 - [ ] Extend `WebScrapingService` with retry logic
 - [ ] Implement `RateLimiter` service
 - [ ] Create `BatchScrapingService`
-- [ ] Add `import_batches` table migration
+- [ ] Add `import_batch` table migration
 - [ ] Implement progress tracking
 - [ ] Add resume capability
 - [ ] Test batch scraping with 10-20 URLs
@@ -908,7 +921,7 @@ enum class QualityTier {
 ### 13.1 Immediate Actions (Week 1)
 
 1. **Start with CSV Parsing**: Build CSV parser and validator first
-2. **Validate All URLs**: Run validation on all 3 CSV files to identify broken links
+2. **Validate URL Syntax**: Run syntax-only validation on all 3 CSV files (no HEAD/GET)
 3. **Test with Small Batch**: Import 10-20 entries to validate end-to-end flow
 4. **Set Up Monitoring**: Add logging and progress tracking from day one
 
