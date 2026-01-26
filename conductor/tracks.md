@@ -16,5 +16,7 @@
 | [TRACK-012](./tracks/TRACK-012-bulk-import-review-workflow-completion.md) | Bulk Import Review Workflow Completion | Completed |
 | [TRACK-013](./tracks/TRACK-013-bulk-import-performance-scalability.md) | Bulk Import Performance & Scalability Improvements | Completed |
 | [TRACK-014](./tracks/TRACK-014-bulk-import-testing-quality-assurance.md) | Bulk Import Testing & Quality Assurance | Proposed |
+| [TRACK-015](./tracks/TRACK-015-ktor-upgrade-3.4.0.md) | Ktor Upgrade to 3.4.0 | Completed |
+| [TRACK-016](./tracks/TRACK-016-exposed-upgrade-1.0.0.md) | Exposed Upgrade to 1.0.0 | Completed |
 
 ## 3. Deprecated Tracks

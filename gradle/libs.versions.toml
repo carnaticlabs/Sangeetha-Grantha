@@ -2,7 +2,7 @@
 kotlin = "2.3.0"
 agp = "8.13.2"
 compose = "1.9.3"
-ktor = "3.3.3"
+ktor = "3.4.0"
 kotlinxCoroutinesCore = "1.9.0"
 kotlinxDatetime = "0.6.1"
 kotlinxSerializationJson = "1.7.3"
@@ -11,7 +11,7 @@ androidxCoreKtx = "1.15.0"
 material = "1.12.0"
 
 # Backend stack
-exposed = "1.0.0-rc-4"
+exposed = "1.0.0"
 postgresql = "42.7.8"
 hikaricp = "7.0.2"
 logback = "1.5.20"

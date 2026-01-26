@@ -12,7 +12,8 @@ import com.sangita.grantha.backend.dal.enums.WorkflowState
 import com.sangita.grantha.backend.dal.support.jsonbText
 import com.sangita.grantha.backend.dal.support.pgEnum
 import org.jetbrains.exposed.v1.core.Table
-import org.jetbrains.exposed.v1.core.dao.id.UUIDTable
+import org.jetbrains.exposed.v1.core.dao.id.java.UUIDTable
+import org.jetbrains.exposed.v1.core.java.javaUUID
 import org.jetbrains.exposed.v1.javatime.timestampWithTimeZone
 
 object RolesTable : Table("roles") {
@@ -34,7 +35,7 @@ object UsersTable : UUIDTable("users") {
 }
 
 object RoleAssignmentsTable : Table("role_assignments") {
-    val userId = uuid("user_id")
+    val userId = javaUUID("user_id")
     val roleCode = text("role_code")
     val assignedAt = timestampWithTimeZone("assigned_at")
 
@@ -56,7 +57,7 @@ object RagasTable : UUIDTable("ragas") {
     val name = text("name")
     val nameNormalized = text("name_normalized")
     val melakartaNumber = integer("melakarta_number").nullable()
-    val parentRagaId = uuid("parent_raga_id").nullable()
+    val parentRagaId = javaUUID("parent_raga_id").nullable()
     val arohanam = text("arohanam").nullable()
     val avarohanam = text("avarohanam").nullable()
     val notes = text("notes").nullable()
@@ -88,7 +89,7 @@ object TemplesTable : UUIDTable("temples") {
     val city = text("city").nullable()
     val state = text("state").nullable()
     val country = text("country").nullable()
-    val primaryDeityId = uuid("primary_deity_id").nullable()
+    val primaryDeityId = javaUUID("primary_deity_id").nullable()
     val latitude = double("latitude").nullable()
     val longitude = double("longitude").nullable()
     val notes = text("notes").nullable()
@@ -97,7 +98,7 @@ object TemplesTable : UUIDTable("temples") {
 }
 
 object TempleNamesTable : UUIDTable("temple_names") {
-    val templeId = uuid("temple_id")
+    val templeId = javaUUID("temple_id")
     val languageCode = pgEnum<LanguageCode>("language_code", LanguageCode.DB_TYPE)
     val scriptCode = pgEnum<ScriptCode>("script_code", ScriptCode.DB_TYPE)
     val name = text("name")
@@ -127,26 +128,26 @@ object KrithisTable : UUIDTable("krithis") {
     val incipit = text("incipit").nullable()
     val titleNormalized = text("title_normalized")
     val incipitNormalized = text("incipit_normalized").nullable()
-    val composerId = uuid("composer_id")
-    val primaryRagaId = uuid("primary_raga_id").nullable()
-    val talaId = uuid("tala_id").nullable()
-    val deityId = uuid("deity_id").nullable()
-    val templeId = uuid("temple_id").nullable()
+    val composerId = javaUUID("composer_id")
+    val primaryRagaId = javaUUID("primary_raga_id").nullable()
+    val talaId = javaUUID("tala_id").nullable()
+    val deityId = javaUUID("deity_id").nullable()
+    val templeId = javaUUID("temple_id").nullable()
     val musicalForm = pgEnum<MusicalForm>("musical_form", MusicalForm.DB_TYPE)
     val primaryLanguage = pgEnum<LanguageCode>("primary_language", LanguageCode.DB_TYPE)
     val isRagamalika = bool("is_ragamalika").default(false)
     val workflowState = pgEnum<WorkflowState>("workflow_state", WorkflowState.DB_TYPE)
     val sahityaSummary = text("sahitya_summary").nullable()
     val notes = text("notes").nullable()
-    val createdByUserId = uuid("created_by_user_id").nullable()
-    val updatedByUserId = uuid("updated_by_user_id").nullable()
+    val createdByUserId = javaUUID("created_by_user_id").nullable()
+    val updatedByUserId = javaUUID("updated_by_user_id").nullable()
     val createdAt = timestampWithTimeZone("created_at")
     val updatedAt = timestampWithTimeZone("updated_at")
 }
 
 object KrithiRagasTable : Table("krithi_ragas") {
-    val krithiId = uuid("krithi_id")
-    val ragaId = uuid("raga_id")
+    val krithiId = javaUUID("krithi_id")
+    val ragaId = javaUUID("raga_id")
     val orderIndex = integer("order_index").default(0)
     val section = pgEnum<RagaSection>("section", RagaSection.DB_TYPE).nullable()
     val notes = text("notes").nullable()
@@ -155,7 +156,7 @@ object KrithiRagasTable : Table("krithi_ragas") {
 }
 
 object KrithiLyricVariantsTable : UUIDTable("krithi_lyric_variants") {
-    val krithiId = uuid("krithi_id")
+    val krithiId = javaUUID("krithi_id")
     val language = pgEnum<LanguageCode>("language", LanguageCode.DB_TYPE)
     val script = pgEnum<ScriptCode>("script", ScriptCode.DB_TYPE)
     val transliterationScheme = text("transliteration_scheme").nullable()
@@ -163,15 +164,15 @@ object KrithiLyricVariantsTable : UUIDTable("krithi_lyric_variants") {
     val variantLabel = text("variant_label").nullable()
     val sourceReference = text("source_reference").nullable()
     val lyrics = text("lyrics")
-    val sampradayaId = uuid("sampradaya_id").nullable()
-    val createdByUserId = uuid("created_by_user_id").nullable()
-    val updatedByUserId = uuid("updated_by_user_id").nullable()
+    val sampradayaId = javaUUID("sampradaya_id").nullable()
+    val createdByUserId = javaUUID("created_by_user_id").nullable()
+    val updatedByUserId = javaUUID("updated_by_user_id").nullable()
     val createdAt = timestampWithTimeZone("created_at")
     val updatedAt = timestampWithTimeZone("updated_at")
 }
 
 object KrithiSectionsTable : UUIDTable("krithi_sections") {
-    val krithiId = uuid("krithi_id")
+    val krithiId = javaUUID("krithi_id")
     val sectionType = text("section_type")
     val orderIndex = integer("order_index")
     val label = text("label").nullable()
@@ -181,8 +182,8 @@ object KrithiSectionsTable : UUIDTable("krithi_sections") {
 }
 
 object KrithiLyricSectionsTable : UUIDTable("krithi_lyric_sections") {
-    val lyricVariantId = uuid("lyric_variant_id")
-    val sectionId = uuid("section_id")
+    val lyricVariantId = javaUUID("lyric_variant_id")
+    val sectionId = javaUUID("section_id")
     val text = text("text")
     val normalizedText = text("normalized_text").nullable()
     val createdAt = timestampWithTimeZone("created_at")
@@ -190,23 +191,23 @@ object KrithiLyricSectionsTable : UUIDTable("krithi_lyric_sections") {
 }
 
 object KrithiNotationVariantsTable : UUIDTable("krithi_notation_variants") {
-    val krithiId = uuid("krithi_id")
+    val krithiId = javaUUID("krithi_id")
     val notationType = text("notation_type")
-    val talaId = uuid("tala_id").nullable()
+    val talaId = javaUUID("tala_id").nullable()
     val kalai = integer("kalai")
     val eduppuOffsetBeats = integer("eduppu_offset_beats").nullable()
     val variantLabel = text("variant_label").nullable()
     val sourceReference = text("source_reference").nullable()
     val isPrimary = bool("is_primary").default(false)
-    val createdByUserId = uuid("created_by_user_id").nullable()
-    val updatedByUserId = uuid("updated_by_user_id").nullable()
+    val createdByUserId = javaUUID("created_by_user_id").nullable()
+    val updatedByUserId = javaUUID("updated_by_user_id").nullable()
     val createdAt = timestampWithTimeZone("created_at")
     val updatedAt = timestampWithTimeZone("updated_at")
 }
 
 object KrithiNotationRowsTable : UUIDTable("krithi_notation_rows") {
-    val notationVariantId = uuid("notation_variant_id")
-    val sectionId = uuid("section_id")
+    val notationVariantId = javaUUID("notation_variant_id")
+    val sectionId = javaUUID("section_id")
     val orderIndex = integer("order_index").default(0)
     val swaraText = text("swara_text")
     val sahityaText = text("sahitya_text").nullable()
@@ -216,8 +217,8 @@ object KrithiNotationRowsTable : UUIDTable("krithi_notation_rows") {
 }
 
 object KrithiTagsTable : Table("krithi_tags") {
-    val krithiId = uuid("krithi_id")
-    val tagId = uuid("tag_id")
+    val krithiId = javaUUID("krithi_id")
+    val tagId = javaUUID("tag_id")
     val sourceInfo = text("source").default("manual")
     val confidence = integer("confidence").nullable()
 
@@ -233,8 +234,8 @@ object ImportSourcesTable : UUIDTable("import_sources") {
 }
 
 object ImportedKrithisTable : UUIDTable("imported_krithis") {
-    val importSourceId = uuid("import_source_id")
-    val importBatchId = uuid("import_batch_id").nullable()
+    val importSourceId = javaUUID("import_source_id")
+    val importBatchId = javaUUID("import_batch_id").nullable()
     val sourceKey = text("source_key").nullable()
     val rawTitle = text("raw_title").nullable()
     val rawLyrics = text("raw_lyrics").nullable()
@@ -248,8 +249,8 @@ object ImportedKrithisTable : UUIDTable("imported_krithis") {
     val resolutionData = jsonbText("resolution_data").nullable()
     val duplicateCandidates = jsonbText("duplicate_candidates").nullable()
     val importStatus = pgEnum<ImportStatus>("import_status", ImportStatus.DB_TYPE)
-    val mappedKrithiId = uuid("mapped_krithi_id").nullable()
-    val reviewerUserId = uuid("reviewer_user_id").nullable()
+    val mappedKrithiId = javaUUID("mapped_krithi_id").nullable()
+    val reviewerUserId = javaUUID("reviewer_user_id").nullable()
     val reviewerNotes = text("reviewer_notes").nullable()
     val reviewedAt = timestampWithTimeZone("reviewed_at").nullable()
     // TRACK-011: Quality scoring columns
@@ -263,11 +264,11 @@ object ImportedKrithisTable : UUIDTable("imported_krithis") {
 }
 
 object AuditLogTable : UUIDTable("audit_log") {
-    val actorUserId = uuid("actor_user_id").nullable()
+    val actorUserId = javaUUID("actor_user_id").nullable()
     val actorIp = text("actor_ip").nullable()
     val action = text("action")
     val entityTable = text("entity_table")
-    val entityId = uuid("entity_id").nullable()
+    val entityId = javaUUID("entity_id").nullable()
     val changedAt = timestampWithTimeZone("changed_at")
     val diff = jsonbText("diff").nullable()
     val metadata = jsonbText("metadata").nullable()
@@ -276,7 +277,7 @@ object AuditLogTable : UUIDTable("audit_log") {
 // Bulk Import Orchestration Tables
 object ImportBatchTable : UUIDTable("import_batch") {
     val sourceManifest = text("source_manifest")
-    val createdByUserId = uuid("created_by_user_id").nullable()
+    val createdByUserId = javaUUID("created_by_user_id").nullable()
     val status = pgEnum<BatchStatus>("status", BatchStatus.DB_TYPE)
     val totalTasks = integer("total_tasks").default(0)
     val processedTasks = integer("processed_tasks").default(0)
@@ -290,7 +291,7 @@ object ImportBatchTable : UUIDTable("import_batch") {
 }
 
 object ImportJobTable : UUIDTable("import_job") {
-    val batchId = uuid("batch_id")
+    val batchId = javaUUID("batch_id")
     val jobType = pgEnum<JobType>("job_type", JobType.DB_TYPE)
     val status = pgEnum<TaskStatus>("status", TaskStatus.DB_TYPE)
     val retryCount = integer("retry_count").default(0)
@@ -303,7 +304,7 @@ object ImportJobTable : UUIDTable("import_job") {
 }
 
 object ImportTaskRunTable : UUIDTable("import_task_run") {
-    val jobId = uuid("job_id")
+    val jobId = javaUUID("job_id")
     val krithiKey = text("krithi_key").nullable()
     val idempotencyKey = text("idempotency_key").nullable()
     val status = pgEnum<TaskStatus>("status", TaskStatus.DB_TYPE)
@@ -321,7 +322,7 @@ object ImportTaskRunTable : UUIDTable("import_task_run") {
 
 object ImportEventTable : UUIDTable("import_event") {
     val refType = text("ref_type")
-    val refId = uuid("ref_id")
+    val refId = javaUUID("ref_id")
     val eventType = text("event_type")
     val data = jsonbText("data").nullable()
     val createdAt = timestampWithTimeZone("created_at")
@@ -332,7 +333,7 @@ object EntityResolutionCacheTable : UUIDTable("entity_resolution_cache") {
     val entityType = varchar("entity_type", 50)
     val rawName = text("raw_name")
     val normalizedName = text("normalized_name")
-    val resolvedEntityId = uuid("resolved_entity_id")
+    val resolvedEntityId = javaUUID("resolved_entity_id")
     val confidence = integer("confidence")
     val createdAt = timestampWithTimeZone("created_at")
     val updatedAt = timestampWithTimeZone("updated_at")

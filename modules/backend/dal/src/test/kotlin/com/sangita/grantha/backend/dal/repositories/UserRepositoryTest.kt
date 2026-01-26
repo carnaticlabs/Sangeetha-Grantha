@@ -29,27 +29,9 @@ class UserRepositoryTest {
             password = ""
         )
 
-        // Create schema using raw SQL (H2 compatible)
-        // Note: For H2 testing, we'll use a simpler approach - just let Exposed create the table
-        // In a real scenario, you'd use migrations, but for unit tests this is acceptable
+        // Create schema using Exposed SchemaUtils
         DatabaseFactory.dbQuery {
-            // Use Exposed's table creation - but since SchemaUtils might not be available,
-            // we'll use a workaround: create the table via the connection
-            val conn = this.connection
-            conn.createStatement().use { stmt ->
-                stmt.execute("""
-                    CREATE TABLE IF NOT EXISTS users (
-                        id UUID PRIMARY KEY,
-                        email TEXT,
-                        full_name TEXT NOT NULL,
-                        display_name TEXT,
-                        password_hash TEXT,
-                        is_active BOOLEAN NOT NULL DEFAULT TRUE,
-                        created_at TIMESTAMP WITH TIME ZONE NOT NULL,
-                        updated_at TIMESTAMP WITH TIME ZONE NOT NULL
-                    )
-                """.trimIndent())
-            }
+            SchemaUtils.create(UsersTable)
         }
 
         repository = UserRepository()
@@ -58,10 +40,7 @@ class UserRepositoryTest {
     @AfterEach
     fun teardown() = runTest {
         DatabaseFactory.dbQuery {
-            val conn = this.connection
-            conn.createStatement().use { stmt ->
-                stmt.execute("DROP TABLE IF EXISTS users")
-            }
+            SchemaUtils.drop(UsersTable)
         }
         DatabaseFactory.close()
     }

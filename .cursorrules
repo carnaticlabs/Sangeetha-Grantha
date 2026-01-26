@@ -62,12 +62,12 @@ Sangeetha Grantha is a digital compendium of Carnatic Music. It is a multi-modul
 - **Rust**: idiomatic safety, proper error handling for CLI tools.
 
 ## Core Technologies
-- **Kotlin**: 2.2.20 (KMP, JVM backend, Android)
+- **Kotlin**: 2.3.0 (KMP, JVM backend, Android)
 - **React**: 19.2.0 with TypeScript 5.8.3
-- **Ktor**: 3.3.1 (Netty server)
-- **Exposed**: 1.0.0-rc-2 (ORM)
-- **Vite**: 7.1.7 (build tool)
-- **Tailwind CSS**: 3.4.13
+- **Ktor**: 3.4.0 (Netty server)
+- **Exposed**: 1.0.0 (ORM)
+- **Vite**: 6.2.0 (build tool)
+- **Tailwind CSS**: 4.1.18
 - **PostgreSQL**: 15+ (migrations via Rust, NOT Flyway)
 
 ## Key Patterns to Follow
