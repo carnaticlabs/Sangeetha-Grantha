@@ -28,6 +28,7 @@ Standardize all documentation files in `application_documentation/` to use a str
 - 2026-01-24: Updated SKILL.md to remove YAML frontmatter and use standard table header.
 - 2026-01-24: Upgraded `fix_headers.py` to handle duplicate headers and bulk update.
 - 2026-01-24: Ran bulk update across `application_documentation/`, standardizing 100+ files.
+- 2026-01-26: Resolved duplicated headers issue where files contained multiple metadata tables. Updated `fix_headers.py` to recursively strip all table occurrences and re-ran across `application_documentation/`. Verified 0 duplicates across the entire project.
 
 ## Scope
 - Scan `application_documentation/` for all `.md` files.

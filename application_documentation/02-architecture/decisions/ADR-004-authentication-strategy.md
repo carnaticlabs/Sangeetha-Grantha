@@ -2,18 +2,11 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-24 |
+| **Last Updated** | 2026-01-26 |
 | **Author** | Sangeetha Grantha Team |
 
 # ADR-004: Authentication Strategy - Bearer Token with Role-Based Access Control
 
-| Metadata | Value |
-|:---|:---|
-| **Status** | Accepted |
-| **Version** | 1.0 |
-| **Last Updated** | 2026-01-20 |
-| **Author** | Engineering Team |
-| **Related Documents** | - [API Coverage Implementation Plan](../../07-quality/api-coverage-implementation-plan.md)<br>- [Security Requirements](../../06-backend/security-requirements.md)<br>- [Tech Stack](../tech-stack.md) |
 
 ## Context
 

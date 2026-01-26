@@ -2,18 +2,11 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-24 |
+| **Last Updated** | 2026-01-26 |
 | **Author** | Sangeetha Grantha Team |
 
 # Entity Relationship Diagram Reference
 
-| Metadata | Value |
-|:---|:---|
-| **Status** | Draft |
-| **Version** | 1.0 |
-| **Last Updated** | 2026-01-20 |
-| **Author** | Engineering Team |
-| **Related Documents** | - [Schema](../../04-database/schema.md)<br>- [Domain Model](../../01-requirements/domain-model.md)<br>- [Differences](../../archive/database-archive/differences.md) |
 
 # 1. Available Assets
 

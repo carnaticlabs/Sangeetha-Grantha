@@ -2,18 +2,11 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-24 |
+| **Last Updated** | 2026-01-26 |
 | **Author** | Sangeetha Grantha Team |
 
 # Google Gemini & AI Integration Opportunities
 
-| Metadata | Value |
-|:---|:---|
-| **Status** | Planned |
-| **Version** | 1.1 |
-| **Last Updated** | 2026-01-20 |
-| **Author** | Engineering Team |
-| **Related Documents** | - [Admin Web Prd](../01-requirements/admin-web/prd.md)<br>- [Architecture](../02-architecture/backend-system-design.md)<br>- [Schema](../04-database/schema.md)<br>- [Api Contract](../03-api/api-contract.md) |
 
 # Google Gemini & AI Integration Opportunities for Sangita Grantha
 

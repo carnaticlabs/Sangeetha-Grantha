@@ -2,18 +2,11 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-24 |
+| **Last Updated** | 2026-01-26 |
 | **Author** | Sangeetha Grantha Team |
 
 # Database Migrations (Sangita Grantha)
 
-| Metadata | Value |
-|:---|:---|
-| **Status** | Draft |
-| **Version** | 0.2 |
-| **Last Updated** | 2026-01-20 |
-| **Author** | Engineering Team |
-| **Related Documents** | - [Schema](./schema.md) |
 
 - Migrations Runner Rust (Deleted)
 - [Config](../08-operations/config.md)

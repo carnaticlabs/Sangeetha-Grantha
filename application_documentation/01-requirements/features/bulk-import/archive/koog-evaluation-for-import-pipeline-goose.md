@@ -2,21 +2,11 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-24 |
+| **Last Updated** | 2026-01-26 |
 | **Author** | Sangeetha Grantha Team |
 
 # Koog Evaluation for Import Pipeline - Detailed Analysis
 
-| Metadata | Value |
-|:---|:---|
-| **Status** | Analysis |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-20 |
-| **Author** | Goose AI Analysis |
-| **Related Documents** | 
-| - [Koog Integration Analysis](./koog-integration-analysis.md) |
-| - [Koog Technical Integration Proposal](./koog-technical-integration-proposal.md) |
-| - [Krithi Bulk Import Capability Analysis](./krithi-bulk-import-capability-analysis-goose.md) |
 
 ---
 

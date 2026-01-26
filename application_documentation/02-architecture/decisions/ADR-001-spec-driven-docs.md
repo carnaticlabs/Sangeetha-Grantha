@@ -2,18 +2,11 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-24 |
+| **Last Updated** | 2026-01-26 |
 | **Author** | Sangeetha Grantha Team |
 
 # ADR-001: Spec-Driven Documentation Architecture
 
-| Metadata | Value |
-|:---|:---|
-| **Status** | Accepted |
-| **Version** | 1.0 |
-| **Last Updated** | 2026-01-20 |
-| **Author** | Engineering Team |
-| **Related Documents** | - [Documentation Index](../../README.md)<br>- [Admin Web Prd](../../01-requirements/admin-web/prd.md)<br>- [Mobile App Prd](../../01-requirements/mobile/prd.md) |
 
 ## Context
 

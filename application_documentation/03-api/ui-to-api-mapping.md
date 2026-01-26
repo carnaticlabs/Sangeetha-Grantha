@@ -2,18 +2,11 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-24 |
+| **Last Updated** | 2026-01-26 |
 | **Author** | Sangeetha Grantha Team |
 
 # UI to API Mapping
 
-| Metadata | Value |
-|:---|:---|
-| **Status** | Approved |
-| **Version** | 2.1 |
-| **Last Updated** | 2026-01-20 |
-| **Author** | Engineering Team |
-| **Related Documents** | - [Api Contract](./api-contract.md)<br>- [Application_Data_Api_Integration_Spec](integration-spec.md)<br>- [Admin Web Prd](../01-requirements/admin-web/prd.md)<br>- [Ui Specs](../05-frontend/mobile/ui-specs.md) |
 
 # UI ↔ API Mapping (Canonical)
 

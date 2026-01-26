@@ -2,18 +2,11 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-24 |
+| **Last Updated** | 2026-01-26 |
 | **Author** | Sangeetha Grantha Team |
 
 # Sangita Grantha Public Mobile App PRD
 
-| Metadata | Value |
-|:---|:---|
-| **Status** | Draft |
-| **Version** | 0.1 |
-| **Last Updated** | 2026-01-20 |
-| **Author** | Engineering Team |
-| **Related Documents** | - [Mobile Ui](../../05-frontend/mobile/ui-specs.md)<br>- [Api Contract](../../03-api/api-contract.md)<br>- [Sangita_Schema_Overview](../../04-database/schema.md)<br>- [Domain Model](../domain-model.md) |
 
 # 1. Executive Summary
 

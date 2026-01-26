@@ -2,18 +2,11 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-24 |
+| **Last Updated** | 2026-01-26 |
 | **Author** | Sangeetha Grantha Team |
 
 # Sangita Grantha API Integration Specification
 
-| Metadata | Value |
-|:---|:---|
-| **Status** | Draft |
-| **Version** | 0.1 |
-| **Last Updated** | 2026-01-20 |
-| **Author** | Engineering Team |
-| **Related Documents** | - [Api Contract](./api-contract.md)<br>- [Ui To Api Mapping](./ui-to-api-mapping.md)<br>- [Mobile Ui](../05-frontend/mobile/ui-specs.md)<br>- [Ui Specs](../05-frontend/mobile/ui-specs.md)<br>- [Architecture](../02-architecture/backend-system-design.md) |
 
 This document focuses on **client integration patterns** and
 **screen-level API usage** for:

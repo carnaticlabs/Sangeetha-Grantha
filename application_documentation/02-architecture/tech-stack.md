@@ -2,18 +2,11 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-24 |
+| **Last Updated** | 2026-01-26 |
 | **Author** | Sangeetha Grantha Team |
 
 # Tech Stack
 
-| Metadata | Value |
-|:---|:---|
-| **Status** | Current |
-| **Version** | 2.1 |
-| **Last Updated** | 2026-01-20 |
-| **Author** | Engineering Team |
-| **Related Documents** | - [Architecture](backend-system-design.md)<br>- [Schema](../04-database/schema.md)<br>- [Frontend Admin Web](../05-frontend/admin-web/) |
 
 ## Current Dependencies
 

@@ -2,18 +2,11 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-24 |
+| **Last Updated** | 2026-01-26 |
 | **Author** | Sangeetha Grantha Team |
 
 # Test Plan
 
-| Metadata | Value |
-|:---|:---|
-| **Status** | Current |
-| **Version** | 2.0 |
-| **Last Updated** | 2026-01-20 |
-| **Author** | Engineering Team |
-| **Related Documents** | - [Admin Web PRD](../../01-requirements/admin-web/prd.md)<br>- [Mobile PRD](../../01-requirements/mobile/prd.md)<br>- [Steel Thread Implementation](../../06-backend/steel-thread-implementation.md) |
 
 # 1. Scope
 

@@ -2,18 +2,11 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-24 |
+| **Last Updated** | 2026-01-26 |
 | **Author** | Sangeetha Grantha Team |
 
 # Schema & API Alignment (Sangita Grantha)
 
-| Metadata | Value |
-|:---|:---|
-| **Status** | Draft |
-| **Version** | 0.1 |
-| **Last Updated** | 2026-01-20 |
-| **Author** | Engineering Team |
-| **Related Documents** | - [Sangita_Schema_Overview](schema.md)<br>- [Api Contract](../03-api/api-contract.md)<br>- [Domain Model](../01-requirements/domain-model.md) |
 
 # Schema & API Alignment
 

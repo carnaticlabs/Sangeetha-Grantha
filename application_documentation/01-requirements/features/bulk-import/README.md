@@ -2,17 +2,11 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-24 |
+| **Last Updated** | 2026-01-26 |
 | **Author** | Sangeetha Grantha Team |
 
 # Bulk Import Feature - Master Index
 
-| Metadata | Value |
-|:---|:---|
-| **Status** | Planning & Analysis Complete |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-20 |
-| **Feature Track** | TRACK-001 |
 
 ---
 

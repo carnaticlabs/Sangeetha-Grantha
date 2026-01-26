@@ -2,19 +2,11 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-24 |
+| **Last Updated** | 2026-01-26 |
 | **Author** | Sangeetha Grantha Team |
 
 # Web Source Detailed Analysis for Krithi Import
 
-| Metadata | Value |
-|:---|:---|
-| **Status** | Analysis |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-20 |
-| **Author** | Goose AI Analysis |
-| **Related Documents** | 
-| - [Krithi Bulk Import Capability Analysis](../archive/krithi-bulk-import-capability-analysis-goose.md) |
 
 ---
 

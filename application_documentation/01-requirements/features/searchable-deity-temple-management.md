@@ -2,16 +2,11 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-24 |
+| **Last Updated** | 2026-01-26 |
 | **Author** | Sangeetha Grantha Team |
 
 # Feature: Searchable Deity and Temple Management with Modal Forms
 
-| Metadata | Value |
-|:---|:---|
-| **Status** | Implemented |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-20 |
 
 ---
 

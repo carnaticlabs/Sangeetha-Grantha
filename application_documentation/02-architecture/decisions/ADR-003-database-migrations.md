@@ -2,18 +2,11 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-24 |
+| **Last Updated** | 2026-01-26 |
 | **Author** | Sangeetha Grantha Team |
 
 # ADR-003: Database Migration Tool Choice - Rust vs Flyway
 
-| Metadata | Value |
-|:---|:---|
-| **Status** | Accepted |
-| **Version** | 1.0 |
-| **Last Updated** | 2026-01-20 |
-| **Author** | Engineering Team |
-| **Related Documents** | - [Database Migrations](../../04-database/migrations.md)<br>- [Sangita CLI README](../../../tools/sangita-cli/README.md)<br>- [Tech Stack](../tech-stack.md) |
 
 ## Context
 

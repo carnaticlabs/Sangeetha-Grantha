@@ -55,6 +55,7 @@ def parse_metadata(content: str) -> Tuple[Dict[str, str], str]:
     """
     Extracts metadata from various formats (YAML, existing Table) and returns
     (metadata_dict, cleaned_content).
+    Removes ALL occurrences of the metadata table.
     """
     metadata = {
         "status": "Active",
@@ -62,55 +63,66 @@ def parse_metadata(content: str) -> Tuple[Dict[str, str], str]:
         "date": datetime.date.today().isoformat(),
         "author": "Sangeetha Grantha Team",
     }
-    cleaned_content = content
-
+    
     # 1. Try YAML Frontmatter (at start of file)
     yaml_match = YAML_FRONTMATTER_REGEX.match(content)
     if yaml_match:
         yaml_content = yaml_match.group(1)
-        cleaned_content = content[yaml_match.end() :].lstrip()
+        content = content[yaml_match.end() :].lstrip()
         
         for line in yaml_content.splitlines():
             if ":" in line:
                 key, val = line.split(":", 1)
                 process_metadata_kv(metadata, key, val)
-        return metadata, cleaned_content
 
-    # 2. Search for existing Markdown Table (anywhere in first 50 lines)
-    # We look for the specific header line
+    # 2. Search for ALL occurrences of Markdown Table
     lines = content.splitlines()
-    table_start_idx = -1
+    ranges_to_remove = [] # List of (start_idx, end_idx)
     
-    for i, line in enumerate(lines[:50]):
+    i = 0
+    first_table_found = False
+    
+    while i < len(lines):
+        line = lines[i]
+        # Check for header line
         if "| Metadata | Value |" in line:
-            table_start_idx = i
-            break
-    
-    if table_start_idx != -1:
-        # Found a table. Let's try to extract from it and remove it.
-        # We assume the table ends when we hit a non-pipe line or empty line
-        table_end_idx = table_start_idx + 1
-        while table_end_idx < len(lines):
-            line = lines[table_end_idx].strip()
-            if not line or not line.startswith("|"):
-                break
+            start_idx = i
+            end_idx = i + 1
             
-            # Extract data
-            if "|" in line and "---" not in line:
-                parts = [p.strip() for p in line.split("|") if p.strip()]
-                if len(parts) >= 2:
-                    key = parts[0].replace("**", "")
-                    val = parts[1]
-                    process_metadata_kv(metadata, key, val)
+            # Scan to find end of this table
+            while end_idx < len(lines):
+                tbl_line = lines[end_idx].strip()
+                # Table ends on empty line or line not starting with pipe
+                if not tbl_line or not tbl_line.startswith("|"):
+                    break
+                
+                # Parse metadata ONLY from the first table found
+                if not first_table_found:
+                    if "|" in tbl_line and "---" not in tbl_line:
+                        parts = [p.strip() for p in tbl_line.split("|") if p.strip()]
+                        if len(parts) >= 2:
+                            key = parts[0].replace("**", "")
+                            val = parts[1]
+                            process_metadata_kv(metadata, key, val)
+                
+                end_idx += 1
             
-            table_end_idx += 1
-            
-        # Remove the table lines
-        # Also remove potential blank lines around it to clean up
-        before = lines[:table_start_idx]
-        after = lines[table_end_idx:]
-        cleaned_content = "\n".join(before + after).strip() + "\n"
+            first_table_found = True
+            ranges_to_remove.append((start_idx, end_idx))
+            i = end_idx
+        else:
+            i += 1
 
+    # Reconstruct content skipping removed ranges
+    new_lines = []
+    curr_line = 0
+    for start, end in ranges_to_remove:
+        # Add lines before this block
+        new_lines.extend(lines[curr_line:start])
+        curr_line = end
+    new_lines.extend(lines[curr_line:])
+    
+    cleaned_content = "\n".join(new_lines).strip() + "\n"
     return metadata, cleaned_content
 
 

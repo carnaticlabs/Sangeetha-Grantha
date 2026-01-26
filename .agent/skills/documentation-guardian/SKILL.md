@@ -2,17 +2,11 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-24 |
+| **Last Updated** | 2026-01-26 |
 | **Author** | Sangeetha Grantha Team |
 
 # Documentation Guardian Skill
 
-| Metadata | Value |
-|:---|:---|
-| **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-24 |
-| **Author** | Sangeetha Grantha Team |
 
 ---
 
@@ -32,12 +26,6 @@ Do not use YAML frontmatter. Use a standard Markdown table or list at the very t
 ```markdown
 # [Document Title]
 
-| Metadata | Value |
-|:---|:---|
-| **Status** | [Draft / Proposed / Accepted / Implemented / Deprecated] |
-| **Version** | [X.Y.Z] |
-| **Last Updated** | YYYY-MM-DD |
-| **Author** | [Optional] |
 
 ---
 ```

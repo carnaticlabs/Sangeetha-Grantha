@@ -2,18 +2,11 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-24 |
+| **Last Updated** | 2026-01-26 |
 | **Author** | Sangeetha Grantha Team |
 
 # Mobile UI Specification (KMP)
 
-| Metadata | Value |
-|:---|:---|
-| **Status** | Draft |
-| **Version** | 1.0 |
-| **Last Updated** | 2026-01-20 |
-| **Author** | Engineering Team |
-| **Related Documents** | - [Prd](../../01-requirements/mobile/prd.md)<br>- [Integration Spec](../../03-api/integration-spec.md)<br>- [Schema](../../04-database/schema.md) |
 
 ## 1. Scope
 This document specifies the UI/UX implementation for the Sangita Grantha mobile application using **Kotlin Multiplatform (KMP)** and **Compose Multiplatform**. It focuses on the read-only discovery experience for Rasikas.

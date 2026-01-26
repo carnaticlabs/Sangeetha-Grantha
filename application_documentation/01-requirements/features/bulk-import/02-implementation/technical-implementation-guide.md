@@ -2,21 +2,11 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-24 |
+| **Last Updated** | 2026-01-26 |
 | **Author** | Sangeetha Grantha Team |
 
 # Import Pipeline Technical Implementation Guide
 
-| Metadata | Value |
-|:---|:---|
-| **Status** | Implementation Guide |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-20 |
-| **Author** | Goose AI Analysis |
-| **Related Documents** | 
-| - [Krithi Bulk Import Capability Analysis](../archive/krithi-bulk-import-capability-analysis-goose.md) |
-| - [Web Source Detailed Analysis](../03-sources/web-source-analysis.md) |
-| - [Koog Evaluation](../archive/koog-evaluation-for-import-pipeline-goose.md) |
 
 ---
 

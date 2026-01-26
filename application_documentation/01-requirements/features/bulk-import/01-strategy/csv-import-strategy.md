@@ -2,22 +2,11 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-24 |
+| **Last Updated** | 2026-01-26 |
 | **Author** | Sangeetha Grantha Team |
 
 # Krithi Bulk Import from CSV - Comprehensive Strategy & Design
 
-| Metadata | Value |
-|:---|:---|
-| **Status** | Strategy & Design Document |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-20 |
-| **Author** | Goose AI Analysis |
-| **Related Documents** | 
-| - [Krithi Bulk Import Capability Analysis](../archive/krithi-bulk-import-capability-analysis-goose.md) |
-| - [Import Pipeline Technical Implementation Guide](../02-implementation/technical-implementation-guide.md) |
-| - [Koog Evaluation](../archive/koog-evaluation-for-import-pipeline-goose.md) |
-| - [Krithi Import Orchestration](../archive/krithi-import-orchestration-comprehensive-analysis-claude.md) |
 
 ---
 

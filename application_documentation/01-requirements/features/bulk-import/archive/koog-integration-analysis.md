@@ -2,17 +2,11 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-24 |
+| **Last Updated** | 2026-01-26 |
 | **Author** | Sangeetha Grantha Team |
 
 # Koog Integration Analysis and Options
 
-| Metadata | Value |
-|:---|:---|
-| **Status** | Analysis |
-| **Version** | 1.1 |
-| **Last Updated** | 2026-01-20 |
-| **Author** | Engineering Team |
 
 > - [Intelligent Content Ingestion](../../intelligent-content-ingestion.md)
 > - [Gemini Integration ADR](../../../../02-architecture/decisions/ADR-006-gemini-integration.md)

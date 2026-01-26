@@ -2,18 +2,11 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-24 |
+| **Last Updated** | 2026-01-26 |
 | **Author** | Sangeetha Grantha Team |
 
 # Sangita Grantha Security Requirements
 
-| Metadata | Value |
-|:---|:---|
-| **Status** | Draft |
-| **Version** | 0.2 |
-| **Last Updated** | 2026-01-20 |
-| **Author** | Engineering Team |
-| **Related Documents** | - [Architecture](../02-architecture/backend-system-design.md)<br>- [Mutation Handlers](./mutation-handlers.md)<br>- [Api Contract](../03-api/api-contract.md) |
 
 # Security Requirements for Sangita Grantha
 

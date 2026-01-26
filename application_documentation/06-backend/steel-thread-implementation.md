@@ -2,18 +2,11 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-24 |
+| **Last Updated** | 2026-01-26 |
 | **Author** | Sangeetha Grantha Team |
 
 # Steel Thread Implementation
 
-| Metadata | Value |
-|:---|:---|
-| **Status** | Current |
-| **Version** | 1.0 |
-| **Last Updated** | 2026-01-20 |
-| **Author** | Engineering Team |
-| **Related Documents** | - [Steel Thread Runbook](../08-operations/runbooks/steel-thread-runbook.md)<br>- [Steel Thread Report](../07-quality/reports/steel-thread.md)<br>- [Sangita CLI README](../../tools/sangita-cli/README.md) |
 
 ## Overview
 

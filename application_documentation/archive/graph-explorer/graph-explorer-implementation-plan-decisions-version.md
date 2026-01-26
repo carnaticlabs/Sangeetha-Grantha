@@ -2,18 +2,11 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-24 |
+| **Last Updated** | 2026-01-26 |
 | **Author** | Sangeetha Grantha Team |
 
 # Graph Explorer Implementation Plan - PostgreSQL + Cytoscape.js
 
-| Metadata | Value |
-|:---|:---|
-| **Status** | Draft |
-| **Version** | 1.0 |
-| **Last Updated** | 2026-01-20 |
-| **Author** | Engineering Team |
-| **Related Documents** | - [Graph Database Evaluation](./graph-database-evaluation.md) |
 
 - Neo4J Graph Evaluation (Deleted)
 - [Sangita_Schema_Overview](../../04-database/schema.md)

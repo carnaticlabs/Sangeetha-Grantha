@@ -2,18 +2,11 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-24 |
+| **Last Updated** | 2026-01-26 |
 | **Author** | Sangeetha Grantha Team |
 
 # Audit Log Specification (Sangita Grantha)
 
-| Metadata | Value |
-|:---|:---|
-| **Status** | Draft |
-| **Version** | 0.2 |
-| **Last Updated** | 2026-01-20 |
-| **Author** | Engineering Team |
-| **Related Documents** | - [Admin Web Prd](../01-requirements/admin-web/prd.md)<br>- [Mutation Handlers](../06-backend/mutation-handlers.md)<br>- [Sangita_Schema_Overview](schema.md) |
 
 # 1. Purpose
 

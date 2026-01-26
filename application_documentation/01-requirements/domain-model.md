@@ -2,18 +2,11 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-24 |
+| **Last Updated** | 2026-01-26 |
 | **Author** | Sangeetha Grantha Team |
 
 # Sangita Grantha Domain Model Overview
 
-| Metadata | Value |
-|:---|:---|
-| **Status** | Draft |
-| **Version** | 0.3 |
-| **Last Updated** | - |
-| **Author** | Engineering Team |
-| **Related Documents** | - [Admin Web Prd](admin-web/prd.md)<br>- [Mobile App Prd](mobile/prd.md)<br>- [Sangita Grantha –Prd](product-requirements-document.md)<br>- [Api Contract](../03-api/api-contract.md)<br>- [Sangita_Schema_Overview](../04-database/schema.md) |
 
 # 1. Purpose
 
