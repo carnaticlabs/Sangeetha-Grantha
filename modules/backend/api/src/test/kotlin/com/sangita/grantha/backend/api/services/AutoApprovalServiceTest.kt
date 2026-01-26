@@ -10,20 +10,24 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.BeforeEach
 import kotlin.uuid.Uuid
+import kotlin.time.Instant
+import com.sangita.grantha.backend.api.services.EntityResolutionService
+import com.sangita.grantha.backend.api.services.DeduplicationService
+import com.sangita.grantha.shared.domain.model.ComposerDto
+import com.sangita.grantha.shared.domain.model.RagaDto
+import com.sangita.grantha.shared.domain.model.TalaDto
 
 class AutoApprovalServiceTest {
 
-    private lateinit var dal: SangitaDal
-    private lateinit var importService: ImportService
+    private lateinit var importReviewer: ImportReviewer
     private lateinit var config: AutoApprovalConfig
     private lateinit var service: AutoApprovalService
 
     @BeforeEach
     fun setUp() {
-        dal = mockk(relaxed = true)
-        importService = mockk(relaxed = true)
+        importReviewer = mockk(relaxed = true)
         config = AutoApprovalConfig.fromEnvironment() // Use default config
-        service = AutoApprovalService(dal, importService, config)
+        service = AutoApprovalService(importReviewer, config)
     }
 
     @Test
@@ -127,7 +131,7 @@ class AutoApprovalServiceTest {
             qualityTiers = setOf("EXCELLENT", "GOOD", "FAIR"),
             requireRagaMatch = false // Don't require raga
         )
-        val permissiveService = AutoApprovalService(dal, importService, permissiveConfig)
+        val permissiveService = AutoApprovalService(importReviewer, permissiveConfig)
 
         val import = createTestImport(
             qualityScore = 0.75,
@@ -150,7 +154,7 @@ class AutoApprovalServiceTest {
         )
 
         assertThrows(IllegalArgumentException::class.java) {
-            AutoApprovalService(dal, importService, invalidConfig)
+            AutoApprovalService(importReviewer, invalidConfig)
         }
     }
 
@@ -173,7 +177,7 @@ class AutoApprovalServiceTest {
     ): ImportedKrithiDto {
         return ImportedKrithiDto(
             id = Uuid.random(),
-            sourceId = Uuid.random(),
+            importSourceId = Uuid.random(),
             sourceKey = "https://example.com/krithi",
             rawTitle = rawTitle,
             rawLyrics = rawLyrics,
@@ -191,7 +195,7 @@ class AutoApprovalServiceTest {
             reviewerNotes = null,
             qualityScore = qualityScore,
             qualityTier = qualityTier,
-            createdAt = "2026-01-23T00:00:00Z",
+            createdAt = kotlin.time.Instant.fromEpochSeconds(1769126400), // 2026-01-23
             reviewedAt = null,
             importBatchId = null
         )
@@ -206,27 +210,61 @@ class AutoApprovalServiceTest {
         ragaConfidence: String = "HIGH",
         talaConfidence: String = "HIGH"
     ): String {
-        val data = mapOf(
-            "composerCandidates" to listOf(
-                mapOf("entity" to mapOf("id" to "c1", "name" to "Thyagaraja"), "confidence" to composerConfidence, "score" to 0.95)
+        val result = EntityResolutionService.ResolutionResult(
+            composerCandidates = listOf(
+                EntityResolutionService.Candidate(createTestComposer("Thyagaraja"), 95, composerConfidence)
             ),
-            "ragaCandidates" to listOf(
-                mapOf("entity" to mapOf("id" to "r1", "name" to "Kalyani"), "confidence" to ragaConfidence, "score" to 0.92)
+            ragaCandidates = listOf(
+                EntityResolutionService.Candidate(createTestRaga("Kalyani"), 92, ragaConfidence)
             ),
-            "talaCandidates" to listOf(
-                mapOf("entity" to mapOf("id" to "t1", "name" to "Adi"), "confidence" to talaConfidence, "score" to 0.90)
+            talaCandidates = listOf(
+                EntityResolutionService.Candidate(createTestTala("Adi"), 90, talaConfidence)
             ),
-            "resolved" to true
+            resolved = true
         )
-        return Json.encodeToString(kotlinx.serialization.json.JsonObject.serializer(), Json.parseToJsonElement(Json.encodeToString(kotlinx.serialization.serializer(), data)).jsonObject)
+        return Json.encodeToString(EntityResolutionService.ResolutionResult.serializer(), result)
     }
 
     private fun createDuplicateCandidates(confidence: String = "LOW"): String {
-        val data = mapOf(
-            "matches" to listOf(
-                mapOf("krithiId" to "k1", "title" to "Similar Krithi", "confidence" to confidence, "score" to 0.60)
+        val result = DeduplicationService.DeduplicationResult(
+            matches = listOf(
+                DeduplicationService.DuplicateMatch(
+                    krithiId = "k1",
+                    reason = "Similar Krithi",
+                    confidence = confidence
+                )
             )
         )
-        return Json.encodeToString(kotlinx.serialization.json.JsonObject.serializer(), Json.parseToJsonElement(Json.encodeToString(kotlinx.serialization.serializer(), data)).jsonObject)
+        return Json.encodeToString(DeduplicationService.DeduplicationResult.serializer(), result)
+    }
+
+    private fun createTestComposer(name: String): ComposerDto {
+        return ComposerDto(
+            id = Uuid.random(),
+            name = name,
+            nameNormalized = "test",
+            createdAt = Instant.fromEpochSeconds(1769126400),
+            updatedAt = Instant.fromEpochSeconds(1769126400)
+        )
+    }
+
+    private fun createTestRaga(name: String): RagaDto {
+        return RagaDto(
+            id = Uuid.random(),
+            name = name,
+            nameNormalized = "test",
+            createdAt = Instant.fromEpochSeconds(1769126400),
+            updatedAt = Instant.fromEpochSeconds(1769126400)
+        )
+    }
+
+    private fun createTestTala(name: String): TalaDto {
+        return TalaDto(
+            id = Uuid.random(),
+            name = name,
+            nameNormalized = "test",
+            createdAt = Instant.fromEpochSeconds(1769126400),
+            updatedAt = Instant.fromEpochSeconds(1769126400)
+        )
     }
 }
