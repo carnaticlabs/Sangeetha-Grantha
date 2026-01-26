@@ -88,6 +88,12 @@ modules/
 2. **Dependency versions** - use `gradle/libs.versions.toml`, no hardcoded versions in build.gradle.kts
 3. **Audit logging** - all backend mutations must log to `AUDIT_LOG` table
 4. **Commit format** - every commit must include `Ref: application_documentation/...` line
+5. **Version updates require documentation sync** - when updating dependency versions, update ALL files that reference versions:
+   - `gradle/libs.versions.toml` (source of truth)
+   - `.cursorrules` (Core Technologies section)
+   - `application_documentation/02-architecture/tech-stack.md`
+   - `application_documentation/00-onboarding/development-setup.md`
+   - Any other docs referencing specific versions
 
 ## Conductor Workflow
 

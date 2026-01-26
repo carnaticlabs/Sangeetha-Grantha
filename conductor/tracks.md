@@ -18,5 +18,9 @@
 | [TRACK-014](./tracks/TRACK-014-bulk-import-testing-quality-assurance.md) | Bulk Import Testing & Quality Assurance | Proposed |
 | [TRACK-015](./tracks/TRACK-015-ktor-upgrade-3.4.0.md) | Ktor Upgrade to 3.4.0 | Completed |
 | [TRACK-016](./tracks/TRACK-016-exposed-upgrade-1.0.0.md) | Exposed Upgrade to 1.0.0 | Completed |
+| [TRACK-017](./tracks/TRACK-017-doc-dependency-update.md) | Documentation Dependency Updates | Completed |
+| [TRACK-018](./tracks/TRACK-018-q1-2026-library-upgrades.md) | Q1 2026 Library Upgrades | Completed |
+| [TRACK-019](./tracks/TRACK-019-datetime-standardization.md) | Datetime Standardization | Completed |
+| [TRACK-020](./tracks/TRACK-020-dal-test-fix.md) | Fix DAL Tests | Completed |
 
 ## 3. Deprecated Tracks
