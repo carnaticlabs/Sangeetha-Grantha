@@ -42,6 +42,7 @@ You must strictly prevent sensitive data from entering the codebase.
 Before suggesting `git commit`, mentally (or actually) check:
 1.  "Did I add any file that might contain a secret?"
 2.  "Am I adding a `.env` file?" (If so, STOP and add it to `.gitignore` instead).
+3.  **Strictly Ignore**: As per the core project guardrails, `config/.env.development` must NEVER be staged or committed. Use `git restore --staged config/.env.development` if it was accidentally added.
 
 ## 3. Workflow
 
