@@ -33,8 +33,8 @@ This document provides detailed technical analysis of each web source for Krithi
 
 ### 2.2 HTML Structure Analysis
 
+```tsx
 **Typical Composition Page Structure:**
-```html
 <div class="composition">
   <h1>Composition Title</h1>
   <div class="metadata">
@@ -122,8 +122,8 @@ This document provides detailed technical analysis of each web source for Krithi
 
 ### 3.2 HTML Structure Analysis
 
+```tsx
 **Typical Blog Post Structure:**
-```html
 <article class="post">
   <header>
     <h1 class="post-title">Post Title</h1>
@@ -211,8 +211,8 @@ This document provides detailed technical analysis of each web source for Krithi
 
 ### 4.2 HTML Structure Analysis
 
+```tsx
 **List Page Structure:**
-```html
 <div class="post-body">
   <h2>A</h2>
   <ul>
@@ -291,8 +291,8 @@ This document provides detailed technical analysis of each web source for Krithi
 
 ### 5.2 HTML Structure Analysis
 
+```tsx
 **Similar to other alphabetical list sources:**
-```html
 <div class="post-body">
   <h2>A</h2>
   <ul>
@@ -434,8 +434,8 @@ This document provides detailed technical analysis of each web source for Krithi
 
 ### 6.2 HTML Structure Analysis
 
+```tsx
 **Typical Temple Page Structure:**
-```html
 <div class="temple-info">
   <h1>Temple Name</h1>
   <div class="location">
@@ -594,7 +594,6 @@ This document provides detailed technical analysis of each web source for Krithi
 
 ### 8.2 Source Handler Architecture
 
-```kotlin
 interface SourceHandler {
     suspend fun discoverUrls(): List<String>
     suspend fun scrape(url: String): RawContent
@@ -606,6 +605,7 @@ class KarnatikSourceHandler : SourceHandler {
     // Karnatik-specific implementation
 }
 
+```text
 class BlogspotSourceHandler : SourceHandler {
     // Generic Blogspot handler, configurable per blog
 }
@@ -625,7 +625,7 @@ class BlogspotSourceHandler : SourceHandler {
 - Extract metadata from text
 
 **Prompt Template:**
-```
+```text
 Extract the following from this HTML content:
 1. Composition title
 2. Composer name

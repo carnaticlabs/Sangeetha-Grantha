@@ -29,15 +29,15 @@ All documentation files should include front matter with:
 - **Last Updated**: ISO date format (YYYY-MM-DD)
 - **Owners**: Team or role responsible for maintaining the document
 
+```text
 Example:
-```markdown
 ```
 
 ### Directory Organization
 
 Documentation is organized in `application_documentation/` with the following structure:
 
-```
+```text
 application_documentation/
 ├── 00-meta/              # Meta-documentation (standards, retention plans)
 ├── 01-requirements/      # PRDs, domain models, feature specs

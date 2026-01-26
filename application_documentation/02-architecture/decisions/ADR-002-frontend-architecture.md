@@ -54,7 +54,7 @@ The decision was driven by several factors:
 
 ### Project Structure
 
-```
+```text
 modules/frontend/sangita-admin-web/
 ├── src/
 │   ├── components/        # Reusable UI components

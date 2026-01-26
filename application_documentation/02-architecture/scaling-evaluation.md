@@ -43,7 +43,7 @@ Sangeetha Grantha is a well-architected, domain-driven application with strong m
 
 ### 1.1 System Components
 
-```
+```text
 ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
 │ Mobile App  │     │ Admin Web   │     │   Public    │
 │  (KMM)      │     │  (React)    │     │   Web?      │
@@ -99,8 +99,8 @@ Sangeetha Grantha is a well-architected, domain-driven application with strong m
 
 #### Scaling Strategy
 
+```text
 **Phase 1: Connection Pool Optimization**
-```kotlin
 // Current: maxPoolSize = 10
 // Recommended for scale:
 maxPoolSize = 50-100 (per instance)
@@ -110,7 +110,7 @@ maxLifetime = 1_800_000
 ```
 
 **Phase 2: Read Replicas**
-```
+```text
 Primary (Write) ──┐
                   ├──> Read Replica 1 (US-East)
                   ├──> Read Replica 2 (EU-West)
@@ -142,7 +142,7 @@ Primary (Write) ──┐
 #### Scaling Strategy
 
 **Phase 1: Application-Level Caching (Redis)**
-```
+```text
 ┌──────────┐     ┌──────────┐     ┌──────────┐
 │  Ktor    │────▶│  Redis   │────▶│PostgreSQL│
 │ Backend  │     │  Cache   │     │          │
@@ -169,8 +169,8 @@ Primary (Write) ──┐
    - Entire JSON response for `/v1/krithis/{id}`
    - Reduces database load significantly
 
-**Implementation:**
 ```kotlin
+**Implementation:**
 // Add Redis client (e.g., Lettuce or Jedis)
 class CacheService(private val redis: RedisClient) {
     suspend fun <T> getOrSet(
@@ -212,7 +212,7 @@ class CacheService(private val redis: RedisClient) {
 - Still limited to single database
 
 **Phase 2: Dedicated Search Engine (Elasticsearch/OpenSearch)**
-```
+```text
 ┌──────────┐     ┌──────────────┐
 │  Ktor    │────▶│ Elasticsearch│
 │ Backend  │     │  (Search)    │
@@ -248,7 +248,7 @@ class CacheService(private val redis: RedisClient) {
 #### Scaling Strategy
 
 **Phase 1: Horizontal Scaling**
-```
+```text
                     ┌──────────┐
                     │   LB     │
                     │ (Nginx/  │
@@ -267,8 +267,8 @@ class CacheService(private val redis: RedisClient) {
 - Stateless application (no session affinity required)
 - Shared Redis cache for session data (if needed)
 
+```text
 **Phase 2: Rate Limiting**
-```kotlin
 // Add rate limiting plugin (e.g., Bucket4j)
 install(RateLimiter) {
     rateLimiter = RateLimiter.create(100.0) // 100 req/sec per IP
@@ -296,7 +296,7 @@ install(RateLimiter) {
 #### Scaling Strategy
 
 **Phase 1: Message Queue (RabbitMQ/AWS SQS)**
-```
+```text
 ┌──────────┐     ┌──────────┐     ┌──────────┐
 │  Ktor    │────▶│  Queue   │────▶│  Worker  │
 │ Backend  │     │ (SQS)    │     │ (Gemini) │
@@ -311,7 +311,6 @@ install(RateLimiter) {
 - Bulk imports (async)
 
 **Implementation:**
-```kotlin
 // Async job submission
 suspend fun transliterateAsync(content: String): JobId {
     val job = TransliterationJob(content)
@@ -319,6 +318,7 @@ suspend fun transliterateAsync(content: String): JobId {
     return job.id
 }
 
+```kotlin
 // Worker processes jobs
 class TransliterationWorker {
     suspend fun process(job: TransliterationJob) {
@@ -342,7 +342,7 @@ class TransliterationWorker {
 #### Scaling Strategy
 
 **Phase 1: Multi-Region Deployment**
-```
+```text
 US-East (Primary) ──┐
                     ├──> Database Replication
 EU-West ────────────┤

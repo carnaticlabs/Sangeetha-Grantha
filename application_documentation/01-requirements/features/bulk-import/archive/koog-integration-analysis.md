@@ -201,7 +201,7 @@ Koog memory features align with domain-specific needs:
 
 ### 7.1 Architecture Sketch
 
-```
+```text
 Ktor API
   |-- GeminiApiClient (existing)
   |-- KoogAgentPipeline (new)

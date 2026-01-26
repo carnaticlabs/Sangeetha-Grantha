@@ -130,7 +130,7 @@ The Graph Explorer provides a visual, interactive interface for administrators t
 
 The implementation follows a "Client-Side Graph" model as documented in [ADR-005](../../02-architecture/decisions/ADR-005-graph-database-evaluation.md):
 
-```
+```text
 ┌─────────────────┐
 │  Admin Web UI   │
 │  (Cytoscape.js) │

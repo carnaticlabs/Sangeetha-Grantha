@@ -514,7 +514,7 @@ Based on the Sangeetha Grantha domain model, the import pipeline must extract an
 - **Kotlin DSL**: Type-safe, fits existing stack
 
 **Workflow Example:**
-```
+```text
 Discovery Node → Scraping Node → Extraction Node → 
 Entity Resolution Node → Cleansing Node → 
 Deduplication Node → Validation Node → Staging Node
@@ -652,7 +652,7 @@ class ImportPipeline {
 
 ### 5.1 Recommended Architecture (Hybrid Approach)
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │                   Import API Endpoints                   │
 │  POST /v1/admin/imports/sources/{id}/scrape            │
@@ -690,13 +690,13 @@ class ImportPipeline {
 - Batch processing
 
 **Key Methods:**
-```kotlin
 suspend fun importFromSource(
     sourceId: UUID,
     urls: List<String>,
     options: ImportOptions
 ): ImportBatchResult
 
+```kotlin
 suspend fun processImportBatch(
     batchId: UUID
 ): ImportBatchStatus
@@ -710,8 +710,8 @@ suspend fun processImportBatch(
 - Confidence scoring
 - Handle ambiguous matches
 
-**Key Methods:**
 ```kotlin
+**Key Methods:**
 suspend fun resolveComposer(name: String): EntityMatch<Composer>
 suspend fun resolveRaga(name: String): EntityMatch<Raga>
 suspend fun resolveDeity(name: String): EntityMatch<Deity>
@@ -727,11 +727,11 @@ suspend fun resolveTemple(name: String, context: String?): EntityMatch<Temple>
 - Merge strategy recommendations
 
 **Key Methods:**
-```kotlin
 suspend fun findDuplicates(
     imported: ImportedKrithiDto
 ): List<DuplicateMatch>
 
+```kotlin
 suspend fun mergeDuplicates(
     primaryId: UUID,
     duplicateIds: List<UUID>
@@ -752,8 +752,8 @@ suspend fun mergeDuplicates(
 
 #### 5.3.1 Import Batch Tracking
 
-**New Table: `import_batches`**
 ```sql
+**New Table: `import_batches`**
 CREATE TABLE import_batches (
   id UUID PRIMARY KEY,
   import_source_id UUID REFERENCES import_sources(id),

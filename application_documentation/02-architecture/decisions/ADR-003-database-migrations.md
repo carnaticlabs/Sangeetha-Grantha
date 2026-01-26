@@ -57,7 +57,7 @@ The decision was driven by several factors:
 
 The migration tool is part of `tools/sangita-cli`:
 
-```
+```text
 tools/sangita-cli/
 ├── src/
 │   ├── commands/
@@ -82,19 +82,18 @@ Migrations live in `database/migrations/` with naming convention `NN__descriptio
 - `07__add-approved-import-status.sql`
 
 Each migration file follows this structure:
-```sql
 -- migrate:up
 SET search_path TO public;
 
 -- Migration SQL here
 
+```text
 -- migrate:down
 -- Optional rollback SQL (commented out by default)
 ```
 
 ### CLI Commands
 
-```bash
 # Run migrations
 cargo run -- db migrate
 
@@ -108,6 +107,7 @@ cargo run -- db init
 cargo run -- db health
 
 # Start/Stop PostgreSQL instance (local)
+```text
 cargo run -- db start
 cargo run -- db stop
 ```

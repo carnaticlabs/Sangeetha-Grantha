@@ -99,7 +99,7 @@ This document provides a comprehensive analysis of building an import capability
 
 ### 2.1 Core Entities
 
-```
+```text
 Krithi
 ├── id (UUID)
 ├── name (primary, with transliteration variants)
@@ -251,7 +251,7 @@ Krithi_Temple (many-to-many)
 - Expert verification for edge cases
 
 #### Proposed De-duplication Pipeline
-```
+```text
 Raw Import →
   Exact Match (automated merge) →
   Fuzzy Match (high confidence: auto-merge, medium: flag) →
@@ -282,7 +282,7 @@ Raw Import →
 ### 4.1 Option A: Custom Python-based Pipeline
 
 #### Architecture
-```
+```text
 Web Scrapers (BeautifulSoup/Scrapy) →
   Raw Data Storage (JSON/CSV) →
   ETL Pipeline (Python/Pandas) →
@@ -332,7 +332,7 @@ Web Scrapers (BeautifulSoup/Scrapy) →
 ### 4.2 Option B: Koog.ai-based Orchestration
 
 #### Architecture (Hypothetical based on typical orchestration platforms)
-```
+```text
 Koog Connectors/Scrapers →
   Koog Data Pipeline →
   Koog Transformation Rules →
@@ -390,7 +390,7 @@ Koog Connectors/Scrapers →
 ### 4.3 Option C: Hybrid Approach
 
 #### Architecture
-```
+```text
 Custom Scrapers (Python) →
   Data Lake (S3/MinIO) →
   Koog.ai or Airflow for Orchestration →
@@ -417,7 +417,7 @@ Custom Scrapers (Python) →
 ### 4.4 Option D: Cloud-Native ETL (AWS Glue/Azure Data Factory/Google Dataflow)
 
 #### Architecture
-```
+```text
 Lambda/Cloud Functions (Scrapers) →
   S3/Blob Storage (Raw Data) →
   AWS Glue/Azure Data Factory (ETL) →
@@ -1034,7 +1034,6 @@ Lambda/Cloud Functions (Scrapers) →
 
 ### Appendix A: Sample Data Schema (SQL)
 
-```sql
 -- Core Krithi Table
 CREATE TABLE krithis (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -1136,13 +1135,13 @@ CREATE INDEX idx_krithis_verification ON krithis(verification_status);
 CREATE INDEX idx_krithi_deities_deity ON krithi_deities(deity_id);
 CREATE INDEX idx_krithi_temples_temple ON krithi_temples(temple_id);
 
+```text
 -- Full-text search
 CREATE INDEX idx_krithis_lyrics_fts ON krithis USING gin(to_tsvector('english', lyrics_full));
 ```
 
 ### Appendix B: Sample Airflow DAG Structure
 
-```python
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from datetime import datetime, timedelta
@@ -1217,13 +1216,13 @@ with DAG(
     )
 
     # Dependencies
+    ```text
     [scrape_karnatik, scrape_guruguha, scrape_syamakrishna, scrape_thyagaraja] >> transform_data
     transform_data >> enrich_metadata >> deduplicate >> quality_checks >> load_staging
 ```
 
 ### Appendix C: Deity Name Normalization Examples
 
-```python
 # Sample deity normalization dictionary
 DEITY_SYNONYMS = {
     'vishnu': ['perumal', 'narayana', 'hari', 'govinda', 'madhava', 'venkateshwara'],
@@ -1242,12 +1241,12 @@ def normalize_deity_name(name):
         if name_lower == canonical or name_lower in synonyms:
             return canonical
 
+    ```text
     return name_lower  # Return as-is if not found
 ```
 
 ### Appendix D: Fuzzy Matching Configuration
 
-```python
 # Sample de-duplication configuration
 DEDUP_CONFIG = {
     'exact_match_threshold': 1.0,  # 100% match
@@ -1262,6 +1261,7 @@ DEDUP_CONFIG = {
         'pallavi': 0.15,
     },
 
+    ```text
     'phonetic_algorithms': ['metaphone', 'soundex'],
     'use_trigram': True,
     'trigram_threshold': 0.7,

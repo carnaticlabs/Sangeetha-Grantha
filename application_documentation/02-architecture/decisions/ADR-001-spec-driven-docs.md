@@ -35,7 +35,7 @@ This structure provides:
 
 The documentation structure is organized as follows:
 
-```
+```text
 application_documentation/
 ├── 00-meta/              # Standards, retention plans, quick references
 ├── 01-requirements/      # PRDs, domain models, feature requirements

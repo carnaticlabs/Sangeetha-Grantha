@@ -51,8 +51,8 @@ The evolution from multiple polling loops to a unified dispatcher with channels 
 - **Adaptive Backoff**: Exponential backoff (750ms → 15s max) efficiently handles idle periods
 - **Channel-Based Decoupling**: Workers consume from channels, enabling better flow control
 
-**Code Quality:**
 ```kotlin
+**Code Quality:**
 // BulkImportWorkerService.kt:175-234
 private suspend fun runDispatcherLoop(...) {
     var currentDelay = config.pollIntervalMs
@@ -93,7 +93,7 @@ The three-level hierarchy (Batch → Job → Task) provides excellent granularit
 
 Services are well-separated with clear responsibilities:
 
-```
+```text
 BulkImportOrchestrationService → Batch lifecycle management
 BulkImportWorkerService → Background processing
 EntityResolutionService → Entity matching
@@ -133,8 +133,8 @@ The Technical Implementation Guide includes clarified requirements from 2026-01 
 - URL syntax validation before task creation
 - Deduplication by hyperlink (case-insensitive)
 
-**Code Review:**
 ```kotlin
+**Code Review:**
 // BulkImportWorkerService.kt:739-778
 private fun parseCsvManifest(path: Path): List<CsvRow> {
     // Uses CSVFormat.DEFAULT with header mapping
@@ -150,8 +150,8 @@ private fun parseCsvManifest(path: Path): List<CsvRow> {
 **Clarified Requirement (2026-01):**
 > "Manifest ingest failures must mark the batch as FAILED, even if zero tasks were created."
 
-**Current Implementation:**
 ```kotlin
+**Current Implementation:**
 // BulkImportWorkerService.kt:371-382
 private suspend fun failManifestTask(...) {
     dal.bulkImport.updateTaskStatus(id = task.id, status = TaskStatus.FAILED, ...)
@@ -166,8 +166,8 @@ private suspend fun failManifestTask(...) {
 - `maybeCompleteBatch()` only runs when `totalTasks > 0`, so if manifest ingest fails before creating any tasks, the batch remains in RUNNING or PENDING status
 - This violates the clarified requirement
 
-**Recommendation:**
 ```kotlin
+**Recommendation:**
 private suspend fun failManifestTask(...) {
     // ... existing code ...
     dal.bulkImport.updateBatchStatus(id = job.batchId, status = BatchStatus.FAILED, completedAt = now)
@@ -197,8 +197,8 @@ private suspend fun failManifestTask(...) {
 - **Normalization Rules**: Domain-specific rules for Composers, Ragas, Talas
 - **Fuzzy Matching**: Levenshtein distance with confidence scoring (HIGH ≥90%, MEDIUM ≥70%, LOW ≥50%)
 
-**Code Quality:**
 ```kotlin
+**Code Quality:**
 // EntityResolutionService.kt:47-64
 private suspend fun ensureCache() {
     // Double-check locking pattern
@@ -216,8 +216,8 @@ private suspend fun ensureCache() {
 1. **Cache Invalidation**: No mechanism to invalidate cache when new entities are created during import
 2. **Normalization Edge Cases**: Some normalization rules may be too aggressive (e.g., removing all spaces from raga names)
 
+```text
 **Example Issue:**
-```kotlin
 // NameNormalizationService.kt:50
 normalized = normalized.replace(" ", "") // "Kedara Gaula" -> "kedaragaula"
 ```
@@ -237,8 +237,8 @@ This may cause false matches if canonical name is "Kedara Gaula" (with space) bu
 - Checks against staging `imported_krithis` (PENDING status)
 - Uses normalized title matching with Levenshtein fallback
 
-**Code Review:**
 ```kotlin
+**Code Review:**
 // DeduplicationService.kt:29-72
 suspend fun findDuplicates(...) {
     // 1. Check canonical krithis
@@ -261,8 +261,8 @@ suspend fun findDuplicates(...) {
 
 **Assessment: ⚠️ Partially Implemented**
 
-**Current Implementation:**
 ```kotlin
+**Current Implementation:**
 // AutoApprovalService.kt:16-55
 suspend fun autoApproveIfHighConfidence(imported: ImportedKrithiDto) {
     // Rules:
@@ -296,8 +296,8 @@ suspend fun autoApproveIfHighConfidence(imported: ImportedKrithiDto) {
 - Retry logic with exponential backoff
 - Watchdog for stuck tasks
 
-**Example:**
 ```kotlin
+**Example:**
 // BulkImportWorkerService.kt:466-494
 catch (e: Exception) {
     val errorJson = buildErrorPayload(
@@ -346,8 +346,8 @@ catch (e: Exception) {
 - Channels provide safe concurrent communication
 - SupervisorJob prevents worker failures from cascading
 
-**Code Review:**
 ```kotlin
+**Code Review:**
 // BulkImportWorkerService.kt:78-80
 private val rateLimiterMutex = Mutex()
 private var globalWindow = RateWindow()
@@ -431,8 +431,8 @@ private val perDomainWindows = mutableMapOf<String, RateWindow>()
 - Watchdog marks stuck RUNNING tasks as RETRYABLE
 - Terminal failures increment batch counters
 
+```text
 **Code Review:**
-```kotlin
 // BulkImportWorkerService.kt:417-432
 if (attempt > config.maxAttempts) {
     // Marks as FAILED, increments batch failed counter
@@ -511,8 +511,8 @@ if (attempt > config.maxAttempts) {
 
 **Assessment: ⚠️ Needs Improvement**
 
-**Current Implementation:**
 ```kotlin
+**Current Implementation:**
 // BulkImportRoutes.kt:32-63
 post {
     val multipart = call.receiveMultipart()
@@ -559,8 +559,8 @@ post {
 - Task filtering by status
 - Batch actions (pause, resume, cancel, retry, delete)
 
+```kotlin
 **Code Review:**
-```typescript
 // BulkImport.tsx:89-101
 useEffect(() => {
     let interval: NodeJS.Timeout;

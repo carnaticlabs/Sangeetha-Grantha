@@ -55,7 +55,6 @@ This document provides a comprehensive analysis of building a production-grade K
 
 **Critical Entities for Import:**
 
-```kotlin
 // Primary import staging
 ImportedKrithi {
     id: UUID
@@ -75,6 +74,7 @@ ImportedKrithi {
     reviewedAt: Instant?
 }
 
+```text
 // Target canonical entities
 Krithi {
     id: UUID
@@ -117,7 +117,7 @@ Krithi {
 ### 2.2 Data Quality Challenges
 
 **Challenge 1: Name Normalization**
-```
+```text
 Example Variations:
 - "Endaro Mahanubhavulu" / "Entaro Mahanubhavulu" / "Entāro Mahānubhāvulu"
 - "Raghuvamsa Sudha" / "Raghuvamsha Sudha" / "Raghuvamśa Sudhā"
@@ -133,7 +133,6 @@ Solution:
 
 The most critical technical challenge is resolving raw text to canonical entities:
 
-```kotlin
 // Input from source
 raw = {
     composer: "Tyagaraja"           // Could be: Tyagaraja, Thyagaraja, Tyāgarāja
@@ -142,6 +141,7 @@ raw = {
     temple: "Tirupati"              // Could be: Tirupati, Tirumala, Sri Venkateswara Temple
 }
 
+```text
 // Must resolve to
 canonical = {
     composerId: UUID("...")         // Must map to existing composer
@@ -185,7 +185,7 @@ Carnatic krithis have structured sections:
 
 **Extraction Challenge**: Sources may not clearly demarcate sections.
 
-```
+```text
 Example Raw Text:
 "Endaro mahanubhavulu andariki vandanamulu
 Endaro mahanubhavulu
@@ -206,7 +206,7 @@ Charanam 1: [separate verse]
 ### 3.1 Option A: Pure Custom Kotlin Pipeline
 
 **Architecture:**
-```
+```text
 ┌─────────────────────────────────────────────────────┐
 │                Admin Import API                      │
 │              (Ktor REST Endpoints)                   │
@@ -244,7 +244,6 @@ Charanam 1: [separate verse]
 
 **Implementation Pattern:**
 
-```kotlin
 // Main orchestration service
 class ImportOrchestrationService(
     private val webScrapingService: WebScrapingService,
@@ -334,6 +333,7 @@ class EntityResolutionService(
         throw EntityResolutionException.AmbiguousComposer(name, candidates)
     }
 
+    ```text
     // Similar patterns for raga, deity, temple
 }
 ```
@@ -370,7 +370,7 @@ class EntityResolutionService(
 ### 3.2 Option B: Koog.ai Integration
 
 **Architecture:**
-```
+```text
 ┌─────────────────────────────────────────────────────┐
 │            Admin Import Trigger API                  │
 └──────────────────────┬──────────────────────────────┘
@@ -398,7 +398,6 @@ class EntityResolutionService(
 
 **Koog Agent Configuration:**
 
-```kotlin
 val importAgent = agent {
     name = "krithi-import-agent"
     description = "Orchestrates krithi import from web sources"
@@ -454,6 +453,7 @@ val resolveComposerTool = tool("resolve_composer") {
         description = "Raw composer name from source"
     }
 
+    ```text
     execute { name ->
         entityResolutionService.resolveComposer(name)
     }
@@ -490,7 +490,6 @@ val resolveComposerTool = tool("resolve_composer") {
 **Strategic Use of Koog:**
 Rather than using Koog for the entire pipeline, use it **selectively** for AI-intensive stages:
 
-```kotlin
 // Hybrid approach: Custom orchestration + Koog for extraction
 suspend fun executeImport(source: ImportSource): ImportResult {
     val urls = webScrapingService.discover(source)
@@ -505,6 +504,7 @@ suspend fun executeImport(source: ImportSource): ImportResult {
     val resolved = extracted.map { entityResolutionService.resolve(it) }
     val validated = resolved.map { validationService.validate(it) }
 
+    ```text
     return importRepository.batchInsert(validated)
 }
 ```
@@ -514,7 +514,7 @@ suspend fun executeImport(source: ImportSource): ImportResult {
 ### 3.3 Option C: Apache Airflow Integration
 
 **Architecture:**
-```
+```text
 ┌─────────────────────────────────────────────────────┐
 │              Airflow Web UI                          │
 │        (Monitoring, Scheduling, Logs)                │
@@ -541,7 +541,6 @@ suspend fun executeImport(source: ImportSource): ImportResult {
 
 **DAG Definition (Python):**
 
-```python
 from airflow import DAG
 from airflow.operators.http import SimpleHttpOperator
 from datetime import datetime, timedelta
@@ -613,6 +612,7 @@ with DAG(
     )
 
     # Define dependencies
+    ```text
     discover >> scrape >> extract >> resolve >> dedupe >> validate
 ```
 
@@ -673,7 +673,6 @@ with DAG(
 
 **Strategy:**
 
-```kotlin
 class ComposerResolutionService(
     private val composerRepo: ComposerRepository
 ) {
@@ -724,6 +723,7 @@ class ComposerResolutionService(
     }
 }
 
+```kotlin
 // Repository implementation using Exposed
 class ComposerRepositoryImpl : ComposerRepository {
     suspend fun findSimilar(name: String, threshold: Double): List<ComposerSimilarity> {
@@ -748,12 +748,12 @@ class ComposerRepositoryImpl : ComposerRepository {
 ```
 
 **Requires PostgreSQL Extension:**
-```sql
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
 CREATE INDEX idx_composers_name_trgm ON composers
 USING gin (name gin_trgm_ops);
 
+```text
 CREATE INDEX idx_composers_normalized_trgm ON composers
 USING gin (name_normalized gin_trgm_ops);
 ```
@@ -762,7 +762,6 @@ USING gin (name_normalized gin_trgm_ops);
 
 **Additional Complexity**: Ragas have parent/child relationships (melakarta/janya).
 
-```kotlin
 class RagaResolutionService(
     private val ragaRepo: RagaRepository
 ) {
@@ -802,6 +801,7 @@ class RagaResolutionService(
         }
     }
 
+    ```kotlin
     private fun normalizeRagaName(name: String): String {
         return name
             .lowercase()
@@ -819,7 +819,6 @@ class RagaResolutionService(
 
 For ambiguous cases, use Gemini to help disambiguate:
 
-```kotlin
 suspend fun resolveAmbiguousRaga(
     rawName: String,
     candidates: List<Raga>,
@@ -828,6 +827,7 @@ suspend fun resolveAmbiguousRaga(
     val prompt = buildAmbiguityPrompt(rawName, candidates, context)
     val aiResponse = geminiService.analyze(prompt)
 
+    ```text
     return aiResponse.bestMatch?.let { matchedId ->
         RagaResolutionResult.Resolved(
             matchedId,
@@ -844,7 +844,6 @@ suspend fun resolveAmbiguousRaga(
 
 **Solution: Synonym Graph**
 
-```kotlin
 class DeityResolutionService(
     private val deityRepo: DeityRepository,
     private val deitySynonymGraph: DeitySynonymGraph
@@ -899,13 +898,14 @@ class DeitySynonymGraph {
             if (syns.contains(normalized)) return canonical
         }
 
+        ```text
         return normalized  // No match, return as-is
     }
 }
 ```
 
+```text
 **Requires Data Seeding:**
-```sql
 -- Seed with comprehensive synonym data
 INSERT INTO deities (id, name, name_normalized, description) VALUES
     (gen_random_uuid(), 'Vishnu', 'vishnu', 'Primary deity in Vaishnavism'),
@@ -922,7 +922,6 @@ INSERT INTO deities (id, name, name_normalized, description) VALUES
 
 **Strategy: Use `temple_names` Table**
 
-```kotlin
 class TempleResolutionService(
     private val templeRepo: TempleRepository,
     private val templeNameRepo: TempleNameRepository
@@ -968,6 +967,7 @@ class TempleResolutionService(
         }
     }
 
+    ```kotlin
     private fun normalizeTempleName(name: String): String {
         return name
             .lowercase()
@@ -1003,7 +1003,6 @@ Many krithis don't explicitly mention temples but do mention deities. The system
 ### 5.1 Multi-Level De-duplication
 
 **Level 1: Exact Hash Match**
-```kotlin
 class DeduplicationService(
     private val importedKrithiRepo: ImportedKrithiRepository
 ) {
@@ -1035,6 +1034,7 @@ class DeduplicationService(
         )
     }
 
+    ```kotlin
     private fun ImportedKrithi.computeHash(): String {
         // Hash on normalized title + composer + raga
         val normalized = "${this.rawTitle.normalize()}_${this.rawComposer?.normalize()}_${this.rawRaga?.normalize()}"
@@ -1044,7 +1044,6 @@ class DeduplicationService(
 ```
 
 **Level 2: Fuzzy String Matching**
-```kotlin
 private suspend fun detectFuzzyDuplicates(batch: List<ImportedKrithi>): List<ImportedKrithi> {
     val duplicates = mutableListOf<ImportedKrithi>()
 
@@ -1070,6 +1069,7 @@ private suspend fun detectFuzzyDuplicates(batch: List<ImportedKrithi>): List<Imp
     return duplicates
 }
 
+```kotlin
 private fun composerMatch(a: String?, b: String?): Boolean {
     if (a == null || b == null) return false
     val simil = Levenshtein.ratio(a.normalize(), b.normalize())
@@ -1081,7 +1081,6 @@ private fun composerMatch(a: String?, b: String?): Boolean {
 
 For cases where title/composer/raga are unclear or transliterated differently:
 
-```kotlin
 private suspend fun detectSemanticDuplicates(batch: List<ImportedKrithi>): List<ImportedKrithi> {
     val duplicates = mutableListOf<ImportedKrithi>()
 
@@ -1107,6 +1106,7 @@ private suspend fun detectSemanticDuplicates(batch: List<ImportedKrithi>): List<
         }
     }
 
+    ```text
     return duplicates
 }
 ```
@@ -1115,7 +1115,6 @@ private suspend fun detectSemanticDuplicates(batch: List<ImportedKrithi>): List<
 
 When duplicates are detected, determine merge strategy:
 
-```kotlin
 sealed class DuplicateAction {
     data class DiscardNew(val reason: String) : DuplicateAction()
     data class MergeData(val existing: UUID, val newData: ImportedKrithi) : DuplicateAction()
@@ -1147,6 +1146,7 @@ fun decideDuplicateAction(
     }
 }
 
+```kotlin
 private fun ImportedKrithi.completenessScore(): Double {
     var score = 0.0
     if (rawTitle.isNotBlank()) score += 0.2
@@ -1166,7 +1166,6 @@ private fun ImportedKrithi.completenessScore(): Double {
 
 ### 6.1 Validation Rules
 
-```kotlin
 class ValidationService(
     private val composerRepo: ComposerRepository,
     private val ragaRepo: RagaRepository,
@@ -1251,6 +1250,7 @@ sealed class ValidationError {
     data class InvalidRaga(val id: UUID) : ValidationError()
 }
 
+```kotlin
 sealed class ValidationWarning {
     object MissingComposer : ValidationWarning()
     data class JanyaRaga(val name: String) : ValidationWarning()
@@ -1264,7 +1264,6 @@ sealed class ValidationWarning {
 
 Assign quality scores to guide manual review prioritization:
 
-```kotlin
 fun ImportedKrithi.calculateQualityScore(): QualityScore {
     var score = 0.0
     val factors = mutableMapOf<String, Double>()
@@ -1307,6 +1306,7 @@ fun ImportedKrithi.calculateQualityScore(): QualityScore {
     )
 }
 
+```text
 enum class QualityTier {
     EXCELLENT,  // Auto-approve for publication
     GOOD,       // Quick review
@@ -1332,7 +1332,6 @@ enum class QualityTier {
 6. Admin API endpoints
 
 **Architecture:**
-```kotlin
 // Service layer
 interface ImportOrchestrationService {
     suspend fun executeImport(config: ImportSourceConfig): Flow<ImportProgress>
@@ -1358,6 +1357,7 @@ fun Route.importRoutes() {
             call.respond(HttpStatusCode.Accepted, ImportBatchResponse(batchId))
         }
 
+        ```kotlin
         get("/api/admin/import/batches/{batchId}") {
             val batchId = UUID.fromString(call.parameters["batchId"]!!)
             val status = importOrchestrationService.getImportStatus(batchId)
@@ -1368,7 +1368,6 @@ fun Route.importRoutes() {
 ```
 
 **Data Model Additions:**
-```sql
 -- Track import batches
 CREATE TABLE import_batches (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -1384,6 +1383,7 @@ CREATE TABLE import_batches (
     error_message TEXT
 );
 
+```sql
 -- Detailed import logs
 CREATE TABLE import_logs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -1416,7 +1416,6 @@ CREATE TABLE import_logs (
 6. PostgreSQL trigram indices
 
 **Implementation:**
-```kotlin
 // Orchestration integration
 suspend fun executeImport(config: ImportSourceConfig): Flow<ImportProgress> = flow {
     // ... (scraping, extraction stages)
@@ -1459,6 +1458,7 @@ suspend fun executeImport(config: ImportSourceConfig): Flow<ImportProgress> = fl
         fuzzy = deduped.fuzzyDuplicates.size
     ))
 
+    ```kotlin
     // Continue with unique records only
     val unique = deduped.unique
     // ...
@@ -1483,7 +1483,6 @@ suspend fun executeImport(config: ImportSourceConfig): Flow<ImportProgress> = fl
 4. Import status dashboard (React admin)
 
 **Validation Integration:**
-```kotlin
 // Stage 6: Validation
 val validated = unique.map { resolved ->
     val validationResult = validationService.validate(resolved)
@@ -1518,6 +1517,7 @@ val validated = unique.map { resolved ->
 // Stage 7: Batch insert
 importedKrithiRepo.batchInsert(validated)
 
+```text
 emit(ImportProgress.Complete(
     total = validated.size,
     excellent = validated.count { it.qualityTier == QualityTier.EXCELLENT },
@@ -1549,7 +1549,6 @@ emit(ImportProgress.Complete(
 **Review UI Features:**
 
 **1. Import Review Queue**
-```typescript
 // React component
 interface ImportReviewQueueProps {
   qualityFilter?: QualityTier;
@@ -1563,6 +1562,7 @@ const ImportReviewQueue: React.FC<ImportReviewQueueProps> = ({ ... }) => {
     () => fetchImportedKrithis({ qualityFilter, sourceFilter, statusFilter })
   );
 
+  ```tsx
   return (
     <div className="review-queue">
       <Filters ... />
@@ -1593,7 +1593,6 @@ const ImportReviewQueue: React.FC<ImportReviewQueueProps> = ({ ... }) => {
 ```
 
 **2. Detailed Review Modal**
-```typescript
 const ImportReviewModal: React.FC<{ import: ImportedKrithi }> = ({ import }) => {
   const [composerOverride, setComposerOverride] = useState<UUID | null>(null);
   const [ragaOverride, setRagaOverride] = useState<UUID | null>(null);
@@ -1641,6 +1640,7 @@ const ImportReviewModal: React.FC<{ import: ImportedKrithi }> = ({ import }) => 
         ))}
       </Section>
 
+      ```text
       <Actions>
         <Button onClick={handleApprove}>Approve & Create Krithi</Button>
         <Button onClick={handleReject}>Reject</Button>
@@ -1652,7 +1652,6 @@ const ImportReviewModal: React.FC<{ import: ImportedKrithi }> = ({ import }) => 
 ```
 
 **3. Canonicalization API**
-```kotlin
 post("/api/admin/import/{id}/canonicalize") {
     val importId = UUID.fromString(call.parameters["id"]!!)
     val overrides = call.receive<CanonicalizationOverrides>()
@@ -1713,6 +1712,7 @@ post("/api/admin/import/{id}/canonicalize") {
         krithi.id
     }
 
+    ```text
     call.respond(HttpStatusCode.Created, CanonicalizationResponse(krithiId))
 }
 ```
@@ -1737,7 +1737,6 @@ post("/api/admin/import/{id}/canonicalize") {
 
 **Source-Specific Scrapers:**
 
-```kotlin
 // Abstract base
 abstract class KrithiSourceScraper {
     abstract val sourceId: UUID
@@ -1886,6 +1885,7 @@ data class KrithiEntry(
     val raga: String?
 )
 
+```kotlin
 // Register all scrapers
 val scraperRegistry = mapOf(
     KARNATIK_COM_SOURCE_ID to KarnatikComScraper(httpClient),
@@ -1897,7 +1897,6 @@ val scraperRegistry = mapOf(
 
 **Performance Optimization:**
 
-```kotlin
 class ImportOrchestrationService(
     // ...
     private val scraperRegistry: Map<UUID, KrithiSourceScraper>,
@@ -1948,6 +1947,7 @@ class ImportOrchestrationService(
             }
             .toList()
 
+        ```text
         // ... continue with entity resolution, validation, etc.
     }
 }
@@ -1955,7 +1955,6 @@ class ImportOrchestrationService(
 
 **Monitoring:**
 
-```kotlin
 // Metrics collection
 class ImportMetricsCollector {
     private val meterRegistry: MeterRegistry = SimpleMeterRegistry()
@@ -1978,6 +1977,7 @@ suspend fun executeImport(config: ImportSourceConfig): Flow<ImportProgress> = fl
     try {
         // ... pipeline execution
 
+        ```text
         metrics.importsCompleted.increment()
         metrics.importDuration.record(Duration.between(startTime, Clock.System.now()))
     } catch (e: Exception) {
@@ -2009,7 +2009,6 @@ suspend fun executeImport(config: ImportSourceConfig): Flow<ImportProgress> = fl
 
 ### 8.2 Hybrid Architecture
 
-```kotlin
 // Main orchestration remains custom Kotlin
 class ImportOrchestrationService(
     private val webScrapingService: WebScrapingService,
@@ -2047,6 +2046,7 @@ class ImportOrchestrationService(
             }
         }
 
+        ```text
         // Stage 6+: Custom (validation, staging)
         // ...
     }
@@ -2056,7 +2056,6 @@ class ImportOrchestrationService(
 ### 8.3 Koog Agent Implementation
 
 **Extraction Agent:**
-```kotlin
 val krithiExtractionAgent = agent {
     name = "krithi-metadata-extractor"
     description = "Extract structured krithi metadata from unstructured blog posts"
@@ -2095,6 +2094,7 @@ suspend fun extract(html: RawHtml): RawMetadata {
 
     val extracted = Json.decodeFromString<ExtractedMetadata>(response.content)
 
+    ```text
     return RawMetadata(
         sourceUrl = html.url,
         title = extracted.title,
@@ -2108,7 +2108,6 @@ suspend fun extract(html: RawHtml): RawMetadata {
 ```
 
 **Ambiguity Resolution Agent:**
-```kotlin
 val ambiguityResolverAgent = agent {
     name = "entity-ambiguity-resolver"
     description = "Resolve ambiguous entity matches using musical knowledge"
@@ -2180,6 +2179,7 @@ suspend fun resolveAmbiguousComposer(
     val response = ambiguityResolverAgent.invoke(message = prompt)
     val result = Json.decodeFromString<AmbiguityResolution>(response.content)
 
+    ```text
     return if (result.confidence > 0.75) result.composerId else null
 }
 ```
@@ -2409,7 +2409,7 @@ suspend fun resolveAmbiguousComposer(
 
 ### 12.3 Timeline
 
-```
+```text
 Week 1-3:   Core infrastructure, single scraper, basic pipeline
 Week 4-5:   Entity resolution, de-duplication
 Week 6:     Validation, staging
@@ -2436,7 +2436,6 @@ Week 13-16: (Optional) Gemini integration for extraction & ambiguity
 
 ### Appendix A: Sample Import Configuration
 
-```kotlin
 data class ImportSourceConfig(
     val sourceId: UUID,
     val sourceName: String,
@@ -2473,6 +2472,7 @@ val guruGuhaBlogConfig = ImportSourceConfig(
     parallelism = 3
 )
 
+```kotlin
 val thyagarajaBlogConfig = ImportSourceConfig(
     sourceId = THYAGARAJA_BLOG_SOURCE_ID,
     sourceName = "Thyagaraja Vaibhavam",
@@ -2487,7 +2487,6 @@ val thyagarajaBlogConfig = ImportSourceConfig(
 
 ### Appendix B: Entity Resolution Query Examples
 
-```sql
 -- Find composer by name with trigram similarity
 SELECT
     id,
@@ -2503,6 +2502,7 @@ SELECT id, name
 FROM ragas
 WHERE name_normalized = normalize('Mayamalava Gowla');
 
+```text
 -- Find temple by deity and name similarity
 SELECT
     t.id,

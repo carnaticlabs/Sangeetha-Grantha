@@ -25,12 +25,12 @@ This document details the completion of remaining work from TRACK-004 and TRACK-
 #### Backend Implementation
 
 **New API Endpoint:**
-```
+```text
 POST /v1/admin/bulk-import/batches/{id}/finalize
 ```
 
+```text
 **Response:**
-```json
 {
   "batchId": "uuid",
   "total": 1200,
@@ -78,14 +78,14 @@ POST /v1/admin/bulk-import/batches/{id}/finalize
 #### Backend Implementation
 
 **New API Endpoint:**
-```
+```text
 GET /v1/admin/bulk-import/batches/{id}/export?format=json|csv
 ```
 
 **Supported Formats:**
 
+```text
 1. **JSON Export:**
-   ```json
    {
      "summary": {
        "batchId": "uuid",
@@ -114,8 +114,8 @@ GET /v1/admin/bulk-import/batches/{id}/export?format=json|csv
    }
    ```
 
+```text
 2. **CSV Export:**
-   ```csv
    ID,Title,Composer,Raga,Tala,Status,Quality Score,Quality Tier,Source
    uuid1,"Endaro Mahanubhavulu",Thyagaraja,Sri,Adi,APPROVED,0.95,EXCELLENT,https://...
    ...
@@ -168,24 +168,24 @@ GET /v1/admin/bulk-import/batches/{id}/export?format=json|csv
 
 #### Preset Configurations
 
+```text
 **Conservative (Production):**
-```kotlin
 AutoApprovalConfig.conservative()
 // minQualityScore = 0.95
 // qualityTiers = ["EXCELLENT"]
 // Only extremely high-confidence imports
 ```
 
+```text
 **Permissive (Development):**
-```kotlin
 AutoApprovalConfig.permissive()
 // minQualityScore = 0.80
 // qualityTiers = ["EXCELLENT", "GOOD", "FAIR"]
 // More lenient for testing
 ```
 
+```text
 **Default (Balanced):**
-```kotlin
 AutoApprovalConfig.fromEnvironment()
 // Loads from environment variables
 // Falls back to sensible defaults
@@ -208,7 +208,6 @@ AutoApprovalConfig.fromEnvironment()
 [config/.env.auto-approval.example](../../config/.env.auto-approval.example)
 
 **Usage:**
-```bash
 # Copy example file
 cp config/.env.auto-approval.example config/.env.auto-approval
 
@@ -219,6 +218,7 @@ nano config/.env.auto-approval
 export $(cat config/.env.auto-approval | xargs)
 
 # Or use with docker-compose
+```kotlin
 docker-compose --env-file config/.env.auto-approval up
 ```
 
@@ -271,8 +271,8 @@ docker-compose --env-file config/.env.auto-approval up
 - MockK for mocking
 - Comprehensive edge case coverage
 
+```text
 **Running Tests:**
-```bash
 ./gradlew :modules:backend:api:test --tests AutoApprovalServiceTest
 ```
 
@@ -295,8 +295,8 @@ docker-compose --env-file config/.env.auto-approval up
 
 ### 2. Service Design
 
-**Dependency Injection:**
 ```kotlin
+**Dependency Injection:**
 class AutoApprovalService(
     private val dal: SangitaDal,
     private val importService: ImportService,
@@ -312,8 +312,8 @@ class AutoApprovalService(
 
 ### 3. Export System
 
-**Modular Design:**
 ```kotlin
+**Modular Design:**
 fun generateQAReport(batchId: Uuid, format: String): String {
     return when (format.lowercase()) {
         "json" -> generateJsonReport(batch, imports)
@@ -408,8 +408,8 @@ fun generateQAReport(batchId: Uuid, format: String): String {
 
 ### 1. Finalizing a Batch
 
+```text
 **CLI (curl):**
-```bash
 curl -X POST http://localhost:8080/v1/admin/bulk-import/batches/{id}/finalize \
   -H "Authorization: Bearer $TOKEN"
 ```
@@ -423,15 +423,15 @@ curl -X POST http://localhost:8080/v1/admin/bulk-import/batches/{id}/finalize \
 
 ### 2. Exporting QA Report
 
+```text
 **CLI (JSON):**
-```bash
 curl http://localhost:8080/v1/admin/bulk-import/batches/{id}/export?format=json \
   -H "Authorization: Bearer $TOKEN" \
   -o batch-report.json
 ```
 
+```text
 **CLI (CSV):**
-```bash
 curl http://localhost:8080/v1/admin/bulk-import/batches/{id}/export?format=csv \
   -H "Authorization: Bearer $TOKEN" \
   -o batch-report.csv
@@ -446,24 +446,24 @@ curl http://localhost:8080/v1/admin/bulk-import/batches/{id}/export?format=csv \
 
 ### 3. Configuring Auto-Approval
 
+```text
 **Option 1: Environment Variables**
-```bash
 export AUTO_APPROVAL_MIN_QUALITY_SCORE=0.95
 export AUTO_APPROVAL_QUALITY_TIERS=EXCELLENT
 export AUTO_APPROVAL_REQUIRE_RAGA=false
 ```
 
 **Option 2: .env File**
-```bash
 # Load from file
 export $(cat config/.env.auto-approval | xargs)
 
 # Or with docker-compose
+```kotlin
 docker-compose --env-file config/.env.auto-approval up
 ```
 
-**Option 3: Programmatic (in code)**
 ```kotlin
+**Option 3: Programmatic (in code)**
 val config = AutoApprovalConfig(
     minQualityScore = 0.85,
     qualityTiers = setOf("EXCELLENT", "GOOD")
@@ -477,7 +477,6 @@ val service = AutoApprovalService(dal, importService, config)
 
 ### Running Unit Tests
 
-```bash
 # All tests
 ./gradlew :modules:backend:api:test
 
@@ -485,6 +484,7 @@ val service = AutoApprovalService(dal, importService, config)
 ./gradlew :modules:backend:api:test --tests AutoApprovalServiceTest
 
 # With coverage
+```text
 ./gradlew :modules:backend:api:test jacocoTestReport
 ```
 

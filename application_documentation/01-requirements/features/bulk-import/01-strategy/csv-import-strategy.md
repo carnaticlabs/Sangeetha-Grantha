@@ -44,7 +44,7 @@ This document provides a comprehensive strategy and detailed design for bulk imp
 
 ### 2.2 CSV Structure
 
-```csv
+```text
 Krithi,Raga,Hyperlink
 abhimAnamennaDu,kunjari,http://thyagaraja-vaibhavam.blogspot.com/2007/11/thyagaraja-kriti-abhimaanamennadu-raga.html
 ```
@@ -115,7 +115,7 @@ The application already has:
 
 ### 3.2 Proposed Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │              CSV Bulk Import Service                     │
 │  (New: CsvBulkImportService)                            │
@@ -141,7 +141,6 @@ The application already has:
 
 **New Service: `CsvBulkImportService`**
 
-```kotlin
 class CsvBulkImportService(
     private val webScrapingService: WebScrapingService,
     private val importService: ImportService,
@@ -157,6 +156,7 @@ class CsvBulkImportService(
     
     suspend fun validateCsvFile(csvFilePath: String): CsvValidationResult
     
+    ```kotlin
     suspend fun processBatch(
         entries: List<CsvKrithiEntry>,
         batchId: UUID
@@ -182,7 +182,6 @@ class EntityResolutionService(
 
 **New Service: `DeduplicationService`**
 
-```kotlin
 class DeduplicationService(
     private val importRepo: ImportRepository,
     private val krithiRepo: KrithiRepository
@@ -192,6 +191,7 @@ class DeduplicationService(
         batchContext: List<ImportedKrithiDto> = emptyList()
     ): List<DuplicateMatch>
     
+    ```kotlin
     suspend fun detectBatchDuplicates(batch: List<ImportedKrithiDto>): DeduplicationResult
 }
 ```
@@ -246,7 +246,6 @@ Implemented as a **Runtime API Upload** mechanism (see `TRACK-005`).
 **Deliverables**:
 
 1. **Batch Scraper**
-```kotlin
 class BatchScrapingService(
     private val webScrapingService: WebScrapingService,
     private val rateLimiter: RateLimiter
@@ -256,6 +255,7 @@ class BatchScrapingService(
         options: BatchScrapingOptions
     ): Flow<ScrapingResult>
     
+    ```kotlin
     suspend fun scrapeWithRetry(
         url: String,
         maxRetries: Int = 3
@@ -263,8 +263,8 @@ class BatchScrapingService(
 }
 ```
 
-2. **Rate Limiter**
 ```kotlin
+2. **Rate Limiter**
 class RateLimiter(
     private val requestsPerSecond: Int = 2, // Conservative for blogspot
     private val maxConcurrency: Int = 3
@@ -273,8 +273,8 @@ class RateLimiter(
 }
 ```
 
-3. **Progress Tracking**
 ```kotlin
+3. **Progress Tracking**
 data class BulkImportBatch(
     val id: UUID,
     val sourceFile: String,
@@ -315,8 +315,8 @@ data class BulkImportBatch(
 1. **Entity Resolution Service**
    - Enhanced with aggressive normalization rules.
 
+```kotlin
 2. **Name Normalization Logic**
-   ```kotlin
    class NameNormalizationService {
        fun normalizeRagaName(name: String): String {
            return name.lowercase()
@@ -402,8 +402,8 @@ data class BulkImportBatch(
    - Bulk approval for high-confidence imports
    - Side-by-side comparison with existing krithis
 
-2. **Auto-approval Rules**
 ```kotlin
+2. **Auto-approval Rules**
 data class AutoApprovalRules(
     val minConfidenceScore: Double = 0.95,
     val requireComposerMatch: Boolean = true,
@@ -412,8 +412,8 @@ data class AutoApprovalRules(
 )
 ```
 
+```text
 3. **Batch Operations**
-```kotlin
 POST /v1/admin/imports/batch/{id}/approve-all
 POST /v1/admin/imports/batch/{id}/reject-all
 POST /v1/admin/imports/batch/{id}/bulk-review
@@ -439,7 +439,7 @@ POST /v1/admin/imports/batch/{id}/bulk-review
 
 ### 5.1 Complete Import Flow
 
-```
+```text
 1. CSV File Upload/Selection
    ↓
 2. CSV Parsing & Validation
@@ -529,7 +529,6 @@ POST /v1/admin/imports/batch/{id}/bulk-review
 
 ### 6.1 Import Batch Tracking
 
-```sql
 CREATE TABLE import_batch (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   source_file TEXT NOT NULL, -- CSV filename
@@ -547,13 +546,13 @@ CREATE TABLE import_batch (
   created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('UTC', now())
 );
 
+```text
 CREATE INDEX idx_import_batch_status ON import_batch(status);
 CREATE INDEX idx_import_batch_source_file ON import_batch(source_file);
 ```
 
 ### 6.2 Enhanced Imported Krithis
 
-```sql
 -- Add columns to existing imported_krithis table
 ALTER TABLE imported_krithis
   ADD COLUMN IF NOT EXISTS import_batch_id UUID REFERENCES import_batch(id),
@@ -567,13 +566,13 @@ ALTER TABLE imported_krithis
   ADD COLUMN IF NOT EXISTS quality_tier VARCHAR(20), -- excellent, good, fair, poor
   ADD COLUMN IF NOT EXISTS processing_errors JSONB;
 
+```text
 CREATE INDEX idx_imported_krithis_batch ON imported_krithis(import_batch_id);
 CREATE INDEX idx_imported_krithis_quality ON imported_krithis(quality_tier, quality_score);
 ```
 
 ### 6.3 Entity Resolution Cache
 
-```sql
 CREATE TABLE entity_resolution_cache (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   entity_type VARCHAR(50) NOT NULL, -- composer, raga, deity, temple
@@ -586,6 +585,7 @@ CREATE TABLE entity_resolution_cache (
   UNIQUE(entity_type, normalized_name)
 );
 
+```text
 CREATE INDEX idx_entity_cache_type_name ON entity_resolution_cache(entity_type, normalized_name);
 ```
 
@@ -595,7 +595,6 @@ CREATE INDEX idx_entity_cache_type_name ON entity_resolution_cache(entity_type, 
 
 ### 7.1 CSV Import Endpoints
 
-```kotlin
 // Upload and validate CSV
 POST /v1/admin/imports/csv/validate
 Request: {
@@ -650,13 +649,13 @@ GET /v1/admin/imports/batches
 Query params: status, sourceFile, composerContext
 Response: List<BulkImportBatch>
 
+```text
 // Cancel batch
 POST /v1/admin/imports/batches/{batchId}/cancel
 ```
 
 ### 7.2 Enhanced Import Review Endpoints
 
-```kotlin
 // List imports with batch context
 GET /v1/admin/imports
 Query params: 
@@ -674,6 +673,7 @@ Request: {
   "reviewerNotes": "Optional notes"
 }
 
+```text
 // Auto-approve high confidence
 POST /v1/admin/imports/batch/{batchId}/auto-approve
 Request: {
@@ -713,7 +713,6 @@ Request: {
 
 ### 8.2 Quality Scoring
 
-```kotlin
 data class QualityScore(
     val overall: Double, // 0.0 - 1.0
     val completeness: Double, // 40% weight
@@ -723,6 +722,7 @@ data class QualityScore(
     val tier: QualityTier
 )
 
+```text
 enum class QualityTier {
     EXCELLENT, // >= 0.90, auto-approve candidate
     GOOD,      // >= 0.75, quick review

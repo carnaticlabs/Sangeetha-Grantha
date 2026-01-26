@@ -47,7 +47,7 @@ This document provides a comprehensive implementation plan for building a **Musi
 
 ### 1.1 System Architecture
 
-```
+```text
 ┌─────────────────┐
 │  Admin Web UI   │
 │  (React + TS)   │
@@ -111,7 +111,6 @@ This document provides a comprehensive implementation plan for building a **Musi
 
 **File:** `modules/shared/domain/src/commonMain/kotlin/com/sangita/grantha/shared/domain/model/GraphDtos.kt`
 
-```kotlin
 package com.sangita.grantha.shared.domain.model
 
 import kotlinx.serialization.Serializable
@@ -146,6 +145,7 @@ data class GraphSearchResultDto(
     val type: String
 )
 
+```text
 @Serializable
 enum class GraphEntityMode {
     KRITHI,
@@ -169,7 +169,6 @@ enum class GraphEntityMode {
 - Validate inputs and handle errors
 
 **Key Methods:**
-```kotlin
 class GraphService(private val dal: SangitaDal) {
     suspend fun getNeighborhood(
         mode: GraphEntityMode,
@@ -182,6 +181,7 @@ class GraphService(private val dal: SangitaDal) {
         query: String
     ): List<GraphSearchResultDto>
     
+    ```kotlin
     suspend fun getPresetGraph(
         mode: GraphEntityMode,
         query: String?,
@@ -210,7 +210,6 @@ class GraphService(private val dal: SangitaDal) {
 **File:** `modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/graphRoutes.kt`
 
 **Endpoints:**
-```kotlin
 fun Route.graphRoutes(graphService: GraphService) {
     route("/v1/admin/graph") {
         // GET /v1/admin/graph/neighborhood?mode=Krithi&id={uuid}&depth=2
@@ -219,6 +218,7 @@ fun Route.graphRoutes(graphService: GraphService) {
         // GET /v1/admin/graph/search?mode=Raga&q=shankarabharanam
         get("/search") { ... }
         
+        ```text
         // GET /v1/admin/graph/preset?mode=Raga&q=shankarabharanam&depth=2
         get("/preset") { ... }
     }
@@ -252,7 +252,6 @@ fun Application.configureRouting(
 
 **File:** `modules/frontend/sangita-admin-web/src/api/graphApi.ts`
 
-```typescript
 import { request } from './client';
 
 export interface GraphNode {
@@ -309,6 +308,7 @@ export const graphApi = {
         return request<GraphResponse>(`/admin/graph/neighborhood?${params}`);
     },
     
+    ```text
     preset: (
         mode: GraphEntityMode, 
         q: string | null, 
@@ -329,7 +329,7 @@ export const graphApi = {
 **File:** `modules/frontend/sangita-admin-web/src/pages/GraphExplorer.tsx`
 
 **Layout:**
-```
+```text
 ┌─────────────────────────────────────────────────┐
 │  [Mode ▼] [Search...] [Depth: 1─●─3] [Load]    │
 ├──────────────────────────┬──────────────────────┤
@@ -354,8 +354,8 @@ export const graphApi = {
 
 ### 3.3 Cytoscape.js Integration
 
+```text
 **Dependencies:**
-```json
 {
   "cytoscape": "^3.27.0",
   "cytoscape-fcose": "^2.2.0"
@@ -400,9 +400,9 @@ export const graphApi = {
 
 **Update:** `modules/frontend/sangita-admin-web/src/App.tsx`
 
-```typescript
 import GraphExplorer from './pages/GraphExplorer';
 
+```tsx
 // In Routes:
 <Route path="/graph-explorer" element={<GraphExplorer />} />
 ```
@@ -417,8 +417,8 @@ import GraphExplorer from './pages/GraphExplorer';
 
 **Simple Case:** Direct relationships from a single entity
 
-**Example: Krithi → Related Entities**
 ```sql
+**Example: Krithi → Related Entities**
 -- Get Krithi and direct relationships
 WITH krithi_node AS (
     SELECT id, title as label, 'KRITHI' as type
@@ -466,7 +466,6 @@ SELECT * FROM all_nodes, all_edges;
 **Complex Case:** Multi-hop traversal using recursive CTEs
 
 **Example: Raga → Krithis → Composers (Depth 2)**
-```sql
 WITH RECURSIVE graph_path AS (
     -- Base: Start node
     SELECT 
@@ -496,6 +495,7 @@ WITH RECURSIVE graph_path AS (
     
     UNION ALL
     
+    ```sql
     -- Depth 2: Krithis → Composers
     SELECT 
         c.id,
@@ -518,8 +518,8 @@ SELECT DISTINCT id, label, type, depth FROM graph_path WHERE depth <= $max_depth
 
 **Strategy:** Use existing normalized indexes
 
-**Example: Raga Search**
 ```sql
+**Example: Raga Search**
 SELECT id, name as label, 'RAGA' as type
 FROM ragas
 WHERE name_normalized LIKE '%' || lower($query) || '%'
@@ -527,8 +527,8 @@ ORDER BY name
 LIMIT 20;
 ```
 
-**Example: Krithi Search**
 ```sql
+**Example: Krithi Search**
 SELECT id, title as label, 'KRITHI' as type
 FROM krithis
 WHERE title_normalized LIKE '%' || lower($query) || '%'
@@ -542,7 +542,6 @@ LIMIT 20;
 **Strategy:** Mode-specific curated queries
 
 **Example: Raga Preset (Janya chain + Krithis)**
-```sql
 -- Get raga and its janya hierarchy
 WITH RECURSIVE raga_hierarchy AS (
     SELECT id, name, parent_raga_id, 0 as level
@@ -551,6 +550,7 @@ WITH RECURSIVE raga_hierarchy AS (
     
     UNION ALL
     
+    ```sql
     SELECT r.id, r.name, r.parent_raga_id, rh.level + 1
     FROM ragas r
     JOIN raga_hierarchy rh ON r.parent_raga_id = rh.id
@@ -808,7 +808,7 @@ SELECT ...;
 
 ### 9.1 Backend File Structure
 
-```
+```text
 modules/backend/
 ├── api/
 │   ├── routes/
@@ -828,7 +828,7 @@ modules/backend/
 
 ### 9.2 Frontend File Structure
 
-```
+```text
 modules/frontend/sangita-admin-web/src/
 ├── api/
 │   └── graphApi.ts                 # NEW
@@ -846,8 +846,8 @@ modules/frontend/sangita-admin-web/src/
 **Backend:**
 - No new dependencies (uses existing PostgreSQL driver)
 
+```text
 **Frontend:**
-```json
 {
   "dependencies": {
     "cytoscape": "^3.27.0",
@@ -946,7 +946,6 @@ modules/frontend/sangita-admin-web/src/
 
 ### A.1 Krithi Neighborhood (Depth 1)
 
-```sql
 -- Get Krithi with all direct relationships
 SELECT 
     'node' as element_type,
@@ -974,6 +973,7 @@ WHERE k.id = $id
 
 UNION ALL
 
+```sql
 SELECT 
     'edge' as element_type,
     k.id::text || '-COMPOSED_BY->' || c.id::text,
@@ -988,7 +988,6 @@ WHERE k.id = $id;
 
 ### A.2 Raga Janya Chain (Preset)
 
-```sql
 WITH RECURSIVE raga_tree AS (
     SELECT id, name, parent_raga_id, 0 as depth
     FROM ragas
@@ -996,6 +995,7 @@ WITH RECURSIVE raga_tree AS (
     
     UNION ALL
     
+    ```sql
     SELECT r.id, r.name, r.parent_raga_id, rt.depth + 1
     FROM ragas r
     JOIN raga_tree rt ON r.parent_raga_id = rt.id
@@ -1010,12 +1010,12 @@ SELECT * FROM raga_tree;
 
 ### B.1 Basic Setup
 
-```typescript
 import cytoscape from 'cytoscape';
 import fcose from 'cytoscape-fcose';
 
 cytoscape.use(fcose);
 
+```text
 const cy = cytoscape({
     container: document.getElementById('cy'),
     elements: {

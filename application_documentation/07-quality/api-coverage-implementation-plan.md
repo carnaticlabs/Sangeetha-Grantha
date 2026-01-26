@@ -55,7 +55,6 @@ The frontend expects the following endpoints that do not exist in the backend:
 
 The notation variant implementation (`AdminNotationRoutes.kt`, `KrithiNotationService.kt`) provides an excellent reference pattern:
 
-```kotlin
 // Pattern: POST /v1/krithis/{id}/notation/variants
 post("/krithis/{id}/notation/variants") {
     val id = parseUuidParam(call.parameters["id"], "krithiId")
@@ -64,6 +63,7 @@ post("/krithis/{id}/notation/variants") {
     call.respond(HttpStatusCode.Created, created)
 }
 
+```kotlin
 // Pattern: PUT /v1/notation/variants/{variantId}
 put("/notation/variants/{variantId}") {
     val variantId = parseUuidParam(call.parameters["variantId"], "variantId")
@@ -83,8 +83,8 @@ put("/notation/variants/{variantId}") {
 
 From `KrithiEditor.tsx` analysis:
 
+```text
 **Create Variant:**
-```typescript
 {
     language: LanguageCodeDto,
     script: ScriptCodeDto,
@@ -96,8 +96,8 @@ From `KrithiEditor.tsx` analysis:
 
 **Update Variant:** (same structure as create)
 
+```text
 **Save Variant Sections:**
-```typescript
 {
     sections: Array<{
         sectionId: string,
@@ -176,7 +176,6 @@ The following routes already use `/v1/admin/` prefix correctly:
 
 Add the following request models (append to existing file):
 
-```kotlin
 @Serializable
 data class LyricVariantCreateRequest(
     val language: LanguageCodeDto,
@@ -207,6 +206,7 @@ data class LyricVariantSectionRequest(
     val text: String,
 )
 
+```kotlin
 @Serializable
 data class SaveLyricVariantSectionsRequest(
     val sections: List<LyricVariantSectionRequest>
@@ -224,7 +224,6 @@ data class SaveLyricVariantSectionsRequest(
 
 Add the following methods:
 
-```kotlin
 suspend fun createLyricVariant(
     krithiId: Uuid,
     language: LanguageCode,
@@ -314,6 +313,7 @@ suspend fun saveLyricVariantSections(
         KrithiLyricSectionsTable.lyricVariantId eq javaVariantId 
     }
     
+    ```text
     // Insert new sections
     if (sections.isNotEmpty()) {
         KrithiLyricSectionsTable.batchInsert(sections) { (sectionId, text) ->
@@ -337,7 +337,6 @@ suspend fun saveLyricVariantSections(
 
 Add the following methods:
 
-```kotlin
 suspend fun createLyricVariant(
     krithiId: Uuid,
     request: com.sangita.grantha.backend.api.models.LyricVariantCreateRequest
@@ -420,6 +419,7 @@ suspend fun saveLyricVariantSections(
     )
 }
 
+```kotlin
 // Helper method needed in repository
 suspend fun findLyricVariantById(variantId: Uuid): KrithiLyricVariantDto? = DatabaseFactory.dbQuery {
     KrithiLyricVariantsTable
@@ -438,7 +438,6 @@ suspend fun findLyricVariantById(variantId: Uuid): KrithiLyricVariantDto? = Data
 
 Add routes within the existing `/v1/admin/krithis` route block:
 
-```kotlin
 // Add after the existing get("/{id}/variants") route (around line 83)
 
 post("/{id}/variants") {
@@ -459,6 +458,7 @@ route("/v1/admin/variants") {
         call.respond(updated)
     }
     
+    ```kotlin
     post("/{id}/sections") {
         val id = parseUuidParam(call.parameters["id"], "variantId")
             ?: return@post call.respondText("Missing variant ID", status = HttpStatusCode.BadRequest)
@@ -485,7 +485,6 @@ route("/v1/admin/variants") {
 
 Change route prefix from `/v1` to `/v1/admin`:
 
-```kotlin
 fun Route.adminNotationRoutes(notationService: KrithiNotationService) {
     route("/v1/admin") {  // Changed from "/v1"
         post("/krithis/{id}/notation/variants") {
@@ -508,6 +507,7 @@ fun Route.adminNotationRoutes(notationService: KrithiNotationService) {
             // ... existing code ...
         }
         
+        ```text
         delete("/notation/rows/{rowId}") {
             // ... existing code ...
         }
@@ -527,7 +527,6 @@ fun Route.adminNotationRoutes(notationService: KrithiNotationService) {
 
 Move POST and PUT routes from `/v1/krithis` to `/v1/admin/krithis`:
 
-```kotlin
 fun Route.adminKrithiRoutes(
     krithiService: KrithiService,
     transliterationService: TransliterationService
@@ -552,6 +551,7 @@ fun Route.adminKrithiRoutes(
             call.respond(updated)
         }
         
+        ```text
         // ... existing routes (sections, variants, tags, etc.) ...
     }
 }
@@ -563,7 +563,6 @@ fun Route.adminKrithiRoutes(
 
 Change route prefix from `/v1/imports` to `/v1/admin/imports`:
 
-```kotlin
 fun Route.importRoutes(
     importService: ImportService,
     webScrapingService: WebScrapingService
@@ -578,6 +577,7 @@ fun Route.importRoutes(
         // ... existing routes ...
     }
     
+    ```text
     route("/v1/admin/imports") {
         // Move review route here as well
         post("/{id}/review") {
@@ -620,7 +620,6 @@ Verify frontend paths match the new backend paths. The frontend already uses `/a
 
 Create or extend integration tests:
 
-```kotlin
 class LyricVariantRoutesTest {
     @Test
     fun `POST admin krithis variants creates variant`() {
@@ -632,6 +631,7 @@ class LyricVariantRoutesTest {
         // Test update endpoint
     }
     
+    ```kotlin
     @Test
     fun `POST admin variants sections saves sections`() {
         // Test save sections endpoint
@@ -660,7 +660,6 @@ class LyricVariantRoutesTest {
 
 **File:** `modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/UserManagementRoutes.kt` (create new file)
 
-```kotlin
 package com.sangita.grantha.backend.api.routes
 
 import com.sangita.grantha.backend.api.models.*
@@ -746,6 +745,7 @@ fun Route.userManagementRoutes(userService: UserManagementService) {
             }
         }
         
+        ```kotlin
         get("/{id}/roles") {
             val id = parseUuidParam(call.parameters["id"], "userId")
                 ?: return@get call.respondText("Missing user ID", status = HttpStatusCode.BadRequest)
@@ -758,7 +758,6 @@ fun Route.userManagementRoutes(userService: UserManagementService) {
 
 **Request DTOs** (add to `modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/models/UserRequests.kt`):
 
-```kotlin
 @Serializable
 data class UserCreateRequest(
     val email: String? = null,
@@ -778,6 +777,7 @@ data class UserUpdateRequest(
     val isActive: Boolean? = null,
 )
 
+```kotlin
 @Serializable
 data class AssignRoleRequest(
     val roleCode: String,
@@ -808,7 +808,7 @@ The system already has foundational RBAC infrastructure:
 
 **Capability Structure (JSONB):**
 
-```json
+```text
 {
   "krithis": {
     "create": true,
@@ -849,7 +849,6 @@ The system already has foundational RBAC infrastructure:
 
 **File:** `modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/AuthorizationService.kt` (create new file)
 
-```kotlin
 package com.sangita.grantha.backend.api.services
 
 import com.sangita.grantha.backend.dal.SangitaDal
@@ -876,6 +875,7 @@ class AuthorizationService(private val dal: SangitaDal) {
         }
     }
     
+    ```kotlin
     suspend fun requirePermission(userId: Uuid, permission: Permission) {
         if (!hasPermission(userId, permission)) {
             throw SecurityException("User does not have permission: ${permission.resource}.${permission.action}")
@@ -894,12 +894,12 @@ Create route interceptors that check permissions before allowing access. This ca
 
 Update route handlers to check permissions:
 
-```kotlin
 // Example in AdminKrithiRoutes.kt
 post("/v1/admin/krithis") {
     val userId = getCurrentUserId(call) // Extract from auth context
     authorizationService.requirePermission(userId, Permission("krithis", "create"))
     
+    ```kotlin
     val request = call.receive<KrithiCreateRequest>()
     val created = krithiService.createKrithi(request)
     call.respond(HttpStatusCode.Created, created)
@@ -912,7 +912,6 @@ Add role management routes (admin-only):
 
 **File:** `modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/RoleManagementRoutes.kt` (create new file)
 
-```kotlin
 route("/v1/admin/roles") {
     get {
         // List all roles (admin only)
@@ -930,6 +929,7 @@ route("/v1/admin/roles") {
         // Update role capabilities (super_admin only)
     }
     
+    ```text
     get("/{code}/users") {
         // List users with this role
     }
@@ -1101,7 +1101,7 @@ route("/v1/admin/roles") {
 
 ### New Endpoints to Implement (Phase 1)
 
-```
+```text
 POST   /v1/admin/krithis/{id}/variants
 PUT    /v1/admin/variants/{id}
 POST   /v1/admin/variants/{id}/sections
@@ -1110,7 +1110,7 @@ POST   /v1/admin/variants/{id}/sections
 ### Endpoints to Standardize (Phase 2 - Path Changes)
 
 **Notation Routes:**
-```
+```text
 POST   /v1/krithis/{id}/notation/variants          → /v1/admin/krithis/{id}/notation/variants
 PUT    /v1/notation/variants/{variantId}           → /v1/admin/notation/variants/{variantId}
 DELETE /v1/notation/variants/{variantId}           → /v1/admin/notation/variants/{variantId}
@@ -1120,20 +1120,20 @@ DELETE /v1/notation/rows/{rowId}                   → /v1/admin/notation/rows/{
 ```
 
 **Krithi Mutation Routes:**
-```
+```text
 POST   /v1/krithis                                 → /v1/admin/krithis
 PUT    /v1/krithis/{id}                            → /v1/admin/krithis/{id}
 ```
 
 **Import Routes:**
-```
+```text
 POST   /v1/imports/krithis                         → /v1/admin/imports/krithis
 POST   /v1/imports/{id}/review                     → /v1/admin/imports/{id}/review
 ```
 
 ### New Endpoints to Implement (Phase 3 - User Management)
 
-```
+```text
 GET    /v1/admin/users
 GET    /v1/admin/users/{id}
 POST   /v1/admin/users
@@ -1146,7 +1146,7 @@ GET    /v1/admin/users/{id}/roles
 
 ### New Endpoints to Implement (Phase 4 - RBAC/Role Management)
 
-```
+```text
 GET    /v1/admin/roles
 GET    /v1/admin/roles/{code}
 POST   /v1/admin/roles                    (super_admin only)

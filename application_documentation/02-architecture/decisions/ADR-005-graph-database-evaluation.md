@@ -50,7 +50,7 @@ Neo4j Enterprise is expensive, and Community Edition lacks critical features lik
 
 The implementation follows a "Client-Side Graph" model:
 
-```
+```text
 ┌─────────────────┐
 │  Admin Web UI   │
 │  (Cytoscape.js) │

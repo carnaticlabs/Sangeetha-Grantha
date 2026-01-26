@@ -15,26 +15,27 @@ All versions are managed in `gradle/libs.versions.toml`.
 ### Backend Core Versions
 
 - **Kotlin**: 2.3.0
-- **Ktor**: 3.3.3 (server + client)
-- **Exposed**: 1.0.0-rc-4 (ORM)
-- **PostgreSQL Driver**: 42.7.8
+- **Ktor**: 3.4.0 (server + client)
+- **Exposed**: 1.0.0 (ORM)
+- **PostgreSQL Driver**: 42.7.9
 - **HikariCP**: 7.0.2 (connection pooling)
 - **JWT (Auth0)**: 4.5.0
-- **Logback**: 1.5.20
+- **Logback**: 1.5.25
 - **Logstash Logback Encoder**: 8.0
+- **Commons CSV**: 1.10.0
 
 ### Kotlinx Libraries
 
-- **Kotlinx Coroutines**: 1.9.0
+- **Kotlinx Coroutines**: 1.10.2
 - **Kotlinx DateTime**: 0.6.1
-- **Kotlinx Serialization JSON**: 1.7.3
+- **Kotlinx Serialization JSON**: 1.10.0
 
 ### Mobile (Kotlin Multiplatform)
 
 - **Kotlin**: 2.3.0
-- **Compose Multiplatform**: 1.9.3
-- **Android Gradle Plugin**: 8.13.2
-- **Ktor Client**: 3.3.3
+- **Compose Multiplatform**: 1.10.0
+- **Android Gradle Plugin**: 9.0.0
+- **Ktor Client**: 3.4.0
 - **Kotlinx Libraries**: Same as backend
 
 ### Frontend (Admin Web)

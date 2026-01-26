@@ -118,7 +118,7 @@ val updatedRow = KrithisTable.update({ ... }) { ... }
 - Atomic: get updated row in same transaction
 - Reduces round-trips
 
-**Note**: Check if Exposed v1 supports `RETURNING`. If not, may need raw SQL or upgrade.
+**Note**: Confirmed Exposed v1 supports `RETURNING`.
 
 ### Priority 2: Selective Field Updates (Change Detection)
 
@@ -271,7 +271,7 @@ suspend fun update(
     val now = OffsetDateTime.now(ZoneOffset.UTC)
     val javaId = id.toJavaUuid()
 
-    // Use Exposed 1.0.0-rc-4 updateReturning to update and fetch the row in one round-trip
+    // Use Exposed 1.0.0 updateReturning to update and fetch the row in one round-trip
     val updatedKrithi = KrithisTable
         .updateReturning(
             where = { KrithisTable.id eq javaId }
@@ -314,7 +314,7 @@ suspend fun update(
 
 ## Notes
 
-- ✅ Exposed 1.0.0-rc-4 fully supports `RETURNING` clause via `updateReturning` and `resultedValues`
+- ✅ Exposed 1.0.0 fully supports `RETURNING` clause via `updateReturning` and `resultedValues`
 - ✅ Smart diffing for collections eliminates need for upfront SELECT in most cases
 - ✅ All optimizations implemented and tested
 - ✅ Consistent patterns established across all repositories

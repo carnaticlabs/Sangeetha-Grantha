@@ -16,7 +16,7 @@ This document outlines the retention and archiving strategy for Sangita Grantha 
 
 All archived documentation is stored in `application_documentation/archive/` with the following structure:
 
-```
+```text
 archive/
 ├── database-archive/      # Legacy database schemas and migrations
 ├── graph-explorer/        # Archived graph database evaluation docs
@@ -40,7 +40,7 @@ Documentation should be archived when:
 
 If archiving a feature or topic, create a subdirectory in `archive/`:
 
-```bash
+```text
 mkdir -p application_documentation/archive/[feature-name]
 ```
 
@@ -53,7 +53,6 @@ Create a `README.md` in the archive directory explaining:
 - Brief summary of contents
 
 Example:
-```markdown
 # [Feature Name] Archive
 
 
@@ -71,6 +70,7 @@ Example:
 
 ## Canonical Replacement
 
+```text
 [Link to current documentation, if applicable]
 ```
 
@@ -78,7 +78,7 @@ Example:
 
 Move files to the archive directory:
 
-```bash
+```text
 mv application_documentation/[path]/[file].md \
    application_documentation/archive/[feature-name]/
 ```
@@ -91,9 +91,9 @@ mv application_documentation/[path]/[file].md \
 
 ### Step 5: Update Status
 
+```text
 Set the document status to "Archived" in front matter:
 
-```markdown
 ```
 
 ## Current Archive Contents

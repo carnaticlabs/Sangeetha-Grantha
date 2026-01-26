@@ -308,7 +308,7 @@ The standardisation solution consists of three core components:
 
 **Configuration**: `.mise.toml` at project root
 
-```toml
+```kotlin
 [tools]
 java = "temurin-25"      # Matches Gradle toolchain requirement
 rust = "1.92.0"          # Matches tools/sangita-cli/rust-toolchain.toml
@@ -316,12 +316,12 @@ bun = "1.3.0"            # Frontend package manager
 ```
 
 **Usage**:
-```bash
 # Install mise (one-time, per developer)
 curl https://mise.run | sh  # macOS/Linux
 # Windows: Use winget or download from https://mise.jdx.dev/
 
 # In project directory
+```text
 mise install              # Installs all tools from .mise.toml
 mise activate            # Activates tools in current shell
 ```
@@ -333,7 +333,7 @@ mise activate            # Activates tools in current shell
 **Solution**: Single source of truth for configuration templates.
 
 **Structure**:
-```
+```text
 tools/bootstrap-assets/
 └── env/
     └── env.development.example    # Template (committed to git)
@@ -354,7 +354,6 @@ config/
 - Used by both backend (Ktor) and frontend (Vite)
 
 **Key Variables**:
-```bash
 # Frontend
 VITE_API_BASE_URL=http://localhost:8080
 
@@ -393,11 +392,11 @@ DB_PASSWORD=postgres
 - Compatible with Windows Docker Desktop
 
 **Workflow**:
-```bash
 # Unix/Linux/macOS
 ./tools/bootstrap
 
 # Windows
+```text
 powershell -ExecutionPolicy Bypass -File .\tools\bootstrap.ps1
 ```
 
@@ -411,18 +410,18 @@ powershell -ExecutionPolicy Bypass -File .\tools\bootstrap.ps1
 7. ✅ Installs frontend dependencies (bun install)
 
 **Post-Bootstrap**:
-```bash
 # Start full dev stack
 cargo run --manifest-path tools/sangita-cli/Cargo.toml -- dev --start-db
 
 # Or run services separately
+```text
 ./gradlew :modules:backend:api:run
 cd modules/frontend/sangita-admin-web && bun run dev
 ```
 
 ### 4.2 Workflow
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │ Developer runs: ./tools/bootstrap (or bootstrap.ps1)        │
 └───────────────────────┬─────────────────────────────────────┘
@@ -531,8 +530,8 @@ cd modules/frontend/sangita-admin-web && bun run dev
 
 #### 4.4.1 Bootstrap Script Logic
 
+```text
 **Phase 1: Toolchain Setup**
-```bash
 if mise is available:
     mise install          # Install Java, Rust, Bun
     mise activate         # Add to PATH
@@ -540,15 +539,15 @@ else:
     warn: "Use system tools (verify versions manually)"
 ```
 
+```text
 **Phase 2: Docker Verification**
-```bash
 check docker command exists
 check docker compose or docker-compose exists
 exit if missing
 ```
 
+```text
 **Phase 3: Config File Creation**
-```bash
 if config/.env.development exists:
     skip (preserve user customizations)
 else:
@@ -556,20 +555,20 @@ else:
          → config/.env.development
 ```
 
+```text
 **Phase 4: Database Setup**
-```bash
 docker compose up -d postgres    # Start PostgreSQL 15
 wait for health check
 ```
 
+```text
 **Phase 5: Build & Migrate**
-```bash
 cargo build --manifest-path tools/sangita-cli/Cargo.toml
 cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db reset --mode docker
 ```
 
+```text
 **Phase 6: Frontend Dependencies**
-```bash
 if bun is available:
     cd modules/frontend/sangita-admin-web
     bun install
@@ -619,7 +618,7 @@ else:
 
 #### 4.4.5 File Structure
 
-```
+```text
 sangeetha-grantha/
 ├── .mise.toml                                    # Toolchain versions
 ├── tools/
@@ -738,14 +737,13 @@ sangeetha-grantha/
 
 ### 9.1 First-Time Setup
 
+```text
 **Step 1: Clone Repository**
-```bash
 git clone <repository-url>
 cd sangeetha-grantha
 ```
 
 **Step 2: Install mise (Recommended)**
-```bash
 # macOS/Linux
 curl https://mise.run | sh
 
@@ -755,22 +753,22 @@ winget install jdx.mise
 ```
 
 **Step 3: Run Bootstrap**
-```bash
 # Unix/Linux/macOS
 ./tools/bootstrap
 
 # Windows
+```text
 powershell -ExecutionPolicy Bypass -File .\tools\bootstrap.ps1
 ```
 
 **Step 4: Verify Setup**
-```bash
 # Check toolchain versions
 java -version    # Should show Java 25
 rustc --version  # Should show rustc 1.92.0
 bun --version    # Should show 1.3.0
 
 # Check database
+```text
 docker ps        # Should show sangita_postgres container running
 cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db health
 ```
@@ -778,7 +776,6 @@ cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db health
 ### 9.2 Daily Development Workflow
 
 **Start Development Stack**:
-```bash
 # Option 1: Via mise (recommended - ensures correct tool versions)
 mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- dev --start-db
 
@@ -786,23 +783,24 @@ mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- dev --sta
 cargo run --manifest-path tools/sangita-cli/Cargo.toml -- dev --start-db
 
 # Option 3: Manual (for debugging)
+```text
 docker compose up -d postgres
 ./gradlew :modules:backend:api:run
 cd modules/frontend/sangita-admin-web && bun run dev
 ```
 
 **Reset Database**:
-```bash
 # Via mise (recommended)
 mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db reset --mode docker
 
 # Or direct
+```text
 cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db reset --mode docker
 ```
 
 **Update Toolchain**:
-```bash
 # Update .mise.toml with new versions
+```text
 mise install    # Installs updated versions
 ```
 

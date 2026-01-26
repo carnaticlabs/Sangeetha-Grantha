@@ -141,7 +141,7 @@ Adopted a spec-driven documentation architecture with:
 - Archived legacy docs with tombstones
 
 **Structure:**
-```
+```text
 application_documentation/
 ├── 00-meta/              # Standards, retention plans
 ├── 01-requirements/      # PRDs, domain models, features
@@ -409,16 +409,16 @@ Updating child collections (e.g., `KrithiSections`, `LyricVariantSections`, `Tag
 **Innovation:**
 Leveraged PostgreSQL's `RETURNING` clause to eliminate redundant SELECT queries.
 
+```sql
 **Before (Two Round-Trips):**
-```kotlin
 // Query 1: INSERT
 KrithisTable.insert { ... }
 // Query 2: SELECT (to return the created entity)
 KrithisTable.selectAll().where { id eq newId }.single()
 ```
 
+```text
 **After (Single Round-Trip):**
-```kotlin
 // Single query: INSERT with RETURNING
 KrithisTable.insert { ... }
     .resultedValues
@@ -427,11 +427,11 @@ KrithisTable.insert { ... }
 ```
 
 **Update Pattern:**
-```kotlin
 // Before: UPDATE + SELECT
 KrithisTable.update { ... }
 KrithisTable.selectAll().where { ... }.singleOrNull()
 
+```text
 // After: UPDATE with RETURNING
 KrithisTable.updateReturning(where = { id eq javaId }) { ... }
     .singleOrNull()
@@ -480,8 +480,8 @@ Chose **mise** (formerly rtx) as unified toolchain version manager:
 - ✅ Automatic PATH management
 
 **Configuration:**
-```toml
 # .mise.toml
+```kotlin
 [tools]
 java = "temurin-25"      # Matches Gradle toolchain requirement
 rust = "1.92.0"          # Matches CLI toolchain
@@ -534,11 +534,11 @@ Implemented in Rust (`tools/sangita-cli`) for:
 - Seamless IDE integration
 
 **Commit Message Format:**
-```text
 <subject line>
 
 Ref: application_documentation/01-requirements/features/my-feature.md
 
+```text
 <optional body>
 ```
 
@@ -613,8 +613,8 @@ End-to-end smoke test that verifies core functionality of the entire stack.
 4. ✅ Admin API endpoints (with authentication)
 5. ✅ Frontend dev server startup
 
+```text
 **Execution:**
-```bash
 cargo run -- test steel-thread
 ```
 
@@ -639,11 +639,11 @@ cargo run -- test steel-thread
 - Coverage spans health routes, OTP auth, admin sangita lifecycle, pagination, participant rosters/payments
 
 **Test Execution:**
-```bash
 # Seed test data
 ./gradlew :modules:backend:api:seedTestData
 
 # Run integration tests
+```text
 ./gradlew :modules:backend:api:test
 ```
 
@@ -752,8 +752,8 @@ Production-ready for small to medium scale (thousands of concurrent users).
 
 **Key Versions:**
 - Kotlin: 2.3.0
-- Ktor: 3.3.3
-- Exposed: 1.0.0-rc-4
+- Ktor: 3.4.0
+- Exposed: 1.0.0
 - React: 19.2.0
 - TypeScript: 5.8.3
 - PostgreSQL: 15+ (dev pinned via Docker Compose)

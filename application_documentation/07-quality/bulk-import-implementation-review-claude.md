@@ -93,7 +93,7 @@ Sections 1, 2, 4, and 10 have been significantly revised. All other technical an
 ### 1.1 Design Evolution: Strategy → Clarified Requirements → Implementation
 
 **Original Strategy Document (csv-import-strategy.md):**
-```
+```text
 CSV Parser (Python Script) → SQL Seed Files → DB Load
                  ↓
 Batch Scraping Service (Kotlin) → Rate Limiter → WebScrapingService
@@ -104,7 +104,7 @@ Review Workflow → Auto-Approval (>0.95) → Manual Review
 ```
 
 **Updated Technical Guide v2 (Section 2.1, 2026-01):**
-```
+```text
 API Upload → BulkImportOrchestrationService
                  ↓
 BulkImportWorkerService (Unified Dispatcher)
@@ -118,7 +118,7 @@ Dispatcher Loop (Adaptive Polling + Event-Driven Wakeup)
 ```
 
 **Actual Implementation:**
-```
+```text
 ✅ POST /bulk-import/upload → Batch Creation → Manifest Job
                  ↓
 ✅ Unified Dispatcher (750ms poll, 15s max backoff, wakeup channel)
@@ -168,8 +168,8 @@ private suspend fun runDispatcherLoop(
 > - **Event-Driven Wakeup**: API actions trigger immediate dispatcher wakeup.
 > - **Batch Claiming**: Workers claim multiple tasks (e.g., 5) per transaction.
 
-**Implementation (BulkImportWorkerService.kt:214-229):**
 ```kotlin
+**Implementation (BulkImportWorkerService.kt:214-229):**
 // Adaptive Backoff with Wakeup Support
 if (anyTaskFound) {
     currentDelay = config.pollIntervalMs  // Reset to 750ms
@@ -197,7 +197,6 @@ if (anyTaskFound) {
 > - URL validation during manifest ingest is syntax-only (no HEAD/GET requirement).
 
 **Implementation (BulkImportWorkerService.kt:711-750):**
-```kotlin
 private fun parseCsvManifest(path: Path): List<CsvRow> {
     val parser = CSVFormat.DEFAULT.builder()
         .setHeader()
@@ -217,6 +216,7 @@ private fun parseCsvManifest(path: Path): List<CsvRow> {
     // ✅ Optional Raga column (line 746)
     val raga = if (record.isMapped("Raga")) record.get("Raga")?.takeIf { it.isNotBlank() } else null
 
+    ```text
     // ✅ Syntax-only URL validation (lines 741-744, isValidUrl function 752-761)
     if (!isValidUrl(hyperlink)) {
         logger.warn("Skipping invalid URL in manifest: $hyperlink")
@@ -302,8 +302,8 @@ The technical implementation guide (Section 1.1) provides four critical clarific
 
 **File: 10__bulk-import-orchestration.sql**
 
-**✅ Excellent Practices:**
 ```sql
+**✅ Excellent Practices:**
 -- Lines 9-49: Safe enum creation with conditional checks
 DO $$
 BEGIN
@@ -313,8 +313,8 @@ BEGIN
 END$$;
 ```
 
+```text
 **✅ Comprehensive Indexing:**
-```sql
 -- Lines 72-126: Well-thought-out indexes
 CREATE INDEX idx_import_batch_status ON import_batch (status);
 CREATE INDEX idx_import_task_run_pending ON import_task_run (status, created_at)
@@ -328,7 +328,6 @@ CREATE INDEX idx_import_task_run_pending ON import_task_run (status, created_at)
 **File: 11__bulk-import-hardening.sql**
 
 **✅ Idempotency Implementation:**
-```sql
 -- Lines 8-24: Idempotency key with backfill
 ALTER TABLE import_task_run ADD COLUMN IF NOT EXISTS idempotency_key TEXT;
 
@@ -340,6 +339,7 @@ SET idempotency_key = CONCAT(
 FROM import_job job
 WHERE itr.job_id = job.id AND itr.idempotency_key IS NULL;
 
+```text
 CREATE UNIQUE INDEX ux_import_task_run_idempotency_key
     ON import_task_run (idempotency_key);
 ```
@@ -348,7 +348,6 @@ CREATE UNIQUE INDEX ux_import_task_run_idempotency_key
 
 The backfill happens *before* the unique constraint. If tasks are being created concurrently during migration, this could fail. Better approach:
 
-```sql
 -- Safer: Create index with WHERE clause first
 CREATE UNIQUE INDEX ux_import_task_run_idempotency_key
     ON import_task_run (idempotency_key)
@@ -357,6 +356,7 @@ CREATE UNIQUE INDEX ux_import_task_run_idempotency_key
 -- Then backfill
 UPDATE import_task_run ... WHERE idempotency_key IS NULL;
 
+```text
 -- Finally enforce NOT NULL
 ALTER TABLE import_task_run ALTER COLUMN idempotency_key SET NOT NULL;
 ```
@@ -365,8 +365,8 @@ ALTER TABLE import_task_run ALTER COLUMN idempotency_key SET NOT NULL;
 
 ### 3.3 Missing Indices
 
+```text
 **Strategy Section 6.3 proposed:**
-```sql
 CREATE INDEX idx_entity_cache_type_name
     ON entity_resolution_cache(entity_type, normalized_name);
 ```
@@ -450,13 +450,13 @@ Implementation defaults:
 > The CSV `Raga` column is optional at ingest; scraped raga values are authoritative. CSV raga is only for authoring-time validation.
 
 **Implementation (BulkImportWorkerService.kt:722-732):**
-```kotlin
 val headerMap = parser.headerMap
 if (headerMap != null) {
     val keys = headerMap.keys.map { it.lowercase() }.toSet()
     val required = listOf("krithi", "hyperlink")  // ✅ Raga intentionally omitted
     val missing = required.filter { !keys.contains(it) }
 
+    ```text
     if (missing.isNotEmpty()) {
         throw IllegalArgumentException("Missing required columns: ${missing...}")
     }
@@ -468,15 +468,14 @@ if (headerMap != null) {
 2. Scraping to provide authoritative raga information
 3. CSV raga to serve as a sanity check during manual review
 
-**Recommendation:** Add inline comment referencing the clarified requirement for future maintainers:
 ```kotlin
+**Recommendation:** Add inline comment referencing the clarified requirement for future maintainers:
 val required = listOf("krithi", "hyperlink")
 // Note: Raga column is optional per technical-implementation-guide.md section 1.1
 ```
 
 #### 🔴 Critical Issue: Stage Transition Logic
 
-```kotlin
 // Lines 551-603: checkAndTriggerNextStage
 private suspend fun checkAndTriggerNextStage(jobId: kotlin.uuid.Uuid) {
     val job = dal.bulkImport.findJobById(jobId) ?: return
@@ -487,6 +486,7 @@ private suspend fun checkAndTriggerNextStage(jobId: kotlin.uuid.Uuid) {
         s == TaskStatus.BLOCKED || s == TaskStatus.CANCELLED
     }
 
+    ```text
     if (isComplete) {
         // ... create next stage job
     }
@@ -495,8 +495,8 @@ private suspend fun checkAndTriggerNextStage(jobId: kotlin.uuid.Uuid) {
 
 **🔴 Problem:** This is called on **every single task completion** (lines 407, 424, 458, 478, 537, 547). For a batch of 1,240 tasks, this means **1,240 database queries** to check if all tasks are complete.
 
+```text
 **Better Approach:**
-```kotlin
 // Only check when batch counters indicate completion
 if (batch.processedTasks >= batch.totalTasks) {
     checkAndTriggerNextStage(jobId)
@@ -523,8 +523,8 @@ private fun ratio(s1: String, s2: String): Int {
 
 #### 🔴 Critical Missing: Confidence-Based Filtering
 
-Strategy Section 4.3 specified:
 ```kotlin
+Strategy Section 4.3 specified:
 data class AutoApprovalRules(
     val minConfidenceScore: Double = 0.95,
     val requireComposerMatch: Boolean = true,
@@ -533,8 +533,8 @@ data class AutoApprovalRules(
 )
 ```
 
-**Implementation:**
 ```kotlin
+**Implementation:**
 // Lines 28-43: resolve() method
 suspend fun resolve(importedKrithi: ImportedKrithiDto): ResolutionResult {
     // ... matching logic
@@ -550,11 +550,11 @@ suspend fun resolve(importedKrithi: ImportedKrithiDto): ResolutionResult {
 **Impact:** Every single krithi requires manual review, even perfect matches. This defeats the purpose of auto-approval (strategy goal: 30%+ auto-approval).
 
 **Recommendation:** Add confidence threshold logic:
-```kotlin
 val autoResolved = composerCandidates.firstOrNull()?.score >= 95 &&
                    ragaCandidates.firstOrNull()?.score >= 90 &&
                    talaCandidates.firstOrNull()?.score >= 85
 
+```text
 return ResolutionResult(..., resolved = autoResolved)
 ```
 
@@ -571,8 +571,8 @@ val talas = dal.talas.listAll()
 - 1,240 × 3 = **3,720 database queries** for reference data
 - Fetching ~300 entities each time = **~1.1 million entity objects created**
 
-**Recommendation:** Add in-memory cache with 1-hour TTL:
 ```kotlin
+**Recommendation:** Add in-memory cache with 1-hour TTL:
 @Cacheable(ttl = 1.hour)
 private suspend fun getAllComposers(): List<ComposerDto> = dal.composers.listAll()
 ```
@@ -681,8 +681,8 @@ private val perDomainWindows = mutableMapOf<String, RateWindow>()
 
 **Problem:** This map grows unbounded. After scraping 1,000 unique domains, this map has 1,000 entries that are never cleaned up.
 
-**Fix:**
 ```kotlin
+**Fix:**
 private val perDomainWindows =
     LRUCache<String, RateWindow>(maxSize = 100, ttl = 1.hour)
 ```
@@ -729,7 +729,7 @@ private val perDomainWindows =
 
 **Query Analysis:**
 
-```kotlin
+```sql
 // BulkImportRepository.kt:340-373 - claimNextPendingTasks
 SELECT * FROM import_task_run
 INNER JOIN import_job ON ...
@@ -760,8 +760,8 @@ FOR UPDATE
 
 #### 🔴 1. Review Workflow APIs (Phase 4)
 
+```text
 **Strategy Section 7.2:**
-```kotlin
 GET /v1/admin/imports?batchId={}&qualityTier={}&confidenceMin={}
 POST /v1/admin/imports/batch/{id}/bulk-review
 POST /v1/admin/imports/batch/{id}/auto-approve
@@ -779,8 +779,8 @@ POST /v1/admin/imports/batch/{id}/auto-approve
 
 #### 🔴 2. Quality Scoring (Section 8.2)
 
-**Strategy:**
 ```kotlin
+**Strategy:**
 data class QualityScore(
     val overall: Double,
     val completeness: Double,      // 40% weight
@@ -799,8 +799,8 @@ data class QualityScore(
 
 #### 🔴 3. Entity Resolution Cache
 
-**Strategy Section 6.3:**
 ```sql
+**Strategy Section 6.3:**
 CREATE TABLE entity_resolution_cache (
   entity_type VARCHAR(50) NOT NULL,
   raw_name TEXT NOT NULL,
@@ -825,8 +825,8 @@ CREATE TABLE entity_resolution_cache (
 
 **Current:** Poll `GET /batches/{id}` for status updates
 
+```text
 **Enhancement:**
-```kotlin
 GET /batches/{id}/progress (Server-Sent Events)
 ```
 
@@ -834,8 +834,8 @@ GET /batches/{id}/progress (Server-Sent Events)
 
 #### ⚠️ 5. Deduplication Service
 
-**Strategy Section 3.3:**
 ```kotlin
+**Strategy Section 3.3:**
 class DeduplicationService {
     suspend fun findDuplicates(
         imported: ImportedKrithiDto,
@@ -898,11 +898,11 @@ class DeduplicationService {
 ### 9.1 Immediate Actions (Pre-Production)
 
 #### 1. Implement Review Workflow APIs (Priority: CRITICAL)
-```kotlin
 // Target: conductor/tracks/TRACK-001-bulk-import-krithis.md Phase D
 POST /v1/admin/imports/batch/{id}/auto-approve
 GET /v1/admin/imports?confidenceMin=0.95&status=PENDING
 
+```kotlin
 // Wire to existing ImportService.reviewImport()
 // Add bulk approval logic
 // Implement quality tier filtering
@@ -912,7 +912,6 @@ GET /v1/admin/imports?confidenceMin=0.95&status=PENDING
 **Blocker:** Yes (cannot complete imports without this)
 
 #### 2. Add Quality Scoring Logic (Priority: HIGH)
-```kotlin
 // EntityResolutionService.kt enhancement
 fun calculateQualityScore(result: ResolutionResult): QualityScore {
     val completeness = scoreCompleteness(result)
@@ -920,6 +919,7 @@ fun calculateQualityScore(result: ResolutionResult): QualityScore {
     val sourceQuality = 0.8 // Fixed for blogspot sources
     val validation = 1.0 // All passed header validation
 
+    ```text
     return QualityScore(
         overall = (completeness * 0.4 + confidence * 0.3 +
                    sourceQuality * 0.2 + validation * 0.1),
@@ -948,12 +948,12 @@ private val perDomainWindows = Collections.synchronizedMap(
 ### 9.2 Short-Term Improvements (1-2 Weeks)
 
 #### 4. Optimize Stage Transition Checks
-```kotlin
 // Only check completion when counters indicate possible completion
 private suspend fun processScrapeTask(...) {
     // ... existing logic
     dal.bulkImport.incrementBatchCounters(...)
 
+    ```kotlin
     // Add this check:
     val batch = dal.bulkImport.findBatchById(batchId)
     if (batch != null && batch.processedTasks >= batch.totalTasks) {
@@ -966,7 +966,6 @@ private suspend fun processScrapeTask(...) {
 **Effort:** 1 hour
 
 #### 5. Add Entity Resolution Caching
-```sql
 -- Migration: 14__entity-resolution-cache.sql
 CREATE TABLE entity_resolution_cache (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -979,6 +978,7 @@ CREATE TABLE entity_resolution_cache (
   UNIQUE(entity_type, normalized_name)
 );
 
+```text
 CREATE INDEX idx_entity_cache_lookup
     ON entity_resolution_cache(entity_type, normalized_name);
 ```
@@ -999,7 +999,6 @@ val globalRateLimitPerMinute: Int = 120,    // Was: 50
 ### 9.3 Medium-Term Enhancements (1 Month)
 
 #### 7. Implement Deduplication Service
-```kotlin
 class DeduplicationService(private val dal: SangitaDal) {
     suspend fun findDuplicates(krithi: ImportedKrithiDto): List<DuplicateMatch> {
         // Level 1: Exact title + composer match
@@ -1011,6 +1010,7 @@ class DeduplicationService(private val dal: SangitaDal) {
         // Level 3: Check within current batch
         val batchDuplicates = findInBatch(krithi.batchId, krithi.rawTitle)
 
+        ```text
         return (exactMatches + fuzzyMatches + batchDuplicates)
             .distinctBy { it.id }
             .sortedByDescending { it.confidence }
@@ -1021,7 +1021,7 @@ class DeduplicationService(private val dal: SangitaDal) {
 **Effort:** 2-3 days
 
 #### 8. Split BulkImportWorkerService
-```
+```text
 BulkImportWorkerService.kt (762 lines) →
 ├── WorkerOrchestrator.kt       (dispatcher, watchdog, lifecycle)
 ├── ManifestProcessor.kt        (CSV parsing, task creation)
@@ -1035,7 +1035,6 @@ BulkImportWorkerService.kt (762 lines) →
 ### 9.4 Long-Term Optimizations (2-3 Months)
 
 #### 9. Adaptive Rate Limiting
-```kotlin
 class AdaptiveRateLimiter {
     private val successRates = mutableMapOf<String, Double>()
 
@@ -1048,6 +1047,7 @@ class AdaptiveRateLimiter {
         // ... apply dynamic limit
     }
 
+    ```kotlin
     fun recordResult(host: String, success: Boolean) {
         successRates[host] = (successRates[host] ?: 0.5) * 0.9 +
                              (if (success) 1.0 else 0.0) * 0.1
@@ -1246,4 +1246,4 @@ The following original findings are **still accurate and important**:
 **Reference Documents:**
 - [csv-import-strategy.md](../01-requirements/features/bulk-import/01-strategy/csv-import-strategy.md) - Original strategy
 - [technical-implementation-guide.md](../01-requirements/features/bulk-import/02-implementation/technical-implementation-guide.md) - Clarified requirements (Section 1.1)
-- [TRACK-001](../../../../conductor/tracks/TRACK-001-bulk-import-krithis.md) - Implementation tracking
+- [TRACK-001](../../conductor/tracks/TRACK-001-bulk-import-krithis.md) - Implementation tracking

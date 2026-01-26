@@ -65,7 +65,6 @@ The import pipeline consists of 10 stages:
 **Koog Strength**: Define complex workflows as graphs
 
 **Import Pipeline as Koog Graph:**
-```kotlin
 val importWorkflow = agent {
     graph {
         val discovery = node("discover") { discoverUrls(source) }
@@ -77,6 +76,7 @@ val importWorkflow = agent {
         val validation = node("validate") { validateData(processed) }
         val staging = node("stage") { stageForReview(validated) }
         
+        ```text
         discovery -> scraping -> extraction -> entityResolution -> 
         cleansing -> deduplication -> validation -> staging
     }
@@ -101,7 +101,6 @@ val importWorkflow = agent {
 **Koog Strength**: Integrate external systems as tools
 
 **Import Pipeline Tools:**
-```kotlin
 val scrapingTool = tool("scrape_url") {
     description = "Scrape HTML content from URL"
     parameter<String>("url")
@@ -118,6 +117,7 @@ val entityResolutionTool = tool("resolve_composer") {
     }
 }
 
+```kotlin
 val validationTool = tool("validate_krithi") {
     description = "Validate extracted Krithi data"
     parameter<ExtractedMetadata>("metadata")
@@ -145,7 +145,6 @@ val validationTool = tool("validate_krithi") {
 **Koog Strength**: Built-in retry and persistence
 
 **Retry Configuration:**
-```kotlin
 agent {
     retryPolicy {
         maxRetries = 3
@@ -155,6 +154,7 @@ agent {
         )
     }
     
+    ```text
     persistence {
         // Save workflow state for recovery
         storage = DatabasePersistence(db)
@@ -179,8 +179,8 @@ agent {
 
 **Koog Strength**: OpenTelemetry integration
 
+```text
 **Tracing:**
-```kotlin
 agent {
     tracing {
         exporter = OpenTelemetryExporter()
@@ -206,8 +206,8 @@ agent {
 
 **Koog Strength**: Switch LLM providers easily
 
+```text
 **Multi-Provider Support:**
-```kotlin
 agent {
     llm = when (stage) {
         "extraction" -> GeminiProvider(model = "gemini-2.0-flash-exp")
@@ -249,8 +249,8 @@ agent {
 
 ### 4.2 Code Complexity Comparison
 
-**Custom Workflow (Coroutines):**
 ```kotlin
+**Custom Workflow (Coroutines):**
 suspend fun importPipeline(url: String): ImportResult {
     return try {
         val html = webScrapingService.scrape(url)
@@ -273,7 +273,6 @@ suspend fun importPipeline(url: String): ImportResult {
 ```
 
 **Koog Workflow:**
-```kotlin
 val importAgent = agent {
     graph {
         val scrape = node("scrape") { scrapeUrl(url) }
@@ -286,6 +285,7 @@ val importAgent = agent {
         scrape -> extract -> resolve -> cleanse -> validate -> stage
     }
     
+    ```text
     retryPolicy { maxRetries = 3 }
     tracing { level = TraceLevel.DETAILED }
 }
@@ -403,7 +403,7 @@ val importAgent = agent {
 
 ### 7.1 Architecture
 
-```
+```text
 ┌─────────────────────────────────────────┐
 │         Import API Endpoints             │
 └──────────────────┬──────────────────────┘

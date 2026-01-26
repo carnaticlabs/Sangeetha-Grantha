@@ -38,7 +38,7 @@
 
 ### Component Structure
 
-```
+```text
 src/
 ├── components/          # Reusable UI primitives
 │   ├── Button.tsx
@@ -84,10 +84,10 @@ src/
 
 ### Example Query Hook
 
-```typescript
 import { useQuery } from '@tanstack/react-query';
 import { krithiApi } from '../api/krithiApi';
 
+```text
 export function useKrithi(id: string) {
   return useQuery({
     queryKey: ['krithis', id],

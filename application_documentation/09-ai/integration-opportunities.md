@@ -67,7 +67,6 @@ This document identifies strategic opportunities to leverage **Google Gemini AI*
 
 **New Backend Service: `TransliterationService`**
 
-```kotlin
 // modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/TransliterationService.kt
 
 class TransliterationService(
@@ -105,6 +104,7 @@ class TransliterationService(
         targetScripts: List<ScriptCode>
     ): List<GeneratedVariant>
 
+    ```kotlin
     /**
      * Transliterate Sahitya within Notation rows, preserving alignment
      */
@@ -119,7 +119,6 @@ class TransliterationService(
 
 Use Gemini 2.0 Flash or Gemini 1.5 Pro with structured output for transliteration:
 
-```kotlin
 // Prompt engineering for transliteration
 val prompt = """
 You are an expert in Indian language transliteration for Carnatic music compositions.
@@ -133,6 +132,7 @@ Translate the following ${sourceScript} text to ${targetScript} script, preservi
 Source text (${sourceScript}):
 ${sourceText}
 
+```text
 Provide ONLY the transliterated text in ${targetScript}, no explanations.
 """.trimIndent()
 ```
@@ -179,7 +179,6 @@ Provide ONLY the transliterated text in ${targetScript}, no explanations.
 
 **New Backend Service: `WebScrapingService`**
 
-```kotlin
 // modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/WebScrapingService.kt
 
 class WebScrapingService(
@@ -204,6 +203,7 @@ class WebScrapingService(
         concurrency: Int = 5
     ): List<ImportedKrithiDto>
     
+    ```kotlin
     /**
      * Extract structured data from HTML using Gemini
      */
@@ -218,7 +218,6 @@ class WebScrapingService(
 
 Use Gemini's multimodal capabilities to parse HTML and extract structured data:
 
-```kotlin
 val extractionPrompt = """
 Extract Carnatic kriti information from the following HTML content.
 
@@ -243,6 +242,7 @@ Extract and return as JSON:
   }
 }
 
+```text
 HTML Content:
 ${htmlContent}
 """.trimIndent()
@@ -250,8 +250,8 @@ ${htmlContent}
 
 **Batch Processing Workflow:**
 
+```kotlin
 1. **Scheduled Job** (using Ktor's coroutine scheduler or external cron)
-   ```kotlin
    // Run daily at 2 AM
    suspend fun scheduledScrape() {
        val sources = dal.imports.getAllActiveSources()
@@ -277,13 +277,13 @@ ${htmlContent}
 
 **Shivkumar.org Handler:**
 
-```kotlin
 class ShivkumarScraper : SourceSpecificScraper {
     override suspend fun discoverUrls(baseUrl: String): List<String> {
         // Navigate to https://www.shivkumar.org/music/
         // Extract all kriti detail page URLs
     }
     
+    ```kotlin
     override suspend fun extractFromPage(html: String): ExtractedKritiData {
         // Use Gemini to parse shivkumar.org's specific HTML structure
         // Handle their notation format, section markers, etc.
@@ -314,7 +314,6 @@ class ShivkumarScraper : SourceSpecificScraper {
 
 **New Service: `MetadataExtractionService`**
 
-```kotlin
 class MetadataExtractionService(
     private val geminiClient: GeminiApiClient,
     private val dal: SangitaDal
@@ -338,6 +337,7 @@ class MetadataExtractionService(
         // Handle name variations, aliases
     }
     
+    ```kotlin
     /**
      * Validate and enrich existing metadata
      */
@@ -349,7 +349,6 @@ class MetadataExtractionService(
 
 **Gemini Prompt for Extraction:**
 
-```kotlin
 val metadataPrompt = """
 Extract Carnatic music metadata from the following text.
 
@@ -365,18 +364,19 @@ Identify:
 Text:
 ${rawText}
 
+```text
 Return as JSON with confidence scores (0.0-1.0) for each field.
 """.trimIndent()
 ```
 
 **Auto-Mapping Logic:**
 
-```kotlin
 suspend fun suggestComposerMapping(extractedName: String): ComposerMapping? {
     // 1. Exact match on normalized name
     val exact = dal.composers.findByNameNormalized(normalize(extractedName))
     if (exact != null) return ComposerMapping(exact.id, confidence = 1.0)
     
+    ```kotlin
     // 2. Use Gemini for fuzzy matching with fallback to Trigram/Levenshtein
     val candidates = dal.composers.searchSimilar(extractedName, algorithm = SearchAlgorithm.TRIGRAM)
     val prompt = "Match '${extractedName}' to one of: ${candidates.map { it.name }}"
@@ -418,7 +418,6 @@ suspend fun suggestComposerMapping(extractedName: String): ComposerMapping? {
 
 **New Service: `SectionDetectionService`**
 
-```kotlin
 class SectionDetectionService(
     private val geminiClient: GeminiApiClient
 ) {
@@ -459,6 +458,7 @@ Raw Lyrics:
 ${rawLyrics}
 """.trimIndent()
         
+        ```text
         return geminiClient.generateStructured(prompt, DetectedSections.serializer())
     }
 }
@@ -492,7 +492,6 @@ ${rawLyrics}
 
 **New Service: `ValidationService`**
 
-```kotlin
 class ValidationService(
     private val geminiClient: GeminiApiClient,
     private val dal: SangitaDal
@@ -539,6 +538,7 @@ ${variants.firstOrNull()?.lyrics}
 Identify any words or phrases that seem inconsistent with the raga's scale.
 """.trimIndent()
         
+        ```text
         // Gemini analysis
     }
 }
@@ -577,7 +577,6 @@ Identify any words or phrases that seem inconsistent with the raga's scale.
 
 **Vector Search Integration:**
 
-```kotlin
 // Add embedding generation
 class EmbeddingService(
     private val geminiClient: GeminiApiClient
@@ -599,6 +598,7 @@ class EmbeddingService(
     }
 }
 
+```text
 // Store embeddings in PostgreSQL with pgvector extension
 // Add vector similarity search
 ```
@@ -676,7 +676,6 @@ class EmbeddingService(
 
 **Client Library:**
 
-```kotlin
 // modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/clients/GeminiApiClient.kt
 
 class GeminiApiClient(
@@ -699,6 +698,7 @@ class GeminiApiClient(
         // Use Gemini's structured output (JSON mode)
     }
     
+    ```kotlin
     suspend fun generateEmbedding(text: String): FloatArray {
         // Use Gemini's embedding API
     }
@@ -707,8 +707,8 @@ class GeminiApiClient(
 
 **Configuration:**
 
-```toml
 # config/application.local.toml
+```text
 [ai]
 gemini_auth_token = "${SG_GEMINI_AUTH_TOKEN}"
 gemini_model = "gemini-2.0-flash-exp"
@@ -753,7 +753,6 @@ suspend fun <T> withRetry(
 
 ### 5.1 New Admin Endpoints
 
-```kotlin
 // Transliteration
 POST /v1/admin/krithis/{id}/transliterate
 Body: { "targetScripts": ["TAMIL", "TELUGU", "KANNADA"] }
@@ -772,6 +771,7 @@ Response: { "extracted": ExtractedMetadata, "suggestions": MappingSuggestions }
 POST /v1/admin/krithis/{id}/validate
 Response: ValidationReport
 
+```text
 // Section Detection
 POST /v1/admin/krithis/{id}/detect-sections
 Body: { "rawLyrics": "text", "language": "SA" }
@@ -780,7 +780,6 @@ Response: { "sections": [DetectedSection] }
 
 ### 5.2 Request/Response DTOs
 
-```kotlin
 @Serializable
 data class TransliterationRequest(
     val targetScripts: List<ScriptCodeDto>
@@ -797,6 +796,7 @@ data class ExtractedMetadata(
     val confidence: Map<String, Double>
 )
 
+```kotlin
 @Serializable
 data class ValidationReport(
     val issues: List<ValidationIssue>,
@@ -945,7 +945,6 @@ data class ValidationReport(
 
 ### 11.1 Required Dependencies
 
-```kotlin
 // build.gradle.kts
 dependencies {
     // HTTP client for Gemini API
@@ -954,6 +953,7 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
     
+    ```text
     // For vector search (future)
     // implementation("com.pgvector:pgvector:0.1.4")
 }
@@ -961,8 +961,8 @@ dependencies {
 
 ### 11.2 Environment Variables
 
-```bash
 # .env or application.local.toml
+```text
 SG_GEMINI_AUTH_TOKEN=your_token_here
 SG_GEMINI_MODEL=gemini-2.0-flash-exp
 SG_GEMINI_ENABLED=true
@@ -1025,7 +1025,7 @@ Conductor and this document must stay in lockstep so that **design intent** (her
 
 ### Transliteration Prompt
 
-```
+```text
 You are an expert in Indian language transliteration for Carnatic music.
 
 Translate the following Devanagari text to Tamil script, preserving:
@@ -1042,7 +1042,7 @@ Provide ONLY the transliterated text in Tamil, no explanations.
 
 ### Metadata Extraction Prompt
 
-```
+```text
 Extract Carnatic music metadata from this text:
 
 "Vatapi Ganapatim - Composed by Muthuswami Dikshitar in Raga Hamsadhwani, Tala Adi. Dedicated to Lord Ganesha of Vatapi (Badami)."

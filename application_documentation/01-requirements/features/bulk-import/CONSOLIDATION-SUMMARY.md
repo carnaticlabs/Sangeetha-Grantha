@@ -31,7 +31,7 @@
 
 ### 2. Created Consolidated Structure
 
-```
+```text
 bulk-import/
 ├── README.md (Master index with feature roadmap)
 ├── 01-strategy/

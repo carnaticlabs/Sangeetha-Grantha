@@ -60,7 +60,7 @@ This document is the **single source of truth** for how musical concepts are per
 Defined in `01__baseline-schema-and-types.sql`.
 
 ### 3.1 `workflow_state_enum`
-```
+```text
 draft
 in_review
 published
@@ -71,7 +71,7 @@ Controls editorial lifecycle.
 ---
 
 ### 3.2 `language_code_enum`
-```
+```text
 sa  – Sanskrit
 ta  – Tamil
 te  – Telugu
@@ -83,7 +83,7 @@ en  – English
 ---
 
 ### 3.3 `script_code_enum`
-```
+```text
 devanagari
 tamil
 telugu
@@ -94,7 +94,7 @@ latin
 ---
 
 ### 3.4 `musical_form_enum`
-```
+```text
 KRITHI
 VARNAM
 SWARAJATHI
@@ -104,7 +104,7 @@ Defines structural and notation requirements.
 ---
 
 ### 3.5 `import_status_enum`
-```
+```text
 pending
 in_review
 mapped
@@ -205,7 +205,7 @@ Supports **ragamalika**.
 Defines the **structural grammar** of a composition.
 
 Supported `section_type` values:
-```
+```text
 PALLAVI
 ANUPALLAVI
 CHARANAM

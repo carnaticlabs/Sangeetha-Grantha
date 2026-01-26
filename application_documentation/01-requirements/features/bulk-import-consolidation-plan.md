@@ -58,7 +58,7 @@
 
 ## Proposed Organization Structure
 
-```
+```text
 features/
 ├── bulk-import/
 │   ├── README.md (Master index)

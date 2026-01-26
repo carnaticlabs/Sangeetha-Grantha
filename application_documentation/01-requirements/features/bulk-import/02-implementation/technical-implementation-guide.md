@@ -29,7 +29,7 @@ This document provides concrete technical implementation guidance for building t
 
 The architecture has evolved to a **Push-based Unified Dispatcher** pattern (TRACK-007) to optimize database load and scalability.
 
-```
+```text
 ┌─────────────────────────────────────────────────────┐
 │              Import API Routes                        │
 │  POST /v1/admin/bulk-import/upload                  │
@@ -69,7 +69,7 @@ The architecture has evolved to a **Push-based Unified Dispatcher** pattern (TRA
 
 ### 2.2 Module Structure
 
-```
+```text
 modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/
 ├── services/
 │   ├── BulkImportOrchestrationService.kt  # Batch management
@@ -90,7 +90,6 @@ modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/
 
 **Implementation Highlights:**
 
-```kotlin
 class BulkImportWorkerService(...) {
     // Buffered channels decoupling polling from processing
     private val scrapeChannel = Channel<ImportTaskRunDto>(capacity = 20)
@@ -113,6 +112,7 @@ class BulkImportWorkerService(...) {
         }
     }
     
+    ```kotlin
     // Worker Consumer
     private suspend fun processScrapeLoop() {
         for (task in scrapeChannel) {
@@ -139,7 +139,6 @@ class BulkImportWorkerService(...) {
 
 **Implementation:**
 
-```kotlin
 package com.sangita.grantha.backend.api.imports.resolution
 
 import com.sangita.grantha.backend.dal.composers.ComposerRepository
@@ -334,6 +333,7 @@ class EntityResolutionService(
     }
 }
 
+```kotlin
 sealed class EntityMatch<T> {
     data class Exact<T>(val entity: T, val confidence: Double) : EntityMatch<T>()
     data class Fuzzy<T>(val entity: T, val confidence: Double) : EntityMatch<T>()
@@ -349,7 +349,6 @@ sealed class EntityMatch<T> {
 
 **Implementation:**
 
-```kotlin
 package com.sangita.grantha.backend.api.imports.deduplication
 
 import com.sangita.grantha.backend.dal.krithis.KrithiRepository
@@ -502,6 +501,7 @@ sealed class DuplicateMatch {
         override val reason: String
     ) : DuplicateMatch()
     
+    ```kotlin
     data class Weak(
         override val krithiId: UUID,
         override val confidence: Double,
@@ -518,7 +518,6 @@ sealed class DuplicateMatch {
 
 **Implementation:**
 
-```kotlin
 package com.sangita.grantha.backend.api.imports.scraping
 
 import kotlinx.coroutines.*
@@ -577,6 +576,7 @@ class BlogspotSourceHandler(
         // ...
     }
     
+    ```text
     // ...
 }
 ```
@@ -587,7 +587,6 @@ class BlogspotSourceHandler(
 
 ### 4.1 Import Batch Table
 
-```sql
 -- Add to migration file
 CREATE TABLE import_batches (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -604,13 +603,13 @@ CREATE TABLE import_batches (
   created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('UTC', now())
 );
 
+```text
 CREATE INDEX idx_import_batches_source_status 
   ON import_batches(import_source_id, status);
 ```
 
 ### 4.2 Enhanced Imported Krithis
 
-```sql
 -- Add columns to imported_krithis table
 ALTER TABLE imported_krithis
   ADD COLUMN IF NOT EXISTS import_batch_id UUID REFERENCES import_batches(id),
@@ -620,6 +619,7 @@ ALTER TABLE imported_krithis
   ADD COLUMN IF NOT EXISTS quality_score DECIMAL(3,2),
   ADD COLUMN IF NOT EXISTS processing_errors JSONB;
 
+```text
 CREATE INDEX idx_imported_krithis_batch 
   ON imported_krithis(import_batch_id);
 ```
@@ -630,7 +630,6 @@ CREATE INDEX idx_imported_krithis_batch
 
 ### 5.1 Import Routes
 
-```kotlin
 package com.sangita.grantha.backend.api.imports
 
 import io.ktor.server.application.*
@@ -686,6 +685,7 @@ fun Route.importRoutes(
     }
 }
 
+```kotlin
 data class ScrapeImportRequest(
     val urls: List<String>,
     val options: ImportOptions? = null
@@ -745,7 +745,6 @@ data class ScrapeImportRequest(
 
 ### 7.1 Unit Tests
 
-```kotlin
 class EntityResolutionServiceTest {
     @Test
     fun `resolveComposer with exact match`() = runTest {
@@ -755,6 +754,7 @@ class EntityResolutionServiceTest {
         assertEquals(1.0, match.confidence)
     }
     
+    ```kotlin
     @Test
     fun `resolveComposer with fuzzy match`() = runTest {
         val service = EntityResolutionService(...)
@@ -767,7 +767,6 @@ class EntityResolutionServiceTest {
 
 ### 7.2 Integration Tests
 
-```kotlin
 class ImportPipelineIntegrationTest {
     @Test
     fun `full import pipeline with test data`() = runTest {
@@ -777,6 +776,7 @@ class ImportPipelineIntegrationTest {
             urls = listOf("http://test.com/krithi1")
         )
         
+        ```text
         assertEquals(1, result.successful)
         assertEquals(0, result.failed)
     }

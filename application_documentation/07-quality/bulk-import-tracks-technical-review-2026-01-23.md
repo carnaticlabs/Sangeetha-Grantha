@@ -63,7 +63,7 @@ The service layer demonstrates excellent separation of concerns:
 The architecture has evolved from a naive polling model (TRACK-001) to a sophisticated push-based dispatcher (TRACK-007):
 
 **Before (TRACK-001):**
-```
+```text
 [Manifest Worker] -> Poll DB
 [Scrape Worker 1] -> Poll DB
 [Scrape Worker 2] -> Poll DB
@@ -71,7 +71,7 @@ The architecture has evolved from a naive polling model (TRACK-001) to a sophist
 ```
 
 **After (TRACK-007):**
-```
+```text
 [Dispatcher] -> Poll DB (Unified)
      |
      +-> [Manifest Channel] -> [Manifest Worker]
@@ -85,8 +85,8 @@ The architecture has evolved from a naive polling model (TRACK-001) to a sophist
 - Channels provide backpressure handling
 - Wake-up signal mechanism for immediate processing
 
-**Code Quality:**
 ```kotlin
+**Code Quality:**
 // Excellent: Unified dispatcher with adaptive backoff
 private suspend fun runDispatcherLoop(...) {
     var currentDelay = config.pollIntervalMs
@@ -131,15 +131,15 @@ The database schema supports the orchestration model well:
 
 Critical security vulnerabilities have been properly addressed:
 
-**Path Traversal Prevention:**
 ```kotlin
+**Path Traversal Prevention:**
 // ✅ Excellent: Sanitizes filename and prevents path traversal
 val sanitizedFileName = Paths.get(originalFileName).fileName.toString()
     .replace(Regex("[^a-zA-Z0-9._-]"), "_")
 ```
 
-**File Size Limits:**
 ```kotlin
+**File Size Limits:**
 // ✅ Excellent: Prevents OOM attacks
 val maxFileSizeBytes = 10 * 1024 * 1024 // 10MB hard limit
 if (fileBytes.size > maxFileSizeBytes) {
@@ -147,16 +147,16 @@ if (fileBytes.size > maxFileSizeBytes) {
 }
 ```
 
+```text
 **File Type Validation:**
-```kotlin
 // ✅ Excellent: Only allows CSV files
 if (!sanitizedFileName.endsWith(".csv", ignoreCase = true)) {
     throw IllegalArgumentException("Only CSV files are allowed")
 }
 ```
 
-**CSV Validation at Upload:**
 ```kotlin
+**CSV Validation at Upload:**
 // ✅ Excellent: Fast-fail validation prevents processing invalid files
 val validationResult = validateCsvFile(file)
 if (!validationResult.isValid) {
@@ -200,8 +200,8 @@ if (!validationResult.isValid) {
 
 **Rating:** ⭐⭐⭐⭐⭐ (5/5)
 
-**Stage Completion Checks Optimization:**
 ```kotlin
+**Stage Completion Checks Optimization:**
 // ✅ Excellent: Changed from O(N) to O(1) using counters
 val batch = dal.bulkImport.findBatchById(batchId)
 if (batch != null && batch.processedTasks >= batch.totalTasks) {
@@ -211,8 +211,8 @@ if (batch != null && batch.processedTasks >= batch.totalTasks) {
 
 **Impact:** Reduces ~1,200 queries per batch to ~2 queries.
 
-**Entity Resolution Caching (TRACK-013):**
 ```kotlin
+**Entity Resolution Caching (TRACK-013):**
 // ✅ Excellent: Two-tier caching strategy
 // 1. Database cache (persistent across restarts)
 val cached = dal.entityResolutionCache.findByNormalizedName(entityType, normalized)
@@ -227,8 +227,8 @@ val fuzzyResults = match(normalized, allEntities, normalizedNameSelector)
 - In-memory cache reduces database load
 - Cache invalidation on entity updates
 
-**Deduplication Optimization:**
 ```kotlin
+**Deduplication Optimization:**
 // ✅ Excellent: DB-level filtering instead of loading all pending imports
 val stagingCandidates = dal.imports.findSimilarPendingImports(
     normalizedTitle = titleNormalized,
@@ -244,15 +244,15 @@ val stagingCandidates = dal.imports.findSimilarPendingImports(
 
 **Rating:** ⭐⭐⭐⭐ (4/5)
 
-**Configuration:**
 ```kotlin
+**Configuration:**
 // ✅ Good: Tuned based on real-world testing
 val perDomainRateLimitPerMinute: Int = 60,  // 1 req/sec per domain
 val globalRateLimitPerMinute: Int = 120,    // 2 req/sec global
 ```
 
-**Memory Leak Fix:**
 ```kotlin
+**Memory Leak Fix:**
 // ✅ Excellent: LRU cache with TTL prevents unbounded growth
 private val perDomainWindows = object : LinkedHashMap<String, RateWindow>(100, 0.75f, true) {
     override fun removeEldestEntry(eldest: Map.Entry<String, RateWindow>): Boolean {
@@ -297,8 +297,8 @@ private val perDomainWindows = object : LinkedHashMap<String, RateWindow>(100, 0
 - Audit logging for all mutations
 - User-friendly error messages in API responses
 
+```text
 **Example:**
-```kotlin
 // ✅ Good: Wrapped in try-catch with meaningful error messages
 try {
     importService.reviewImport(...)
@@ -319,11 +319,11 @@ try {
 **Rating:** ⭐⭐⭐⭐⭐ (5/5)
 
 **Race Condition Fix:**
-```kotlin
 // ✅ Excellent: Only set startedAt when execution begins (not at claim time)
 private suspend fun processManifestTask(task: ImportTaskRunDto, config: WorkerConfig) {
     val startedAt = OffsetDateTime.now(ZoneOffset.UTC)
     
+    ```text
     // Set startedAt when execution begins (not at claim time)
     dal.bulkImport.updateTaskStatus(
         id = task.id,
@@ -333,8 +333,8 @@ private suspend fun processManifestTask(task: ImportTaskRunDto, config: WorkerCo
 }
 ```
 
-**Watchdog Implementation:**
 ```kotlin
+**Watchdog Implementation:**
 // ✅ Good: Detects stuck tasks and marks as RETRYABLE
 private suspend fun runWatchdogLoop(config: WorkerConfig) {
     while (scope?.isActive == true) {
@@ -358,8 +358,8 @@ private suspend fun runWatchdogLoop(config: WorkerConfig) {
 
 **Rating:** ⭐⭐⭐⭐⭐ (5/5)
 
-**Manifest Ingest Failure:**
 ```kotlin
+**Manifest Ingest Failure:**
 // ✅ Excellent: Marks batch as FAILED when manifest ingest fails
 private suspend fun failManifestTask(...) {
     // ... update task and job status ...
@@ -389,8 +389,8 @@ private suspend fun failManifestTask(...) {
 - Data classes for DTOs
 - Extension functions where appropriate
 
-**Example of Good Practice:**
 ```kotlin
+**Example of Good Practice:**
 // ✅ Excellent: Proper coroutine scope management
 val workerScope = CoroutineScope(
     SupervisorJob() + Dispatchers.IO + CoroutineName("BulkImportWorkers")
@@ -405,8 +405,8 @@ val workerScope = CoroutineScope(
 
 **Rating:** ⭐⭐⭐⭐ (4/5)
 
+```text
 **Bug Fixes Applied:**
-```kotlin
 // ✅ Fixed: Word boundary regex (was "\b" which is backspace)
 .replace(Regex("\\b(saint|sri|swami|sir|dr|prof|smt)\\b", RegexOption.IGNORE_CASE), "")
 ```
@@ -424,8 +424,8 @@ val workerScope = CoroutineScope(
 
 **Rating:** ⭐⭐⭐⭐ (4/5)
 
+```text
 **Collision Handling:**
-```kotlin
 // ✅ Excellent: Handles normalization collisions properly
 composerMap = cachedComposers.groupBy { normalizer.normalizeComposer(it.name) ?: it.name.lowercase() }
     .mapValues { (_, group) ->
@@ -451,8 +451,8 @@ composerMap = cachedComposers.groupBy { normalizer.normalizeComposer(it.name) ?:
 
 **Rating:** ⭐⭐⭐⭐ (4/5)
 
-**Implementation:**
 ```kotlin
+**Implementation:**
 // ✅ Good: Multi-factor quality scoring
 val overall = (completeness * 0.40) +
              (resolutionConfidence * 0.30) +
@@ -476,8 +476,8 @@ val overall = (completeness * 0.40) +
 
 **Rating:** ⭐⭐⭐⭐⭐ (5/5)
 
-**Configurable Rules:**
 ```kotlin
+**Configurable Rules:**
 // ✅ Excellent: Configurable via environment/config
 class AutoApprovalConfig(
     val minQualityScore: Double = 0.90,
@@ -512,12 +512,12 @@ class AutoApprovalConfig(
 - Bulk selection and actions
 
 **Example:**
-```typescript
 // ✅ Good: Proper polling with cleanup
 useEffect(() => {
     let interval: NodeJS.Timeout;
     const isRunning = selectedBatch?.status === 'RUNNING' || selectedBatch?.status === 'PENDING';
     
+    ```kotlin
     if (isRunning && selectedBatchId) {
         interval = setInterval(() => {
             void loadBatchDetail(selectedBatchId);
@@ -642,8 +642,8 @@ useEffect(() => {
 - Appropriate log levels (info, warn, error, debug)
 - Structured logging in some places (JSON)
 
+```text
 **Example:**
-```kotlin
 logger.info("Bulk import workers started (manifest={}, scrape={}, resolution={})", 
     config.manifestWorkerCount, config.scrapeWorkerCount, config.resolutionWorkerCount)
 ```

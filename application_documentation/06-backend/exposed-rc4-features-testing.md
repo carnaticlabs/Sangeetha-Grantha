@@ -5,7 +5,7 @@
 | **Last Updated** | 2026-01-26 |
 | **Author** | Sangeetha Grantha Team |
 
-# Exposed 1.0.0-rc-4 Features Testing
+# Exposed 1.0.0 Features Testing
 
 
 ---
@@ -13,13 +13,13 @@
 
 ## Summary
 
-This document tracks the testing and implementation of new Exposed 1.0.0-rc-4 features in the Sangeetha Grantha codebase.
+This document tracks the testing and implementation of new Exposed 1.0.0 features in the Sangeetha Grantha codebase.
 
 ## Version Confirmation
 
-✅ **Confirmed**: Project is using Exposed `1.0.0-rc-4` via version catalog:
-- `gradle/libs.versions.toml`: `exposed = "1.0.0-rc-4"`
-- All Exposed modules (core, dao, jdbc, java-time) resolve to rc-4
+✅ **Confirmed**: Project is using Exposed `1.0.0` via version catalog:
+- `gradle/libs.versions.toml`: `exposed = "1.0.0"`
+- All Exposed modules (core, dao, jdbc, java-time) resolve to 1.0.0
 
 ## Features Tested
 
@@ -55,7 +55,7 @@ suspend fun create(...): UserDto = DatabaseFactory.dbQuery {
 - ✅ More efficient (one query instead of two)
 - ✅ Atomic operation
 
-**Status**: ✅ **Working** - Code compiles and follows Exposed rc-4 API
+**Status**: ✅ **Working** - Code compiles and follows Exposed 1.0.0 API
 
 ### 2. `updateReturning` ✅ **IMPLEMENTED**
 
@@ -67,7 +67,7 @@ suspend fun update(...): UserDto? = DatabaseFactory.dbQuery {
     val now = OffsetDateTime.now(ZoneOffset.UTC)
     val javaId = id.toJavaUuid()
 
-    // Use Exposed 1.0.0-rc-4 updateReturning to update and fetch the row in one round-trip
+    // Use Exposed 1.0.0 updateReturning to update and fetch the row in one round-trip
     UsersTable
         .updateReturning(
             where = { UsersTable.id eq javaId }
@@ -85,7 +85,7 @@ suspend fun update(...): UserDto? = DatabaseFactory.dbQuery {
 **API Confirmed**:
 - ✅ Syntax: `Table.updateReturning(where = {...}, body = {...})`
 - ✅ Returns `Query` that can be chained with `.singleOrNull()` or `.map { }`
-- ✅ Works seamlessly with Exposed rc-4
+- ✅ Works seamlessly with Exposed 1.0.0
 
 **Benefits**:
 - ✅ Eliminates post-update SELECT query
@@ -160,10 +160,10 @@ testImplementation(libs.kotlinx.coroutines.test)
 ## Next Steps
 
 ### Immediate
-1. ✅ Verify Exposed version is rc-4
+1. ✅ Verify Exposed version is 1.0.0
 2. ✅ Implement `resultedValues` in `UserRepository.create`
 3. ✅ Create test suite for `resultedValues`
-4. ✅ Verify `updateReturning` API in Exposed rc-4 documentation
+4. ✅ Verify `updateReturning` API- ✅ Exposed 1.0.0 fully supports `RETURNING` clause via `updateReturning` and `resultedValues`
 5. ✅ Implement `updateReturning` in `UserRepository.update`
 
 ### Completed Enhancements

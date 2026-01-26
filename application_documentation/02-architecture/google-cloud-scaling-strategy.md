@@ -35,7 +35,7 @@
 
 ### 2.1 High-Level Diagram (Phase 1–2 Target)
 
-```
+```text
 Users (Global)
    |
    |  HTTPS

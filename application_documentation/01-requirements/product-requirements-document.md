@@ -336,14 +336,14 @@ Notation supports:
 ## 8. Backend API Requirements
 
 ### Public APIs
-```
+```text
 GET /v1/compositions/search
 GET /v1/compositions/{id}
 GET /v1/compositions/{id}/notation
 ```
 
 ### Admin APIs
-```
+```text
 POST /v1/admin/compositions
 PUT  /v1/admin/compositions/{id}
 POST /v1/admin/compositions/{id}/notation

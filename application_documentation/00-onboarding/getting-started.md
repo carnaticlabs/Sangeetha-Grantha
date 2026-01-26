@@ -13,7 +13,7 @@ Welcome to the **Sangita Grantha** project. This document provides a comprehensi
 
 **Sangita Grantha** is the authoritative "System of Record" for Carnatic compositions. It is designed for longevity, musicological integrity, and high-performance access.
 
-- **Backend:** Kotlin (Ktor 3.x) + Exposed ORM + PostgreSQL 15+.
+- **Backend:** Kotlin (Ktor 3.4.0) + Exposed ORM + PostgreSQL 15+.
 - **Frontend (Admin):** React 19 + TypeScript 5.8 + Tailwind CSS + Shadcn UI.
 - **Mobile:** Kotlin Multiplatform (Compose Multiplatform) for Android & iOS.
 - **Tooling:** Rust CLI (`tools/sangita-cli`) for database operations and dev orchestration.

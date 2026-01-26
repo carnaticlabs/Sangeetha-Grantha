@@ -46,7 +46,7 @@ For detailed versions and dependencies, see **[Tech Stack](./tech-stack.md)**.
 
 ### 3.2 Package Layout
 
-```
+```text
 modules/backend/api/
 ├── App.kt                    # Entry point
 ├── config/                   # Environment configuration
@@ -116,8 +116,8 @@ Centralized database connection management:
 - Provides `dbQuery { }` suspend function for all database operations
 - Handles transaction boundaries
 
+```text
 **Pattern:**
-```kotlin
 DatabaseFactory.dbQuery {
     // Exposed DSL operations
 }
