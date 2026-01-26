@@ -1,7 +1,7 @@
 package com.sangita.grantha.shared.domain.model
 
 import com.sangita.grantha.shared.domain.serialization.UuidSerializer
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
