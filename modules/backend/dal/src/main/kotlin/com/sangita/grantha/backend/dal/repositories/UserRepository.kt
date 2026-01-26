@@ -79,6 +79,7 @@ class UserRepository {
         val javaId = id.toJavaUuid()
 
         // Use Exposed 1.0.0-rc-4 updateReturning to update and fetch the row in one round-trip
+        // Use Exposed 1.0.0-rc-4 updateReturning to update and fetch the row in one round-trip
         UsersTable
             .updateReturning(
                 where = { UsersTable.id eq javaId }

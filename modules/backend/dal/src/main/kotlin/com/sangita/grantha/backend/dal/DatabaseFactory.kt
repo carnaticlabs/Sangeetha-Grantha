@@ -40,12 +40,16 @@ object DatabaseFactory {
         connectionTimeoutMillis: Long = 10_000,
         idleTimeoutMillis: Long = 600_000,
         maxLifetimeMillis: Long = 1_800_000,
+        driverClassName: String? = null,
     ) {
         val config = HikariConfig().apply {
             jdbcUrl = databaseUrl
             this.username = username
             this.password = password
-            driverClassName = "org.postgresql.Driver"
+            this.driverClassName = driverClassName ?: when {
+                jdbcUrl.startsWith("jdbc:h2:") -> "org.h2.Driver"
+                else -> "org.postgresql.Driver"
+            }
             maximumPoolSize = maxPoolSize
             minimumIdle = minOf(minIdle, maxPoolSize)
             isAutoCommit = false
