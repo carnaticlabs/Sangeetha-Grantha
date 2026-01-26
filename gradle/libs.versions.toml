@@ -1,20 +1,20 @@
 [versions]
 kotlin = "2.3.0"
-agp = "8.13.2"
-compose = "1.9.3"
+agp = "9.0.0"
+compose = "1.10.0"
 ktor = "3.4.0"
-kotlinxCoroutinesCore = "1.9.0"
-kotlinxDatetime = "0.6.1"
-kotlinxSerializationJson = "1.7.3"
+kotlinxCoroutinesCore = "1.10.2"
+kotlinxDatetime = "0.7.1"
+kotlinxSerializationJson = "1.10.0"
 activityCompose = "1.10.0"
 androidxCoreKtx = "1.15.0"
 material = "1.12.0"
 
 # Backend stack
 exposed = "1.0.0"
-postgresql = "42.7.8"
+postgresql = "42.7.9"
 hikaricp = "7.0.2"
-logback = "1.5.20"
+logback = "1.5.25"
 logstashLogbackEncoder = "8.0"
 jwt = "4.5.0"
 commonsCsv = "1.10.0"
@@ -23,6 +23,8 @@ shadow = "9.2.2"
 awsSdk = "2.29.0"
 googleAuth = "1.23.0"
 dotenvKotlin = "6.5.1"
+
+mockk = "1.14.7"
 
 [plugins]
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose" }
@@ -88,6 +90,8 @@ commons-csv = { module = "org.apache.commons:commons-csv", version.ref = "common
 google-auth = { module = "com.google.auth:google-auth-library-oauth2-http", version.ref = "googleAuth" }
 aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "awsSdk" }
 dotenv-kotlin = { module = "io.github.cdimascio:dotenv-kotlin", version.ref = "dotenvKotlin" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+
 
 [bundles]
 # Common server plugin bundle you can pull in one line
