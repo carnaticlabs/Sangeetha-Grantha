@@ -1,11 +1,13 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-26 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-01-27 |
 | **Author** | Sangeetha Grantha Team |
 
-# ADR-004: Authentication Strategy - Bearer Token with Role-Based Access Control
+---
+
+# ADR-004: Authentication Strategy - JWT with Role-Based Access Control
 
 
 ## Context
@@ -26,27 +28,26 @@ The system needs to support:
 
 ## Decision
 
-Adopt **Bearer Token Authentication** (currently simple token-based, migrating to JWT) with **Role-Based Access Control (RBAC)** using capability-based permissions.
+Adopt **JWT Authentication** with **Role-Based Access Control (RBAC)** using capability-based permissions.
 
-### Current Implementation (v1.0)
+### Current Implementation (v1.1)
 
-**Authentication**: Bearer token authentication using Ktor's `bearer` authentication provider
-- Simple token comparison against `ADMIN_TOKEN` environment variable
-- Default token: `dev-admin-token` (development)
-- Token configured via `ADMIN_TOKEN` environment variable or config
+**Authentication**: JWT authentication using Ktor's `jwt` authentication provider
+- Signed JWT tokens with `userId` and `roles` claims
+- Token expiration based on `TOKEN_TTL_SECONDS`
+- Refresh endpoint issues new tokens for authenticated users
+
+**Bootstrap Token**: `ADMIN_TOKEN` is retained only for issuing JWTs
+- `POST /v1/auth/token` exchanges `ADMIN_TOKEN` + `userId` for JWT
+- Admin token is **not** accepted for protected routes
 
 **Authorization**: RBAC infrastructure in place (database schema ready)
 - `roles` table with `capabilities` JSONB column
 - `role_assignments` table linking users to roles
 - Authentication middleware protects admin routes
-- Full RBAC implementation planned (see below)
+- Full RBAC enforcement planned (see below)
 
 ### Planned Enhancement (v2.0)
-
-**JWT Token Support**: Migrate from simple bearer tokens to JWT tokens
-- Signed JWT tokens with user ID and roles in claims
-- Token expiration and refresh token support
-- Ktor JWT authentication provider (already included in dependencies)
 
 **Capability-Based RBAC**: Fine-grained permission system
 - JSONB capabilities define resource-action permissions

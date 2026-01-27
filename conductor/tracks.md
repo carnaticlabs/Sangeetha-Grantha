@@ -1,3 +1,10 @@
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 1.0.0 |
+| **Last Updated** | 2026-01-27 |
+| **Author** | Sangeetha Grantha Team |
+
 # Conductor Tracks Registry
 
 | ID | Name | Status |
@@ -22,5 +29,11 @@
 | [TRACK-018](./tracks/TRACK-018-q1-2026-library-upgrades.md) | Q1 2026 Library Upgrades | Completed |
 | [TRACK-019](./tracks/TRACK-019-datetime-standardization.md) | Datetime Standardization | Completed |
 | [TRACK-020](./tracks/TRACK-020-dal-test-fix.md) | Fix DAL Tests | Completed |
+| [TRACK-021](./tracks/TRACK-021-kotlin-quality-refactor.md) | Kotlin Code Review Refactor (Quality & Security) | Completed |
+| [TRACK-022](./tracks/TRACK-022-frontend-refactor-foundation.md) | Frontend Foundation & Infrastructure | Completed |
+| [TRACK-023](./tracks/TRACK-023-frontend-refactor-krithi-editor.md) | Krithi Editor Refactoring | Completed |
+| [TRACK-024](./tracks/TRACK-024-frontend-refactor-reference-data.md) | Reference Data Refactoring | Completed |
+| [TRACK-025](./tracks/TRACK-025-frontend-refactor-secondary-pages.md) | Secondary Pages & Polish | Completed |
+| [TRACK-026](./tracks/TRACK-026-gradle-problems-report-deprecation.md) | Gradle Problems Report - Archives Deprecation | Completed |
 
 ## 3. Deprecated Tracks

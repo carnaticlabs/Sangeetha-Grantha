@@ -26,10 +26,10 @@
 java = "temurin-25"
 
 # Keep in sync with tools/sangita-cli/rust-toolchain.toml
-rust = "1.92.0"
+rust = "1.93.0"
 
 # Bun is used by modules/frontend/sangita-admin-web
-bun = "1.3.0"
+bun = "1.3.6"
 
 # Docker Compose for database container management
 # Note: Docker Desktop/Engine must be installed separately (system requirement)

@@ -18,6 +18,9 @@ logback = "1.5.25"
 logstashLogbackEncoder = "8.0"
 jwt = "4.5.0"
 commonsCsv = "1.10.0"
+koin = "3.5.6"
+micrometer = "1.12.3"
+h2 = "2.2.224"
 
 shadow = "9.2.2"
 awsSdk = "2.29.0"
@@ -74,6 +77,10 @@ ktor-server-conditional-headers = { module = "io.ktor:ktor-server-conditional-he
 ktor-server-auto-head-response = { module = "io.ktor:ktor-server-auto-head-response", version.ref = "ktor" }
 ktor-server-default-headers = { module = "io.ktor:ktor-server-default-headers", version.ref = "ktor" }
 ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref = "ktor" }
+ktor-server-request-validation = { module = "io.ktor:ktor-server-request-validation", version.ref = "ktor" }
+ktor-server-rate-limit = { module = "io.ktor:ktor-server-rate-limit", version.ref = "ktor" }
+ktor-server-metrics-micrometer = { module = "io.ktor:ktor-server-metrics-micrometer", version.ref = "ktor" }
+ktor-server-call-id = { module = "io.ktor:ktor-server-call-id", version.ref = "ktor" }
 
 # --- Backend: DB, Pooling, Logging, Auth ---
 exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
@@ -86,11 +93,16 @@ logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "lo
 logstash-logback-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version.ref = "logstashLogbackEncoder" }
 jwt-core = { module = "com.auth0:java-jwt", version.ref = "jwt" }
 commons-csv = { module = "org.apache.commons:commons-csv", version.ref = "commonsCsv" }
+koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koin" }
+koin-logger-slf4j = { module = "io.insert-koin:koin-logger-slf4j", version.ref = "koin" }
+micrometer-registry-prometheus = { module = "io.micrometer:micrometer-registry-prometheus", version.ref = "micrometer" }
+h2 = { module = "com.h2database:h2", version.ref = "h2" }
 
 google-auth = { module = "com.google.auth:google-auth-library-oauth2-http", version.ref = "googleAuth" }
 aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "awsSdk" }
 dotenv-kotlin = { module = "io.github.cdimascio:dotenv-kotlin", version.ref = "dotenvKotlin" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+micrometer-core = { module = "io.micrometer:micrometer-core", version.ref = "micrometer" }
 
 
 [bundles]

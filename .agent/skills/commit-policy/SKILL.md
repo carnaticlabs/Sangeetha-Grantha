@@ -26,8 +26,12 @@ Ref: application_documentation/<path-to-file>.md
 
 ### Rules
 1.  **Mandatory Reference**: You CANNOT suggest a commit message without a `Ref:` line.
-2.  **Existing File**: The file referenced in `Ref:` MUST exist.
-3.  **One Reference Per Commit**: A commit should address only one feature or requirement file. Do not combine unrelated changes.
+2.  **Reference Hierarchy**: 
+    - **Priority**: Always reference a file in `application_documentation/` (e.g., `tech-stack.md`, `architecture.md`).
+    - **Fallback**: Reference a `conductor/tracks/TRACK-*.md` file *only* if no relevant architectural spec exists.
+3.  **Accuracy Check**: The `<Title>`, `<Short Summary>`, and `<Detailed Description>` MUST strictly match the actual changes in the `git diff`. Hallucinating version numbers or unintended changes is a critical failure.
+4.  **Existing File**: The file referenced in `Ref:` MUST exist.
+5.  **One Reference Per Commit**: A commit should address only one feature or requirement file. Do not combine unrelated changes.
 
 ## 2. Security (The No-Secrets Rule)
 

@@ -30,14 +30,18 @@ Mentally group the files into "Changesets".
 
 ### 3. Reference Hunt
 For *each* Changeset, find the specific markdown file in `application_documentation` that describes it.
+- **Priority**: Always prefer official architectural specs or feature requirements in `application_documentation/*.md`.
+- **Fallback**: Use `conductor/tracks/TRACK-*.md` *only* if no relevant architectural documentation exists or if the change is strictly a maintenance step of a track.
 - Use `find_by_name` or `grep_search` to locate the relevant spec.
 - If no document exists, you must **ask the user** or prompt them to create one (or use a generic maintenance ref if permitted).
 
-### 4. Sequential Execution
+### 4. Fact Check & Sequential Execution
 For each Changeset (A, then B, then C...):
-1.  **Select**: `git add <file1> <file2> ...` (Only the files in this set).
-2.  **Commit**: Generate a commit message strictly following the `commit-policy` skill (including the `Ref:`).
-3.  **Verify**: Ensure only the intended files were committed.
+1.  **Examine Diff**: Run `git diff --cached` and meticulously verify every line.
+2.  **Verify Versions**: Ensure any version numbers mentioned in the commit message (e.g., "Upgraded X to 1.1.0") exactly match the actual changes in the diff.
+3.  **Draft Message**: Generate a commit message strictly following the `commit-policy` skill (including the `Ref:`). **NEVER** hallucinate version numbers or summaries that contradict the diff.
+4.  **Commit**: `git commit -m "..."`
+5.  **Verify**: Ensure only the intended files were committed.
 
 ### 5. The "Leftovers"
 If files remain that don't fit any clear category or documentation, **do not commit them**. Report them to the user and ask for guidance.
@@ -51,8 +55,8 @@ M src/api/payment.rs
 M src/api/user.rs
 ```
 
-**Incorrect Action:**
-`git add .` -> `git commit -m "Update theme and users"` (VIOLATION: Mixed concerns)
+**Incorrect Action (Misleading Summary):**
+`git add .` -> `git commit -m "Update theme and users... Ref: .../ui-design.md"` (VIOLATION: Mixed concerns and misleading reference)
 
 **Correct Action:**
 1.  **Commit 1 (UI)**:

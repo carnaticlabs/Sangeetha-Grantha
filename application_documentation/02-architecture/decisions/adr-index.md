@@ -1,9 +1,11 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-26 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-01-27 |
 | **Author** | Sangeetha Grantha Team |
+
+---
 
 # Architectural Decision Records Index
 
@@ -18,6 +20,9 @@
 | ADR-004 | Authentication Strategy - JWT with Role-Based Access Control | Accepted | 2025-01-27 | [ADR-004-authentication-strategy.md](./ADR-004-authentication-strategy.md) |
 | ADR-005 | Graph Database Evaluation for Music-Aware Graph Explorer | Draft | 2025-12-29 | [ADR-005-graph-database-evaluation.md](./ADR-005-graph-database-evaluation.md) |
 | ADR-006 | Integration of Google Gemini for Content Ingestion and Validation | Accepted | 2026-01-05 | [ADR-006-gemini-integration.md](./ADR-006-gemini-integration.md) |
+| ADR-007 | Exposed ORM Selection (Kotlin DSL) | Accepted | 2026-01-27 | [ADR-007-exposed-orm-selection.md](./ADR-007-exposed-orm-selection.md) |
+| ADR-008 | Dependency Injection with Koin | Accepted | 2026-01-27 | [ADR-008-dependency-injection-koin.md](./ADR-008-dependency-injection-koin.md) |
+| ADR-009 | Bulk Import Orchestration Architecture | Accepted | 2026-01-27 | [ADR-009-bulk-import-orchestration.md](./ADR-009-bulk-import-orchestration.md) |
 
 ## How to Propose a New ADR
 
