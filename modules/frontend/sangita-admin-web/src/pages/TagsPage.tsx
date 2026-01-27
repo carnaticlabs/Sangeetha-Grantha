@@ -7,7 +7,8 @@ import { useToast } from '../components/Toast';
 const TAG_CATEGORIES = Object.keys(TAG_CATEGORY_LABELS);
 
 const TagsPage: React.FC = () => {
-    const { toast } = useToast();
+    const { success, error } = useToast();
+    const toast = { success, error };
     const [tags, setTags] = useState<Tag[]>([]);
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
@@ -29,9 +30,10 @@ const TagsPage: React.FC = () => {
         try {
             const data = await getAllTags();
             setTags(data);
-        } catch (err: any) {
+        } catch (err) {
             console.error('Failed to load tags:', err);
-            toast.error('Failed to load tags: ' + (err.message || 'Unknown error'));
+            const message = err instanceof Error ? err.message : 'Unknown error';
+            toast.error('Failed to load tags: ' + message);
         } finally {
             setLoading(false);
         }
@@ -40,35 +42,27 @@ const TagsPage: React.FC = () => {
     const handleCreate = async (e?: React.MouseEvent) => {
         e?.preventDefault();
         e?.stopPropagation();
-        
-        console.log('handleCreate called', { formData, isCreating });
-        
+
         if (!formData.slug || !formData.displayNameEn) {
             toast.error('Slug and Display Name are required');
             return;
         }
 
         try {
-            console.log('Creating tag with payload:', {
+            await createTag({
                 category: formData.category,
                 slug: formData.slug,
                 displayNameEn: formData.displayNameEn,
                 descriptionEn: formData.descriptionEn || null,
             });
-            const created = await createTag({
-                category: formData.category,
-                slug: formData.slug,
-                displayNameEn: formData.displayNameEn,
-                descriptionEn: formData.descriptionEn || null,
-            });
-            console.log('Tag created successfully:', created);
             toast.success('Tag created successfully');
             setIsCreating(false);
             setFormData({ category: 'OTHER', slug: '', displayNameEn: '', descriptionEn: '' });
             await loadTags();
-        } catch (err: any) {
+        } catch (err) {
             console.error('Failed to create tag:', err);
-            toast.error('Failed to create tag: ' + (err.message || 'Unknown error'));
+            const message = err instanceof Error ? err.message : 'Unknown error';
+            toast.error('Failed to create tag: ' + message);
         }
     };
 
@@ -90,9 +84,10 @@ const TagsPage: React.FC = () => {
             setEditingTag(null);
             setFormData({ category: 'OTHER', slug: '', displayNameEn: '', descriptionEn: '' });
             loadTags();
-        } catch (err: any) {
+        } catch (err) {
             console.error('Failed to update tag:', err);
-            toast.error('Failed to update tag: ' + (err.message || 'Unknown error'));
+            const message = err instanceof Error ? err.message : 'Unknown error';
+            toast.error('Failed to update tag: ' + message);
         }
     };
 
@@ -103,9 +98,10 @@ const TagsPage: React.FC = () => {
             await deleteTag(id);
             toast.success('Tag deleted successfully');
             loadTags();
-        } catch (err: any) {
+        } catch (err) {
             console.error('Failed to delete tag:', err);
-            toast.error('Failed to delete tag: ' + (err.message || 'Unknown error'));
+            const message = err instanceof Error ? err.message : 'Unknown error';
+            toast.error('Failed to delete tag: ' + message);
         }
     };
 
@@ -313,4 +309,3 @@ const TagsPage: React.FC = () => {
 };
 
 export default TagsPage;
-

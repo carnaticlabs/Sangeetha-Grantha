@@ -29,7 +29,7 @@ const ImportsPage: React.FC = () => {
         try {
             const data = await getImports();
             setImports(data);
-        } catch (e) {
+        } catch {
             toast.error('Failed to load imports');
         } finally {
             setLoadingImports(false);
@@ -44,7 +44,7 @@ const ImportsPage: React.FC = () => {
             const result = await scrapeContent(scrapeUrl);
             setScrapeResult(result);
             toast.success('Content scraped successfully!');
-        } catch (e) {
+        } catch {
             toast.error('Scraping failed. Check URL or server logs.');
         } finally {
             setIsScraping(false);
@@ -206,14 +206,13 @@ const ImportsPage: React.FC = () => {
                                             <td className="px-6 py-4 font-medium text-ink-900">{imp.rawTitle || '-'}</td>
                                             <td className="px-6 py-4 text-ink-600">{imp.rawComposer || '-'}</td>
                                             <td className="px-6 py-4">
-                                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold ring-1 ring-inset ${
-                                                    imp.importStatus === 'APPROVED' ? 'bg-emerald-50 text-emerald-700 ring-emerald-600/20' :
+                                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold ring-1 ring-inset ${imp.importStatus === 'APPROVED' ? 'bg-emerald-50 text-emerald-700 ring-emerald-600/20' :
                                                     imp.importStatus === 'MAPPED' ? 'bg-green-50 text-green-700 ring-green-600/20' :
-                                                    imp.importStatus === 'REJECTED' ? 'bg-red-50 text-red-700 ring-red-600/20' :
-                                                    imp.importStatus === 'DISCARDED' ? 'bg-gray-50 text-gray-700 ring-gray-600/20' :
-                                                    imp.importStatus === 'IN_REVIEW' ? 'bg-yellow-50 text-yellow-700 ring-yellow-600/20' :
-                                                    'bg-blue-50 text-blue-700 ring-blue-700/10'
-                                                }`}>
+                                                        imp.importStatus === 'REJECTED' ? 'bg-red-50 text-red-700 ring-red-600/20' :
+                                                            imp.importStatus === 'DISCARDED' ? 'bg-gray-50 text-gray-700 ring-gray-600/20' :
+                                                                imp.importStatus === 'IN_REVIEW' ? 'bg-yellow-50 text-yellow-700 ring-yellow-600/20' :
+                                                                    'bg-blue-50 text-blue-700 ring-blue-700/10'
+                                                    }`}>
                                                     {imp.importStatus.replace(/_/g, ' ')}
                                                 </span>
                                             </td>
