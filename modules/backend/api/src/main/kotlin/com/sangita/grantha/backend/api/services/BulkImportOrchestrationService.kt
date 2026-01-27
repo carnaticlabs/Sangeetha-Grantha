@@ -1,5 +1,6 @@
 package com.sangita.grantha.backend.api.services
 
+import com.sangita.grantha.backend.api.services.bulkimport.IBulkImportWorker
 import com.sangita.grantha.backend.dal.SangitaDal
 import com.sangita.grantha.backend.dal.enums.BatchStatus
 import com.sangita.grantha.backend.dal.enums.JobType
@@ -14,15 +15,21 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
+/**
+ * Service for coordinating bulk import batch/job/task lifecycle operations.
+ */
 class BulkImportOrchestrationService(
     private val dal: SangitaDal,
-    private val workerService: BulkImportWorkerService? = null,
+    private val workerService: IBulkImportWorker? = null,
 ) {
     @Serializable
     private data class ManifestJobPayload(
         val sourceManifestPath: String,
     )
 
+    /**
+     * Create a new batch and enqueue the manifest ingest job.
+     */
     suspend fun createBatch(sourceManifestPath: String): ImportBatchDto {
         val batch = dal.bulkImport.createBatch(sourceManifest = sourceManifestPath, createdByUserId = null)
 
@@ -56,13 +63,25 @@ class BulkImportOrchestrationService(
         return batch
     }
 
+    /**
+     * List batches with optional status filter and pagination.
+     */
     suspend fun listBatches(status: BatchStatus? = null, limit: Int = 100, offset: Int = 0): List<ImportBatchDto> =
         dal.bulkImport.listBatches(status = status, limit = limit, offset = offset)
 
+    /**
+     * Fetch a batch by ID.
+     */
     suspend fun getBatch(id: Uuid): ImportBatchDto? = dal.bulkImport.findBatchById(id)
 
+    /**
+     * List jobs for a batch.
+     */
     suspend fun getBatchJobs(id: Uuid): List<ImportJobDto> = dal.bulkImport.listJobsByBatch(id)
 
+    /**
+     * List tasks for a batch with optional status filter and pagination.
+     */
     suspend fun getBatchTasks(
         id: Uuid,
         status: TaskStatus? = null,
@@ -70,9 +89,15 @@ class BulkImportOrchestrationService(
         offset: Int = 0,
     ): List<ImportTaskRunDto> = dal.bulkImport.listTasksByBatch(batchId = id, status = status, limit = limit, offset = offset)
 
+    /**
+     * List events for a batch.
+     */
     suspend fun getBatchEvents(id: Uuid, limit: Int = 200): List<ImportEventDto> =
         dal.bulkImport.listEventsByRef(refType = "batch", refId = id, limit = limit)
 
+    /**
+     * Pause a running batch.
+     */
     suspend fun pauseBatch(id: Uuid): ImportBatchDto {
         val updated = dal.bulkImport.updateBatchStatus(id = id, status = BatchStatus.PAUSED)
             ?: throw NoSuchElementException("Batch not found")
@@ -82,6 +107,9 @@ class BulkImportOrchestrationService(
         return updated
     }
 
+    /**
+     * Resume a paused batch and wake the worker.
+     */
     suspend fun resumeBatch(id: Uuid): ImportBatchDto {
         val updated = dal.bulkImport.updateBatchStatus(id = id, status = BatchStatus.RUNNING)
             ?: throw NoSuchElementException("Batch not found")
@@ -94,6 +122,9 @@ class BulkImportOrchestrationService(
         return updated
     }
 
+    /**
+     * Cancel a batch.
+     */
     suspend fun cancelBatch(id: Uuid): ImportBatchDto {
         val updated = dal.bulkImport.updateBatchStatus(id = id, status = BatchStatus.CANCELLED)
             ?: throw NoSuchElementException("Batch not found")
@@ -103,6 +134,9 @@ class BulkImportOrchestrationService(
         return updated
     }
 
+    /**
+     * Requeue retryable (and optionally failed) tasks for a batch.
+     */
     suspend fun retryBatch(id: Uuid, includeFailed: Boolean = true): Int {
         val batch = dal.bulkImport.findBatchById(id) ?: throw NoSuchElementException("Batch not found")
         if (batch.status == BatchStatusDto.CANCELLED) return 0
@@ -129,6 +163,9 @@ class BulkImportOrchestrationService(
         return updatedCount
     }
 
+    /**
+     * Delete a batch and its associated records.
+     */
     suspend fun deleteBatch(id: Uuid) {
         val batch = dal.bulkImport.findBatchById(id) ?: return
         // Ideally we should cascade delete jobs/tasks/events. 
@@ -143,4 +180,3 @@ class BulkImportOrchestrationService(
         dal.auditLogs.append(action = "BULK_IMPORT_BATCH_DELETE", entityTable = "import_batch", entityId = id)
     }
 }
-

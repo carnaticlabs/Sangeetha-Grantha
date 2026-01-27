@@ -11,7 +11,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.BeforeEach
 import kotlin.uuid.Uuid
 import kotlin.time.Instant
-import com.sangita.grantha.backend.api.services.EntityResolutionService
+import com.sangita.grantha.backend.api.services.Candidate
+import com.sangita.grantha.backend.api.services.ResolutionResult
 import com.sangita.grantha.backend.api.services.DeduplicationService
 import com.sangita.grantha.shared.domain.model.ComposerDto
 import com.sangita.grantha.shared.domain.model.RagaDto
@@ -210,19 +211,19 @@ class AutoApprovalServiceTest {
         ragaConfidence: String = "HIGH",
         talaConfidence: String = "HIGH"
     ): String {
-        val result = EntityResolutionService.ResolutionResult(
+        val result = ResolutionResult(
             composerCandidates = listOf(
-                EntityResolutionService.Candidate(createTestComposer("Thyagaraja"), 95, composerConfidence)
+                Candidate(createTestComposer("Thyagaraja"), 95, composerConfidence)
             ),
             ragaCandidates = listOf(
-                EntityResolutionService.Candidate(createTestRaga("Kalyani"), 92, ragaConfidence)
+                Candidate(createTestRaga("Kalyani"), 92, ragaConfidence)
             ),
             talaCandidates = listOf(
-                EntityResolutionService.Candidate(createTestTala("Adi"), 90, talaConfidence)
+                Candidate(createTestTala("Adi"), 90, talaConfidence)
             ),
             resolved = true
         )
-        return Json.encodeToString(EntityResolutionService.ResolutionResult.serializer(), result)
+        return Json.encodeToString(ResolutionResult.serializer(), result)
     }
 
     private fun createDuplicateCandidates(confidence: String = "LOW"): String {

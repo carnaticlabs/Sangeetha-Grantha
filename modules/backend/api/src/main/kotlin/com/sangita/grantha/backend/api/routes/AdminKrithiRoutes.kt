@@ -6,8 +6,9 @@ import com.sangita.grantha.backend.api.models.SaveKrithiSectionsRequest
 import com.sangita.grantha.backend.api.models.LyricVariantCreateRequest
 import com.sangita.grantha.backend.api.models.LyricVariantUpdateRequest
 import com.sangita.grantha.backend.api.models.SaveLyricVariantSectionsRequest
-import com.sangita.grantha.backend.api.services.KrithiService
-import com.sangita.grantha.backend.api.services.TransliterationService
+import com.sangita.grantha.backend.api.services.IKrithiService
+import com.sangita.grantha.backend.api.services.ITransliterator
+import com.sangita.grantha.backend.api.support.currentUserId
 import com.sangita.grantha.shared.domain.model.TransliterationRequest
 import com.sangita.grantha.shared.domain.model.TransliterationResponse
 import com.sangita.grantha.shared.domain.model.ValidateKrithiRequest
@@ -25,13 +26,13 @@ import io.ktor.server.routing.put
 import io.ktor.server.routing.route
 
 fun Route.adminKrithiRoutes(
-    krithiService: KrithiService,
-    transliterationService: TransliterationService
+    krithiService: IKrithiService,
+    transliterationService: ITransliterator
 ) {
     route("/v1/admin/krithis") {
         post {
             val request = call.receive<KrithiCreateRequest>()
-            val created = krithiService.createKrithi(request)
+            val created = krithiService.createKrithi(request, call.currentUserId())
             call.respond(HttpStatusCode.Created, created)
         }
 
@@ -39,70 +40,85 @@ fun Route.adminKrithiRoutes(
             val id = parseUuidParam(call.parameters["id"], "krithiId")
                 ?: return@put call.respondText("Missing krithi ID", status = HttpStatusCode.BadRequest)
             val request = call.receive<KrithiUpdateRequest>()
-            val updated = krithiService.updateKrithi(id, request)
+            val updated = krithiService.updateKrithi(id, request, call.currentUserId())
             call.respond(updated)
         }
 
         // AI-powered admin routes
         post("/{id}/transliterate") {
-                 val id = parseUuidParam(call.parameters["id"], "krithiId")
-                 // We expect the client to send the content to be transliterated.
-                 // If the client sends empty content, we could fetch from DB (future enhancement),
-                 // but for now we assume the editor sends the current draft state.
-                 val request = call.receive<TransliterationRequest>()
-                 
-                 val result = transliterationService.transliterate(
-                     content = request.content,
-                     sourceScript = request.sourceScript,
-                     targetScript = request.targetScript
-                 )
-                 
-                 call.respond(TransliterationResponse(result, request.targetScript))
-             }
+            parseUuidParam(call.parameters["id"], "krithiId")
+                ?: return@post call.respondText("Missing krithi ID", status = HttpStatusCode.BadRequest)
+            // We expect the client to send the content to be transliterated.
+            // If the client sends empty content, we could fetch from DB (future enhancement),
+            // but for now we assume the editor sends the current draft state.
+            val request = call.receive<TransliterationRequest>()
+
+            val result = transliterationService.transliterate(
+                content = request.content,
+                sourceScript = request.sourceScript,
+                targetScript = request.targetScript
+            )
+
+            call.respond(TransliterationResponse(result, request.targetScript))
+        }
 
         post("/{id}/validate") {
-                 val id = parseUuidParam(call.parameters["id"], "krithiId")
-                 val request = call.receiveNullable<ValidateKrithiRequest>() ?: ValidateKrithiRequest()
-                 
-                 // TODO: Implement actual validation logic (Phase 4)
-                 // For now, return a stub response
-                 call.respond(ValidationResult(isValid = true, issues = listOf("Validation service not yet fully implemented")))
-             }
+            val id = parseUuidParam(call.parameters["id"], "krithiId")
+                ?: return@post call.respondText("Missing krithi ID", status = HttpStatusCode.BadRequest)
+            val request = call.receiveNullable<ValidateKrithiRequest>() ?: ValidateKrithiRequest()
+
+            val krithi = krithiService.getKrithi(id)
+                ?: return@post call.respondText("Krithi not found", status = HttpStatusCode.NotFound)
+
+            val issues = mutableListOf<String>()
+
+            if (request.checkRaga && krithi.primaryRagaId == null) {
+                issues.add("Primary raga is missing")
+            }
+            if (request.checkTala && krithi.talaId == null) {
+                issues.add("Tala is missing")
+            }
+            if (krithi.title.isBlank()) {
+                issues.add("Title is blank")
+            }
+
+            call.respond(ValidationResult(isValid = issues.isEmpty(), issues = issues))
+        }
 
         get("/{id}/sections") {
-                 val id = parseUuidParam(call.parameters["id"], "krithiId")
-                     ?: return@get call.respondText("Missing krithi ID", status = HttpStatusCode.BadRequest)
-                 val sections = krithiService.getKrithiSections(id)
-                 call.respond(sections)
-             }
+            val id = parseUuidParam(call.parameters["id"], "krithiId")
+                ?: return@get call.respondText("Missing krithi ID", status = HttpStatusCode.BadRequest)
+            val sections = krithiService.getKrithiSections(id)
+            call.respond(sections)
+        }
 
         get("/{id}/variants") {
-                 val id = parseUuidParam(call.parameters["id"], "krithiId")
-                     ?: return@get call.respondText("Missing krithi ID", status = HttpStatusCode.BadRequest)
-                 val variants = krithiService.getKrithiLyricVariants(id)
-                 call.respond(variants)
-             }
+            val id = parseUuidParam(call.parameters["id"], "krithiId")
+                ?: return@get call.respondText("Missing krithi ID", status = HttpStatusCode.BadRequest)
+            val variants = krithiService.getKrithiLyricVariants(id)
+            call.respond(variants)
+        }
 
         post("/{id}/variants") {
-                 val id = parseUuidParam(call.parameters["id"], "krithiId")
-                     ?: return@post call.respondText("Missing krithi ID", status = HttpStatusCode.BadRequest)
-                 val request = call.receive<LyricVariantCreateRequest>()
-                 val created = krithiService.createLyricVariant(id, request)
-                 call.respond(HttpStatusCode.Created, created)
-             }
+            val id = parseUuidParam(call.parameters["id"], "krithiId")
+                ?: return@post call.respondText("Missing krithi ID", status = HttpStatusCode.BadRequest)
+            val request = call.receive<LyricVariantCreateRequest>()
+            val created = krithiService.createLyricVariant(id, request, call.currentUserId())
+            call.respond(HttpStatusCode.Created, created)
+        }
 
         get("/{id}/tags") {
-                 val id = parseUuidParam(call.parameters["id"], "krithiId")
-                     ?: return@get call.respondText("Missing krithi ID", status = HttpStatusCode.BadRequest)
-                 val tags = krithiService.getKrithiTags(id)
-                 call.respond(tags)
-             }
+            val id = parseUuidParam(call.parameters["id"], "krithiId")
+                ?: return@get call.respondText("Missing krithi ID", status = HttpStatusCode.BadRequest)
+            val tags = krithiService.getKrithiTags(id)
+            call.respond(tags)
+        }
 
         post("/{id}/sections") {
-                 val id = parseUuidParam(call.parameters["id"], "krithiId")
-                     ?: return@post call.respondText("Missing krithi ID", status = HttpStatusCode.BadRequest)
-                 val request = call.receive<SaveKrithiSectionsRequest>()
-                 krithiService.saveKrithiSections(id, request.sections)
+            val id = parseUuidParam(call.parameters["id"], "krithiId")
+                ?: return@post call.respondText("Missing krithi ID", status = HttpStatusCode.BadRequest)
+            val request = call.receive<SaveKrithiSectionsRequest>()
+            krithiService.saveKrithiSections(id, request.sections)
             call.respond(HttpStatusCode.NoContent)
         }
     }
@@ -112,7 +128,7 @@ fun Route.adminKrithiRoutes(
             val id = parseUuidParam(call.parameters["id"], "variantId")
                 ?: return@put call.respondText("Missing variant ID", status = HttpStatusCode.BadRequest)
             val request = call.receive<LyricVariantUpdateRequest>()
-            val updated = krithiService.updateLyricVariant(id, request)
+            val updated = krithiService.updateLyricVariant(id, request, call.currentUserId())
             call.respond(updated)
         }
 

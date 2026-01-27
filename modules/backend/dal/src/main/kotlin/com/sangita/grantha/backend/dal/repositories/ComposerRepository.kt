@@ -13,12 +13,18 @@ import java.time.ZoneOffset
 import java.util.UUID
 import kotlin.uuid.Uuid
 
+/**
+ * Repository for composer reference data.
+ */
 class ComposerRepository {
     private fun normalize(value: String): String =
         value.trim()
             .lowercase()
             .replace(Regex("\\s+"), " ")
 
+    /**
+     * List all composers ordered by normalized name.
+     */
     suspend fun listAll(): List<ComposerDto> = DatabaseFactory.dbQuery {
         ComposersTable
             .selectAll()
@@ -26,6 +32,9 @@ class ComposerRepository {
             .map { row: ResultRow -> row.toComposerDto() }
     }
 
+    /**
+     * Find a composer by ID.
+     */
     suspend fun findById(id: Uuid): ComposerDto? = DatabaseFactory.dbQuery {
         ComposersTable
             .selectAll()
@@ -34,6 +43,9 @@ class ComposerRepository {
             .singleOrNull()
     }
 
+    /**
+     * Find a composer by exact name.
+     */
     suspend fun findByName(name: String): ComposerDto? = DatabaseFactory.dbQuery {
         ComposersTable
             .selectAll()
@@ -42,6 +54,9 @@ class ComposerRepository {
             .singleOrNull()
     }
 
+    /**
+     * Find a composer by normalized name.
+     */
     suspend fun findByNameNormalized(nameNormalized: String): ComposerDto? = DatabaseFactory.dbQuery {
         ComposersTable
             .selectAll()
@@ -50,6 +65,9 @@ class ComposerRepository {
             .singleOrNull()
     }
 
+    /**
+     * Find an existing composer or create a new record.
+     */
     suspend fun findOrCreate(
         name: String,
         nameNormalized: String? = null,
@@ -70,6 +88,9 @@ class ComposerRepository {
         }
     }
 
+    /**
+     * Create a new composer record.
+     */
     suspend fun create(
         name: String,
         nameNormalized: String? = null,
@@ -99,6 +120,9 @@ class ComposerRepository {
             ?: error("Failed to insert composer")
     }
 
+    /**
+     * Update an existing composer and return the updated record.
+     */
     suspend fun update(
         id: Uuid,
         name: String? = null,
@@ -131,11 +155,17 @@ class ComposerRepository {
             ?.toComposerDto()
     }
 
+    /**
+     * Delete a composer by ID.
+     */
     suspend fun delete(id: Uuid): Boolean = DatabaseFactory.dbQuery {
         val deleted = ComposersTable.deleteWhere { ComposersTable.id eq id.toJavaUuid() }
         deleted > 0
     }
 
+    /**
+     * Count all composers.
+     */
     suspend fun countAll(): Long = DatabaseFactory.dbQuery {
         ComposersTable.selectAll().count()
     }

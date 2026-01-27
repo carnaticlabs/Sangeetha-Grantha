@@ -24,9 +24,11 @@ class UserRepositoryTest {
     fun setup() = runTest {
         // Use H2 in PostgreSQL compatibility mode for in-memory testing
         DatabaseFactory.connect(
-            databaseUrl = "jdbc:h2:mem:test_${System.currentTimeMillis()};MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH",
-            username = "sa",
-            password = ""
+            DatabaseFactory.ConnectionConfig(
+                databaseUrl = "jdbc:h2:mem:test_${System.currentTimeMillis()};MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH",
+                username = "sa",
+                password = ""
+            )
         )
 
         // Create schema using Exposed SchemaUtils

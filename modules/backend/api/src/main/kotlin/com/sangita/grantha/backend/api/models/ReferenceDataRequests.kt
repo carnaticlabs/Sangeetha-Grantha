@@ -102,3 +102,16 @@ data class DeityUpdateRequest(
     val description: String? = null,
 )
 
+@Serializable
+data class SampradayaCreateRequest(
+    val name: String,
+    val nameNormalized: String? = null,
+    val description: String? = null,
+)
+
+@Serializable
+data class SampradayaUpdateRequest(
+    val name: String? = null,
+    val nameNormalized: String? = null,
+    val description: String? = null,
+)

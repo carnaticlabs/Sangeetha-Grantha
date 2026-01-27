@@ -18,31 +18,41 @@ import org.slf4j.LoggerFactory
  * - Source Quality (20%): blogspot.com = 0.8, other = 0.6
  * - Validation (10%): Passed header validation, URL valid
  */
-class QualityScoringService {
-    private val logger = LoggerFactory.getLogger(javaClass)
-
-    data class QualityScore(
-        val overall: Double,
-        val completeness: Double,           // 40% weight
-        val resolutionConfidence: Double,    // 30% weight
-        val sourceQuality: Double,          // 20% weight
-        val validationScore: Double,        // 10% weight
-        val tier: QualityTier
-    )
-
-    enum class QualityTier {
-        EXCELLENT,  // ≥ 0.90
-        GOOD,       // ≥ 0.75
-        FAIR,       // ≥ 0.60
-        POOR        // < 0.60
-    }
-
+interface IQualityScorer {
     /**
      * Calculate quality score for an imported krithi.
      */
     suspend fun calculateQualityScore(
         imported: ImportedKrithiDto,
         resolutionDataJson: String? = null
+    ): QualityScore
+}
+
+data class QualityScore(
+    val overall: Double,
+    val completeness: Double,           // 40% weight
+    val resolutionConfidence: Double,    // 30% weight
+    val sourceQuality: Double,          // 20% weight
+    val validationScore: Double,        // 10% weight
+    val tier: QualityTier
+)
+
+enum class QualityTier {
+    EXCELLENT,  // ≥ 0.90
+    GOOD,       // ≥ 0.75
+    FAIR,       // ≥ 0.60
+    POOR        // < 0.60
+}
+
+class QualityScoringServiceImpl : IQualityScorer {
+    private val logger = LoggerFactory.getLogger(javaClass)
+
+    /**
+     * Calculate quality score for an imported krithi.
+     */
+    override suspend fun calculateQualityScore(
+        imported: ImportedKrithiDto,
+        resolutionDataJson: String?
     ): QualityScore {
         val completeness = calculateCompleteness(imported)
         val resolutionConfidence = calculateResolutionConfidence(resolutionDataJson)

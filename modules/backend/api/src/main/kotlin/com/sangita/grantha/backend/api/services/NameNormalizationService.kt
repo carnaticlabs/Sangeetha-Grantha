@@ -2,9 +2,15 @@ package com.sangita.grantha.backend.api.services
 
 import org.slf4j.LoggerFactory
 
+/**
+ * Service for normalizing composer, raga, tala, and title strings.
+ */
 class NameNormalizationService {
     private val logger = LoggerFactory.getLogger(javaClass)
 
+    /**
+     * Normalize composer names to a canonical form for matching.
+     */
     fun normalizeComposer(name: String?): String? {
         if (name.isNullOrBlank()) return null
         val normalized = basicNormalize(name)
@@ -35,6 +41,9 @@ class NameNormalizationService {
         }
     }
 
+    /**
+     * Normalize raga names to a canonical form for matching.
+     */
     fun normalizeRaga(name: String?): String? {
         if (name.isNullOrBlank()) return null
         var normalized = basicNormalize(name)
@@ -52,6 +61,9 @@ class NameNormalizationService {
         return normalized
     }
 
+    /**
+     * Normalize tala names to a canonical form for matching.
+     */
     fun normalizeTala(name: String?): String? {
         if (name.isNullOrBlank()) return null
         var normalized = basicNormalize(name)
@@ -86,6 +98,9 @@ class NameNormalizationService {
         }
     }
 
+    /**
+     * Normalize titles for fuzzy comparisons.
+     */
     fun normalizeTitle(title: String?): String? {
         if (title.isNullOrBlank()) return null
         return basicNormalize(title)

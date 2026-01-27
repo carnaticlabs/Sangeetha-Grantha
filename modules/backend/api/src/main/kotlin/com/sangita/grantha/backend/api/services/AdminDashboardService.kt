@@ -12,7 +12,13 @@ data class DashboardStatsDto(
     val pendingReview: Long
 )
 
+/**
+ * Service that aggregates high-level admin dashboard statistics.
+ */
 class AdminDashboardService(private val dal: SangitaDal) {
+    /**
+     * Compute dashboard totals for krithis, composers, ragas, and pending review.
+     */
     suspend fun getStats(): DashboardStatsDto {
         val krithis = dal.krithis.countAll()
         val composers = dal.composers.countAll()

@@ -38,7 +38,7 @@ class WebScrapingServiceTest {
         println("Using API Key: ${env.geminiApiKey.take(4)}...")
 
         val client = GeminiApiClient(env.geminiApiKey!!)
-        val service = WebScrapingService(client)
+        val service = WebScrapingServiceImpl(client)
 
 //        val url = "https://www.shivkumar.org/music/abhayambikaya.htm"
         val url = "https://guru-guha.blogspot.com/2007/08/dikshitar-kriti-abhayaambikaayaah-anyam.html"

@@ -50,7 +50,59 @@ data class KrithiSearchFilters(
     val primaryLanguage: LanguageCode? = null,
 )
 
+data class KrithiCreateParams(
+    val title: String,
+    val titleNormalized: String,
+    val incipit: String? = null,
+    val incipitNormalized: String? = null,
+    val composerId: UUID,
+    val musicalForm: MusicalForm,
+    val primaryLanguage: LanguageCode,
+    val primaryRagaId: UUID? = null,
+    val talaId: UUID? = null,
+    val deityId: UUID? = null,
+    val templeId: UUID? = null,
+    val isRagamalika: Boolean,
+    val ragaIds: List<UUID> = emptyList(),
+    val workflowState: WorkflowState,
+    val sahityaSummary: String? = null,
+    val notes: String? = null,
+    val createdByUserId: UUID? = null,
+    val updatedByUserId: UUID? = null,
+)
+
+data class KrithiUpdateParams(
+    val id: Uuid,
+    val title: String? = null,
+    val titleNormalized: String? = null,
+    val incipit: String? = null,
+    val incipitNormalized: String? = null,
+    val composerId: UUID? = null,
+    val musicalForm: MusicalForm? = null,
+    val primaryLanguage: LanguageCode? = null,
+    val primaryRagaId: UUID? = null,
+    val talaId: UUID? = null,
+    val deityId: UUID? = null,
+    val templeId: UUID? = null,
+    val isRagamalika: Boolean? = null,
+    val ragaIds: List<UUID>? = null,
+    val workflowState: WorkflowState? = null,
+    val sahityaSummary: String? = null,
+    val notes: String? = null,
+    val updatedByUserId: UUID? = null,
+)
+
+/**
+ * Repository for krithi entities, tags, sections, and lyric variants.
+ */
 class KrithiRepository {
+    companion object {
+        const val MIN_PAGE_SIZE = 1
+        const val MAX_PAGE_SIZE = 200
+    }
+    /**
+     * Find a krithi by ID.
+     */
     suspend fun findById(id: Uuid): KrithiDto? = DatabaseFactory.dbQuery {
         KrithisTable
             .selectAll()
@@ -59,44 +111,32 @@ class KrithiRepository {
             .singleOrNull()
     }
 
-    suspend fun create(
-        title: String,
-        titleNormalized: String,
-        incipit: String?,
-        incipitNormalized: String?,
-        composerId: UUID,
-        musicalForm: MusicalForm,
-        primaryLanguage: LanguageCode,
-        primaryRagaId: UUID?,
-        talaId: UUID?,
-        deityId: UUID?,
-        templeId: UUID?,
-        isRagamalika: Boolean,
-        ragaIds: List<UUID>,
-        workflowState: WorkflowState,
-        sahityaSummary: String?,
-        notes: String?,
-    ): KrithiDto = DatabaseFactory.dbQuery {
+    /**
+     * Create a new krithi record.
+     */
+    suspend fun create(params: KrithiCreateParams): KrithiDto = DatabaseFactory.dbQuery {
         val now = OffsetDateTime.now(ZoneOffset.UTC)
         val krithiId = UUID.randomUUID()
 
         val result = KrithisTable.insert {
             it[id] = krithiId
-            it[KrithisTable.title] = title
-            it[KrithisTable.titleNormalized] = titleNormalized
-            it[KrithisTable.incipit] = incipit
-            it[KrithisTable.incipitNormalized] = incipitNormalized
-            it[KrithisTable.composerId] = composerId
-            it[KrithisTable.musicalForm] = musicalForm
-            it[KrithisTable.primaryLanguage] = primaryLanguage
-            it[KrithisTable.primaryRagaId] = primaryRagaId
-            it[KrithisTable.talaId] = talaId
-            it[KrithisTable.deityId] = deityId
-            it[KrithisTable.templeId] = templeId
-            it[KrithisTable.isRagamalika] = isRagamalika
-            it[KrithisTable.workflowState] = workflowState
-            it[KrithisTable.sahityaSummary] = sahityaSummary
-            it[KrithisTable.notes] = notes
+            it[KrithisTable.title] = params.title
+            it[KrithisTable.titleNormalized] = params.titleNormalized
+            it[KrithisTable.incipit] = params.incipit
+            it[KrithisTable.incipitNormalized] = params.incipitNormalized
+            it[KrithisTable.composerId] = params.composerId
+            it[KrithisTable.musicalForm] = params.musicalForm
+            it[KrithisTable.primaryLanguage] = params.primaryLanguage
+            it[KrithisTable.primaryRagaId] = params.primaryRagaId
+            it[KrithisTable.talaId] = params.talaId
+            it[KrithisTable.deityId] = params.deityId
+            it[KrithisTable.templeId] = params.templeId
+            it[KrithisTable.isRagamalika] = params.isRagamalika
+            it[KrithisTable.workflowState] = params.workflowState
+            it[KrithisTable.sahityaSummary] = params.sahityaSummary
+            it[KrithisTable.notes] = params.notes
+            it[KrithisTable.createdByUserId] = params.createdByUserId
+            it[KrithisTable.updatedByUserId] = params.updatedByUserId
             it[KrithisTable.createdAt] = now
             it[KrithisTable.updatedAt] = now
         }
@@ -105,8 +145,8 @@ class KrithiRepository {
             ?.toKrithiDto()
             ?: error("Failed to insert krithi")
 
-        if (ragaIds.isNotEmpty()) {
-            KrithiRagasTable.batchInsert(ragaIds.withIndex()) { (index, ragaId) ->
+        if (params.ragaIds.isNotEmpty()) {
+            KrithiRagasTable.batchInsert(params.ragaIds.withIndex()) { (index, ragaId) ->
                 this[KrithiRagasTable.krithiId] = krithiId
                 this[KrithiRagasTable.ragaId] = ragaId
                 this[KrithiRagasTable.orderIndex] = index
@@ -116,48 +156,34 @@ class KrithiRepository {
         result
     }
 
-    suspend fun update(
-        id: Uuid,
-        title: String? = null,
-        titleNormalized: String? = null,
-        incipit: String? = null,
-        incipitNormalized: String? = null,
-        composerId: UUID? = null,
-        musicalForm: MusicalForm? = null,
-        primaryLanguage: LanguageCode? = null,
-        primaryRagaId: UUID? = null,
-        talaId: UUID? = null,
-        deityId: UUID? = null,
-        templeId: UUID? = null,
-        isRagamalika: Boolean? = null,
-        ragaIds: List<UUID>? = null,
-        workflowState: WorkflowState? = null,
-        sahityaSummary: String? = null,
-        notes: String? = null,
-    ): KrithiDto? = DatabaseFactory.dbQuery {
+    /**
+     * Update an existing krithi and return the updated record.
+     */
+    suspend fun update(params: KrithiUpdateParams): KrithiDto? = DatabaseFactory.dbQuery {
         val now = OffsetDateTime.now(ZoneOffset.UTC)
-        val javaId = id.toJavaUuid()
+        val javaId = params.id.toJavaUuid()
 
         // Use Exposed 1.0.0-rc-4 updateReturning to update and fetch the row in one round-trip
         val updatedKrithi = KrithisTable
             .updateReturning(
                 where = { KrithisTable.id eq javaId }
             ) {
-                title?.let { value -> it[KrithisTable.title] = value }
-                titleNormalized?.let { value -> it[KrithisTable.titleNormalized] = value }
-                incipit?.let { value -> it[KrithisTable.incipit] = value }
-                incipitNormalized?.let { value -> it[KrithisTable.incipitNormalized] = value }
-                composerId?.let { value -> it[KrithisTable.composerId] = value }
-                musicalForm?.let { value -> it[KrithisTable.musicalForm] = value }
-                primaryLanguage?.let { value -> it[KrithisTable.primaryLanguage] = value }
-                primaryRagaId?.let { value -> it[KrithisTable.primaryRagaId] = value }
-                talaId?.let { value -> it[KrithisTable.talaId] = value }
-                deityId?.let { value -> it[KrithisTable.deityId] = value }
-                templeId?.let { value -> it[KrithisTable.templeId] = value }
-                isRagamalika?.let { value -> it[KrithisTable.isRagamalika] = value }
-                workflowState?.let { value -> it[KrithisTable.workflowState] = value }
-                sahityaSummary?.let { value -> it[KrithisTable.sahityaSummary] = value }
-                notes?.let { value -> it[KrithisTable.notes] = value }
+                params.title?.let { value -> it[KrithisTable.title] = value }
+                params.titleNormalized?.let { value -> it[KrithisTable.titleNormalized] = value }
+                params.incipit?.let { value -> it[KrithisTable.incipit] = value }
+                params.incipitNormalized?.let { value -> it[KrithisTable.incipitNormalized] = value }
+                params.composerId?.let { value -> it[KrithisTable.composerId] = value }
+                params.musicalForm?.let { value -> it[KrithisTable.musicalForm] = value }
+                params.primaryLanguage?.let { value -> it[KrithisTable.primaryLanguage] = value }
+                params.primaryRagaId?.let { value -> it[KrithisTable.primaryRagaId] = value }
+                params.talaId?.let { value -> it[KrithisTable.talaId] = value }
+                params.deityId?.let { value -> it[KrithisTable.deityId] = value }
+                params.templeId?.let { value -> it[KrithisTable.templeId] = value }
+                params.isRagamalika?.let { value -> it[KrithisTable.isRagamalika] = value }
+                params.workflowState?.let { value -> it[KrithisTable.workflowState] = value }
+                params.sahityaSummary?.let { value -> it[KrithisTable.sahityaSummary] = value }
+                params.notes?.let { value -> it[KrithisTable.notes] = value }
+                params.updatedByUserId?.let { value -> it[KrithisTable.updatedByUserId] = value }
                 it[KrithisTable.updatedAt] = now
             }
             .singleOrNull()
@@ -167,8 +193,8 @@ class KrithiRepository {
             return@dbQuery null
         }
 
-        ragaIds?.let { ragas ->
-            val javaKrithiId = id.toJavaUuid()
+        params.ragaIds?.let { ragas ->
+            val javaKrithiId = params.id.toJavaUuid()
             
             // Get existing ragas indexed by (ragaId, orderIndex) - composite key
             val existingRagas = KrithiRagasTable
@@ -231,6 +257,9 @@ class KrithiRepository {
         updatedKrithi
     }
 
+    /**
+     * List tags for a krithi.
+     */
     suspend fun getTags(krithiId: Uuid): List<TagDto> = DatabaseFactory.dbQuery {
         val javaKrithiId = krithiId.toJavaUuid()
         (KrithiTagsTable innerJoin TagsTable)
@@ -297,6 +326,9 @@ class KrithiRepository {
         // Tags that remain unchanged preserve their sourceInfo and confidence automatically
     }
 
+    /**
+     * List structured sections for a krithi.
+     */
     suspend fun getSections(krithiId: Uuid): List<KrithiSectionDto> = DatabaseFactory.dbQuery {
         KrithiSectionsTable
             .selectAll()
@@ -305,6 +337,9 @@ class KrithiRepository {
             .map { it.toKrithiSectionDto() }
     }
 
+    /**
+     * List lyric variants with their sections for a krithi.
+     */
     suspend fun getLyricVariants(krithiId: Uuid): List<KrithiLyricVariantWithSectionsDto> = DatabaseFactory.dbQuery {
         val javaKrithiId = krithiId.toJavaUuid()
         
@@ -335,6 +370,9 @@ class KrithiRepository {
         }
     }
 
+    /**
+     * Find a lyric variant by ID.
+     */
     suspend fun findLyricVariantById(variantId: Uuid): KrithiLyricVariantDto? = DatabaseFactory.dbQuery {
         KrithiLyricVariantsTable
             .selectAll()
@@ -343,6 +381,9 @@ class KrithiRepository {
             .singleOrNull()
     }
 
+    /**
+     * Create a lyric variant for a krithi.
+     */
     suspend fun createLyricVariant(
         krithiId: Uuid,
         language: LanguageCode,
@@ -381,6 +422,9 @@ class KrithiRepository {
             ?: error("Failed to insert lyric variant")
     }
 
+    /**
+     * Update a lyric variant and return the updated record.
+     */
     suspend fun updateLyricVariant(
         variantId: Uuid,
         language: LanguageCode? = null,
@@ -587,144 +631,105 @@ class KrithiRepository {
         }
     }
 
+    /**
+     * Search krithis with filters and pagination.
+     */
     suspend fun search(
         filters: KrithiSearchFilters,
         page: Int,
         pageSize: Int,
         publishedOnly: Boolean = true,
     ): KrithiSearchResult = DatabaseFactory.dbQuery {
-        val baseQuery = KrithisTable.selectAll()
         val safePage = page.coerceAtLeast(0)
-        val safeSize = pageSize.coerceIn(1, 200)
+        val safeSize = pageSize.coerceIn(MIN_PAGE_SIZE, MAX_PAGE_SIZE)
+        val offset = (safePage * safeSize).toLong()
+
+        var join = KrithisTable
+            .leftJoin(ComposersTable, { KrithisTable.composerId }, { ComposersTable.id })
+            .leftJoin(KrithiRagasTable, { KrithisTable.id }, { KrithiRagasTable.krithiId })
+            .leftJoin(RagasTable, { KrithiRagasTable.ragaId }, { RagasTable.id })
+
+        if (!filters.lyric.isNullOrBlank()) {
+            join = join.leftJoin(KrithiLyricVariantsTable, { KrithisTable.id }, { KrithiLyricVariantsTable.krithiId })
+        }
+
+        val idQuery = join
+            .select(KrithisTable.id)
+            .withDistinct()
 
         if (publishedOnly) {
-            baseQuery.andWhere { KrithisTable.workflowState eq WorkflowState.PUBLISHED }
+            idQuery.andWhere { KrithisTable.workflowState eq WorkflowState.PUBLISHED }
         }
 
         filters.query?.trim()?.takeIf { it.isNotEmpty() }?.let { query ->
             val token = "%${query.lowercase()}%"
-            
-            // Search in composer names
-            val matchingComposerIds = ComposersTable
-                .selectAll()
-                .where { ComposersTable.nameNormalized like token }
-                .map { it[ComposersTable.id].value }
-                .distinct()
-            
-            // Search in raga names (through krithi_ragas join)
-            val matchingRagaIds = RagasTable
-                .selectAll()
-                .where { RagasTable.nameNormalized like token }
-                .map { it[RagasTable.id].value }
-                .distinct()
-            
-            val krithiIdsWithMatchingRagas = if (matchingRagaIds.isNotEmpty()) {
-                KrithiRagasTable
-                    .selectAll()
-                    .where { KrithiRagasTable.ragaId inList matchingRagaIds }
-                    .map { it[KrithiRagasTable.krithiId] }
-                    .distinct()
-            } else {
-                emptyList()
-            }
-            
-            // Build OR condition: title/incipit OR composer match OR raga match
-            baseQuery.andWhere {
-                var condition = (KrithisTable.titleNormalized like token) or 
-                    (KrithisTable.incipitNormalized like token)
-                
-                if (matchingComposerIds.isNotEmpty()) {
-                    condition = condition or (KrithisTable.composerId inList matchingComposerIds)
-                }
-                
-                if (krithiIdsWithMatchingRagas.isNotEmpty()) {
-                    condition = condition or (KrithisTable.id inList krithiIdsWithMatchingRagas)
-                }
-                
-                condition
+            idQuery.andWhere {
+                (KrithisTable.titleNormalized like token) or
+                    (KrithisTable.incipitNormalized like token) or
+                    (ComposersTable.nameNormalized like token) or
+                    (RagasTable.nameNormalized like token)
             }
         }
 
         filters.lyric?.trim()?.takeIf { it.isNotEmpty() }?.let { lyric ->
             val token = "%${lyric.lowercase()}%"
-            val krithiIds = KrithiLyricVariantsTable
-                .selectAll()
-                .where { KrithiLyricVariantsTable.lyrics like token }
-                .map { it[KrithiLyricVariantsTable.krithiId] }
-                .distinct()
+            idQuery.andWhere { KrithiLyricVariantsTable.lyrics like token }
+        }
 
-            if (krithiIds.isEmpty()) {
-                return@dbQuery KrithiSearchResult(
-                    items = emptyList(),
-                    total = 0,
-                    page = safePage,
-                    pageSize = safeSize
+        filters.composerId?.let { idQuery.andWhere { KrithisTable.composerId eq it } }
+        filters.ragaId?.let { idQuery.andWhere { KrithisTable.primaryRagaId eq it } }
+        filters.talaId?.let { idQuery.andWhere { KrithisTable.talaId eq it } }
+        filters.deityId?.let { idQuery.andWhere { KrithisTable.deityId eq it } }
+        filters.templeId?.let { idQuery.andWhere { KrithisTable.templeId eq it } }
+        filters.primaryLanguage?.let { idQuery.andWhere { KrithisTable.primaryLanguage eq it } }
+
+        idQuery.orderBy(KrithisTable.titleNormalized to SortOrder.ASC)
+
+        val total = idQuery.count()
+        val pagedIds = idQuery.limit(safeSize).offset(offset)
+
+        val dataQuery = join
+            .select(
+                KrithisTable.columns +
+                    listOf(
+                        ComposersTable.name,
+                        RagasTable.id,
+                        RagasTable.name,
+                        KrithiRagasTable.orderIndex
+                    )
+            )
+            .where { KrithisTable.id inSubQuery pagedIds }
+
+        val summaries = linkedMapOf<UUID, KrithiSummary>()
+        val ragasByKrithi = linkedMapOf<UUID, MutableList<RagaRefDto>>()
+
+        dataQuery.forEach { row ->
+            val krithiId = row[KrithisTable.id].value
+            val composerName = row[ComposersTable.name]
+            val summary = summaries.getOrPut(krithiId) {
+                KrithiSummary(
+                    id = krithiId.toKotlinUuid(),
+                    name = row[KrithisTable.title],
+                    composerName = composerName,
+                    primaryLanguage = com.sangita.grantha.shared.domain.model.LanguageCodeDto.valueOf(row[KrithisTable.primaryLanguage].name),
+                    ragas = emptyList()
                 )
             }
 
-            baseQuery.andWhere { KrithisTable.id inList krithiIds }
-        }
-
-        filters.composerId?.let { baseQuery.andWhere { KrithisTable.composerId eq it } }
-        filters.ragaId?.let { baseQuery.andWhere { KrithisTable.primaryRagaId eq it } }
-        filters.talaId?.let { baseQuery.andWhere { KrithisTable.talaId eq it } }
-        filters.deityId?.let { baseQuery.andWhere { KrithisTable.deityId eq it } }
-        filters.templeId?.let { baseQuery.andWhere { KrithisTable.templeId eq it } }
-        filters.primaryLanguage?.let { baseQuery.andWhere { KrithisTable.primaryLanguage eq it } }
-
-        val total = baseQuery.count()
-        val offset = (safePage * safeSize).toLong()
-
-        val krithiDtos = baseQuery
-            .limit(safeSize)
-            .offset(offset)
-            .map { it.toKrithiDto() }
-
-        // Enrich with composer names and ragas
-        val krithiIds = krithiDtos.map { it.id.toJavaUuid() }
-        val composerIds = krithiDtos.map { it.composerId.toJavaUuid() }.distinct()
-        
-        val composersMap = if (composerIds.isNotEmpty()) {
-            ComposersTable
-                .selectAll()
-                .where { ComposersTable.id inList composerIds }
-                .associate { it[ComposersTable.id].value to it[ComposersTable.name] }
-        } else {
-            emptyMap()
-        }
-        
-        val ragasMap: Map<UUID, List<RagaRefDto>> = if (krithiIds.isNotEmpty()) {
-            KrithiRagasTable
-                .join(
-                    RagasTable,
-                    joinType = JoinType.INNER,
-                    onColumn = KrithiRagasTable.ragaId,
-                    otherColumn = RagasTable.id,
-                )
-                .select(KrithiRagasTable.krithiId, KrithiRagasTable.orderIndex, RagasTable.id, RagasTable.name)
-                .where { KrithiRagasTable.krithiId inList krithiIds }
-                .groupBy { it[KrithiRagasTable.krithiId] }
-                .mapValues { (_, rows) ->
-                    rows.map { row ->
-                        RagaRefDto(
-                            id = row[RagasTable.id].value.toKotlinUuid(),
-                            name = row[RagasTable.name],
-                            orderIndex = row[KrithiRagasTable.orderIndex]
-                        )
-                    }.sortedBy { it.orderIndex }
+            val ragaId = row.getOrNull(RagasTable.id)?.value
+            val ragaName = row.getOrNull(RagasTable.name)
+            val orderIndex = row.getOrNull(KrithiRagasTable.orderIndex)
+            if (ragaId != null && ragaName != null && orderIndex != null) {
+                val list = ragasByKrithi.getOrPut(krithiId) { mutableListOf() }
+                if (list.none { it.id.toJavaUuid() == ragaId && it.orderIndex == orderIndex }) {
+                    list.add(RagaRefDto(id = ragaId.toKotlinUuid(), name = ragaName, orderIndex = orderIndex))
                 }
-        } else {
-            emptyMap<UUID, List<RagaRefDto>>()
+            }
         }
-        
-        val items = krithiDtos.map { dto ->
-            KrithiSummary(
-                id = dto.id,
-                name = dto.title,
-                composerName = composersMap[dto.composerId.toJavaUuid()] ?: "Unknown",
-                primaryLanguage = dto.primaryLanguage,
-                ragas = ragasMap[dto.id.toJavaUuid()] ?: emptyList()
-            )
+
+        val items = summaries.values.map { summary ->
+            val ragas = ragasByKrithi[summary.id.toJavaUuid()]?.sortedBy { it.orderIndex } ?: emptyList()
+            summary.copy(ragas = ragas)
         }
 
         KrithiSearchResult(
@@ -735,14 +740,23 @@ class KrithiRepository {
         )
     }
 
+    /**
+     * Count all krithis.
+     */
     suspend fun countAll(): Long = DatabaseFactory.dbQuery {
         KrithisTable.selectAll().count()
     }
 
+    /**
+     * Count krithis by workflow state.
+     */
     suspend fun countByState(state: WorkflowState): Long = DatabaseFactory.dbQuery {
         KrithisTable.selectAll().where { KrithisTable.workflowState eq state }.count()
     }
 
+    /**
+     * Find potential duplicate krithis by normalized title and optional composer/raga.
+     */
     suspend fun findDuplicateCandidates(
         titleNormalized: String,
         composerId: UUID? = null,

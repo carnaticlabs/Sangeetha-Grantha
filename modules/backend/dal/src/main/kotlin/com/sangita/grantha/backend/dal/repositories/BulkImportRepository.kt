@@ -25,6 +25,9 @@ import kotlin.uuid.Uuid
 import org.jetbrains.exposed.v1.jdbc.*
 import org.jetbrains.exposed.v1.core.*
 
+/**
+ * Repository for bulk import batches, jobs, tasks, and events.
+ */
 class BulkImportRepository {
 
     private fun buildIdempotencyKey(
@@ -50,6 +53,9 @@ class BulkImportRepository {
     }
     
     // Batch Operations
+    /**
+     * Create a new import batch for the given source manifest.
+     */
     suspend fun createBatch(
         sourceManifest: String,
         createdByUserId: Uuid? = null,
@@ -76,6 +82,9 @@ class BulkImportRepository {
             ?: error("Failed to create import batch")
     }
     
+    /**
+     * Find a batch by ID.
+     */
     suspend fun findBatchById(id: Uuid): ImportBatchDto? = DatabaseFactory.dbQuery {
         ImportBatchTable
             .selectAll()
@@ -84,6 +93,9 @@ class BulkImportRepository {
             .singleOrNull()
     }
     
+    /**
+     * List batches with optional status filter and pagination.
+     */
     suspend fun listBatches(
         status: BatchStatus? = null,
         limit: Int = 100,
@@ -98,6 +110,9 @@ class BulkImportRepository {
             .map { it.toImportBatchDto() }
     }
     
+    /**
+     * Update batch status and optionally set start/completion timestamps.
+     */
     suspend fun updateBatchStatus(
         id: Uuid,
         status: BatchStatus,
@@ -118,6 +133,9 @@ class BulkImportRepository {
             ?.toImportBatchDto()
     }
     
+    /**
+     * Update batch counters (total/processed/succeeded/failed/blocked).
+     */
     suspend fun updateBatchStats(
         id: Uuid,
         totalTasks: Int? = null,
@@ -143,6 +161,9 @@ class BulkImportRepository {
     }
     
     // Job Operations
+    /**
+     * Create a job entry for the given batch.
+     */
     suspend fun createJob(
         batchId: Uuid,
         jobType: JobType,
@@ -167,6 +188,9 @@ class BulkImportRepository {
             ?: error("Failed to create import job")
     }
     
+    /**
+     * Find a job by ID.
+     */
     suspend fun findJobById(id: Uuid): ImportJobDto? = DatabaseFactory.dbQuery {
         ImportJobTable
             .selectAll()
@@ -175,6 +199,9 @@ class BulkImportRepository {
             .singleOrNull()
     }
     
+    /**
+     * List jobs for a batch ordered by creation time.
+     */
     suspend fun listJobsByBatch(batchId: Uuid): List<ImportJobDto> = DatabaseFactory.dbQuery {
         ImportJobTable
             .selectAll()
@@ -183,6 +210,9 @@ class BulkImportRepository {
             .map { it.toImportJobDto() }
     }
     
+    /**
+     * Update a job's status and optional result/timestamps.
+     */
     suspend fun updateJobStatus(
         id: Uuid,
         status: TaskStatus,
@@ -205,6 +235,9 @@ class BulkImportRepository {
             ?.toImportJobDto()
     }
     
+    /**
+     * Increment retry count for a job.
+     */
     suspend fun incrementJobRetry(id: Uuid): ImportJobDto? = DatabaseFactory.dbQuery {
         val now = OffsetDateTime.now(ZoneOffset.UTC)
         // Get current retry count first
@@ -228,6 +261,9 @@ class BulkImportRepository {
     }
     
     // Task Operations
+    /**
+     * Create a single task for a job with idempotency enforcement.
+     */
     suspend fun createTask(
         jobId: Uuid,
         batchId: Uuid? = null,
@@ -272,6 +308,9 @@ class BulkImportRepository {
             ?: error("Failed to create import task")
     }
     
+    /**
+     * Create tasks in bulk for a job while deduplicating idempotency keys.
+     */
     suspend fun createTasks(
         jobId: Uuid,
         batchId: Uuid,
@@ -392,6 +431,9 @@ class BulkImportRepository {
             ?.toImportTaskRunDto()
     }
     
+    /**
+     * Find a task by ID.
+     */
     suspend fun findTaskById(id: Uuid): ImportTaskRunDto? = DatabaseFactory.dbQuery {
         ImportTaskRunTable
             .selectAll()
@@ -400,6 +442,9 @@ class BulkImportRepository {
             .singleOrNull()
     }
     
+    /**
+     * List tasks for a specific job ordered by creation time.
+     */
     suspend fun listTasksByJob(jobId: Uuid): List<ImportTaskRunDto> = DatabaseFactory.dbQuery {
         ImportTaskRunTable
             .selectAll()
@@ -408,6 +453,9 @@ class BulkImportRepository {
             .map { it.toImportTaskRunDto() }
     }
     
+    /**
+     * List tasks for a batch with optional status filter and pagination.
+     */
     suspend fun listTasksByBatch(
         batchId: Uuid,
         status: TaskStatus? = null,
@@ -428,6 +476,9 @@ class BulkImportRepository {
             .map { it.toImportTaskRunDto() }
     }
     
+    /**
+     * Update task status and optional metadata fields.
+     */
     suspend fun updateTaskStatus(
         id: Uuid,
         status: TaskStatus,
@@ -456,6 +507,9 @@ class BulkImportRepository {
             ?.toImportTaskRunDto()
     }
     
+    /**
+     * Increment the attempt count for a task.
+     */
     suspend fun incrementTaskAttempt(id: Uuid): ImportTaskRunDto? = DatabaseFactory.dbQuery {
         val now = OffsetDateTime.now(ZoneOffset.UTC)
         val current = ImportTaskRunTable
@@ -497,6 +551,9 @@ class BulkImportRepository {
         }
     }
 
+    /**
+     * Set the total task count for a batch.
+     */
     suspend fun setBatchTotals(
         id: Uuid,
         totalTasks: Int,
@@ -511,6 +568,9 @@ class BulkImportRepository {
             ?.toImportBatchDto()
     }
 
+    /**
+     * Requeue tasks in the given statuses back to PENDING.
+     */
     suspend fun requeueTasksForBatch(
         batchId: Uuid,
         fromStatuses: Set<TaskStatus>,
@@ -533,6 +593,9 @@ class BulkImportRepository {
             }
     }
 
+    /**
+     * Mark running tasks as retryable when they exceed the watchdog threshold.
+     */
     suspend fun markStuckRunningTasks(
         threshold: OffsetDateTime,
         maxAttempts: Int,
@@ -571,6 +634,9 @@ class BulkImportRepository {
     }
 
     // Event Operations
+    /**
+     * Create a batch/job/task event.
+     */
     suspend fun createEvent(
         refType: String,
         refId: Uuid,
@@ -594,6 +660,9 @@ class BulkImportRepository {
             ?: error("Failed to create import event")
     }
     
+    /**
+     * List events for a reference type/id ordered by most recent.
+     */
     suspend fun listEventsByRef(
         refType: String,
         refId: Uuid,
@@ -608,6 +677,9 @@ class BulkImportRepository {
             .map { it.toImportEventDto() }
     }
 
+    /**
+     * Delete a batch and its related records (events are pruned explicitly).
+     */
     suspend fun deleteBatch(id: Uuid): Boolean = DatabaseFactory.dbQuery {
         // Cascade delete should handle jobs, tasks, events if configured in DB
         // But for safety/Exposed, we might want to be explicit or rely on FK CASCADE

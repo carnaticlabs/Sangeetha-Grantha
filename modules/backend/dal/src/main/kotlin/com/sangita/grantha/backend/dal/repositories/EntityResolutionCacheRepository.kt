@@ -12,7 +12,9 @@ import kotlin.uuid.Uuid
 import org.jetbrains.exposed.v1.core.*
 import org.jetbrains.exposed.v1.jdbc.*
 
-// TRACK-013: Entity Resolution Cache Repository
+/**
+ * TRACK-013: Entity resolution cache repository.
+ */
 class EntityResolutionCacheRepository {
 
     /**

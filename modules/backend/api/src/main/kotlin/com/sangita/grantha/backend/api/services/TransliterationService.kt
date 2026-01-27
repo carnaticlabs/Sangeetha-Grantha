@@ -2,9 +2,16 @@ package com.sangita.grantha.backend.api.services
 
 import com.sangita.grantha.backend.api.clients.GeminiApiClient
 
-class TransliterationService(private val geminiClient: GeminiApiClient) {
+interface ITransliterator {
+    /**
+     * Transliterate content from a source script to a target script.
+     */
+    suspend fun transliterate(content: String, sourceScript: String?, targetScript: String): String
+}
 
-    suspend fun transliterate(content: String, sourceScript: String?, targetScript: String): String {
+class TransliterationServiceImpl(private val geminiClient: GeminiApiClient) : ITransliterator {
+
+    override suspend fun transliterate(content: String, sourceScript: String?, targetScript: String): String {
         val prompt = """
             You are an expert in Carnatic music notation and Indian scripts.
             Transliterate the following text to $targetScript.

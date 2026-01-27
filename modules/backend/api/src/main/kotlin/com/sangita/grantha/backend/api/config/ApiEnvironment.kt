@@ -16,6 +16,10 @@ data class ApiEnvironment(
     val port: Int = 8080,
     val adminToken: String = "dev-admin-token",
     val tokenTtlSeconds: Long = 3600,
+    val jwtSecret: String = "dev-jwt-secret",
+    val jwtIssuer: String = "sangita-grantha",
+    val jwtAudience: String = "sangita-users",
+    val jwtRealm: String = "Sangita Grantha API",
     val geminiApiKey: String? = null,
     val database: DatabaseConfig? = null,
     val storage: StorageConfig? = null,
@@ -69,6 +73,10 @@ object ApiEnvironmentLoader {
         val port = get("API_PORT", "8080")?.toIntOrNull() ?: 8080
         val adminToken = get("ADMIN_TOKEN", "dev-admin-token")!!
         val tokenTtlSeconds = get("TOKEN_TTL_SECONDS", "3600")?.toLongOrNull() ?: 3600L
+        val jwtSecret = get("JWT_SECRET", adminToken)!!
+        val jwtIssuer = get("JWT_ISSUER", "sangita-grantha")!!
+        val jwtAudience = get("JWT_AUDIENCE", "sangita-users")!!
+        val jwtRealm = get("JWT_REALM", "Sangita Grantha API")!!
         
         // Gemini API Key lookup
         val geminiApiKey = get("SG_GEMINI_API_KEY") ?: get("GEMINI_API_KEY")
@@ -105,6 +113,10 @@ object ApiEnvironmentLoader {
             port = port,
             adminToken = adminToken,
             tokenTtlSeconds = tokenTtlSeconds,
+            jwtSecret = jwtSecret,
+            jwtIssuer = jwtIssuer,
+            jwtAudience = jwtAudience,
+            jwtRealm = jwtRealm,
             geminiApiKey = geminiApiKey,
             database = databaseConfig,
             storage = storageConfig,
@@ -138,4 +150,3 @@ object ApiEnvironmentLoader {
         return origins.split(",").map { it.trim() }.filter { it.isNotBlank() }
     }
 }
-

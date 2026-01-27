@@ -1,7 +1,9 @@
 package com.sangita.grantha.backend.api.routes
 
 import com.sangita.grantha.backend.api.models.*
-import com.sangita.grantha.backend.api.services.ReferenceDataService
+import com.sangita.grantha.backend.api.services.IReferenceDataService
+import com.sangita.grantha.backend.api.support.computeEtag
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.request.receive
@@ -14,7 +16,7 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.put
 import io.ktor.server.routing.route
 
-fun Route.referenceDataRoutes(service: ReferenceDataService) {
+fun Route.referenceDataRoutes(service: IReferenceDataService) {
     route("/v1/reference") {
         get("/stats") {
             call.respond(service.getStats())
@@ -25,6 +27,8 @@ fun Route.referenceDataRoutes(service: ReferenceDataService) {
     route("/v1/admin/composers") {
         get {
             val composers = service.listComposers()
+            val etag = computeEtag(composers.joinToString("|") { "${it.id}-${it.updatedAt}" })
+            call.response.headers.append(HttpHeaders.ETag, "\"$etag\"")
             call.respond(composers)
         }
 
@@ -73,6 +77,8 @@ fun Route.referenceDataRoutes(service: ReferenceDataService) {
     route("/v1/admin/ragas") {
         get {
             val ragas = service.listRagas()
+            val etag = computeEtag(ragas.joinToString("|") { "${it.id}-${it.updatedAt}" })
+            call.response.headers.append(HttpHeaders.ETag, "\"$etag\"")
             call.respond(ragas)
         }
 
@@ -121,6 +127,8 @@ fun Route.referenceDataRoutes(service: ReferenceDataService) {
     route("/v1/admin/talas") {
         get {
             val talas = service.listTalas()
+            val etag = computeEtag(talas.joinToString("|") { "${it.id}-${it.updatedAt}" })
+            call.response.headers.append(HttpHeaders.ETag, "\"$etag\"")
             call.respond(talas)
         }
 
@@ -169,6 +177,8 @@ fun Route.referenceDataRoutes(service: ReferenceDataService) {
     route("/v1/admin/temples") {
         get {
             val temples = service.listTemples()
+            val etag = computeEtag(temples.joinToString("|") { "${it.id}-${it.updatedAt}" })
+            call.response.headers.append(HttpHeaders.ETag, "\"$etag\"")
             call.respond(temples)
         }
 
@@ -217,6 +227,8 @@ fun Route.referenceDataRoutes(service: ReferenceDataService) {
     route("/v1/admin/deities") {
         get {
             val deities = service.listDeities()
+            val etag = computeEtag(deities.joinToString("|") { "${it.id}-${it.updatedAt}" })
+            call.response.headers.append(HttpHeaders.ETag, "\"$etag\"")
             call.respond(deities)
         }
 
@@ -265,6 +277,8 @@ fun Route.referenceDataRoutes(service: ReferenceDataService) {
     route("/v1/admin/tags") {
         get {
             val tags = service.listTags()
+            val etag = computeEtag(tags.joinToString("|") { "${it.id}-${it.createdAt}" })
+            call.response.headers.append(HttpHeaders.ETag, "\"$etag\"")
             call.respond(tags)
         }
 
@@ -281,12 +295,7 @@ fun Route.referenceDataRoutes(service: ReferenceDataService) {
 
         post {
             val request = call.receive<TagCreateRequest>()
-            val created = service.createTag(
-                category = request.category,
-                slug = request.slug,
-                displayNameEn = request.displayNameEn,
-                descriptionEn = request.descriptionEn
-            )
+            val created = service.createTag(request)
             call.respond(HttpStatusCode.Created, created)
         }
 
@@ -294,13 +303,7 @@ fun Route.referenceDataRoutes(service: ReferenceDataService) {
             val id = parseUuidParam(call.parameters["id"], "tagId")
                 ?: return@put call.respondText("Missing tag ID", status = HttpStatusCode.BadRequest)
             val request = call.receive<TagUpdateRequest>()
-            val updated = service.updateTag(
-                id = id,
-                category = request.category,
-                slug = request.slug,
-                displayNameEn = request.displayNameEn,
-                descriptionEn = request.descriptionEn
-            )
+            val updated = service.updateTag(id, request)
             if (updated == null) {
                 call.respondText("Tag not found", status = HttpStatusCode.NotFound)
             } else {

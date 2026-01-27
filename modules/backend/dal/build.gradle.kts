@@ -20,6 +20,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.datetime)
     implementation(libs.postgresql)
+    implementation(libs.micrometer.core)
 
     testImplementation(kotlin("test"))
     testImplementation(libs.kotlinx.coroutines.test)

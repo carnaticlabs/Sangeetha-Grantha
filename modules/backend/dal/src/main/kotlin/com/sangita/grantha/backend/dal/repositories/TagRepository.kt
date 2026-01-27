@@ -16,7 +16,13 @@ import com.sangita.grantha.backend.dal.support.toKotlinUuid
 import java.util.UUID
 import kotlin.uuid.Uuid
 
+/**
+ * Repository for tag reference data.
+ */
 class TagRepository {
+    /**
+     * List all tags ordered by display name.
+     */
     suspend fun listAll(): List<TagDto> = DatabaseFactory.dbQuery {
         TagsTable
             .selectAll()
@@ -24,10 +30,16 @@ class TagRepository {
             .map { row: ResultRow -> row.toTagDto() }
     }
 
+    /**
+     * Count all tags.
+     */
     suspend fun countAll(): Long = DatabaseFactory.dbQuery {
         TagsTable.selectAll().count()
     }
 
+    /**
+     * Find a tag by ID.
+     */
     suspend fun findById(id: Uuid): TagDto? = DatabaseFactory.dbQuery {
         TagsTable
             .selectAll()
@@ -36,6 +48,9 @@ class TagRepository {
             .singleOrNull()
     }
 
+    /**
+     * Create a new tag.
+     */
     suspend fun create(
         category: TagCategoryDto,
         slug: String,
@@ -59,6 +74,9 @@ class TagRepository {
             ?: error("Failed to insert tag")
     }
 
+    /**
+     * Update a tag and return the updated record.
+     */
     suspend fun update(
         id: Uuid,
         category: TagCategoryDto? = null,
@@ -82,6 +100,9 @@ class TagRepository {
             ?.toTagDto()
     }
 
+    /**
+     * Delete a tag by ID.
+     */
     suspend fun delete(id: Uuid): Boolean = DatabaseFactory.dbQuery {
         val deleted = TagsTable.deleteWhere { TagsTable.id eq id.toJavaUuid() }
         deleted > 0

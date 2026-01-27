@@ -9,14 +9,21 @@ import io.ktor.client.statement.bodyAsText
 import kotlinx.serialization.Serializable
 import org.slf4j.LoggerFactory
 
-class WebScrapingService(
+interface IWebScraper {
+    /**
+     * Scrape and parse a krithi page into structured metadata.
+     */
+    suspend fun scrapeKrithi(url: String): ScrapedKrithiMetadata
+}
+
+class WebScrapingServiceImpl(
     private val geminiClient: GeminiApiClient
-) {
+) : IWebScraper {
     private val logger = LoggerFactory.getLogger(javaClass)
     // Using a separate client instance for scraping to avoid config conflicts with Gemini client
     private val httpClient = HttpClient(CIO)
 
-    suspend fun scrapeKrithi(url: String): ScrapedKrithiMetadata {
+    override suspend fun scrapeKrithi(url: String): ScrapedKrithiMetadata {
         logger.info("Scraping URL: $url")
         val html = try {
             httpClient.get(url).bodyAsText()

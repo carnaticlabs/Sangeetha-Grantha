@@ -1,6 +1,5 @@
 package com.sangita.grantha.backend.api.clients
 
-import com.sangita.grantha.backend.dal.support.DatabaseConfigLoader
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
@@ -38,7 +37,7 @@ class GeminiApiClient(
     }
 
     init {
-        logger.info("Initializing GeminiApiClient with key: '${apiKey.take(4)}...' (Length: ${apiKey.length})")
+        logger.info("Initializing GeminiApiClient (keyConfigured={})", apiKey.isNotBlank())
         if (apiKey.isBlank()) {
            logger.warn("GEMINI_API_KEY is not configured or blank. Gemini features will fail.")
         }
@@ -49,7 +48,8 @@ class GeminiApiClient(
             }
             defaultRequest {
                 // Using gemini-2.0-flash as confirmed by available models list
-                url("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$apiKey")
+                url("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent")
+                header("x-goog-api-key", apiKey)
                 contentType(ContentType.Application.Json)
             }
             expectSuccess = false // We handle errors manually to log the body

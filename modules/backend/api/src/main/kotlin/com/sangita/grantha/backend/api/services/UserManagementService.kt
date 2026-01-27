@@ -8,11 +8,23 @@ import com.sangita.grantha.shared.domain.model.RoleAssignmentDto
 import java.util.UUID
 import kotlin.uuid.Uuid
 
+/**
+ * Service for managing users and role assignments.
+ */
 class UserManagementService(private val dal: SangitaDal) {
+    /**
+     * List all users.
+     */
     suspend fun listUsers(): List<UserDto> = dal.users.listAll()
 
+    /**
+     * Fetch a user by ID.
+     */
     suspend fun getUser(id: Uuid): UserDto? = dal.users.findById(id)
 
+    /**
+     * Create a user and assign initial roles.
+     */
     suspend fun createUser(request: UserCreateRequest): UserDto {
         // TODO: Implement password hashing (e.g., using bcrypt)
         val passwordHash = request.password?.let { hashPassword(it) }
@@ -41,6 +53,9 @@ class UserManagementService(private val dal: SangitaDal) {
         return created
     }
 
+    /**
+     * Update an existing user.
+     */
     suspend fun updateUser(id: Uuid, request: UserUpdateRequest): UserDto? {
         // TODO: Implement password hashing (e.g., using bcrypt)
         val passwordHash = request.password?.let { hashPassword(it) }
@@ -65,6 +80,9 @@ class UserManagementService(private val dal: SangitaDal) {
         return updated
     }
 
+    /**
+     * Delete a user by ID.
+     */
     suspend fun deleteUser(id: Uuid): Boolean {
         val deleted = dal.users.delete(id)
         
@@ -79,6 +97,9 @@ class UserManagementService(private val dal: SangitaDal) {
         return deleted
     }
 
+    /**
+     * Assign a role to a user.
+     */
     suspend fun assignRole(userId: Uuid, roleCode: String) {
         val assigned = dal.users.assignRole(userId, roleCode)
         if (assigned) {
@@ -90,6 +111,9 @@ class UserManagementService(private val dal: SangitaDal) {
         }
     }
 
+    /**
+     * Remove a role assignment from a user.
+     */
     suspend fun removeRole(userId: Uuid, roleCode: String): Boolean {
         val removed = dal.users.removeRole(userId, roleCode)
         if (removed) {
@@ -102,6 +126,9 @@ class UserManagementService(private val dal: SangitaDal) {
         return removed
     }
 
+    /**
+     * Fetch role assignments for a user.
+     */
     suspend fun getUserRoles(userId: Uuid): List<RoleAssignmentDto> = dal.users.getUserRoles(userId)
 
     private fun hashPassword(password: String): String {
@@ -110,4 +137,3 @@ class UserManagementService(private val dal: SangitaDal) {
         return password
     }
 }
-

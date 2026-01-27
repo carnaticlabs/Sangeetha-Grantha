@@ -13,30 +13,41 @@ import java.time.Instant
 import kotlin.math.max
 import kotlin.uuid.toKotlinUuid
 
-class EntityResolutionService(
+@Serializable
+data class ResolutionResult(
+    val composerCandidates: List<Candidate<ComposerDto>>,
+    val ragaCandidates: List<Candidate<RagaDto>>,
+    val talaCandidates: List<Candidate<TalaDto>>,
+    val resolved: Boolean = false
+)
+
+@Serializable
+data class Candidate<T>(
+    val entity: T,
+    val score: Int,
+    val confidence: String // HIGH, MEDIUM, LOW
+)
+
+interface IEntityResolver {
+    /**
+     * Resolve imported krithi metadata against reference data.
+     */
+    suspend fun resolve(importedKrithi: ImportedKrithiDto): ResolutionResult
+}
+
+class EntityResolutionServiceImpl(
     private val dal: SangitaDal,
     private val normalizer: NameNormalizationService = NameNormalizationService()
-) {
+) : IEntityResolver {
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    @Serializable
-    data class ResolutionResult(
-        val composerCandidates: List<Candidate<ComposerDto>>,
-        val ragaCandidates: List<Candidate<RagaDto>>,
-        val talaCandidates: List<Candidate<TalaDto>>,
-        val resolved: Boolean = false
-    )
-
-    @Serializable
-    data class Candidate<T>(
-        val entity: T,
-        val score: Int,
-        val confidence: String // HIGH, MEDIUM, LOW
-    )
+    companion object {
+        private const val CACHE_TTL_MINUTES = 15L
+    }
 
     private val cacheMutex = Mutex()
     private var lastCacheUpdate: Instant = Instant.MIN
-    private val cacheTtl = java.time.Duration.ofMinutes(15)
+    private val cacheTtl = java.time.Duration.ofMinutes(CACHE_TTL_MINUTES)
 
     private var cachedComposers: List<ComposerDto> = emptyList()
     private var cachedRagas: List<RagaDto> = emptyList()
@@ -85,7 +96,7 @@ class EntityResolutionService(
         }
     }
 
-    suspend fun resolve(importedKrithi: ImportedKrithiDto): ResolutionResult {
+    override suspend fun resolve(importedKrithi: ImportedKrithiDto): ResolutionResult {
         ensureCache()
 
         val normComposer = normalizer.normalizeComposer(importedKrithi.rawComposer)

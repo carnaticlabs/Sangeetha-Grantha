@@ -3,8 +3,8 @@ package com.sangita.grantha.backend.api.routes
 import com.sangita.grantha.backend.api.models.ImportKrithiRequest
 import com.sangita.grantha.backend.api.models.ImportReviewRequest
 import com.sangita.grantha.backend.api.models.ImportOverridesDto
-import com.sangita.grantha.backend.api.services.ImportService
-import com.sangita.grantha.backend.api.services.WebScrapingService
+import com.sangita.grantha.backend.api.services.IImportService
+import com.sangita.grantha.backend.api.services.IWebScraper
 import com.sangita.grantha.backend.api.services.ScrapedKrithiMetadata
 import com.sangita.grantha.backend.dal.enums.ImportStatus
 import com.sangita.grantha.shared.domain.model.ScrapeRequest
@@ -26,8 +26,8 @@ import org.slf4j.LoggerFactory
 import kotlin.uuid.Uuid
 
 fun Route.importRoutes(
-    importService: ImportService,
-    webScrapingService: WebScrapingService
+    importService: IImportService,
+    webScrapingService: IWebScraper
 ) {
     route("/v1/admin/imports") {
         // List imports

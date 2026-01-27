@@ -13,12 +13,18 @@ import java.time.ZoneOffset
 import java.util.UUID
 import kotlin.uuid.Uuid
 
+/**
+ * Repository for temple reference data.
+ */
 class TempleRepository {
     private fun normalize(value: String): String =
         value.trim()
             .lowercase()
             .replace(Regex("\\s+"), " ")
 
+    /**
+     * List all temples ordered by normalized name.
+     */
     suspend fun listAll(): List<TempleDto> = DatabaseFactory.dbQuery {
         TemplesTable
             .selectAll()
@@ -26,6 +32,9 @@ class TempleRepository {
             .map { row: ResultRow -> row.toTempleDto() }
     }
 
+    /**
+     * Find a temple by ID.
+     */
     suspend fun findById(id: Uuid): TempleDto? = DatabaseFactory.dbQuery {
         TemplesTable
             .selectAll()
@@ -34,6 +43,9 @@ class TempleRepository {
             .singleOrNull()
     }
 
+    /**
+     * Find a temple by exact name.
+     */
     suspend fun findByName(name: String): TempleDto? = DatabaseFactory.dbQuery {
         TemplesTable
             .selectAll()
@@ -42,6 +54,9 @@ class TempleRepository {
             .singleOrNull()
     }
 
+    /**
+     * Create a new temple record.
+     */
     suspend fun create(
         name: String,
         nameNormalized: String? = null,
@@ -77,6 +92,9 @@ class TempleRepository {
             ?: error("Failed to insert temple")
     }
 
+    /**
+     * Update a temple and return the updated record.
+     */
     suspend fun update(
         id: Uuid,
         name: String? = null,
@@ -115,11 +133,17 @@ class TempleRepository {
             ?.toTempleDto()
     }
 
+    /**
+     * Delete a temple by ID.
+     */
     suspend fun delete(id: Uuid): Boolean = DatabaseFactory.dbQuery {
         val deleted = TemplesTable.deleteWhere { TemplesTable.id eq id.toJavaUuid() }
         deleted > 0
     }
 
+    /**
+     * Count all temples.
+     */
     suspend fun countAll(): Long = DatabaseFactory.dbQuery {
         TemplesTable.selectAll().count()
     }

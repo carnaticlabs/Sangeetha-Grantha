@@ -34,7 +34,13 @@ dependencies {
     implementation(libs.ktor.server.call.logging)
     implementation(libs.ktor.server.status.pages)
     implementation(libs.ktor.server.cors)
+    implementation(libs.ktor.server.request.validation)
+    implementation(libs.ktor.server.rate.limit)
+    implementation(libs.ktor.server.metrics.micrometer)
+    implementation(libs.ktor.server.call.id)
     implementation(libs.bundles.ktor.server.core.plugins)
+    implementation(libs.koin.ktor)
+    implementation(libs.koin.logger.slf4j)
 
     // Ktor Client
     implementation(libs.bundles.ktor.client)
@@ -44,6 +50,8 @@ dependencies {
     implementation(libs.logback.classic)
     implementation(libs.logstash.logback.encoder)
     implementation(libs.dotenv.kotlin)
+    implementation(libs.jwt.core)
+    implementation(libs.micrometer.registry.prometheus)
 
     implementation(libs.kotlinx.datetime)
     implementation(libs.kotlinx.serialization.json)
@@ -55,6 +63,7 @@ dependencies {
     testImplementation(libs.kotlinx.serialization.json)
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.mockk)
+    testImplementation(libs.h2)
 }
 
 // Simple dev run task (no frontend coupling yet)

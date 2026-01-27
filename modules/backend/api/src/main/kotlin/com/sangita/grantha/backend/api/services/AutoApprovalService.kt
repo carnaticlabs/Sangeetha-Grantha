@@ -59,7 +59,7 @@ class AutoApprovalService(
         // Parse resolution data
         val resolution = try {
             imported.resolutionData?.let {
-                Json.decodeFromString<EntityResolutionService.ResolutionResult>(it)
+                Json.decodeFromString<ResolutionResult>(it)
             }
         } catch (e: Exception) {
             logger.warn("Failed to parse resolution data for import ${imported.id}: ${e.message}")

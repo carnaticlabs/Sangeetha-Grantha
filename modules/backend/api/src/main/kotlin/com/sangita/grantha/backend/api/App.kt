@@ -2,28 +2,28 @@ package com.sangita.grantha.backend.api
 
 import com.sangita.grantha.backend.api.config.ApiEnvironmentLoader
 import com.sangita.grantha.backend.api.config.LogbackConfig
+import com.sangita.grantha.backend.api.di.appModule
+import com.sangita.grantha.backend.api.di.dalModule
+import com.sangita.grantha.backend.api.plugins.configureCaching
+import com.sangita.grantha.backend.api.plugins.configureMetrics
+import com.sangita.grantha.backend.api.plugins.configureRequestValidation
 import com.sangita.grantha.backend.api.plugins.configureCors
 import com.sangita.grantha.backend.api.plugins.configureRequestLogging
 import com.sangita.grantha.backend.api.plugins.configureRouting
 import com.sangita.grantha.backend.api.plugins.configureSecurity
 import com.sangita.grantha.backend.api.plugins.configureSerialization
 import com.sangita.grantha.backend.api.plugins.configureStatusPages
-import com.sangita.grantha.backend.api.services.AuditLogService
-import com.sangita.grantha.backend.api.services.BulkImportOrchestrationService
-import com.sangita.grantha.backend.api.services.BulkImportWorkerService
-import com.sangita.grantha.backend.api.services.ImportService
-import com.sangita.grantha.backend.api.services.KrithiNotationService
-import com.sangita.grantha.backend.api.services.KrithiService
-import com.sangita.grantha.backend.api.services.ReferenceDataService
+import com.sangita.grantha.backend.api.services.bulkimport.IBulkImportWorker
 import com.sangita.grantha.backend.dal.DatabaseFactory
-import com.sangita.grantha.backend.dal.SangitaDal
-import com.sangita.grantha.backend.api.clients.GeminiApiClient
-import com.sangita.grantha.backend.api.services.TransliterationService
-import com.sangita.grantha.backend.api.services.WebScrapingService
 
 import io.ktor.server.application.ApplicationStopping
+import io.ktor.server.application.install
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import io.micrometer.prometheus.PrometheusConfig
+import io.micrometer.prometheus.PrometheusMeterRegistry
+import org.koin.ktor.ext.inject
+import org.koin.ktor.plugin.Koin
 import org.slf4j.LoggerFactory
 
 private val logger = LoggerFactory.getLogger("SangitaAPI")
@@ -32,69 +32,43 @@ fun main() {
     val env = ApiEnvironmentLoader.load()
     LogbackConfig.configure(env)
     logger.info("Starting Sangita Grantha API (env: {})", env.environment)
-    logger.info("Loaded Gemini API Key: ${env.geminiApiKey?.take(4)}... (Length: ${env.geminiApiKey?.length ?: 0})")
     
     if (env.database == null) {
         throw IllegalStateException("Database configuration is missing")
     }
-    DatabaseFactory.connect(env.database)
-    val dal = SangitaDal()
-    val krithiService = KrithiService(dal)
-    val notationService = KrithiNotationService(dal)
-    val referenceDataService = ReferenceDataService(dal)
-    val auditLogService = AuditLogService(dal)
-    val dashboardService = com.sangita.grantha.backend.api.services.AdminDashboardService(dal)
-    val userManagementService = com.sangita.grantha.backend.api.services.UserManagementService(dal)
-
-    // AI Services
-    val geminiApiClient = GeminiApiClient(env.geminiApiKey ?: "")
-    val transliterationService = TransliterationService(geminiApiClient)
-    val webScrapingService = WebScrapingService(geminiApiClient)
-    
-    val nameNormalizationService = com.sangita.grantha.backend.api.services.NameNormalizationService()
-    val entityResolutionService = com.sangita.grantha.backend.api.services.EntityResolutionService(dal, nameNormalizationService)
-    val deduplicationService = com.sangita.grantha.backend.api.services.DeduplicationService(dal, nameNormalizationService)
-    
-    // Create ImportService first (implements ImportReviewer interface)
-    val importService = ImportService(dal)
-    
-    // Create AutoApprovalService with ImportService as ImportReviewer (breaks circular dependency)
-    val autoApprovalService = com.sangita.grantha.backend.api.services.AutoApprovalService(importService)
-    
-    // Wire AutoApprovalService back into ImportService for getAutoApproveQueue filtering
-    importService.setAutoApprovalService(autoApprovalService)
-    
-    val bulkImportWorkerService = BulkImportWorkerService(
-        dal = dal,
-        importService = importService,
-        webScrapingService = webScrapingService,
-        entityResolutionService = entityResolutionService,
-        deduplicationService = deduplicationService,
-        autoApprovalService = autoApprovalService
-    )
-    
-    val bulkImportService = BulkImportOrchestrationService(dal, bulkImportWorkerService)
+    val metricsRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
 
     embeddedServer(Netty, host = env.host, port = env.port) {
+        configureMetrics(metricsRegistry)
+
+        val dbConfig = env.database!!
+        DatabaseFactory.connect(
+            DatabaseFactory.ConnectionConfig(
+                databaseUrl = dbConfig.jdbcUrl,
+                username = dbConfig.username,
+                password = dbConfig.password,
+                schema = dbConfig.schema,
+                meterRegistry = metricsRegistry,
+                enableQueryLogging = env.environment != com.sangita.grantha.backend.api.config.Environment.PROD,
+                slowQueryThresholdMs = 100
+            )
+        )
+
+        install(Koin) {
+            modules(dalModule, appModule(env, metricsRegistry))
+        }
+
         configureSerialization()
         configureRequestLogging()
         configureCors(env)
         configureSecurity(env)
         configureStatusPages()
-        configureRouting(
-            krithiService,
-            notationService,
-            referenceDataService,
-            importService,
-            auditLogService,
-            dashboardService,
-            transliterationService,
-            webScrapingService,
-            userManagementService,
-            bulkImportService
-        )
+        configureRequestValidation()
+        configureCaching()
+        configureRouting()
 
         // Start background workers (bulk import orchestration)
+        val bulkImportWorkerService by inject<IBulkImportWorker>()
         bulkImportWorkerService.start()
 
         monitor.subscribe(ApplicationStopping) {

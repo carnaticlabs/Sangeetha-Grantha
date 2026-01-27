@@ -13,7 +13,13 @@ import org.jetbrains.exposed.v1.core.SortOrder
 import org.jetbrains.exposed.v1.jdbc.insert
 import org.jetbrains.exposed.v1.jdbc.selectAll
 
+/**
+ * Repository for reading and writing audit log entries.
+ */
 class AuditLogRepository {
+    /**
+     * Returns recent audit entries ordered by timestamp descending.
+     */
     suspend fun listRecent(limit: Int = 100): List<AuditLogDto> = DatabaseFactory.dbQuery {
         AuditLogTable
             .selectAll()
@@ -22,6 +28,9 @@ class AuditLogRepository {
             .map { row: ResultRow -> row.toAuditLogDto() }
     }
 
+    /**
+     * Appends a single audit log entry.
+     */
     suspend fun append(
         action: String,
         entityTable: String,

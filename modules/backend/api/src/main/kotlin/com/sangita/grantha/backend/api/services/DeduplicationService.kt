@@ -8,6 +8,9 @@ import com.sangita.grantha.shared.domain.model.KrithiDto
 import kotlinx.serialization.Serializable
 import kotlin.math.max
 
+/**
+ * Service that detects potential duplicate krithis during import review.
+ */
 class DeduplicationService(
     private val dal: SangitaDal,
     private val normalizer: NameNormalizationService = NameNormalizationService()
@@ -26,6 +29,9 @@ class DeduplicationService(
         val matches: List<DuplicateMatch>
     )
 
+    /**
+     * Find duplicate candidates across canonical and staging data.
+     */
     suspend fun findDuplicates(
         imported: ImportedKrithiDto,
         resolvedComposerId: kotlin.uuid.Uuid?,

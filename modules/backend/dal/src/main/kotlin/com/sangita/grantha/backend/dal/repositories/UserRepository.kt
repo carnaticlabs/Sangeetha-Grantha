@@ -16,7 +16,13 @@ import java.time.ZoneOffset
 import java.util.UUID
 import kotlin.uuid.Uuid
 
+/**
+ * Repository for user accounts and role assignments.
+ */
 class UserRepository {
+    /**
+     * Find a user ID by email.
+     */
     suspend fun findByEmail(email: String): UUID? = DatabaseFactory.dbQuery {
         UsersTable
             .selectAll()
@@ -25,6 +31,9 @@ class UserRepository {
             ?.get(UsersTable.id)?.value
     }
 
+    /**
+     * Find a user by ID.
+     */
     suspend fun findById(id: Uuid): UserDto? = DatabaseFactory.dbQuery {
         UsersTable
             .selectAll()
@@ -33,6 +42,9 @@ class UserRepository {
             .singleOrNull()
     }
 
+    /**
+     * List all users ordered by full name.
+     */
     suspend fun listAll(): List<UserDto> = DatabaseFactory.dbQuery {
         UsersTable
             .selectAll()
@@ -40,6 +52,9 @@ class UserRepository {
             .map { it.toUserDto() }
     }
 
+    /**
+     * Create a new user record.
+     */
     suspend fun create(
         email: String? = null,
         fullName: String,
@@ -67,6 +82,9 @@ class UserRepository {
             ?: error("Failed to insert user")
     }
 
+    /**
+     * Update a user and return the updated record.
+     */
     suspend fun update(
         id: Uuid,
         email: String? = null,
@@ -95,11 +113,17 @@ class UserRepository {
             ?.toUserDto()
     }
 
+    /**
+     * Delete a user by ID.
+     */
     suspend fun delete(id: Uuid): Boolean = DatabaseFactory.dbQuery {
         val deleted = UsersTable.deleteWhere { UsersTable.id eq id.toJavaUuid() }
         deleted > 0
     }
 
+    /**
+     * List role assignments for a user.
+     */
     suspend fun getUserRoles(userId: Uuid): List<RoleAssignmentDto> = DatabaseFactory.dbQuery {
         RoleAssignmentsTable
             .selectAll()
@@ -108,6 +132,9 @@ class UserRepository {
             .map { it.toRoleAssignmentDto() }
     }
 
+    /**
+     * Assign a role to a user if not already assigned.
+     */
     suspend fun assignRole(userId: Uuid, roleCode: String): Boolean = DatabaseFactory.dbQuery {
         val now = OffsetDateTime.now(ZoneOffset.UTC)
         val javaUserId = userId.toJavaUuid()
@@ -134,6 +161,9 @@ class UserRepository {
         true
     }
 
+    /**
+     * Remove a role assignment from a user.
+     */
     suspend fun removeRole(userId: Uuid, roleCode: String): Boolean = DatabaseFactory.dbQuery {
         val deleted = RoleAssignmentsTable.deleteWhere {
             (RoleAssignmentsTable.userId eq userId.toJavaUuid()) and

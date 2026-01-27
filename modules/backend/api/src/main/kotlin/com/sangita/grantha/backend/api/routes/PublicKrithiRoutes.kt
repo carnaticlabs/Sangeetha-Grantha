@@ -1,13 +1,15 @@
 package com.sangita.grantha.backend.api.routes
 
+import com.sangita.grantha.backend.api.services.IKrithiService
+import com.sangita.grantha.backend.api.services.IReferenceDataService
 import com.sangita.grantha.backend.api.services.KrithiNotationService
-import com.sangita.grantha.backend.api.services.KrithiService
-import com.sangita.grantha.backend.api.services.ReferenceDataService
+import com.sangita.grantha.backend.api.support.computeEtag
 import com.sangita.grantha.shared.domain.model.KrithiSearchRequest
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.HttpHeaders
 import io.ktor.server.application.call
-import io.ktor.server.auth.UserIdPrincipal
 import io.ktor.server.auth.authenticate
+import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
@@ -16,14 +18,13 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.route
 
 fun Route.publicKrithiRoutes(
-    krithiService: KrithiService,
-    referenceDataService: ReferenceDataService,
+    krithiService: IKrithiService,
+    referenceDataService: IReferenceDataService,
     notationService: KrithiNotationService,
 ) {
     route("/v1") {
         authenticate("admin-auth", optional = true) {
             get("/krithis/search") {
-                val isAdmin = call.principal<UserIdPrincipal>() != null
                 val request = KrithiSearchRequest(
                     query = call.request.queryParameters["query"],
                     lyric = call.request.queryParameters["lyric"],
@@ -58,7 +59,7 @@ fun Route.publicKrithiRoutes(
             get("/krithis/{id}/notation") {
                 val id = parseUuidParam(call.parameters["id"], "krithiId")
                     ?: return@get call.respondText("Missing krithi ID", status = HttpStatusCode.BadRequest)
-                val isAdmin = call.principal<UserIdPrincipal>() != null
+                val isAdmin = call.principal<JWTPrincipal>() != null
                 val notation = if (isAdmin) {
                     notationService.getAdminNotation(id)
                 } else {
@@ -73,25 +74,46 @@ fun Route.publicKrithiRoutes(
         }
 
         get("/composers") {
-            call.respond(referenceDataService.listComposers())
+            val composers = referenceDataService.listComposers()
+            val etag = computeEtag(composers.joinToString("|") { "${it.id}-${it.updatedAt}" })
+            call.response.headers.append(HttpHeaders.ETag, "\"$etag\"")
+            call.respond(composers)
         }
         get("/ragas") {
-            call.respond(referenceDataService.listRagas())
+            val ragas = referenceDataService.listRagas()
+            val etag = computeEtag(ragas.joinToString("|") { "${it.id}-${it.updatedAt}" })
+            call.response.headers.append(HttpHeaders.ETag, "\"$etag\"")
+            call.respond(ragas)
         }
         get("/talas") {
-            call.respond(referenceDataService.listTalas())
+            val talas = referenceDataService.listTalas()
+            val etag = computeEtag(talas.joinToString("|") { "${it.id}-${it.updatedAt}" })
+            call.response.headers.append(HttpHeaders.ETag, "\"$etag\"")
+            call.respond(talas)
         }
         get("/deities") {
-            call.respond(referenceDataService.listDeities())
+            val deities = referenceDataService.listDeities()
+            val etag = computeEtag(deities.joinToString("|") { "${it.id}-${it.updatedAt}" })
+            call.response.headers.append(HttpHeaders.ETag, "\"$etag\"")
+            call.respond(deities)
         }
         get("/temples") {
-            call.respond(referenceDataService.listTemples())
+            val temples = referenceDataService.listTemples()
+            val etag = computeEtag(temples.joinToString("|") { "${it.id}-${it.updatedAt}" })
+            call.response.headers.append(HttpHeaders.ETag, "\"$etag\"")
+            call.respond(temples)
         }
         get("/tags") {
-            call.respond(referenceDataService.listTags())
+            val tags = referenceDataService.listTags()
+            val etag = computeEtag(tags.joinToString("|") { "${it.id}-${it.createdAt}" })
+            call.response.headers.append(HttpHeaders.ETag, "\"$etag\"")
+            call.respond(tags)
         }
         get("/sampradayas") {
-            call.respond(referenceDataService.listSampradayas())
+            val sampradayas = referenceDataService.listSampradayas()
+            val etag = computeEtag(sampradayas.joinToString("|") { "${it.id}-${it.createdAt}" })
+            call.response.headers.append(HttpHeaders.ETag, "\"$etag\"")
+            call.respond(sampradayas)
         }
     }
 }

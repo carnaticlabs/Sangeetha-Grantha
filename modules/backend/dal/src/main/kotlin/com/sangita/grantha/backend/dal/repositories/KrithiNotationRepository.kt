@@ -21,7 +21,13 @@ data class NotationRowWithSectionOrder(
     val sectionOrderIndex: Int,
 )
 
+/**
+ * Repository for krithi notation variants and rows.
+ */
 class KrithiNotationRepository {
+    /**
+     * Find a notation variant by ID.
+     */
     suspend fun findVariantById(variantId: Uuid): KrithiNotationVariantDto? =
         DatabaseFactory.dbQuery {
             KrithiNotationVariantsTable
@@ -31,6 +37,9 @@ class KrithiNotationRepository {
                 .singleOrNull()
         }
 
+    /**
+     * List notation variants for a krithi ordered by primary and creation time.
+     */
     suspend fun listVariantsByKrithiId(krithiId: Uuid): List<KrithiNotationVariantDto> =
         DatabaseFactory.dbQuery {
             KrithiNotationVariantsTable
@@ -43,6 +52,9 @@ class KrithiNotationRepository {
                 .map { it.toKrithiNotationVariantDto() }
         }
 
+    /**
+     * List notation rows for multiple variants ordered by section and row index.
+     */
     suspend fun listRowsByVariantIds(variantIds: List<Uuid>): List<NotationRowWithSectionOrder> =
         DatabaseFactory.dbQuery {
             if (variantIds.isEmpty()) return@dbQuery emptyList()
@@ -68,6 +80,9 @@ class KrithiNotationRepository {
                 }
         }
 
+    /**
+     * Create a notation variant for a krithi.
+     */
     suspend fun createVariant(
         krithiId: UUID,
         notationType: String,
@@ -114,6 +129,9 @@ class KrithiNotationRepository {
             ?: error("Failed to insert notation variant")
     }
 
+    /**
+     * Update a notation variant and return the updated record.
+     */
     suspend fun updateVariant(
         variantId: Uuid,
         notationType: String? = null,
@@ -166,10 +184,16 @@ class KrithiNotationRepository {
             ?: error("Failed to update notation variant")
     }
 
+    /**
+     * Delete a notation variant by ID.
+     */
     suspend fun deleteVariant(variantId: Uuid): Boolean = DatabaseFactory.dbQuery {
         KrithiNotationVariantsTable.deleteWhere { KrithiNotationVariantsTable.id eq variantId.toJavaUuid() } > 0
     }
 
+    /**
+     * Create a notation row for a variant.
+     */
     suspend fun createRow(
         notationVariantId: UUID,
         sectionId: UUID,
@@ -198,6 +222,9 @@ class KrithiNotationRepository {
             ?: error("Failed to insert notation row")
     }
 
+    /**
+     * Update a notation row and return the updated record.
+     */
     suspend fun updateRow(
         rowId: Uuid,
         sectionId: UUID? = null,
@@ -231,6 +258,9 @@ class KrithiNotationRepository {
             ?: error("Failed to update notation row")
     }
 
+    /**
+     * Delete a notation row by ID.
+     */
     suspend fun deleteRow(rowId: Uuid): Boolean = DatabaseFactory.dbQuery {
         KrithiNotationRowsTable.deleteWhere { KrithiNotationRowsTable.id eq rowId.toJavaUuid() } > 0
     }

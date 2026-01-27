@@ -4,6 +4,7 @@ import com.sangita.grantha.backend.api.models.NotationRowCreateRequest
 import com.sangita.grantha.backend.api.models.NotationRowUpdateRequest
 import com.sangita.grantha.backend.api.models.NotationVariantCreateRequest
 import com.sangita.grantha.backend.api.models.NotationVariantUpdateRequest
+import com.sangita.grantha.backend.api.support.toJavaUuidOrThrow
 import com.sangita.grantha.backend.dal.SangitaDal
 import com.sangita.grantha.backend.dal.repositories.NotationRowWithSectionOrder
 import com.sangita.grantha.backend.dal.support.toJavaUuid
@@ -14,19 +15,30 @@ import com.sangita.grantha.shared.domain.model.KrithiNotationVariantWithRowsDto
 import com.sangita.grantha.shared.domain.model.KrithiNotationRowDto
 import com.sangita.grantha.shared.domain.model.KrithiNotationVariantDto
 import com.sangita.grantha.shared.domain.model.WorkflowStateDto
-import java.util.UUID
 import kotlin.uuid.Uuid
 
+/**
+ * Service for managing krithi notation variants and rows.
+ */
 class KrithiNotationService(private val dal: SangitaDal) {
+    /**
+     * Fetch published notation for public consumption.
+     */
     suspend fun getPublishedNotation(krithiId: Uuid): KrithiNotationResponseDto? =
         getNotation(krithiId, includeUnpublished = false)
 
+    /**
+     * Fetch notation with unpublished variants for admin use.
+     */
     suspend fun getAdminNotation(krithiId: Uuid): KrithiNotationResponseDto? =
         getNotation(krithiId, includeUnpublished = true)
 
+    /**
+     * Create a new notation variant for a krithi.
+     */
     suspend fun createVariant(krithiId: Uuid, request: NotationVariantCreateRequest): KrithiNotationVariantDto {
         val krithi = dal.krithis.findById(krithiId) ?: throw NoSuchElementException("Krithi not found")
-        val talaId = request.talaId?.let { parseUuidOrThrow(it, "talaId") }
+        val talaId = request.talaId?.toJavaUuidOrThrow("talaId")
 
         val created = dal.krithiNotation.createVariant(
             krithiId = krithi.id.toJavaUuid(),
@@ -50,11 +62,14 @@ class KrithiNotationService(private val dal: SangitaDal) {
         return created
     }
 
+    /**
+     * Update a notation variant.
+     */
     suspend fun updateVariant(
         variantId: Uuid,
         request: NotationVariantUpdateRequest
     ): KrithiNotationVariantDto {
-        val talaId = request.talaId?.let { parseUuidOrThrow(it, "talaId") }
+        val talaId = request.talaId?.toJavaUuidOrThrow("talaId")
         val updated = dal.krithiNotation.updateVariant(
             variantId = variantId,
             notationType = request.notationType?.name,
@@ -76,6 +91,9 @@ class KrithiNotationService(private val dal: SangitaDal) {
         return updated
     }
 
+    /**
+     * Delete a notation variant.
+     */
     suspend fun deleteVariant(variantId: Uuid): Boolean {
         val deleted = dal.krithiNotation.deleteVariant(variantId)
         if (deleted) {
@@ -88,10 +106,13 @@ class KrithiNotationService(private val dal: SangitaDal) {
         return deleted
     }
 
+    /**
+     * Create a notation row for a variant.
+     */
     suspend fun createRow(variantId: Uuid, request: NotationRowCreateRequest): KrithiNotationRowDto {
         val variant = dal.krithiNotation.findVariantById(variantId)
             ?: throw NoSuchElementException("Notation variant not found")
-        val sectionId = parseUuidOrThrow(request.sectionId, "sectionId")
+        val sectionId = request.sectionId.toJavaUuidOrThrow("sectionId")
 
         val created = dal.krithiNotation.createRow(
             notationVariantId = variant.id.toJavaUuid(),
@@ -111,8 +132,11 @@ class KrithiNotationService(private val dal: SangitaDal) {
         return created
     }
 
+    /**
+     * Update a notation row.
+     */
     suspend fun updateRow(rowId: Uuid, request: NotationRowUpdateRequest): KrithiNotationRowDto {
-        val sectionId = request.sectionId?.let { parseUuidOrThrow(it, "sectionId") }
+        val sectionId = request.sectionId?.toJavaUuidOrThrow("sectionId")
         val updated = dal.krithiNotation.updateRow(
             rowId = rowId,
             sectionId = sectionId,
@@ -131,6 +155,9 @@ class KrithiNotationService(private val dal: SangitaDal) {
         return updated
     }
 
+    /**
+     * Delete a notation row.
+     */
     suspend fun deleteRow(rowId: Uuid): Boolean {
         val deleted = dal.krithiNotation.deleteRow(rowId)
         if (deleted) {
@@ -198,10 +225,4 @@ class KrithiNotationService(private val dal: SangitaDal) {
         }
     }
 
-    private fun parseUuidOrThrow(value: String, label: String): UUID =
-        try {
-            UUID.fromString(value)
-        } catch (ex: IllegalArgumentException) {
-            throw IllegalArgumentException("Invalid $label")
-        }
 }

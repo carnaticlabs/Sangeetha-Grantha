@@ -13,12 +13,18 @@ import java.time.ZoneOffset
 import java.util.UUID
 import kotlin.uuid.Uuid
 
+/**
+ * Repository for tala reference data.
+ */
 class TalaRepository {
     private fun normalize(value: String): String =
         value.trim()
             .lowercase()
             .replace(Regex("\\s+"), " ")
 
+    /**
+     * List all talas ordered by normalized name.
+     */
     suspend fun listAll(): List<TalaDto> = DatabaseFactory.dbQuery {
         TalasTable
             .selectAll()
@@ -26,6 +32,9 @@ class TalaRepository {
             .map { row: ResultRow -> row.toTalaDto() }
     }
 
+    /**
+     * Find a tala by ID.
+     */
     suspend fun findById(id: Uuid): TalaDto? = DatabaseFactory.dbQuery {
         TalasTable
             .selectAll()
@@ -34,6 +43,9 @@ class TalaRepository {
             .singleOrNull()
     }
 
+    /**
+     * Find a tala by exact name.
+     */
     suspend fun findByName(name: String): TalaDto? = DatabaseFactory.dbQuery {
         TalasTable
             .selectAll()
@@ -42,6 +54,9 @@ class TalaRepository {
             .singleOrNull()
     }
 
+    /**
+     * Find a tala by normalized name.
+     */
     suspend fun findByNameNormalized(nameNormalized: String): TalaDto? = DatabaseFactory.dbQuery {
         TalasTable
             .selectAll()
@@ -50,6 +65,9 @@ class TalaRepository {
             .singleOrNull()
     }
 
+    /**
+     * Find an existing tala or create a new record.
+     */
     suspend fun findOrCreate(
         name: String,
         nameNormalized: String? = null,
@@ -74,6 +92,9 @@ class TalaRepository {
         }
     }
 
+    /**
+     * Create a new tala record.
+     */
     suspend fun create(
         name: String,
         nameNormalized: String? = null,
@@ -101,6 +122,9 @@ class TalaRepository {
             ?: error("Failed to insert tala")
     }
 
+    /**
+     * Update a tala and return the updated record.
+     */
     suspend fun update(
         id: Uuid,
         name: String? = null,
@@ -131,11 +155,17 @@ class TalaRepository {
             ?.toTalaDto()
     }
 
+    /**
+     * Delete a tala by ID.
+     */
     suspend fun delete(id: Uuid): Boolean = DatabaseFactory.dbQuery {
         val deleted = TalasTable.deleteWhere { TalasTable.id eq id.toJavaUuid() }
         deleted > 0
     }
 
+    /**
+     * Count all talas.
+     */
     suspend fun countAll(): Long = DatabaseFactory.dbQuery {
         TalasTable.selectAll().count()
     }

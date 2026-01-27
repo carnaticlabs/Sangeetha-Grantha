@@ -3,7 +3,7 @@ package com.sangita.grantha.backend.api.routes
 import com.sangita.grantha.backend.api.models.BulkImportCreateBatchRequest
 import com.sangita.grantha.backend.api.models.BulkImportRetryRequest
 import com.sangita.grantha.backend.api.services.BulkImportOrchestrationService
-import com.sangita.grantha.backend.api.services.ImportService
+import com.sangita.grantha.backend.api.services.IImportService
 import com.sangita.grantha.backend.dal.enums.BatchStatus
 import com.sangita.grantha.backend.dal.enums.TaskStatus
 import io.ktor.http.HttpStatusCode
@@ -30,14 +30,14 @@ import io.ktor.utils.io.core.readBytes
 import org.apache.commons.csv.CSVFormat
 import java.nio.charset.StandardCharsets
 
-fun Route.bulkImportRoutes(service: BulkImportOrchestrationService, importService: ImportService) {
+private const val MAX_MANIFEST_SIZE_BYTES = 10 * 1024 * 1024 // 10MB hard limit
+
+fun Route.bulkImportRoutes(service: BulkImportOrchestrationService, importService: IImportService) {
     route("/v1/admin/bulk-import") {
         route("/upload") {
             post {
                 val multipart = call.receiveMultipart()
                 var savedFilePath: String? = null
-                val maxFileSizeBytes = 10 * 1024 * 1024 // 10MB hard limit
-
                 multipart.forEachPart { part ->
                     if (part is PartData.FileItem) {
                         val originalFileName = part.originalFileName
@@ -76,7 +76,7 @@ fun Route.bulkImportRoutes(service: BulkImportOrchestrationService, importServic
                         val fileBytes = part.provider().readRemaining().readBytes()
 
                         // Enforce maximum file size to prevent OOM and abuse
-                        if (fileBytes.size > maxFileSizeBytes) {
+                        if (fileBytes.size > MAX_MANIFEST_SIZE_BYTES) {
                             part.dispose()
                             call.respondText(
                                 "File size exceeds maximum allowed size (10MB)",
@@ -315,4 +315,3 @@ private fun isValidUrl(url: String): Boolean {
         false
     }
 }
-

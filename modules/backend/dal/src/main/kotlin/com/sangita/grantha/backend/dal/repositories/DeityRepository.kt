@@ -13,12 +13,18 @@ import java.time.ZoneOffset
 import java.util.UUID
 import kotlin.uuid.Uuid
 
+/**
+ * Repository for deity reference data.
+ */
 class DeityRepository {
     private fun normalize(value: String): String =
         value.trim()
             .lowercase()
             .replace(Regex("\\s+"), " ")
 
+    /**
+     * List all deities ordered by normalized name.
+     */
     suspend fun listAll(): List<DeityDto> = DatabaseFactory.dbQuery {
         DeitiesTable
             .selectAll()
@@ -26,6 +32,9 @@ class DeityRepository {
             .map { row: ResultRow -> row.toDeityDto() }
     }
 
+    /**
+     * Find a deity by ID.
+     */
     suspend fun findById(id: Uuid): DeityDto? = DatabaseFactory.dbQuery {
         DeitiesTable
             .selectAll()
@@ -34,6 +43,9 @@ class DeityRepository {
             .singleOrNull()
     }
 
+    /**
+     * Find a deity by exact name.
+     */
     suspend fun findByName(name: String): DeityDto? = DatabaseFactory.dbQuery {
         DeitiesTable
             .selectAll()
@@ -42,6 +54,9 @@ class DeityRepository {
             .singleOrNull()
     }
 
+    /**
+     * Create a new deity record.
+     */
     suspend fun create(
         name: String,
         nameNormalized: String? = null,
@@ -65,6 +80,9 @@ class DeityRepository {
             ?: error("Failed to insert deity")
     }
 
+    /**
+     * Update a deity and return the updated record.
+     */
     suspend fun update(
         id: Uuid,
         name: String? = null,
@@ -90,11 +108,17 @@ class DeityRepository {
             ?.toDeityDto()
     }
 
+    /**
+     * Delete a deity by ID.
+     */
     suspend fun delete(id: Uuid): Boolean = DatabaseFactory.dbQuery {
         val deleted = DeitiesTable.deleteWhere { DeitiesTable.id eq id.toJavaUuid() }
         deleted > 0
     }
 
+    /**
+     * Count all deities.
+     */
     suspend fun countAll(): Long = DatabaseFactory.dbQuery {
         DeitiesTable.selectAll().count()
     }

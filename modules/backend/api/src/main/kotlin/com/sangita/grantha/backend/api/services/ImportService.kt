@@ -2,6 +2,7 @@ package com.sangita.grantha.backend.api.services
 
 import com.sangita.grantha.backend.api.models.ImportKrithiRequest
 import com.sangita.grantha.backend.api.models.ImportReviewRequest
+import com.sangita.grantha.backend.api.support.toJavaUuidOrThrow
 import com.sangita.grantha.backend.dal.SangitaDal
 import com.sangita.grantha.backend.dal.enums.ImportStatus
 import com.sangita.grantha.backend.dal.enums.LanguageCode
@@ -11,6 +12,7 @@ import com.sangita.grantha.backend.dal.support.toJavaUuid
 import com.sangita.grantha.shared.domain.model.ImportedKrithiDto
 import com.sangita.grantha.backend.dal.enums.ScriptCode
 import com.sangita.grantha.backend.dal.enums.RagaSection
+import com.sangita.grantha.backend.dal.repositories.KrithiCreateParams
 import kotlinx.serialization.json.Json
 import java.util.UUID
 import kotlin.uuid.Uuid
@@ -21,25 +23,65 @@ import kotlin.uuid.Uuid
  * Implements ImportReviewer interface to allow AutoApprovalService
  * to review imports without creating a circular dependency.
  */
-class ImportService(
-    private val dal: SangitaDal
-) : ImportReviewer {
-    private var autoApprovalService: AutoApprovalService? = null
-    
+interface IImportService {
     /**
-     * Set the auto-approval service after initialization to break circular dependency.
-     * This should be called once after both services are created.
+     * List imports optionally filtered by status and/or batch.
      */
-    fun setAutoApprovalService(service: AutoApprovalService) {
-        this.autoApprovalService = service
-    }
+    suspend fun getImports(status: ImportStatus? = null, batchId: Uuid? = null): List<ImportedKrithiDto>
+
+    /**
+     * Approve all pending imports in the batch.
+     */
+    suspend fun approveAllInBatch(batchId: Uuid)
+
+    /**
+     * Reject all pending imports in the batch.
+     */
+    suspend fun rejectAllInBatch(batchId: Uuid)
+
+    /**
+     * Fetch imports eligible for auto-approval with optional filters.
+     */
+    suspend fun getAutoApproveQueue(
+        batchId: Uuid? = null,
+        qualityTier: String? = null,
+        confidenceMin: Double? = null,
+        limit: Int = 100,
+        offset: Int = 0
+    ): List<ImportedKrithiDto>
+
+    /**
+     * Submit one or more imports to the system.
+     */
+    suspend fun submitImports(requests: List<ImportKrithiRequest>): List<ImportedKrithiDto>
+
+    /**
+     * Review an import and optionally create/map a krithi.
+     */
+    suspend fun reviewImport(id: Uuid, request: ImportReviewRequest): ImportedKrithiDto
+
+    /**
+     * Calculate summary stats for a batch to decide if it can be finalized.
+     */
+    suspend fun finalizeBatch(batchId: Uuid): Map<String, Any>
+
+    /**
+     * Generate a QA report for a batch in JSON or CSV.
+     */
+    suspend fun generateQAReport(batchId: Uuid, format: String): String
+}
+
+class ImportServiceImpl(
+    private val dal: SangitaDal,
+    private val autoApprovalServiceProvider: () -> AutoApprovalService
+) : ImportReviewer, IImportService {
     
     private fun normalize(value: String): String =
         value.trim()
             .lowercase()
             .replace(Regex("\\s+"), " ")
             .replace(Regex("[^a-z0-9\\s]"), "")
-    suspend fun getImports(status: ImportStatus? = null, batchId: Uuid? = null): List<ImportedKrithiDto> {
+    override suspend fun getImports(status: ImportStatus?, batchId: Uuid?): List<ImportedKrithiDto> {
         return if (batchId != null) {
             dal.imports.listByBatch(batchId, status)
         } else {
@@ -47,7 +89,7 @@ class ImportService(
         }
     }
 
-    suspend fun approveAllInBatch(batchId: Uuid) {
+    override suspend fun approveAllInBatch(batchId: Uuid) {
         val pending = dal.imports.listByBatch(batchId, ImportStatus.PENDING)
         for (importRow in pending) {
             try {
@@ -58,7 +100,7 @@ class ImportService(
         }
     }
 
-    suspend fun rejectAllInBatch(batchId: Uuid) {
+    override suspend fun rejectAllInBatch(batchId: Uuid) {
         val pending = dal.imports.listByBatch(batchId, ImportStatus.PENDING)
         for (importRow in pending) {
             dal.imports.reviewImport(importRow.id, ImportStatus.REJECTED, null, "Bulk rejected")
@@ -66,12 +108,12 @@ class ImportService(
     }
 
     // TRACK-012: Get auto-approve queue with filtering
-    suspend fun getAutoApproveQueue(
-        batchId: Uuid? = null,
-        qualityTier: String? = null,
-        confidenceMin: Double? = null,
-        limit: Int = 100,
-        offset: Int = 0
+    override suspend fun getAutoApproveQueue(
+        batchId: Uuid?,
+        qualityTier: String?,
+        confidenceMin: Double?,
+        limit: Int,
+        offset: Int
     ): List<ImportedKrithiDto> {
         // Get pending imports with optional filters
         val allPending = if (batchId != null) {
@@ -98,18 +140,14 @@ class ImportService(
 
         // Filter by auto-approval eligibility
         filtered = filtered.filter { imported ->
-            try {
-                autoApprovalService?.shouldAutoApprove(imported) ?: false
-            } catch (e: Exception) {
-                false
-            }
+            runCatching { autoApprovalServiceProvider().shouldAutoApprove(imported) }.getOrDefault(false)
         }
 
         // Apply pagination
         return filtered.drop(offset).take(limit)
     }
 
-    suspend fun submitImports(requests: List<ImportKrithiRequest>): List<ImportedKrithiDto> {
+    override suspend fun submitImports(requests: List<ImportKrithiRequest>): List<ImportedKrithiDto> {
         if (requests.isEmpty()) return emptyList()
 
         val created = mutableListOf<ImportedKrithiDto>()
@@ -145,7 +183,7 @@ class ImportService(
     }
 
     override suspend fun reviewImport(id: Uuid, request: ImportReviewRequest): ImportedKrithiDto {
-        val mappedId = request.mappedKrithiId?.let { parseUuidOrThrow(it, "mappedKrithiId") }
+        val mappedId = request.mappedKrithiId?.toJavaUuidOrThrow("mappedKrithiId")
         val status = ImportStatus.valueOf(request.status.name)
         
         // If status is APPROVED and no mappedKrithiId is provided, create a new krithi
@@ -202,22 +240,24 @@ class ImportService(
                 
                 // Create the krithi
                 val createdKrithi = dal.krithis.create(
-                    title = effectiveTitle,
-                    titleNormalized = normalize(effectiveTitle),
-                    incipit = null,
-                    incipitNormalized = null,
-                    composerId = composerId,
-                    musicalForm = MusicalForm.KRITHI,
-                    primaryLanguage = languageCode,
-                    primaryRagaId = ragaId,
-                    talaId = talaId,
-                    deityId = null, // Deity/temple can be added later in editor
-                    templeId = null,
-                    isRagamalika = false,
-                    ragaIds = if (ragaId != null) listOf(ragaId) else emptyList(),
-                    workflowState = WorkflowState.DRAFT,
-                    sahityaSummary = effectiveLyrics?.take(500), // First 500 chars as summary
-                    notes = "Created from import: ${sourceKey ?: "unknown"}"
+                    KrithiCreateParams(
+                        title = effectiveTitle,
+                        titleNormalized = normalize(effectiveTitle),
+                        incipit = null,
+                        incipitNormalized = null,
+                        composerId = composerId,
+                        musicalForm = MusicalForm.KRITHI,
+                        primaryLanguage = languageCode,
+                        primaryRagaId = ragaId,
+                        talaId = talaId,
+                        deityId = null, // Deity/temple can be added later in editor
+                        templeId = null,
+                        isRagamalika = false,
+                        ragaIds = if (ragaId != null) listOf(ragaId) else emptyList(),
+                        workflowState = WorkflowState.DRAFT,
+                        sahityaSummary = effectiveLyrics?.take(500), // First 500 chars as summary
+                        notes = "Created from import: ${sourceKey ?: "unknown"}"
+                    )
                 )
                 
                 createdKrithiId = createdKrithi.id.toJavaUuid()
@@ -319,15 +359,8 @@ class ImportService(
         return updated
     }
 
-    private fun parseUuidOrThrow(value: String, label: String): UUID =
-        try {
-            UUID.fromString(value)
-        } catch (ex: IllegalArgumentException) {
-            throw IllegalArgumentException("Invalid $label")
-        }
-
     // TRACK-004: Finalize Batch
-    suspend fun finalizeBatch(batchId: Uuid): Map<String, Any> {
+    override suspend fun finalizeBatch(batchId: Uuid): Map<String, Any> {
         val imports = dal.imports.listByBatch(batchId, null)
 
         val total = imports.size
@@ -356,7 +389,7 @@ class ImportService(
     }
 
     // TRACK-004: Generate QA Report
-    suspend fun generateQAReport(batchId: Uuid, format: String): String {
+    override suspend fun generateQAReport(batchId: Uuid, format: String): String {
         val imports = dal.imports.listByBatch(batchId, null)
         val batch = dal.bulkImport.findBatchById(batchId)
 

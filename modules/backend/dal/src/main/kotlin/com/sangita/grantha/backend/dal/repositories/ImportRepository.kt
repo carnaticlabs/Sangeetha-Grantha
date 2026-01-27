@@ -14,7 +14,13 @@ import kotlin.uuid.Uuid
 import org.jetbrains.exposed.v1.jdbc.*
 import org.jetbrains.exposed.v1.core.*
 
+/**
+ * Repository for import sources and imported krithi records.
+ */
 class ImportRepository {
+    /**
+     * List imported krithis with optional status filter.
+     */
     suspend fun listImports(status: ImportStatus? = null): List<ImportedKrithiDto> =
         DatabaseFactory.dbQuery {
             val query = ImportedKrithisTable.selectAll()
@@ -22,6 +28,9 @@ class ImportRepository {
             query.map { it.toImportedKrithiDto() }
         }
 
+    /**
+     * Find an imported krithi by ID.
+     */
     suspend fun findById(id: Uuid): ImportedKrithiDto? = DatabaseFactory.dbQuery {
         ImportedKrithisTable
             .selectAll()
@@ -30,6 +39,9 @@ class ImportRepository {
             .singleOrNull()
     }
 
+    /**
+     * Find or create an import source and return its ID.
+     */
     suspend fun findOrCreateSource(name: String): UUID = DatabaseFactory.dbQuery {
         ImportSourcesTable
             .selectAll()
@@ -48,6 +60,9 @@ class ImportRepository {
             }
     }
 
+    /**
+     * Create an imported krithi record (idempotent by source key).
+     */
     suspend fun createImport(
         sourceId: UUID,
         sourceKey: String?,
@@ -98,6 +113,9 @@ class ImportRepository {
             ?: error("Failed to insert imported krithi")
     }
 
+    /**
+     * List imports for a batch with optional status filter.
+     */
     suspend fun listByBatch(batchId: Uuid, status: ImportStatus? = null): List<ImportedKrithiDto> = DatabaseFactory.dbQuery {
         val query = ImportedKrithisTable.selectAll().where { ImportedKrithisTable.importBatchId eq batchId.toJavaUuid() }
         status?.let { query.andWhere { ImportedKrithisTable.importStatus eq it } }
@@ -105,6 +123,9 @@ class ImportRepository {
     }
 
     // TRACK-013: Optimized deduplication query - use DB ILIKE for filtering instead of loading all
+    /**
+     * Find similar pending imports for deduplication.
+     */
     suspend fun findSimilarPendingImports(
         normalizedTitle: String,
         excludeId: Uuid? = null,
@@ -126,6 +147,9 @@ class ImportRepository {
             .map { it.toImportedKrithiDto() }
     }
 
+    /**
+     * Review an import and set its mapped krithi ID.
+     */
     suspend fun reviewImport(
         id: Uuid,
         status: ImportStatus,
@@ -149,6 +173,9 @@ class ImportRepository {
             ?.toImportedKrithiDto()
     }
 
+    /**
+     * Find an import by source and source key.
+     */
     suspend fun findBySourceAndKey(sourceId: UUID, sourceKey: String): ImportedKrithiDto? = DatabaseFactory.dbQuery {
         ImportedKrithisTable
             .selectAll()
@@ -157,6 +184,9 @@ class ImportRepository {
             .singleOrNull()
     }
 
+    /**
+     * Persist resolution data for an import.
+     */
     suspend fun saveResolution(
         id: Uuid,
         resolutionData: String,
@@ -172,6 +202,9 @@ class ImportRepository {
             ?.toImportedKrithiDto()
     }
 
+    /**
+     * Persist duplicate candidates for an import.
+     */
     suspend fun saveDuplicates(
         id: Uuid,
         duplicateCandidates: String,
@@ -188,6 +221,9 @@ class ImportRepository {
     }
 
     // TRACK-011: Update quality scoring fields
+    /**
+     * Update quality scoring fields on an import.
+     */
     suspend fun updateQualityScores(
         id: Uuid,
         qualityScore: Double? = null,

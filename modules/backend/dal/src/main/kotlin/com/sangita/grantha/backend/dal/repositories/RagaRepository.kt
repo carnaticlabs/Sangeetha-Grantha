@@ -13,12 +13,18 @@ import java.time.ZoneOffset
 import java.util.UUID
 import kotlin.uuid.Uuid
 
+/**
+ * Repository for raga reference data.
+ */
 class RagaRepository {
     private fun normalize(value: String): String =
         value.trim()
             .lowercase()
             .replace(Regex("\\s+"), " ")
 
+    /**
+     * List all ragas ordered by normalized name.
+     */
     suspend fun listAll(): List<RagaDto> = DatabaseFactory.dbQuery {
         RagasTable
             .selectAll()
@@ -26,6 +32,9 @@ class RagaRepository {
             .map { row: ResultRow -> row.toRagaDto() }
     }
 
+    /**
+     * Find a raga by ID.
+     */
     suspend fun findById(id: Uuid): RagaDto? = DatabaseFactory.dbQuery {
         RagasTable
             .selectAll()
@@ -34,6 +43,9 @@ class RagaRepository {
             .singleOrNull()
     }
 
+    /**
+     * Find a raga by exact name.
+     */
     suspend fun findByName(name: String): RagaDto? = DatabaseFactory.dbQuery {
         RagasTable
             .selectAll()
@@ -42,6 +54,9 @@ class RagaRepository {
             .singleOrNull()
     }
 
+    /**
+     * Find a raga by normalized name.
+     */
     suspend fun findByNameNormalized(nameNormalized: String): RagaDto? = DatabaseFactory.dbQuery {
         RagasTable
             .selectAll()
@@ -50,6 +65,9 @@ class RagaRepository {
             .singleOrNull()
     }
 
+    /**
+     * Find an existing raga or create a new record.
+     */
     suspend fun findOrCreate(
         name: String,
         nameNormalized: String? = null,
@@ -71,6 +89,9 @@ class RagaRepository {
         }
     }
 
+    /**
+     * Create a new raga record.
+     */
     suspend fun create(
         name: String,
         nameNormalized: String? = null,
@@ -102,6 +123,9 @@ class RagaRepository {
             ?: error("Failed to insert raga")
     }
 
+    /**
+     * Update a raga and return the updated record.
+     */
     suspend fun update(
         id: Uuid,
         name: String? = null,
@@ -136,11 +160,17 @@ class RagaRepository {
             ?.toRagaDto()
     }
 
+    /**
+     * Delete a raga by ID.
+     */
     suspend fun delete(id: Uuid): Boolean = DatabaseFactory.dbQuery {
         val deleted = RagasTable.deleteWhere { RagasTable.id eq id.toJavaUuid() }
         deleted > 0
     }
 
+    /**
+     * Count all ragas.
+     */
     suspend fun countAll(): Long = DatabaseFactory.dbQuery {
         RagasTable.selectAll().count()
     }
