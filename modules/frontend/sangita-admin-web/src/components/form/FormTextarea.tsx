@@ -24,17 +24,17 @@ export const FormTextarea: React.FC<FormTextareaProps> = ({
         <div className={`mb-4 ${className}`}>
             <label
                 htmlFor={inputId}
-                className="block text-sm font-medium text-slate-700 mb-1"
+                className="block text-sm font-semibold text-ink-900 mb-2"
             >
                 {label}
-                {props.required && <span className="text-rose-500 ml-1">*</span>}
+                {props.required && <span className="text-primary ml-1">*</span>}
             </label>
             <textarea
                 id={inputId}
                 name={name}
                 rows={rows}
-                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors ${error ? 'border-rose-300 bg-rose-50' : 'border-slate-300'
-                    } ${props.disabled ? 'bg-slate-100 text-slate-500 cursor-not-allowed' : ''}`}
+                className={`w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all ${error ? 'border-red-300 bg-red-50' : 'border-border-light bg-slate-50'
+                    } ${props.disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
                 {...props}
             />
             {error && <p className="mt-1 text-xs text-rose-600">{error}</p>}

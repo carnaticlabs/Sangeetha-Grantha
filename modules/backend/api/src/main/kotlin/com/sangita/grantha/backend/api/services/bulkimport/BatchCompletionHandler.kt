@@ -94,13 +94,13 @@ class BatchCompletionHandler(
             refId = batchId,
             eventType = "BATCH_COMPLETED",
             data = json.encodeToString(
-                mapOf(
-                    "status" to finalStatus.name,
-                    "totalTasks" to batch.totalTasks,
-                    "processedTasks" to batch.processedTasks,
-                    "succeededTasks" to batch.succeededTasks,
-                    "failedTasks" to batch.failedTasks
-                )
+                buildJsonObject {
+                    put("status", finalStatus.name)
+                    put("totalTasks", batch.totalTasks)
+                    put("processedTasks", batch.processedTasks)
+                    put("succeededTasks", batch.succeededTasks)
+                    put("failedTasks", batch.failedTasks)
+                }
             )
         )
     }

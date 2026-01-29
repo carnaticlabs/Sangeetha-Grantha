@@ -35,5 +35,6 @@
 | [TRACK-024](./tracks/TRACK-024-frontend-refactor-reference-data.md) | Reference Data Refactoring | Completed |
 | [TRACK-025](./tracks/TRACK-025-frontend-refactor-secondary-pages.md) | Secondary Pages & Polish | Completed |
 | [TRACK-026](./tracks/TRACK-026-gradle-problems-report-deprecation.md) | Gradle Problems Report - Archives Deprecation | Completed |
+| [TRACK-027](./tracks/TRACK-027-authentication-login.md) | Authentication & Login Page Implementation | Completed |
 
 ## 3. Deprecated Tracks

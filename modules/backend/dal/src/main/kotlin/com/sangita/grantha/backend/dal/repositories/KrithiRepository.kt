@@ -262,7 +262,8 @@ class KrithiRepository {
      */
     suspend fun getTags(krithiId: Uuid): List<TagDto> = DatabaseFactory.dbQuery {
         val javaKrithiId = krithiId.toJavaUuid()
-        (KrithiTagsTable innerJoin TagsTable)
+        KrithiTagsTable
+            .join(TagsTable, JoinType.INNER, onColumn = KrithiTagsTable.tagId, otherColumn = TagsTable.id)
             .selectAll()
             .where { KrithiTagsTable.krithiId eq javaKrithiId }
             .map { it.toTagDto() }
@@ -277,6 +278,7 @@ class KrithiRepository {
      */
     suspend fun updateTags(krithiId: Uuid, tagIds: List<UUID>) = DatabaseFactory.dbQuery {
         val javaKrithiId = krithiId.toJavaUuid()
+        org.slf4j.LoggerFactory.getLogger(KrithiRepository::class.java).info("Updating tags for krithi $krithiId. New tags: $tagIds")
         
         // Get existing tags indexed by tag_id
         val existingTags = KrithiTagsTable
@@ -307,6 +309,7 @@ class KrithiRepository {
         
         // Execute deletes - only removed tags
         if (toDelete.isNotEmpty()) {
+            org.slf4j.LoggerFactory.getLogger(KrithiRepository::class.java).info("Deleting tags: $toDelete")
             KrithiTagsTable.deleteWhere {
                 (KrithiTagsTable.krithiId eq javaKrithiId) and
                 (KrithiTagsTable.tagId inList toDelete)
@@ -315,6 +318,7 @@ class KrithiRepository {
         
         // Execute inserts - only new tags
         if (toInsert.isNotEmpty()) {
+            org.slf4j.LoggerFactory.getLogger(KrithiRepository::class.java).info("Inserting tags: $toInsert")
             KrithiTagsTable.batchInsert(toInsert) { tagId ->
                 this[KrithiTagsTable.krithiId] = javaKrithiId
                 this[KrithiTagsTable.tagId] = tagId
@@ -655,7 +659,7 @@ class KrithiRepository {
 
         val idQuery = join
             .select(KrithisTable.id)
-            .withDistinct()
+            .groupBy(KrithisTable.id, KrithisTable.titleNormalized)
 
         if (publishedOnly) {
             idQuery.andWhere { KrithisTable.workflowState eq WorkflowState.PUBLISHED }

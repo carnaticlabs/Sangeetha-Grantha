@@ -21,7 +21,7 @@ export interface KrithiEditorState {
 
 export type KrithiEditorAction =
     | { type: 'SET_KRITHI'; payload: Partial<KrithiDetail> }
-    | { type: 'UPDATE_FIELD'; field: keyof KrithiDetail; value: any }
+    | { type: 'UPDATE_FIELD'; field: keyof KrithiDetail; value: KrithiDetail[keyof KrithiDetail] }
     | { type: 'SET_LOADING'; payload: boolean }
     | { type: 'SET_SAVING'; payload: boolean }
     | { type: 'SET_ACTIVE_TAB'; payload: KrithiEditorState['activeTab'] }
@@ -40,11 +40,13 @@ export interface ReferenceDataState {
     loading: boolean;
     error: string | null;
     loadTags: () => Promise<void>;
+    refreshDeities: () => Promise<void>;
+    refreshTemples: () => Promise<void>;
 }
 
 export interface TabProps {
     krithi: Partial<KrithiDetail>;
-    onChange: (field: keyof KrithiDetail, value: any) => void;
+    onChange: <K extends keyof KrithiDetail>(field: K, value: KrithiDetail[K]) => void;
     referenceData: ReferenceDataState;
     readOnly?: boolean;
 }

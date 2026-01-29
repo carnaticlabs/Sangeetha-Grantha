@@ -1,7 +1,19 @@
--- Admin User
+-- Admin User (ID generated per environment; idempotent via ON CONFLICT on email)
 INSERT INTO users (id, email, full_name, is_active, created_at, updated_at)
 VALUES (gen_random_uuid(), 'admin@sangitagrantha.org', 'System Admin', true, NOW(), NOW())
 ON CONFLICT (email) DO NOTHING;
+
+-- Roles
+INSERT INTO roles (code, name)
+VALUES ('grp_sangita_admin', 'Sangita Admin')
+ON CONFLICT (code) DO NOTHING;
+
+-- Role Assignments (bind by email so no hard-coded user ID; safe when seed runs multiple times)
+INSERT INTO role_assignments (user_id, role_code, assigned_at)
+SELECT id, 'grp_sangita_admin', NOW()
+FROM users
+WHERE email = 'admin@sangitagrantha.org'
+ON CONFLICT (user_id, role_code) DO NOTHING;
 
 -- Composers
 INSERT INTO composers (id, name, name_normalized, birth_year, death_year, created_at, updated_at)

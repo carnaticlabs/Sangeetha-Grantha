@@ -107,7 +107,7 @@ const BulkImportPage: React.FC = () => {
       interval = setInterval(() => {
         void loadBatchDetail(selectedBatchId);
         void refreshBatches();
-      }, 2000);
+      }, 5000);
     }
     return () => clearInterval(interval);
   }, [selectedBatch?.status, selectedBatchId]);
@@ -586,18 +586,18 @@ const BulkImportPage: React.FC = () => {
                           <React.Fragment key={stage}>
                             {index > 0 && (
                               <div className={`flex-1 h-0.5 ${isCompleted || (index < jobs.findIndex(j => j.status === 'RUNNING'))
-                                  ? 'bg-primary'
-                                  : 'bg-slate-300'
+                                ? 'bg-primary'
+                                : 'bg-slate-300'
                                 }`}></div>
                             )}
                             <div className="flex flex-col items-center gap-1.5">
                               <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold border-2 ${isActive
-                                  ? 'bg-blue-50 border-blue-500 text-blue-700 animate-pulse'
-                                  : isCompleted
-                                    ? 'bg-green-50 border-green-500 text-green-700'
-                                    : isFailed
-                                      ? 'bg-rose-50 border-rose-500 text-rose-700'
-                                      : 'bg-slate-100 border-slate-300 text-slate-500'
+                                ? 'bg-blue-50 border-blue-500 text-blue-700 animate-pulse'
+                                : isCompleted
+                                  ? 'bg-green-50 border-green-500 text-green-700'
+                                  : isFailed
+                                    ? 'bg-rose-50 border-rose-500 text-rose-700'
+                                    : 'bg-slate-100 border-slate-300 text-slate-500'
                                 }`}>
                                 {isCompleted ? '✓' : isFailed ? '✗' : index + 1}
                               </div>

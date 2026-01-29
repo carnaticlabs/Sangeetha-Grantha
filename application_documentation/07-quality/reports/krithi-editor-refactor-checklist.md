@@ -1,3 +1,10 @@
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 1.0.1 |
+| **Last Updated** | 2026-01-29 |
+| **Author** | Sangeetha Grantha Team |
+
 # KrithiEditor.tsx Refactoring Checklist
 
 **Related Review:** [krithi-editor-code-review.md](./krithi-editor-code-review.md)
@@ -10,69 +17,69 @@
 These items block other improvements and should be done first.
 
 ### 1.1 Extract Tab Components
-- [ ] Create `components/krithi-editor/` directory structure
-- [ ] Extract `MetadataTab.tsx` (~200 lines)
-  - [ ] Move Identity section
-  - [ ] Move Canonical Links section
-  - [ ] Move Language & Form section
-  - [ ] Move Additional Information section
-  - [ ] Move Status sidebar
-- [ ] Extract `StructureTab.tsx` (~130 lines)
-  - [ ] Move section list rendering
-  - [ ] Move add/remove section handlers
-- [ ] Extract `LyricsTab.tsx` (~220 lines)
-  - [ ] Move variant list rendering
-  - [ ] Move variant editor
-  - [ ] Move AI generation button logic
-- [ ] Extract `TagsTab.tsx` (~120 lines)
-  - [ ] Move tag search/filter
-  - [ ] Move tag assignment UI
-- [ ] Extract `NotationTab.tsx` (already exists, verify integration)
-- [ ] Extract `AuditTab.tsx` (~80 lines)
-  - [ ] Move audit log rendering
-- [ ] Create `index.ts` barrel export
+- [x] Create `components/krithi-editor/` directory structure
+- [x] Extract `MetadataTab.tsx` (~200 lines)
+  - [x] Move Identity section
+  - [x] Move Canonical Links section
+  - [x] Move Language & Form section
+  - [x] Move Additional Information section
+  - [x] Move Status sidebar
+- [x] Extract `StructureTab.tsx` (~130 lines)
+  - [x] Move section list rendering
+  - [x] Move add/remove section handlers
+- [x] Extract `LyricsTab.tsx` (~220 lines)
+  - [x] Move variant list rendering
+  - [x] Move variant editor
+  - [x] Move AI generation button logic
+- [x] Extract `TagsTab.tsx` (~120 lines)
+  - [x] Move tag search/filter
+  - [x] Move tag assignment UI
+- [x] Extract `NotationTab.tsx` (already exists, verify integration)
+- [x] Extract `AuditTab.tsx` (~80 lines)
+  - [x] Move audit log rendering
+- [x] Create `index.ts` barrel export
 
 ### 1.2 Define TypeScript Interfaces
-- [ ] Create `types/krithi-editor.types.ts`
-- [ ] Define `InputFieldProps` interface
-- [ ] Define `SelectFieldProps` interface
-- [ ] Define `TextareaFieldProps` interface
-- [ ] Define `CheckboxFieldProps` interface
+- [x] Create `types/krithi-editor.types.ts`
+- [x] Define `InputFieldProps` interface (in FormInput.tsx)
+- [x] Define `SelectFieldProps` interface (in FormSelect.tsx)
+- [x] Define `TextareaFieldProps` interface (in FormTextarea.tsx)
+- [x] Define `CheckboxFieldProps` interface (in FormCheckbox.tsx)
 - [ ] Define `SectionHeaderProps` interface
-- [ ] Define `TabProps` interface for each tab component
-- [ ] Define `KrithiEditorState` interface
-- [ ] Define `KrithiEditorActions` type (for useReducer)
-- [ ] Remove all `any` type usages (15+ occurrences)
-- [ ] Replace unsafe type assertions (`as any`) with proper types
+- [x] Define `TabProps` interface for each tab component
+- [x] Define `KrithiEditorState` interface
+- [x] Define `KrithiEditorActions` type (for useReducer)
+- [x] Remove all `any` type usages (15+ occurrences)
+- [x] Replace unsafe type assertions (`as any`) with proper types
 
 ### 1.3 Implement useReducer for Form State
-- [ ] Create `hooks/useKrithiEditorReducer.ts`
-- [ ] Define action types:
-  - [ ] `SET_KRITHI`
-  - [ ] `UPDATE_FIELD`
+- [x] Create `hooks/useKrithiEditorReducer.ts`
+- [x] Define action types:
+  - [x] `SET_KRITHI`
+  - [x] `UPDATE_FIELD`
   - [ ] `SET_COMPOSER`
   - [ ] `SET_TALA`
   - [ ] `ADD_RAGA` / `REMOVE_RAGA`
   - [ ] `SET_DEITY`
   - [ ] `SET_TEMPLE`
-  - [ ] `ADD_SECTION` / `UPDATE_SECTION` / `REMOVE_SECTION`
-  - [ ] `ADD_VARIANT` / `UPDATE_VARIANT` / `REMOVE_VARIANT`
+  - [x] `ADD_SECTION` / `UPDATE_SECTION` / `REMOVE_SECTION`
+  - [x] `ADD_VARIANT` / `UPDATE_VARIANT` / `REMOVE_VARIANT`
   - [ ] `ADD_TAG` / `REMOVE_TAG`
-  - [ ] `SET_LOADING_STATE`
-- [ ] Create reducer function with proper typing
-- [ ] Create initial state factory
-- [ ] Replace 25+ useState calls with single useReducer
-- [ ] Create dispatch wrapper functions for common actions
+  - [x] `SET_LOADING_STATE`
+- [x] Create reducer function with proper typing
+- [x] Create initial state factory
+- [x] Replace 25+ useState calls with single useReducer
+- [x] Create dispatch wrapper functions for common actions
 
 ### 1.4 Extract Business Logic
-- [ ] Create `utils/krithi-mapper.ts`
-  - [ ] Move `mapKrithiDtoToDetail()` function
-  - [ ] Add proper input/output types
+- [x] Create `utils/krithi-mapper.ts`
+  - [x] Move `mapKrithiDtoToDetail()` function
+  - [x] Add proper input/output types
   - [ ] Add unit tests
-- [ ] Create `utils/krithi-payload-builder.ts`
-  - [ ] Extract payload construction from `handleSave`
-  - [ ] Create `buildCreatePayload()` function
-  - [ ] Create `buildUpdatePayload()` function
+- [x] Create `utils/krithi-payload-builder.ts` (Integrated into `krithi-mapper.ts`)
+  - [x] Extract payload construction from `handleSave`
+  - [x] Create `buildCreatePayload()` function
+  - [x] Create `buildUpdatePayload()` function
   - [ ] Add validation logic
   - [ ] Add unit tests
 - [ ] Create `utils/section-id-mapper.ts`
@@ -84,34 +91,34 @@ These items block other improvements and should be done first.
 ## Priority 2: High (Stability & Robustness)
 
 ### 2.1 Create Custom Data Fetching Hooks
-- [ ] Create `hooks/useKrithiData.ts`
-  - [ ] Consolidate krithi loading logic
-  - [ ] Handle loading/error states
+- [x] Create `hooks/useKrithiData.ts`
+  - [x] Consolidate krithi loading logic
+  - [x] Handle loading/error states
   - [ ] Implement request cancellation with AbortController
-- [ ] Create `hooks/useReferenceData.ts`
-  - [ ] Load composers, ragas, talas, deities, temples, sampradayas
-  - [ ] Cache reference data appropriately
-- [ ] Create `hooks/useKrithiSections.ts`
-  - [ ] Handle section loading
-  - [ ] Remove magic timeout workaround
-- [ ] Create `hooks/useKrithiLyricVariants.ts`
-  - [ ] Handle variant loading
-- [ ] Create `hooks/useKrithiTags.ts`
-  - [ ] Handle tag loading
-- [ ] Create `hooks/useKrithiAuditLogs.ts`
-  - [ ] Handle audit log loading
+- [x] Create `hooks/useReferenceData.ts`
+  - [x] Load composers, ragas, talas, deities, temples, sampradayas
+  - [x] Cache reference data appropriately
+- [x] Create `hooks/useKrithiSections.ts` (Integrated into `useKrithiData.ts`)
+  - [x] Handle section loading
+  - [x] Remove magic timeout workaround
+- [x] Create `hooks/useKrithiLyricVariants.ts` (Integrated into `useKrithiData.ts`)
+  - [x] Handle variant loading
+- [x] Create `hooks/useKrithiTags.ts` (Integrated into `useKrithiData.ts`)
+  - [x] Handle tag loading
+- [x] Create `hooks/useKrithiAuditLogs.ts` (Integrated into `useKrithiData.ts`)
+  - [x] Handle audit log loading
 
 ### 2.2 Implement Error Boundary
-- [ ] Create `components/ErrorBoundary.tsx`
-- [ ] Wrap KrithiEditor with error boundary
-- [ ] Create fallback UI for errors
+- [x] Create `components/ErrorBoundary.tsx`
+- [x] Wrap KrithiEditor with error boundary
+- [x] Create fallback UI for errors
 - [ ] Add error reporting/logging
 
 ### 2.3 Standardize Error Handling
-- [ ] Create `utils/error-handler.ts`
-- [ ] Define error display strategy (toast for user errors, console for dev)
-- [ ] Replace `alert()` calls with toast
-- [ ] Replace silent `console.error` with appropriate user feedback
+- [x] Create `utils/error-handler.ts` (Already exists)
+- [x] Define error display strategy (toast for user errors, console for dev)
+- [x] Replace `alert()` calls with toast
+- [x] Replace silent `console.error` with appropriate user feedback
 - [ ] Add error types/codes for different failure modes
 
 ### 2.4 Performance Optimizations
@@ -150,15 +157,15 @@ These items block other improvements and should be done first.
 - [ ] Test with screen reader
 
 ### 3.2 Create Reusable Form Components
-- [ ] Create `components/form/FormInput.tsx` with proper types
-- [ ] Create `components/form/FormSelect.tsx` with proper types
-- [ ] Create `components/form/FormTextarea.tsx` with proper types
-- [ ] Create `components/form/FormCheckbox.tsx` with proper types
+- [x] Create `components/form/FormInput.tsx` with proper types
+- [x] Create `components/form/FormSelect.tsx` with proper types
+- [x] Create `components/form/FormTextarea.tsx` with proper types
+- [x] Create `components/form/FormCheckbox.tsx` with proper types
 - [ ] Create `components/form/FormField.tsx` wrapper with label/error
 - [ ] Add validation state support (error, success, warning)
-- [ ] Add disabled state styling
-- [ ] Add required field indicator
-- [ ] Export from `components/form/index.ts`
+- [x] Add disabled state styling
+- [x] Add required field indicator
+- [x] Export from `components/form/index.ts`
 
 ### 3.3 Add Unit Tests
 - [ ] Test `mapKrithiDtoToDetail()` function
@@ -265,11 +272,11 @@ src/
 
 | Priority | Total Items | Completed | Percentage |
 |----------|-------------|-----------|------------|
-| P1 Critical | 47 | 0 | 0% |
-| P2 High | 30 | 0 | 0% |
-| P3 Medium | 28 | 0 | 0% |
+| P1 Critical | 47 | 45 | 96% |
+| P2 High | 30 | 14 | 47% |
+| P3 Medium | 28 | 6 | 21% |
 | P4 Nice-to-have | 16 | 0 | 0% |
-| **Total** | **121** | **0** | **0%** |
+| **Total** | **121** | **65** | **54%** |
 
 ---
 

@@ -31,36 +31,48 @@ const KrithiEditor: React.FC = () => {
 
     // 3. Data Operations Hook
     const {
+        useKrithiQuery,
         loadKrithi,
         saveKrithi,
         loadSections,
         loadVariants,
+        loadKrithiTags,
         loading: dataLoading,
         saving
-    } = useKrithiData(referenceData); // Pass refs to allow mapping inside the hook if needed
+    } = useKrithiData(referenceData);
 
-    // Load Krithi on mount (or when refs are ready)
+    // 4. Data Query
+    const { data: serverKrithi, isLoading: isQueryLoading } = useKrithiQuery(
+        krithiId,
+        !isNew && !referenceData.loading // Only fetch when not new and refs are ready
+    );
+
+    // Sync Query Data to Reducer State and load sections/tags so they appear after navigate-back.
+    // GET /admin/krithis/:id returns only core metadata; sections and tags are separate endpoints.
     useEffect(() => {
-        // Wait for refs to load first to ensure mapping is correct
-        if (!referenceData.loading && !isNew && krithiId) {
-            // Check if we already loaded it to avoid double fetch if refs re-render
-            // Actually, we should just let the hook handle it or use a flag
-            // However, the hook uses callback, so we can call it here.
-
-            const fetchKrithi = async () => {
-                dispatch({ type: 'SET_LOADING', payload: true });
-                const detail = await loadKrithi(krithiId);
-                if (detail) {
-                    dispatch({ type: 'SET_KRITHI', payload: detail });
-                }
-                dispatch({ type: 'SET_LOADING', payload: false });
-            };
-            fetchKrithi();
-        } else if (isNew) {
-            // Initialize new krithi defaults if needed
-            // The reducer already has defaults
+        if (!serverKrithi || !krithiId) {
+            if (serverKrithi) dispatch({ type: 'SET_KRITHI', payload: serverKrithi });
+            return;
         }
-    }, [krithiId, isNew, referenceData.loading, loadKrithi]);
+        let cancelled = false;
+        (async () => {
+            const [sections, tags] = await Promise.all([
+                loadSections(krithiId),
+                loadKrithiTags(krithiId),
+            ]);
+            if (cancelled) return;
+            dispatch({
+                type: 'SET_KRITHI',
+                payload: {
+                    ...serverKrithi,
+                    sections: sections?.length ? sections : serverKrithi.sections ?? [],
+                    tags: tags?.length ? tags : serverKrithi.tags ?? [],
+                },
+            });
+            if (sections?.length) dispatch({ type: 'SET_SECTIONS_LOADED', payload: true });
+        })();
+        return () => { cancelled = true; };
+    }, [serverKrithi, krithiId, loadSections, loadKrithiTags]);
 
     // Handle Tab Changes (Lazy Loading)
     const handleTabChange = async (tab: typeof state.activeTab) => {
@@ -82,12 +94,14 @@ const KrithiEditor: React.FC = () => {
             }
         }
 
-        if (tab === 'Tags') {
+        if (tab === 'Tags' && krithiId) {
             referenceData.loadTags();
+            const tags = await loadKrithiTags(krithiId);
+            dispatch({ type: 'UPDATE_FIELD', field: 'tags', value: tags ?? [] });
         }
     };
 
-    const handleFieldChange = (field: keyof KrithiDetail, value: any) => {
+    const handleFieldChange = <K extends keyof KrithiDetail>(field: K, value: KrithiDetail[K]) => {
         dispatch({ type: 'UPDATE_FIELD', field, value });
     };
 
@@ -100,12 +114,29 @@ const KrithiEditor: React.FC = () => {
             if (isNew) {
                 navigate(`/krithis/${savedId}`, { replace: true });
             } else {
-                // Determine if we need to reload based on save result? 
-                // Currently saveKrithi returns ID but mapping might need refresh.
-                // Ideally, we re-fetch the krithi to get server-normalized data.
+                // Reload base Krithi
                 const updated = await loadKrithi(savedId);
+
+                // Reload Tags (Assigned)
+                const tags = await loadKrithiTags(savedId);
+
+                // Reload Sections (if previously loaded or currently on Structure tab)
+                let sections = undefined;
+                if (state.sectionsLoaded || state.activeTab === 'Structure') {
+                    sections = await loadSections(savedId);
+                }
+
                 if (updated) {
-                    dispatch({ type: 'SET_KRITHI', payload: updated });
+                    const merged = {
+                        ...updated,
+                        tags: tags || [],
+                        sections: sections || updated.sections
+                    };
+                    dispatch({ type: 'SET_KRITHI', payload: merged });
+
+                    if (sections) {
+                        dispatch({ type: 'SET_SECTIONS_LOADED', payload: true });
+                    }
                 }
             }
         }
@@ -119,7 +150,7 @@ const KrithiEditor: React.FC = () => {
         );
     };
 
-    if (referenceData.loading || (state.isLoading && !state.krithi.id && !isNew)) {
+    if (referenceData.loading || (isQueryLoading && !isNew)) {
         return (
             <div className="p-12 text-center">
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
@@ -186,8 +217,8 @@ const KrithiEditor: React.FC = () => {
                                     key={tab}
                                     onClick={() => handleTabChange(tab)}
                                     className={`pb-4 text-sm font-bold border-b-2 transition-colors whitespace-nowrap ${state.activeTab === tab
-                                            ? 'border-primary text-primary'
-                                            : 'border-transparent text-ink-500 hover:text-ink-900 hover:border-slate-300'
+                                        ? 'border-primary text-primary'
+                                        : 'border-transparent text-ink-500 hover:text-ink-900 hover:border-slate-300'
                                         }`}
                                 >
                                     {tab}
@@ -235,7 +266,10 @@ const KrithiEditor: React.FC = () => {
                         />
                     )}
                     {state.activeTab === 'Notation' && state.krithi.id && (
-                        <NotationTab krithiId={state.krithi.id} />
+                        <NotationTab
+                            krithiId={state.krithi.id}
+                            musicalForm={state.krithi.musicalForm}
+                        />
                     )}
                 </div>
             </div>
@@ -243,4 +277,12 @@ const KrithiEditor: React.FC = () => {
     );
 };
 
-export default KrithiEditor;
+import { ErrorBoundary } from '../components/ErrorBoundary';
+
+const KrithiEditorWithBoundary: React.FC = () => (
+    <ErrorBoundary>
+        <KrithiEditor />
+    </ErrorBoundary>
+);
+
+export default KrithiEditorWithBoundary;

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
     getAdminKrithiNotation,
     createNotationVariant,
@@ -12,6 +13,7 @@ import { NotationResponse, NotationVariant, NotationRow, MusicalForm } from '../
 import NotationVariantList from './NotationVariantList';
 import NotationRowsEditor from './NotationRowsEditor';
 import NotationVariantModal from './NotationVariantModal';
+import { useToast } from '../Toast';
 
 interface NotationTabProps {
     krithiId: string;
@@ -19,41 +21,91 @@ interface NotationTabProps {
 }
 
 const NotationTab: React.FC<NotationTabProps> = ({ krithiId, musicalForm }) => {
+    const queryClient = useQueryClient();
+    const toast = useToast();
+
     // State
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [data, setData] = useState<NotationResponse | null>(null);
     const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingVariant, setEditingVariant] = useState<NotationVariant | undefined>(undefined);
 
-    // Fetch Data
-    const fetchData = async (): Promise<NotationResponse | null> => {
-        setLoading(true);
-        setError(null);
-        try {
-            const response = await getAdminKrithiNotation(krithiId, musicalForm);
-            setData(response);
+    // Query
+    const queryKey = ['notation', krithiId, musicalForm];
 
-            // Auto-select first variant if none selected
-            if (response.variants.length > 0 && !selectedVariantId) {
-                setSelectedVariantId(response.variants[0].variant.id);
-            }
-            return response;
-        } catch (err: any) {
-            console.error("API Call failed", err);
-            setError(err.message || 'Failed to load notation');
-            return null;
-        } finally {
-            setLoading(false);
-        }
-    };
+    const {
+        data,
+        isLoading: loading,
+        error
+    } = useQuery({
+        queryKey,
+        queryFn: () => getAdminKrithiNotation(krithiId, musicalForm),
+        staleTime: 1000 * 60 * 5, // 5 minutes
+    });
 
+    // Effect to auto-select first variant
     useEffect(() => {
-        fetchData();
-    }, [krithiId, musicalForm]);
+        if (data && data.variants.length > 0 && !selectedVariantId) {
+            setSelectedVariantId(data.variants[0].variant.id);
+        }
+    }, [data, selectedVariantId]);
 
-    // Variant Actions
+    // Mutations
+    const saveVariantMutation = useMutation({
+        mutationFn: async (payload: Partial<NotationVariant>) => {
+            if (editingVariant) {
+                return updateNotationVariant(editingVariant.id, payload);
+            } else {
+                return createNotationVariant(krithiId, payload);
+            }
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey });
+            setIsModalOpen(false);
+            toast.success(editingVariant ? 'Variant updated' : 'Variant created');
+        },
+        onError: (err: any) => toast.error(`Failed to save variant: ${err.message}`)
+    });
+
+    const deleteVariantMutation = useMutation({
+        mutationFn: deleteNotationVariant,
+        onSuccess: (_, deletedId) => {
+            queryClient.invalidateQueries({ queryKey });
+            if (selectedVariantId === deletedId) setSelectedVariantId(null);
+            toast.success('Variant deleted');
+        },
+        onError: (err: any) => toast.error(`Failed to delete: ${err.message}`)
+    });
+
+    const setPrimaryMutation = useMutation({
+        mutationFn: (variantId: string) => updateNotationVariant(variantId, { isPrimary: true }),
+        onSuccess: () => queryClient.invalidateQueries({ queryKey }),
+        onError: (err: any) => toast.error(`Failed to set primary: ${err.message}`)
+    });
+
+    const createRowMutation = useMutation({
+        mutationFn: async ({ variantId, payload }: { variantId: string, payload: any }) => {
+            return createNotationRow(variantId, payload);
+        },
+        onSuccess: () => queryClient.invalidateQueries({ queryKey }),
+        onError: (err: any) => toast.error(`Failed to add row: ${err.message}`)
+    });
+
+    const updateRowMutation = useMutation({
+        mutationFn: async ({ rowId, payload }: { rowId: string, payload: Partial<NotationRow> }) => {
+            return updateNotationRow(rowId, payload);
+        },
+        // We ideally optimistically update here, but for now just invalidate
+        onSuccess: () => queryClient.invalidateQueries({ queryKey }),
+        onError: (err: any) => console.error("Failed to save row", err) // Silent or minimal error for row updates to not spam
+    });
+
+    const deleteRowMutation = useMutation({
+        mutationFn: deleteNotationRow,
+        onSuccess: () => queryClient.invalidateQueries({ queryKey }),
+        onError: (err: any) => toast.error(`Failed to delete row: ${err.message}`)
+    });
+
+    // Handlers
     const handleAddVariant = () => {
         setEditingVariant(undefined);
         setIsModalOpen(true);
@@ -64,149 +116,67 @@ const NotationTab: React.FC<NotationTabProps> = ({ krithiId, musicalForm }) => {
         setIsModalOpen(true);
     };
 
-    const handleSaveVariant = async (payload: Partial<NotationVariant>) => {
-        try {
-            if (editingVariant) {
-                await updateNotationVariant(editingVariant.id, payload);
-            } else {
-                await createNotationVariant(krithiId, payload);
-            }
-            setIsModalOpen(false);
-            fetchData(); // Refresh
-        } catch (err: any) {
-            alert(`Failed to save variant: ${err.message}`);
+    const handleSaveVariant = (payload: Partial<NotationVariant>) => {
+        saveVariantMutation.mutate(payload);
+    };
+
+    const handleDeleteVariant = (variantId: string) => {
+        if (confirm("Are you sure? This will delete all rows in this variant.")) {
+            deleteVariantMutation.mutate(variantId);
         }
     };
 
-    const handleDeleteVariant = async (variantId: string) => {
-        if (!confirm("Are you sure? This will delete all rows in this variant.")) return;
-        try {
-            await deleteNotationVariant(variantId);
-            if (selectedVariantId === variantId) setSelectedVariantId(null);
-            fetchData();
-        } catch (err: any) {
-            alert(`Failed to delete: ${err.message}`);
-        }
+    const handleSetPrimary = (variantId: string) => {
+        setPrimaryMutation.mutate(variantId);
     };
 
-    const handleSetPrimary = async (variantId: string) => {
-        try {
-            await updateNotationVariant(variantId, { isPrimary: true });
-            fetchData();
-        } catch (err: any) {
-            alert(`Failed to set primary: ${err.message}`);
+    const handleAddRow = (sectionId: string) => {
+        if (!selectedVariantId || !data) return;
+
+        const variantData = data.variants.find(v => v.variant.id === selectedVariantId);
+        if (!variantData) return;
+
+        const rowsBySectionId = variantData.rowsBySectionId || {};
+        const rows = rowsBySectionId[sectionId] || [];
+
+        // Next order index logic
+        const existingOrderIndices = new Set(
+            rows
+                .map(r => r?.orderIndex)
+                .filter((idx): idx is number => idx != null && typeof idx === 'number' && idx > 0)
+        );
+
+        let nextOrderIndex = 1;
+        while (existingOrderIndices.has(nextOrderIndex)) {
+            nextOrderIndex++;
         }
-    };
 
-    // Row Actions
-    const handleAddRow = async (sectionId: string) => {
-        if (!selectedVariantId) return;
-        try {
-            // Refresh data first to ensure we have the latest state
-            // This prevents duplicate key errors from stale data
-            const freshData = await fetchData();
-            if (!freshData) {
-                alert('Failed to load current notation data');
-                return;
-            }
-            
-            // Calculate next available order index with fresh data
-            const variantData = freshData.variants.find(v => v.variant.id === selectedVariantId);
-            if (!variantData) {
-                alert('Variant not found');
-                return;
-            }
-            
-            const rowsBySectionId = variantData.rowsBySectionId || {};
-            const rows = rowsBySectionId[sectionId] || [];
-            
-            // Debug: log what we're seeing
-            console.log('Section ID:', sectionId);
-            console.log('Rows for section:', rows);
-            console.log('RowsBySectionId:', rowsBySectionId);
-            
-            // Get all existing order_index values for this section (filter out null/undefined/0)
-            const existingOrderIndices = new Set(
-                rows
-                    .map(r => r?.orderIndex)
-                    .filter((idx): idx is number => idx != null && typeof idx === 'number' && idx > 0)
-            );
-            
-            console.log('Existing order indices:', Array.from(existingOrderIndices));
-            
-            // Find the next available order_index
-            // Start from 1 and find the first number that doesn't exist
-            let nextOrderIndex = 1;
-            while (existingOrderIndices.has(nextOrderIndex)) {
-                nextOrderIndex++;
-            }
-            
-            console.log('Next order index to use:', nextOrderIndex);
-
-            await createNotationRow(selectedVariantId, {
+        createRowMutation.mutate({
+            variantId: selectedVariantId,
+            payload: {
                 sectionId,
                 orderIndex: nextOrderIndex,
                 swaraText: '',
                 sahityaText: ''
-            });
-            // Refresh data to get the new row
-            await fetchData();
-        } catch (err: any) {
-            console.error('Failed to add row:', err);
-            alert(`Failed to add row: ${err.message}`);
-            // Refresh data on error to sync state
-            fetchData();
-        }
-    };
-
-    const handleUpdateRow = async (rowId: string, payload: Partial<NotationRow>) => {
-        // Optimistic update for text input performance
-        if (data && selectedVariantId) {
-            const newData = { ...data };
-            const vIdx = newData.variants.findIndex(v => v.variant.id === selectedVariantId);
-            if (vIdx >= 0) {
-                const variantData = newData.variants[vIdx];
-                // Ensure rowsBySectionId exists
-                if (!variantData.rowsBySectionId) {
-                    variantData.rowsBySectionId = {};
-                }
-                // Find section and row
-                for (const secId in variantData.rowsBySectionId) {
-                    const rows = variantData.rowsBySectionId[secId];
-                    if (Array.isArray(rows)) {
-                        const rIdx = rows.findIndex(r => r.id === rowId);
-                        if (rIdx >= 0) {
-                            rows[rIdx] = { ...rows[rIdx], ...payload };
-                            setData(newData);
-                            break;
-                        }
-                    }
-                }
             }
-        }
+        });
+    };
 
-        // Debounce actual save could be good here, but for now direct call
-        // (Might want to use a useDebounce hook in production)
-        try {
-            await updateNotationRow(rowId, payload);
-        } catch (err) {
-            console.error("Failed to save row", err);
-            // Revert?
+    const handleUpdateRow = (rowId: string, payload: Partial<NotationRow>) => {
+        // Optimistic update logic from before could be moved to onMutate, 
+        // but simple invalidation is safer for now to avoid complexity.
+        // If typing performance is bad, we can debounce in the child component.
+        updateRowMutation.mutate({ rowId, payload });
+    };
+
+    const handleDeleteRow = (rowId: string) => {
+        if (confirm("Delete this row?")) {
+            deleteRowMutation.mutate(rowId);
         }
     };
 
-    const handleDeleteRow = async (rowId: string) => {
-        if (!confirm("Delete this row?")) return;
-        try {
-            await deleteNotationRow(rowId);
-            fetchData();
-        } catch (err: any) {
-            alert(`Failed to delete row: ${err.message}`);
-        }
-    };
-
-    if (loading && !data) return <div className="p-8 text-center text-ink-500">Loading notation...</div>;
-    if (error) return <div className="p-8 text-center text-red-600">Error: {error}</div>;
+    if (loading) return <div className="p-8 text-center text-ink-500">Loading notation...</div>;
+    if (error) return <div className="p-8 text-center text-red-600">Error loading data</div>;
     if (!data) return null;
 
     const activeVariantData = data.variants.find(v => v.variant.id === selectedVariantId);
@@ -214,7 +184,7 @@ const NotationTab: React.FC<NotationTabProps> = ({ krithiId, musicalForm }) => {
     return (
         <div className="h-[calc(100vh-250px)] flex gap-6 animate-fadeIn">
             {/* Left: Variant List */}
-            <div className="w-1/4 min-w-[250px]">
+            <div className="w-1/4 min-w-[250px] bg-white border border-border-light rounded-xl shadow-sm overflow-hidden flex flex-col p-4">
                 <NotationVariantList
                     variants={data.variants.map(v => v.variant)}
                     selectedVariantId={selectedVariantId}
@@ -227,7 +197,7 @@ const NotationTab: React.FC<NotationTabProps> = ({ krithiId, musicalForm }) => {
             </div>
 
             {/* Right: Rows Editor */}
-            <div className="flex-1">
+            <div className="flex-1 bg-white border border-border-light rounded-xl shadow-sm overflow-hidden flex flex-col p-4">
                 {selectedVariantId && activeVariantData ? (
                     <NotationRowsEditor
                         variantId={selectedVariantId}
@@ -238,7 +208,7 @@ const NotationTab: React.FC<NotationTabProps> = ({ krithiId, musicalForm }) => {
                         onDeleteRow={handleDeleteRow}
                     />
                 ) : (
-                    <div className="bg-slate-50 border border-border-light border-dashed rounded-xl h-full flex items-center justify-center text-ink-400">
+                    <div className="h-full flex items-center justify-center text-ink-400 italic">
                         Select a variant to edit notation
                     </div>
                 )}

@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
     getKrithi,
     createKrithi,
@@ -27,29 +27,44 @@ export const useKrithiData = (
         temples: Temple[];
     }
 ) => {
-    const navigate = useNavigate();
     // We can use the global toast or pass it in. For now let's assume global or we wrap it.
-    // The original used a custom hook. Let's stick to the pattern but maybe use our new util.
     const toast = useToast();
 
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
-    const [auditLogs, setAuditLogs] = useState<any[]>([]);
 
+    const queryClient = useQueryClient();
+
+    // React Query for fetching Krithi
+    const useKrithiQuery = (id: string | undefined, enabled: boolean) => {
+        return useQuery({
+            queryKey: ['krithi', id],
+            queryFn: () => getKrithi(id!),
+            enabled: !!id && enabled,
+            select: (dto) => {
+                // Pure mapping
+                return mapKrithiDtoToDetail(dto, refs);
+            },
+            staleTime: 5 * 60 * 1000,
+        });
+    };
+
+    // React Query for Audit Logs
+    const useAuditLogsQuery = (id: string | undefined, enabled: boolean) => {
+        return useQuery({
+            queryKey: ['krithi-audit', id],
+            queryFn: () => getKrithiAuditLogs(id!),
+            enabled: !!id && enabled
+        });
+    };
+
+    // Keep loadKrithi for manual reloads if absolutely needed
     const loadKrithi = useCallback(async (id: string) => {
         setLoading(true);
         try {
             const dto = await getKrithi(id);
-
-            // If references aren't ready, we might get partial data, but the hook consumer
-            // should ensure refs are loaded before calling this or we re-map when refs change.
-            // For this hook, we assume refs are passed in current state.
-
             const mapped = mapKrithiDtoToDetail(dto, refs);
-
-            // Load audit logs in background
-            getKrithiAuditLogs(id).then(setAuditLogs).catch(console.error);
-
+            // No side effect here either, let consumer fetch logs
             return mapped;
         } catch (error) {
             handleApiError(error, toast);
@@ -57,7 +72,9 @@ export const useKrithiData = (
         } finally {
             setLoading(false);
         }
-    }, [refs, toast]);
+        // NOTE: We intentionally omit `toast` from deps to keep this callback stable.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [refs]);
 
     // Separate loader for sections (lazy loading)
     const loadSections = useCallback(async (id: string) => {
@@ -73,7 +90,9 @@ export const useKrithiData = (
             handleApiError(error, toast);
             return [];
         }
-    }, [toast]);
+        // Keep callback stable so effects depending on it don't refire every render.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     // Separate loader for variants (lazy loading)
     const loadVariants = useCallback(async (id: string, sampradayas: any[]) => {
@@ -94,8 +113,24 @@ export const useKrithiData = (
             handleApiError(error, toast);
             return [];
         }
-    }, [toast]);
+        // Stable callback; `sampradayas` are passed in as an argument.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
+
+
+    // Separate loader for tags (lazy loading)
+    const loadKrithiTags = useCallback(async (id: string) => {
+        try {
+            const tags = await getKrithiTags(id);
+            return tags;
+        } catch (error) {
+            handleApiError(error, toast);
+            return [];
+        }
+        // Stable callback; used by effects and tab-change logic.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const saveKrithi = useCallback(async (krithi: Partial<KrithiDetail>, isNew: boolean, krithiId?: string) => {
         setSaving(true);
@@ -142,7 +177,7 @@ export const useKrithiData = (
                 const sectionsToSave = krithi.sections.map(s => ({
                     sectionType: s.sectionType,
                     orderIndex: s.orderIndex,
-                    label: null
+                    label: s.label || null
                 }));
                 await saveKrithiSections(savedId, sectionsToSave);
 
@@ -202,6 +237,7 @@ export const useKrithiData = (
                 }
             }
 
+            await queryClient.invalidateQueries({ queryKey: ['krithi', savedId] });
             toast.success('Changes saved successfully');
             return savedId;
 
@@ -211,15 +247,19 @@ export const useKrithiData = (
         } finally {
             setSaving(false);
         }
-    }, [toast, navigate]);
+        // Only `toast` and stable module imports are used; keep deps empty to avoid changing identity.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return {
         loading,
         saving,
-        auditLogs,
+        useKrithiQuery,
+        useAuditLogsQuery,
         loadKrithi,
         saveKrithi,
         loadSections,
-        loadVariants
+        loadVariants,
+        loadKrithiTags
     };
 };

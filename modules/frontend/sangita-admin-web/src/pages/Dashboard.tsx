@@ -1,43 +1,32 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { getAuditLogs, getDashboardStats } from '../api/client';
-import { AuditLog, DashboardStats } from '../types';
-
 import { StatCard, RecentItem } from '../components/dashboard';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
-  const [activities, setActivities] = useState<AuditLog[]>([]);
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    // setLoading(true);
-    setError(null);
+  const {
+    data: activities = [],
+    isLoading: logsLoading,
+    error: logsError
+  } = useQuery({
+    queryKey: ['auditLogs'],
+    queryFn: getAuditLogs,
+  });
 
-    Promise.all([
-      getAuditLogs().catch(err => {
-        console.error('Failed to load audit logs:', err);
-        return [];
-      }),
-      getDashboardStats().catch(err => {
-        console.error('Failed to load dashboard stats:', err);
-        return null;
-      })
-    ])
-      .then(([auditLogs, dashboardStats]) => {
-        setActivities(auditLogs);
-        setStats(dashboardStats);
-      })
-      .catch(err => {
-        console.error('Dashboard initialization error:', err);
-        setError(err instanceof Error ? err.message : 'Failed to load dashboard data');
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, []);
+  const {
+    data: stats,
+    isLoading: statsLoading,
+    error: statsError
+  } = useQuery({
+    queryKey: ['dashboardStats'],
+    queryFn: getDashboardStats,
+  });
+
+  const loading = logsLoading || statsLoading;
+  const error = logsError || statsError;
 
   if (loading) {
     return (
@@ -60,7 +49,7 @@ const Dashboard: React.FC = () => {
             <span className="material-symbols-outlined text-red-600">error</span>
             <h3 className="text-red-900 font-bold">Error loading dashboard</h3>
           </div>
-          <p className="text-red-700 text-sm">{error}</p>
+          <p className="text-red-700 text-sm">{(error as Error).message || 'Failed to load dashboard data'}</p>
           <button
             onClick={() => window.location.reload()}
             className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors"

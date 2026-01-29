@@ -27,7 +27,7 @@ export const FormCheckbox: React.FC<FormCheckboxProps> = ({
                         id={inputId}
                         name={name}
                         type="checkbox"
-                        className={`h-4 w-4 text-amber-600 focus:ring-amber-500 border-slate-300 rounded ${error ? 'border-rose-300' : ''
+                        className={`h-5 w-5 text-primary focus:ring-primary border-border-light rounded ${error ? 'border-red-300' : ''
                             } ${props.disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
                         {...props}
                     />
@@ -35,11 +35,11 @@ export const FormCheckbox: React.FC<FormCheckboxProps> = ({
                 <div className="ml-3 text-sm">
                     <label
                         htmlFor={inputId}
-                        className={`font-medium text-slate-700 ${props.disabled ? 'cursor-not-allowed opacity-75' : 'cursor-pointer'
+                        className={`font-semibold text-ink-900 ${props.disabled ? 'cursor-not-allowed opacity-75' : 'cursor-pointer'
                             }`}
                     >
                         {label}
-                        {props.required && <span className="text-rose-500 ml-1">*</span>}
+                        {props.required && <span className="text-primary ml-1">*</span>}
                     </label>
                     {help && <p className="text-slate-500">{help}</p>}
                     {error && <p className="text-rose-600">{error}</p>}
