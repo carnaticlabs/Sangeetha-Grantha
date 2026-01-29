@@ -23,6 +23,7 @@ fun Application.configureStatusPages() {
             call.respond(HttpStatusCode.NotImplemented, ErrorResponse(cause.message ?: "Not implemented"))
         }
         exception<Throwable> { call, cause ->
+            call.application.environment.log.error("Unhandled exception", cause)
             call.respond(HttpStatusCode.InternalServerError, ErrorResponse(cause.message ?: "Internal error"))
         }
     }

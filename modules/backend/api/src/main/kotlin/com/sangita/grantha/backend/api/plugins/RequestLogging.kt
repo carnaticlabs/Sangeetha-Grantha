@@ -25,7 +25,9 @@ fun Application.configureRequestLogging() {
         withContext(QueryCounter.contextElement(counter)) {
             proceed()
         }
-        call.response.headers.append("X-DB-Query-Count", counter.get().toString())
+        if (!call.response.isCommitted) {
+            call.response.headers.append("X-DB-Query-Count", counter.get().toString())
+        }
     }
 
     install(CallLogging) {

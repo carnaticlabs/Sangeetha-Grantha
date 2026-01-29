@@ -25,9 +25,13 @@ fun Route.authRoutes(env: ApiEnvironment, jwtConfig: JwtConfig, userManagementSe
                 return@post call.respondText("Invalid admin token", status = HttpStatusCode.Unauthorized)
             }
 
-            val userId = request.userId.toKotlinUuidOrThrow("userId")
-            val user = userManagementService.getUser(userId)
-                ?: return@post call.respondText("User not found", status = HttpStatusCode.NotFound)
+            if (request.email.isNullOrBlank() && request.userId.isNullOrBlank()) {
+                return@post call.respondText("Provide email or userId", status = HttpStatusCode.BadRequest)
+            }
+            val user = when {
+                !request.email.isNullOrBlank() -> userManagementService.getUserByEmail(request.email.trim())
+                else -> userManagementService.getUser(request.userId!!.toKotlinUuidOrThrow("userId"))
+            } ?: return@post call.respondText("User not found", status = HttpStatusCode.NotFound)
 
             val token = jwtConfig.generateToken(user.id, request.roles)
             call.respond(AuthTokenResponse(token = token, expiresInSeconds = jwtConfig.tokenTtlSeconds))

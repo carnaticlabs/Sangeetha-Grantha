@@ -54,6 +54,34 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     return response.json();
 }
 
+/** Login with admin token and either email (preferred) or userId. */
+export const login = async (
+    adminToken: string,
+    credentials: { email?: string; userId?: string }
+) => {
+    const body: { adminToken: string; email?: string; userId?: string } = { adminToken };
+    if (credentials.email?.trim()) body.email = credentials.email.trim();
+    else if (credentials.userId?.trim()) body.userId = credentials.userId.trim();
+    const response = await fetch(`${API_BASE_URL}/auth/token`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+        const errorBody = await response.text();
+        throw new Error(`Login failed: ${errorBody || response.statusText}`);
+    }
+
+    const data = await response.json();
+    if (data.token) {
+        localStorage.setItem('authToken', data.token);
+    }
+    return data;
+};
+
 // --- Public / Search ---
 
 export const searchKrithis = (query?: string) => {
@@ -373,7 +401,7 @@ export const createBulkImportBatch = (sourceManifestPath: string) => {
 export const uploadBulkImportFile = async (file: File) => {
     const formData = new FormData();
     formData.append('file', file);
-    
+
     const token = getAuthToken();
     const headers: Record<string, string> = {};
     if (token) headers['Authorization'] = `Bearer ${token}`;
@@ -576,11 +604,11 @@ export const getAdminKrithiNotation = async (krithiId: string, form: MusicalForm
     // Backend returns sections as array, but frontend expects rowsBySectionId as object
     // Transform the response to match frontend expectations
     const response = await request<any>(`/admin/krithis/${krithiId}/notation?musicalForm=${form}`);
-    
+
     // Transform variants: convert sections array to rowsBySectionId object
     const transformedVariants = response.variants.map((v: any) => {
         const rowsBySectionId: Record<string, NotationRow[]> = {};
-        
+
         // Backend sends sections as array of { sectionId, rows }
         if (v.sections && Array.isArray(v.sections)) {
             v.sections.forEach((section: any) => {
@@ -589,13 +617,13 @@ export const getAdminKrithiNotation = async (krithiId: string, form: MusicalForm
                 }
             });
         }
-        
+
         return {
             variant: v.variant,
             rowsBySectionId
         };
     });
-    
+
     return {
         ...response,
         variants: transformedVariants

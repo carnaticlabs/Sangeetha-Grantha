@@ -15,7 +15,7 @@ data class ApiEnvironment(
     val host: String = "0.0.0.0",
     val port: Int = 8080,
     val adminToken: String = "dev-admin-token",
-    val tokenTtlSeconds: Long = 3600,
+    val tokenTtlSeconds: Long = 86400,
     val jwtSecret: String = "dev-jwt-secret",
     val jwtIssuer: String = "sangita-grantha",
     val jwtAudience: String = "sangita-users",
@@ -72,7 +72,7 @@ object ApiEnvironmentLoader {
         val host = get("API_HOST", "0.0.0.0")!!
         val port = get("API_PORT", "8080")?.toIntOrNull() ?: 8080
         val adminToken = get("ADMIN_TOKEN", "dev-admin-token")!!
-        val tokenTtlSeconds = get("TOKEN_TTL_SECONDS", "3600")?.toLongOrNull() ?: 3600L
+        val tokenTtlSeconds = get("TOKEN_TTL_SECONDS", "86400")?.toLongOrNull() ?: 86400L
         val jwtSecret = get("JWT_SECRET", adminToken)!!
         val jwtIssuer = get("JWT_ISSUER", "sangita-grantha")!!
         val jwtAudience = get("JWT_AUDIENCE", "sangita-users")!!

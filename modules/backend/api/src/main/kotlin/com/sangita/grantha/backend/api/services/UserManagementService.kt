@@ -3,6 +3,7 @@ package com.sangita.grantha.backend.api.services
 import com.sangita.grantha.backend.api.models.UserCreateRequest
 import com.sangita.grantha.backend.api.models.UserUpdateRequest
 import com.sangita.grantha.backend.dal.SangitaDal
+import com.sangita.grantha.backend.dal.support.toKotlinUuid
 import com.sangita.grantha.shared.domain.model.UserDto
 import com.sangita.grantha.shared.domain.model.RoleAssignmentDto
 import java.util.UUID
@@ -21,6 +22,14 @@ class UserManagementService(private val dal: SangitaDal) {
      * Fetch a user by ID.
      */
     suspend fun getUser(id: Uuid): UserDto? = dal.users.findById(id)
+
+    /**
+     * Fetch a user by email (e.g. for login when admin UUID is not known).
+     */
+    suspend fun getUserByEmail(email: String): UserDto? {
+        val id = dal.users.findByEmail(email) ?: return null
+        return dal.users.findById(id.toKotlinUuid())
+    }
 
     /**
      * Create a user and assign initial roles.
