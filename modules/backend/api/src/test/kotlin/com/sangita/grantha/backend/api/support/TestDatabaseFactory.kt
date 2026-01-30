@@ -16,70 +16,74 @@ object TestDatabaseFactory {
             )
         )
 
-        DatabaseFactory.dbQuery {
-            SchemaUtils.create(
-                RolesTable,
-                UsersTable,
-                RoleAssignmentsTable,
-                ComposersTable,
-                RagasTable,
-                TalasTable,
-                DeitiesTable,
-                TemplesTable,
-                TempleNamesTable,
-                TagsTable,
-                SampradayasTable,
-                KrithisTable,
-                KrithiRagasTable,
-                KrithiLyricVariantsTable,
-                KrithiSectionsTable,
-                KrithiLyricSectionsTable,
-                KrithiNotationVariantsTable,
-                KrithiNotationRowsTable,
-                KrithiTagsTable,
-                ImportSourcesTable,
-                ImportedKrithisTable,
-                AuditLogTable,
-                ImportBatchTable,
-                ImportJobTable,
-                ImportTaskRunTable,
-                ImportEventTable,
-                EntityResolutionCacheTable
-            )
+        kotlinx.coroutines.runBlocking {
+            DatabaseFactory.dbQuery {
+                SchemaUtils.create(
+                    RolesTable,
+                    UsersTable,
+                    RoleAssignmentsTable,
+                    ComposersTable,
+                    RagasTable,
+                    TalasTable,
+                    DeitiesTable,
+                    TemplesTable,
+                    TempleNamesTable,
+                    TagsTable,
+                    SampradayasTable,
+                    KrithisTable,
+                    KrithiRagasTable,
+                    KrithiLyricVariantsTable,
+                    KrithiSectionsTable,
+                    KrithiLyricSectionsTable,
+                    KrithiNotationVariantsTable,
+                    KrithiNotationRowsTable,
+                    KrithiTagsTable,
+                    ImportSourcesTable,
+                    ImportedKrithisTable,
+                    AuditLogTable,
+                    ImportBatchTable,
+                    ImportJobTable,
+                    ImportTaskRunTable,
+                    ImportEventTable,
+                    EntityResolutionCacheTable
+                )
+            }
         }
     }
 
     fun reset() {
-        DatabaseFactory.dbQuery {
-            SchemaUtils.drop(
-                EntityResolutionCacheTable,
-                ImportEventTable,
-                ImportTaskRunTable,
-                ImportJobTable,
-                ImportBatchTable,
-                AuditLogTable,
-                ImportedKrithisTable,
-                ImportSourcesTable,
-                KrithiTagsTable,
-                KrithiNotationRowsTable,
-                KrithiNotationVariantsTable,
-                KrithiLyricSectionsTable,
-                KrithiSectionsTable,
-                KrithiLyricVariantsTable,
-                KrithiRagasTable,
-                KrithisTable,
-                SampradayasTable,
-                TagsTable,
-                TempleNamesTable,
-                TemplesTable,
-                DeitiesTable,
-                TalasTable,
-                RagasTable,
-                ComposersTable,
-                RoleAssignmentsTable,
-                UsersTable,
-                RolesTable
-            )
+        kotlinx.coroutines.runBlocking {
+            DatabaseFactory.dbQuery {
+                SchemaUtils.drop(
+                    EntityResolutionCacheTable,
+                    ImportEventTable,
+                    ImportTaskRunTable,
+                    ImportJobTable,
+                    ImportBatchTable,
+                    AuditLogTable,
+                    ImportedKrithisTable,
+                    ImportSourcesTable,
+                    KrithiTagsTable,
+                    KrithiNotationRowsTable,
+                    KrithiNotationVariantsTable,
+                    KrithiLyricSectionsTable,
+                    KrithiSectionsTable,
+                    KrithiLyricVariantsTable,
+                    KrithiRagasTable,
+                    KrithisTable,
+                    SampradayasTable,
+                    TagsTable,
+                    TempleNamesTable,
+                    TemplesTable,
+                    DeitiesTable,
+                    TalasTable,
+                    RagasTable,
+                    ComposersTable,
+                    RoleAssignmentsTable,
+                    UsersTable,
+                    RolesTable
+                )
+            }
         }
         DatabaseFactory.close()
     }

@@ -21,6 +21,12 @@ data class ApiEnvironment(
     val jwtAudience: String = "sangita-users",
     val jwtRealm: String = "Sangita Grantha API",
     val geminiApiKey: String? = null,
+    val geminiModelUrl: String = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+    /** Minimum milliseconds between Gemini API calls to avoid 429 (e.g. 10000 = ~6 RPM). */
+    val geminiMinIntervalMs: Long = 10_000L,
+    val geoProvider: String = "osm",
+    val geoApiKey: String? = null,
+    val templeAutoCreateConfidence: Double = 0.9,
     val database: DatabaseConfig? = null,
     val storage: StorageConfig? = null,
     val corsAllowedOrigins: List<String> = listOf(
@@ -78,8 +84,15 @@ object ApiEnvironmentLoader {
         val jwtAudience = get("JWT_AUDIENCE", "sangita-users")!!
         val jwtRealm = get("JWT_REALM", "Sangita Grantha API")!!
         
-        // Gemini API Key lookup
+        // Gemini API Config
         val geminiApiKey = get("SG_GEMINI_API_KEY") ?: get("GEMINI_API_KEY")
+        val geminiModelUrl = get("SG_GEMINI_MODEL_URL", "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent")!!
+        val geminiMinIntervalMs = get("SG_GEMINI_MIN_INTERVAL_MS", "10000")?.toLongOrNull()?.coerceIn(1000L, 60_000L) ?: 10_000L
+
+        // Geocoding Config
+        val geoProvider = get("SG_GEO_PROVIDER", "osm")!!
+        val geoApiKey = get("SG_GEO_API_KEY")
+        val templeAutoCreateConfidence = get("SG_TEMPLE_AUTO_CREATE_CONFIDENCE", "0.9")?.toDoubleOrNull() ?: 0.9
 
         val corsAllowedOrigins = parseCorsOrigins(get("CORS_ALLOWED_ORIGINS"))
         val frontendPort = get("FRONTEND_PORT", "5173")?.toIntOrNull() ?: 5173
@@ -118,6 +131,11 @@ object ApiEnvironmentLoader {
             jwtAudience = jwtAudience,
             jwtRealm = jwtRealm,
             geminiApiKey = geminiApiKey,
+            geminiModelUrl = geminiModelUrl,
+            geminiMinIntervalMs = geminiMinIntervalMs,
+            geoProvider = geoProvider,
+            geoApiKey = geoApiKey,
+            templeAutoCreateConfidence = templeAutoCreateConfidence,
             database = databaseConfig,
             storage = storageConfig,
             corsAllowedOrigins = corsAllowedOrigins,

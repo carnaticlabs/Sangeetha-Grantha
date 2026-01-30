@@ -55,6 +55,17 @@ class TempleRepository {
     }
 
     /**
+     * Find a temple by normalized name.
+     */
+    suspend fun findByNameNormalized(nameNormalized: String): TempleDto? = DatabaseFactory.dbQuery {
+        TemplesTable
+            .selectAll()
+            .where { TemplesTable.nameNormalized eq nameNormalized }
+            .map { it.toTempleDto() }
+            .singleOrNull()
+    }
+
+    /**
      * Create a new temple record.
      */
     suspend fun create(

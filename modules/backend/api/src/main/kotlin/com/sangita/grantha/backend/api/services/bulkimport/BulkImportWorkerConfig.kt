@@ -12,6 +12,7 @@ data class BulkImportWorkerConfig(
     val resolutionChannelCapacity: Int = DEFAULT_RESOLUTION_CHANNEL_CAPACITY,
     val maxAttempts: Int = DEFAULT_MAX_ATTEMPTS,
     val perDomainRateLimitPerMinute: Int = DEFAULT_PER_DOMAIN_RATE_LIMIT,
+    val templeRateLimitPerMinute: Int = DEFAULT_TEMPLE_RATE_LIMIT,
     val globalRateLimitPerMinute: Int = DEFAULT_GLOBAL_RATE_LIMIT,
     val stuckTaskThresholdMs: Long = DEFAULT_STUCK_TASK_THRESHOLD_MS,
     val watchdogIntervalMs: Long = DEFAULT_WATCHDOG_INTERVAL_MS,
@@ -29,6 +30,7 @@ data class BulkImportWorkerConfig(
         const val DEFAULT_MAX_ATTEMPTS = 3
         // TRACK-013: Tuned rate limits (was 12/50, now 60/120 for better throughput)
         const val DEFAULT_PER_DOMAIN_RATE_LIMIT = 60
+        const val DEFAULT_TEMPLE_RATE_LIMIT = 20 // Lower limit for external temple sites
         const val DEFAULT_GLOBAL_RATE_LIMIT = 120
         const val DEFAULT_STUCK_TASK_THRESHOLD_MS = 10 * 60 * 1000L
         const val DEFAULT_WATCHDOG_INTERVAL_MS = 60_000L

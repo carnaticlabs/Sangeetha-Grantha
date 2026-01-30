@@ -258,6 +258,21 @@ export interface NotationResponse {
   }>;
 }
 
+export interface ResolutionCandidate<T> {
+  entity: T;
+  score: number;
+  confidence: 'HIGH' | 'MEDIUM' | 'LOW';
+}
+
+export interface ResolutionResult {
+  composerCandidates: ResolutionCandidate<Composer>[];
+  ragaCandidates: ResolutionCandidate<Raga>[];
+  talaCandidates: ResolutionCandidate<Tala>[];
+  deityCandidates: ResolutionCandidate<Deity>[];
+  templeCandidates: ResolutionCandidate<Temple>[];
+  resolved: boolean;
+}
+
 export interface ImportedKrithi {
   id: string;
   importSourceId: string;
@@ -271,13 +286,16 @@ export interface ImportedKrithi {
   rawTemple: string | null;
   rawLanguage: string | null;
   parsedPayload: string | null;
-  resolutionData?: string | null;
+  resolutionData?: string | null; // JSON String of ResolutionResult
   importStatus: 'PENDING' | 'IN_REVIEW' | 'APPROVED' | 'MAPPED' | 'REJECTED' | 'DISCARDED';
   mappedKrithiId: string | null;
   reviewerUserId: string | null;
   reviewerNotes: string | null;
   reviewedAt: string | null;
   createdAt: string;
+
+  // Computed (Parsed from resolutionData)
+  resolution?: ResolutionResult;
 }
 
 export interface ImportReviewRequest {
@@ -290,6 +308,8 @@ export interface ImportReviewRequest {
     raga?: string | null;
     tala?: string | null;
     language?: string | null;
+    deity?: string | null;
+    temple?: string | null;
     lyrics?: string | null;
   } | null;
 }

@@ -39,6 +39,9 @@ const taskChip: Record<BulkTaskStatus, string> = {
 
 const formatDate = (value?: string | null) => (value ? new Date(value).toLocaleString() : '—');
 
+/** Show filename only (no full path) for manifest display. */
+const basename = (path: string) => (path ? path.replace(/^.*[/\\]/, '') : path);
+
 const parseError = (value?: string | null) => {
   if (!value) return '';
   try {
@@ -213,6 +216,25 @@ const BulkImportPage: React.FC = () => {
     [taskStatusFilter, tasks]
   );
 
+  /** Task counts by status (from loaded tasks; accurate when filter is ALL). */
+  const taskBreakdown = useMemo(() => {
+    const byStatus: Record<BulkTaskStatus, number> = {
+      PENDING: 0,
+      RUNNING: 0,
+      SUCCEEDED: 0,
+      FAILED: 0,
+      RETRYABLE: 0,
+      BLOCKED: 0,
+      CANCELLED: 0
+    };
+    tasks.forEach(t => {
+      if (t.status in byStatus) byStatus[t.status as BulkTaskStatus]++;
+    });
+    return byStatus;
+  }, [tasks]);
+
+  const notCompleteCount = (selectedBatch?.totalTasks ?? 0) - (selectedBatch?.processedTasks ?? 0);
+
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       <ToastContainer toasts={toasts} onRemove={removeToast} />
@@ -337,31 +359,31 @@ const BulkImportPage: React.FC = () => {
       </div>
 
       <div className="bg-white border border-border-light rounded-xl shadow-sm p-4 md:p-6 flex flex-col gap-4">
-        <div className="flex flex-col md:flex-row md:items-end gap-3">
-          <div className="flex-1">
-            <label className="text-xs font-semibold text-ink-600 mb-1 block">Upload CSV Manifest</label>
+        <div>
+          <label className="text-xs font-semibold text-ink-600 mb-1 block">Upload CSV Manifest</label>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <input
               type="file"
               accept=".csv"
               onChange={e => setSelectedFile(e.target.files?.[0] || null)}
-              className="w-full px-3 py-2 rounded-lg border border-border-light text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary-light file:text-primary hover:file:bg-primary-light/80"
+              className="flex-1 min-w-0 px-3 py-2 rounded-lg border border-border-light text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary-light file:text-primary hover:file:bg-primary-light/80"
             />
-            <p className="text-[11px] text-ink-400 mt-1">
-              Select a CSV file with columns: Krithi, Raga, Hyperlink.
-            </p>
+            <button
+              onClick={handleCreate}
+              disabled={creating || !selectedFile}
+              className="shrink-0 px-4 py-2.5 h-[42px] box-border bg-primary text-white rounded-lg font-medium shadow-sm hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            >
+              {creating ? 'Uploading…' : 'Start Import'}
+            </button>
           </div>
-          <button
-            onClick={handleCreate}
-            disabled={creating || !selectedFile}
-            className="px-4 py-2.5 bg-primary text-white rounded-lg font-medium shadow-sm hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {creating ? 'Uploading…' : 'Start Import'}
-          </button>
+          <p className="text-[11px] text-ink-400 mt-1">
+            Select a CSV file with columns: Krithi, Raga, Hyperlink.
+          </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        <div className="xl:col-span-2 bg-white border border-border-light rounded-xl shadow-sm">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 min-w-0">
+        <div className="xl:col-span-2 bg-white border border-border-light rounded-xl shadow-sm min-w-0">
           <div className="flex items-center justify-between px-4 py-3 border-b border-border-light">
             <div>
               <h3 className="text-sm font-bold text-ink-900">Batches</h3>
@@ -404,7 +426,7 @@ const BulkImportPage: React.FC = () => {
                       >
                         <td className="px-4 py-3 max-w-[260px]">
                           <div className="font-semibold text-ink-900 truncate" title={batch.sourceManifest}>
-                            {batch.sourceManifest}
+                            {basename(batch.sourceManifest || '') || batch.sourceManifest}
                           </div>
                           <div className="text-[11px] text-ink-500">#{batch.id.slice(0, 8)}</div>
                         </td>
@@ -476,13 +498,15 @@ const BulkImportPage: React.FC = () => {
           )}
         </div>
 
-        <div className="bg-white border border-border-light rounded-xl shadow-sm p-4 space-y-4">
+        <div className="bg-white border border-border-light rounded-xl shadow-sm p-4 space-y-4 min-w-0">
           {selectedBatch ? (
             <>
-              <div className="flex items-center justify-between gap-2">
-                <div>
+              <div className="flex flex-col gap-3">
+                <div className="min-w-0">
                   <h3 className="text-sm font-bold text-ink-900">Batch Detail</h3>
-                  <p className="text-xs text-ink-500 truncate">{selectedBatch.sourceManifest}</p>
+                  <p className="text-xs text-ink-500 truncate" title={selectedBatch.sourceManifest || undefined}>
+                    {basename(selectedBatch.sourceManifest || '') || '—'}
+                  </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <button
@@ -536,6 +560,30 @@ const BulkImportPage: React.FC = () => {
                 </div>
               )}
 
+              {/* Task breakdown: explains "other N" when progress is 8/14 (e.g. 6 are RETRYABLE/PENDING) */}
+              {selectedBatch.totalTasks > 0 && (
+                <div className="p-3 rounded-lg bg-slate-50 border border-border-light">
+                  <div className="text-ink-500 font-semibold text-xs mb-1">Task breakdown</div>
+                  <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-ink-700">
+                    <span>Succeeded: {selectedBatch.succeededTasks}</span>
+                    <span>Failed: {selectedBatch.failedTasks}</span>
+                    {taskBreakdown.RETRYABLE > 0 && <span>Retryable: {taskBreakdown.RETRYABLE}</span>}
+                    {taskBreakdown.PENDING > 0 && <span>Pending: {taskBreakdown.PENDING}</span>}
+                    {taskBreakdown.RUNNING > 0 && <span>Running: {taskBreakdown.RUNNING}</span>}
+                    {notCompleteCount > 0 && (
+                      <span className="text-ink-600">
+                        ({notCompleteCount} not yet complete)
+                      </span>
+                    )}
+                  </div>
+                  {notCompleteCount > 0 && selectedBatch.status === 'RUNNING' && (
+                    <p className="text-[11px] text-ink-500 mt-1.5">
+                      These tasks will be retried automatically, or use <strong>Retry Failed</strong> to requeue retryable tasks now.
+                    </p>
+                  )}
+                </div>
+              )}
+
               <div className="grid grid-cols-2 gap-3 text-xs">
                 {/* Status/Progress chips same as before */}
                 <div className="p-3 rounded-lg bg-slate-50">
@@ -575,23 +623,28 @@ const BulkImportPage: React.FC = () => {
                   {/* Job Pipeline Stepper Visualization */}
                   <div className="border border-border-light rounded-lg p-4 bg-slate-50">
                     <div className="text-sm font-semibold text-ink-800 mb-3">Pipeline Progress</div>
-                    <div className="relative flex items-center justify-between">
+                    <div className="relative flex items-stretch justify-between gap-2">
                       {['MANIFEST_INGEST', 'SCRAPE', 'ENTITY_RESOLUTION'].map((stage, index) => {
                         const job = jobs.find(j => j.jobType === stage);
                         const isActive = job?.status === 'RUNNING';
                         const isCompleted = job?.status === 'SUCCEEDED';
                         const isFailed = job?.status === 'FAILED';
+                        const succeededCount = tasks.filter(t => t.status === 'SUCCEEDED').length;
+                        const failedCount = tasks.filter(t => t.status === 'FAILED').length;
+                        const showTaskSummary = stage === 'SCRAPE' && tasks.length > 0 && (isCompleted || isFailed);
 
                         return (
                           <React.Fragment key={stage}>
                             {index > 0 && (
-                              <div className={`flex-1 h-0.5 ${isCompleted || (index < jobs.findIndex(j => j.status === 'RUNNING'))
-                                ? 'bg-primary'
-                                : 'bg-slate-300'
-                                }`}></div>
+                              <div className="flex-1 flex items-center min-w-2 self-stretch">
+                                <div className={`h-0.5 w-full ${isCompleted || (index < jobs.findIndex(j => j.status === 'RUNNING'))
+                                  ? 'bg-primary'
+                                  : 'bg-slate-300'
+                                  }`} />
+                              </div>
                             )}
-                            <div className="flex flex-col items-center gap-1.5">
-                              <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold border-2 ${isActive
+                            <div className="flex flex-col items-center gap-1.5 shrink-0 w-[84px] min-h-[88px]">
+                              <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold border-2 shrink-0 ${isActive
                                 ? 'bg-blue-50 border-blue-500 text-blue-700 animate-pulse'
                                 : isCompleted
                                   ? 'bg-green-50 border-green-500 text-green-700'
@@ -601,7 +654,7 @@ const BulkImportPage: React.FC = () => {
                                 }`}>
                                 {isCompleted ? '✓' : isFailed ? '✗' : index + 1}
                               </div>
-                              <div className="text-[10px] font-semibold text-center max-w-[80px] leading-tight">
+                              <div className="text-[10px] font-semibold text-center leading-tight">
                                 {stage === 'MANIFEST_INGEST' ? 'Ingest' : stage === 'SCRAPE' ? 'Scrape' : 'Resolve'}
                               </div>
                               {job && (
@@ -609,6 +662,13 @@ const BulkImportPage: React.FC = () => {
                                   {job.status}
                                 </span>
                               )}
+                              <div className="min-h-[1.25rem] flex items-center justify-center">
+                                {showTaskSummary ? (
+                                  <span className="text-[10px] text-ink-600 text-center">
+                                    {succeededCount} ok{failedCount > 0 ? `, ${failedCount} failed` : ''}
+                                  </span>
+                                ) : null}
+                              </div>
                             </div>
                           </React.Fragment>
                         );

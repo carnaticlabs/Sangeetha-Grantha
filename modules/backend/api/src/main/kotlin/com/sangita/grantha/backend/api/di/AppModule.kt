@@ -26,6 +26,8 @@ import com.sangita.grantha.backend.api.services.ReferenceDataServiceImpl
 import com.sangita.grantha.backend.api.services.TransliterationServiceImpl
 import com.sangita.grantha.backend.api.services.UserManagementService
 import com.sangita.grantha.backend.api.services.WebScrapingServiceImpl
+import com.sangita.grantha.backend.api.services.GeocodingService
+import com.sangita.grantha.backend.api.services.TempleScrapingService
 import com.sangita.grantha.backend.api.services.bulkimport.BulkImportWorkerServiceImpl
 import com.sangita.grantha.backend.api.services.bulkimport.IBulkImportWorker
 import io.micrometer.prometheus.PrometheusMeterRegistry
@@ -34,9 +36,11 @@ import org.koin.dsl.module
 fun appModule(env: ApiEnvironment, metricsRegistry: PrometheusMeterRegistry) = module {
     single { env }
     single { JwtConfig.fromEnvironment(env) }
-    single { GeminiApiClient(env.geminiApiKey ?: "") }
+    single { GeminiApiClient(env.geminiApiKey ?: "", env.geminiModelUrl, env.geminiMinIntervalMs) }
     single<ITransliterator> { TransliterationServiceImpl(get()) }
-    single<IWebScraper> { WebScrapingServiceImpl(get()) }
+    single { GeocodingService(get()) }
+    single { TempleScrapingService(get(), get(), get()) }
+    single<IWebScraper> { WebScrapingServiceImpl(get(), get()) }
 
     single { NameNormalizationService() }
     single<IEntityResolver> { EntityResolutionServiceImpl(get(), get()) }
@@ -45,7 +49,7 @@ fun appModule(env: ApiEnvironment, metricsRegistry: PrometheusMeterRegistry) = m
 
     single<IImportService> {
         val scope = this
-        ImportServiceImpl(get()) { scope.get<AutoApprovalService>() }
+        ImportServiceImpl(get(), get(), get()) { scope.get<AutoApprovalService>() }
     }
     single<ImportReviewer> { get<IImportService>() as ImportReviewer }
     single { AutoApprovalService(get()) }

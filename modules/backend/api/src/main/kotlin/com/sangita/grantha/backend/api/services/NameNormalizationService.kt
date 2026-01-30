@@ -99,6 +99,29 @@ class NameNormalizationService {
     }
 
     /**
+     * Normalize deity names.
+     */
+    fun normalizeDeity(name: String?): String? {
+        if (name.isNullOrBlank()) return null
+        // "Sri Ganesha" -> "ganesha", "Lord Shiva" -> "shiva"
+        var normalized = basicNormalize(name)
+        normalized = normalized.replace(Regex("\\b(lord|goddess|sri|shri|Arulmigu)\\b", RegexOption.IGNORE_CASE), "").trim()
+        return normalized.takeIf { it.isNotBlank() }
+    }
+
+    /**
+     * Normalize temple names.
+     */
+    fun normalizeTemple(name: String?): String? {
+        if (name.isNullOrBlank()) return null
+        var normalized = basicNormalize(name)
+        // "Sri Kapaleeswarar Temple" -> "kapaleeswarar temple"
+        // "Arulmigu ..." -> "..."
+        normalized = normalized.replace(Regex("\\b(sri|shri|arulmigu|tiru|thiru)\\b", RegexOption.IGNORE_CASE), "").trim()
+        return normalized.takeIf { it.isNotBlank() }
+    }
+
+    /**
      * Normalize titles for fuzzy comparisons.
      */
     fun normalizeTitle(title: String?): String? {

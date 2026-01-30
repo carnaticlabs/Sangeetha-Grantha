@@ -60,4 +60,48 @@ class WebScrapingServiceTest {
         
         assertTrue(metadata.lyrics?.isNotBlank() == true, "Lyrics (concatenated or direct) should not be blank")
     }
+
+    @Test
+    fun `test scrapeKrithi with templeNet embedded link`() = runBlocking {
+        val configDir = File("config")
+        val envMap = if (configDir.exists()) {
+             io.github.cdimascio.dotenv.dotenv {
+                 directory = configDir.absolutePath
+                 filename = ".env.development"
+                 ignoreIfMissing = true
+             }.entries().associate { it.key to it.value }
+        } else {
+            emptyMap()
+        }
+
+        val env = ApiEnvironmentLoader.load(envMap)
+        
+        if (env.geminiApiKey.isNullOrBlank()) {
+             println("Skipping test: GEMINI_API_KEY not found in .env.development")
+             return@runBlocking
+        }
+        
+        val client = GeminiApiClient(env.geminiApiKey!!)
+        val service = WebScrapingServiceImpl(client)
+
+        // URL provided by user
+        val url = "https://guru-guha.blogspot.com/2008/03/dikshitar-kriti-balambikayaa.html"
+        val metadata = service.scrapeKrithi(url)
+        
+        println("Scraped Metadata: $metadata")
+        println("Scraped Temple Details: ${metadata.templeDetails}")
+
+        assertNotNull(metadata)
+        assertNotNull(metadata.templeDetails, "Should have scraped temple details")
+        
+        val details = metadata.templeDetails!!
+        println("Temple Name: ${details.name}")
+        println("Deity: ${details.deity}")
+        println("Location: ${details.location}")
+        println("Lat/Long: ${details.latitude}, ${details.longitude}")
+        
+        // Assertions based on expected content from the URL
+        assertTrue(details.name.contains("Vaitheeswaran") || details.name.contains("Vaideeswaran") || details.name.contains("Vaitheesvaran"), "Should identify Vaitheeswaran Koil")
+        assertTrue(metadata.templeUrl?.let { it.contains("templenet.com") || it.contains("indiantemples.com") } == true, "Should have extracted temple URL (templenet or indiantemples)")
+    }
 }

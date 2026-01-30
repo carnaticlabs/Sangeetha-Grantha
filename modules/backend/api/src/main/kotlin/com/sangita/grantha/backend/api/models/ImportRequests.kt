@@ -27,7 +27,9 @@ data class ImportOverridesDto(
     val composer: String? = null,
     val tala: String? = null,
     val language: String? = null,
-    val lyrics: String? = null
+    val lyrics: String? = null,
+    val deity: String? = null,
+    val temple: String? = null
 )
 
 @Serializable

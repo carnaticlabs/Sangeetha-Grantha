@@ -24,11 +24,18 @@ class RateLimiter {
         while (isActive()) {
             val waitMs = rateLimiterMutex.withLock {
                 val now = System.currentTimeMillis()
-                val globalWait = computeWait(globalWindow, now, config.globalRateLimitPerMinute)
                 val domainWindow = synchronized(perDomainWindows) {
                     perDomainWindows.getOrPut(host) { RateWindow(windowStartedAtMs = now, count = 0) }
                 }
-                val domainWait = computeWait(domainWindow, now, config.perDomainRateLimitPerMinute)
+
+                val limit = if (host.contains("templenet.com") || host.contains("indiantemples.com") || host.contains("wikipedia")) {
+                    config.templeRateLimitPerMinute
+                } else {
+                    config.perDomainRateLimitPerMinute
+                }
+
+                val domainWait = computeWait(domainWindow, now, limit)
+                val globalWait = computeWait(globalWindow, now, config.globalRateLimitPerMinute)
                 val maxWait = max(globalWait, domainWait)
                 if (maxWait <= 0) {
                     incrementWindow(globalWindow, now)
