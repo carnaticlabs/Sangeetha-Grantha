@@ -41,5 +41,6 @@
 | [TRACK-030](./tracks/TRACK-030-documentation-cleanup-2026-01.md) | Documentation Cleanup 2026-01 | Planned |
 | [TRACK-031](./tracks/TRACK-031-composer-deduplication-analysis.md) | Composer Deduplication – Avoid Duplicate Names | In Progress |
 | [TRACK-032](./tracks/TRACK-032-multi-language-lyric-extraction-analysis.md) | Multi-Language Lyric Extraction from Web Sources | In Progress |
+| [TRACK-033](./tracks/TRACK-033-cli-docs-command.md) | Sangita CLI – Docs Command | Active |
 
 ## 3. Deprecated Tracks

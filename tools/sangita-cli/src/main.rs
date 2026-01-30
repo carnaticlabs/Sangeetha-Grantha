@@ -7,7 +7,7 @@ mod utils;
 
 use anyhow::Result;
 use clap::{Parser, Subcommand};
-use commands::{commit, db, dev, mobile, net, setup, test};
+use commands::{commit, db, dev, docs, mobile, net, setup, test};
 
 // Re-export for convenience
 pub use app_config::AppConfig;
@@ -36,6 +36,8 @@ enum Commands {
     Mobile(mobile::MobileArgs),
     /// Commit guardrails and workflow enforcement
     Commit(commit::CommitArgs),
+    /// Documentation management (version sync, link validation)
+    Docs(docs::DocsArgs),
 }
 
 #[tokio::main]
@@ -51,5 +53,6 @@ async fn main() -> Result<()> {
         Commands::Test(args) => test::run(args).await,
         Commands::Mobile(args) => mobile::run(args).await,
         Commands::Commit(args) => commit::run(args).await,
+        Commands::Docs(args) => docs::run(args).await,
     }
 }

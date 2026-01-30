@@ -4,7 +4,7 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-20 |
+| **Last Updated** | 2026-01-30 |
 | **Author** | Sangeetha Grantha Team |
 
 A unified command-line tool for the Sangita Grantha project.
@@ -13,10 +13,10 @@ A unified command-line tool for the Sangita Grantha project.
 
 **Recommended**: Use [mise](https://mise.jdx.dev/) for toolchain management (see `.mise.toml` in project root).
 
-Tools managed by mise:
-- Rust 1.92.0
-- Java 25 (Temurin)
-- Bun 1.3.0
+Tools managed by mise (see [current versions](../../application_documentation/00-meta/current-versions.md)):
+- Rust (see `.mise.toml`)
+- Java (Temurin, see `.mise.toml`)
+- Bun (see `.mise.toml`)
 - Docker Compose (latest)
 
 System requirements (not managed by mise):
@@ -55,9 +55,9 @@ mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- setup
 ```
 
 This ensures:
-- ✅ Correct Rust version (1.92.0)
-- ✅ Correct Java version (25)
-- ✅ Correct Bun version (1.3.0)
+- ✅ Correct Rust version (per `.mise.toml`)
+- ✅ Correct Java version (per `.mise.toml`)
+- ✅ Correct Bun version (per `.mise.toml`)
 - ✅ Correct Docker Compose version (latest)
 
 ### Without mise (Fallback)
@@ -159,6 +159,26 @@ Show where the mobile testing guides/checklists live:
 ```bash
 cargo run -- mobile guide
 ```
+
+### Documentation Management
+Sync version information from source files to documentation:
+```bash
+# Generate/update current-versions.md
+cargo run -- docs sync-versions
+
+# Check if versions are in sync (for CI - exits with error if out of sync)
+cargo run -- docs sync-versions --check
+
+# Validate documentation links (future feature)
+cargo run -- docs validate-links
+```
+
+**Sources of Truth:**
+- `gradle/libs.versions.toml` - Backend/Mobile dependencies
+- `modules/frontend/sangita-admin-web/package.json` - Frontend dependencies
+- `.mise.toml` - Development toolchain versions
+
+**Output:** `application_documentation/00-meta/current-versions.md`
 
 ### Testing
 
