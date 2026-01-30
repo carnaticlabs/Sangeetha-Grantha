@@ -2,7 +2,7 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-26 |
+| **Last Updated** | 2026-01-29 |
 | **Author** | Sangita Grantha Architect |
 
 # Onboarding
@@ -12,6 +12,8 @@ This directory contains essential documentation for new developers and contribut
 ## Documents
 
 - **[Getting Started](./getting-started.md)**: The primary guide for environment setup and project standards.
+- **[IDE Setup](./ide-setup.md)**: Detailed IDE configuration for IntelliJ IDEA, VS Code, Android Studio, and Cursor.
+- **[Troubleshooting](./troubleshooting.md)**: Solutions for common development issues.
 - **[Glossary](../01-requirements/glossary.md)**: Common musical and technical terms used in the project.
 
 ## Orientation

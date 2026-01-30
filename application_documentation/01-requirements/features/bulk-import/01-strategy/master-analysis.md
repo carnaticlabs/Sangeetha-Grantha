@@ -313,10 +313,11 @@ Based on the Sangeetha Grantha domain model, the import pipeline must extract an
   - Geographic disambiguation (multiple temples with same deity)
 
 #### 3.1.5 Lyric Structure
-- **Sections**: Pallavi, Anupallavi, Charanam(s)
+- **Sections**: Pallavi, Anupallavi, Charanam(s), Samashti Charanam, etc.
 - **Section Text**: Per-section lyrics
 - **Language/Script**: Support for multiple scripts
 - **Sampradaya**: Optional lineage/school information
+- **Implementation**: Web scraping (Gemini) is prompted to return a `sections` array with type and text. On import approval, if `sections` is present it is written to `krithi_sections` and `krithi_lyric_sections` so the Lyrics tab shows section-wise content. If the scraper returns only `lyrics` (no sections), a fallback parser splits lyrics by line headers (e.g. "Pallavi", "Samashti Charanam") and creates sections so the Lyrics and Lyric Variants tab still show structure.
 
 #### 3.1.6 Additional Metadata
 - **Tala**: Rhythmic cycle (may be missing)

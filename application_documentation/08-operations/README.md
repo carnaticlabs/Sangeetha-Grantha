@@ -2,7 +2,7 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-26 |
+| **Last Updated** | 2026-01-29 |
 | **Author** | Sangeetha Grantha Team |
 
 # 08 Operations
@@ -13,5 +13,9 @@
 
 ## Contents
 
-- [config.md](./config.md)
-- [runbooks/](./runbooks/)
+- [config.md](./config.md) - Configuration management
+- [deployment.md](./deployment.md) - Deployment procedures for all environments
+- [monitoring.md](./monitoring.md) - Monitoring, metrics, and alerting
+- [runbooks/](./runbooks/) - Operational runbooks
+  - [database-runbook.md](./runbooks/database-runbook.md) - Database operations and disaster recovery
+  - [steel-thread-runbook.md](./runbooks/steel-thread-runbook.md) - Steel thread test execution
