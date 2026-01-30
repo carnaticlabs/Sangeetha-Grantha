@@ -2,9 +2,11 @@ package com.sangita.grantha.backend.api.services
 
 import com.sangita.grantha.backend.dal.SangitaDal
 import com.sangita.grantha.shared.domain.model.ComposerDto
+import com.sangita.grantha.shared.domain.model.DeityDto
 import com.sangita.grantha.shared.domain.model.ImportedKrithiDto
 import com.sangita.grantha.shared.domain.model.RagaDto
 import com.sangita.grantha.shared.domain.model.TalaDto
+import com.sangita.grantha.shared.domain.model.TempleDto
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.Serializable
@@ -18,6 +20,8 @@ data class ResolutionResult(
     val composerCandidates: List<Candidate<ComposerDto>>,
     val ragaCandidates: List<Candidate<RagaDto>>,
     val talaCandidates: List<Candidate<TalaDto>>,
+    val deityCandidates: List<Candidate<DeityDto>> = emptyList(),
+    val templeCandidates: List<Candidate<TempleDto>> = emptyList(),
     val resolved: Boolean = false
 )
 
@@ -52,11 +56,15 @@ class EntityResolutionServiceImpl(
     private var cachedComposers: List<ComposerDto> = emptyList()
     private var cachedRagas: List<RagaDto> = emptyList()
     private var cachedTalas: List<TalaDto> = emptyList()
+    private var cachedDeities: List<DeityDto> = emptyList()
+    private var cachedTemples: List<TempleDto> = emptyList()
     
     // Normalized maps for O(1) lookup: NormalizedName -> Entity
     private var composerMap: Map<String, ComposerDto> = emptyMap()
     private var ragaMap: Map<String, RagaDto> = emptyMap()
     private var talaMap: Map<String, TalaDto> = emptyMap()
+    private var deityMap: Map<String, DeityDto> = emptyMap()
+    private var templeMap: Map<String, TempleDto> = emptyMap()
 
     private suspend fun ensureCache() {
         if (Instant.now().isBefore(lastCacheUpdate.plus(cacheTtl)) && cachedComposers.isNotEmpty()) return
@@ -67,30 +75,28 @@ class EntityResolutionServiceImpl(
             cachedComposers = dal.composers.listAll()
             cachedRagas = dal.ragas.listAll()
             cachedTalas = dal.talas.listAll()
+            cachedDeities = dal.deities.listAll()
+            cachedTemples = dal.temples.listAll()
             
-            // Re-normalize reference data to ensure matching rules are consistent with incoming data
-            // Fix: Use groupBy to handle collisions (multiple entities may normalize to same key)
+            // Re-normalize reference data; include canonical name and TRACK-031 alias -> composer
             composerMap = cachedComposers.groupBy { normalizer.normalizeComposer(it.name) ?: it.name.lowercase() }
-                .mapValues { (_, group) ->
-                    if (group.size > 1) {
-                        logger.warn("Normalization collision for composers: ${group.map { it.name }}")
-                    }
-                    group.first() // Use first entity if collision
-                }
+                .mapValues { (_, group) -> group.first() }
+            val aliasToId = dal.composerAliases.loadAliasToComposerIdMap()
+            composerMap = composerMap + aliasToId.mapNotNull { (alias, composerId) ->
+                cachedComposers.find { it.id == composerId }?.let { alias to it }
+            }
+            
             ragaMap = cachedRagas.groupBy { normalizer.normalizeRaga(it.name) ?: it.name.lowercase() }
-                .mapValues { (_, group) ->
-                    if (group.size > 1) {
-                        logger.warn("Normalization collision for ragas: ${group.map { it.name }}")
-                    }
-                    group.first()
-                }
+                .mapValues { (_, group) -> group.first() }
+            
             talaMap = cachedTalas.groupBy { normalizer.normalizeTala(it.name) ?: it.name.lowercase() }
-                .mapValues { (_, group) ->
-                    if (group.size > 1) {
-                        logger.warn("Normalization collision for talas: ${group.map { it.name }}")
-                    }
-                    group.first()
-                }
+                .mapValues { (_, group) -> group.first() }
+                
+            deityMap = cachedDeities.groupBy { normalizer.normalizeDeity(it.name) ?: it.nameNormalized.lowercase() }
+                .mapValues { (_, group) -> group.first() }
+                
+            templeMap = cachedTemples.groupBy { normalizer.normalizeTemple(it.name) ?: it.nameNormalized.lowercase() }
+                .mapValues { (_, group) -> group.first() }
             
             lastCacheUpdate = Instant.now()
         }
@@ -102,11 +108,10 @@ class EntityResolutionServiceImpl(
         val normComposer = normalizer.normalizeComposer(importedKrithi.rawComposer)
         val normRaga = normalizer.normalizeRaga(importedKrithi.rawRaga)
         val normTala = normalizer.normalizeTala(importedKrithi.rawTala)
+        val normDeity = normalizer.normalizeDeity(importedKrithi.rawDeity)
+        val normTemple = normalizer.normalizeTemple(importedKrithi.rawTemple)
 
         // TRACK-013: Two-tier caching strategy
-        // 1. Database cache check (persistent across restarts)
-        // 2. In-memory exact match (O(1))
-        // 3. Fuzzy match fallback (O(N) * L)
         val composerCandidates = resolveWithCache(
             entityType = "composer",
             rawName = importedKrithi.rawComposer,
@@ -130,15 +135,35 @@ class EntityResolutionServiceImpl(
             exactMatch = normTala?.let { talaMap[it] },
             allEntities = cachedTalas
         ) { normalizer.normalizeTala(it.name) ?: it.name.lowercase() }
+        
+        val deityCandidates = resolveWithCache(
+            entityType = "deity",
+            rawName = importedKrithi.rawDeity,
+            normalized = normDeity,
+            exactMatch = normDeity?.let { deityMap[it] },
+            allEntities = cachedDeities
+        ) { normalizer.normalizeDeity(it.name) ?: it.nameNormalized.lowercase() }
+
+        val templeCandidates = resolveWithCache(
+            entityType = "temple",
+            rawName = importedKrithi.rawTemple,
+            normalized = normTemple,
+            exactMatch = normTemple?.let { templeMap[it] },
+            allEntities = cachedTemples
+        ) { normalizer.normalizeTemple(it.name) ?: it.nameNormalized.lowercase() }
 
         val fullyResolved = composerCandidates.isNotEmpty() &&
                             ragaCandidates.isNotEmpty() &&
                             (importedKrithi.rawTala == null || talaCandidates.isNotEmpty())
+                            // Deities and temples are optional for "resolution" status currently, 
+                            // but good to have matches.
 
         return ResolutionResult(
             composerCandidates = composerCandidates,
             ragaCandidates = ragaCandidates,
             talaCandidates = talaCandidates,
+            deityCandidates = deityCandidates,
+            templeCandidates = templeCandidates,
             resolved = fullyResolved
         )
     }
@@ -214,6 +239,8 @@ class EntityResolutionServiceImpl(
             is ComposerDto -> entity.id
             is RagaDto -> entity.id
             is TalaDto -> entity.id
+            is DeityDto -> entity.id
+            is TempleDto -> entity.id
             else -> throw IllegalArgumentException("Unknown entity type: ${entity::class.simpleName}")
         }
     }
@@ -224,6 +251,8 @@ class EntityResolutionServiceImpl(
             is ComposerDto -> entity.name
             is RagaDto -> entity.name
             is TalaDto -> entity.name
+            is DeityDto -> entity.name
+            is TempleDto -> entity.name
             else -> "Unknown"
         }
     }
@@ -240,6 +269,8 @@ class EntityResolutionServiceImpl(
                 "composer" -> cachedComposers = emptyList()
                 "raga" -> cachedRagas = emptyList()
                 "tala" -> cachedTalas = emptyList()
+                "deity" -> cachedDeities = emptyList()
+                "temple" -> cachedTemples = emptyList()
             }
             lastCacheUpdate = Instant.MIN // Force refresh
         }

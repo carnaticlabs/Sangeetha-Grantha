@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-27 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-01-30 |
 | **Author** | Sangeetha Grantha Team |
 
 # Conductor Tracks Registry
@@ -36,5 +36,10 @@
 | [TRACK-025](./tracks/TRACK-025-frontend-refactor-secondary-pages.md) | Secondary Pages & Polish | Completed |
 | [TRACK-026](./tracks/TRACK-026-gradle-problems-report-deprecation.md) | Gradle Problems Report - Archives Deprecation | Completed |
 | [TRACK-027](./tracks/TRACK-027-authentication-login.md) | Authentication & Login Page Implementation | Completed |
+| [TRACK-028](./tracks/TRACK-028-documentation-quality-improvements.md) | Documentation Quality Improvements | Completed |
+| [TRACK-029](./tracks/TRACK-029-bulk-import-kshetra-mapping.md) | Bulk Import - Kshetra & Deity Mapping | In Progress |
+| [TRACK-030](./tracks/TRACK-030-documentation-cleanup-2026-01.md) | Documentation Cleanup 2026-01 | Planned |
+| [TRACK-031](./tracks/TRACK-031-composer-deduplication-analysis.md) | Composer Deduplication – Avoid Duplicate Names | In Progress |
+| [TRACK-032](./tracks/TRACK-032-multi-language-lyric-extraction-analysis.md) | Multi-Language Lyric Extraction from Web Sources | In Progress |
 
 ## 3. Deprecated Tracks

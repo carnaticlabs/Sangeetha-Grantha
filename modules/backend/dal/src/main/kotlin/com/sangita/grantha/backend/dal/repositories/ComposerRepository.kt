@@ -15,8 +15,11 @@ import kotlin.uuid.Uuid
 
 /**
  * Repository for composer reference data.
+ * TRACK-031: Uses composer aliases to avoid creating duplicates for known short names.
  */
-class ComposerRepository {
+class ComposerRepository(
+    private val composerAliases: ComposerAliasRepository
+) {
     private fun normalize(value: String): String =
         value.trim()
             .lowercase()
@@ -77,7 +80,10 @@ class ComposerRepository {
         notes: String? = null
     ): ComposerDto {
         val normalized = nameNormalized ?: normalize(name)
-        
+
+        // TRACK-031: Resolve known alias to canonical composer before create
+        composerAliases.findComposerByAliasNormalized(normalized)?.let { return it }
+
         findByNameNormalized(normalized)?.let { return it }
         findByName(name)?.let { return it }
 
