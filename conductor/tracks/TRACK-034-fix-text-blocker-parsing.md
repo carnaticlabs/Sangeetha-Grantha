@@ -24,3 +24,5 @@ Fix issue where `TextBlocker` incorrectly parses section headers that contain ad
 ## 4. Progress Log
 - **2026-02-01**: Identified the issue in `detectSectionHeader`. Created reproduction script. Implemented fix in `TextBlocker.kt` to handle optional `sahityam` suffix and clean up trailing punctuation from the remainder. Verified fix with reproduction script.
 - **2026-02-01**: Extended support for single-letter section headers (`P`, `A`, `C`) as used in some Thyagaraja Vaibhavam posts (e.g. `P cakkani...`). Validated against multiple URLs.
+- **2026-02-01**: Hardened production code (`TextBlocker` and `ImportService`) to handle literal `\n` strings discovered during data fix. This ensures robust line splitting even if data is double-escaped in the database or source payload.
+- **2026-02-01**: Successfully ran `FixBalambikayaScript` to correct existing data for krithi `c64243b2...`, converting 10 unstructured variants into correctly segmented sections.

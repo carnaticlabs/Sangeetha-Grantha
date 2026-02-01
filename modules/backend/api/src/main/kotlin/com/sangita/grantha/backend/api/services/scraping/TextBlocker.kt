@@ -9,6 +9,7 @@ class TextBlocker {
 
     fun buildBlocks(rawText: String): PromptBlocks {
         val lines = rawText
+            .replace("\\n", "\n") // Unescape literal \n strings if present
             .lines()
             .map { it.trim() }
             .filter { it.isNotBlank() }
@@ -123,7 +124,14 @@ class TextBlocker {
             Regex("^\\s*P(?:\\s|\\.|:|-|\$)", RegexOption.IGNORE_CASE) to "PALLAVI",
             Regex("^\\s*A(?:\\s|\\.|:|-|\$)", RegexOption.IGNORE_CASE) to "ANUPALLAVI",
             Regex("^\\s*C(?:\\s|\\.|:|-|\$)", RegexOption.IGNORE_CASE) to "CHARANAM",
-            Regex("^\\s*Ch(?:\\s|\\.|:|-|\$)", RegexOption.IGNORE_CASE) to "CHARANAM"
+            Regex("^\\s*Ch(?:\\s|\\.|:|-|\$)", RegexOption.IGNORE_CASE) to "CHARANAM",
+
+            // Devanagari Headers
+            Regex("^\\s*पल्लवि(?:\\s|:|\\-|\\)|]|\$)", RegexOption.IGNORE_CASE) to "PALLAVI",
+            Regex("^\\s*अनुपल्लवि(?:\\s|:|\\-|\\)|]|\$)", RegexOption.IGNORE_CASE) to "ANUPALLAVI",
+            Regex("^\\s*चरणम्(?:\\s|:|\\-|\\)|]|\$)", RegexOption.IGNORE_CASE) to "CHARANAM",
+            Regex("^\\s*समष्टि\\s+चरणम्(?:\\s|:|\\-|\\)|]|\$)", RegexOption.IGNORE_CASE) to "SAMASHTI_CHARANAM",
+            Regex("^\\s*[(]?मध्यम\\s+काल\\s+साहित्यम्[)]?(?:\\s|:|\\-|\\)|]|\$)", RegexOption.IGNORE_CASE) to "MADHYAMAKALA"
         )
 
         for ((regex, label) in patterns) {

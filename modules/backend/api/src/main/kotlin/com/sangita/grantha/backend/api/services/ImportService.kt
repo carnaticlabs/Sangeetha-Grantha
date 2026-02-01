@@ -170,7 +170,7 @@ class ImportServiceImpl(
                 val effectiveTala = overrides?.tala ?: importData.rawTala
                 val effectiveTitle = overrides?.title ?: importData.rawTitle ?: "Untitled"
                 val effectiveLanguage = overrides?.language ?: importData.rawLanguage
-                val effectiveLyrics = overrides?.lyrics ?: importData.rawLyrics
+                val effectiveLyrics = (overrides?.lyrics ?: importData.rawLyrics)?.replace("\\n", "\n")
                 // Deity/Temple are handled below
                 val sourceKey = importData.sourceKey
                 
@@ -377,9 +377,9 @@ class ImportServiceImpl(
                             variants.forEachIndexed { index, scraped ->
                                 val lang = parseLanguageCode(scraped.language) ?: LanguageCode.valueOf(createdKrithi.primaryLanguage.name)
                                 val script = parseScriptCode(scraped.script) ?: ScriptCode.LATIN
-                                val lyricsText = scraped.lyrics?.takeIf { it.isNotBlank() }
+                                val lyricsText = (scraped.lyrics?.takeIf { it.isNotBlank() }
                                     ?: scraped.sections?.joinToString("\n\n") { "[${it.type.name}]\n${it.text}" }.takeIf { it?.isNotBlank() == true }
-                                    ?: ""
+                                    ?: "").replace("\\n", "\n")
                                 val createdVariant = dal.krithis.createLyricVariant(
                                     krithiId = createdKrithi.id,
                                     language = lang,
@@ -405,7 +405,7 @@ class ImportServiceImpl(
                             // Single primary variant (existing behaviour)
                             val effectiveSections = when {
                                 !metadata.sections.isNullOrEmpty() -> metadata.sections!!
-                                !metadata.lyrics.isNullOrBlank() -> parseSectionHeadersFromLyrics(metadata.lyrics!!)
+                                !metadata.lyrics.isNullOrBlank() -> parseSectionHeadersFromLyrics(metadata.lyrics!!.replace("\\n", "\n"))
                                 else -> emptyList()
                             }
                             if (effectiveSections.isNotEmpty()) {

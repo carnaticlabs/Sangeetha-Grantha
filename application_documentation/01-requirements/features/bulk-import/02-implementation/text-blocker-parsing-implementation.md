@@ -17,7 +17,10 @@ Fix issues in `TextBlocker` regex logic where section headers with suffixes (e.g
         - `caranam` spelling (starting with 'c').
         - Surrounding punctuation removal (parentheses, brackets).
         - Single-letter abbreviations (`P`, `A`, `C`) when at the start of a line.
-- **Verification**: Validated against multiple blog formats (Thyagaraja Vaibhavam, Syama Krishna Vaibhavam) covering inline headers and complex transliteration.
+        - Devanagari headers (पल्लवि, अनुपल्लवि, etc.).
+    - **Robustness**: Added automatic unescaping of literal `\n` strings before line splitting.
+- **Enhanced `ImportService.kt`**: Added sanitization logic to unescape `\n` literals during the review and section-mapping flow, preventing data corruption from reaching the structural tables.
+- **Verification**: Validated against multiple blog formats (Thyagaraja Vaibhavam, Syama Krishna Vaibhavam) covering inline headers and complex transliteration. Corrected existing data for krithi `c64243b2` using a focused fix script.
 
 ## 3. Commit Reference
 This document serves as the `Ref` for the commit.
