@@ -1,12 +1,14 @@
-# TRACK-032: Multi-Language Lyric Extraction from Web Sources
-
 | Metadata | Value |
 |:---|:---|
 | **Status** | In Progress |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-30 |
+| **Version** | 1.0.2 |
+| **Last Updated** | 2026-02-01 |
 | **Author** | Sangeetha Grantha Team |
 | **Related Tracks** | TRACK-001 (Bulk Import), TRACK-029 (Kshetra/Deity) |
+
+---
+
+# TRACK-032: Multi-Language Lyric Extraction from Web Sources
 
 ## 1. Goal
 Extract all language/script variants of lyrics in a single scrape from pages that publish multiple scripts (e.g. [Guru Guha – Bala Kuchambike](http://guru-guha.blogspot.com/2008/02/dikshitar-kriti-bala-kuchambike-raga.html): English, Devanagari, Tamil, Telugu, Kannada, Malayalam), and create one lyric variant per language/script when approving the import.
@@ -49,3 +51,5 @@ Extract all language/script variants of lyrics in a single scrape from pages tha
 ## 6. Progress Log
 - 2026-01-30: Track created; analysis and implementation plan drafted.
 - 2026-01-30: Implemented ScrapedLyricVariantDto and lyricVariants on ScrapedKrithiMetadata; updated WebScrapingService prompt for multi-language/script extraction; ImportService.reviewImport creates one lyric variant per scraped lyricVariant (language/script/sections) when lyricVariants non-empty, with parseLanguageCode/parseScriptCode helpers.
+- 2026-02-01: Added JSoup-based extraction, prompt segmentation, scrape caching/in-flight dedupe, and Gemini adaptive rate limiting with schema-mode support to reduce 429s and improve multi-script extraction.
+- 2026-02-01: Added fallback section derivation from detected blocks and improved section header parsing to preserve Pallavi/Anupallavi/Charanam lines from scraped text.

@@ -36,11 +36,32 @@ import org.koin.dsl.module
 fun appModule(env: ApiEnvironment, metricsRegistry: PrometheusMeterRegistry) = module {
     single { env }
     single { JwtConfig.fromEnvironment(env) }
-    single { GeminiApiClient(env.geminiApiKey ?: "", env.geminiModelUrl, env.geminiMinIntervalMs) }
+    single {
+        GeminiApiClient(
+            apiKey = env.geminiApiKey ?: "",
+            modelUrl = env.geminiModelUrl,
+            minIntervalMs = env.geminiMinIntervalMs,
+            qpsLimit = env.geminiQpsLimit,
+            maxConcurrent = env.geminiMaxConcurrent,
+            maxRetries = env.geminiMaxRetries,
+            maxRetryWindowMs = env.geminiMaxRetryWindowMs,
+            requestTimeoutMs = env.geminiRequestTimeoutMs,
+            fallbackModelUrl = env.geminiFallbackModelUrl,
+            useSchemaMode = env.geminiUseSchemaMode
+        )
+    }
     single<ITransliterator> { TransliterationServiceImpl(get()) }
     single { GeocodingService(get()) }
     single { TempleScrapingService(get(), get(), get()) }
-    single<IWebScraper> { WebScrapingServiceImpl(get(), get()) }
+    single<IWebScraper> {
+        WebScrapingServiceImpl(
+            geminiClient = get(),
+            templeScrapingService = get(),
+            cacheTtlHours = env.scrapeCacheTtlHours,
+            cacheMaxEntries = env.scrapeCacheMaxEntries,
+            useSchemaMode = env.geminiUseSchemaMode
+        )
+    }
 
     single { NameNormalizationService() }
     single<IEntityResolver> { EntityResolutionServiceImpl(get(), get()) }

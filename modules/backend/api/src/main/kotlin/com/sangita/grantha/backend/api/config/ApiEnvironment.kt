@@ -24,6 +24,15 @@ data class ApiEnvironment(
     val geminiModelUrl: String = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
     /** Minimum milliseconds between Gemini API calls to avoid 429 (e.g. 10000 = ~6 RPM). */
     val geminiMinIntervalMs: Long = 10_000L,
+    val geminiQpsLimit: Double = 0.1,
+    val geminiMaxConcurrent: Int = 1,
+    val geminiMaxRetries: Int = 5,
+    val geminiMaxRetryWindowMs: Long = 120_000L,
+    val geminiRequestTimeoutMs: Long = 90_000L,
+    val geminiFallbackModelUrl: String? = null,
+    val geminiUseSchemaMode: Boolean = false,
+    val scrapeCacheTtlHours: Long = 24,
+    val scrapeCacheMaxEntries: Long = 500,
     val geoProvider: String = "osm",
     val geoApiKey: String? = null,
     val templeAutoCreateConfidence: Double = 0.9,
@@ -88,6 +97,15 @@ object ApiEnvironmentLoader {
         val geminiApiKey = get("SG_GEMINI_API_KEY") ?: get("GEMINI_API_KEY")
         val geminiModelUrl = get("SG_GEMINI_MODEL_URL", "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent")!!
         val geminiMinIntervalMs = get("SG_GEMINI_MIN_INTERVAL_MS", "10000")?.toLongOrNull()?.coerceIn(1000L, 60_000L) ?: 10_000L
+        val geminiQpsLimit = get("SG_GEMINI_QPS_LIMIT", "0.1")?.toDoubleOrNull()?.coerceAtLeast(0.0) ?: 0.1
+        val geminiMaxConcurrent = get("SG_GEMINI_MAX_CONCURRENT", "1")?.toIntOrNull()?.coerceIn(1, 8) ?: 1
+        val geminiMaxRetries = get("SG_GEMINI_MAX_RETRIES", "5")?.toIntOrNull()?.coerceIn(1, 10) ?: 5
+        val geminiMaxRetryWindowMs = get("SG_GEMINI_MAX_RETRY_WINDOW_MS", "120000")?.toLongOrNull()?.coerceIn(30_000L, 300_000L) ?: 120_000L
+        val geminiRequestTimeoutMs = get("SG_GEMINI_REQUEST_TIMEOUT_MS", "90000")?.toLongOrNull()?.coerceIn(30_000L, 180_000L) ?: 90_000L
+        val geminiFallbackModelUrl = get("SG_GEMINI_FALLBACK_MODEL_URL")
+        val geminiUseSchemaMode = get("SG_GEMINI_USE_SCHEMA_MODE", "false")?.equals("true", ignoreCase = true) ?: false
+        val scrapeCacheTtlHours = get("SG_SCRAPE_CACHE_TTL_HOURS", "24")?.toLongOrNull()?.coerceIn(1L, 168L) ?: 24
+        val scrapeCacheMaxEntries = get("SG_SCRAPE_CACHE_MAX_ENTRIES", "500")?.toLongOrNull()?.coerceAtLeast(0L) ?: 500
 
         // Geocoding Config
         val geoProvider = get("SG_GEO_PROVIDER", "osm")!!
@@ -133,6 +151,15 @@ object ApiEnvironmentLoader {
             geminiApiKey = geminiApiKey,
             geminiModelUrl = geminiModelUrl,
             geminiMinIntervalMs = geminiMinIntervalMs,
+            geminiQpsLimit = geminiQpsLimit,
+            geminiMaxConcurrent = geminiMaxConcurrent,
+            geminiMaxRetries = geminiMaxRetries,
+            geminiMaxRetryWindowMs = geminiMaxRetryWindowMs,
+            geminiRequestTimeoutMs = geminiRequestTimeoutMs,
+            geminiFallbackModelUrl = geminiFallbackModelUrl,
+            geminiUseSchemaMode = geminiUseSchemaMode,
+            scrapeCacheTtlHours = scrapeCacheTtlHours,
+            scrapeCacheMaxEntries = scrapeCacheMaxEntries,
             geoProvider = geoProvider,
             geoApiKey = geoApiKey,
             templeAutoCreateConfidence = templeAutoCreateConfidence,

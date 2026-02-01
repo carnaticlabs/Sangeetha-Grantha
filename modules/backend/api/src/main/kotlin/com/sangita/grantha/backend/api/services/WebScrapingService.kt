@@ -1,13 +1,30 @@
 package com.sangita.grantha.backend.api.services
 
 import com.sangita.grantha.backend.api.clients.GeminiApiClient
+import com.sangita.grantha.backend.api.clients.GenerationConfig
+import com.sangita.grantha.backend.api.services.scraping.HtmlTextExtractor
+import com.sangita.grantha.backend.api.services.scraping.ScrapeJsonSanitizer
+import com.sangita.grantha.backend.api.services.scraping.ScrapeCache
+import com.sangita.grantha.backend.api.services.scraping.TextBlocker
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.request.get
 import com.sangita.grantha.shared.domain.model.RagaSectionDto
 import io.ktor.client.statement.bodyAsText
+import io.ktor.network.tls.TlsException
+import java.time.Duration
+import java.util.concurrent.ConcurrentHashMap
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.buildJsonArray
+import kotlinx.serialization.json.buildJsonObject
 import org.slf4j.LoggerFactory
 
 interface IWebScraper {
@@ -19,7 +36,10 @@ interface IWebScraper {
 
 class WebScrapingServiceImpl(
     private val geminiClient: GeminiApiClient,
-    private val templeScrapingService: TempleScrapingService
+    private val templeScrapingService: TempleScrapingService? = null,
+    private val cacheTtlHours: Long = 24,
+    private val cacheMaxEntries: Long = 500,
+    private val useSchemaMode: Boolean = false
 ) : IWebScraper {
     private val logger = LoggerFactory.getLogger(javaClass)
     // Using a separate client instance for scraping to avoid config conflicts with Gemini client
@@ -30,89 +50,180 @@ class WebScrapingServiceImpl(
             socketTimeoutMillis = 45_000   // 45 seconds between data packets
         }
     }
+    private val extractorVersion = "jsoup-v2|blocks-v1"
+    private val textExtractor = HtmlTextExtractor(maxChars = 120_000)
+    private val textBlocker = TextBlocker()
+    private val json = Json { ignoreUnknownKeys = true }
+    private val scrapeCache = ScrapeCache<ScrapedKrithiMetadata>(
+        ttl = Duration.ofHours(cacheTtlHours),
+        maxEntries = cacheMaxEntries,
+        cacheName = "krithi-scrape"
+    )
+    private val inFlight = ConcurrentHashMap<String, Deferred<ScrapedKrithiMetadata>>()
 
     override suspend fun scrapeKrithi(url: String): ScrapedKrithiMetadata {
-        logger.info("Scraping URL: $url")
-        val html = fetchAndClean(url)
+        val cacheKey = "$extractorVersion|schema=$useSchemaMode::$url"
+        scrapeCache.get(cacheKey)?.let {
+            logger.info("Scrape cache hit for {}", url)
+            return it
+        }
 
-        val prompt = """
-            Analyze the following text content extracted from a Carnatic music webpage.
-            Extract the Krithi details into a structured JSON format.
-            
-            Text Content:
-            $html
-            
-            Instructions for Section Extraction:
-            - Look for keywords like "Pallavi", "Anupallavi", "Charanam", "Samashti Charanam", "Chittaswaram", "Madhyamakala", "Muktayi Swara", "Ettugada", "Solkattu", "Anubandha" (case insensitive) to identify sections.
-            - The text immediately following these headers belongs to that section.
-            - If explicit section headers are NOT found, assume the first stanza/paragraph of the lyrics is the PALLAVI, the second might be ANUPALLAVI (if distinct), etc.
-            - If the lyrics are presented as a list of links (e.g., [Word](...)), treat the link text as the lyrics.
-            - If sections are found, populating the 'sections' array is MANDATORY.
-            
-            TRACK-032 Multi-language lyric extraction:
-            - If the page contains lyrics in multiple languages or scripts (e.g. English, Devanagari, Tamil, Telugu, Kannada, Malayalam), also populate 'lyricVariants' with one object per distinct language/script block.
-            - Each lyricVariant must have: 'language' (use codes: SA, TA, TE, KN, ML, HI, EN), 'script' (use: devanagari, tamil, telugu, kannada, malayalam, latin), 'lyrics' (full text for that script), and optionally 'sections' (same structure as top-level sections) if that script has section labels.
-            - If only one language/script is present, you may still set lyricVariants with a single entry, or leave lyricVariants null and use the top-level 'lyrics' and 'sections'.
-            
-            Extract the following fields:
-            - title
-            - composer (e.g., Tyagaraja, Dikshitar)
-            - raga
-            - tala
-            - deity (if mentioned in lyrics or header)
-            - temple (if mentioned in lyrics or header)
-            - templeUrl (Look for explicit links to external temple info pages like templenet.com, wikipedia, etc. within the content)
-            - language (if mentioned; primary language)
-            - lyrics (The full lyrics text for the primary/first script, preserving intended line breaks if possible)
-            - notation (The musical notation if available)
-            - sections: A list of objects with 'type' (some valid values: PALLAVI, ANUPALLAVI, CHARANAM, SAMASHTI_CHARANAM, CHITTASWARAM, SWARA_SAHITYA, MADHYAMA_KALA, SOLKATTU_SWARA, ANUBANDHA, MUKTAYI_SWARA, ETTUGADA_SWARA, ETTUGADA_SAHITYA, VILOMA_CHITTASWARAM, OTHER) and 'text'.
-            - lyricVariants: (optional) List of { "language": "SA"|"TA"|"TE"|"KN"|"ML"|"HI"|"EN", "script": "devanagari"|"tamil"|"telugu"|"kannada"|"malayalam"|"latin", "lyrics": "...", "sections": [...] }.
-            
-            If a field is not found, use null.
-            
-            Return ONLY the valid JSON matching the structure.
-        """.trimIndent()
+        inFlight[cacheKey]?.let {
+            logger.info("Scrape in-flight dedupe hit for {}", url)
+            return it.await()
+        }
 
-        var metadata = geminiClient.generateStructured<ScrapedKrithiMetadata>(prompt)
-        
-        // Post-processing to ensure lyrics is populated
+        return coroutineScope {
+            val deferred = async { scrapeKrithiInternal(url) }
+            val existing = inFlight.putIfAbsent(cacheKey, deferred)
+            if (existing != null) {
+                deferred.cancel()
+                return@coroutineScope existing.await()
+            }
+
+            try {
+                val result = deferred.await()
+                val cacheable = result.warnings
+                    ?.none { it == "gemini_failed" || it == "empty_extraction" }
+                    ?: true
+                if (cacheable) {
+                    scrapeCache.put(cacheKey, result)
+                }
+                result
+            } finally {
+                inFlight.remove(cacheKey, deferred)
+            }
+        }
+    }
+
+    private suspend fun scrapeKrithiInternal(url: String): ScrapedKrithiMetadata {
+        logger.info("Scraping URL: {}", url)
+        val extracted = fetchAndExtract(url)
+        if (extracted.text.isBlank()) {
+            logger.warn("Empty extraction for {}", url)
+            return ScrapedKrithiMetadata(
+                title = extracted.title ?: url,
+                warnings = listOf("empty_extraction")
+            )
+        }
+
+        val promptBlocks = textBlocker.buildBlocks(extracted.text)
+        val structuredText = buildStructuredText(url, extracted.title, promptBlocks)
+        val prompt = buildPrompt(structuredText)
+        val detectedSections = deriveSectionsFromBlocks(promptBlocks.blocks)
+
+        logger.info(
+            "Scrape sizes for {}: extractedChars={}, promptChars={}",
+            url,
+            extracted.text.length,
+            prompt.length
+        )
+
+        val metadata = try {
+            val rawJson = if (useSchemaMode) {
+                geminiClient.generateStructuredRaw(
+                    prompt,
+                    GenerationConfig(
+                        responseMimeType = "application/json",
+                        responseSchema = scrapedKrithiSchema()
+                    )
+                )
+            } else {
+                geminiClient.generateStructuredRaw(prompt, null)
+            }
+            val cleanedJson = ScrapeJsonSanitizer.sanitizeScrapedKrithiJson(rawJson)
+            json.decodeFromString<ScrapedKrithiMetadata>(cleanedJson)
+        } catch (e: Exception) {
+            logger.error("Gemini scrape failed for {}. Returning partial metadata.", url, e)
+            return ScrapedKrithiMetadata(
+                title = extracted.title ?: url,
+                warnings = listOf("gemini_failed")
+            )
+        }
+
+        var postProcessed = postProcessMetadata(metadata)
+        if (postProcessed.sections.isNullOrEmpty() && detectedSections.isNotEmpty()) {
+            postProcessed = postProcessed.copy(sections = detectedSections)
+            postProcessed = postProcessMetadata(postProcessed)
+        }
+        return enrichTempleDetails(url, postProcessed)
+    }
+
+    private fun postProcessMetadata(metadata: ScrapedKrithiMetadata): ScrapedKrithiMetadata {
         if (metadata.lyrics.isNullOrBlank() && !metadata.sections.isNullOrEmpty()) {
             val concatenatedLyrics = metadata.sections.joinToString("\n\n") { section ->
                 "[${section.type}]\n${section.text}"
             }
-            metadata = metadata.copy(lyrics = concatenatedLyrics)
+            return metadata.copy(lyrics = concatenatedLyrics)
         }
-
-        // Nested scraping for Temple Details using Dedicated Service
-        if (!metadata.templeUrl.isNullOrBlank()) {
-             try {
-                val templeDto = templeScrapingService.getTempleDetails(metadata.templeUrl) {
-                    fetchAndClean(it)
-                }
-                
-                if (templeDto != null) {
-                    val templeDetails = ScrapedTempleDetails(
-                        name = templeDto.templeName,
-                        deity = templeDto.deityName,
-                        location = templeDto.city ?: templeDto.kshetraText,
-                        latitude = templeDto.latitude,
-                        longitude = templeDto.longitude,
-                        description = templeDto.notes
-                    )
-                    metadata = metadata.copy(templeDetails = templeDetails)
-                }
-             } catch (e: Exception) {
-                 logger.warn("Failed to scrape nested temple URL via service: ${metadata.templeUrl}", e)
-                 // Continue without failing the main scrape
-             }
-        }
-        
         return metadata
     }
 
-    private suspend fun fetchAndClean(url: String): String {
+    private fun deriveSectionsFromBlocks(blocks: List<TextBlocker.TextBlock>): List<ScrapedSectionDto> {
+        if (blocks.isEmpty()) return emptyList()
+        val sections = mutableListOf<ScrapedSectionDto>()
+        for (block in blocks) {
+            val type = mapLabelToSection(block.label) ?: continue
+            val text = block.lines.joinToString("\n").trim()
+            if (text.isBlank()) continue
+            sections.add(ScrapedSectionDto(type = type, text = text))
+        }
+        return sections
+    }
+
+    private fun mapLabelToSection(label: String): RagaSectionDto? {
+        return when (label.uppercase()) {
+            "PALLAVI" -> RagaSectionDto.PALLAVI
+            "ANUPALLAVI" -> RagaSectionDto.ANUPALLAVI
+            "CHARANAM" -> RagaSectionDto.CHARANAM
+            "SAMASHTI_CHARANAM" -> RagaSectionDto.SAMASHTI_CHARANAM
+            "CHITTASWARAM" -> RagaSectionDto.CHITTASWARAM
+            "SWARA_SAHITYA" -> RagaSectionDto.SWARA_SAHITYA
+            "MADHYAMAKALA", "MADHYAMA_KALA" -> RagaSectionDto.MADHYAMA_KALA
+            "SOLKATTU_SWARA" -> RagaSectionDto.SOLKATTU_SWARA
+            "ANUBANDHA" -> RagaSectionDto.ANUBANDHA
+            "MUKTAYI_SWARA" -> RagaSectionDto.MUKTAYI_SWARA
+            "ETTUGADA_SWARA" -> RagaSectionDto.ETTUGADA_SWARA
+            "ETTUGADA_SAHITYA" -> RagaSectionDto.ETTUGADA_SAHITYA
+            "VILOMA_CHITTASWARAM" -> RagaSectionDto.VILOMA_CHITTASWARAM
+            else -> null
+        }
+    }
+
+    private suspend fun enrichTempleDetails(url: String, metadata: ScrapedKrithiMetadata): ScrapedKrithiMetadata {
+        val templeUrl = metadata.templeUrl
+        if (templeScrapingService == null || templeUrl.isNullOrBlank()) return metadata
+
+        return try {
+            val templeDto = templeScrapingService.getTempleDetails(templeUrl) {
+                fetchAndClean(it)
+            }
+
+            if (templeDto != null) {
+                val templeDetails = ScrapedTempleDetails(
+                    name = templeDto.templeName,
+                    deity = templeDto.deityName,
+                    location = templeDto.city ?: templeDto.kshetraText,
+                    latitude = templeDto.latitude,
+                    longitude = templeDto.longitude,
+                    description = templeDto.notes
+                )
+                metadata.copy(templeDetails = templeDetails)
+            } else {
+                metadata
+            }
+        } catch (e: Exception) {
+            logger.warn("Failed to scrape nested temple URL via service: {} (source {})", templeUrl, url, e)
+            metadata.copy(warnings = (metadata.warnings ?: emptyList()) + "temple_scrape_failed")
+        }
+    }
+
+    private suspend fun fetchAndExtract(url: String): HtmlTextExtractor.ExtractedContent {
         val html = try {
             httpClient.get(url).bodyAsText()
+        } catch (e: TlsException) {
+            logger.warn("TLS validation failed for {}. Skipping content fetch.", url, e)
+            return HtmlTextExtractor.ExtractedContent(text = "", title = null)
         } catch (e: Exception) {
             logger.error("Failed to fetch URL: $url", e)
              // For nested URLs, we might want to just return empty string instead of throwing, 
@@ -120,17 +231,160 @@ class WebScrapingServiceImpl(
             throw IllegalArgumentException("Could not fetch URL: $url")
         }
 
-        return html.replace(Regex("<script.*?</script>", RegexOption.DOT_MATCHES_ALL), "")
-            .replace(Regex("<style.*?</style>", RegexOption.DOT_MATCHES_ALL), "")
-            .replace(Regex("<br\\s*/?>", RegexOption.IGNORE_CASE), "\n")
-            .replace(Regex("<p.*?>", RegexOption.IGNORE_CASE), "\n")
-            .replace(Regex("</div>", RegexOption.IGNORE_CASE), "\n")
-            // Preserve links for the LLM to extract URLs
-            .replace(Regex("<a\\b[^>]*href=[\"']([^\"']*)[\"'][^>]*>(.*?)</a>", setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL)), " $2 ($1) ")
-            .replace(Regex("<.*?>", RegexOption.DOT_MATCHES_ALL), " ")
-            .replace(Regex("[ \\t]+"), " ")
-            .replace(Regex("\\n\\s*\\n+"), "\n\n")
-            .take(30000)
+        return textExtractor.extract(html, url)
+    }
+
+    private suspend fun fetchAndClean(url: String): String = fetchAndExtract(url).text
+
+    private fun buildStructuredText(
+        url: String,
+        title: String?,
+        promptBlocks: TextBlocker.PromptBlocks
+    ): String {
+        val builder = StringBuilder()
+        builder.appendLine("=== SOURCE URL ===")
+        builder.appendLine(url)
+        if (!title.isNullOrBlank()) {
+            builder.appendLine()
+            builder.appendLine("=== PAGE TITLE ===")
+            builder.appendLine(title)
+        }
+        builder.appendLine()
+        builder.appendLine("=== HEADER META ===")
+        if (promptBlocks.metaLines.isNotEmpty()) {
+            builder.appendLine(promptBlocks.metaLines.joinToString("\n"))
+        } else {
+            builder.appendLine("(none)")
+        }
+        builder.appendLine()
+        builder.appendLine("=== CONTENT BLOCKS ===")
+        if (promptBlocks.blocks.isEmpty()) {
+            builder.appendLine("(none)")
+        } else {
+            promptBlocks.blocks.forEach { block ->
+                builder.appendLine("=== ${block.label} ===")
+                builder.appendLine(block.lines.joinToString("\n"))
+                builder.appendLine()
+            }
+        }
+        return builder.toString().trim()
+    }
+
+    private fun buildPrompt(structuredText: String): String {
+        return """
+            Extract Carnatic krithi metadata from the structured text below.
+            Keep null for missing fields. Preserve line breaks in lyrics with \\n.
+
+            Section rules:
+            - Section headers like Pallavi/Anupallavi/Charanam identify sections.
+            - If explicit headers are absent, infer Pallavi then Anupallavi then Charanam from stanza order.
+            - If sections are found, populate the 'sections' array.
+
+            TRACK-032 Multi-language lyric extraction:
+            - If multiple scripts/languages exist, populate lyricVariants with one entry per block.
+            - language codes: SA, TA, TE, KN, ML, HI, EN
+            - script codes: devanagari, tamil, telugu, kannada, malayalam, latin
+
+            Extract:
+            - title, composer, raga, tala, deity, temple, templeUrl, language, lyrics, notation, sections, lyricVariants
+
+            Structured Content:
+            $structuredText
+        """.trimIndent()
+    }
+
+    private fun scrapedKrithiSchema(): JsonObject = buildJsonObject {
+        put("type", JsonPrimitive("object"))
+        put(
+            "properties",
+            buildJsonObject {
+                put("title", stringSchema())
+                put("composer", nullableStringSchema())
+                put("raga", nullableStringSchema())
+                put("tala", nullableStringSchema())
+                put("deity", nullableStringSchema())
+                put("temple", nullableStringSchema())
+                put("templeUrl", nullableStringSchema())
+                put("language", nullableStringSchema())
+                put("lyrics", nullableStringSchema())
+                put("notation", nullableStringSchema())
+                put("sections", nullableArraySchema(sectionSchema()))
+                put("lyricVariants", nullableArraySchema(lyricVariantSchema()))
+                put("templeDetails", nullableObjectSchema(templeDetailsSchema()))
+                put("warnings", nullableArraySchema(stringSchema()))
+            }
+        )
+        put("required", JsonArray(listOf(JsonPrimitive("title"))))
+        put("additionalProperties", JsonPrimitive(false))
+    }
+
+    private fun sectionSchema(): JsonObject = buildJsonObject {
+        put("type", JsonPrimitive("object"))
+        put(
+            "properties",
+            buildJsonObject {
+                put("type", JsonPrimitive("string"))
+                put("text", JsonPrimitive("string"))
+            }
+        )
+        put("required", JsonArray(listOf(JsonPrimitive("type"), JsonPrimitive("text"))))
+        put("additionalProperties", JsonPrimitive(false))
+    }
+
+    private fun lyricVariantSchema(): JsonObject = buildJsonObject {
+        put("type", JsonPrimitive("object"))
+        put(
+            "properties",
+            buildJsonObject {
+                put("language", JsonPrimitive("string"))
+                put("script", JsonPrimitive("string"))
+                put("lyrics", nullableStringSchema())
+                put("sections", nullableArraySchema(sectionSchema()))
+            }
+        )
+        put("required", JsonArray(listOf(JsonPrimitive("language"), JsonPrimitive("script"))))
+        put("additionalProperties", JsonPrimitive(false))
+    }
+
+    private fun templeDetailsSchema(): JsonObject = buildJsonObject {
+        put("type", JsonPrimitive("object"))
+        put(
+            "properties",
+            buildJsonObject {
+                put("name", JsonPrimitive("string"))
+                put("deity", nullableStringSchema())
+                put("location", nullableStringSchema())
+                put("latitude", nullableNumberSchema())
+                put("longitude", nullableNumberSchema())
+                put("description", nullableStringSchema())
+            }
+        )
+        put("required", JsonArray(listOf(JsonPrimitive("name"))))
+        put("additionalProperties", JsonPrimitive(false))
+    }
+
+    private fun stringSchema(): JsonObject = buildJsonObject {
+        put("type", JsonPrimitive("string"))
+    }
+
+    private fun nullableStringSchema(): JsonObject = buildJsonObject {
+        put("type", buildJsonArray { add(JsonPrimitive("string")); add(JsonPrimitive("null")) })
+    }
+
+    private fun nullableNumberSchema(): JsonObject = buildJsonObject {
+        put("type", buildJsonArray { add(JsonPrimitive("number")); add(JsonPrimitive("null")) })
+    }
+
+    private fun nullableObjectSchema(schema: JsonObject): JsonObject = buildJsonObject {
+        put("type", buildJsonArray { add(JsonPrimitive("object")); add(JsonPrimitive("null")) })
+        put("properties", schema["properties"] ?: JsonObject(emptyMap()))
+        put("required", schema["required"] ?: JsonArray(emptyList()))
+        put("additionalProperties", JsonPrimitive(false))
+    }
+
+    private fun nullableArraySchema(itemSchema: JsonObject): JsonObject = buildJsonObject {
+        put("type", buildJsonArray { add(JsonPrimitive("array")); add(JsonPrimitive("null")) })
+        put("items", itemSchema)
     }
 }
 
@@ -157,7 +411,8 @@ data class ScrapedKrithiMetadata(
     val notation: String? = null,
     val sections: List<ScrapedSectionDto>? = null,
     val lyricVariants: List<ScrapedLyricVariantDto>? = null,
-    val templeDetails: ScrapedTempleDetails? = null
+    val templeDetails: ScrapedTempleDetails? = null,
+    val warnings: List<String>? = null
 )
 
 @Serializable
@@ -175,4 +430,3 @@ data class ScrapedSectionDto(
     val type: RagaSectionDto,
     val text: String
 )
-

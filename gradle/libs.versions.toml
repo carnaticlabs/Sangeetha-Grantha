@@ -28,6 +28,8 @@ googleAuth = "1.23.0"
 dotenvKotlin = "6.5.1"
 
 mockk = "1.14.7"
+jsoup = "1.18.1"
+caffeine = "3.1.8"
 
 [plugins]
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose" }
@@ -103,6 +105,8 @@ aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "awsSdk" }
 dotenv-kotlin = { module = "io.github.cdimascio:dotenv-kotlin", version.ref = "dotenvKotlin" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 micrometer-core = { module = "io.micrometer:micrometer-core", version.ref = "micrometer" }
+jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
+caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine" }
 
 
 [bundles]

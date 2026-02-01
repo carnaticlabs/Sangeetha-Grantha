@@ -28,6 +28,10 @@ class TempleScrapingService(
         logger.info("Cache miss. Scraping temple URL: $url")
         return try {
             val html = fetchContent(url)
+            if (html.isBlank()) {
+                logger.warn("Temple scrape received empty HTML for {}", url)
+                return null
+            }
             
             // Extract details using Gemini
             val prompt = """
@@ -49,6 +53,11 @@ class TempleScrapingService(
             """.trimIndent()
             
             val details = geminiClient.generateStructured<ScrapedTempleDetailsInternal>(prompt)
+            val templeName = details.name?.trim()
+            if (templeName.isNullOrBlank()) {
+                logger.warn("Temple scrape returned null/blank name for {}", url)
+                return null
+            }
 
             // 3. Geocode Fallback
             var lat = details.latitude
@@ -75,8 +84,8 @@ class TempleScrapingService(
             dal.templeSourceCache.save(
                 sourceUrl = url,
                 sourceDomain = domain,
-                templeName = details.name,
-                templeNameNormalized = normalize(details.name),
+                templeName = templeName,
+                templeNameNormalized = normalize(templeName),
                 deityName = details.deity,
                 kshetraText = details.location, // Assuming location implies kshetra roughly
                 city = details.location,
@@ -106,7 +115,7 @@ class TempleScrapingService(
 
     @Serializable
     private data class ScrapedTempleDetailsInternal(
-        val name: String,
+        val name: String? = null,
         val deity: String? = null,
         val location: String? = null,
         val state: String? = null,
