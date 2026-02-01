@@ -1,12 +1,14 @@
-# TRACK-031: Composer Deduplication – Avoid Duplicate Composer Names
-
 | Metadata | Value |
 |:---|:---|
 | **Status** | In Progress |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-30 |
+| **Version** | 1.0.1 |
+| **Last Updated** | 2026-02-01 |
 | **Author** | Sangeetha Grantha Team |
 | **Related Tracks** | TRACK-001 (Bulk Import), TRACK-008 (Entity Resolution) |
+
+---
+
+# TRACK-031: Composer Deduplication – Avoid Duplicate Composer Names
 
 ## 1. Goal
 Avoid creating duplicate composer records when the same person is referred to by different names (e.g. "Dikshitar" vs "Muthuswami Dikshitar", "Thyagaraja" vs "Tyagaraja"). Ensure a single canonical composer per person and map aliases to it during import and reference-data entry.
@@ -50,3 +52,4 @@ Avoid creating duplicate composer records when the same person is referred to by
 ## 6. Progress Log
 - 2026-01-30: Track created; analysis and implementation plan drafted.
 - 2026-01-30: Implemented composer_aliases migration (22__composer_aliases.sql), ComposerAliasesTable, ComposerAliasRepository, seed 03_composer_aliases.sql; wired alias resolution into EntityResolutionService (alias map in composerMap) and ComposerRepository.findOrCreate (resolve alias before create). Reference data UI warning/merge deferred.
+- 2026-02-01: Fixed composer alias lookup to avoid implicit join without FK, preventing bulk approve failures during import review.

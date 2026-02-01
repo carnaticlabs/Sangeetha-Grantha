@@ -19,9 +19,16 @@ class ComposerAliasRepository {
      * Returns the canonical composer for the given normalized alias, or null.
      */
     suspend fun findComposerByAliasNormalized(aliasNormalized: String): ComposerDto? = DatabaseFactory.dbQuery {
-        (ComposerAliasesTable innerJoin ComposersTable)
-            .selectAll()
+        val composerId = ComposerAliasesTable
+            .select(ComposerAliasesTable.composerId)
             .where { ComposerAliasesTable.aliasNormalized eq aliasNormalized }
+            .map { it[ComposerAliasesTable.composerId] }
+            .singleOrNull()
+            ?: return@dbQuery null
+
+        ComposersTable
+            .selectAll()
+            .where { ComposersTable.id eq composerId }
             .map { it.toComposerDto() }
             .singleOrNull()
     }
