@@ -37,11 +37,11 @@
 | [TRACK-026](./tracks/TRACK-026-gradle-problems-report-deprecation.md) | Gradle Problems Report - Archives Deprecation | Completed |
 | [TRACK-027](./tracks/TRACK-027-authentication-login.md) | Authentication & Login Page Implementation | Completed |
 | [TRACK-028](./tracks/TRACK-028-documentation-quality-improvements.md) | Documentation Quality Improvements | Completed |
-| [TRACK-029](./tracks/TRACK-029-bulk-import-kshetra-mapping.md) | Bulk Import - Kshetra & Deity Mapping | In Progress |
+| [TRACK-029](./tracks/TRACK-029-bulk-import-kshetra-mapping.md) | Bulk Import - Kshetra & Deity Mapping | Completed |
 | [TRACK-030](./tracks/TRACK-030-documentation-cleanup-2026-01.md) | Documentation Cleanup 2026-01 | Planned |
-| [TRACK-031](./tracks/TRACK-031-composer-deduplication-analysis.md) | Composer Deduplication – Avoid Duplicate Names | In Progress |
-| [TRACK-032](./tracks/TRACK-032-multi-language-lyric-extraction-analysis.md) | Multi-Language Lyric Extraction from Web Sources | In Progress |
-| [TRACK-033](./tracks/TRACK-033-cli-docs-command.md) | Sangita CLI – Docs Command | Active |
-| [TRACK-034](./tracks/TRACK-034-fix-text-blocker-parsing.md) | Fix TextBlocker Section Parsing | Active |
+| [TRACK-031](./tracks/TRACK-031-composer-deduplication-analysis.md) | Composer Deduplication – Avoid Duplicate Names | Completed |
+| [TRACK-032](./tracks/TRACK-032-multi-language-lyric-extraction-analysis.md) | Multi-Language Lyric Extraction from Web Sources | Completed |
+| [TRACK-033](./tracks/TRACK-033-cli-docs-command.md) | Sangita CLI – Docs Command | Completed |
+| [TRACK-034](./tracks/TRACK-034-fix-text-blocker-parsing.md) | Fix TextBlocker Section Parsing | Completed |
 
 ## 3. Deprecated Tracks
