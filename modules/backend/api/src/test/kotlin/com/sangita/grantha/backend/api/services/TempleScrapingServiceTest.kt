@@ -41,14 +41,14 @@ class TempleScrapingServiceTest {
         // 2. Setup Mocks
         val mockCacheRepo = mockk<TempleSourceCacheRepository>()
         val mockGeocodingService = mockk<GeocodingService>()
-        val realGeminiClient = GeminiApiClient(env.geminiApiKey!!)
+        val realGeminiClient = GeminiApiClient(
+            apiKey = env.geminiApiKey!!,
+            modelUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+        )
         
         // Mock Cache Miss
         val url = "http://templenet.com/Tamilnadu/s207.html"
         coEvery { mockCacheRepo.findByUrl(url) } returns null
-        
-        // Mock Cache Save (Capture the argument)
-        val saveSlot = slot<TempleSourceCacheDto>()
         
         // Create a dummy DTO to return
         val dummyDto = TempleSourceCacheDto(
@@ -56,51 +56,54 @@ class TempleScrapingServiceTest {
             sourceUrl = url,
             sourceDomain = "templenet.com",
             templeName = "Vaitheeswaran Koil",
-            deityName = null,
-            city = null,
-            state = null,
-            country = null,
-            latitude = null,
-            longitude = null,
-            geoSource = null,
-            geoConfidence = null,
+            deityName = "Muthukumaraswamy",
+            kshetraText = "Vaitheeswaran Koil",
+            city = "Vaitheeswaran Koil",
+            state = "Tamil Nadu",
+            country = "India",
+            latitude = 11.20,
+            longitude = 79.71,
+            geoSource = "Manual",
+            geoConfidence = "HIGH",
             notes = null,
             rawPayload = null,
-            fetchedAt = null,
+            fetchedAt = Instant.now().toString(),
             error = null
         )
 
-        // Mock save to return the dummy DTO (since we can't easily return the captured argument directly in the same call in a type-safe way without side effects)
-        // But actually, we just need to return ANY TempleSourceCacheDto to satisfy the signature.
+        // Mock save to return the dummy DTO
         coEvery { 
             mockCacheRepo.save(
-                any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()
+                sourceUrl = any(),
+                sourceDomain = any(),
+                templeName = any(),
+                templeNameNormalized = any(),
+                deityName = any(),
+                kshetraText = any(),
+                city = any(),
+                state = any(),
+                country = any(),
+                latitude = any(),
+                longitude = any(),
+                geoSource = any(),
+                geoConfidence = any(),
+                notes = any(),
+                rawPayload = any(),
+                error = any()
             ) 
         } returns dummyDto
 
         // Mock Geocoding
-        coEvery { mockGeocodingService.geocode(any()) } returns null // Fallback to scraping logic or stay null
+        coEvery { mockGeocodingService.geocode(any(), any(), any()) } returns null // Fallback to scraping logic or stay null
 
         // 3. Initialize Service
         // We need a way to mock the "fetchContent" lambda which is passed TO the method, 
         // but the service also has internal logic?
-        // Wait, TempleScrapingService takes (cacheRepo, geocodingService, geminiClient) in constructor
-        val service = TempleScrapingService(mockCacheRepo, mockGeocodingService, realGeminiClient)
+        // Wait, TempleScrapingService takes (dal, geminiClient, geocodingService) in constructor
+        val dal = com.sangita.grantha.backend.dal.SangitaDalImpl()
+        val service = TempleScrapingService(dal, realGeminiClient, mockGeocodingService)
 
         // 4. Execute
-        // We need a real fetcher that actually gets the HTML, because we want to test Gemini parsing real HTML.
-        // Simple fetcher using java.net.URL or Ktor client?
-        // Let's use a simple valid fake HTML for stability if we don't want to hit templenet, 
-        // OR use a real fetcher if we want E2E.
-        // The previous test used real URL scraping.
-        // But TempleScrapingService.getTempleDetails requires a `fetchContent` lambda.
-        
-        // Let's use a real fetcher logic similar to WebWriter or just a simple HTTP client.
-        // For the test, I'll write a simple scraper using java.net for simplicity, or just hardcode HTML if I want to test parsing only.
-        // But "Integration test (mocking external calls)" usually means mocking the HTTP response too.
-        // However, user liked the previous test hitting real URLs.
-        // Let's hitting the real URL.
-        
         val fetcher: suspend (String) -> String = { u ->
             java.net.URL(u).readText()
         }
@@ -112,10 +115,10 @@ class TempleScrapingServiceTest {
         assertNotNull(result)
         println("Scraped Result: $result")
         
-        assertEquals(url, result?.url)
+        assertEquals(url, result?.sourceUrl)
         // Verify we got some expected data
-        assertTrue(result?.name?.contains("Vaitheeswaran") == true, "Should identify Vaitheeswaran Koil")
-        assertTrue(result?.deity?.contains("Muthukumaraswamy") == true || result?.deity?.contains("Selvamuthukumaraswamy") == true || result?.deity?.contains("Shiva") == true, "Should identify deity")
+        assertTrue(result?.templeName?.contains("Vaitheeswaran") == true, "Should identify Vaitheeswaran Koil")
+        assertTrue(result?.deityName?.contains("Muthukumaraswamy") == true || result?.deityName?.contains("Selvamuthukumaraswamy") == true || result?.deityName?.contains("Shiva") == true, "Should identify deity")
 
         // Verify Cache was saved
         coVerify(exactly = 1) { 

@@ -162,11 +162,43 @@ class WebScrapingServiceImpl(
     private fun deriveSectionsFromBlocks(blocks: List<TextBlocker.TextBlock>): List<ScrapedSectionDto> {
         if (blocks.isEmpty()) return emptyList()
         val sections = mutableListOf<ScrapedSectionDto>()
+
+        // Define language/script headers that should trigger a stop if we have already found sections.
+        val languageLabels = setOf(
+            "DEVANAGARI",
+            "TAMIL",
+            "TELUGU",
+            "KANNADA",
+            "MALAYALAM",
+            "HINDI",
+            "SANSKRIT",
+            "ENGLISH",
+            "LATIN",
+            "WORD_DIVISION",
+            "MEANING",
+            "GIST",
+            "NOTES",
+            "VARIATIONS"
+        )
+
+        var foundFirstSection = false
+
         for (block in blocks) {
+            // If we encounter a language header, it often marks the start of a new script section.
+            // If we have already collected sections (from the primary block), stop to avoid duplicates.
+            if (block.label in languageLabels) {
+                if (foundFirstSection) {
+                    break
+                }
+                continue
+            }
+
             val type = mapLabelToSection(block.label) ?: continue
             val text = block.lines.joinToString("\n").trim()
             if (text.isBlank()) continue
+
             sections.add(ScrapedSectionDto(type = type, text = text))
+            foundFirstSection = true
         }
         return sections
     }

@@ -15,7 +15,7 @@ class QualityScoringServiceTest {
     @BeforeEach
     fun setup() {
         TestDatabaseFactory.connectTestDb()
-        dal = SangitaDal()
+        dal = com.sangita.grantha.backend.dal.SangitaDalImpl()
         service = QualityScoringServiceImpl()
     }
 

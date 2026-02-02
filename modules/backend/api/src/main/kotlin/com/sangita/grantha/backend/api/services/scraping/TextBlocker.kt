@@ -35,7 +35,9 @@ class TextBlocker {
         val currentLines = mutableListOf<String>()
 
         fun flush() {
-            if (currentLines.isNotEmpty()) {
+            // Emit block if it has content OR if it's a language marker (even if empty)
+            // This ensures we preserve language boundaries like "English" -> "Pallavi"
+            if (currentLines.isNotEmpty() || currentLabel in LANGUAGE_LABELS) {
                 blocks.add(TextBlock(currentLabel, currentLines.toList()))
                 currentLines.clear()
             }
@@ -59,6 +61,12 @@ class TextBlocker {
     }
 
     private data class HeaderMatch(val label: String, val remainder: String)
+    
+    private val LANGUAGE_LABELS = setOf(
+        "DEVANAGARI", "TAMIL", "TELUGU", "KANNADA", "MALAYALAM", 
+        "ENGLISH", "LATIN", "SANSKRIT", "HINDI",
+        "WORD_DIVISION", "MEANING", "GIST", "NOTES", "VARIATIONS"
+    )
 
     private fun detectHeader(line: String): HeaderMatch? {
         val normalized = line.trim()
@@ -85,12 +93,17 @@ class TextBlocker {
             "roman" to "LATIN",
             "latin" to "LATIN",
             "sanskrit" to "SANSKRIT",
-            "hindi" to "HINDI"
+            "hindi" to "HINDI",
+            "word division" to "WORD_DIVISION",
+            "meaning" to "MEANING",
+            "gist" to "GIST",
+            "notes" to "NOTES",
+            "variations" to "VARIATIONS"
         )
 
         for ((key, label) in candidates) {
-            if (lowered == key || lowered.startsWith("$key:") || lowered.startsWith("$key -")) {
-                val remainder = line.substringAfter(key, "").trimStart(':', '-', ' ')
+            if (lowered == key || lowered.startsWith("$key:") || lowered.startsWith("$key -") || lowered.startsWith("$key –")) {
+                val remainder = line.substringAfter(key, "").trimStart(':', '-', '–', ' ')
                 return HeaderMatch(label, remainder)
             }
         }
@@ -98,9 +111,9 @@ class TextBlocker {
     }
 
     private fun detectSectionHeader(line: String): HeaderMatch? {
-        val prefix = "^\\s*[\\-–—•*()\\[\\]]*\\s*"
+        val prefix = "^\\s*[\\-–—•*()=\\[\\]]*\\s*"
         // Suffix can be word boundary, colon, dash, closing parenthesis, closing bracket, or end of line
-        val suffix = "(?:\\b|:|\\-|\\)|]|$)"
+        val suffix = "(?:\\b|:|\\.|\\-|\\)|]|=|$)"
 
         val patterns = listOf(
             Regex("${prefix}pallavi$suffix", RegexOption.IGNORE_CASE) to "PALLAVI",
@@ -126,12 +139,61 @@ class TextBlocker {
             Regex("^\\s*C(?:\\s|\\.|:|-|\$)", RegexOption.IGNORE_CASE) to "CHARANAM",
             Regex("^\\s*Ch(?:\\s|\\.|:|-|\$)", RegexOption.IGNORE_CASE) to "CHARANAM",
 
+            // Indic Abbreviations
+            Regex("^\\s*प(?:\\.|\\s|:|-|\$)", RegexOption.IGNORE_CASE) to "PALLAVI",
+            Regex("^\\s*अ(?:\\.|\\s|:|-|\$)", RegexOption.IGNORE_CASE) to "ANUPALLAVI",
+            Regex("^\\s*च(?:\\.|\\s|:|-|\$)", RegexOption.IGNORE_CASE) to "CHARANAM",
+            
+            Regex("^\\s*ப(?:\\.|\\s|:|-|\$)", RegexOption.IGNORE_CASE) to "PALLAVI",
+            Regex("^\\s*அ(?:\\.|\\s|:|-|\$)", RegexOption.IGNORE_CASE) to "ANUPALLAVI",
+            Regex("^\\s*ச(?:\\.|\\s|:|-|\$)", RegexOption.IGNORE_CASE) to "CHARANAM",
+            
+            Regex("^\\s*ప(?:\\.|\\s|:|-|\$)", RegexOption.IGNORE_CASE) to "PALLAVI",
+            Regex("^\\s*అ(?:\\.|\\s|:|-|\$)", RegexOption.IGNORE_CASE) to "ANUPALLAVI",
+            Regex("^\\s*చ(?:\\.|\\s|:|-|\$)", RegexOption.IGNORE_CASE) to "CHARANAM",
+            
+            Regex("^\\s*ಪ(?:\\.|\\s|:|-|\$)", RegexOption.IGNORE_CASE) to "PALLAVI",
+            Regex("^\\s*ಅ(?:\\.|\\s|:|-|\$)", RegexOption.IGNORE_CASE) to "ANUPALLAVI",
+            Regex("^\\s*ಚ(?:\\.|\\s|:|-|\$)", RegexOption.IGNORE_CASE) to "CHARANAM",
+            
+            Regex("^\\s*പ(?:\\.|\\s|:|-|\$)", RegexOption.IGNORE_CASE) to "PALLAVI",
+            Regex("^\\s*അ(?:\\.|\\s|:|-|\$)", RegexOption.IGNORE_CASE) to "ANUPALLAVI",
+            Regex("^\\s*ച(?:\\.|\\s|:|-|\$)", RegexOption.IGNORE_CASE) to "CHARANAM",
+
             // Devanagari Headers
-            Regex("^\\s*पल्लवि(?:\\s|:|\\-|\\)|]|\$)", RegexOption.IGNORE_CASE) to "PALLAVI",
-            Regex("^\\s*अनुपल्लवि(?:\\s|:|\\-|\\)|]|\$)", RegexOption.IGNORE_CASE) to "ANUPALLAVI",
-            Regex("^\\s*चरणम्(?:\\s|:|\\-|\\)|]|\$)", RegexOption.IGNORE_CASE) to "CHARANAM",
-            Regex("^\\s*समष्टि\\s+चरणम्(?:\\s|:|\\-|\\)|]|\$)", RegexOption.IGNORE_CASE) to "SAMASHTI_CHARANAM",
-            Regex("^\\s*[(]?मध्यम\\s+काल\\s+साहित्यम्[)]?(?:\\s|:|\\-|\\)|]|\$)", RegexOption.IGNORE_CASE) to "MADHYAMAKALA"
+            Regex("^\\s*पल्लवि(?:\\s|:|\\-|\\.|\\)|]|\$)", RegexOption.IGNORE_CASE) to "PALLAVI",
+            Regex("^\\s*अनुपल्लवि(?:\\s|:|\\-|\\.|\\)|]|\$)", RegexOption.IGNORE_CASE) to "ANUPALLAVI",
+            Regex("^\\s*चरणम्(?:\\s|:|\\-|\\.|\\)|]|\$)", RegexOption.IGNORE_CASE) to "CHARANAM",
+            Regex("^\\s*समष्टि\\s+चरणम्(?:\\s|:|\\-|\\.|\\)|]|\$)", RegexOption.IGNORE_CASE) to "SAMASHTI_CHARANAM",
+            Regex("^\\s*[(]?मध्यम\\s+काल\\s+साहित्यम्[)]?(?:\\s|:|\\-|\\.|\\)|]|\$)", RegexOption.IGNORE_CASE) to "MADHYAMAKALA",
+
+            // Tamil Headers
+            Regex("^\\s*பல்லவி(?:\\s|:|\\-|\\.|\\)|]|\$)", RegexOption.IGNORE_CASE) to "PALLAVI",
+            Regex("^\\s*அனுபல்லவி(?:\\s|:|\\-|\\.|\\)|]|\$)", RegexOption.IGNORE_CASE) to "ANUPALLAVI",
+            Regex("^\\s*சரணம்(?:\\s|:|\\-|\\.|\\)|]|\$)", RegexOption.IGNORE_CASE) to "CHARANAM",
+            Regex("^\\s*ஸமஷ்டி\\s+சரணம்(?:\\s|:|\\-|\\.|\\)|]|\$)", RegexOption.IGNORE_CASE) to "SAMASHTI_CHARANAM",
+            Regex("^\\s*[(]?மத் 4 யம\\s+கால\\s+ஸாஹித்யம்[)]?(?:\\s|:|\\-|\\.|\\)|]|\$)", RegexOption.IGNORE_CASE) to "MADHYAMAKALA",
+
+            // Telugu Headers
+            Regex("^\\s*పల్లవి(?:\\s|:|\\-|\\)|]|\$)", RegexOption.IGNORE_CASE) to "PALLAVI",
+            Regex("^\\s*అనుపల్లవి(?:\\s|:|\\-|\\)|]|\$)", RegexOption.IGNORE_CASE) to "ANUPALLAVI",
+            Regex("^\\s*చరణం(?:\\s|:|\\-|\\)|]|\$)", RegexOption.IGNORE_CASE) to "CHARANAM",
+            Regex("^\\s*సమష్టి\\s+చరణం(?:\\s|:|\\-|\\)|]|\$)", RegexOption.IGNORE_CASE) to "SAMASHTI_CHARANAM",
+            Regex("^\\s*[(]?మధ్యమ\\s+కాల\\s+సాహిత్యమ్[)]?(?:\\s|:|\\-|\\)|]|\$)", RegexOption.IGNORE_CASE) to "MADHYAMAKALA",
+
+            // Kannada Headers
+            Regex("^\\s*ಪಲ್ಲವಿ(?:\\s|:|\\-|\\.|\\)|]|\$)", RegexOption.IGNORE_CASE) to "PALLAVI",
+            Regex("^\\s*ಅನುಪಲ್ಲವಿ(?:\\s|:|\\-|\\.|\\)|]|\$)", RegexOption.IGNORE_CASE) to "ANUPALLAVI",
+            Regex("^\\s*ಚರಣ(?:\\s|:|\\-|\\.|\\)|]|\$)", RegexOption.IGNORE_CASE) to "CHARANAM",
+            Regex("^\\s*ಸಮಷ್ಟಿ\\s+ಚರಣ(?:\\s|:|\\-|\\.|\\)|]|\$)", RegexOption.IGNORE_CASE) to "SAMASHTI_CHARANAM",
+            Regex("^\\s*[(]?ಮಧ್ಯಮ\\s+ಕಾಲ\\s+ಸಾಹಿತ್ಯಮ್[)]?(?:\\s|:|\\-|\\.|\\)|]|\$)", RegexOption.IGNORE_CASE) to "MADHYAMAKALA",
+
+            // Malayalam Headers
+            Regex("^\\s*പല്ലവി(?:\\s|:|\\-|\\.|\\)|]|\$)", RegexOption.IGNORE_CASE) to "PALLAVI",
+            Regex("^\\s*അനുപല്ലവി(?:\\s|:|\\-|\\.|\\)|]|\$)", RegexOption.IGNORE_CASE) to "ANUPALLAVI",
+            Regex("^\\s*ചരണം(?:\\s|:|\\-|\\.|\\)|]|\$)", RegexOption.IGNORE_CASE) to "CHARANAM",
+            Regex("^\\s*സമഷ്ടി\\s+ചരണം(?:\\s|:|\\-|\\.|\\)|]|\$)", RegexOption.IGNORE_CASE) to "SAMASHTI_CHARANAM",
+            Regex("^\\s*[(]?മധ്യമ\\s+കാല\\s+സാഹിത്യമ്[)]?(?:\\s|:|\\-|\\.|\\)|]|\$)", RegexOption.IGNORE_CASE) to "MADHYAMAKALA"
         )
 
         for ((regex, label) in patterns) {

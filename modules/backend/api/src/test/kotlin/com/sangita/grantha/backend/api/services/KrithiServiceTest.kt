@@ -22,7 +22,7 @@ class KrithiServiceTest {
     @BeforeEach
     fun setup() = runTest {
         TestDatabaseFactory.connectTestDb()
-        dal = SangitaDal()
+        dal = com.sangita.grantha.backend.dal.SangitaDalImpl()
         service = KrithiServiceImpl(dal)
     }
 

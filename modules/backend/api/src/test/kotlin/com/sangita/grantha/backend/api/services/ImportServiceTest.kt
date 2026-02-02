@@ -19,13 +19,18 @@ class ImportServiceTest {
     @BeforeEach
     fun setup() {
         TestDatabaseFactory.connectTestDb()
-        dal = SangitaDal()
+        dal = com.sangita.grantha.backend.dal.SangitaDalImpl()
         val dummyReviewer = object : ImportReviewer {
             override suspend fun reviewImport(id: kotlin.uuid.Uuid, request: ImportReviewRequest) =
                 throw UnsupportedOperationException("Not used in tests")
         }
         val autoApproval = AutoApprovalService(dummyReviewer)
-        service = ImportServiceImpl(dal) { autoApproval }
+        val env = com.sangita.grantha.backend.api.config.ApiEnvironment(
+            adminToken = "test",
+            geminiApiKey = "test"
+        )
+        val entityResolver = EntityResolutionServiceImpl(dal, NameNormalizationService())
+        service = ImportServiceImpl(dal, env, entityResolver) { autoApproval }
     }
 
     @AfterEach

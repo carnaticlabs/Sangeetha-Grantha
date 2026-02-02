@@ -45,7 +45,8 @@ object TestDatabaseFactory {
                     ImportJobTable,
                     ImportTaskRunTable,
                     ImportEventTable,
-                    EntityResolutionCacheTable
+                    EntityResolutionCacheTable,
+                    TempleSourceCacheTable
                 )
             }
         }
@@ -55,6 +56,7 @@ object TestDatabaseFactory {
         kotlinx.coroutines.runBlocking {
             DatabaseFactory.dbQuery {
                 SchemaUtils.drop(
+                    TempleSourceCacheTable,
                     EntityResolutionCacheTable,
                     ImportEventTable,
                     ImportTaskRunTable,

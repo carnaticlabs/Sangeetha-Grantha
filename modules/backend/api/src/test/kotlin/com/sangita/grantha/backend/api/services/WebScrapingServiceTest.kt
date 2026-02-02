@@ -37,7 +37,10 @@ class WebScrapingServiceTest {
         
         println("Using API Key: ${env.geminiApiKey.take(4)}...")
 
-        val client = GeminiApiClient(env.geminiApiKey!!)
+        val client = GeminiApiClient(
+            apiKey = env.geminiApiKey!!,
+            modelUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+        )
         val service = WebScrapingServiceImpl(client)
 
 //        val url = "https://www.shivkumar.org/music/abhayambikaya.htm"
@@ -81,7 +84,10 @@ class WebScrapingServiceTest {
              return@runBlocking
         }
         
-        val client = GeminiApiClient(env.geminiApiKey!!)
+        val client = GeminiApiClient(
+            apiKey = env.geminiApiKey!!,
+            modelUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+        )
         val service = WebScrapingServiceImpl(client)
 
         // URL provided by user

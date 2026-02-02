@@ -15,6 +15,7 @@ import com.sangita.grantha.shared.domain.model.RagaSectionDto
 import com.sangita.grantha.backend.dal.enums.ScriptCode
 import com.sangita.grantha.backend.dal.enums.RagaSection
 import com.sangita.grantha.backend.dal.repositories.KrithiCreateParams
+import com.sangita.grantha.backend.api.services.scraping.TextBlocker
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.UUID
@@ -164,13 +165,22 @@ class ImportServiceImpl(
                 val importData = dal.imports.findById(id) ?: throw NoSuchElementException("Import not found")
                 val overrides = request.overrides
                 
-                // Extract values, prioritizing overrides
-                val effectiveComposer = overrides?.composer ?: importData.rawComposer
-                val effectiveRaga = overrides?.raga ?: importData.rawRaga
-                val effectiveTala = overrides?.tala ?: importData.rawTala
-                val effectiveTitle = overrides?.title ?: importData.rawTitle ?: "Untitled"
-                val effectiveLanguage = overrides?.language ?: importData.rawLanguage
-                val effectiveLyrics = (overrides?.lyrics ?: importData.rawLyrics)?.replace("\\n", "\n")
+                // Extract values, prioritizing overrides, then raw data, then scraped payload
+                val metadata = importData.parsedPayload?.let { 
+                    try { 
+                        Json.decodeFromString<ScrapedKrithiMetadata>(it) 
+                    } catch (e: Exception) { 
+                        null 
+                    } 
+                }
+
+                val effectiveComposer = overrides?.composer ?: importData.rawComposer ?: metadata?.composer
+                val effectiveRaga = overrides?.raga ?: importData.rawRaga ?: metadata?.raga
+                val effectiveTala = overrides?.tala ?: importData.rawTala ?: metadata?.tala
+                val effectiveTitle = overrides?.title ?: importData.rawTitle ?: metadata?.title ?: "Untitled"
+                val effectiveLanguage = overrides?.language ?: importData.rawLanguage ?: metadata?.language
+                val effectiveLyrics = (overrides?.lyrics ?: importData.rawLyrics ?: metadata?.lyrics)?.replace("\\n", "\n")
+                
                 // Deity/Temple are handled below
                 val sourceKey = importData.sourceKey
                 
@@ -360,26 +370,65 @@ class ImportServiceImpl(
 
                         // TRACK-032: Multi-language lyric variants from scrape
                         if (!metadata.lyricVariants.isNullOrEmpty()) {
-                            val variants = metadata.lyricVariants!!
-                            val firstSections = variants.firstOrNull()?.sections
+                            val variants = metadata.lyricVariants!!.toMutableList()
+                            
+                            // 1. Recover missing sections for each variant using TextBlocker
+                            variants.forEachIndexed { idx, v ->
+                                if (v.sections.isNullOrEmpty() && !v.lyrics.isNullOrBlank()) {
+                                    val recovered = TextBlocker().buildBlocks(v.lyrics.replace("\\n", "\n")).blocks
+                                        .mapNotNull { block: TextBlocker.TextBlock ->
+                                            val type = parseRagaSectionDto(block.label)
+                                            if (type != null && type != RagaSectionDto.OTHER) {
+                                                ScrapedSectionDto(type = type, text = block.lines.joinToString("\n"))
+                                            } else null
+                                        }
+                                    if (recovered.isNotEmpty()) {
+                                        variants[idx] = v.copy(sections = recovered)
+                                    }
+                                }
+                            }
+
+                            // 2. Determine canonical section structure
+                            // Deduplicate metadata.sections if they are concatenated language blocks
+                            val rawSections = metadata.sections ?: emptyList()
+                            val deduplicated = mutableListOf<ScrapedSectionDto>()
+                            val seenTypes = mutableListOf<String>()
+                            
+                            // Heuristic: If we see a PALLAVI again after a CHARANAM, it's likely a new language block.
+                            // We only take the first complete block.
+                            var stopDedupe = false
+                            for (s in rawSections) {
+                                if (s.type == RagaSectionDto.PALLAVI && seenTypes.contains("CHARANAM")) {
+                                    stopDedupe = true
+                                }
+                                if (stopDedupe) break
+                                deduplicated.add(s)
+                                seenTypes.add(s.type.name)
+                            }
+
                             val sectionStructure = when {
-                                !firstSections.isNullOrEmpty() -> firstSections
-                                !metadata.sections.isNullOrEmpty() -> metadata.sections!!
+                                !variants.first().sections.isNullOrEmpty() -> variants.first().sections!!
+                                deduplicated.isNotEmpty() -> deduplicated
                                 else -> emptyList()
                             }
+
                             if (sectionStructure.isNotEmpty()) {
                                 val sectionsToSave = sectionStructure.mapIndexed { index, section ->
                                     Triple(section.type.name, index + 1, null as String?)
                                 }
                                 dal.krithis.saveSections(createdKrithi.id, sectionsToSave)
                             }
+                            
                             val savedSections = dal.krithis.getSections(createdKrithi.id)
+                            
+                            // 3. Save each variant and link to sections
                             variants.forEachIndexed { index, scraped ->
                                 val lang = parseLanguageCode(scraped.language) ?: LanguageCode.valueOf(createdKrithi.primaryLanguage.name)
                                 val script = parseScriptCode(scraped.script) ?: ScriptCode.LATIN
                                 val lyricsText = (scraped.lyrics?.takeIf { it.isNotBlank() }
                                     ?: scraped.sections?.joinToString("\n\n") { "[${it.type.name}]\n${it.text}" }.takeIf { it?.isNotBlank() == true }
                                     ?: "").replace("\\n", "\n")
+                                
                                 val createdVariant = dal.krithis.createLyricVariant(
                                     krithiId = createdKrithi.id,
                                     language = lang,
@@ -388,12 +437,29 @@ class ImportServiceImpl(
                                     isPrimary = index == 0,
                                     sourceReference = sourceKey
                                 )
+                                
                                 val variantSections = scraped.sections
-                                if (variantSections != null && variantSections.isNotEmpty() && savedSections.isNotEmpty()) {
+                                if (!variantSections.isNullOrEmpty() && savedSections.isNotEmpty()) {
                                     val lyricSections = savedSections.mapNotNull { savedSection ->
-                                        val originalSection = variantSections.getOrNull(savedSection.orderIndex - 1)
-                                        if (originalSection != null && originalSection.text.isNotBlank()) {
-                                            savedSection.id.toJavaUuid() to originalSection.text
+                                        // Find matching section by type and approximate index
+                                        // Use orderIndex to pick from variantSections
+                                        val match = variantSections.getOrNull(savedSection.orderIndex - 1)
+                                        if (match != null && match.text.isNotBlank()) {
+                                            savedSection.id.toJavaUuid() to match.text
+                                        } else null
+                                    }
+                                    if (lyricSections.isNotEmpty()) {
+                                        dal.krithis.saveLyricVariantSections(createdVariant.id, lyricSections)
+                                    }
+                                } else if (!scraped.lyrics.isNullOrBlank() && savedSections.isNotEmpty()) {
+                                    // FALLBACK: Stanza-based mapping if TextBlocker failed to find headers
+                                    val stanzas = scraped.lyrics!!.replace("\\n", "\n").split(Regex("\\n\\s*\\n")).filter { it.isNotBlank() }
+                                    val lyricSections = savedSections.mapIndexedNotNull { idx, savedSection ->
+                                        // Find a stanza that matches this section. 
+                                        // If no headers, we assume stanzas align with canonical sections.
+                                        val stanza = stanzas.getOrNull(idx)
+                                        if (stanza != null) {
+                                            savedSection.id.toJavaUuid() to stanza
                                         } else null
                                     }
                                     if (lyricSections.isNotEmpty()) {
@@ -610,6 +676,26 @@ class ImportServiceImpl(
             "kannada" -> ScriptCode.KANNADA
             "malayalam" -> ScriptCode.MALAYALAM
             "latin" -> ScriptCode.LATIN
+            else -> null
+        }
+    }
+
+    /** TRACK-032: Map TextBlocker label to RagaSectionDto. */
+    private fun parseRagaSectionDto(label: String): RagaSectionDto? {
+        return when (label.uppercase()) {
+            "PALLAVI" -> RagaSectionDto.PALLAVI
+            "ANUPALLAVI" -> RagaSectionDto.ANUPALLAVI
+            "CHARANAM", "CARANAM" -> RagaSectionDto.CHARANAM
+            "SAMASHTI_CHARANAM" -> RagaSectionDto.SAMASHTI_CHARANAM
+            "CHITTASWARAM" -> RagaSectionDto.CHITTASWARAM
+            "SWARA_SAHITYA" -> RagaSectionDto.SWARA_SAHITYA
+            "MADHYAMAKALA", "MADHYAMA_KALA" -> RagaSectionDto.MADHYAMA_KALA
+            "SOLKATTU_SWARA" -> RagaSectionDto.SOLKATTU_SWARA
+            "ANUBANDHA" -> RagaSectionDto.ANUBANDHA
+            "MUKTAYI_SWARA" -> RagaSectionDto.MUKTAYI_SWARA
+            "ETTUGADA_SWARA" -> RagaSectionDto.ETTUGADA_SWARA
+            "ETTUGADA_SAHITYA" -> RagaSectionDto.ETTUGADA_SAHITYA
+            "VILOMA_CHITTASWARAM" -> RagaSectionDto.VILOMA_CHITTASWARAM
             else -> null
         }
     }
