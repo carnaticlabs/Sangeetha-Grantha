@@ -2,20 +2,25 @@ package com.sangita.grantha.backend.api.services.scraping
 
 import com.sangita.grantha.shared.domain.model.RagaSectionDto
 
-class TextBlocker {
+class KrithiStructureParser {
     data class TextBlock(val label: String, val lines: List<String>)
     data class PromptBlocks(
         val metaLines: List<String>,
         val blocks: List<TextBlock>
     )
     
-    data class ScrapedSection(val type: RagaSectionDto, val text: String)
+    data class ScrapedSection(val type: RagaSectionDto, val text: String, val label: String? = null)
     data class ScrapedVariant(
         val language: String,
         val script: String,
         val lyrics: String,
         val sections: List<ScrapedSection>
     )
+
+    // Matches "1. SrI rAgaM" or "Arabhi rAgaM"
+    private val ragaPattern = Regex("""^(\d+\.\s*)?(.+?)\s+rAgaM\s*$""", RegexOption.IGNORE_CASE)
+    // Matches "vilOma - mOhana rAgaM"
+    private val vilomaPattern = Regex("""^vilOma\s*-\s*(.+?)\s+rAgaM\s*$""", RegexOption.IGNORE_CASE)
 
     fun buildBlocks(rawText: String): PromptBlocks {
         val lines = rawText
@@ -55,11 +60,43 @@ class TextBlocker {
             }
 
             val type = mapLabelToSection(block.label) ?: continue
-            val text = block.lines.joinToString("\n").trim()
-            if (text.isBlank()) continue
-
-            sections.add(ScrapedSection(type = type, text = text))
             foundFirstSection = true
+
+            // Parse lines within the block for Ragamalika sub-sections
+            var currentLabel: String? = null
+            val currentLines = mutableListOf<String>()
+
+            fun flushSubSection() {
+                if (currentLines.isNotEmpty()) {
+                    sections.add(ScrapedSection(type = type, text = currentLines.joinToString("\n"), label = currentLabel))
+                    currentLines.clear()
+                }
+            }
+
+            for (line in block.lines) {
+                val vilomaMatch = vilomaPattern.find(line)
+                val ragaMatch = ragaPattern.find(line)
+
+                if (vilomaMatch != null) {
+                    flushSubSection()
+                    currentLabel = "Viloma - ${vilomaMatch.groupValues[1].trim()}"
+                    // The line itself is the header, don't add it to content, OR add it?
+                    // Usually headers are separate. But in this text, they are line items.
+                    // "vilOma - mOhana rAgaM" is the header. The next line is the lyric.
+                    // BUT: "1. SrI rAgaM" is a header.
+                    // We should preserve the header in the text if it's significant, but for "label" extraction, we treat it as a delimiter.
+                    // Let's add it to the text for context, or skip it?
+                    // The user requirement says: "And parse in tune with the lyrics".
+                    // If we split sections, the header line becomes the "label". It shouldn't be in the body text of the *new* section ideally, or it's redundant.
+                    // Let's SKIP adding the header line to the body, as it's now metadata (the label).
+                } else if (ragaMatch != null) {
+                    flushSubSection()
+                    currentLabel = ragaMatch.groupValues[2].trim()
+                } else {
+                    currentLines.add(line)
+                }
+            }
+            flushSubSection()
         }
         return sections
     }
@@ -119,7 +156,9 @@ class TextBlocker {
 
                 val type = mapLabelToSection(block.label)
                 if (type != null) {
-                    currentSections.add(ScrapedSection(type, blockText))
+                    // For variants, we currently don't parse sub-sections deep inside because regexes are language-specific (Latin script).
+                    // We just store the block as a whole section.
+                    currentSections.add(ScrapedSection(type, blockText, null))
                 }
                 
                 // Always append to full lyrics blob for safety/fallback
@@ -365,6 +404,11 @@ class TextBlocker {
     }
 
     private fun isMetaLine(line: String): Boolean {
+        // Skip structural headers that look like meta lines (e.g. "1. SrI rAgaM")
+        if (ragaPattern.containsMatchIn(line) || vilomaPattern.containsMatchIn(line)) {
+            return false
+        }
+
         val lowered = line.lowercase()
         val keywords = listOf(
             "title",

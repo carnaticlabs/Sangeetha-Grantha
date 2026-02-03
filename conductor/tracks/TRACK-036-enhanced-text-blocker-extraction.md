@@ -50,6 +50,8 @@ Shift the primary responsibility for **Lyric and Section Extraction** from the L
 - **2026-02-03**: Refined Gemini prompt to remove internal "TRACK-032" reference and clarify multi-language extraction instructions.
 - **2026-02-03**: Verified changes with `TextBlockerTest` (including `bAla kRshNaM bhAvayAmi` case) and `WebScrapingServiceTest`. All tests passed.
 - **2026-02-03**: Implemented **Deterministic Variant Extraction** in `TextBlocker` and optimized `WebScrapingService`. Now, if deterministic sections/variants are found, the prompt sent to Gemini EXCLUDES the lyric blocks, reducing token usage by ~90% while preserving multi-script data.
+- **2026-02-03**: Renamed `TextBlocker` to **`KrithiStructureParser`** to reflect its evolved role.
+- **2026-02-03**: Implemented **Ragamalika-Aware Parsing**: The parser now detects sub-sections within blocks using Raga headers (e.g., "1. Sri Raga", "Viloma - Mohana"). These are extracted as distinct sections with a `label` property, preserving the "Garland" structure.
 
 ## 5. References
 - `modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/scraping/TextBlocker.kt`

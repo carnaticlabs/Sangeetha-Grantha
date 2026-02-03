@@ -5,7 +5,7 @@ import com.sangita.grantha.backend.api.clients.GenerationConfig
 import com.sangita.grantha.backend.api.services.scraping.HtmlTextExtractor
 import com.sangita.grantha.backend.api.services.scraping.ScrapeJsonSanitizer
 import com.sangita.grantha.backend.api.services.scraping.ScrapeCache
-import com.sangita.grantha.backend.api.services.scraping.TextBlocker
+import com.sangita.grantha.backend.api.services.scraping.KrithiStructureParser
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.HttpTimeout
@@ -52,7 +52,7 @@ class WebScrapingServiceImpl(
     }
     private val extractorVersion = "jsoup-v2|blocks-v1"
     private val textExtractor = HtmlTextExtractor(maxChars = 120_000)
-    private val textBlocker = TextBlocker()
+    private val textBlocker = KrithiStructureParser()
     private val json = Json { ignoreUnknownKeys = true }
     private val scrapeCache = ScrapeCache<ScrapedKrithiMetadata>(
         ttl = Duration.ofHours(cacheTtlHours),
@@ -109,14 +109,14 @@ class WebScrapingServiceImpl(
 
         val promptBlocks = textBlocker.buildBlocks(extracted.text)
         val detectedSections = textBlocker.extractSections(extracted.text).map { 
-            ScrapedSectionDto(type = it.type, text = it.text) 
+            ScrapedSectionDto(type = it.type, text = it.text, label = it.label) 
         }
         val detectedVariants = textBlocker.extractLyricVariants(extracted.text).map { v ->
             ScrapedLyricVariantDto(
                 language = v.language,
                 script = v.script,
                 lyrics = v.lyrics,
-                sections = v.sections.map { s -> ScrapedSectionDto(s.type, s.text) }
+                sections = v.sections.map { s -> ScrapedSectionDto(s.type, s.text, s.label) }
             )
         }
 
@@ -154,23 +154,20 @@ class WebScrapingServiceImpl(
             val cleanedJson = ScrapeJsonSanitizer.sanitizeScrapedKrithiJson(rawJson)
             json.decodeFromString<ScrapedKrithiMetadata>(cleanedJson)
         } catch (e: Exception) {
-            logger.error("Gemini scrape failed for {}. Returning partial metadata.", url, e)
-            return ScrapedKrithiMetadata(
+            logger.error("Gemini scrape failed for {}. Using deterministic structure only.", url, e)
+            ScrapedKrithiMetadata(
                 title = extracted.title ?: url,
                 warnings = listOf("gemini_failed")
             )
         }
 
         var postProcessed = metadata
-        // For Ragamalikas, we trust Gemini's sectioning over TextBlocker because TextBlocker likely merged Raga sections.
-        // However, if Gemini returns NOTHING, we fallback to TextBlocker's basic structure.
         if (detectedSections.isNotEmpty()) {
-            if (!isRagamalika || postProcessed.sections.isNullOrEmpty()) {
-                postProcessed = postProcessed.copy(sections = detectedSections)
-            }
+            // Prioritize deterministic sections from KrithiStructureParser (now handles Ragamalika sub-sections)
+            postProcessed = postProcessed.copy(sections = detectedSections)
         }
         if (detectedVariants.isNotEmpty()) {
-            // Prioritize deterministic variants from TextBlocker (scripts are usually reliable even in Ragamalika)
+            // Prioritize deterministic variants from KrithiStructureParser (scripts are usually reliable even in Ragamalika)
             postProcessed = postProcessed.copy(lyricVariants = detectedVariants)
         }
         
@@ -241,7 +238,7 @@ class WebScrapingServiceImpl(
     private fun buildStructuredText(
         url: String,
         title: String?,
-        promptBlocks: TextBlocker.PromptBlocks,
+        promptBlocks: KrithiStructureParser.PromptBlocks,
         includeContent: Boolean = true
     ): String {
         val builder = StringBuilder()
@@ -350,6 +347,7 @@ class WebScrapingServiceImpl(
             buildJsonObject {
                 put("type", JsonPrimitive("string"))
                 put("text", JsonPrimitive("string"))
+                put("label", nullableStringSchema())
             }
         )
         put("required", JsonArray(listOf(JsonPrimitive("type"), JsonPrimitive("text"))))
@@ -453,5 +451,6 @@ data class ScrapedTempleDetails(
 @Serializable
 data class ScrapedSectionDto(
     val type: RagaSectionDto,
-    val text: String
+    val text: String,
+    val label: String? = null
 )

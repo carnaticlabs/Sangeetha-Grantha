@@ -5,9 +5,9 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class TextBlockerTest {
+class KrithiStructureParserTest {
 
-    private val blocker = TextBlocker()
+    private val blocker = KrithiStructureParser()
 
     @Test
     fun `test multi script duplication via extractSections`() {

@@ -15,7 +15,7 @@ import com.sangita.grantha.shared.domain.model.RagaSectionDto
 import com.sangita.grantha.backend.dal.enums.ScriptCode
 import com.sangita.grantha.backend.dal.enums.RagaSection
 import com.sangita.grantha.backend.dal.repositories.KrithiCreateParams
-import com.sangita.grantha.backend.api.services.scraping.TextBlocker
+import com.sangita.grantha.backend.api.services.scraping.KrithiStructureParser
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.UUID
@@ -372,11 +372,11 @@ class ImportServiceImpl(
                         if (!metadata.lyricVariants.isNullOrEmpty()) {
                             val variants = metadata.lyricVariants!!.toMutableList()
                             
-                            // 1. Recover missing sections for each variant using TextBlocker
+                            // 1. Recover missing sections for each variant using KrithiStructureParser
                             variants.forEachIndexed { idx, v ->
                                 if (v.sections.isNullOrEmpty() && !v.lyrics.isNullOrBlank()) {
-                                    val recovered = TextBlocker().buildBlocks(v.lyrics.replace("\\n", "\n")).blocks
-                                        .mapNotNull { block: TextBlocker.TextBlock ->
+                                    val recovered = KrithiStructureParser().buildBlocks(v.lyrics.replace("\\n", "\n")).blocks
+                                        .mapNotNull { block: KrithiStructureParser.TextBlock ->
                                             val type = parseRagaSectionDto(block.label)
                                             if (type != null && type != RagaSectionDto.OTHER) {
                                                 ScrapedSectionDto(type = type, text = block.lines.joinToString("\n"))
