@@ -1,3 +1,10 @@
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 1.0.0 |
+| **Last Updated** | 2026-02-02 |
+| **Author** | Sangeetha Grantha Team |
+
 # Frontend Pages Refactoring Checklist
 
 **Related Review:** [frontend-pages-code-review.md](./frontend-pages-code-review.md)
