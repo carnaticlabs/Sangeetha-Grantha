@@ -1,5 +1,6 @@
 package com.sangita.grantha.backend.api.services.scraping
 
+import com.sangita.grantha.shared.domain.model.RagaSectionDto
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -9,7 +10,7 @@ class TextBlockerTest {
     private val blocker = TextBlocker()
 
     @Test
-    fun `test multi script duplication`() {
+    fun `test multi script duplication via extractSections`() {
         val rawText = """
             English
             
@@ -24,114 +25,55 @@ class TextBlockerTest {
             
             variations -
             rasAlanga  - sAranga
-            divyAlaMkRtAnga SriyE  - divyAlaMkRtAngASrayE - divyAlaMkRtAngASriyE
             
             English - Word Division
             
             pallavi
-            avyAja karuNA kaTAkshi aniSaM mAm-ava kAmAkshi
-            
-            samashTi caraNam
-            ravi-Adi nava graha-udayE rasAlanga nATaka kriyE
+            avyAja karuNA kaTAkshi
             
             Devanagari
             
             पलल्लवि
             avyAja karuNA kaTAkshi
-            
-            समष्टि चरणम्
-            ravyAdi nava grahOdayE
         """.trimIndent()
 
-        val blocks = blocker.buildBlocks(rawText).blocks
+        val sections = blocker.extractSections(rawText)
         
-        // Debug output
-        blocks.forEach { println("Block: ${it.label}, Lines: ${it.lines.size}") }
-
-        // We expect TextBlocker to find ALL of them (it's dumb)
-        // usage in WebScrapingService should filter them.
-        
-        // Check labels
-        val labels = blocks.map { it.label }
-        // Depending on regex matching:
-        // 1. ENGLISH (from "English")
-        // 2. PALLAVI
-        // 3. SAMASHTI_CHARANAM (if matched)
-        // 4. MADHYAMAKALA
-        // 5. ENGLISH (from "English - Word Division")
-        // 6. PALLAVI
-        // 7. SAMASHTI_CHARANAM
-        // 8. DEVANAGARI
-        // 9. PALLAVI
-        // 10. SAMASHTI_CHARANAM
-        
-        assertTrue(labels.contains("PALLAVI"))
-        assertTrue(labels.contains("DEVANAGARI"))
-        assertTrue(labels.count { it == "PALLAVI" } >= 2, "Should find multiple Pallavis")
+        // Should only have the first block's sections
+        val types = sections.map { it.type }
+        assertEquals(listOf(RagaSectionDto.PALLAVI, RagaSectionDto.SAMASHTI_CHARANAM, RagaSectionDto.MADHYAMA_KALA), types)
     }
 
     @Test
-    fun `test filtering logic`() {
+    fun `test dikshitar bala kuchambike structure`() {
         val rawText = """
-            English
-            
             pallavi
-            Line 1
+            bAla kucAmbikE mAmava vara dAyikE SrI
             
             samashTi caraNam
-            Line 2
-            
+            bAlEndu SEkhari bhakta janAvana Sankari
             (madhyama kAla sAhityam)
-            Line 3
-            
-            English - Word Division
-            
-            pallavi
-            Line 1 repeat
-            
-            Devanagari
-            
-            पलल्लवि
-            Line 1 dev
+            nIla kaNTha manOranjani guru guha janani
+            nIrajAsanAdi pOshiNi kadamba vana vAsini
         """.trimIndent()
 
-        val blocks = blocker.buildBlocks(rawText).blocks
+        val sections = blocker.extractSections(rawText)
         
-        // Replicating WebScrapingService logic
-        val languageLabels = setOf("DEVANAGARI", "TAMIL", "TELUGU", "KANNADA", "MALAYALAM", "HINDI", "SANSKRIT", "ENGLISH", "LATIN")
-        val sections = mutableListOf<String>() // Just storing labels for this test
-        var foundFirstSection = false
-
-        for (block in blocks) {
-            if (block.label in languageLabels) {
-                if (foundFirstSection) {
-                    break
-                }
-                continue
-            }
-            
-            // Map labels roughly
-            val isSection = block.label in setOf("PALLAVI", "SAMASHTI_CHARANAM", "MADHYAMAKALA")
-            if (isSection) {
-                sections.add(block.label)
-                foundFirstSection = true
-            }
-        }
-
-        // Expected: PALLAVI, SAMASHTI_CHARANAM, MADHYAMAKALA
-        // "Word Division" (ENGLISH) should trigger break.
-        // "Devanagari" should be unreachable.
+        assertEquals(3, sections.size)
+        assertEquals(RagaSectionDto.PALLAVI, sections[0].type)
+        assertEquals(RagaSectionDto.SAMASHTI_CHARANAM, sections[1].type)
+        assertEquals(RagaSectionDto.MADHYAMA_KALA, sections[2].type)
         
-        assertEquals(listOf("PALLAVI", "SAMASHTI_CHARANAM", "MADHYAMAKALA"), sections)
+        assertTrue(sections[2].text.contains("nIla kaNTha"))
+        assertTrue(sections[2].text.contains("kadamba vana"))
     }
 
     @Test
-    fun `test thyagaraja vaibhavam structure`() {
+    fun `test thyagaraja vaibhavam structure with extractSections`() {
         val rawText = """
             Transliteration–Telugu
-            Transliteration as per Modified Harvard-Kyoto (HK) Convention
             
-            amma rAvamma-kalyANi
+            amma rA(va)mma tuLas(a)mma
             
             pallavi
             amma rA(va)mma tuLas(a)mma
@@ -149,40 +91,29 @@ class TextBlockerTest {
             
             pallavi
             amma rA-amma tuLasi-amma
-            
-            Devanagari
-            
-            प. अम&#2381;म र&#2366;वम&#2381;म त&#2369;ळ(स)म&#2381;म
-            
-            अ. न&#2374;म&#2381;मद&#2367;न&#2367; न&#2368;(व&#2367;)ह
-            
-            च. न&#2368; म&#2371;द&#2369; तन&#2369;व&#2369;न&#2369; कन&#2367;
         """.trimIndent()
 
-        val blocks = blocker.buildBlocks(rawText).blocks
+        val sections = blocker.extractSections(rawText)
         
-        // Replicating WebScrapingService logic
-        val languageLabels = setOf("DEVANAGARI", "TAMIL", "TELUGU", "KANNADA", "MALAYALAM", "HINDI", "SANSKRIT", "ENGLISH", "LATIN", "WORD_DIVISION", "MEANING", "GIST", "NOTES", "VARIATIONS")
-        val sections = mutableListOf<String>()
-        var foundFirstSection = false
+        val types = sections.map { it.type }
+        assertEquals(listOf(RagaSectionDto.PALLAVI, RagaSectionDto.ANUPALLAVI, RagaSectionDto.CHARANAM), types)
+    }
 
-        for (block in blocks) {
-            if (block.label in languageLabels) {
-                if (foundFirstSection) {
-                    break
-                }
-                continue
-            }
+    @Test
+    fun `test noise filtering of pronunciation guides`() {
+        val rawText = """
+            Pronunciation Guide
+            A i I u U
+            ch j jh n/J
+            ph b bh m
             
-            val isSection = block.label in setOf("PALLAVI", "ANUPALLAVI", "CHARANAM", "SAMASHTI_CHARANAM", "MADHYAMAKALA")
-            if (isSection) {
-                sections.add(block.label)
-                foundFirstSection = true
-            }
-        }
+            pallavi
+            Real Content
+        """.trimIndent()
 
-        // Expected: PALLAVI, ANUPALLAVI, CHARANAM
-        // "Gist" should trigger break.
-        assertEquals(listOf("PALLAVI", "ANUPALLAVI", "CHARANAM"), sections)
+        val sections = blocker.extractSections(rawText)
+        assertEquals(1, sections.size)
+        assertEquals(RagaSectionDto.PALLAVI, sections[0].type)
+        assertEquals("Real Content", sections[0].text)
     }
 }

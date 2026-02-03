@@ -109,14 +109,18 @@ class WebScrapingServiceImpl(
 
         val promptBlocks = textBlocker.buildBlocks(extracted.text)
         val structuredText = buildStructuredText(url, extracted.title, promptBlocks)
-        val prompt = buildPrompt(structuredText)
-        val detectedSections = deriveSectionsFromBlocks(promptBlocks.blocks)
+        val detectedSections = textBlocker.extractSections(extracted.text).map { 
+            ScrapedSectionDto(type = it.type, text = it.text) 
+        }
+
+        val prompt = buildPrompt(structuredText, detectedSections.isNotEmpty())
 
         logger.info(
-            "Scrape sizes for {}: extractedChars={}, promptChars={}",
+            "Scrape sizes for {}: extractedChars={}, promptChars={}, detectedSections={}",
             url,
             extracted.text.length,
-            prompt.length
+            prompt.length,
+            detectedSections.size
         )
 
         val metadata = try {
@@ -141,11 +145,13 @@ class WebScrapingServiceImpl(
             )
         }
 
-        var postProcessed = postProcessMetadata(metadata)
-        if (postProcessed.sections.isNullOrEmpty() && detectedSections.isNotEmpty()) {
+        var postProcessed = metadata
+        if (detectedSections.isNotEmpty()) {
+            // Prioritize deterministic sections from TextBlocker
             postProcessed = postProcessed.copy(sections = detectedSections)
-            postProcessed = postProcessMetadata(postProcessed)
         }
+        
+        postProcessed = postProcessMetadata(postProcessed)
         return enrichTempleDetails(url, postProcessed)
     }
 
@@ -159,74 +165,15 @@ class WebScrapingServiceImpl(
         return metadata
     }
 
-    private fun deriveSectionsFromBlocks(blocks: List<TextBlocker.TextBlock>): List<ScrapedSectionDto> {
-        if (blocks.isEmpty()) return emptyList()
-        val sections = mutableListOf<ScrapedSectionDto>()
-
-        // Define language/script headers that should trigger a stop if we have already found sections.
-        val languageLabels = setOf(
-            "DEVANAGARI",
-            "TAMIL",
-            "TELUGU",
-            "KANNADA",
-            "MALAYALAM",
-            "HINDI",
-            "SANSKRIT",
-            "ENGLISH",
-            "LATIN",
-            "WORD_DIVISION",
-            "MEANING",
-            "GIST",
-            "NOTES",
-            "VARIATIONS"
-        )
-
-        var foundFirstSection = false
-
-        for (block in blocks) {
-            // If we encounter a language header, it often marks the start of a new script section.
-            // If we have already collected sections (from the primary block), stop to avoid duplicates.
-            if (block.label in languageLabels) {
-                if (foundFirstSection) {
-                    break
-                }
-                continue
-            }
-
-            val type = mapLabelToSection(block.label) ?: continue
-            val text = block.lines.joinToString("\n").trim()
-            if (text.isBlank()) continue
-
-            sections.add(ScrapedSectionDto(type = type, text = text))
-            foundFirstSection = true
-        }
-        return sections
-    }
-
-    private fun mapLabelToSection(label: String): RagaSectionDto? {
-        return when (label.uppercase()) {
-            "PALLAVI" -> RagaSectionDto.PALLAVI
-            "ANUPALLAVI" -> RagaSectionDto.ANUPALLAVI
-            "CHARANAM" -> RagaSectionDto.CHARANAM
-            "SAMASHTI_CHARANAM" -> RagaSectionDto.SAMASHTI_CHARANAM
-            "CHITTASWARAM" -> RagaSectionDto.CHITTASWARAM
-            "SWARA_SAHITYA" -> RagaSectionDto.SWARA_SAHITYA
-            "MADHYAMAKALA", "MADHYAMA_KALA" -> RagaSectionDto.MADHYAMA_KALA
-            "SOLKATTU_SWARA" -> RagaSectionDto.SOLKATTU_SWARA
-            "ANUBANDHA" -> RagaSectionDto.ANUBANDHA
-            "MUKTAYI_SWARA" -> RagaSectionDto.MUKTAYI_SWARA
-            "ETTUGADA_SWARA" -> RagaSectionDto.ETTUGADA_SWARA
-            "ETTUGADA_SAHITYA" -> RagaSectionDto.ETTUGADA_SAHITYA
-            "VILOMA_CHITTASWARAM" -> RagaSectionDto.VILOMA_CHITTASWARAM
-            else -> null
-        }
-    }
-
     private suspend fun enrichTempleDetails(url: String, metadata: ScrapedKrithiMetadata): ScrapedKrithiMetadata {
         val templeUrl = metadata.templeUrl
-        if (templeScrapingService == null || templeUrl.isNullOrBlank()) return metadata
+        if (templeScrapingService == null || templeUrl.isNullOrBlank()) {
+            logger.info("Skipping temple enrichment: templeScrapingService is null or templeUrl is blank for {}", url)
+            return metadata
+        }
 
         return try {
+            logger.info("Attempting temple enrichment for {} using URL {}", url, templeUrl)
             val templeDto = templeScrapingService.getTempleDetails(templeUrl) {
                 fetchAndClean(it)
             }
@@ -302,15 +249,26 @@ class WebScrapingServiceImpl(
         return builder.toString().trim()
     }
 
-    private fun buildPrompt(structuredText: String): String {
+    private fun buildPrompt(structuredText: String, hasDeterministicSections: Boolean): String {
+        val sectionInstruction = if (hasDeterministicSections) {
+            "Sections have already been deterministically extracted. Focus on extracting METADATA and OTHER DETAILS (Meaning, Temple, Composer, Raga, Tala) from the text."
+        } else {
+            "Extract sections (Pallavi, etc.) and metadata from the text."
+        }
+
         return """
             Extract Carnatic krithi metadata from the structured text below.
             Keep null for missing fields. Preserve line breaks in lyrics with \\n.
 
-            Section rules:
-            - Section headers like Pallavi/Anupallavi/Charanam identify sections.
+            Extraction Scope:
+            - $sectionInstruction
             - If explicit headers are absent, infer Pallavi then Anupallavi then Charanam from stanza order.
             - If sections are found, populate the 'sections' array.
+
+            Value-Added Enrichment:
+            - Identify 'temple' (shrine/kshetra) and 'deity' (primary god/goddess) mentioned.
+            - Extract 'raga' and 'tala' if available in the text.
+            - Provide a concise 'meaning' or 'gist' if present in the text.
 
             TRACK-032 Multi-language lyric extraction:
             - If multiple scripts/languages exist, populate lyricVariants with one entry per block.

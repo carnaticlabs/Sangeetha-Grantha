@@ -1,11 +1,15 @@
 package com.sangita.grantha.backend.api.services.scraping
 
+import com.sangita.grantha.shared.domain.model.RagaSectionDto
+
 class TextBlocker {
     data class TextBlock(val label: String, val lines: List<String>)
     data class PromptBlocks(
         val metaLines: List<String>,
         val blocks: List<TextBlock>
     )
+    
+    data class ScrapedSection(val type: RagaSectionDto, val text: String)
 
     fun buildBlocks(rawText: String): PromptBlocks {
         val lines = rawText
@@ -25,6 +29,52 @@ class TextBlocker {
 
         val blocks = splitIntoBlocks(bodyLines)
         return PromptBlocks(metaLines = metaLines, blocks = blocks)
+    }
+
+    fun extractSections(rawText: String): List<ScrapedSection> {
+        val blocks = buildBlocks(rawText).blocks
+        if (blocks.isEmpty()) return emptyList()
+        val sections = mutableListOf<ScrapedSection>()
+
+        var foundFirstSection = false
+
+        for (block in blocks) {
+            // If we encounter a language header, it often marks the start of a new script section.
+            // If we have already collected sections (from the primary block), stop to avoid duplicates.
+            if (block.label in LANGUAGE_LABELS) {
+                if (foundFirstSection) {
+                    break
+                }
+                continue
+            }
+
+            val type = mapLabelToSection(block.label) ?: continue
+            val text = block.lines.joinToString("\n").trim()
+            if (text.isBlank()) continue
+
+            sections.add(ScrapedSection(type = type, text = text))
+            foundFirstSection = true
+        }
+        return sections
+    }
+
+    private fun mapLabelToSection(label: String): RagaSectionDto? {
+        return when (label.uppercase()) {
+            "PALLAVI" -> RagaSectionDto.PALLAVI
+            "ANUPALLAVI" -> RagaSectionDto.ANUPALLAVI
+            "CHARANAM" -> RagaSectionDto.CHARANAM
+            "SAMASHTI_CHARANAM" -> RagaSectionDto.SAMASHTI_CHARANAM
+            "CHITTASWARAM" -> RagaSectionDto.CHITTASWARAM
+            "SWARA_SAHITYA" -> RagaSectionDto.SWARA_SAHITYA
+            "MADHYAMAKALA", "MADHYAMA_KALA" -> RagaSectionDto.MADHYAMA_KALA
+            "SOLKATTU_SWARA" -> RagaSectionDto.SOLKATTU_SWARA
+            "ANUBANDHA" -> RagaSectionDto.ANUBANDHA
+            "MUKTAYI_SWARA" -> RagaSectionDto.MUKTAYI_SWARA
+            "ETTUGADA_SWARA" -> RagaSectionDto.ETTUGADA_SWARA
+            "ETTUGADA_SAHITYA" -> RagaSectionDto.ETTUGADA_SAHITYA
+            "VILOMA_CHITTASWARAM" -> RagaSectionDto.VILOMA_CHITTASWARAM
+            else -> null
+        }
     }
 
     private fun splitIntoBlocks(lines: List<String>): List<TextBlock> {
@@ -123,6 +173,7 @@ class TextBlocker {
             Regex("${prefix}samash?ti\\s+(?:ch|c)ara?nam$suffix", RegexOption.IGNORE_CASE) to "SAMASHTI_CHARANAM",
             Regex("${prefix}chittaswaram$suffix", RegexOption.IGNORE_CASE) to "CHITTASWARAM",
             // Allow "sahityam" in Madhyama Kala header (e.g., "(madhyama kAla sAhityam)")
+            Regex("${prefix}madhyama\\s+kAla(?:\\s+sAhityam)?$suffix", RegexOption.IGNORE_CASE) to "MADHYAMAKALA",
             Regex("${prefix}madhyama\\s+kala(?:\\s+sahityam)?$suffix", RegexOption.IGNORE_CASE) to "MADHYAMAKALA",
             Regex("${prefix}madhyamakala(?:\\s+sahityam)?$suffix", RegexOption.IGNORE_CASE) to "MADHYAMAKALA",
             Regex("${prefix}muktayi\\s+swara$suffix", RegexOption.IGNORE_CASE) to "MUKTAYI_SWARA",
@@ -238,6 +289,13 @@ class TextBlocker {
 
     private fun isBoilerplate(line: String): Boolean {
         val lowered = line.lowercase()
+        
+        // Pronunciation guide patterns common in Vaibhavam blogs
+        if (lowered.contains("a i i u u")) return true
+        if (lowered.contains("ch j jh")) return true
+        if (lowered.contains("ph b bh m")) return true
+        if (lowered.contains("pronunciation guide")) return true
+
         val patterns = listOf(
             "powered by blogger",
             "newer post",
