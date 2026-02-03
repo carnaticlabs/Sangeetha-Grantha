@@ -27,28 +27,38 @@ The [C4 model](https://c4model.com/) provides a hierarchical set of software arc
 This diagram shows Sangita Grantha and its relationships with users and external systems.
 
 ```mermaid
-C4Context
-    title System Context Diagram - Sangita Grantha
+flowchart TB
+    subgraph Users["👥 Users"]
+        rasika["👤 Rasika/Learner<br/><small>End user searching and viewing<br/>Carnatic music compositions</small>"]
+        editor["👤 Editor/Curator<br/><small>Manages and curates<br/>the krithi catalog</small>"]
+        admin["👤 Administrator<br/><small>Manages users, imports,<br/>and system configuration</small>"]
+    end
 
-    Person(rasika, "Rasika/Learner", "End user searching and viewing Carnatic music compositions")
-    Person(editor, "Editor/Curator", "Manages and curates the krithi catalog")
-    Person(admin, "Administrator", "Manages users, imports, and system configuration")
+    subgraph System["🎵 Sangita Grantha System"]
+        sangita["Sangita Grantha<br/><small>Digital compendium of Carnatic<br/>classical music compositions<br/>with multilingual lyrics and notation</small>"]
+    end
 
-    System(sangita, "Sangita Grantha", "Digital compendium of Carnatic classical music compositions with multilingual lyrics and notation")
+    subgraph External["🌐 External Systems"]
+        karnatik["📚 Karnatik.com<br/><small>External source<br/>for krithi data</small>"]
+        shivkumar["📚 Shivkumar.org<br/><small>External source for<br/>notation and lyrics</small>"]
+        gemini["🤖 Google Gemini<br/><small>AI services for transliteration<br/>and content validation</small>"]
+    end
 
-    System_Ext(karnatik, "Karnatik.com", "External source for krithi data")
-    System_Ext(shivkumar, "Shivkumar.org", "External source for notation and lyrics")
-    System_Ext(gemini, "Google Gemini", "AI services for transliteration and content validation")
+    rasika -->|"Searches and views krithis<br/>(HTTPS/Mobile App)"| sangita
+    editor -->|"Curates krithi content<br/>(HTTPS/Admin Web)"| sangita
+    admin -->|"Manages system<br/>(HTTPS/Admin Web)"| sangita
 
-    Rel(rasika, sangita, "Searches and views krithis", "HTTPS/Mobile App")
-    Rel(editor, sangita, "Curates krithi content", "HTTPS/Admin Web")
-    Rel(admin, sangita, "Manages system", "HTTPS/Admin Web")
+    sangita -->|"Imports krithi data<br/>(Web Scraping)"| karnatik
+    sangita -->|"Imports notation<br/>(Web Scraping)"| shivkumar
+    sangita -->|"Transliteration, validation<br/>(HTTPS/API)"| gemini
 
-    Rel(sangita, karnatik, "Imports krithi data", "Web Scraping")
-    Rel(sangita, shivkumar, "Imports notation", "Web Scraping")
-    Rel(sangita, gemini, "Transliteration, validation", "HTTPS/API")
-
-    UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
+    style sangita fill:#438DD5,color:#fff,stroke:#2E6DA4,stroke-width:3px
+    style rasika fill:#08427B,color:#fff
+    style editor fill:#08427B,color:#fff
+    style admin fill:#08427B,color:#fff
+    style karnatik fill:#999,color:#fff
+    style shivkumar fill:#999,color:#fff
+    style gemini fill:#999,color:#fff
 ```
 
 ### Context Diagram (Alternative Flowchart)
@@ -92,31 +102,39 @@ flowchart TB
 This diagram shows the high-level technology choices and how containers communicate.
 
 ```mermaid
-C4Container
-    title Container Diagram - Sangita Grantha
+flowchart TB
+    subgraph Users["👥 Users"]
+        rasika["👤 Rasika<br/><small>End user</small>"]
+        editor["👤 Editor<br/><small>Content curator</small>"]
+    end
 
-    Person(rasika, "Rasika", "End user")
-    Person(editor, "Editor", "Content curator")
+    subgraph sangita["🎵 Sangita Grantha System Boundary"]
+        mobile["📱 Mobile App<br/><small>Kotlin Multiplatform<br/>iOS/Android app for searching<br/>and viewing krithis</small>"]
+        admin["🖥️ Admin Web<br/><small>React 19, TypeScript<br/>Web application for<br/>content management</small>"]
+        api["⚙️ Backend API<br/><small>Kotlin, Ktor<br/>REST API serving all clients</small>"]
+        db[("🗄️ Database<br/><small>PostgreSQL 15<br/>Stores krithis, variants,<br/>notation, and audit logs</small>")]
+    end
 
-    System_Boundary(sangita, "Sangita Grantha") {
-        Container(mobile, "Mobile App", "Kotlin Multiplatform", "iOS/Android app for searching and viewing krithis")
-        Container(admin, "Admin Web", "React 19, TypeScript", "Web application for content management")
-        Container(api, "Backend API", "Kotlin, Ktor", "REST API serving all clients")
-        ContainerDb(db, "Database", "PostgreSQL 15", "Stores krithis, variants, notation, and audit logs")
-    }
+    subgraph External["🌐 External Systems"]
+        gemini["🤖 Google Gemini<br/><small>AI Services</small>"]
+    end
 
-    System_Ext(gemini, "Google Gemini", "AI Services")
+    rasika -->|"Uses<br/>(HTTPS)"| mobile
+    editor -->|"Uses<br/>(HTTPS)"| admin
 
-    Rel(rasika, mobile, "Uses", "HTTPS")
-    Rel(editor, admin, "Uses", "HTTPS")
+    mobile -->|"API calls<br/>(HTTPS/JSON)"| api
+    admin -->|"API calls<br/>(HTTPS/JSON)"| api
 
-    Rel(mobile, api, "API calls", "HTTPS/JSON")
-    Rel(admin, api, "API calls", "HTTPS/JSON")
+    api -->|"Reads/Writes<br/>(JDBC/SQL)"| db
+    api -.->|"AI requests<br/>(HTTPS/API)"| gemini
 
-    Rel(api, db, "Reads/Writes", "JDBC/SQL")
-    Rel(api, gemini, "AI requests", "HTTPS/API")
-
-    UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
+    style api fill:#438DD5,color:#fff,stroke:#2E6DA4,stroke-width:2px
+    style db fill:#438DD5,color:#fff,stroke:#2E6DA4,stroke-width:2px
+    style mobile fill:#85BBF0,color:#000,stroke:#438DD5,stroke-width:2px
+    style admin fill:#85BBF0,color:#000,stroke:#438DD5,stroke-width:2px
+    style rasika fill:#08427B,color:#fff
+    style editor fill:#08427B,color:#fff
+    style gemini fill:#999,color:#fff
 ```
 
 ### Container Diagram (Alternative Flowchart)
