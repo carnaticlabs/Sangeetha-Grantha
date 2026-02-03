@@ -2,7 +2,7 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-29 |
+| **Last Updated** | 2026-02-03 |
 | **Author** | Sangita Grantha Architect |
 
 # IDE Setup Guide
@@ -255,7 +255,7 @@ Create `.vscode/settings.json` in the project root (if not present):
     "typescriptreact": "javascript"
   },
   "tailwindCSS.experimental.classRegex": [
-    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
+    ["cva\(([^)]*)\)", "["'`]([^"'`]*).*?["'`]"]
   ],
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -594,7 +594,7 @@ After IDE setup:
 1. Follow [Getting Started](./getting-started.md) for project setup
 2. Review [Troubleshooting](./troubleshooting.md) for common issues
 3. Check [Conductor Tracks](../../conductor/tracks.md) for current work
-4. Read [Architecture Overview](../02-architecture/overview.md)
+4. Read [Architecture Overview](../02-architecture/README.md)
 
 ---
 

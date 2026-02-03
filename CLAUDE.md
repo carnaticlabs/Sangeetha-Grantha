@@ -88,23 +88,19 @@ modules/
 2. **Dependency versions** - use `gradle/libs.versions.toml`, no hardcoded versions in build.gradle.kts
 3. **Audit logging** - all backend mutations must log to `AUDIT_LOG` table
 4. **Commit format** - every commit must include `Ref: application_documentation/...` line
-5. **Version updates require documentation sync** - when updating dependency versions, update ALL files that reference versions:
-   - `gradle/libs.versions.toml` (source of truth)
+5. **Version updates require documentation sync** - when updating dependency versions, run `sangita-cli docs sync-versions` and update any files that reference `current-versions.md`:
+   - `application_documentation/00-meta/current-versions.md` (auto-generated)
    - `.cursorrules` (Core Technologies section)
    - `application_documentation/02-architecture/tech-stack.md`
-   - `application_documentation/00-onboarding/development-setup.md`
-   - Any other docs referencing specific versions
+   - `application_documentation/00-onboarding/getting-started.md`
 
 ## Conductor Workflow
 
 Work is tracked in `conductor/tracks/TRACK-<ID>-<slug>.md` files. Check `conductor/tracks.md` for active tracks before starting work.
 
-## Toolchain (managed by mise)
+## Toolchain & Versions
 
-- Java: Temurin 25
-- Rust: 1.92.0
-- Bun: 1.3.0
-- Docker Compose: latest
+For current toolchain and library versions, see [Current Versions](application_documentation/00-meta/current-versions.md).
 
 ## Default Ports
 
@@ -114,6 +110,7 @@ Work is tracked in `conductor/tracks/TRACK-<ID>-<slug>.md` files. Check `conduct
 
 ## Key Documentation
 
+- Onboarding: `application_documentation/00-onboarding/getting-started.md`
 - Architecture: `application_documentation/02-architecture/`
 - Database schema: `application_documentation/04-database/schema.md`
 - API spec: `openapi/sangita-grantha.openapi.yaml`

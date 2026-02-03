@@ -23,30 +23,20 @@ Sangeetha Grantha is a digital compendium of Carnatic Music. It is a multi-modul
 - **Database Migrations**: ❌ NEVER suggest Flyway or Liquibase. ✅ ALWAYS use the Rust migration tool in `tools/sangita-cli`.
 - **Environment Management**: Use `cargo run -- db reset` or `cargo run -- dev --start-db` from `tools/sangita-cli`.
 - **Dependency Management**: Use `gradle/libs.versions.toml`. No hardcoded versions in `build.gradle.kts`.
-- **Audit Logs**: All mutations (Backend) MUST be logged to the `AUDIT_LOG` table.
+- **Audit Logs**: All mutations (Backend) MUST be logged to the `audit_log` table.
 
 ## 🚂 Conductor Workflow (Mandatory)
-**Rule**: All work must be tracked via the Conductor system.
-1. **Registry**: Check `conductor/tracks.md` for your active Track ID. If none, create one.
-2. **Track File**: Maintain a dedicated file `conductor/tracks/TRACK-<ID>-<slug>.md` (Follow `TRACK-001` template).
+**Rule**: All work must be tracked via the Conductor system in `conductor/`.
+1. **Registry**: Check `conductor/tracks.md` for your active Track ID.
+2. **Track File**: Maintain dedicated file `conductor/tracks/TRACK-<ID>-<slug>.md`.
 3. **Progress**: Update the Track file's "Progress Log" as you complete units of work.
-4. **Context**: Ensure your changes are aligned with the Goal and Implementation Plan in the Track file.
 
 ## 🛡️ Commit Guardrails (Mandatory)
 - **Reference Required**: Every commit message MUST include a `Ref: application_documentation/...` line pointing to the relevant spec.
-- **Atomic Changes**: Map commits 1:1 to documentation references. Do not mix unrelated changes.
 - **No Secrets**: Never commit API keys or credentials.
 
 ## 📝 Documentation Standards
-- **Headers**: All markdown files MUST start with this exact table:
-  ```markdown
-  | Metadata | Value |
-  |:---|:---|
-  | **Status** | [Active/Draft/Deprecated] |
-  | **Version** | [X.Y.Z] |
-  | **Last Updated** | YYYY-MM-DD |
-  | **Author** | [Team/Name] |
-  ```
+- **Headers**: Maintain standardized metadata headers in all markdown files.
 - **Links**: Use relative links only. Verify they work.
 - **Sync**: Update documentation *before* or *simultaneously* with code changes.
 
@@ -61,14 +51,15 @@ Sangeetha Grantha is a digital compendium of Carnatic Music. It is a multi-modul
 - **React**: Strict TypeScript, functional components, small composable units.
 - **Rust**: idiomatic safety, proper error handling for CLI tools.
 
-## Core Technologies
+## Core Technologies & Versions
+
+For current toolchain and library versions, see **[Current Versions](application_documentation/00-meta/current-versions.md)**.
+
 - **Kotlin**: 2.3.0 (KMP, JVM backend, Android)
-- **React**: 19.2.0 with TypeScript 5.8.3
-- **Ktor**: 3.4.0 (Netty server)
-- **Exposed**: 1.0.0 (ORM)
-- **Vite**: 6.2.0 (build tool)
-- **Tailwind CSS**: 4.1.18
-- **PostgreSQL**: 15+ (migrations via Rust, NOT Flyway)
+- **React**: 19 + TypeScript
+- **Ktor**: (Netty server)
+- **Exposed**: (ORM)
+- **PostgreSQL**: 15+ (migrations via Rust tool)
 
 ## Key Patterns to Follow
 
@@ -78,27 +69,25 @@ Sangeetha Grantha is a digital compendium of Carnatic Music. It is a multi-modul
 - Return explicit DTOs, not Exposed entity objects
 - Use `suspend` functions consistently
 - Auth: JWT with role-based claims
-- All mutations must write to `AUDIT_LOG` table
+- All mutations must write to `audit_log` table
 - Error handling: sealed results or nullable returns (avoid exceptions unless necessary)
 
 ### Frontend (React + TypeScript)
-- Use function components with explicit TypeScript types
+- Use function components with hooks and explicit TypeScript types
 - Avoid `any` type; prefer `ReactNode`, `PropsWithChildren`, discriminated unions
 - Use Tailwind utility classes for styling
-- Keep components small and composable
+- Use TanStack Query (React Query) for data fetching
 - Use `react-router-dom` for navigation
-- Reuse UI primitives from `src/components`
 
 ### Shared Domain (Kotlin Multiplatform)
 - Mark DTOs with `@Serializable`
 - Use Kotlin `Instant`, `Duration`, `UUID` (not Java types)
 - Keep enums exhaustive
-- Platform-specific code in expect/actual patterns
 
 ### Database
-- **IMPORTANT**: Use Rust migration tool in `database/rust/`, NOT Flyway
-- New migrations: add to `database/rust/migrations/`
-- Run migrations: `cd database/rust && cargo run migrate`
+- **IMPORTANT**: Use Rust migration tool in `tools/sangita-cli`, NOT Flyway
+- Migrations live in `database/migrations/`
+- Run migrations: `cargo run -- db migrate`
 - Configuration: `config/application.local.toml`
 
 ## Module Structure
@@ -116,16 +105,14 @@ modules/
 
 ## Dependency Management
 - Always use `libs` version catalog from `gradle/libs.versions.toml`
-- Don't add dependencies without explicit request
-- Check existing dependencies before suggesting new ones
+- Don't add dependencies without checking existing ones
 
 ## Code Style
 
 ### Kotlin
 - Default Kotlin style guide
 - Sorted imports, no wildcard imports
-- Proper null safety (prefer `?` over `!!`)
-- Coroutines for async operations
+- Proper null safety (`?` over `!!`)
 - `suspend` functions return direct values or Result types
 
 ### TypeScript
@@ -133,45 +120,28 @@ modules/
 - No implicit `any`
 - Use arrow functions for components
 - Props interfaces for all components
-- Consistent hooks usage (React 19.2)
 
 ## Testing
-- Backend: `kotlin.test` with `runBlocking`
-- Frontend: Vitest (if test harness exists)
+- Backend: `kotlin.test` with `runBlocking`, Ktor test application
+- Frontend: Playwright for E2E, Vitest for unit tests
 - Use deterministic fixtures (fixed UUIDs, timestamps)
-- Integration tests with Ktor test application
 
 ## Documentation
 - Reference files in `application_documentation/`
 - Key docs:
-  - `backend/architecture.md` - Backend patterns
-  - `tech-stack.md` - Full tech stack
-  - `requirements/prd/` - PRDs for features
-  - `database/schema.md` - Database design
-  - `.github/copilot-instructions.md` - Development guidelines
-
-## Important Constraints
-- ❌ **Never suggest Flyway** - use Rust migration tool
-- ✅ **Always reference version catalog** in build files
-- ✅ **Keep changes minimal and surgical**
-- ✅ **Follow existing patterns in the codebase**
-- ✅ **Use `DatabaseFactory.dbQuery` for all DB operations**
+  - `application_documentation/02-architecture/backend-system-design.md`
+  - `application_documentation/02-architecture/tech-stack.md`
+  - `application_documentation/01-requirements/product-requirements-document.md`
+  - `application_documentation/04-database/schema.md`
 
 ## Common Commands
-- Reset Environment: `cd tools/sangita-cli && cargo run -- db reset`
-- Start Full Stack: `cd tools/sangita-cli && cargo run -- dev --start-db`
+- Reset Environment: `cargo run -- db reset` (from tools/sangita-cli)
+- Start Full Stack: `cargo run -- dev --start-db` (from tools/sangita-cli)
 - Test: `cargo run -- test steel-thread`
 
-## Tooling Updates (Dec 2025)
-- **Sangita CLI (`tools/sangita-cli/`)**
-  - v0.1.0 (2025-11-27) unifies setup/reset/dev/test workflows.
-  - `cargo run -- dev --start-db` boots the DB tool, backend, and React admin console after health verification.
-  - `cargo run -- test steel-thread` resets + seeds the DB using `test_data.json`, exercises admin create/import/dashboard/payment flows, and leaves services running for manual QA.
-- **Ktor Client Integration Tests**
-  - Seed deterministic fixtures first: `./gradlew :modules:backend:api:seedTestData` (override DB config with `SG_DB_ENV_PATH`).
-  - Run integration tests with `./gradlew :modules:backend:api:test` (tests use Ktor Client with `testApplication`).
-  - Coverage spans health routes, OTP auth, admin sangita lifecycle & pagination, participant rosters/payments, and participant self-service APIs.
-  - Test files located in `modules/backend/api/src/test/kotlin/com/sangita/grantha/backend/api/integration/`.
+## Tooling & Automation
+- **Sangita CLI**: Unifies setup/reset/dev/test workflows.
+- **Ktor Client Integration Tests**: Seed fixtures via `./gradlew :modules:backend:api:seedTestData`.
 
 ## When Making Changes
 1. Check existing patterns in similar files
@@ -179,24 +149,4 @@ modules/
 3. Use version catalog for dependencies
 4. Keep DTOs in sync between frontend/backend
 5. Add audit logging for mutations
-6. Test with realistic data
-7. Update documentation if changing APIs or schemas
-
-# Agent Instructions: Rust Tooling & Database Automation
-
-## Context
-The project uses `tools/sangita-cli` (Rust) as the primary interface for DB operations, local development, and environment verification.
-
-## Data Structures
-- **PostgresInstance**: Manages local PG lifecycle (pg_home, pg_data, host, port, etc.).
-- **PostgresTimeouts**: Controls startup/shutdown and connection retry logic.
-
-## Task Rules
-- When modifying the CLI, ensure compatibility with `PostgresInstance` configuration.
-- Migrations live in `database/migrations/` and are executed via the Rust tool.
-- Always check `PostgresTimeouts` when debugging "database not ready" errors in the dev loop.
-
-## Common CLI Commands
-- `cargo run -- db migrate`
-- `cargo run -- dev --start-db`
-- `cargo run -- test steel-thread`
+6. Update documentation if changing APIs or schemas

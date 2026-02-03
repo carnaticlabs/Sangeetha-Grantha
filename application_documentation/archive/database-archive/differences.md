@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Active |
+| **Status** | Archived |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-26 |
+| **Last Updated** | 2026-02-03 |
 | **Author** | Sangeetha Grantha Team |
 
 # DB vs ERD

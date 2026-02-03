@@ -1,69 +1,42 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-26 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-02-03 |
 | **Author** | Sangeetha Grantha Team |
 
 # Tech Stack
 
+The Sangeetha Grantha platform uses a modern, type-safe stack spanning mobile, backend, and web.
 
-## Current Dependencies
+For current toolchain and library versions, see **[Current Versions](../00-meta/current-versions.md)**.
 
-All versions are managed in `gradle/libs.versions.toml`.
+## Core Technologies
 
-### Backend Core Versions
+### Backend & Mobile (Kotlin/JVM)
+- **Language**: Kotlin
+- **HTTP Server**: Ktor (Netty)
+- **ORM**: Exposed (DSL-based)
+- **Database**: PostgreSQL 15+
+- **Security**: JWT (Auth0)
+- **Dependency Injection**: Koin
 
-- **Kotlin**: 2.3.0
-- **Ktor**: 3.4.0 (server + client)
-- **Exposed**: 1.0.0 (ORM)
-- **PostgreSQL Driver**: 42.7.9
-- **HikariCP**: 7.0.2 (connection pooling)
-- **JWT (Auth0)**: 4.5.0
-- **Logback**: 1.5.25
-- **Logstash Logback Encoder**: 8.0
-- **Commons CSV**: 1.10.0
-
-### Kotlinx Libraries
-
-- **Kotlinx Coroutines**: 1.10.2
-- **Kotlinx DateTime**: 0.6.1
-- **Kotlinx Serialization JSON**: 1.10.0
+### Admin Web (React/TypeScript)
+- **Framework**: React 19
+- **Language**: TypeScript
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS
+- **State Management**: TanStack Query (React Query)
 
 ### Mobile (Kotlin Multiplatform)
+- **UI Framework**: Compose Multiplatform
+- **Logic**: Shared Kotlin domain models and services
 
-- **Kotlin**: 2.3.0
-- **Compose Multiplatform**: 1.10.0
-- **Android Gradle Plugin**: 9.0.0
-- **Ktor Client**: 3.4.0
-- **Kotlinx Libraries**: Same as backend
-
-### Frontend (Admin Web)
-
-- **React**: 19.2.0
-- **TypeScript**: 5.8.3
-- **Vite**: 7.1.7
-- **Tailwind CSS**: 3.4.13
-- **React Router**: Latest (via npm)
-
-### Database & Migrations
-
-- **PostgreSQL**: 15+ (local development)
-- **Rust Migration Tool**: `tools/sangita-cli` (custom Rust CLI)
-- **❌ NOT Flyway**: Migrations are managed via Rust tool, not Flyway
-
-### Build & Tooling
-
-- **Gradle**: Wrapper included
-- **Shadow Plugin**: 9.2.2 (for JAR packaging)
-- **JDK**: 25+ (JVM Toolchain)
-- **Rust**: Stable (for migration CLI)
-- **Bun**: For frontend package management
-
-### Cloud & Authentication
-
-- **AWS SDK**: 2.29.0 (for S3, future use)
-- **Google Auth Library**: 1.23.0 (for SSO, future use)
+### Tooling & Infrastructure
+- **Version Manager**: `mise` (Java, Rust, Bun)
+- **CLI Tool**: `sangita-cli` (Rust) for migrations and dev orchestration
+- **Containerization**: Docker Compose for local database
+- **Package Manager**: `bun` for frontend, `gradle` for backend/mobile
 
 ---
 
@@ -84,19 +57,20 @@ All versions are managed in `gradle/libs.versions.toml`.
 - Reference data services
 - Admin dashboard service
 - Rust-based migration tool (`tools/sangita-cli`)
+- AI Transliteration Service (Gemini integration)
+- Web Scraping Infrastructure
 
 ### In Progress 🔄
 
-- Frontend admin web console
-- Mobile app (KMM)
+- Frontend admin web console enhancements
+- Mobile app (Compose Multiplatform)
 - Advanced search features
-- Bulk import workflows
+- Bulk import workflow optimizations
 
 ### Planned 📋
 
-- Audio file support
-- Public user accounts
-- Comments and annotations
+- Audio file support and media management
+- Public user accounts and favorites
+- Thematic annotations and curated collections
 - Advanced graph visualization
-- API rate limiting
-- Caching layer
+- API rate limiting and caching layer

@@ -1,17 +1,16 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-26 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-02-03 |
 | **Author** | Sangeetha Grantha Team |
 
-# Diagrams
-
+# Architecture Diagrams
 
 ---
 
-
 ## Contents
 
-- [erd.md](./erd.md)
-- [flows.md](./flows.md)
+- [c4-model.md](./c4-model.md) - System Context, Container, and Component diagrams
+- [erd.md](./erd.md) - Entity Relationship Diagrams
+- [flows.md](./flows.md) - System sequence and logic flows

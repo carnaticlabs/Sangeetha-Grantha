@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-26 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-02-03 |
 | **Author** | Sangita Grantha Architect |
 
 # Getting Started with Sangita Grantha
@@ -13,10 +13,7 @@ Welcome to the **Sangita Grantha** project. This document provides a comprehensi
 
 **Sangita Grantha** is the authoritative "System of Record" for Carnatic compositions. It is designed for longevity, musicological integrity, and high-performance access.
 
-- **Backend:** Kotlin (Ktor 3.4.0) + Exposed ORM + PostgreSQL 15+.
-- **Frontend (Admin):** React 19 + TypeScript 5.8 + Tailwind CSS + Shadcn UI.
-- **Mobile:** Kotlin Multiplatform (Compose Multiplatform) for Android & iOS.
-- **Tooling:** Rust CLI (`tools/sangita-cli`) for database operations and dev orchestration.
+For current toolchain and library versions, see **[Current Versions](../00-meta/current-versions.md)**.
 
 ## 2. Prerequisites
 
@@ -26,7 +23,7 @@ Ensure you have the following installed on your system:
 - **Docker & Docker Compose**: For running the PostgreSQL database.
 - **Rust Toolchain**: To build and run the `sangita-cli`.
 - **Bun**: For frontend package management and building.
-- **JDK 21+**: For Kotlin and Android development.
+- **JDK**: For Kotlin and Android development. (See [Current Versions](../00-meta/current-versions.md))
 - **Android Studio / Xcode**: For mobile development.
 
 ## 3. Local Environment Setup
@@ -132,5 +129,5 @@ Ref: application_documentation/01-requirements/features/bulk-import/01-strategy/
 
 ## 7. Useful Links
 - [Product Definition](../../conductor/product.md)
-- [Tech Stack](../../conductor/tech-stack.md)
-- [Database Schema](../04-database/schema.md)
+- [Tech Stack](../../02-architecture/tech-stack.md)
+- [Database Schema](../../04-database/schema.md)

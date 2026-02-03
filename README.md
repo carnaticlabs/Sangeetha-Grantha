@@ -3,8 +3,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-16 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-02-03 |
 | **Author** | Sangeetha Grantha Team |
 
 ---
@@ -53,7 +53,7 @@ It is designed to become the **system of record** for Carnatic Krithis — suppo
 ### ⚙️ Backend
 
 - **API**: Kotlin + Ktor (REST)
-- **Database**: PostgreSQL 15 (dev pinned via Docker Compose) / 15+ (prod)
+- **Database**: PostgreSQL 15+
 - **Migrations**: Rust-based CLI tool (`tools/sangita-cli`) for database management (no Flyway)
 
 ### ☁️ Infrastructure
@@ -103,9 +103,9 @@ For the authoritative schema definition and detailed relationship models, please
 
 ---
 
-## 🧩 Tech Stack
+## 🧩 Tech Stack & Versions
 
-For a complete and specific list of versions and dependencies, please see **[Tech Stack Documentation](./application_documentation/02-architecture/tech-stack.md)**.
+For a complete and specific list of versions and dependencies, please see **[Current Versions](./application_documentation/00-meta/current-versions.md)**.
 
 ### Core Technologies
 
@@ -113,19 +113,17 @@ For a complete and specific list of versions and dependencies, please see **[Tec
 |-------|------------|
 | **Mobile** | Kotlin Multiplatform (KMM) + Compose Multiplatform |
 | **Backend** | Kotlin + Ktor + Exposed |
-| **Database** | PostgreSQL 15 (dev pinned via Docker Compose) / 15+ (prod) |
+| **Database** | PostgreSQL 15+ |
 | **Migrations** | Rust CLI (`tools/sangita-cli`) |
 | **Admin Web** | React + TypeScript + Tailwind + Vite |
 | **Build** | Gradle (Backend/Mobile), Bun (Frontend) |
-| **Toolchain** | Managed via [mise](https://mise.jdx.dev/): Java 25, Rust 1.92.0, Bun 1.3.0, Docker Compose |
+| **Toolchain** | Managed via [mise](https://mise.jdx.dev/) |
 
 ---
 
 ## 📂 Repository Structure
 
 ```text
-├── androidApp/                  # Android client (KMM)
-├── iosApp/                      # iOS client (KMM)
 ├── modules/
 │   ├── shared/                  # Shared domain models & UI (KMM)
 │   ├── backend/
@@ -134,7 +132,8 @@ For a complete and specific list of versions and dependencies, please see **[Tec
 │   └── frontend/
 │       └── sangita-admin-web/   # Admin web (React + TS)
 ├── database/
-│   └── migrations/              # SQL migration files
+│   ├── migrations/              # SQL migration files
+│   └── seed_data/               # Seed SQL files
 ├── tools/
 │   └── sangita-cli/             # Rust CLI for DB management, dev workflow, testing
 ├── openapi/                     # OpenAPI specifications
@@ -147,7 +146,7 @@ For a complete and specific list of versions and dependencies, please see **[Tec
 
 ## 🚀 Getting Started
 
-> **💡 Quick Setup**: For complete setup instructions, see [Cross-Platform Development Environment Standardisation](./application_documentation/01-requirements/features/cross-platform-development-environment-standardisation.md).
+> **💡 Quick Setup**: For complete setup instructions, see [Getting Started](./application_documentation/00-onboarding/getting-started.md).
 
 **Prerequisites**:
 - [mise](https://mise.jdx.dev/) (toolchain version manager)
@@ -162,28 +161,21 @@ For a complete and specific list of versions and dependencies, please see **[Tec
 powershell -ExecutionPolicy Bypass -File .\tools\bootstrap.ps1
 ```
 
-This will install all required tools via mise (Java 25, Rust 1.92.0, Bun 1.3.0, Docker Compose) and set up the development environment.
+This will set up the required toolchain and development environment.
 
 **Start development stack** (recommended via mise):
 ```bash
 # Via mise (ensures correct tool versions)
 
-# Initialize Database
-mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db init
-
-# Migrate / Set up seed Database
-mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db migrate
+# Reset Database (Drop -> Create -> Migrate -> Seed)
+mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db reset
 
 # Start development stack with database
 mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- dev --start-db
-
-# Or without mise (requires tools to be installed manually)
-cd tools/sangita-cli
-cargo run -- dev --start-db
 ```
 
 For detailed setup, usage guides, troubleshooting, and CLI commands, see:
-- **[Cross-Platform Development Environment Standardisation](./application_documentation/01-requirements/features/cross-platform-development-environment-standardisation.md)** — Complete setup guide
+- **[Getting Started](./application_documentation/00-onboarding/getting-started.md)** — Complete setup guide
 - **[Sangita CLI README](./tools/sangita-cli/README.md)** — Development workflow and commands
 
 ---
@@ -191,27 +183,17 @@ For detailed setup, usage guides, troubleshooting, and CLI commands, see:
 ## 📜 Documentation
 
 - **Product Requirements Document**: [Sangita Grantha PRD](./application_documentation/01-requirements/product-requirements-document.md)
-- **Development Environment Setup**: [Cross-Platform Development Environment Standardisation](./application_documentation/01-requirements/features/cross-platform-development-environment-standardisation.md)
-- **OpenAPI Spec**: [`openapi/sangita-grantha.openapi.yaml`](openapi/sangita-grantha.openapi.yaml)
-- **Database Schema & ERDs**: [`application_documentation/04-database/`](application_documentation/04-database/)
-- **Architecture & Blueprints**: [`application_documentation/02-architecture/`](application_documentation/02-architecture/)
+- **API Spec**: [API Contract](./application_documentation/03-api/api-contract.md)
+- **Database Schema**: [Schema Overview](./application_documentation/04-database/schema.md)
+- **Architecture**: [Backend System Design](./application_documentation/02-architecture/backend-system-design.md)
 
 ---
 
 ## 🤖 AI & Vibe Coding Usage
 
-This repository is designed to work seamlessly with VS Code Copilot / Codex / Cursor / Google Antigravity.
+This repository is designed to work seamlessly with AI coding assistants.
 
 For comprehensive references and coding patterns, see: **[AI & Vibe Coding References](./application_documentation/09-ai/vibe-coding-references.md)**
-
-This document includes:
-- Product requirements and domain model references
-- Architecture patterns and design guidelines
-- API contracts and integration specs
-- Database schema and migration strategies
-- Frontend architecture and patterns
-- Development workflow and commands
-- Key coding patterns and constraints
 
 ---
 
@@ -219,28 +201,19 @@ This document includes:
 
 - ✅ Core schema & ingestion pipeline
 - ✅ Admin editorial workflow
-- 🔄 Mobile app UX refinement
+- ✅ AI Transliteration & Web Scraping
+- 🔄 Mobile app development
 - 🔄 Advanced lyric search & ranking
-- 🔮 Notation & audio references (future)
+- 🔮 Media management (audio/notation)
 - 🔮 Public read-only web experience
 
 ---
 
 ## 🙏 Credits & Inspiration
 
-This project draws inspiration from decades of Carnatic scholarship and legacy sources such as:
-
-- [karnatik.com](https://www.karnatik.com)
-- [shivkumar.org/music](https://www.shivkumar.org/music/)
-- Composer-centric archives and PDFs
+This project draws inspiration from decades of Carnatic scholarship and legacy sources such as karnatik.com, shivkumar.org, and various composer-centric archives.
 
 **Sangeetha Grantha** exists to preserve, structure, and respectfully modernize this knowledge for future generations.
-
----
-
-## 📄 License
-
-TBD (to be finalized — likely a permissive open-source license).
 
 ---
 

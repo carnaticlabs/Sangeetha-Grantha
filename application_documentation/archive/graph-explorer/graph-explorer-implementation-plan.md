@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Draft |
+| **Status** | Archived |
 | **Version** | 0.1.0 |
-| **Last Updated** | 2026-01-26 |
+| **Last Updated** | 2026-02-03 |
 | **Author** | System |
 
 ---
