@@ -1,7 +1,7 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Completed |
-| **Version** | 1.1.0 |
+| **Version** | 1.2.0 |
 | **Last Updated** | 2026-02-03 |
 | **Author** | Sangita Grantha Team |
 
@@ -47,6 +47,7 @@ Shift the primary responsibility for **Lyric and Section Extraction** from the L
 - **2026-02-03**: Enhanced `TextBlocker` regex to support `(madhyama kAla sAhityam)` and variations, mapping them to `MADHYAMA_KALA`.
 - **2026-02-03**: Updated `WebScrapingService` to prioritize sections extracted by `TextBlocker` and adjusted the Gemini prompt to focus on metadata when sections are already found.
 - **2026-02-03**: Validated Raga/Tala extraction against 30 random URLs from import CSVs. Confirmed reliable presence in header meta for Dikshitar/Syama Sastri and refined LLM prompt to explicitly target `HEADER META`.
+- **2026-02-03**: Refined Gemini prompt to remove internal "TRACK-032" reference and clarify multi-language extraction instructions.
 - **2026-02-03**: Verified changes with `TextBlockerTest` (including `bAla kucAmbikE` case) and `WebScrapingServiceTest`. All tests passed.
 
 ## 5. References

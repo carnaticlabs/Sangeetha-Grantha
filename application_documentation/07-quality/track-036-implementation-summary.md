@@ -1,14 +1,14 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Completed |
-| **Version** | 1.1.0 |
+| **Version** | 1.2.0 |
 | **Last Updated** | 2026-02-03 |
 | **Author** | Sangita Grantha Team |
 
 # Implementation Summary: TRACK-036 Enhanced TextBlocker Extraction Strategy
 
 ## 1. Executive Summary
-Successfully enhanced the text extraction strategy to prioritize deterministic parsing via `TextBlocker` over LLM-based extraction. This change improves reliability for standard formats (especially Guru Guha and Vaibhavam blogs), reduces LLM token usage, and correctly handles complex structures like `MADHYAMA_KALA` sections interspersed within lyrics. Additionally, metadata extraction (Raga/Tala) was refined based on a 30-URL sample validation.
+Successfully enhanced the text extraction strategy to prioritize deterministic parsing via `TextBlocker` over LLM-based extraction. This change improves reliability for standard formats (especially Guru Guha and Vaibhavam blogs), reduces LLM token usage, and correctly handles complex structures like `MADHYAMA_KALA` sections interspersed within lyrics. Additionally, metadata extraction (Raga/Tala) was refined based on a 30-URL sample validation, and the LLM prompt was optimized for clarity.
 
 ## 2. Key Changes
 
@@ -24,6 +24,7 @@ Successfully enhanced the text extraction strategy to prioritize deterministic p
 - **Focused Prompting**: 
     - The Gemini prompt is dynamically adjusted. If sections are pre-extracted, the LLM is instructed to focus **only** on metadata and not re-parse lyrics.
     - **Metadata Refinement**: Explicitly directed the LLM to check the `=== HEADER META ===` section for Raga and Tala, as validation confirmed these details are reliably captured there by `TextBlocker`.
+    - **Prompt Cleanup**: Removed internal project references (e.g., "TRACK-032") from the prompt text sent to Gemini and clarified multi-language extraction instructions.
 
 ### C. Testing - Validation & Fixes
 - **H2 Compatibility**: Updated `TestDatabaseFactory` to explicitly create Postgres ENUMs as types in the test database, ensuring compatibility for local testing.

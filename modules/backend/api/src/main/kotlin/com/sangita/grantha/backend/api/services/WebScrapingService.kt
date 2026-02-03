@@ -270,10 +270,12 @@ class WebScrapingServiceImpl(
             - Extract 'raga' and 'tala' from the text. **Check the === HEADER META === section first**, as it often contains these details (e.g., "rAgaM ... tALaM ...").
             - Provide a concise 'meaning' or 'gist' if present in the text.
 
-            TRACK-032 Multi-language lyric extraction:
-            - If multiple scripts/languages exist, populate lyricVariants with one entry per block.
-            - language codes: SA, TA, TE, KN, ML, HI, EN
-            - script codes: devanagari, tamil, telugu, kannada, malayalam, latin
+            Multi-language Lyric Extraction:
+            - The source text often contains lyric blocks in multiple scripts (Devanagari, Tamil, Telugu, Kannada, Malayalam, Latin/English).
+            - Extract EACH distinct script block into a separate entry in 'lyricVariants'.
+            - Map them to the correct language/script codes:
+              - Language: SA (Sanskrit), TA (Tamil), TE (Telugu), KN (Kannada), ML (Malayalam), HI (Hindi), EN (English)
+              - Script: devanagari, tamil, telugu, kannada, malayalam, latin
 
             Extract:
             - title, composer, raga, tala, deity, temple, templeUrl, language, lyrics, notation, sections, lyricVariants
