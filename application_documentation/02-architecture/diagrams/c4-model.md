@@ -27,33 +27,6 @@ The [C4 model](https://c4model.com/) provides a hierarchical set of software arc
 This diagram shows Sangita Grantha and its relationships with users and external systems.
 
 ```mermaid
-C4Context
-    title System Context Diagram - Sangita Grantha
-
-    Person(rasika, "Rasika/Learner", "End user searching and viewing Carnatic music compositions")
-    Person(editor, "Editor/Curator", "Manages and curates the krithi catalog")
-    Person(admin, "Administrator", "Manages users, imports, and system configuration")
-
-    System(sangita, "Sangita Grantha", "Digital compendium of Carnatic classical music compositions with multilingual lyrics and notation")
-
-    System_Ext(karnatik, "Karnatik.com", "External source for krithi data")
-    System_Ext(shivkumar, "Shivkumar.org", "External source for notation and lyrics")
-    System_Ext(gemini, "Google Gemini", "AI services for transliteration and content validation")
-
-    Rel(rasika, sangita, "Searches and views krithis", "HTTPS/Mobile App")
-    Rel(editor, sangita, "Curates krithi content", "HTTPS/Admin Web")
-    Rel(admin, sangita, "Manages system", "HTTPS/Admin Web")
-
-    Rel(sangita, karnatik, "Imports krithi data", "Web Scraping")
-    Rel(sangita, shivkumar, "Imports notation", "Web Scraping")
-    Rel(sangita, gemini, "Transliteration, validation", "HTTPS/API")
-
-    UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
-```
-
-### Context Diagram (Alternative Flowchart)
-
-```mermaid
 flowchart TB
     subgraph Users["Users"]
         R[👤 Rasika/Learner]
@@ -90,36 +63,6 @@ flowchart TB
 ## 3. Container Diagram
 
 This diagram shows the high-level technology choices and how containers communicate.
-
-```mermaid
-C4Container
-    title Container Diagram - Sangita Grantha
-
-    Person(rasika, "Rasika", "End user")
-    Person(editor, "Editor", "Content curator")
-
-    System_Boundary(sangita, "Sangita Grantha") {
-        Container(mobile, "Mobile App", "Kotlin Multiplatform", "iOS/Android app for searching and viewing krithis")
-        Container(admin, "Admin Web", "React 19, TypeScript", "Web application for content management")
-        Container(api, "Backend API", "Kotlin, Ktor", "REST API serving all clients")
-        ContainerDb(db, "Database", "PostgreSQL 15", "Stores krithis, variants, notation, and audit logs")
-    }
-
-    System_Ext(gemini, "Google Gemini", "AI Services")
-
-    Rel(rasika, mobile, "Uses", "HTTPS")
-    Rel(editor, admin, "Uses", "HTTPS")
-
-    Rel(mobile, api, "API calls", "HTTPS/JSON")
-    Rel(admin, api, "API calls", "HTTPS/JSON")
-
-    Rel(api, db, "Reads/Writes", "JDBC/SQL")
-    Rel(api, gemini, "AI requests", "HTTPS/API")
-
-    UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
-```
-
-### Container Diagram (Alternative Flowchart)
 
 ```mermaid
 flowchart TB
