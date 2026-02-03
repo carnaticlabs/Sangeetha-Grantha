@@ -267,7 +267,7 @@ class WebScrapingServiceImpl(
 
             Value-Added Enrichment:
             - Identify 'temple' (shrine/kshetra) and 'deity' (primary god/goddess) mentioned.
-            - Extract 'raga' and 'tala' if available in the text.
+            - Extract 'raga' and 'tala' from the text. **Check the === HEADER META === section first**, as it often contains these details (e.g., "rAgaM ... tALaM ...").
             - Provide a concise 'meaning' or 'gist' if present in the text.
 
             TRACK-032 Multi-language lyric extraction:

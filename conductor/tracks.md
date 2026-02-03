@@ -44,6 +44,6 @@
 | [TRACK-033](./tracks/TRACK-033-cli-docs-command.md) | Sangita CLI – Docs Command | Completed |
 | [TRACK-034](./tracks/TRACK-034-fix-text-blocker-parsing.md) | Fix TextBlocker Section Parsing | Completed |
 | [TRACK-035](./tracks/TRACK-035-frontend-e2e-testing.md) | Frontend E2E Testing with Playwright | In Progress |
-| [TRACK-036](./tracks/TRACK-036-enhanced-text-blocker-extraction.md) | Enhanced TextBlocker Extraction Strategy | Active |
+| [TRACK-036](./tracks/TRACK-036-enhanced-text-blocker-extraction.md) | Enhanced TextBlocker Extraction Strategy | Completed |
 
 ## 3. Deprecated Tracks
