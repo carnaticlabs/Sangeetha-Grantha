@@ -49,3 +49,5 @@ tools/sangita-cli/Cargo.lock
 **/storage/**
 **/database/for_import/**
 **/*_logs.txt
+**/test_output/**
+**/test-results/**
