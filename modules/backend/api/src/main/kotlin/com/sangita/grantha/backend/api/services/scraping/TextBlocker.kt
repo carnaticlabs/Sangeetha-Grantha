@@ -10,6 +10,12 @@ class TextBlocker {
     )
     
     data class ScrapedSection(val type: RagaSectionDto, val text: String)
+    data class ScrapedVariant(
+        val language: String,
+        val script: String,
+        val lyrics: String,
+        val sections: List<ScrapedSection>
+    )
 
     fun buildBlocks(rawText: String): PromptBlocks {
         val lines = rawText
@@ -56,6 +62,104 @@ class TextBlocker {
             foundFirstSection = true
         }
         return sections
+    }
+
+    fun extractLyricVariants(rawText: String): List<ScrapedVariant> {
+        val blocks = buildBlocks(rawText).blocks
+        if (blocks.isEmpty()) return emptyList()
+
+        val variants = mutableListOf<ScrapedVariant>()
+        
+        var currentLanguage: String? = null
+        var currentScript: String? = null
+        val currentSections = mutableListOf<ScrapedSection>()
+        val currentLyricsBuilder = StringBuilder()
+
+        fun flushVariant() {
+            if (currentLanguage != null && (currentSections.isNotEmpty() || currentLyricsBuilder.isNotEmpty())) {
+                variants.add(
+                    ScrapedVariant(
+                        language = currentLanguage!!,
+                        script = currentScript ?: "latin",
+                        lyrics = currentLyricsBuilder.toString().trim(),
+                        sections = currentSections.toList()
+                    )
+                )
+            }
+            currentSections.clear()
+            currentLyricsBuilder.clear()
+            currentLanguage = null
+            currentScript = null
+        }
+
+        // Iterate blocks to find Language Groups
+        for (block in blocks) {
+            // Check if this block starts a new Language Context
+            // We only care about script languages, not "MEANING" or "NOTES"
+            if (block.label in LANGUAGE_LABELS && block.label !in setOf("MEANING", "GIST", "NOTES", "WORD_DIVISION", "VARIATIONS")) {
+                // If we were already building a variant, flush it
+                flushVariant()
+                
+                // Start new variant
+                currentLanguage = mapLabelToLanguageCode(block.label)
+                currentScript = mapLabelToScriptCode(block.label)
+                
+                // If the block itself has text content, append it
+                val blockText = block.lines.joinToString("\n").trim()
+                if (blockText.isNotBlank()) {
+                    currentLyricsBuilder.append(blockText).append("\n\n")
+                }
+                continue
+            }
+
+            // If we are inside a language context, accumulate sections/lyrics
+            if (currentLanguage != null) {
+                val blockText = block.lines.joinToString("\n").trim()
+                if (blockText.isBlank()) continue
+
+                val type = mapLabelToSection(block.label)
+                if (type != null) {
+                    currentSections.add(ScrapedSection(type, blockText))
+                }
+                
+                // Always append to full lyrics blob for safety/fallback
+                if (currentLyricsBuilder.isNotEmpty()) {
+                    currentLyricsBuilder.append("\n\n")
+                }
+                if (type != null) {
+                    currentLyricsBuilder.append("[${type.name}]\n")
+                }
+                currentLyricsBuilder.append(blockText)
+            }
+        }
+        
+        flushVariant()
+        return variants
+    }
+
+    private fun mapLabelToLanguageCode(label: String): String {
+        return when(label.uppercase()) {
+            "SANSKRIT", "DEVANAGARI" -> "SA"
+            "TAMIL" -> "TA"
+            "TELUGU" -> "TE"
+            "KANNADA" -> "KN"
+            "MALAYALAM" -> "ML"
+            "HINDI" -> "HI"
+            "ENGLISH", "LATIN" -> "EN" // Often transliteration
+            else -> "EN"
+        }
+    }
+
+    private fun mapLabelToScriptCode(label: String): String {
+        return when(label.uppercase()) {
+            "SANSKRIT", "DEVANAGARI", "HINDI" -> "devanagari"
+            "TAMIL" -> "tamil"
+            "TELUGU" -> "telugu"
+            "KANNADA" -> "kannada"
+            "MALAYALAM" -> "malayalam"
+            "ENGLISH", "LATIN" -> "latin"
+            else -> "latin"
+        }
     }
 
     private fun mapLabelToSection(label: String): RagaSectionDto? {

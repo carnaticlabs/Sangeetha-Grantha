@@ -108,19 +108,35 @@ class WebScrapingServiceImpl(
         }
 
         val promptBlocks = textBlocker.buildBlocks(extracted.text)
-        val structuredText = buildStructuredText(url, extracted.title, promptBlocks)
         val detectedSections = textBlocker.extractSections(extracted.text).map { 
             ScrapedSectionDto(type = it.type, text = it.text) 
         }
+        val detectedVariants = textBlocker.extractLyricVariants(extracted.text).map { v ->
+            ScrapedLyricVariantDto(
+                language = v.language,
+                script = v.script,
+                lyrics = v.lyrics,
+                sections = v.sections.map { s -> ScrapedSectionDto(s.type, s.text) }
+            )
+        }
 
-        val prompt = buildPrompt(structuredText, detectedSections.isNotEmpty())
+        // Ragamalikas require LLM intelligence to identify Raga-based sections which TextBlocker misses.
+        val isRagamalika = (extracted.title?.contains("ragamalika", ignoreCase = true) == true) || 
+                           (extracted.text.contains("ragamalika", ignoreCase = true))
+
+        val hasDeterministicContent = (detectedSections.isNotEmpty() || detectedVariants.isNotEmpty()) && !isRagamalika
+        val structuredText = buildStructuredText(url, extracted.title, promptBlocks, includeContent = !hasDeterministicContent)
+        
+        val prompt = buildPrompt(structuredText, hasDeterministicContent)
 
         logger.info(
-            "Scrape sizes for {}: extractedChars={}, promptChars={}, detectedSections={}",
+            "Scrape sizes for {}: extractedChars={}, promptChars={}, detectedSections={}, detectedVariants={}, isRagamalika={}",
             url,
             extracted.text.length,
             prompt.length,
-            detectedSections.size
+            detectedSections.size,
+            detectedVariants.size,
+            isRagamalika
         )
 
         val metadata = try {
@@ -146,9 +162,16 @@ class WebScrapingServiceImpl(
         }
 
         var postProcessed = metadata
+        // For Ragamalikas, we trust Gemini's sectioning over TextBlocker because TextBlocker likely merged Raga sections.
+        // However, if Gemini returns NOTHING, we fallback to TextBlocker's basic structure.
         if (detectedSections.isNotEmpty()) {
-            // Prioritize deterministic sections from TextBlocker
-            postProcessed = postProcessed.copy(sections = detectedSections)
+            if (!isRagamalika || postProcessed.sections.isNullOrEmpty()) {
+                postProcessed = postProcessed.copy(sections = detectedSections)
+            }
+        }
+        if (detectedVariants.isNotEmpty()) {
+            // Prioritize deterministic variants from TextBlocker (scripts are usually reliable even in Ragamalika)
+            postProcessed = postProcessed.copy(lyricVariants = detectedVariants)
         }
         
         postProcessed = postProcessMetadata(postProcessed)
@@ -218,7 +241,8 @@ class WebScrapingServiceImpl(
     private fun buildStructuredText(
         url: String,
         title: String?,
-        promptBlocks: TextBlocker.PromptBlocks
+        promptBlocks: TextBlocker.PromptBlocks,
+        includeContent: Boolean = true
     ): String {
         val builder = StringBuilder()
         builder.appendLine("=== SOURCE URL ===")
@@ -237,10 +261,19 @@ class WebScrapingServiceImpl(
         }
         builder.appendLine()
         builder.appendLine("=== CONTENT BLOCKS ===")
-        if (promptBlocks.blocks.isEmpty()) {
-            builder.appendLine("(none)")
+        
+        val blocksToInclude = if (includeContent) {
+            promptBlocks.blocks
         } else {
-            promptBlocks.blocks.forEach { block ->
+            // Only include meta-like content blocks (Meaning, Notes, etc.)
+            val allowedLabels = setOf("MEANING", "GIST", "NOTES", "WORD_DIVISION")
+            promptBlocks.blocks.filter { it.label in allowedLabels }
+        }
+
+        if (blocksToInclude.isEmpty()) {
+            builder.appendLine("(none - filtered for metadata optimization)")
+        } else {
+            blocksToInclude.forEach { block ->
                 builder.appendLine("=== ${block.label} ===")
                 builder.appendLine(block.lines.joinToString("\n"))
                 builder.appendLine()
@@ -249,9 +282,9 @@ class WebScrapingServiceImpl(
         return builder.toString().trim()
     }
 
-    private fun buildPrompt(structuredText: String, hasDeterministicSections: Boolean): String {
-        val sectionInstruction = if (hasDeterministicSections) {
-            "Sections have already been deterministically extracted. Focus on extracting METADATA and OTHER DETAILS (Meaning, Temple, Composer, Raga, Tala) from the text."
+    private fun buildPrompt(structuredText: String, hasDeterministicContent: Boolean): String {
+        val sectionInstruction = if (hasDeterministicContent) {
+            "Sections and Lyrics have already been deterministically extracted. Focus ONLY on extracting METADATA (Composer, Raga, Tala, Deity, Temple, Meaning) from the provided text headers/summaries."
         } else {
             "Extract sections (Pallavi, etc.) and metadata from the text."
         }

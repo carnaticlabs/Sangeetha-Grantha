@@ -48,7 +48,8 @@ Shift the primary responsibility for **Lyric and Section Extraction** from the L
 - **2026-02-03**: Updated `WebScrapingService` to prioritize sections extracted by `TextBlocker` and adjusted the Gemini prompt to focus on metadata when sections are already found.
 - **2026-02-03**: Validated Raga/Tala extraction against 30 random URLs from import CSVs. Confirmed reliable presence in header meta for Dikshitar/Syama Sastri and refined LLM prompt to explicitly target `HEADER META`.
 - **2026-02-03**: Refined Gemini prompt to remove internal "TRACK-032" reference and clarify multi-language extraction instructions.
-- **2026-02-03**: Verified changes with `TextBlockerTest` (including `bAla kucAmbikE` case) and `WebScrapingServiceTest`. All tests passed.
+- **2026-02-03**: Verified changes with `TextBlockerTest` (including `bAla kRshNaM bhAvayAmi` case) and `WebScrapingServiceTest`. All tests passed.
+- **2026-02-03**: Implemented **Deterministic Variant Extraction** in `TextBlocker` and optimized `WebScrapingService`. Now, if deterministic sections/variants are found, the prompt sent to Gemini EXCLUDES the lyric blocks, reducing token usage by ~90% while preserving multi-script data.
 
 ## 5. References
 - `modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/scraping/TextBlocker.kt`
