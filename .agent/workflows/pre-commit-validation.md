@@ -24,14 +24,14 @@ git diff --cached | grep -iE "(API_KEY|SECRET|PASSWORD|TOKEN|PRIVATE_KEY)" || ec
 **If secrets found:** STOP and unstage the offending file.
 
 ### Step 3: Environment File Check
-Verify `config/.env.development` is NOT staged:
+Verify no env files with secrets are staged (e.g. `config/development.env`, `config/local.env`, any `config/*.env`):
 ```bash
-git diff --cached --name-only | grep -q "config/.env.development" && echo "ERROR: .env.development is staged!" || echo "OK: No env files staged"
+git diff --cached --name-only | grep -q "config/.env" && echo "ERROR: Env file staged!" || echo "OK: No env files staged"
 ```
 
-**If staged:** Remove it:
+**If staged:** Remove them:
 ```bash
-git restore --staged config/.env.development
+git restore --staged config/development.env config/local.env
 ```
 
 ### Step 4: Documentation Reference Check
@@ -125,7 +125,7 @@ git restore --staged <file-with-secrets>
 
 ### Unstage Environment Config
 ```bash
-git restore --staged config/.env.development
+git restore --staged config/development.env
 ```
 
 ### Split Mixed Commit

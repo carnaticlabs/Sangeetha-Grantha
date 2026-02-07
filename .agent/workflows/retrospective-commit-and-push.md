@@ -19,7 +19,7 @@ git status
 git diff --stat
 ```
 
-List every **modified** and **untracked** file (exclude `config/.env.development` from any staging or commit).
+List every **modified** and **untracked** file (exclude `config/development.env` from any staging or commit).
 
 ---
 
@@ -75,7 +75,7 @@ Before committing any changeset that includes documentation:
 For **each** changeset, in order:
 
 1. **Stage only that changeset’s files**
-   - Never stage `config/.env.development`.
+   - Never stage `config/development.env`.
    - Example (TRACK-029):
      ```bash
      git add database/migrations/21__create_temple_source_cache.sql \
@@ -106,10 +106,10 @@ For **each** changeset, in order:
 
 ## 6. Exclude Local Config (If Ever Staged)
 
-If `config/.env.development` was staged by mistake:
+If `config/development.env` was staged by mistake:
 
 ```bash
-git restore --staged config/.env.development
+git restore --staged config/development.env
 ```
 
 Do **not** commit it.
@@ -146,6 +146,6 @@ If some modified or untracked files did **not** fit any changeset:
 | 3 | Create/update conductor track + implementation summary doc in `application_documentation/` |
 | 4 | Mask secrets in any staged docs |
 | 5 | For each changeset: `git add <files>`, `git commit -m "..."` with `Ref: application_documentation/...` |
-| 6 | `git restore --staged config/.env.development` if needed |
+| 6 | `git restore --staged config/development.env` if needed |
 | 7 | `git push origin main` |
 | 8 | Report uncommitted leftovers to user |

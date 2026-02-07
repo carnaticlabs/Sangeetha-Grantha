@@ -24,7 +24,7 @@ class WebScrapingServiceTest {
         val envMap = if (configDir.exists()) {
              io.github.cdimascio.dotenv.dotenv {
                  directory = configDir.absolutePath
-                 filename = ".env.development"
+                 filename = "development.env"
                  ignoreIfMissing = true
              }.entries().associate { it.key to it.value }
         } else {
@@ -33,7 +33,7 @@ class WebScrapingServiceTest {
 
         val env = ApiEnvironmentLoader.load(envMap)
         if (env.geminiApiKey.isNullOrBlank()) {
-             println("Skipping test: GEMINI_API_KEY not found in .env.development")
+             println("Skipping test: GEMINI_API_KEY not found in development.env")
              return@runBlocking
         }
         
@@ -67,7 +67,7 @@ class WebScrapingServiceTest {
         val envMap = if (configDir.exists()) {
              io.github.cdimascio.dotenv.dotenv {
                  directory = configDir.absolutePath
-                 filename = ".env.development"
+                 filename = "development.env"
                  ignoreIfMissing = true
              }.entries().associate { it.key to it.value }
         } else {
@@ -76,7 +76,7 @@ class WebScrapingServiceTest {
 
         val env = ApiEnvironmentLoader.load(envMap)
         if (env.geminiApiKey.isNullOrBlank()) {
-             println("Skipping test: GEMINI_API_KEY not found in .env.development")
+             println("Skipping test: GEMINI_API_KEY not found in development.env")
              return@runBlocking
         }
         

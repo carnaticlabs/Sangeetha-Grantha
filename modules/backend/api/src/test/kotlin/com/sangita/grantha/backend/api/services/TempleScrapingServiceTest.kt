@@ -25,7 +25,7 @@ class TempleScrapingServiceTest {
         val envMap = if (configDir.exists()) {
              io.github.cdimascio.dotenv.dotenv {
                  directory = configDir.absolutePath
-                 filename = ".env.development"
+                 filename = "development.env"
                  ignoreIfMissing = true
              }.entries().associate { it.key to it.value }
         } else {

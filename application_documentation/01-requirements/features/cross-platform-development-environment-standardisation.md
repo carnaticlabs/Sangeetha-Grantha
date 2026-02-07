@@ -63,7 +63,7 @@ Sangeetha Grantha is a complex monorepo requiring multiple toolchains:
 **Problem**: Environment configuration scattered across multiple files with inconsistent naming:
 
 - Backend expects: `config/application.local.toml`
-- Frontend expects: `.env` or `config/.env.development`
+- Frontend expects: `.env` or `config/development.env`
 - Database connection strings vary by developer
 - API endpoints don't match between services
 - Sensitive keys accidentally committed to version control
@@ -336,18 +336,18 @@ mise activate            # Activates tools in current shell
 ```text
 tools/bootstrap-assets/
 └── env/
-    └── env.development.example    # Template (committed to git)
+    └── development.env.example    # Template (committed to git)
 config/
-└── .env.development               # Actual config (gitignored)
+└── development.env               # Actual config (gitignored)
 ```
 
-**Template File**: `tools/bootstrap-assets/env/env.development.example`
+**Template File**: `tools/bootstrap-assets/env/development.env.example`
 - Contains all required environment variables
 - Includes safe defaults for development
 - Documents optional vs required variables
 - No sensitive data (API keys commented out)
 
-**Generated File**: `config/.env.development`
+**Generated File**: `config/development.env`
 - Created automatically by bootstrap script
 - Gitignored (never committed)
 - Developer can customize without affecting others
@@ -403,7 +403,7 @@ powershell -ExecutionPolicy Bypass -File .\tools\bootstrap.ps1
 **What it does** (in order):
 1. ✅ Installs toolchain via mise (Java 25, Rust 1.92.0, Bun 1.3.0)
 2. ✅ Verifies Docker + Docker Compose availability
-3. ✅ Creates `config/.env.development` from template (if missing)
+3. ✅ Creates `config/development.env` from template (if missing)
 4. ✅ Starts PostgreSQL 15 via Docker Compose
 5. ✅ Builds `sangita-cli` Rust tool
 6. ✅ Runs database reset (drop → create → migrate → seed)
@@ -442,7 +442,7 @@ cd modules/frontend/sangita-admin-web && bun run dev
                         ▼
 ┌─────────────────────────────────────────────────────────────┐
 │ 3. Create config files from templates                       │
-│    ├─ config/.env.development (if missing)                  │
+│    ├─ config/development.env (if missing)                  │
 │    └─ Preserve existing files (idempotent)                  │
 └───────────────────────┬─────────────────────────────────────┘
                         │
@@ -548,11 +548,11 @@ exit if missing
 
 ```text
 **Phase 3: Config File Creation**
-if config/.env.development exists:
+if config/development.env exists:
     skip (preserve user customizations)
 else:
-    copy tools/bootstrap-assets/env/env.development.example
-         → config/.env.development
+    copy tools/bootstrap-assets/env/development.env.example
+         → config/development.env
 ```
 
 ```text
@@ -626,9 +626,9 @@ sangeetha-grantha/
 │   ├── bootstrap.ps1                             # Windows PowerShell script
 │   └── bootstrap-assets/
 │       └── env/
-│           └── env.development.example           # Config template
+│           └── development.env.example           # Config template
 ├── config/
-│   └── .env.development                          # Generated (gitignored)
+│   └── development.env                          # Generated (gitignored)
 └── compose.yaml                                  # Docker Compose (Postgres 15)
 ```
 
@@ -816,7 +816,7 @@ mise install    # Installs updated versions
 - **Solution**: Stop existing PostgreSQL instance or change port in `compose.yaml`
 
 **Issue: "Config file not created"**
-- **Solution**: Manually copy `tools/bootstrap-assets/env/env.development.example` to `config/.env.development`
+- **Solution**: Manually copy `tools/bootstrap-assets/env/development.env.example` to `config/development.env`
 
 **Issue: "Rust build fails"**
 - **Solution**: Run via mise to ensure correct Rust version: `mise exec cargo run -- ...`
@@ -843,7 +843,7 @@ After running bootstrap, verify:
 - [ ] Rust 1.92.0 is available (`rustc --version`)
 - [ ] Bun 1.3.0 is available (`bun --version`)
 - [ ] PostgreSQL container is running (`docker ps`)
-- [ ] `config/.env.development` exists and has correct values
+- [ ] `config/development.env` exists and has correct values
 - [ ] Database migrations completed (`cargo run -- db health`)
 - [ ] Frontend dependencies installed (`ls modules/frontend/sangita-admin-web/node_modules`)
 
@@ -868,7 +868,7 @@ After running bootstrap, verify:
 - ✅ `.mise.toml` with toolchain version pinning
 - ✅ `tools/bootstrap` (Unix/Linux/macOS)
 - ✅ `tools/bootstrap.ps1` (Windows)
-- ✅ `tools/bootstrap-assets/env/env.development.example` (config template)
+- ✅ `tools/bootstrap-assets/env/development.env.example` (config template)
 - ✅ Documentation and usage guides
 
 **Testing Status**: ✅ Tested on macOS, Linux, and Windows

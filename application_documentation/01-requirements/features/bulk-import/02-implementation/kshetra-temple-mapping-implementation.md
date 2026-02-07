@@ -92,4 +92,4 @@ Use this file as the single documentation reference for the **Kshetra & Temple M
 Ref: application_documentation/01-requirements/features/bulk-import/02-implementation/kshetra-temple-mapping-implementation.md
 ```
 
-**Suggested commit scope (atomic):** All files listed in §3 (database migration 21, DAL temple cache + TempleRepository, API config/DI/services/models, tests, frontend pages/types/index). Exclude `config/.env.development`.
+**Suggested commit scope (atomic):** All files listed in §3 (database migration 21, DAL temple cache + TempleRepository, API config/DI/services/models, tests, frontend pages/types/index). Exclude `config/development.env`.

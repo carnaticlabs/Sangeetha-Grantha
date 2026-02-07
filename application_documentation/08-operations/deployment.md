@@ -90,7 +90,7 @@ bun run dev
 
 ### 2.4 Environment Variables
 
-Create `.env.local` in the repo root:
+Create `config/local.env` (or set env vars in your environment):
 
 ```bash
 # Database

@@ -39,14 +39,14 @@ You must strictly prevent sensitive data from entering the codebase.
 
 ### Blocked Items
 - **API Keys**: `SG_GEMINI_API_KEY`, `AWS_SECRET_ACCESS_KEY`, `OPENAI_API_KEY`, etc.
-- **Configuration Files**: `config/.env`, `config/.env.development`, `config/.env.production`.
+- **Configuration Files**: `config/.env`, `config/development.env`, `config/local.env`, `config/.env.production` (all gitignored).
 - **Secrets/Tokens**: Any string that looks like a high-entropy secret.
 
 ### Pre-Commit Check
 Before suggesting `git commit`, mentally (or actually) check:
 1.  "Did I add any file that might contain a secret?"
 2.  "Am I adding a `.env` file?" (If so, STOP and add it to `.gitignore` instead).
-3.  **Strictly Ignore**: As per the core project guardrails, `config/.env.development` must NEVER be staged or committed. Use `git restore --staged config/.env.development` if it was accidentally added.
+3.  **Strictly Ignore**: No `config/*.env` or `config/local.env` file with secrets must be staged or committed. Use `git restore --staged config/development.env config/local.env` if any were accidentally added.
 
 ## 3. Workflow
 

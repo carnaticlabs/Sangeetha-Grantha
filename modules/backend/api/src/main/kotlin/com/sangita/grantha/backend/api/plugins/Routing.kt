@@ -25,7 +25,7 @@ import com.sangita.grantha.backend.api.services.ITransliterator
 import com.sangita.grantha.backend.api.services.IWebScraper
 import com.sangita.grantha.backend.api.services.KrithiNotationService
 import com.sangita.grantha.backend.api.services.UserManagementService
-import io.micrometer.prometheus.PrometheusMeterRegistry
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 
 import io.ktor.server.application.Application
 import io.ktor.server.application.install

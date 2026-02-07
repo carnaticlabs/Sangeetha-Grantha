@@ -57,7 +57,7 @@ object ApiEnvironmentLoader {
 
         // Load .env using idiomatic Kotlin API
         val filename = when (environment) {
-            Environment.DEV -> ".env.development"
+            Environment.DEV -> "development.env"
             Environment.TEST -> ".env.test"
             Environment.PROD -> ".env.production"
         }
@@ -68,15 +68,18 @@ object ApiEnvironmentLoader {
             ignoreIfMissing = true
         }
 
-        // We will create a map merging strategies:
-        // System Env > .env.development > TOML (legacy/fallback)
+        // Merge order: <env>.env then local.env (if present) then system env (highest).
+        // Use a single gitignored config/local.env for all local overrides; variable names in repo-root tools.yaml.
         val combinedEnv = HashMap<String, String>()
-
-        // 2. Add from Dotenv (middle priority)
-        // 2. Add from Dotenv (middle priority)
         dotenv.entries().forEach { combinedEnv[it.key] = it.value }
 
-        // 3. Add System Env (highest priority)
+        val dotenvLocal = io.github.cdimascio.dotenv.dotenv {
+            directory = "./config"
+            this.filename = "local.env"
+            ignoreIfMissing = true
+        }
+        dotenvLocal.entries().forEach { combinedEnv[it.key] = it.value }
+
         sysEnv.forEach { (k, v) -> combinedEnv[k] = v }
         
         // Helper to get value

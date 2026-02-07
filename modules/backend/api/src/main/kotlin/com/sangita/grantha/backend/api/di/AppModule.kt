@@ -30,7 +30,7 @@ import com.sangita.grantha.backend.api.services.GeocodingService
 import com.sangita.grantha.backend.api.services.TempleScrapingService
 import com.sangita.grantha.backend.api.services.bulkimport.BulkImportWorkerServiceImpl
 import com.sangita.grantha.backend.api.services.bulkimport.IBulkImportWorker
-import io.micrometer.prometheus.PrometheusMeterRegistry
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import org.koin.dsl.module
 
 fun appModule(env: ApiEnvironment, metricsRegistry: PrometheusMeterRegistry) = module {
@@ -95,5 +95,5 @@ fun appModule(env: ApiEnvironment, metricsRegistry: PrometheusMeterRegistry) = m
     }
     single { BulkImportOrchestrationService(get(), get()) }
 
-    single { metricsRegistry }
+    single<PrometheusMeterRegistry> { metricsRegistry }
 }

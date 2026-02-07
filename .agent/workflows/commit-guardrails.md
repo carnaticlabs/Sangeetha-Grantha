@@ -56,10 +56,10 @@ grep -r "API_KEY" . || true
 ```
 
 ## 5. Exclude Local Environment Config
-**CRITICAL:** If you have modified `config/.env.development` (e.g., to update `API_KEY` values for local testing), you **MUST** exclude it from the commit to prevent leaking secrets.
+**CRITICAL:** If you have modified `config/development.env` or `config/local.env` (e.g., to update API keys for local testing), you **MUST** exclude them from the commit to prevent leaking secrets.
 
 ```bash
-git restore --staged config/.env.development
+git restore --staged config/development.env config/local.env
 ```
 
 ## 6. Commit and Push

@@ -44,7 +44,13 @@ build_log_final.txt
 .gitignore
 **/*Cargo.lock
 tools/sangita-cli/Cargo.lock
-**/config/.env.development
+# Env and secrets – keep out of repo; set values via system env or config/local.env (gitignored)
+.env
+.env.local
+**/config/.env
+**/config/development.env
+**/config/local.env
+**/config/.env.production
 **/config/postgres-local.env
 **/storage/**
 **/database/for_import/**
