@@ -2,7 +2,7 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-03 |
+| **Last Updated** | 2026-02-06 |
 | **Author** | Sangeetha Grantha Team |
 
 # Conductor Tracks Registry
@@ -45,5 +45,11 @@
 | [TRACK-034](./tracks/TRACK-034-fix-text-blocker-parsing.md) | Fix TextBlocker Section Parsing | Completed |
 | [TRACK-035](./tracks/TRACK-035-frontend-e2e-testing.md) | Frontend E2E Testing with Playwright | In Progress |
 | [TRACK-036](./tracks/TRACK-036-enhanced-text-blocker-extraction.md) | Enhanced TextBlocker Extraction Strategy | Completed |
+| [TRACK-037](./tracks/TRACK-037-environment-variables.md) | Environment Variables & Config Standardisation | Completed |
+| [TRACK-038](./tracks/TRACK-038-dependency-updates-feb-2026.md) | Dependency Updates (Feb 2026) | Completed |
+| [TRACK-039](./tracks/TRACK-039-data-quality-audit-krithi-structure.md) | Data Quality Audit – Krithi Structural Consistency | In Progress |
+| [TRACK-040](./tracks/TRACK-040-krithi-remediation-deduplication.md) | Krithi Data Remediation & Deduplication | Planned |
+| [TRACK-041](./tracks/TRACK-041-enhanced-sourcing-logic.md) | Enhanced Sourcing Logic & Structural Voting | Planned |
+| [TRACK-042](./tracks/TRACK-042-mcp-database-tooling-optimization.md) | MCP Database Tooling Optimization | Proposed |
 
 ## 3. Deprecated Tracks
