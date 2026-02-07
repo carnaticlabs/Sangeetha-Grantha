@@ -21,32 +21,50 @@ data class DatabaseConfig(
  * 3. Values under the `[database]` section of the TOML file (defaults to `config/application.local.toml`).
  */
 object DatabaseConfigLoader {
-    private val defaultConfigPath: Path = Paths.get("config/application.local.toml")
-
     fun load(
-        configPath: Path? = null,
-        env: Map<String, String> = System.getenv()
+        sysEnv: Map<String, String> = System.getenv()
     ): DatabaseConfig {
-        val resolvedPath = resolveConfigPath(configPath, env)
-        val fileSettings = resolvedPath?.let { path ->
-            if (isEnvFile(path)) {
-                DotenvConfig.read(path)
-            } else {
-                TomlConfig.readSection(path, "database")
-            }
-        } ?: emptyMap()
+        // Merge order: development.env then local.env then system env (highest).
+        val combinedEnv = HashMap<String, String>()
+        
+        // 1. Load development.env
+        io.github.cdimascio.dotenv.dotenv {
+            directory = "./config"
+            filename = "development.env"
+            ignoreIfMissing = true
+        }.entries().forEach { combinedEnv[it.key] = it.value }
 
-        val url = firstPresent(env, fileSettings, "SG_DB_URL", "DB_URL", "url")
-            ?: buildJdbcUrl(env, fileSettings)
-        val username = firstPresent(env, fileSettings, "SG_DB_USERNAME", "SG_DB_USER", "DB_USERNAME", "DB_USER", "user")
-            ?: error(
-                "Database username not configured. Set SG_DB_USERNAME or add 'user' under [database] in ${resolvedPath ?: defaultConfigPath}."
-            )
-        val password = firstPresent(env, fileSettings, "SG_DB_PASSWORD", "DB_PASSWORD", "password")
-            ?: error(
-                "Database password not configured. Set SG_DB_PASSWORD or add 'password' under [database] in ${resolvedPath ?: defaultConfigPath}."
-            )
-        val schema = firstPresent(env, fileSettings, "SG_DB_SCHEMA", "DB_SCHEMA", "schema")
+        // 2. Load local.env
+        io.github.cdimascio.dotenv.dotenv {
+            directory = "./config"
+            filename = "local.env"
+            ignoreIfMissing = true
+        }.entries().forEach { combinedEnv[it.key] = it.value }
+
+        // 3. System environment overrides
+        sysEnv.forEach { (k, v) -> combinedEnv[k] = v }
+
+        fun get(vararg keys: String): String? {
+            return keys.firstNotNullOfOrNull { key ->
+                combinedEnv[key]?.takeIf { it.isNotBlank() }
+            }
+        }
+
+        // Build JDBC URL from components or explicit URL
+        val url = get("SG_DB_URL", "DB_URL") ?: run {
+            val host = get("DB_HOST", "SG_DB_HOST", "host") ?: "localhost"
+            val port = get("DB_PORT", "SG_DB_PORT", "port") ?: "5432"
+            val name = get("DB_NAME", "SG_DB_NAME", "name") ?: "sangita_grantha"
+            "jdbc:postgresql://$host:$port/$name"
+        }
+
+        val username = get("DB_USER", "SG_DB_USERNAME", "SG_DB_USER", "DB_USERNAME", "user")
+            ?: error("Database username not configured. Set DB_USER or SG_DB_USER.")
+        
+        val password = get("DB_PASSWORD", "SG_DB_PASSWORD", "password")
+            ?: error("Database password not configured. Set DB_PASSWORD or SG_DB_PASSWORD.")
+            
+        val schema = get("DB_SCHEMA", "SG_DB_SCHEMA", "schema")
 
         return DatabaseConfig(
             jdbcUrl = url,
@@ -55,46 +73,4 @@ object DatabaseConfigLoader {
             schema = schema
         )
     }
-
-    private fun resolveConfigPath(configPath: Path?, env: Map<String, String>): Path? {
-        configPath?.let { if (Files.exists(it)) return it }
-
-        val candidate = sequenceOf(
-            env["SG_DB_ENV_PATH"],
-            env["SG_DB_CONFIG_PATH"],
-            env["SG_APP_CONFIG_PATH"],
-            System.getProperty("sg.db.env"),
-            System.getProperty("sg.db.config")
-        ).filterNotNull()
-            .map { it.trim() }
-            .firstOrNull { it.isNotEmpty() }
-            ?.let { Paths.get(it) }
-
-        if (candidate != null && Files.exists(candidate)) {
-            return candidate
-        }
-
-        return TomlConfig.findConfigFile(defaultConfigPath)?.takeIf { Files.exists(it) }
-    }
-
-    private fun isEnvFile(path: Path): Boolean {
-        val name = path.fileName.toString().lowercase()
-        return name.endsWith(".env") || name.endsWith(".env.local") || name.endsWith(".env.test")
-    }
-
-    private fun buildJdbcUrl(env: Map<String, String>, fileSettings: Map<String, String>): String {
-        val host = firstPresent(env, fileSettings, "SG_DB_HOST", "DB_HOST", "host")
-            ?: error("Database host not configured. Set SG_DB_HOST or add 'host' under [database].")
-        val port = firstPresent(env, fileSettings, "SG_DB_PORT", "DB_PORT", "port")
-            ?: error("Database port not configured. Set SG_DB_PORT or add 'port' under [database].")
-        val name = firstPresent(env, fileSettings, "SG_DB_NAME", "DB_NAME", "name")
-            ?: error("Database name not configured. Set SG_DB_NAME or add 'name' under [database].")
-
-        return "jdbc:postgresql://$host:${port.trim()}/$name"
-    }
-
-    private fun firstPresent(env: Map<String, String>, fileSettings: Map<String, String>, vararg keys: String): String? =
-        keys.firstNotNullOfOrNull { key ->
-            env[key]?.takeIf { it.isNotBlank() } ?: fileSettings[key]?.takeIf { it.isNotBlank() }
-        }
 }

@@ -21,6 +21,7 @@ dependencies {
     implementation(libs.kotlinx.datetime)
     implementation(libs.postgresql)
     implementation(libs.micrometer.core)
+    implementation(libs.dotenv.kotlin)
 
     testImplementation(kotlin("test"))
     testImplementation(libs.kotlinx.coroutines.test)

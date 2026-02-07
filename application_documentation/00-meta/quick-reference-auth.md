@@ -45,9 +45,7 @@ Include the received token in the `Authorization` header as a Bearer token:
 
 ---
 
-## Configuration
-
-Authentication is configured via environment variables in `config/.env.development` (or equivalent):
+Authentication is configured via environment variables. See [Configuration Documentation](../08-operations/config.md) for details on where to set these.
 
 | Variable | Description | Default (Dev) |
 |:---|:---|:---|

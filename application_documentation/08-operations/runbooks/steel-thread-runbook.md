@@ -41,9 +41,7 @@ mise exec -- bun --version
 
 ---
 
-## Environment
-
-### Default Configuration
+### Configuration
 
 | Service | Host | Port | Notes |
 |---------|------|------|-------|
@@ -51,13 +49,13 @@ mise exec -- bun --version
 | Backend API | 0.0.0.0 | 8080 | Ktor server |
 | Admin Web | localhost | 5001 | Vite dev server |
 
-### Configuration Files
+See [Configuration Documentation](../config.md) for single-source env var details.
 
-| File | Purpose |
-|------|---------|
-| `config/application.local.toml` | Local development settings |
-| `docker-compose.yml` | Database container |
-| `.env.local` | Environment overrides |
+### Environment Setup
+
+1. Copy system-wide defaults from `tools/bootstrap-assets/env/development.env.example` to `config/development.env` (if not present).
+2. Create `config/local.env` (gitignored) for local overrides (secrests, DB password).
+3. The backend and frontend will automatically load these files.
 
 ### Environment Variables
 
@@ -440,8 +438,8 @@ curl http://localhost:8080/health
 psql -h localhost -U sangita -d sangita_grantha -c \
   "SELECT id, email FROM users WHERE email = 'admin@sangitagrantha.org'"
 
-# Verify admin token matches config
-grep ADMIN_TOKEN config/application.local.toml
+# Verify admin token matches configuration
+grep ADMIN_TOKEN config/local.env || grep ADMIN_TOKEN config/development.env
 ```
 
 **Problem: JWT expired**

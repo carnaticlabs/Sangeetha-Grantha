@@ -1,0 +1,79 @@
+# Sangeetha Grantha – Environment and tools configuration
+#
+# Use this file to define environment-backed configuration. Actual values (API keys,
+# passwords, etc.) should be set outside the repo (e.g. secrets manager, local
+# .env not in git, or Goose/IDE env). Use environment variable substitution for required secrets
+# and optional values with defaults (e.g. DB_HOST:localhost).
+#
+# Reference: https://googleapis.github.io/genai-toolbox/getting-started/configure/
+#
+# -----------------------------------------------------------------------------
+# EXTERNALIZABLE VARIABLES (set these outside the repo)
+# -----------------------------------------------------------------------------
+#
+# Backend (ApiEnvironment.kt / config/development.env)
+#   API_HOST, API_PORT, ADMIN_TOKEN, TOKEN_TTL_SECONDS
+#   JWT_SECRET, JWT_ISSUER, JWT_AUDIENCE, JWT_REALM
+#   DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD, DB_SCHEMA
+#   SG_GEMINI_API_KEY, GEMINI_API_KEY, SG_GEMINI_MODEL_URL, SG_GEMINI_MIN_INTERVAL_MS
+#   SG_GEMINI_QPS_LIMIT, SG_GEMINI_MAX_CONCURRENT, SG_GEMINI_MAX_RETRIES
+#   SG_GEMINI_MAX_RETRY_WINDOW_MS, SG_GEMINI_REQUEST_TIMEOUT_MS
+#   SG_GEMINI_FALLBACK_MODEL_URL, SG_GEMINI_USE_SCHEMA_MODE
+#   SG_SCRAPE_CACHE_TTL_HOURS, SG_SCRAPE_CACHE_MAX_ENTRIES
+#   SG_GEO_PROVIDER, SG_GEO_API_KEY, SG_TEMPLE_AUTO_CREATE_CONFIDENCE
+#   STORAGE_UPLOAD_DIR, STORAGE_PUBLIC_URL
+#   CORS_ALLOWED_ORIGINS, FRONTEND_PORT, ENVIRONMENT, SG_ENV
+#
+# Auto-approval (AutoApprovalConfig.kt / config/.env.auto-approval.example)
+#   AUTO_APPROVAL_MIN_QUALITY_SCORE, AUTO_APPROVAL_MIN_COMPOSER_CONFIDENCE
+#   AUTO_APPROVAL_MIN_RAGA_CONFIDENCE, AUTO_APPROVAL_MIN_TALA_CONFIDENCE
+#   AUTO_APPROVAL_REQUIRE_COMPOSER, AUTO_APPROVAL_REQUIRE_RAGA
+#   AUTO_APPROVAL_ALLOW_NEW_ENTITIES, AUTO_APPROVAL_QUALITY_TIERS
+#   AUTO_APPROVAL_REQUIRE_METADATA
+#
+# Frontend (Vite / sangita-admin-web)
+#   VITE_API_BASE_URL, GEMINI_API_KEY (vite define)
+#
+# E2E / Playwright (e2e/global-setup.ts, fixtures, playwright.config.ts)
+#   API_BASE_URL, DATABASE_URL, ADMIN_TOKEN, ADMIN_EMAIL, FRONTEND_URL, CI
+#
+# Database / CLI (DatabaseConfigLoader.kt, sangita-cli app_config)
+#   SG_DB_URL, SG_DB_HOST, SG_DB_PORT, SG_DB_NAME, SG_DB_USERNAME, SG_DB_USER
+#   SG_DB_PASSWORD, SG_DB_SCHEMA, SG_DB_ENV_PATH, SG_DB_CONFIG_PATH, SG_APP_CONFIG_PATH
+#
+# -----------------------------------------------------------------------------
+
+sources:
+  # PostgreSQL source for Sangeetha Grantha. Used by MCP/tooling that needs
+  # DB access. Application backend reads from config/.env.* or system env.
+  sangita-grantha-db:
+    kind: postgres
+    host: ${DB_HOST:localhost}
+    port: ${DB_PORT:5432}
+    database: ${DB_NAME:sangita_grantha}
+    user: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+
+# Optional: tools that use the source (e.g. for Goose / MCP Toolbox).
+# Uncomment and extend as needed. See https://googleapis.github.io/genai-toolbox/resources/tools/
+tools:
+  sangita-db-query:
+    kind: postgres-sql
+    source: sangita-grantha-db
+    statement: |
+      SELECT 
+        k.title,
+        klv.lyric_blob,
+        kls.section_label,
+        kls.order_index
+      FROM krithis k
+      LEFT JOIN krithi_lyric_variants klv ON k.id = klv.id
+      LEFT JOIN krithi_lyric_sections kls ON k.id = kls.id
+      WHERE k.id = '91079b86-53ee-4a2b-8dbf-2e21b958a62b'
+      ORDER BY kls.order_index;
+
+toolsets:
+  sangita-db:
+    - sangita-db-query
+
+# prompts: {}
