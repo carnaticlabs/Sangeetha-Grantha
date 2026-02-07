@@ -41,23 +41,23 @@ if ! docker compose version >/dev/null 2>&1 && ! command -v docker-compose >/dev
 fi
 
 # 3) Canonical config files
-step "Ensuring config/.env.development exists"
+step "Ensuring config/development.env exists"
 mkdir -p "$ROOT_DIR/config"
 
 # NOTE: Goose tool restrictions may block committing .env templates.
 # We keep a template path under tools/bootstrap-assets/ for source control.
-TEMPLATE="$ROOT_DIR/tools/bootstrap-assets/env/env.development.example"
-TARGET="$ROOT_DIR/config/.env.development"
+TEMPLATE="$ROOT_DIR/tools/bootstrap-assets/env/development.env.example"
+TARGET="$ROOT_DIR/config/development.env"
 
 if [[ -f "$TARGET" ]]; then
-  printf "config/.env.development already exists (leaving as-is)\n"
+  printf "config/development.env already exists (leaving as-is)\n"
 else
   if [[ -f "$TEMPLATE" ]]; then
     cp "$TEMPLATE" "$TARGET"
-    printf "Created config/.env.development from template\n"
+    printf "Created config/development.env from template\n"
   else
     warn "Template not found at $TEMPLATE"
-    warn "Create config/.env.development manually (see docs)"
+    warn "Create config/development.env manually (see docs)"
   fi
 fi
 

@@ -118,7 +118,7 @@ async fn configure(args: NetConfigureArgs) -> Result<()> {
 
     print_success("Configuration written");
     println!(
-        "  - config/application.local.toml\n  - config/.env.development\n  - androidApp/src/main/res/xml/network_security_config.xml (if androidApp exists)\n  - modules/shared/domain/src/commonMain/kotlin/com/sangita/grantha/shared/config/ApiConfig.kt"
+        "  - config/application.local.toml\n  - config/development.env\n  - androidApp/src/main/res/xml/network_security_config.xml (if androidApp exists)\n  - modules/shared/domain/src/commonMain/kotlin/com/sangita/grantha/shared/config/ApiConfig.kt"
     );
     println!("Uploads directory ready at {}", uploads_dir.display());
 
@@ -380,7 +380,7 @@ fn write_env_development(root: &Path, host: &str) -> Result<()> {
 CORS_ALLOWED_ORIGINS=http://localhost:5173,http://localhost:8080,http://{host}:8080,http://{host}:5173
 "#
     );
-    write_with_backup(&root.join("config/.env.development"), &content)
+    write_with_backup(&root.join("config/development.env"), &content)
 }
 
 fn write_android_network_config(root: &Path, host: &str) -> Result<()> {

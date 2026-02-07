@@ -365,7 +365,7 @@ fn load_repo_dotenv(root: &Path) {
     let filename = match env.as_str() {
         "TEST" | "TESTING" => ".env.test",
         "PROD" | "PRODUCTION" => ".env.production",
-        _ => ".env.development",
+        _ => "development.env",
     };
 
     let path = root.join("config").join(filename);

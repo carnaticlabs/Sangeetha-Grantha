@@ -49,21 +49,21 @@ if (-not $composeOk) {
 }
 
 # 3) Canonical config files
-Step "Ensuring config/.env.development exists"
+Step "Ensuring config/development.env exists"
 New-Item -ItemType Directory -Force -Path (Join-Path $Root "config") | Out-Null
 
-$template = Join-Path $Root "tools\bootstrap-assets\env\env.development.example"
-$target = Join-Path $Root "config\.env.development"
+$template = Join-Path $Root "tools\bootstrap-assets\env\development.env.example"
+$target = Join-Path $Root "config\development.env"
 
 if (Test-Path $target) {
-  Write-Host "config/.env.development already exists (leaving as-is)"
+  Write-Host "config/development.env already exists (leaving as-is)"
 } else {
   if (Test-Path $template) {
     Copy-Item $template $target
-    Write-Host "Created config/.env.development from template"
+    Write-Host "Created config/development.env from template"
   } else {
     Warn "Template not found at $template"
-    Warn "Create config/.env.development manually (see docs)"
+    Warn "Create config/development.env manually (see docs)"
   }
 }
 

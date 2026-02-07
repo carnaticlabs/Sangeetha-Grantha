@@ -9,4 +9,4 @@ bun run dev
 ```
 
 ## Configuration
-- `VITE_API_BASE_URL` (from `config/.env.development`)
+- `VITE_API_BASE_URL` (from `config/development.env`)
