@@ -1,9 +1,9 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-02-03 |
-| **Author** | Sangita Grantha Architect |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-02-08 |
+| **Author** | Sangeetha Grantha Team |
 
 # IDE Setup Guide
 
@@ -87,7 +87,7 @@ Create these run configurations for development:
 
 #### Backend API
 
-```
+```text
 Name: Backend API
 Type: Gradle
 Tasks: :modules:backend:api:run
@@ -97,7 +97,7 @@ Environment: SANGITA_ENV=local
 
 #### Backend Dev Mode
 
-```
+```text
 Name: Backend Dev
 Type: Gradle
 Tasks: :modules:backend:api:runDev
@@ -107,7 +107,7 @@ Environment: SANGITA_ENV=local
 
 #### Backend Tests
 
-```
+```text
 Name: Backend Tests
 Type: Gradle
 Tasks: :modules:backend:api:test
@@ -426,7 +426,7 @@ Install via `Settings > Plugins`:
 
 #### Android App
 
-```
+```text
 Name: Sangita Android
 Type: Android App
 Module: modules.mobile.composeApp.main
@@ -437,7 +437,7 @@ Deploy: Default APK
 
 Requires Xcode installed:
 
-```
+```text
 Name: Sangita iOS
 Type: iOS Application
 Configuration: Debug

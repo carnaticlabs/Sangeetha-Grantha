@@ -1,3 +1,10 @@
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-02-08 |
+| **Author** | Sangeetha Grantha Team |
+
 # Data Quality Audit Results (Interim) - Feb 2026
 
 ## 1. Executive Summary
@@ -49,4 +56,3 @@ To ensure structural integrity, the `ImportService` should adopt a "Composer-to-
 1. **Pilot Fix**: Apply normalization logic to high-priority Dikshitar Krithis (e.g., Navavarnas).
 2. **Metadata Purge**: Automated script to remove "Updated on...", "Meaning:", and "Word-by-word" blocks from the `text` field.
 3. **Re-Extraction**: Re-run `TextBlocker` with the enhanced strategy for variants flagged with low section counts.
-

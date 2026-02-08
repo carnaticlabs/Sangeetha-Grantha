@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-26 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-02-08 |
 | **Author** | Sangeetha Grantha Team |
 
 # Krithi Bulk Import from CSV - Comprehensive Strategy & Design
@@ -156,7 +156,7 @@ class CsvBulkImportService(
     
     suspend fun validateCsvFile(csvFilePath: String): CsvValidationResult
     
-    ```kotlin
+```kotlin
     suspend fun processBatch(
         entries: List<CsvKrithiEntry>,
         batchId: UUID
@@ -191,7 +191,7 @@ class DeduplicationService(
         batchContext: List<ImportedKrithiDto> = emptyList()
     ): List<DuplicateMatch>
     
-    ```kotlin
+```kotlin
     suspend fun detectBatchDuplicates(batch: List<ImportedKrithiDto>): DeduplicationResult
 }
 ```
@@ -255,7 +255,7 @@ class BatchScrapingService(
         options: BatchScrapingOptions
     ): Flow<ScrapingResult>
     
-    ```kotlin
+```kotlin
     suspend fun scrapeWithRetry(
         url: String,
         maxRetries: Int = 3
@@ -329,7 +329,7 @@ data class BulkImportBatch(
        }
        // ... other normalizers
    }
-   ```
+```
 
 3. **Fuzzy Matching Strategy**
    - **Step 1**: Exact match on *Normalized Name*.

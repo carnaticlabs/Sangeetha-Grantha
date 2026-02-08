@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.2.0 |
-| **Last Updated** | 2026-01-27 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-02-08 |
 | **Author** | Sangeetha Grantha Team |
 
 ---
@@ -86,7 +86,7 @@ Split the 847-line god class into focused components.
 - [x] Extract `TaskErrorBuilder` for error payload construction
 
 **Target Structure:**
-```
+```text
 services/
 ├── bulkimport/
 │   ├── BulkImportOrchestrator.kt     # Main coordinator
@@ -705,7 +705,7 @@ data class KrithiSearchRequest(
 - [x] Split `ImportDtos.kt` (151 lines) into workflow and orchestration
 
 **Target Structure:**
-```
+```text
 domain/model/
 ├── krithi/
 │   ├── KrithiDto.kt

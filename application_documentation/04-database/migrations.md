@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-26 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-02-08 |
 | **Author** | Sangeetha Grantha Team |
 
 # Database Migrations (Sangita Grantha)
@@ -104,7 +104,7 @@ cargo run -- db health
    - Follow naming convention: `NN__description.sql`
 
 2. **Write migration SQL**:
-   ```sql
+```sql
    -- migrate:up
    SET search_path TO public;
    
@@ -113,14 +113,14 @@ cargo run -- db health
    
    -- migrate:down
    -- DROP TABLE IF EXISTS new_table;
-   ```
+```
 
 3. **Test migration**:
-   ```bash
+```bash
    cd tools/sangita-cli
    cargo run -- db reset  # Test full reset
    cargo run -- db migrate  # Test incremental migration
-   ```
+```
 
 4. **Update documentation**:
    - Update this file with new migration entry

@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.1 |
-| **Last Updated** | 2026-01-29 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-02-08 |
 | **Author** | Sangeetha Grantha Team |
 
 # KrithiEditor.tsx Refactoring Checklist
@@ -224,7 +224,7 @@ These items block other improvements and should be done first.
 
 ## File Structure After Refactoring
 
-```
+```text
 src/
 ├── pages/
 │   └── KrithiEditor.tsx              # ~200 lines (orchestration only)

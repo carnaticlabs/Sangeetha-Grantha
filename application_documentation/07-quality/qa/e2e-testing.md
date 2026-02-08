@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-29 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-02-08 |
 | **Author** | Sangeetha Grantha Team |
 
 # End-to-End Testing Guide
@@ -107,7 +107,7 @@ export const testKrithi = {
 
 ### 3.1 Directory Structure
 
-```
+```text
 modules/frontend/sangita-admin-web/
 ├── e2e/
 │   ├── fixtures/

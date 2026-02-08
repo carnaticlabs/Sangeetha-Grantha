@@ -2,7 +2,7 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-01-29 |
+| **Last Updated** | 2026-02-08 |
 | **Author** | Sangeetha Grantha Team |
 
 # Steel Thread Testing & Usability Report
@@ -262,7 +262,7 @@ The Sangita Grantha steel thread test validates end-to-end functionality across 
 
 ### 6.1 Test Environment
 
-```
+```text
 Date: 2026-01-29
 Tester: Automated + Manual QA
 Environment: Local development
@@ -271,7 +271,7 @@ OS: macOS 14.x
 
 ### 6.2 Versions Tested
 
-```
+```text
 Java: Temurin 25
 Kotlin: 2.1.0
 Ktor: 3.0.3

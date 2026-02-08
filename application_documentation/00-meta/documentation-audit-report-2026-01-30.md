@@ -1,9 +1,9 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 3.0.0 |
-| **Last Updated** | 2026-01-30 |
-| **Author** | Claude Code Documentation Audit |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-02-08 |
+| **Author** | Sangeetha Grantha Team |
 
 # Sangita Grantha Documentation Audit Report
 
@@ -141,7 +141,7 @@ These files currently hardcode versions and should be refactored to reference [c
 
 | File | Current Issue | Action Required |
 |------|---------------|-----------------|
-| `CLAUDE.md` | Hardcodes Java 25, Rust 1.92.0, Bun 1.3.0 | Add link: "See [Current Versions](application_documentation/00-meta/current-versions.md)" |
+| `CLAUDE.md` | Hardcodes Java 25, Rust 1.92.0, Bun 1.3.0 | Add link: "See [Current Versions](./current-versions.md)" |
 | `.claude-context.md` | Hardcodes 15+ versions (many outdated) | Replace version section with link to `current-versions.md` |
 | `.goose-context.md` | Hardcodes 15+ versions (many outdated) | Replace version section with link to `current-versions.md` |
 | `.cursorrules` | Hardcodes 10+ versions | Replace version section with link to `current-versions.md` |
@@ -174,13 +174,13 @@ The version sync has been implemented as a **Rust CLI command** in `sangita-cli`
    - Cloud & External Services versions
 
 4. **Usage:**
-   ```bash
+```bash
    # Generate/update current-versions.md
    sangita-cli docs sync-versions
 
    # Check if versions are in sync (for CI)
    sangita-cli docs sync-versions --check
-   ```
+```
 
 5. **Future Enhancement:** `sangita-cli docs validate-links` (placeholder for link validation)
 
@@ -303,7 +303,7 @@ The main `application_documentation/README.md` is missing links to documents cre
 
 **Proposed Structure:**
 
-```
+```text
 project/
 ├── CLAUDE.md                    # Primary agent instructions (canonical)
 ├── .agent-versions.md           # Auto-generated version summary (referenced by all)
@@ -340,11 +340,11 @@ project/
 
 3. **Pending: Add CI validation**
    - Add to GitHub Actions workflow:
-   ```yaml
+```yaml
    - name: Verify version sync
      run: |
        sangita-cli docs sync-versions --check
-   ```
+```
 
 ### Phase 2: Fix Broken References (Priority: High)
 

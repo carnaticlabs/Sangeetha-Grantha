@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-26 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-02-08 |
 | **Author** | Sangeetha Grantha Team |
 
 # API Coverage Gap Implementation Plan
@@ -313,7 +313,7 @@ suspend fun saveLyricVariantSections(
         KrithiLyricSectionsTable.lyricVariantId eq javaVariantId 
     }
     
-    ```text
+```text
     // Insert new sections
     if (sections.isNotEmpty()) {
         KrithiLyricSectionsTable.batchInsert(sections) { (sectionId, text) ->
@@ -458,7 +458,7 @@ route("/v1/admin/variants") {
         call.respond(updated)
     }
     
-    ```kotlin
+```kotlin
     post("/{id}/sections") {
         val id = parseUuidParam(call.parameters["id"], "variantId")
             ?: return@post call.respondText("Missing variant ID", status = HttpStatusCode.BadRequest)
@@ -507,7 +507,7 @@ fun Route.adminNotationRoutes(notationService: KrithiNotationService) {
             // ... existing code ...
         }
         
-        ```text
+```text
         delete("/notation/rows/{rowId}") {
             // ... existing code ...
         }
@@ -551,7 +551,7 @@ fun Route.adminKrithiRoutes(
             call.respond(updated)
         }
         
-        ```text
+```text
         // ... existing routes (sections, variants, tags, etc.) ...
     }
 }
@@ -577,7 +577,7 @@ fun Route.importRoutes(
         // ... existing routes ...
     }
     
-    ```text
+```text
     route("/v1/admin/imports") {
         // Move review route here as well
         post("/{id}/review") {
@@ -631,7 +631,7 @@ class LyricVariantRoutesTest {
         // Test update endpoint
     }
     
-    ```kotlin
+```kotlin
     @Test
     fun `POST admin variants sections saves sections`() {
         // Test save sections endpoint
@@ -745,7 +745,7 @@ fun Route.userManagementRoutes(userService: UserManagementService) {
             }
         }
         
-        ```kotlin
+```kotlin
         get("/{id}/roles") {
             val id = parseUuidParam(call.parameters["id"], "userId")
                 ?: return@get call.respondText("Missing user ID", status = HttpStatusCode.BadRequest)
@@ -875,7 +875,7 @@ class AuthorizationService(private val dal: SangitaDal) {
         }
     }
     
-    ```kotlin
+```kotlin
     suspend fun requirePermission(userId: Uuid, permission: Permission) {
         if (!hasPermission(userId, permission)) {
             throw SecurityException("User does not have permission: ${permission.resource}.${permission.action}")
@@ -899,7 +899,7 @@ post("/v1/admin/krithis") {
     val userId = getCurrentUserId(call) // Extract from auth context
     authorizationService.requirePermission(userId, Permission("krithis", "create"))
     
-    ```kotlin
+```kotlin
     val request = call.receive<KrithiCreateRequest>()
     val created = krithiService.createKrithi(request)
     call.respond(HttpStatusCode.Created, created)
@@ -929,7 +929,7 @@ route("/v1/admin/roles") {
         // Update role capabilities (super_admin only)
     }
     
-    ```text
+```text
     get("/{code}/users") {
         // List users with this role
     }

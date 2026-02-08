@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-29 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-02-08 |
 | **Author** | Sangeetha Grantha Team |
 
 # Incident Response Runbook
@@ -61,13 +61,13 @@ flowchart TD
 **When an alert fires:**
 
 1. **Acknowledge immediately**
-   ```bash
+```bash
    # If using PagerDuty
    pd incident acknowledge --id <incident-id>
 
    # Or acknowledge in Slack
    # React with ✅ to the alert message
-   ```
+```
 
 2. **Assess initial impact**
    - Check monitoring dashboards
@@ -143,34 +143,34 @@ gcloud monitoring dashboards list
 **Quick Mitigation Options:**
 
 1. **Rollback deployment:**
-   ```bash
+```bash
    # List recent revisions
    gcloud run revisions list --service=sangita-grantha-api-prod
 
    # Rollback to previous version
    gcloud run services update-traffic sangita-grantha-api-prod \
      --to-revisions=<previous-revision>=100
-   ```
+```
 
 2. **Scale up resources:**
-   ```bash
+```bash
    # Increase Cloud Run instances
    gcloud run services update sangita-grantha-api-prod \
      --min-instances=5 --max-instances=20
-   ```
+```
 
 3. **Enable maintenance mode:**
-   ```bash
+```bash
    # Update Cloud Run env var
    gcloud run services update sangita-grantha-api-prod \
      --set-env-vars="MAINTENANCE_MODE=true"
-   ```
+```
 
 4. **Database failover:**
-   ```bash
+```bash
    # Promote replica (if configured)
    gcloud sql instances failover sangita-grantha-prod
-   ```
+```
 
 ### 2.6 Phase 5: Resolution
 

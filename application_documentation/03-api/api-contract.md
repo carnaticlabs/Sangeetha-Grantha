@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-26 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-02-08 |
 | **Author** | Sangeetha Grantha Team |
 
 # Sangita Grantha API Contract
@@ -55,9 +55,9 @@ Screen-level usage for admin and mobile apps is documented in
 - Returns a JWT access token and optional refresh token with role claims.
 - Admin requests include header:
 
-  ```http
+```http
   Authorization: Bearer <accessToken>
-  ```
+```
 
 - Tokens include claims:
   - `userId`: UUID
@@ -270,16 +270,16 @@ mutations in v1 of Sangita Grantha.
 
 - Request:
 
-  ```json
+```json
   {
     "email": "editor@example.org",
     "password": "string"
   }
-  ```
+```
 
 - Response (`200 OK`):
 
-  ```json
+```json
   {
     "accessToken": "jwt",
     "expiresInSeconds": 3600,
@@ -290,7 +290,7 @@ mutations in v1 of Sangita Grantha.
       "roles": ["editor"]
     }
   }
-  ```
+```
 
 ---
 
@@ -302,7 +302,7 @@ Create a new Krithi.
 
 - Request body aligns with `KrithiDto` minus generated fields:
 
-  ```json
+```json
   {
     "title": "string",
     "incipit": "string?",
@@ -317,7 +317,7 @@ Create a new Krithi.
     "sahityaSummary": "string?",
     "notes": "string?"
   }
-  ```
+```
 
 - Response (`201 Created`): `KrithiDto`.
 
@@ -381,7 +381,7 @@ Create a new notation variant.
 
 - Request:
 
-  ```json
+```json
   {
     "notationType": "SWARA",
     "talaId": "uuid?",
@@ -400,7 +400,7 @@ Create a new notation variant.
       }
     ]
   }
-  ```
+```
 
 - Response: Created `KrithiNotationVariantDto` with all rows.
 
@@ -436,11 +436,11 @@ Assign tags to a Krithi.
 
 - Request:
 
-  ```json
+```json
   {
     "tagIds": ["uuid", "uuid"]
   }
-  ```
+```
 
 ### `DELETE /v1/admin/krithis/{id}/tags/{tagId}`
 
@@ -456,12 +456,12 @@ Map an `ImportedKrithi` to a canonical `Krithi`.
 
 - Request:
 
-  ```json
+```json
   {
     "krithiId": "uuid",
     "notes": "Mapped to existing Vatapi Ganapatim record"
   }
-  ```
+```
 
 - Behaviour:
   - Sets `mapped_krithi_id`.
@@ -483,9 +483,9 @@ Reject an imported entry.
 Scrape metadata and content from a supported external URL (e.g., shivkumar.org).
 
 - Request: `ScrapeRequest`
-  ```json
+```json
   { "url": "http://shivkumar.org/musical/..." }
-  ```
+```
 - Response: `ImportedKrithiDto` (Created status `PENDING`).
 
 ### `GET /v1/admin/imports`
@@ -500,20 +500,20 @@ List imported records with optional filtering.
 AI-powered transliteration of lyrics or notation.
 
 - Request: `TransliterationRequest`
-  ```json
+```json
   {
     "content": "raw text...",
     "targetScript": "latn",
     "sourceScript": "deva"
   }
-  ```
+```
 - Response: `TransliterationResponse`
-  ```json
+```json
   {
     "transliterated": "transliterated text...",
     "targetScript": "latn"
   }
-  ```
+```
 
 ---
 

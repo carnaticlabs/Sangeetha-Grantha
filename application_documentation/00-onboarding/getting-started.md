@@ -2,8 +2,8 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-03 |
-| **Author** | Sangita Grantha Architect |
+| **Last Updated** | 2026-02-08 |
+| **Author** | Sangeetha Grantha Team |
 
 # Getting Started with Sangita Grantha
 
@@ -68,23 +68,23 @@ bun install
 ### 4.1 Running the Application
 
 - **Backend (API):**
-  ```bash
+```bash
   ./gradlew :modules:backend:api:run
-  ```
+```
 - **Frontend (Admin):**
-  ```bash
+```bash
   cd modules/frontend/sangita-admin-web
   bun dev
-  ```
+```
 - **Database Dev Mode:**
-  ```bash
+```bash
   mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- dev --start-db
-  ```
+```
 
 - **Database Migrations:**
-  ```bash
+```bash
   mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db migrate
-  ```
+```
 
 ### 4.2 The Conductor System
 All work MUST be tracked via the Conductor system located in the `conductor/` directory.
@@ -129,5 +129,5 @@ Ref: application_documentation/01-requirements/features/bulk-import/01-strategy/
 
 ## 7. Useful Links
 - [Product Definition](../../conductor/product.md)
-- [Tech Stack](../../02-architecture/tech-stack.md)
-- [Database Schema](../../04-database/schema.md)
+- [Tech Stack](../02-architecture/tech-stack.md)
+- [Database Schema](../04-database/schema.md)

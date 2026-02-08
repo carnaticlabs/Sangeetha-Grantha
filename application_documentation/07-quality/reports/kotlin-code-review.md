@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.2.0 |
-| **Last Updated** | 2026-01-27 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-02-08 |
 | **Author** | Sangeetha Grantha Team |
 
 ---
@@ -42,7 +42,7 @@ All remediation items have been addressed per [kotlin-refactor-checklist.md](./k
 
 ### 1.1 Module Structure
 
-```
+```text
 modules/
 ├── shared/
 │   ├── domain/          # KMP DTOs - EXCELLENT separation
@@ -64,7 +64,7 @@ modules/
 ### 1.2 Package Organization
 
 **Backend API (`com.sangita.grantha.backend.api`):**
-```
+```text
 api/
 ├── App.kt              # Entry point + manual DI
 ├── config/             # Environment configuration
@@ -76,7 +76,7 @@ api/
 ```
 
 **Backend DAL (`com.sangita.grantha.backend.dal`):**
-```
+```text
 dal/
 ├── DatabaseFactory.kt  # Connection management
 ├── SangitaDal.kt       # Repository facade
@@ -122,64 +122,64 @@ fun main() {
 **Excellent Usage:**
 
 1. **Data Classes for DTOs:**
-   ```kotlin
+```kotlin
    @Serializable
    data class KrithiDto(
        val id: Uuid,
        val title: String,
        // ... properly immutable
    )
-   ```
+```
 
 2. **Null Safety:**
-   ```kotlin
+```kotlin
    val talaId = request.talaId?.let { parseUuidOrThrow(it, "talaId") }
-   ```
+```
 
 3. **Extension Functions:**
-   ```kotlin
+```kotlin
    fun ResultRow.toKrithiDto(): KrithiDto = KrithiDto(...)
    fun WorkflowState.toDto(): WorkflowStateDto = WorkflowStateDto.valueOf(name)
-   ```
+```
 
 4. **Scope Functions:**
-   ```kotlin
+```kotlin
    filters.query?.trim()?.takeIf { it.isNotEmpty() }?.let { query -> ... }
-   ```
+```
 
 5. **Sealed Enums for State Machines:**
-   ```kotlin
+```kotlin
    enum class WorkflowStateDto { DRAFT, IN_REVIEW, PUBLISHED, ARCHIVED }
    enum class ImportStatusDto { PENDING, IN_REVIEW, APPROVED, MAPPED, REJECTED, DISCARDED }
-   ```
+```
 
 **Areas for Improvement:**
 
 1. **Excessive `?.let {}` Chaining:**
-   ```kotlin
+```kotlin
    // Current (KrithiService.kt:80-86)
    val composerId = request.composerId?.let { parseUuidOrThrow(it, "composerId") }
    val talaId = request.talaId?.let { parseUuidOrThrow(it, "talaId") }
    val primaryRagaId = request.primaryRagaId?.let { parseUuidOrThrow(it, "primaryRagaId") }
    // Repetitive - consider extracting a helper
-   ```
+```
 
 2. **Missing `require`/`check` for Preconditions:**
-   ```kotlin
+```kotlin
    // Current: throws generic IllegalArgumentException
    throw IllegalArgumentException("Invalid $label")
 
    // Better: use require() for parameter validation
    require(value.isNotBlank()) { "Invalid $label: must not be blank" }
-   ```
+```
 
 3. **String Templates Could Replace Concatenation:**
-   ```kotlin
+```kotlin
    // Current (BulkImportWorkerService.kt:338)
    val key = "${row.krithi}|${row.raga ?: ""}".trim()
 
    // Consider: buildString for complex cases
-   ```
+```
 
 ### 2.2 Suspend Function Usage
 
@@ -236,56 +236,56 @@ exception<NoSuchElementException> { call, cause ->
 **Strengths:**
 
 1. **Type-Safe Queries:**
-   ```kotlin
+```kotlin
    KrithisTable
        .selectAll()
        .where { KrithisTable.id eq id.toJavaUuid() }
        .map { it.toKrithiDto() }
-   ```
+```
 
 2. **Modern API Usage (updateReturning):**
-   ```kotlin
+```kotlin
    KrithisTable.updateReturning(where = { KrithisTable.id eq javaId }) {
        title?.let { value -> it[KrithisTable.title] = value }
        // ... atomic update + fetch
    }
-   ```
+```
 
 3. **Efficient Batch Operations:**
-   ```kotlin
+```kotlin
    KrithiRagasTable.batchInsert(ragaIds.withIndex()) { (index, ragaId) ->
        this[KrithiRagasTable.krithiId] = krithiId
        this[KrithiRagasTable.ragaId] = ragaId
        this[KrithiRagasTable.orderIndex] = index
    }
-   ```
+```
 
 4. **Selective Updates (preserving unchanged data):**
-   ```kotlin
+```kotlin
    // Only update/delete changed ragas (KrithiRepository.kt:170-229)
    val toInsert = mutableListOf<Pair<UUID, Int>>()
    val toDelete = mutableListOf<Pair<UUID, Int>>()
    // ... delta calculation
-   ```
+```
 
 **Concerns:**
 
 1. **N+1 Query Risk in Search:**
-   ```kotlin
+```kotlin
    // KrithiRepository.search() performs 3 separate queries:
    val krithiDtos = baseQuery.map { it.toKrithiDto() }
    val composersMap = ComposersTable.selectAll()...  // N+1 for composers
    val ragasMap = KrithiRagasTable.join(RagasTable)... // N+1 for ragas
-   ```
+```
 
 2. **Missing Index Hints:**
    - Complex queries don't specify index usage
    - Consider adding `.forUpdate()` where needed for consistency
 
 3. **Hardcoded Limits:**
-   ```kotlin
+```kotlin
    val safeSize = pageSize.coerceIn(1, 200) // Magic number
-   ```
+```
 
 ### 3.2 DTO Mapping Layer
 
@@ -306,10 +306,10 @@ fun ResultRow.toKrithiDto(): KrithiDto = KrithiDto(
 **Concerns:**
 - 40+ mapping functions - consider code generation (KSP) for maintenance
 - Timestamp conversion repeated in every mapper:
-  ```kotlin
+```kotlin
   createdAt = this.kotlinInstant(SomeTable.createdAt),
   updatedAt = this.kotlinInstant(SomeTable.updatedAt)
-  ```
+```
 
 ### 3.3 Connection Pool Configuration
 
@@ -342,33 +342,33 @@ maxLifetime = 1_800_000
    - `QualityScoringService` - Import quality metrics
 
 2. **Audit Logging Consistency:**
-   ```kotlin
+```kotlin
    dal.auditLogs.append(
        action = "CREATE_KRITHI",
        entityTable = "krithis",
        entityId = created.id
    )
-   ```
+```
 
 3. **Normalization Applied at Service Layer:**
-   ```kotlin
+```kotlin
    private fun normalize(value: String): String =
        value.trim().lowercase().replace(Regex("\\s+"), " ")
-   ```
+```
 
 **Concerns:**
 
 1. **Service Classes Are Not Interfaces:**
-   ```kotlin
+```kotlin
    class KrithiService(private val dal: SangitaDal) { ... }
    // No interface - hard to mock in tests
-   ```
+```
 
 2. **Incomplete User Context:**
-   ```kotlin
+```kotlin
    createdByUserId = null, // TODO: Extract from auth context
    updatedByUserId = null
-   ```
+```
 
 3. **Some Services Have Mixed Responsibilities:**
    - `BulkImportWorkerService` handles workers, rate limiting, CSV parsing, and error handling
@@ -386,7 +386,7 @@ maxLifetime = 1_800_000
 - Graceful shutdown via `scope?.cancel()`
 
 **Architecture:**
-```
+```text
 Dispatcher Loop
     ↓ claims tasks
     ├─► Manifest Channel ─► Manifest Workers (1)
@@ -583,13 +583,13 @@ Found in codebase:
 ### 9.2 Recommendations
 
 1. **Extract Interfaces:**
-   ```kotlin
+```kotlin
    interface KrithiService {
        suspend fun search(...): KrithiSearchResult
        suspend fun getKrithi(id: Uuid): KrithiDto?
    }
    class KrithiServiceImpl(...) : KrithiService
-   ```
+```
 
 2. **Test Fixtures:**
    - Create `TestDatabaseFactory` with H2

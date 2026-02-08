@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-26 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-02-08 |
 | **Author** | Sangeetha Grantha Team |
 
 # Documentation Standards
@@ -48,7 +48,8 @@ application_documentation/
 ├── 06-backend/          # Backend-specific docs (mutation handlers, security)
 ├── 07-quality/          # Test plans, coverage reports
 ├── 08-operations/       # Runbooks, configuration guides
-└── 09-ai/               # AI integration docs, knowledge base
+├── 09-ai/               # AI integration docs, knowledge base
+└── 10-implementations/  # Implementation-specific details and platform guides
 ```
 
 ## Content Standards

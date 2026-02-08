@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-26 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-02-08 |
 | **Author** | Sangeetha Grantha Team |
 
 # Cross-Platform Development Environment Standardisation
@@ -371,7 +371,7 @@ DB_PASSWORD=postgres
 
 # Optional: Gemini AI
 # SG_GEMINI_API_KEY=your-api-key-here
-```
+```text
 
 ### 4.1.3 Bootstrap Scripts
 
@@ -396,9 +396,9 @@ DB_PASSWORD=postgres
 ./tools/bootstrap
 
 # Windows
-```text
-powershell -ExecutionPolicy Bypass -File .\tools\bootstrap.ps1
 ```
+powershell -ExecutionPolicy Bypass -File .\tools\bootstrap.ps1
+```text
 
 **What it does** (in order):
 1. ✅ Installs toolchain via mise (Java 25, Rust 1.92.0, Bun 1.3.0)
@@ -414,14 +414,14 @@ powershell -ExecutionPolicy Bypass -File .\tools\bootstrap.ps1
 cargo run --manifest-path tools/sangita-cli/Cargo.toml -- dev --start-db
 
 # Or run services separately
-```text
+```
 ./gradlew :modules:backend:api:run
 cd modules/frontend/sangita-admin-web && bun run dev
-```
+```text
 
 ### 4.2 Workflow
 
-```text
+```
 ┌─────────────────────────────────────────────────────────────┐
 │ Developer runs: ./tools/bootstrap (or bootstrap.ps1)        │
 └───────────────────────┬─────────────────────────────────────┘
@@ -474,7 +474,7 @@ cd modules/frontend/sangita-admin-web && bun run dev
 │ ✅ Environment ready!                                        │
 │    Next: cargo run -- dev --start-db                        │
 └─────────────────────────────────────────────────────────────┘
-```
+```text
 
 ### 4.3 Key Design Decisions
 
@@ -530,51 +530,51 @@ cd modules/frontend/sangita-admin-web && bun run dev
 
 #### 4.4.1 Bootstrap Script Logic
 
-```text
+```
 **Phase 1: Toolchain Setup**
 if mise is available:
     mise install          # Install Java, Rust, Bun
     mise activate         # Add to PATH
 else:
     warn: "Use system tools (verify versions manually)"
-```
-
 ```text
+
+```
 **Phase 2: Docker Verification**
 check docker command exists
 check docker compose or docker-compose exists
 exit if missing
-```
-
 ```text
+
+```
 **Phase 3: Config File Creation**
 if config/development.env exists:
     skip (preserve user customizations)
 else:
     copy tools/bootstrap-assets/env/development.env.example
          → config/development.env
-```
-
 ```text
+
+```
 **Phase 4: Database Setup**
 docker compose up -d postgres    # Start PostgreSQL 15
 wait for health check
-```
-
 ```text
+
+```
 **Phase 5: Build & Migrate**
 cargo build --manifest-path tools/sangita-cli/Cargo.toml
 cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db reset --mode docker
-```
-
 ```text
+
+```
 **Phase 6: Frontend Dependencies**
 if bun is available:
     cd modules/frontend/sangita-admin-web
     bun install
 else:
     warn: "Skip frontend install"
-```
+```text
 
 #### 4.4.2 Error Handling
 
@@ -618,7 +618,7 @@ else:
 
 #### 4.4.5 File Structure
 
-```text
+```
 sangeetha-grantha/
 ├── .mise.toml                                    # Toolchain versions
 ├── tools/
@@ -630,7 +630,7 @@ sangeetha-grantha/
 ├── config/
 │   └── development.env                          # Generated (gitignored)
 └── compose.yaml                                  # Docker Compose (Postgres 15)
-```
+```text
 
 ---
 
@@ -737,11 +737,11 @@ sangeetha-grantha/
 
 ### 9.1 First-Time Setup
 
-```text
+```
 **Step 1: Clone Repository**
 git clone <repository-url>
 cd sangeetha-grantha
-```
+```text
 
 **Step 2: Install mise (Recommended)**
 # macOS/Linux

@@ -1,9 +1,9 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Draft |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-26 |
-| **Author** | Sangita Grantha Architect |
+| **Status** | Active |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-02-08 |
+| **Author** | Sangeetha Grantha Team |
 
 # Bulk Import Query Optimization Plan
 
@@ -19,26 +19,26 @@ A review of the application logs (`sangita_logs.txt`) reveals a high frequency o
 The following queries appear repeatedly (every ~750ms per worker):
 
 1.  **Entity Resolution Claim:**
-    ```sql
+```sql
     SELECT ... FROM import_task_run 
     WHERE status IN ('pending', 'retryable') 
     AND job_type = 'entity_resolution' 
     AND batch_status = 'running' 
     LIMIT 1 FOR UPDATE
-    ```
+```
 2.  **Scrape Claim:**
-    ```sql
+```sql
     SELECT ... FROM import_task_run 
     WHERE status IN ('pending', 'retryable') 
     AND job_type = 'scrape' 
     LIMIT 1 FOR UPDATE
-    ```
+```
 3.  **Manifest Claim:**
-    ```sql
+```sql
     SELECT ... FROM import_task_run 
     WHERE job_type = 'manifest_ingest' 
     LIMIT 1 FOR UPDATE
-    ```
+```
 
 ## 2. Optimization Strategy
 

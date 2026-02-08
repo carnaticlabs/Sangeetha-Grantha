@@ -2,7 +2,7 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-01-29 |
+| **Last Updated** | 2026-02-08 |
 | **Author** | Sangeetha Grantha Team |
 
 # Test Plan
@@ -206,21 +206,21 @@ mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db reset
 ### 5.2 Full Regression (Run on Merge to Main)
 
 1. **Steel Thread Test**
-   ```bash
+```bash
    cargo run -- test steel-thread
-   ```
+```
 
 2. **Backend Unit Tests**
-   ```bash
+```bash
    ./gradlew :modules:backend:api:test
    ./gradlew :modules:backend:dal:test
-   ```
+```
 
 3. **Frontend Tests**
-   ```bash
+```bash
    cd modules/frontend/sangita-admin-web
    bun run test
-   ```
+```
 
 ### 5.3 Nightly Regression
 

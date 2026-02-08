@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-26 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-02-08 |
 | **Author** | Sangeetha Grantha Team |
 
 # Audit Log Specification (Sangita Grantha)
@@ -82,13 +82,13 @@ categories remain **machine-filterable**.
   - Set `entity_table` and `entity_id` where applicable.
   - Populate `diff` with:
 
-    ```json
+```json
     {
       "before": { /* optional */ },
       "after": { /* optional */ },
       "request": { /* original request body (optional) */ }
     }
-    ```
+```
 
 ### Notation Mutations
 

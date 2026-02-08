@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-26 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-02-08 |
 | **Author** | Sangeetha Grantha Team |
 
 # Documentation Guardian Skill
@@ -24,8 +24,14 @@ Do not use YAML frontmatter. Use a standard Markdown table or list at the very t
 **Preferred Format:**
 
 ```markdown
-# [Document Title]
+| Metadata | Value |
+|:---|:---|
+| **Status** | [Active/Draft/Archived] |
+| **Version** | [X.Y.Z] |
+| **Last Updated** | [YYYY-MM-DD] |
+| **Author** | [Team Name] |
 
+# [Document Title]
 
 ---
 ```
@@ -73,7 +79,36 @@ As the guardian, you are expected to be proactive:
 
 ---
 
-## 5. Audit Checklist
+## 5. Folder Organization & Naming
+
+The `application_documentation` folder follows a strict numbering and naming convention to ensure discoverability and order.
+
+- **Convention**: `XX-name-of-folder` (e.g., `01-requirements`, `10-implementations`).
+- **Index Alignment**: Every new top-level folder **MUST** be added to the [README.md](file:///Users/seshadri/project/sangeetha-grantha/application_documentation/README.md) and [standards.md](file:///Users/seshadri/project/sangeetha-grantha/application_documentation/00-meta/standards.md).
+- **Subfolder consistency**: Maintain logical subfolders (e.g., `features/`, `decisions/`) across different components where applicable.
+
+## 6. Logical Grouping & Merging
+
+To prevent documentation bloat, periodically identify documents that cover overlapping topics.
+
+- **Merging**: If multiple small files describe facets of the same feature, merge them into a single comprehensive guide (e.g., `feature-X-details.md` and `feature-X-config.md` -> `feature-X.md`).
+- **Grouping**: Use `README.md` files in subdirectories to group related documents and provide context.
+- **Deduplication**: If information exists in multiple places, consolidate it into the most relevant section and link from the others.
+
+## 7. Archiving & Retention
+
+As the project evolves, older documentation becomes obsolete. Refer to the [Retention Plan](file:///Users/seshadri/project/sangeetha-grantha/application_documentation/00-meta/retention-plan.md) for details.
+
+- **Identification**: Identify files that:
+  - Reference deprecated features.
+  - Are superseded by newer architecture/specs.
+  - Have not been updated for a long time and no longer reflect reality.
+- **Process**: Move identified files to the `archive/` directory under a relevant sub-category. Update the `Status` to `Archived`.
+- **Tombstones**: If a heavily referenced file is moved, leave a "tombstone" (a small file with a link to the new location) if necessary, or update all incoming links.
+
+---
+
+## 8. Audit Checklist
 
 Before finishing any work in `application_documentation`:
 1. [ ] Is the `Last Updated` date correct?
@@ -81,3 +116,6 @@ Before finishing any work in `application_documentation`:
 3. [ ] Do all code blocks have language specifiers?
 4. [ ] Are all code blocks properly closed?
 5. [ ] Is the header table format correct?
+6. [ ] Does the folder structure follow the `XX-name` convention?
+7. [ ] Are any obsolete documents identified for archiving?
+8. [ ] Can any documents be logically grouped or merged?

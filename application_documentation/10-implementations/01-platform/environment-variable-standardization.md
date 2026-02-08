@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Completed |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-02-07 |
+| **Status** | Active |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-02-08 |
 | **Author** | Sangeetha Grantha Team |
 
 # Environment Variable & Config Standardization Implementation Summary
@@ -36,12 +36,12 @@ Standardize environment variable handling across the monorepo using a single sou
 
 | Component | File | Change |
 |:---|:---|:---|
-| Config | [tools.yaml](../../tools.yaml) | Define externalizable variables |
-| Config | [config/README.md](../../config/README.md) | Document structure |
-| DAL | [build.gradle.kts](../../modules/backend/dal/build.gradle.kts) | Add dotenv dependency |
-| DAL | [DatabaseConfigLoader.kt](../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/support/DatabaseConfigLoader.kt) | Refactor loading logic |
-| Frontend | [vite.config.ts](../../modules/frontend/sangita-admin-web/vite.config.ts) | Point envDir to central config |
-| Ops | [config.md](../../application_documentation/08-operations/config.md) | Update canonical docs |
-| Ops | [steel-thread-runbook.md](../../application_documentation/08-operations/runbooks/steel-thread-runbook.md) | Aligned runbook |
+| Config | [tools.yaml](../../../tools.yaml) | Define externalizable variables |
+| Config | [config/README.md](../../../config/README.md) | Document structure |
+| DAL | [build.gradle.kts](../../../modules/backend/dal/build.gradle.kts) | Add dotenv dependency |
+| DAL | [DatabaseConfigLoader.kt](../../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/support/DatabaseConfigLoader.kt) | Refactor loading logic |
+| Frontend | [vite.config.ts](../../../modules/frontend/sangita-admin-web/vite.config.ts) | Point envDir to central config |
+| Ops | [config.md](../../08-operations/config.md) | Update canonical docs |
+| Ops | [steel-thread-runbook.md](../../08-operations/runbooks/steel-thread-runbook.md) | Aligned runbook |
 
-Ref: application_documentation/implementations/01-platform/environment-variable-standardization.md
+Ref: application_documentation/10-implementations/01-platform/environment-variable-standardization.md

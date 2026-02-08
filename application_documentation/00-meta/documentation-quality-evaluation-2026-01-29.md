@@ -1,9 +1,9 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 2.0.0 |
-| **Last Updated** | 2026-01-29 |
-| **Author** | Claude Code Review |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-02-08 |
+| **Author** | Sangeetha Grantha Team |
 
 # Sangita Grantha Documentation Quality Evaluation Report
 
@@ -363,7 +363,7 @@ This evaluation reviewed 220+ markdown files across 24 directories, including al
 
 ### New Files Added (16 total)
 
-```
+```text
 00-onboarding/troubleshooting.md
 00-onboarding/ide-setup.md
 02-architecture/diagrams/erd.md (updated)

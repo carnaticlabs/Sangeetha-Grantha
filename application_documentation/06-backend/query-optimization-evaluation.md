@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-26 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-02-08 |
 | **Author** | Sangeetha Grantha Team |
 
 # Query Optimization Evaluation: Krithi UPDATE Operations
@@ -18,7 +18,7 @@
 When updating only `temple_id` for a Krithi:
 
 1. **UPDATE query** - Updates ALL fields (even unchanged ones):
-   ```sql
+```sql
    UPDATE krithis SET 
      title='...', title_normalized='...', incipit='...', 
      incipit_normalized='...', composer_id='...', 
@@ -28,30 +28,30 @@ When updating only `temple_id` for a Krithi:
      is_ragamalika=FALSE, workflow_state='draft'::workflow_state_enum,
      sahitya_summary='...', notes='...', updated_at='...'
    WHERE krithis.id = '...'
-   ```
+```
 
 2. **SELECT krithi_ragas** - Always executed if `ragaIds` parameter is provided:
-   ```sql
+```sql
    SELECT krithi_ragas.krithi_id, krithi_ragas.raga_id, 
           krithi_ragas.order_index, krithi_ragas."section", 
           krithi_ragas.notes 
    FROM krithi_ragas 
    WHERE krithi_ragas.krithi_id = '...'
-   ```
+```
 
 3. **SELECT krithis** - To return updated DTO:
-   ```sql
+```sql
    SELECT krithis.id, krithis.title, krithis.incipit, ...
    FROM krithis 
    WHERE krithis.id = '...'
-   ```
+```
 
 4. **SELECT krithi_tags** - If tags are being updated:
-   ```sql
+```sql
    SELECT krithi_tags.krithi_id, krithi_tags.tag_id, ...
    FROM krithi_tags 
    WHERE krithi_tags.krithi_id = '...'
-   ```
+```
 
 5. **INSERT audit_log** - Audit trail entry
 

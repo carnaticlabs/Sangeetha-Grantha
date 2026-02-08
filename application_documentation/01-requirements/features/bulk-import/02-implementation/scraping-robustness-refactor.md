@@ -1,9 +1,9 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-02-01 |
-| **Author** | Sangita Grantha Team |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-02-08 |
+| **Author** | Sangeetha Grantha Team |
 
 # Scraping Robustness and Refactor Implementation (TRACK-032)
 

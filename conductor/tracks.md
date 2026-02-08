@@ -51,5 +51,6 @@
 | [TRACK-040](./tracks/TRACK-040-krithi-remediation-deduplication.md) | Krithi Data Remediation & Deduplication | Planned |
 | [TRACK-041](./tracks/TRACK-041-enhanced-sourcing-logic.md) | Enhanced Sourcing Logic & Structural Voting | Planned |
 | [TRACK-042](./tracks/TRACK-042-mcp-database-tooling-optimization.md) | MCP Database Tooling Optimization | Proposed |
+| [TRACK-043](./tracks/TRACK-043-documentation-guardian-audit.md) | Documentation Guardian Audit & Repair | Completed |
 
 ## 3. Deprecated Tracks

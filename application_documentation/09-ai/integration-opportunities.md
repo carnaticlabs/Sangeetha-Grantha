@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-26 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-02-08 |
 | **Author** | Sangeetha Grantha Team |
 
 # Google Gemini & AI Integration Opportunities
@@ -104,7 +104,7 @@ class TransliterationService(
         targetScripts: List<ScriptCode>
     ): List<GeneratedVariant>
 
-    ```kotlin
+```kotlin
     /**
      * Transliterate Sahitya within Notation rows, preserving alignment
      */
@@ -203,7 +203,7 @@ class WebScrapingService(
         concurrency: Int = 5
     ): List<ImportedKrithiDto>
     
-    ```kotlin
+```kotlin
     /**
      * Extract structured data from HTML using Gemini
      */
@@ -261,7 +261,7 @@ ${htmlContent}
            // Store in imported_krithis table
        }
    }
-   ```
+```
 
 2. **Admin Console Integration**
    - New page: "Import Sources" with "Scrape Now" button
@@ -283,7 +283,7 @@ class ShivkumarScraper : SourceSpecificScraper {
         // Extract all kriti detail page URLs
     }
     
-    ```kotlin
+```kotlin
     override suspend fun extractFromPage(html: String): ExtractedKritiData {
         // Use Gemini to parse shivkumar.org's specific HTML structure
         // Handle their notation format, section markers, etc.
@@ -337,7 +337,7 @@ class MetadataExtractionService(
         // Handle name variations, aliases
     }
     
-    ```kotlin
+```kotlin
     /**
      * Validate and enrich existing metadata
      */
@@ -376,7 +376,7 @@ suspend fun suggestComposerMapping(extractedName: String): ComposerMapping? {
     val exact = dal.composers.findByNameNormalized(normalize(extractedName))
     if (exact != null) return ComposerMapping(exact.id, confidence = 1.0)
     
-    ```kotlin
+```kotlin
     // 2. Use Gemini for fuzzy matching with fallback to Trigram/Levenshtein
     val candidates = dal.composers.searchSimilar(extractedName, algorithm = SearchAlgorithm.TRIGRAM)
     val prompt = "Match '${extractedName}' to one of: ${candidates.map { it.name }}"
@@ -458,7 +458,7 @@ Raw Lyrics:
 ${rawLyrics}
 """.trimIndent()
         
-        ```text
+```text
         return geminiClient.generateStructured(prompt, DetectedSections.serializer())
     }
 }
@@ -538,7 +538,7 @@ ${variants.firstOrNull()?.lyrics}
 Identify any words or phrases that seem inconsistent with the raga's scale.
 """.trimIndent()
         
-        ```text
+```text
         // Gemini analysis
     }
 }
@@ -698,7 +698,7 @@ class GeminiApiClient(
         // Use Gemini's structured output (JSON mode)
     }
     
-    ```kotlin
+```kotlin
     suspend fun generateEmbedding(text: String): FloatArray {
         // Use Gemini's embedding API
     }
@@ -953,7 +953,7 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
     
-    ```text
+```text
     // For vector search (future)
     // implementation("com.pgvector:pgvector:0.1.4")
 }

@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-02-02 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-02-08 |
 | **Author** | Sangeetha Grantha Team |
 
 # Frontend Pages Refactoring Checklist
@@ -44,7 +44,7 @@ See detailed checklist: [krithi-editor-refactor-checklist.md](./krithi-editor-re
 - [ ] Create `components/form/FormTextarea.tsx` with proper types
 - [ ] Create `components/form/FormSelect.tsx` with proper types
 - [ ] Define interfaces:
-  ```typescript
+```typescript
   interface FormInputProps {
     label: string;
     name: string;
@@ -57,7 +57,7 @@ See detailed checklist: [krithi-editor-refactor-checklist.md](./krithi-editor-re
     className?: string;
     readOnly?: boolean;
   }
-  ```
+```
 - [ ] Remove `any` types from all form components
 
 #### 1.2.4 Extract Data Mappers
@@ -73,9 +73,9 @@ See detailed checklist: [krithi-editor-refactor-checklist.md](./krithi-editor-re
 #### 1.2.5 Consolidate Validation Logic
 - [ ] Create `utils/reference-data-validation.ts`
 - [ ] Extract common validation pattern:
-  ```typescript
+```typescript
   const validateRequiredFields = (entityType: EntityType, formData: FormData): string | null
-  ```
+```
 - [ ] Replace 5 duplicate validation blocks with single call
 
 #### 1.2.6 Simplify Entity CRUD Logic
@@ -178,11 +178,11 @@ See detailed checklist: [krithi-editor-refactor-checklist.md](./krithi-editor-re
 
 #### 2.2.3 Consolidate Form State
 - [ ] Replace 6 individual useState calls:
-  ```typescript
+```typescript
   const [formState, setFormState] = useState({
     title: '', composer: '', raga: '', tala: '', language: '', lyrics: ''
   });
-  ```
+```
 - [ ] Create `updateField(field: string, value: string)` helper
 
 ---
@@ -349,7 +349,7 @@ See detailed checklist: [krithi-editor-refactor-checklist.md](./krithi-editor-re
 
 ## File Structure After Refactoring
 
-```
+```text
 src/
 ├── pages/
 │   ├── AutoApproveQueue.tsx      # ~150 lines

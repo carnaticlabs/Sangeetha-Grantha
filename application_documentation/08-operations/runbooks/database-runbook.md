@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-29 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-02-08 |
 | **Author** | Sangeetha Grantha Team |
 
 # Database Runbook
@@ -24,7 +24,7 @@ This runbook provides procedures for database operations, maintenance, backup, a
 ### 1.2 Connection Information
 
 **Local Development:**
-```
+```text
 Host: localhost
 Port: 5432
 Database: sangita_grantha
@@ -146,7 +146,7 @@ gcloud sql instances clone sangita-grantha-prod sangita-grantha-pitr \
 ### 4.1 Creating Migrations
 
 **Naming Convention:**
-```
+```text
 NN__description.sql
 Examples:
   07__add-user-preferences.sql

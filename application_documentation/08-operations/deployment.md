@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-29 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-02-08 |
 | **Author** | Sangeetha Grantha Team |
 
 # Deployment Guide
@@ -23,7 +23,7 @@ This document describes deployment procedures for Sangita Grantha across all env
 
 ### 1.2 Architecture Overview
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                    Cloud Load Balancer                       │
 │                    (HTTPS termination)                       │

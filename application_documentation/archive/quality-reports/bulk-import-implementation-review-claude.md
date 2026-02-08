@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-26 |
+| **Status** | Archived |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-02-08 |
 | **Author** | Sangeetha Grantha Team |
 
 # Bulk Import Implementation - Critical Design & Code Review
@@ -216,7 +216,7 @@ private fun parseCsvManifest(path: Path): List<CsvRow> {
     // ✅ Optional Raga column (line 746)
     val raga = if (record.isMapped("Raga")) record.get("Raga")?.takeIf { it.isNotBlank() } else null
 
-    ```text
+```text
     // ✅ Syntax-only URL validation (lines 741-744, isValidUrl function 752-761)
     if (!isValidUrl(hyperlink)) {
         logger.warn("Skipping invalid URL in manifest: $hyperlink")
@@ -456,7 +456,7 @@ if (headerMap != null) {
     val required = listOf("krithi", "hyperlink")  // ✅ Raga intentionally omitted
     val missing = required.filter { !keys.contains(it) }
 
-    ```text
+```text
     if (missing.isNotEmpty()) {
         throw IllegalArgumentException("Missing required columns: ${missing...}")
     }
@@ -486,7 +486,7 @@ private suspend fun checkAndTriggerNextStage(jobId: kotlin.uuid.Uuid) {
         s == TaskStatus.BLOCKED || s == TaskStatus.CANCELLED
     }
 
-    ```text
+```text
     if (isComplete) {
         // ... create next stage job
     }
@@ -919,7 +919,7 @@ fun calculateQualityScore(result: ResolutionResult): QualityScore {
     val sourceQuality = 0.8 // Fixed for blogspot sources
     val validation = 1.0 // All passed header validation
 
-    ```text
+```text
     return QualityScore(
         overall = (completeness * 0.4 + confidence * 0.3 +
                    sourceQuality * 0.2 + validation * 0.1),
@@ -953,7 +953,7 @@ private suspend fun processScrapeTask(...) {
     // ... existing logic
     dal.bulkImport.incrementBatchCounters(...)
 
-    ```kotlin
+```kotlin
     // Add this check:
     val batch = dal.bulkImport.findBatchById(batchId)
     if (batch != null && batch.processedTasks >= batch.totalTasks) {
@@ -1010,7 +1010,7 @@ class DeduplicationService(private val dal: SangitaDal) {
         // Level 3: Check within current batch
         val batchDuplicates = findInBatch(krithi.batchId, krithi.rawTitle)
 
-        ```text
+```text
         return (exactMatches + fuzzyMatches + batchDuplicates)
             .distinctBy { it.id }
             .sortedByDescending { it.confidence }
@@ -1047,7 +1047,7 @@ class AdaptiveRateLimiter {
         // ... apply dynamic limit
     }
 
-    ```kotlin
+```kotlin
     fun recordResult(host: String, success: Boolean) {
         successRates[host] = (successRates[host] ?: 0.5) * 0.9 +
                              (if (success) 1.0 else 0.0) * 0.1
