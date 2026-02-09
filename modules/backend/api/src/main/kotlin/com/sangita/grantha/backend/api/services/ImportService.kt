@@ -16,8 +16,10 @@ import com.sangita.grantha.backend.dal.enums.ScriptCode
 import com.sangita.grantha.backend.dal.enums.RagaSection
 import com.sangita.grantha.backend.dal.repositories.KrithiCreateParams
 import com.sangita.grantha.backend.api.services.scraping.KrithiStructureParser
+import com.sangita.grantha.backend.api.services.scraping.StructuralVotingEngine
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import java.net.URI
 import java.util.UUID
 import kotlin.uuid.Uuid
 
@@ -81,6 +83,13 @@ class ImportServiceImpl(
     private val entityResolver: IEntityResolver,
     private val autoApprovalServiceProvider: () -> AutoApprovalService
 ) : ImportReviewer, IImportService {
+    private val structuralVotingEngine = StructuralVotingEngine()
+    private val composerSourcePriority = mapOf(
+        "muthuswami dikshitar" to listOf("guruguha.org"),
+        "tyagaraja" to listOf("thyagarajavaibhavam.blogspot.com"),
+        "swathi thirunal" to listOf("swathithirunalfestival.org"),
+        "general" to listOf("karnatik.com", "shivkumar.org")
+    )
     
     private fun normalize(value: String): String =
         value.trim()
@@ -218,14 +227,14 @@ class ImportServiceImpl(
                 // Note: Currently we don't have a way to distinguish "user confirmed raw" vs "raw". 
                 // But we can check if explicit override was sent.
                 // For now, if override is present, we try to find/create based on that name.
-                if (overrides?.deity != null && overrides.deity!!.isNotBlank()) {
-                     val dName = overrides.deity!!
+                if (overrides?.deity != null && overrides.deity.isNotBlank()) {
+                     val dName = overrides.deity
                      deityId = dal.deities.findByName(dName)?.id?.toJavaUuid() 
                         ?: dal.deities.create(name = dName).id.toJavaUuid()
                 }
                 
-                if (overrides?.temple != null && overrides.temple!!.isNotBlank()) {
-                     val tName = overrides.temple!!
+                if (overrides?.temple != null && overrides.temple.isNotBlank()) {
+                     val tName = overrides.temple
                      val existing = dal.temples.findByName(tName) ?: dal.temples.findByNameNormalized(normalize(tName))
                      templeId = existing?.id?.toJavaUuid() 
                         ?: dal.temples.create(name = tName, primaryDeityId = deityId).id.toJavaUuid()
@@ -370,7 +379,7 @@ class ImportServiceImpl(
 
                         // TRACK-032: Multi-language lyric variants from scrape
                         if (!metadata.lyricVariants.isNullOrEmpty()) {
-                            val variants = metadata.lyricVariants!!.toMutableList()
+                            val variants = metadata.lyricVariants.toMutableList()
                             
                             // 1. Recover missing sections for each variant using KrithiStructureParser
                             variants.forEachIndexed { idx, v ->
@@ -406,11 +415,31 @@ class ImportServiceImpl(
                                 seenTypes.add(s.type.name)
                             }
 
-                            val sectionStructure = when {
-                                !variants.first().sections.isNullOrEmpty() -> variants.first().sections!!
-                                deduplicated.isNotEmpty() -> deduplicated
-                                else -> emptyList()
+                            val authoritySource = isAuthoritySourceForComposer(sourceKey, effectiveComposer)
+                            val candidates = mutableListOf<StructuralVotingEngine.SectionCandidate>()
+                            variants.forEach { variant ->
+                                val sections = variant.sections
+                                if (!sections.isNullOrEmpty()) {
+                                    candidates.add(
+                                        StructuralVotingEngine.SectionCandidate(
+                                            sections = sections,
+                                            isAuthoritySource = authoritySource,
+                                            label = "variant:${variant.language}"
+                                        )
+                                    )
+                                }
                             }
+                            if (deduplicated.isNotEmpty()) {
+                                candidates.add(
+                                    StructuralVotingEngine.SectionCandidate(
+                                        sections = deduplicated,
+                                        isAuthoritySource = authoritySource,
+                                        label = "metadata"
+                                    )
+                                )
+                            }
+
+                            val sectionStructure = structuralVotingEngine.pickBestStructure(candidates)
 
                             if (sectionStructure.isNotEmpty()) {
                                 val sectionsToSave = sectionStructure.mapIndexed { index, section ->
@@ -453,7 +482,7 @@ class ImportServiceImpl(
                                     }
                                 } else if (!scraped.lyrics.isNullOrBlank() && savedSections.isNotEmpty()) {
                                     // FALLBACK: Stanza-based mapping if TextBlocker failed to find headers
-                                    val stanzas = scraped.lyrics!!.replace("\\n", "\n").split(Regex("\\n\\s*\\n")).filter { it.isNotBlank() }
+                                    val stanzas = scraped.lyrics.replace("\\n", "\n").split(Regex("\\n\\s*\\n")).filter { it.isNotBlank() }
                                     val lyricSections = savedSections.mapIndexedNotNull { idx, savedSection ->
                                         // Find a stanza that matches this section. 
                                         // If no headers, we assume stanzas align with canonical sections.
@@ -470,8 +499,8 @@ class ImportServiceImpl(
                         } else {
                             // Single primary variant (existing behaviour)
                             val effectiveSections = when {
-                                !metadata.sections.isNullOrEmpty() -> metadata.sections!!
-                                !metadata.lyrics.isNullOrBlank() -> parseSectionHeadersFromLyrics(metadata.lyrics!!.replace("\\n", "\n"))
+                                !metadata.sections.isNullOrEmpty() -> metadata.sections
+                                !metadata.lyrics.isNullOrBlank() -> parseSectionHeadersFromLyrics(metadata.lyrics.replace("\\n", "\n"))
                                 else -> emptyList()
                             }
                             if (effectiveSections.isNotEmpty()) {
@@ -726,5 +755,18 @@ class ImportServiceImpl(
             ).trim()
             ScrapedSectionDto(type = type, text = text)
         }.filter { it.text.isNotBlank() }
+    }
+
+    private fun isAuthoritySourceForComposer(sourceKey: String?, composer: String?): Boolean {
+        if (sourceKey.isNullOrBlank() || composer.isNullOrBlank()) return false
+        val normalizedComposer = composer.trim().lowercase()
+        val authorityHosts = composerSourcePriority[normalizedComposer] ?: composerSourcePriority["general"] ?: emptyList()
+        val host = try {
+            URI(sourceKey).host?.lowercase()
+        } catch (e: Exception) {
+            null
+        }
+        if (host.isNullOrBlank()) return false
+        return authorityHosts.any { host.contains(it) }
     }
 }

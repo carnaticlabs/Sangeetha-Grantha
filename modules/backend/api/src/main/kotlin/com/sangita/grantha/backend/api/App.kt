@@ -41,7 +41,7 @@ fun main() {
     embeddedServer(Netty, host = env.host, port = env.port) {
         configureMetrics(metricsRegistry)
 
-        val dbConfig = env.database!!
+        val dbConfig = env.database
         DatabaseFactory.connect(
             DatabaseFactory.ConnectionConfig(
                 databaseUrl = dbConfig.jdbcUrl,

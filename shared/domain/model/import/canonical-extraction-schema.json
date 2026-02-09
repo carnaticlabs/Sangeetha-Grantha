@@ -1,0 +1,155 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Canonical Extraction Format",
+  "description": "Standard schema for all source adapters (HTML, PDF, DOCX) to produce identical extraction output",
+  "type": "object",
+  "required": ["title", "composer", "musicalForm", "ragas", "tala", "sections", "sourceUrl", "sourceName", "sourceTier", "extractionMethod", "extractionTimestamp"],
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Krithi title (required)"
+    },
+    "alternateTitle": {
+      "type": "string",
+      "description": "Optional transliterated or alternate form of title"
+    },
+    "composer": {
+      "type": "string",
+      "description": "Raw composer name (will be resolved downstream via entity resolution)"
+    },
+    "musicalForm": {
+      "type": "string",
+      "enum": ["KRITHI", "VARNAM", "SWARAJATHI"],
+      "description": "Musical form classification"
+    },
+    "ragas": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "order"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Raga name (raw, will be resolved)"
+          },
+          "order": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "1 for primary, 2+ for ragamalika"
+          },
+          "section": {
+            "type": "string",
+            "description": "Optional: which section this raga covers"
+          }
+        }
+      }
+    },
+    "tala": {
+      "type": "string",
+      "description": "Tala name (raw, will be resolved)"
+    },
+    "sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type", "order"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["PALLAVI", "ANUPALLAVI", "CHARANAM", "SAMASHTI_CHARANAM", "CHITTASWARAM", "SWARA_SAHITYA", "MADHYAMA_KALA", "OTHER"],
+            "description": "Section type"
+          },
+          "order": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Order index (1-based)"
+          },
+          "label": {
+            "type": "string",
+            "description": "Optional label (e.g. 'Charanam 1')"
+          }
+        }
+      }
+    },
+    "lyricVariants": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["language", "script", "sections"],
+        "properties": {
+          "language": {
+            "type": "string",
+            "enum": ["sa", "ta", "te", "kn", "ml", "hi", "en"],
+            "description": "Language code"
+          },
+          "script": {
+            "type": "string",
+            "enum": ["devanagari", "tamil", "telugu", "kannada", "malayalam", "latin"],
+            "description": "Script code"
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["sectionOrder", "text"],
+              "properties": {
+                "sectionOrder": {
+                  "type": "integer",
+                  "description": "Matches sections[].order"
+                },
+                "text": {
+                  "type": "string",
+                  "description": "Lyric text for this section"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "deity": {
+      "type": "string",
+      "description": "Optional deity name"
+    },
+    "temple": {
+      "type": "string",
+      "description": "Optional temple name"
+    },
+    "templeLocation": {
+      "type": "string",
+      "description": "Optional temple location"
+    },
+    "sourceUrl": {
+      "type": "string",
+      "description": "URL or file reference (required)"
+    },
+    "sourceName": {
+      "type": "string",
+      "description": "Source identifier (e.g. 'guruguha.org') (required)"
+    },
+    "sourceTier": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5,
+      "description": "Source authority tier 1-5 (required)"
+    },
+    "extractionMethod": {
+      "type": "string",
+      "enum": ["PDF_PYMUPDF", "PDF_OCR", "HTML_JSOUP", "HTML_JSOUP_GEMINI", "DOCX_PYTHON", "MANUAL"],
+      "description": "Extraction method identifier (required)"
+    },
+    "extractionTimestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 datetime (required)"
+    },
+    "pageRange": {
+      "type": "string",
+      "description": "Optional page range for PDFs (e.g. '42-43')"
+    },
+    "checksum": {
+      "type": "string",
+      "description": "Optional SHA-256 checksum of source content"
+    }
+  }
+}

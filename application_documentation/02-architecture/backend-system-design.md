@@ -179,9 +179,31 @@ Services contain business logic and orchestrate repository calls.
 
 ### 5.4 ImportService
 
-- Import source management
+- Import source management with authority hierarchy (Tier 1–5)
 - Imported Krithi review workflow
 - Mapping imported entries to canonical Krithis
+- `ComposerSourcePriority` map — routes each composer to their most authoritative source (e.g., Dikshitar → guruguha.org)
+- Multi-source structural voting integration via `StructuralVotingEngine`
+- Enhanced deity/temple resolution with priority ordering (overrides → resolution → scraped metadata)
+
+### 5.4.1 StructuralVotingEngine
+
+Compares section structures from multiple sources for the same Krithi and selects the most accurate canonical structure.
+
+- Scores candidates by primary section count, technical marker detection (Madhyama Kala, Chittaswaram), and source authority tier
+- Voting rules: Unanimous agreement (HIGH confidence), Majority agreement (MEDIUM), Authority override (Tier 1 prevails), Manual review (LOW)
+- Results logged to `structural_vote_log` table for audit transparency
+- See [Strategy §5.3](../01-requirements/krithi-data-sourcing/quality-strategy.md#53-phase-2--structural-validation-track-041-integration)
+
+### 5.4.2 KrithiStructureParser (Enhanced)
+
+The `KrithiStructureParser` has been enhanced with:
+
+- Multi-script section header detection (Devanagari, Tamil, Telugu, Kannada, Malayalam)
+- Parenthesized Madhyama Kala recognition (e.g., `(m.k)`, `(madhyama kāla)`)
+- Tamil subscript normalisation (removes Unicode subscripts `₁₂₃₄`)
+- Improved Ragamalika sub-section detection with raga labels
+- Enhanced boilerplate filtering (pronunciation guides, blog footers, metadata noise)
 
 ### 5.5 AuditLogService
 
@@ -202,6 +224,29 @@ Services contain business logic and orchestrate repository calls.
 **WebScrapingService:**
 - Fetches HTML from external sources (e.g., shivkumar.org).
 - Uses Gemini to parse structured metadata from unstructured HTML.
+
+### 5.8 Containerised Extraction Architecture
+
+The import pipeline now supports multi-format ingestion (PDF, DOCX, OCR) via a Python extraction service running as a Docker container alongside the Kotlin backend.
+
+**Integration Pattern**: Database Queue Table (`extraction_queue`)
+- Kotlin writes extraction requests → Python polls and processes → writes results back
+- No HTTP coupling, no subprocess management, no shared filesystem
+- Uses `SELECT ... FOR UPDATE SKIP LOCKED` for exactly-once processing
+- See [Strategy §8.3](../01-requirements/krithi-data-sourcing/quality-strategy.md#83-integration-via-database-queue-table)
+
+**Python Extraction Service** (`tools/pdf-extractor/`):
+- PyMuPDF for text extraction with positional data
+- Tesseract OCR with Indic language packs (Sanskrit, Tamil, Telugu, Kannada, Malayalam)
+- `indic-transliteration` for script conversion
+- Page segmentation for anthology PDFs (e.g., 484 Dikshitar compositions)
+- Section label detection and metadata header extraction
+- All output conforms to the `CanonicalExtractionDto` schema
+
+**Deployment**:
+- Docker Compose (local): `pdf-extractor` service, profile-gated under `extraction`
+- Kubernetes (production): Deployment with Cloud SQL Proxy sidecar, HPA based on queue depth
+- See `compose.yaml` and [Strategy §8.2](../01-requirements/krithi-data-sourcing/quality-strategy.md#82-docker-containerised-architecture)
 
 ---
 

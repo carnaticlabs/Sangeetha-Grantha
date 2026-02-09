@@ -26,7 +26,7 @@ class KrithiStructureParser {
         val lines = rawText
             .replace("\\n", "\n") // Unescape literal \n strings if present
             .lines()
-            .map { it.trim() }
+            .map { normalizeLine(it.trim()) }
             .filter { it.isNotBlank() }
             .filterNot { isBoilerplate(it) }
 
@@ -319,6 +319,7 @@ class KrithiStructureParser {
             Regex("${prefix}madhyama\\s+kAla(?:\\s+sAhityam)?$suffix", RegexOption.IGNORE_CASE) to "MADHYAMAKALA",
             Regex("${prefix}madhyama\\s+kala(?:\\s+sahityam)?$suffix", RegexOption.IGNORE_CASE) to "MADHYAMAKALA",
             Regex("${prefix}madhyamakala(?:\\s+sahityam)?$suffix", RegexOption.IGNORE_CASE) to "MADHYAMAKALA",
+            Regex("${prefix}m\\.\\s*k(?:\\s+sahityam)?$suffix", RegexOption.IGNORE_CASE) to "MADHYAMAKALA",
             Regex("${prefix}muktayi\\s+swara$suffix", RegexOption.IGNORE_CASE) to "MUKTAYI_SWARA",
             Regex("${prefix}ettugada\\s+swara$suffix", RegexOption.IGNORE_CASE) to "ETTUGADA_SWARA",
             Regex("${prefix}ettugada\\s+sahitya$suffix", RegexOption.IGNORE_CASE) to "ETTUGADA_SAHITYA",
@@ -433,6 +434,12 @@ class KrithiStructureParser {
             "language"
         )
         return keywords.any { lowered.contains(it) }
+    }
+
+    private fun normalizeLine(line: String): String {
+        if (line.isBlank()) return line
+        // Normalize Tamil subscripts (₁-₄) and other Unicode subscripts used in lyric notes.
+        return line.replace(Regex("[\\u2080-\\u2089]"), "")
     }
 
     private fun isBoilerplate(line: String): Boolean {

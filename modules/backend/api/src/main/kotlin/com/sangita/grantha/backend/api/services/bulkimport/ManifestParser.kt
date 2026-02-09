@@ -21,7 +21,7 @@ class ManifestParser(private val logger: Logger) {
                 .setSkipHeaderRecord(true)
                 .setIgnoreHeaderCase(true)
                 .setTrim(true)
-                .build()
+                .get()
                 .parse(reader)
 
             val headerMap = parser.headerMap

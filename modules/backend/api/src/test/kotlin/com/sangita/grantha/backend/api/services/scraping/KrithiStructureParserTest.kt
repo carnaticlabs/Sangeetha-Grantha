@@ -116,4 +116,20 @@ class KrithiStructureParserTest {
         assertEquals(RagaSectionDto.PALLAVI, sections[0].type)
         assertEquals("Real Content", sections[0].text)
     }
+
+    @Test
+    fun `test madhyama kala short header and tamil subscript normalization`() {
+        val rawText = """
+            pallavi
+            க₁ வா
+            
+            (m.k)
+            நீ வா
+        """.trimIndent()
+
+        val sections = blocker.extractSections(rawText)
+        val types = sections.map { it.type }
+        assertEquals(listOf(RagaSectionDto.PALLAVI, RagaSectionDto.MADHYAMA_KALA), types)
+        assertTrue(sections[0].text.contains("க வா"))
+    }
 }

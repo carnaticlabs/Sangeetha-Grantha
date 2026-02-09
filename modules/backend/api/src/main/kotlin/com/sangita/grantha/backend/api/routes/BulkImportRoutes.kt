@@ -73,7 +73,7 @@ fun Route.bulkImportRoutes(service: BulkImportOrchestrationService, importServic
                             return@forEachPart
                         }
 
-                        val fileBytes = part.provider().readRemaining().readBytes()
+                        val fileBytes = part.provider().readRemaining().readByteArray()
 
                         // Enforce maximum file size to prevent OOM and abuse
                         if (fileBytes.size > MAX_MANIFEST_SIZE_BYTES) {
@@ -118,7 +118,7 @@ fun Route.bulkImportRoutes(service: BulkImportOrchestrationService, importServic
                 }
 
                 if (savedFilePath != null) {
-                    val created = service.createBatch(savedFilePath!!)
+                    val created = service.createBatch(savedFilePath)
                     call.respond(HttpStatusCode.Accepted, created)
                 } else {
                     call.respondText("No file uploaded", status = HttpStatusCode.BadRequest)
@@ -265,7 +265,7 @@ private fun validateCsvFile(file: File): CsvValidationResult {
                 .setSkipHeaderRecord(true)
                 .setIgnoreHeaderCase(true)
                 .setTrim(true)
-                .build()
+                .get()
                 .parse(reader)
             
             val headerMap = parser.headerMap
