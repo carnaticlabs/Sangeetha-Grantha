@@ -343,6 +343,12 @@ Used by:
 
 Tracks provenance of scraped data.
 
+**Source Authority Enhancement** *(Migration 23)*:
+- `source_tier` — Authority level 1–5 (1 = scholarly/published, 5 = individual blogs). See [Source Authority Hierarchy](../01-requirements/krithi-data-sourcing/quality-strategy.md#32-source-authority-hierarchy).
+- `supported_formats` — Array of supported formats (`HTML`, `PDF`, `DOCX`, etc.)
+- `composer_affinity` — JSONB map of composer → weight (e.g., `{"dikshitar": 1.0}` for guruguha.org)
+- `last_harvested_at` — Timestamp of most recent harvest from this source
+
 ---
 
 ### 10.2 `imported_krithis`
@@ -353,6 +359,66 @@ Rules:
 - Never auto-published
 - Must be reviewed and mapped
 - Retains original raw text and metadata
+
+---
+
+### 10.3 `import_task_run` *(Enhanced — Migration 26)*
+
+**Format Tracking**:
+- `source_format` — Format of source document (`HTML`, `PDF`, `DOCX`, `IMAGE`). Default: `HTML`.
+- `page_range` — For PDF sources, the specific pages extracted (e.g., `42-43`).
+
+---
+
+### 10.4 `krithi_source_evidence` *(New — Migration 24)*
+
+Links each Krithi to all sources that contributed data, with per-source extraction metadata and confidence scores. Supports the multi-source provenance model.
+
+Key columns:
+- `krithi_id` — FK to `krithis`
+- `import_source_id` — FK to `import_sources`
+- `source_url`, `source_format`, `extraction_method`
+- `page_range` — For PDFs (e.g., `42-43`)
+- `confidence` — Extraction confidence score
+- `contributed_fields` — Array of field names this source asserted (e.g., `{title, raga, tala, sections}`)
+- `raw_extraction` — Full extraction payload (JSONB) for audit/replay
+
+Indexes: `krithi_id`, `import_source_id`.
+
+---
+
+### 10.5 `structural_vote_log` *(New — Migration 25)*
+
+Audit trail for cross-source structural voting decisions. When multiple sources provide section structures for the same Krithi, the [Structural Voting Engine](../01-requirements/krithi-data-sourcing/quality-strategy.md#53-phase-2--structural-validation-track-041-integration) records the outcome.
+
+Key columns:
+- `krithi_id` — FK to `krithis`
+- `participating_sources` — JSONB array of `{sourceId, tier, sectionStructure}`
+- `consensus_structure` — JSONB array of `{type, order, label}` (the winning structure)
+- `consensus_type` — `UNANIMOUS`, `MAJORITY`, `AUTHORITY_OVERRIDE`, or `MANUAL`
+- `confidence` — `HIGH`, `MEDIUM`, or `LOW`
+- `dissenting_sources` — JSONB array of sources that disagreed
+- `reviewer_id` — Optional FK to `users` (for manual overrides)
+
+---
+
+### 10.6 `extraction_queue` *(New — Migration 27)*
+
+Database-backed work queue for Kotlin ↔ Python integration. The Kotlin backend writes extraction requests; the Python PDF extraction service polls, processes, and writes results back. Uses `SELECT ... FOR UPDATE SKIP LOCKED` for exactly-once processing.
+
+Key columns:
+- `import_batch_id`, `import_task_run_id` — FKs for orchestration context
+- `source_url`, `source_format`, `source_name`, `source_tier` — Request metadata
+- `request_payload` — JSONB extraction parameters (written by Kotlin)
+- `status` — Enum: `PENDING` → `PROCESSING` → `DONE` / `FAILED` / `CANCELLED`
+- `result_payload` — JSONB array of `CanonicalExtractionDto` (written by Python)
+- `result_count`, `extraction_method`, `extractor_version`, `confidence`, `duration_ms` — Result metadata
+- `attempts`, `max_attempts` — Retry tracking
+- `source_checksum`, `cached_artifact_path` — Artifact tracking
+
+Indexes: Partial indexes on `status = 'PENDING'` and `status = 'DONE'` for efficient polling.
+
+See [Extraction Queue Architecture](../01-requirements/krithi-data-sourcing/quality-strategy.md#83-integration-via-database-queue-table) for the integration pattern.
 
 ---
 
@@ -394,6 +460,7 @@ Shared DTOs in `modules/shared/domain` mirror this schema:
 - `KrithiSectionDto`, `KrithiLyricSectionDto`.
 - `KrithiNotationVariantDto`, `KrithiNotationRowDto`.
 - `TagDto`, `KrithiTagDto`, `SampradayaDto`, `TempleNameDto`.
+- `CanonicalExtractionDto` — Universal extraction format for all source adapters (PDF, HTML, DOCX). See [`modules/shared/domain/.../import/CanonicalExtractionDto.kt`](../../modules/shared/domain/src/commonMain/kotlin/com/sangita/grantha/shared/domain/model/import/CanonicalExtractionDto.kt).
 
 Any schema change MUST:
 1. Add a migration
@@ -402,13 +469,28 @@ Any schema change MUST:
 
 ---
 
-## 14. Future Extensions
+## 14. Recent Migrations (Feb 2026)
+
+| Migration | Table/Columns | Purpose |
+|:---|:---|:---|
+| 23 | `import_sources` + 4 columns | Source authority tiers, supported formats, composer affinity |
+| 24 | `krithi_source_evidence` (new) | Per-source provenance tracking for each Krithi |
+| 25 | `structural_vote_log` (new) | Cross-source structural voting audit trail |
+| 26 | `import_task_run` + 2 columns | Source format and page range tracking |
+| 27 | `extraction_queue` (new) | Database-backed work queue for Kotlin ↔ Python extraction |
+
+See [Krithi Data Sourcing Quality Strategy](../01-requirements/krithi-data-sourcing/quality-strategy.md#7-database-schema-extensions) for full schema design rationale.
+
+---
+
+## 15. Future Extensions
 
 Planned but out of scope for v1:
 - Audio / notation synchronization
 - Tala animation
 - Line-level gamaka annotations
 - Public user annotations
+- `source_documents`, `extraction_runs`, `field_assertions` tables — Per-field provenance tracking (planned for medium-term, see [Strategy §7.2](../01-requirements/krithi-data-sourcing/quality-strategy.md#72-newmodified-tables))
 
 ---
 
