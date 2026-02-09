@@ -31,14 +31,14 @@ This document outlines the specific checklist and logic for correcting the data 
         - `(?i)^Kannada - .*`
 
 ### Sourcing Logic (Hardening)
-- [ ] **Authority Source Mapping**:
+- [x] **Authority Source Mapping**:
     - `Muthuswami Dikshitar` -> `guruguha.org` (highest priority for structure).
     - `Tyagaraja` -> `thyagarajavaibhavam.blogspot.com`.
     - `Swathi Thirunal` -> `swathithirunalfestival.org`.
-- [ ] **"Structural Voting" Engine**:
+- [x] **"Structural Voting" Engine**:
     - When ingesting a Krithi from multiple URLs, the parser must score each source's structure.
     - Score = (Count of detected standard sections) + (Presence of technical markers like Madhyama Kala).
-- [ ] **Parser Enhancements (`KrithiStructureParser.kt`)**:
+- [x] **Parser Enhancements (`KrithiStructureParser.kt`)**:
     - Expand regex for `MADHYAMAKALA` to include parenthesized forms: `\((?:madhyama\s+kAla|m\.k)\)`.
     - Support Tamil subscript normalization (e.g., `க₁` -> `க`).
 

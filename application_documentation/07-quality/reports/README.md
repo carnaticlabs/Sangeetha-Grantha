@@ -15,6 +15,9 @@
 - [steel-thread.md](./steel-thread.md) - End-to-end smoke test validation
 - [usability-test.md](./usability-test.md) - UI/UX usability testing results
 
+### Sourcing & Quality
+- [sourcing-strategy-2026.md](./sourcing-strategy-2026.md) - Krithi data sourcing & quality progress report (Feb 2026)
+
 ### Code Reviews
 - [kotlin-code-review.md](./kotlin-code-review.md) - Backend Kotlin code review
 - [kotlin-refactor-checklist.md](./kotlin-refactor-checklist.md) - Backend refactoring tasks
