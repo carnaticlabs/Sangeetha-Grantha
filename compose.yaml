@@ -16,6 +16,32 @@ services:
       timeout: 3s
       retries: 30
 
+  # TRACK-041: Multi-format PDF/DOCX extraction service
+  # Polls extraction_queue for PENDING tasks, extracts Krithis from documents,
+  # writes results back. Communicates with Kotlin backend via shared PostgreSQL.
+  pdf-extractor:
+    build:
+      context: ./tools/pdf-extractor
+      dockerfile: Dockerfile
+    container_name: sangita_pdf_extractor
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/sangita_grantha
+      SG_GEMINI_API_KEY: ${SG_GEMINI_API_KEY:-}
+      EXTRACTION_POLL_INTERVAL_S: "5"
+      EXTRACTION_BATCH_SIZE: "10"
+      EXTRACTION_MAX_CONCURRENT: "3"
+      LOG_LEVEL: INFO
+    volumes:
+      - extraction_cache:/app/cache
+    restart: unless-stopped
+    profiles:
+      - extraction  # Only starts when explicitly requested: docker compose --profile extraction up
+
 volumes:
   sangita_postgres_data:
     name: sangita_postgres_data
+  extraction_cache:
+    name: sangita_extraction_cache
