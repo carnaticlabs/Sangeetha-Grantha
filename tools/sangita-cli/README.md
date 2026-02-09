@@ -160,6 +160,43 @@ Show where the mobile testing guides/checklists live:
 cargo run -- mobile guide
 ```
 
+### PDF Extraction Service
+Manage the containerised Python PDF extraction service for multi-format data ingestion:
+```bash
+# Build the PDF extractor Docker image
+cargo run -- extraction build
+
+# Start the extraction service (with database)
+cargo run -- extraction start --with-db
+
+# Start and follow logs
+cargo run -- extraction start --with-db --follow
+
+# View logs
+cargo run -- extraction logs -f
+
+# Check service and queue status
+cargo run -- extraction status
+
+# Stop the service
+cargo run -- extraction stop
+
+# Restart the service
+cargo run -- extraction restart
+```
+
+**Commands:**
+- `build` - Build the Docker image from `tools/pdf-extractor/`
+- `start` - Start the extraction worker (use `--with-db` to also start PostgreSQL)
+- `stop` - Stop the extraction worker
+- `logs` - View container logs (`-f` to follow, `-n 50` for tail count)
+- `status` - Show container status and extraction queue statistics
+- `restart` - Stop and restart the service
+
+**Requirements:**
+- Docker Desktop (macOS/Windows) or Docker Engine + Compose (Linux)
+- PostgreSQL must be running (use `--with-db` or `sangita-cli db start` first)
+
 ### Documentation Management
 Sync version information from source files to documentation:
 ```bash

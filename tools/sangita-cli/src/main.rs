@@ -7,7 +7,7 @@ mod utils;
 
 use anyhow::Result;
 use clap::{Parser, Subcommand};
-use commands::{commit, db, dev, docs, mobile, net, setup, test};
+use commands::{commit, db, dev, docs, extraction, mobile, net, setup, test};
 
 // Re-export for convenience
 pub use app_config::AppConfig;
@@ -28,6 +28,8 @@ enum Commands {
     Db(db::DbArgs),
     /// Start development servers
     Dev(dev::DevArgs),
+    /// PDF extraction service management (build, start, stop, logs)
+    Extraction(extraction::ExtractionArgs),
     /// Network configuration and diagnostics
     Net(net::NetArgs),
     /// Run tests (including steel thread)
@@ -49,6 +51,7 @@ async fn main() -> Result<()> {
         Commands::Setup => setup::run().await,
         Commands::Db(args) => db::run(args).await,
         Commands::Dev(args) => dev::run(args).await,
+        Commands::Extraction(args) => extraction::run(args).await,
         Commands::Net(args) => net::run(args).await,
         Commands::Test(args) => test::run(args).await,
         Commands::Mobile(args) => mobile::run(args).await,
