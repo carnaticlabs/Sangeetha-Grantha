@@ -30,6 +30,12 @@ Historical / inherited drafts from earlier projects, and any future archival doc
   - [Features](./01-requirements/features/README.md)
     - [Commit Guardrails & Workflow Enforcement](./01-requirements/features/commit-guardrails-workflow.md) ✅ *Implemented*
     - [Bulk Import](./01-requirements/features/bulk-import/README.md)
+    - [Intelligent Content Ingestion](./01-requirements/features/intelligent-content-ingestion.md)
+    - [Advanced Krithi Notation & Transliteration](./01-requirements/features/advanced-krithi-notation-transliteration.md)
+  - [Krithi Data Sourcing & Quality](./01-requirements/krithi-data-sourcing/README.md) *(New — Feb 2026)*
+    - [Quality Strategy](./01-requirements/krithi-data-sourcing/quality-strategy.md)
+    - [Implementation Checklist](./01-requirements/krithi-data-sourcing/implementation-checklist.md)
+  - [Tech Debt](./01-requirements/tech-debt/README.md)
 
 - **[02 Architecture](./02-architecture/README.md)**
   - [System Design](./02-architecture/backend-system-design.md)
@@ -69,10 +75,17 @@ Historical / inherited drafts from earlier projects, and any future archival doc
     - [E2E Testing](./07-quality/qa/e2e-testing.md)
     - [Performance Testing](./07-quality/qa/performance-testing.md)
   - [Steel Thread Report](./07-quality/reports/steel-thread.md)
+  - [Data Quality & Remediation](./07-quality/remediation-implementation-plan-2026-02.md) *(Feb 2026)*
+  - [Sourcing Strategy Progress](./07-quality/reports/sourcing-strategy-2026.md)
+  - [Structural Audit Results](./07-quality/results/krithi-structural-audit-2026-02.md)
 
 - **[08 Operations](./08-operations/README.md)**
   - [Deployment](./08-operations/deployment.md)
   - [Monitoring](./08-operations/monitoring.md)
+  - [Configuration](./08-operations/config.md)
+  - [CLI Docs Command](./08-operations/cli-docs-command.md)
+  - [Agent Workflows](./08-operations/agent-workflows.md)
+  - [Query Optimization Plan](./08-operations/query-optimization-plan.md)
   - [Runbooks](./08-operations/runbooks/README.md)
     - [Steel Thread Runbook](./08-operations/runbooks/steel-thread-runbook.md)
     - [Database Runbook](./08-operations/runbooks/database-runbook.md)
@@ -82,10 +95,12 @@ Historical / inherited drafts from earlier projects, and any future archival doc
   - [AI Integration](./09-ai/integration-summary.md)
   - [Knowledge Base](./09-ai/gemini-knowledge-base.md)
 
-- **Meta (`00-meta/README.md`)**
+- **[Meta](./00-meta/README.md)** (`00-meta/`)
   - [Current Versions](./00-meta/current-versions.md)
   - [Standards](./00-meta/standards.md)
   - [Retention Plan](./00-meta/retention-plan.md)
+  - [Track Closure Report](./00-meta/track-closure-report-2026-02-02.md)
 
 - **[10 Implementations](./10-implementations/README.md)**
   - [Platform Standardization](./10-implementations/01-platform/environment-variable-standardization.md)
+  - [Dependency Updates (Feb 2026)](./10-implementations/01-platform/dependency-updates-feb-2026.md)

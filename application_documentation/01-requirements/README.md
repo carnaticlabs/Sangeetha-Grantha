@@ -13,10 +13,13 @@
 
 ## Contents
 
-- [admin-web/](./admin-web/)
-- [domain-model.md](./domain-model.md)
-- [features/](./features/)
-- [glossary.md](./glossary.md)
-- [mobile/](./mobile/)
-- [product-requirements-document.md](./product-requirements-document.md)
-- [tech-debt/](./tech-debt/)
+- [admin-web/](./admin-web/) - Admin web application PRD
+- [domain-model.md](./domain-model.md) - Carnatic music domain model
+- [features/](./features/) - Feature specifications and implementation plans
+- [glossary.md](./glossary.md) - Musical and technical terminology
+- [krithi-data-sourcing/](./krithi-data-sourcing/README.md) - Multi-format data sourcing & quality strategy
+  - [Quality Strategy](./krithi-data-sourcing/quality-strategy.md) - Comprehensive strategy for multi-source ingestion, authority hierarchy, and quality framework
+  - [Implementation Checklist](./krithi-data-sourcing/implementation-checklist.md) - Phase-by-phase task breakdown with acceptance criteria
+- [mobile/](./mobile/) - Mobile application PRD
+- [product-requirements-document.md](./product-requirements-document.md) - Primary PRD
+- [tech-debt/](./tech-debt/) - Technical debt tracking

@@ -13,3 +13,4 @@ This directory contains detailed summaries and guides for specific platform and 
 
 - **[01 Platform](./01-platform/README.md)**
   - [Environment Variable Standardization](./01-platform/environment-variable-standardization.md)
+  - [Dependency Updates (Feb 2026)](./01-platform/dependency-updates-feb-2026.md)

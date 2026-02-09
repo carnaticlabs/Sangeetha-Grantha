@@ -13,9 +13,10 @@
 
 ## Contents
 
-- [backend-system-design.md](./backend-system-design.md)
-- [google-cloud-scaling-strategy.md](./google-cloud-scaling-strategy.md)
-- [decisions/](./decisions/)
-- [diagrams/](./diagrams/)
-- [scaling-evaluation.md](./scaling-evaluation.md)
-- [tech-stack.md](./tech-stack.md)
+- [backend-system-design.md](./backend-system-design.md) - Backend architecture, service layer, and containerised extraction
+- [google-cloud-scaling-strategy.md](./google-cloud-scaling-strategy.md) - GCP scaling strategy
+- [scale-target-architecture.md](./scale-target-architecture.md) - Target architecture for scale
+- [scaling-evaluation.md](./scaling-evaluation.md) - Scaling evaluation analysis
+- [tech-stack.md](./tech-stack.md) - Technology stack and versions
+- [decisions/](./decisions/) - Architecture Decision Records (ADRs)
+- [diagrams/](./diagrams/) - C4 model, ERD, and flow diagrams

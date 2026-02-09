@@ -27,6 +27,10 @@
 - [track-008-013-implementation-summary-2026-01-23.md](../archive/quality-reports/track-008-013-implementation-summary-2026-01-23.md)
 - [track-010-implementation-summary-2026-01-23.md](../archive/quality-reports/track-010-implementation-summary-2026-01-23.md)
 - [track-034-implementation-summary.md](./track-034-implementation-summary.md)
+- [track-036-implementation-summary.md](./track-036-implementation-summary.md)
+
+### Data Quality & Remediation
+- [remediation-implementation-plan-2026-02.md](./remediation-implementation-plan-2026-02.md) - Remediation & sourcing logic plan (Feb 2026)
 
 ### Reviews (Archived)
 - [csv-import-strategy-review-codex.md](../archive/quality-reports/csv-import-strategy-review-codex.md)
@@ -37,4 +41,6 @@
 
 ### Subdirectories
 - [qa/](./qa/) - Testing guides, checklists, and verification reports
-- [reports/](./reports/) - Code reviews, refactor checklists, and test results
+- [reports/](./reports/) - Code reviews, refactor checklists, sourcing strategy reports, and test results
+- [results/](./results/) - Quality audit results
+  - [krithi-structural-audit-2026-02.md](./results/krithi-structural-audit-2026-02.md) - Structural consistency audit results (Feb 2026)
