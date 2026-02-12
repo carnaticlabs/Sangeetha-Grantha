@@ -6,14 +6,20 @@ import com.sangita.grantha.backend.dal.repositories.ComposerAliasRepository
 import com.sangita.grantha.backend.dal.repositories.ComposerRepository
 import com.sangita.grantha.backend.dal.repositories.DeityRepository
 import com.sangita.grantha.backend.dal.repositories.EntityResolutionCacheRepository
+import com.sangita.grantha.backend.dal.repositories.ExtractionQueueRepository
 import com.sangita.grantha.backend.dal.repositories.ImportRepository
 import com.sangita.grantha.backend.dal.repositories.KrithiNotationRepository
 import com.sangita.grantha.backend.dal.repositories.KrithiRepository
 //import com.sangita.grantha.backend.dal.repositories.NotationRepository
+import com.sangita.grantha.backend.dal.repositories.QualityDashboardRepository
 import com.sangita.grantha.backend.dal.repositories.RagaRepository
 //import com.sangita.grantha.backend.dal.repositories.RoleRepository
 import com.sangita.grantha.backend.dal.repositories.SampradayaRepository
+import com.sangita.grantha.backend.dal.repositories.SourceEvidenceRepository
+import com.sangita.grantha.backend.dal.repositories.SourceRegistryRepository
+import com.sangita.grantha.backend.dal.repositories.StructuralVotingRepository
 import com.sangita.grantha.backend.dal.repositories.TagRepository
+import com.sangita.grantha.backend.dal.repositories.VariantMatchRepository
 import com.sangita.grantha.backend.dal.repositories.TalaRepository
 import com.sangita.grantha.backend.dal.repositories.TempleRepository
 import com.sangita.grantha.backend.dal.repositories.TempleSourceCacheRepository
@@ -40,6 +46,14 @@ interface SangitaDal {
     val sampradayas: SampradayaRepository
     val tags: TagRepository
     val krithiNotation: KrithiNotationRepository
+    // TRACK-045: Sourcing repositories
+    val sourceRegistry: SourceRegistryRepository
+    val extractionQueue: ExtractionQueueRepository
+    val sourceEvidence: SourceEvidenceRepository
+    val structuralVoting: StructuralVotingRepository
+    val qualityDashboard: QualityDashboardRepository
+    // TRACK-056: Variant matching
+    val variantMatch: VariantMatchRepository
 }
 
 class SangitaDalImpl : SangitaDal {
@@ -62,4 +76,12 @@ class SangitaDalImpl : SangitaDal {
     override val sampradayas = SampradayaRepository()
     override val tags = TagRepository()
     override val krithiNotation = KrithiNotationRepository()
+    // TRACK-045: Sourcing repositories
+    override val sourceRegistry = SourceRegistryRepository()
+    override val extractionQueue = ExtractionQueueRepository()
+    override val sourceEvidence = SourceEvidenceRepository()
+    override val structuralVoting = StructuralVotingRepository()
+    override val qualityDashboard = QualityDashboardRepository()
+    // TRACK-056: Variant matching
+    override val variantMatch = VariantMatchRepository()
 }

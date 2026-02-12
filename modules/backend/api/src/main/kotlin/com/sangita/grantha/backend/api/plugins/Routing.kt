@@ -12,6 +12,8 @@ import com.sangita.grantha.backend.api.routes.importRoutes
 import com.sangita.grantha.backend.api.routes.metricsRoutes
 import com.sangita.grantha.backend.api.routes.publicKrithiRoutes
 import com.sangita.grantha.backend.api.routes.referenceDataRoutes
+import com.sangita.grantha.backend.api.routes.remediationRoutes
+import com.sangita.grantha.backend.api.routes.sourcingRoutes
 import com.sangita.grantha.backend.api.routes.userManagementRoutes
 import com.sangita.grantha.backend.api.config.ApiEnvironment
 import com.sangita.grantha.backend.api.config.JwtConfig
@@ -24,6 +26,11 @@ import com.sangita.grantha.backend.api.services.IReferenceDataService
 import com.sangita.grantha.backend.api.services.ITransliterator
 import com.sangita.grantha.backend.api.services.IWebScraper
 import com.sangita.grantha.backend.api.services.KrithiNotationService
+import com.sangita.grantha.backend.api.services.AuditRunnerService
+import com.sangita.grantha.backend.api.services.ExtractionResultProcessor
+import com.sangita.grantha.backend.api.services.RemediationService
+import com.sangita.grantha.backend.api.services.SourcingService
+import com.sangita.grantha.backend.api.services.VariantMatchingService
 import com.sangita.grantha.backend.api.services.UserManagementService
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 
@@ -44,6 +51,11 @@ fun Application.configureRouting() {
     val webScrapingService by inject<IWebScraper>()
     val userManagementService by inject<UserManagementService>()
     val bulkImportService by inject<BulkImportOrchestrationService>()
+    val sourcingService by inject<SourcingService>()
+    val variantMatchingService by inject<VariantMatchingService>()
+    val auditRunnerService by inject<AuditRunnerService>()
+    val remediationService by inject<RemediationService>()
+    val extractionProcessor by inject<ExtractionResultProcessor>()
     val metricsRegistry by inject<PrometheusMeterRegistry>()
     val env by inject<ApiEnvironment>()
     val jwtConfig by inject<JwtConfig>()
@@ -63,6 +75,8 @@ fun Application.configureRouting() {
             auditRoutes(auditLogService)
             referenceDataRoutes(referenceDataService)
             userManagementRoutes(userManagementService)
+            sourcingRoutes(sourcingService, variantMatchingService)
+            remediationRoutes(auditRunnerService, remediationService, extractionProcessor)
             metricsRoutes(metricsRegistry)
         }
         

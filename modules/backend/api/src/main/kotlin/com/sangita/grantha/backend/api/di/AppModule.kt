@@ -26,10 +26,12 @@ import com.sangita.grantha.backend.api.services.ReferenceDataServiceImpl
 import com.sangita.grantha.backend.api.services.TransliterationServiceImpl
 import com.sangita.grantha.backend.api.services.UserManagementService
 import com.sangita.grantha.backend.api.services.WebScrapingServiceImpl
+import com.sangita.grantha.backend.api.services.DeterministicWebScraper
 import com.sangita.grantha.backend.api.services.GeocodingService
 import com.sangita.grantha.backend.api.services.TempleScrapingService
 import com.sangita.grantha.backend.api.services.bulkimport.BulkImportWorkerServiceImpl
 import com.sangita.grantha.backend.api.services.bulkimport.IBulkImportWorker
+import com.sangita.grantha.backend.api.services.IExtractionWorker
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import org.koin.dsl.module
 
@@ -54,13 +56,17 @@ fun appModule(env: ApiEnvironment, metricsRegistry: PrometheusMeterRegistry) = m
     single { GeocodingService(get()) }
     single { TempleScrapingService(get(), get(), get()) }
     single<IWebScraper> {
-        WebScrapingServiceImpl(
-            geminiClient = get(),
-            templeScrapingService = get(),
-            cacheTtlHours = env.scrapeCacheTtlHours,
-            cacheMaxEntries = env.scrapeCacheMaxEntries,
-            useSchemaMode = env.geminiUseSchemaMode
-        )
+        if (env.geminiStubMode) {
+            DeterministicWebScraper()
+        } else {
+            WebScrapingServiceImpl(
+                geminiClient = get(),
+                templeScrapingService = get(),
+                cacheTtlHours = env.scrapeCacheTtlHours,
+                cacheMaxEntries = env.scrapeCacheMaxEntries,
+                useSchemaMode = env.geminiUseSchemaMode
+            )
+        }
     }
 
     single { NameNormalizationService() }
@@ -70,7 +76,7 @@ fun appModule(env: ApiEnvironment, metricsRegistry: PrometheusMeterRegistry) = m
 
     single<IImportService> {
         val scope = this
-        ImportServiceImpl(get(), get(), get()) { scope.get<AutoApprovalService>() }
+        ImportServiceImpl(get(), get(), get(), get()) { scope.get<AutoApprovalService>() }
     }
     single<ImportReviewer> { get<IImportService>() as ImportReviewer }
     single { AutoApprovalService(get()) }
@@ -94,6 +100,47 @@ fun appModule(env: ApiEnvironment, metricsRegistry: PrometheusMeterRegistry) = m
         )
     }
     single { BulkImportOrchestrationService(get(), get()) }
+
+    // TRACK-045: Sourcing service
+    single { com.sangita.grantha.backend.api.services.SourcingService(get()) }
+
+    // TRACK-039/040/041: Quality audit, remediation, and extraction processing
+    single { com.sangita.grantha.backend.api.services.AuditRunnerService() }
+    single { com.sangita.grantha.backend.api.services.MetadataCleanupService(get()) }
+    single { com.sangita.grantha.backend.api.services.StructuralNormalizationService(get()) }
+    single {
+        com.sangita.grantha.backend.api.services.RemediationService(
+            dal = get(),
+            metadataCleanup = get(),
+            structuralNormalization = get(),
+            qualityScorer = get(),
+            normalizer = get(),
+        )
+    }
+    // TRACK-053: Krithi creation from extraction results
+    single {
+        com.sangita.grantha.backend.api.services.KrithiCreationFromExtractionService(
+            dal = get(),
+            normalizer = get(),
+        )
+    }
+    // TRACK-056: Variant matching service
+    single {
+        com.sangita.grantha.backend.api.services.VariantMatchingService(
+            dal = get(),
+            normalizer = get(),
+        )
+    }
+    single {
+        com.sangita.grantha.backend.api.services.ExtractionResultProcessor(
+            dal = get(),
+            normalizer = get(),
+            krithiCreationService = get(),
+            variantMatchingService = get(),
+        )
+    }
+
+    single<IExtractionWorker> { com.sangita.grantha.backend.api.services.ExtractionWorker(get()) }
 
     single<PrometheusMeterRegistry> { metricsRegistry }
 }

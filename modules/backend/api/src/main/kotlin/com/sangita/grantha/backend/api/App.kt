@@ -69,11 +69,15 @@ fun main() {
 
         // Start background workers (bulk import orchestration)
         val bulkImportWorkerService by inject<IBulkImportWorker>()
+        val extractionWorker by inject<com.sangita.grantha.backend.api.services.IExtractionWorker>()
+        
         bulkImportWorkerService.start()
+        extractionWorker.start()
 
         monitor.subscribe(ApplicationStopping) {
             logger.info("Shutting down, closing database pool")
             bulkImportWorkerService.stop()
+            extractionWorker.stop()
             DatabaseFactory.close()
         }
     }.start(wait = true)

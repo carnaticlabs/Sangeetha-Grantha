@@ -127,3 +127,27 @@ enum class TaskStatus(override val dbValue: String) : DbEnum {
         const val DB_TYPE = "task_status_enum"
     }
 }
+
+// TRACK-056: Extraction intent (maps to DB enum 'extraction_intent')
+enum class ExtractionIntent(override val dbValue: String) : DbEnum {
+    PRIMARY("PRIMARY"),   // Standard extraction: create new Krithis
+    ENRICH("ENRICH");     // Variant enrichment: add lyric variants to existing Krithis
+
+    companion object {
+        const val DB_TYPE = "extraction_intent"
+    }
+}
+
+// TRACK-045: Extraction status (maps to DB enum 'extraction_status')
+enum class ExtractionStatus(override val dbValue: String) : DbEnum {
+    PENDING("PENDING"),
+    PROCESSING("PROCESSING"),
+    DONE("DONE"),
+    INGESTED("INGESTED"),  // TRACK-041: Kotlin has processed the extraction results
+    FAILED("FAILED"),
+    CANCELLED("CANCELLED");
+
+    companion object {
+        const val DB_TYPE = "extraction_status"
+    }
+}
