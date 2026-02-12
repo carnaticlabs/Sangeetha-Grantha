@@ -2,7 +2,7 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-02-12 |
 | **Author** | Sangeetha Grantha Team |
 
 # Krithi Data Sourcing & Quality — Document Index
@@ -16,6 +16,7 @@ This directory contains the strategy, implementation plan, and supporting analys
 | [quality-strategy.md](./quality-strategy.md) | **Primary Strategy Document** — Comprehensive strategy covering multi-format ingestion architecture, source authority hierarchy, multi-phase enrichment, data quality framework, containerised deployment, and risk analysis. |
 | [implementation-checklist.md](./implementation-checklist.md) | **Implementation Checklist** — Detailed, actionable breakdown of every task across 6 phases with dependencies, acceptance criteria, and sprint allocation. |
 | [ui-ux-plan.md](./ui-ux-plan.md) | **UI/UX Plan** — User interface and experience requirements for sourcing & extraction monitoring: source registry, extraction queue monitor, provenance browser, structural voting viewer, and quality dashboard. |
+| [pdf-diacritic-extraction-analysis.md](./pdf-diacritic-extraction-analysis.md) | **PDF Diacritic Extraction Analysis** — Forensic analysis of garbled Utopia font encoding in guruguha.org PDFs causing Raga/Tala/Section extraction failures. Includes root cause, evidence, solution design, and implementation plan. |
 
 > [!NOTE]
 > The original combined strategy document has been [archived](../../archive/krithi-data-sourcing/krithi-data-sourcing-strategy-and-implementation-checklist.md) — it is superseded by the two documents above.

@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-02-09 |
 | **Author** | Sangita Grantha Architect |
 
 # TRACK-041: Enhanced Sourcing Logic & Structural Voting
@@ -27,9 +27,9 @@ Harden the Krithi import pipeline by implementing multi-source structural voting
 - [x] Add support for script-specific subscript normalization (Tamil subscripts 1-4).
 - [x] Create Docker infrastructure (Dockerfile, compose.yaml extension).
 - [x] Add `extraction` CLI command to sangita-cli.
-- [ ] Integrate "Authority Source" validation into the `ImportReview` UI.
-- [ ] Build Kotlin `ExtractionQueueRepository` and `ExtractionQueueService`.
-- [ ] Build `ExtractionResultProcessor` for reading Python extraction results.
+- [x] Integrate "Authority Source" validation into the `ImportReview` UI (TierBadge + AuthorityWarning — TRACK-044/052).
+- [x] Build Kotlin `ExtractionQueueRepository` and `ExtractionQueueService` (TRACK-045).
+- [x] Build `ExtractionResultProcessor` for reading Python extraction results.
 - [ ] End-to-end integration test: Kotlin → extraction_queue → Python → results.
 
 ## 4. Artifacts
@@ -55,6 +55,8 @@ Harden the Krithi import pipeline by implementing multi-source structural voting
 | Docker Compose | `compose.yaml` | Extended with `pdf-extractor` service |
 | CLI extraction command | `tools/sangita-cli/src/commands/extraction.rs` | sangita-cli extraction start/stop/status/logs |
 | Sourcing UI/UX Plan | `application_documentation/01-requirements/krithi-data-sourcing/ui-ux-plan.md` | UI/UX requirements for sourcing & extraction monitoring screens |
+| ExtractionResultProcessor | `modules/backend/api/.../services/ExtractionResultProcessor.kt` | Processes DONE extraction queue items → source evidence + structural voting |
+| Migration 28 | `database/migrations/28__extraction_ingested_status.sql` | Adds INGESTED status to extraction_status enum |
 
 ## 5. Progress Log
 - **2026-02-07**: Track created to operationalize sourcing findings from TRACK-039.
@@ -91,3 +93,11 @@ Harden the Krithi import pipeline by implementing multi-source structural voting
     - `07-quality/README.md`, `07-quality/reports/README.md` — Sourcing strategy and audit results
     - Root `README.md` — Comprehensive link updates across all sections
     - All README files audited for missing file links
+- **2026-02-09**: Completed ExtractionResultProcessor and closed remaining integration gaps:
+  - **ExtractionResultProcessor**: New service that polls DONE extraction queue items, parses `result_payload` as `List<CanonicalExtractionDto>`, matches each to existing Krithis (via normalised title), creates `krithi_source_evidence` records, and runs structural voting for Krithis with multiple sources. Marks processed items as INGESTED.
+  - **Migration 28**: Added `INGESTED` status to `extraction_status` DB enum to track Kotlin-processed items.
+  - **DAL updates**: Added `markIngested()` to `ExtractionQueueRepository`, `createEvidence()` to `SourceEvidenceRepository`, `createVotingRecord()` to `StructuralVotingRepository`.
+  - **DbEnums**: Added `INGESTED` to `ExtractionStatus` enum.
+  - **API route**: `POST /v1/admin/quality/extraction/process` triggers batch processing.
+  - Wired into DI and routing. Authority Source validation in ImportReview UI and ExtractionQueueRepository+Service confirmed as already completed in TRACK-044/045/052.
+  - Remaining: end-to-end integration test (Kotlin → extraction_queue → Python → results → INGESTED).

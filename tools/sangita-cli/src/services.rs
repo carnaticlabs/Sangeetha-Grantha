@@ -301,6 +301,28 @@ pub fn kill_processes_on_port(port: &str, service_name: &str) -> Result<()> {
     Ok(())
 }
 
+// ─── Extraction service (Docker container) ──────────────────────────────────
+
+/// Start the PDF extraction Docker container (requires postgres to be running).
+pub fn start_extraction_service(root: &Path) -> Result<()> {
+    if !docker_compose_available() {
+        anyhow::bail!("Docker Compose is required for the extraction service");
+    }
+    run_docker_compose(root, &["--profile", "extraction", "up", "-d", "--build", "pdf-extractor"])
+        .context("Failed to start extraction service")?;
+    Ok(())
+}
+
+/// Stop the PDF extraction Docker container.
+pub fn stop_extraction_service(root: &Path) -> Result<()> {
+    if !docker_compose_available() {
+        return Ok(()); // nothing to stop
+    }
+    run_docker_compose(root, &["--profile", "extraction", "stop", "pdf-extractor"])
+        .context("Failed to stop extraction service")?;
+    Ok(())
+}
+
 /// Kill processes on configured backend/frontend ports.
 /// This ensures a clean start by clearing ports before starting services.
 pub fn cleanup_ports(config: &Config) -> Result<()> {

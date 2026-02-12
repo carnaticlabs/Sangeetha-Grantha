@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Version** | 2.0.0 |
+| **Last Updated** | 2026-02-12 |
 | **Author** | Sangeetha Grantha Team |
 
 # Sangeetha Grantha: Complete Engineering Evolution
@@ -11,7 +11,7 @@
 ## From Vision to Production-Ready Platform
 
 > **Audience**: Software Engineers & Technical Leaders  
-> **Period**: Project Inception - January 2026  
+> **Period**: Project Inception – February 2026  
 >| **Status** | Published |
 | **Version** | 1.0 |
 | **Last Updated** | 2026-01-20 |
@@ -28,9 +28,12 @@ Sangeetha Grantha represents a systematic journey from concept to production-rea
 - **95% reduction** in developer setup time via cross-platform standardization
 - **100% documentation coverage** with commit-level traceability
 - **Zero security incidents** from automated guardrails
-- **Production-ready** testing infrastructure with steel thread validation
-- **9 database migrations** evolving from baseline to comprehensive schema
-- **6 architectural decision records** documenting key choices
+- **Production-ready** testing infrastructure with steel thread and E2E validation
+- **30 database migrations** evolving from baseline to comprehensive sourcing schema
+- **63 conductor tracks** tracking engineering progress
+- **87+ commits** shipped since mid-January 2026 alone
+- **PDF extraction pipeline** decoding Velthuis Sanskrit fonts and garbled diacritics
+- **9-screen Sourcing & Quality UI** for provenance tracking and structural voting
 
 This is the story of building a system that respects both **musical tradition** and **engineering excellence**.
 
@@ -77,6 +80,23 @@ While the rest of this document is structured thematically, it is useful to anch
 - Generic scraping + domain mapping added to support heterogeneous legacy sources.
 - Searchable deity and temple management added, strengthening domain coverage.
 - Steel thread test (`cargo run -- test steel-thread`) wired into the dev workflow, acting as a production-grade smoke test.
+
+### Phase 6 – Data Quality, Sourcing Pipeline & PDF Extraction (Late Jan – Feb 2026)
+
+- **Authentication & Login**: JWT-based login page shipped; seed-data admin user standardised for local development.
+- **Code Quality Refactoring**: Systematic Kotlin backend and React frontend audits (TRACK-021–025) eliminating `any` types, adding accessibility, and extracting reusable components.
+- **Bulk Import Hardening**: Composer deduplication via alias tables, kshetra/temple mapping with geocoding, TextBlocker parsing fixes for Devanagari and complex headers, newline sanitisation, and duplicate section prevention.
+- **Scraping Pipeline Evolution**: `TextBlocker` promoted to **`KrithiStructureParser`** — a deterministic, regex-based Carnatic section parser. Gemini LLM usage reduced by ~90% (lyrics no longer sent to LLM when deterministic extraction succeeds). Ragamalika-aware sub-section detection added.
+- **Data Quality Audit**: SQL-driven audit of Krithi structural consistency across 30+ authoritative sources (Guruguha PDFs, karnatik.com, shivkumar.org). Remediation plan for duplicates, orphaned sections, and missing metadata.
+- **Enhanced Sourcing & Structural Voting**: Source authority tiers (T1–T5), `krithi_source_evidence` provenance table, `structural_vote_log` for multi-source consensus, and `extraction_queue` for database-backed work distribution.
+- **PDF Extraction Service**: Python-based PDF extractor with Docker infrastructure. English diacritic normalisation (garbled Utopia fonts), Sanskrit Velthuis Type 1 font decoder (155-glyph map with mātrā reordering), and segment-level bold detection.
+- **Language Variant Pipeline**: Backend matching & enrichment API for cross-language variants (e.g. Sanskrit PDF as variant of English PDF). Multi-signal confidence scoring, auto-approval for high-confidence matches (≥0.85), anomaly/structure mismatch flagging.
+- **Sourcing UI (9 screens)**: Source Registry, Extraction Monitor, Sourcing Dashboard, Source Evidence Browser, Structural Voting, Quality Dashboard, and integration with existing Krithi Editor. Full design system with 12 shared components (TierBadge, ConfidenceBar, StructureVisualiser, etc.).
+- **Transliteration-Aware Normalisation**: Aspirate collapse table (`sh→s`, `th→t`, `ksh→ks`, etc.) ensuring cross-scheme matching (IAST ↔ Harvard-Kyoto ↔ ITRANS).
+- **Bulk Import Idempotency**: Deduplication guards on Krithi creation, section insertion, and lyric variant persistence. Source evidence records now written during bulk import. Migration-based integration test infrastructure replacing SchemaUtils.
+- **Dependency Updates**: Two upgrade cycles (Q1 2026 + Feb 2026) covering Ktor, Exposed, Kotlin, React, Vite, and Rust toolchains. Environment variable standardisation across monorepo.
+- **Frontend E2E Testing**: Playwright scaffolding with headed/debug mode support.
+- **Documentation**: Documentation Guardian audit & repair (TRACK-043), 12+ doc files updated, comprehensive project README overhaul.
 
 The remaining sections of this document dive deeper into each of these themes, connecting them back to the underlying architecture, schema, and tooling decisions.
 
@@ -247,17 +267,46 @@ application_documentation/
 **Critical Design:**
 Notation is **independent of lyrics**, allowing multiple notation variants per composition while preserving lyric variants separately.
 
-### 2.7-2.9 Subsequent Migrations
+### 2.7-2.9 Import Workflow & Section Type Enhancements
 
 **Migration 07:** Added `approved` status to import workflow
 **Migration 08:** Added `samashti_charanam` section type enum
 **Migration 09:** Added advanced section types for complex compositions
 
-**Total Evolution:** 9 migrations from baseline to comprehensive schema supporting:
+### 2.10-2.20 Bulk Import Orchestration & Entity Resolution (Phase 5-6)
+
+**Migration 10:** Bulk import orchestration tables (`import_batches`, `import_task_runs`, stage/status enums, polling indexes)
+**Migration 11:** Import hardening (header validation, URL deduplication, operational safety columns)
+**Migration 12:** Resolution data columns on `imported_krithis` for entity linking
+**Migration 13:** Optimised polling indexes for `SELECT ... FOR UPDATE SKIP LOCKED` pattern
+**Migration 14:** Duplicate candidate tracking table
+**Migration 15:** Missing import metadata columns backfill
+**Migration 16:** Quality scoring columns (`qualityScore`, `confidenceScore`, scoring breakdown)
+**Migration 17:** Entity resolution cache table for performance
+**Migration 18:** Full-text search indexes on `krithis` table
+**Migration 19-20:** Schema fixes and alignment (`imported_krithis` nullable columns, foreign key corrections)
+**Migration 21:** Temple source cache table for geocoding results
+**Migration 22:** `composer_aliases` table for deduplication across transliteration schemes
+
+### 2.11 Source Authority & Evidence Tracking (Phase 6)
+
+**Migration 23:** Source authority enhancement — `authority_tier` (T1-T5), `reliability_score`, `coverage_metadata` on `import_sources`
+**Migration 24:** `krithi_source_evidence` table — provenance trail linking each Krithi to its authoritative sources with `contributed_fields`, `confidence_score`, and `extraction_method`
+**Migration 25:** `structural_vote_log` table — multi-source consensus tracking with field-level voting
+**Migration 26:** `source_format` and `page_range` tracking on import task runs
+**Migration 27:** `extraction_queue` table — database-backed work queue for Kotlin ↔ Python integration using `SELECT ... FOR UPDATE SKIP LOCKED`
+**Migration 28:** Added `INGESTED` status to extraction_status enum
+**Migration 29:** Extraction variant support — `content_language`, `extraction_intent`, `related_extraction_id` columns; `variant_match` table
+**Migration 30:** Entity resolution cache schema fix (missing `updated_at` column, `confidence` type)
+
+**Total Evolution:** 30 migrations from baseline to comprehensive sourcing and extraction schema supporting:
 - Multiple musical forms (Krithi, Varnam, Swarajathi)
 - Multilingual lyrics with sampradaya variants
 - Notation variants with tala alignment
-- Import pipeline with review workflow
+- Import pipeline with review workflow and quality scoring
+- Source authority tiers and evidence provenance
+- Structural voting for multi-source consensus
+- PDF extraction queue with variant matching
 - Tags, sampradayas, temple names
 - Full audit trail
 
@@ -664,7 +713,202 @@ Detailed implementation plan created with:
 
 ---
 
-## Part XI: Scalability & Future-Proofing
+## Part XI: Scraping Pipeline Evolution
+
+### 11.1 From TextBlocker to KrithiStructureParser
+
+**Evolution Date:** January – February 2026 (TRACK-034, TRACK-036)
+
+**The Problem:**
+The original `TextBlocker` was a simple text chunker that structured HTML content into prompt blocks for the Gemini LLM. All lyric section extraction, metadata parsing, and structure detection was delegated to the LLM — consuming significant tokens and occasionally producing formatting hallucinations.
+
+**The Solution:**
+`TextBlocker` was progressively enhanced and ultimately renamed to **`KrithiStructureParser`** — a deterministic, regex-based parser that understands Carnatic music section structure natively.
+
+**Key Capabilities:**
+- ✅ **Section Detection**: Regex-based identification of Pallavi, Anupallavi, Charanam, Samashti Charanam, Madhyama Kala Sahityam, and Chittaswaram
+- ✅ **Ragamalika Awareness**: Detects raga sub-sections within blocks (e.g., "1. Sri Raga", "Viloma - Mohana") and extracts them as distinct labelled sections
+- ✅ **Multi-Script Support**: Handles Devanagari headers, transliterated labels (both `ch` and `c` prefixes for Charanam), and abbreviation patterns
+- ✅ **Madhyama Kala Detection**: Correctly flushes current block and starts new `MADHYAMA_KALA` sections when encountering sub-headers
+- ✅ **Strongly-Typed Output**: Returns `List<ScrapedSectionDto>` instead of raw text blocks
+
+**Token Savings:**
+When deterministic extraction succeeds (sections and variants found), the full lyric text is **excluded from the Gemini prompt**, reducing token usage by approximately **90%**. The LLM is then asked only for metadata (Raga, Tala, Meaning, Temple) — high-value enrichment that is not regex-friendly.
+
+### 11.2 Composer Deduplication & Entity Resolution
+
+**Implementation Date:** January – February 2026 (TRACK-031)
+
+**Problem:** Different transliteration schemes for the same composer created duplicate database records (e.g., "Muthuswami Dikshitar" vs "Muttuswami Diksitar" vs "Muthuswami Dikshithar").
+
+**Solution:**
+- Created `composer_aliases` table (Migration 22) linking alternative spellings to canonical composers
+- Implemented `ComposerAliasRepository` with query logic for alias resolution
+- Added transliteration-aware normalisation in `NameNormalizationService` with aspirate collapse rules
+
+### 11.3 Transliteration-Aware Normalisation
+
+**Implementation Date:** February 2026 (TRACK-061)
+
+**The Problem:**
+IAST `ṣ` normalised to `s` after NFD decomposition, but Harvard-Kyoto `sh` stayed as `sh`. These forms never matched despite referring to the same composition.
+
+**The Solution:**
+A post-NFD transliteration collapse table applied to all normalised matching keys:
+
+| Input | Output | Example |
+|-------|--------|---------|
+| `ksh` | `ks` | raksha → raksa |
+| `sh` | `s` | shankarabharanam → sankarabaranam |
+| `th` | `t` | dikshithar → diksitar |
+| `ch` | `c` | charanam → caranam |
+| `dh` | `d` | dhyana → dyana |
+| `bh` | `b` | bhairavi → bairavi |
+
+Rules are applied longest-first to prevent partial replacement and are used **only for matching keys**, not display titles.
+
+---
+
+## Part XII: PDF Extraction & Data Sourcing Pipeline
+
+### 12.1 Python PDF Extraction Service
+
+**Implementation Date:** February 2026 (TRACK-041, TRACK-053–055)
+
+**Architecture:**
+A new Python-based PDF extraction service was created to handle authoritative PDF sources (e.g., guruguha.org compendium with ~486 Dikshitar compositions). The service runs as a Docker container, communicating with the Kotlin backend via a database-backed extraction queue.
+
+**Components:**
+- **PdfExtractor**: Core extraction engine using PyMuPDF for text extraction
+- **PageSegmenter**: Identifies metadata lines, section headers, and lyric content
+- **MetadataParser**: Extracts Raga, Tala, and Composer from body text
+- **StructureParser**: Detects Pallavi, Anupallavi, Charanam, and other section types
+- **Worker**: Polls `extraction_queue`, processes PDFs, writes `CanonicalExtractionDto` results
+
+**Docker Infrastructure:**
+- Dockerfile with Tesseract + Indic language packs for OCR fallback
+- Docker Compose extension for local development
+- CLI commands: `sangita-cli extraction start|stop|status|logs|restart`
+
+### 12.2 Diacritic Normalisation (English PDFs)
+
+**Problem:** The guruguha.org English PDF used Utopia fonts that produced garbled diacritics when extracted (e.g., `r¯aga ˙m` instead of `rāgaṁ`). Result: 480 of 481 Krithis had "Unknown" for Raga and Tala.
+
+**Solution (TRACK-054):**
+- Created `DiacriticNormalizer` utility with 31 unit tests
+- Mapped garbled sequences to Unicode: `¯a→ā`, `˙m→ṁ`, `.n→ṇ`, `.t→ṭ`
+- Added garbled-form regex patterns to MetadataParser and StructureParser
+- **Result**: ≤5 Krithis with Unknown raga (down from 480); ≥430 Krithis with 3+ sections (up from 0)
+
+### 12.3 Velthuis Sanskrit Font Decoder
+
+**Problem:** Sanskrit PDFs used Velthuis-dvng Type 1 fonts with no `/ToUnicode` CMap. Standard PDF extraction returned garbage characters.
+
+**Solution (TRACK-055):**
+- Created `VelthuisDecoder` that parses the Type 1 font program to extract the encoding vector
+- Built a 155-entry byte→Unicode glyph mapping table
+- Implemented left-side mātrā reordering and vowel merging for correct Devanagari rendering
+- Auto-detection: PdfExtractor identifies Velthuis-dvng fonts and applies decoder per span
+- Output includes IAST `alternateTitle` for cross-language matching
+- **23 unit tests**, 67 total tests passing
+
+### 12.4 Language Variant Pipeline
+
+**Implementation Date:** February 2026 (TRACK-056–058)
+
+**Purpose:** Enable a second PDF (e.g., Sanskrit) to be submitted as a **language variant** of an existing extraction (e.g., English), automatically matching compositions across languages.
+
+**Architecture:**
+- Database migration adds `content_language`, `extraction_intent` (NEW/ENRICH), `related_extraction_id` to `extraction_queue`
+- `VariantMatchingService`: Multi-signal matching (title, IAST alternate title, section structure, section count)
+- **Confidence thresholds**: HIGH (≥0.85) auto-approved; MEDIUM/LOW queued for review
+- **Anomaly detection**: Compositions in variant PDF but not in related extraction flagged as ANOMALY
+- **Structure mismatch**: Different section counts/types flagged (e.g., 3 vs 4 sections) with section-type alignment
+- Approved matches create `krithi_lyric_variants` and `krithi_lyric_sections` with source evidence
+
+### 12.5 Source Authority & Evidence Tracking
+
+**Implementation Date:** February 2026 (TRACK-041)
+
+**Source Authority Tiers:**
+
+| Tier | Description | Example |
+|------|-------------|---------|
+| T1 | Composer's own manuscripts or direct disciples | Historical manuscripts |
+| T2 | Authoritative published compendiums | guruguha.org PDFs |
+| T3 | Curated reference websites | karnatik.com |
+| T4 | Community-maintained resources | Blogspot collections |
+| T5 | User-contributed content | Manual entries |
+
+**Evidence Chain:**
+- Every Krithi linked to its sources via `krithi_source_evidence`
+- Each evidence record tracks: source URL, format, extraction method, contributed fields, and confidence score
+- `structural_vote_log` enables multi-source consensus on field values
+- `CanonicalExtractionDto`: Universal contract between all source adapters and the resolution pipeline
+
+### 12.6 Bulk Import Idempotency
+
+**Implementation Date:** February 2026 (TRACK-062)
+
+**Problem:** Bulk import retries created duplicate Krithis (32 duplicates from blogspot import), duplicate sections (9 sections instead of 3), and no source evidence records.
+
+**Solution:**
+- Deduplication check via `findDuplicateCandidates(titleNormalized)` before Krithi creation
+- Section creation idempotency (skip if `(krithi_id, section_type, order_index)` exists)
+- Lyric variant dedup guard on `(krithi_id, language, script, source_reference)`
+- Source evidence records written during import task completion
+- `idempotency_key` enforcement via `ON CONFLICT DO NOTHING` on `import_task_run`
+- **Migration-based integration test infrastructure**: Replaced SchemaUtils with `MigrationRunner` that applies real SQL migration files, ensuring test schema matches production
+
+---
+
+## Part XIII: Sourcing & Quality UI
+
+### 13.1 Design System Components
+
+**Implementation Date:** February 2026 (TRACK-044)
+
+**12 shared components** purpose-built for the sourcing module:
+
+| Component | Purpose |
+|-----------|---------|
+| TierBadge | Colour-coded authority tier (T1=gold through T5=grey) |
+| FormatPill | Document format badges (PDF, HTML, DOCX, API, MANUAL) |
+| ConfidenceBar | Gradient-filled 0–1 bar (red→amber→green) |
+| StructureVisualiser | Coloured block diagram of Krithi sections (P=blue, A=green, C=amber) |
+| FieldComparisonTable | Multi-source diff with colour-coded agreement/conflict cells |
+| TimelineCard | Vertical state transition timeline |
+| MetricCard | Summary card with trends and sparklines |
+| HeatmapGrid | Composer × Field coverage matrix |
+| ProgressBarRow | Phase tracking with target/actual/percentage |
+| JsonViewer | Collapsible syntax-highlighted JSON |
+| StatusChip | Extended with extraction-specific states and pulse animation |
+| SourcingErrorBoundary | Module-level error boundary with retry |
+
+### 13.2 Nine Sourcing Screens
+
+**Screens delivered (TRACK-046–052):**
+
+1. **Sourcing Dashboard** — Top-level metrics, phase progress, gap analysis
+2. **Source Registry** — CRUD for import sources with authority tier management
+3. **Extraction Monitor** — Real-time job tracking with status transitions
+4. **Source Evidence Browser** — Provenance explorer linking Krithis to sources
+5. **Structural Voting** — Multi-source consensus review and manual override
+6. **Quality Dashboard** — Coverage heatmaps, confidence distributions, gap identification
+7. **Variant Match Review** — Cross-language match approval/rejection
+8. **Extraction Detail** — Per-extraction result viewer with JSON payload
+9. **Krithi Evidence Integration** — Sourcing data embedded in the existing Krithi Editor
+
+**Technical Foundation:**
+- Route prefix `/admin/sourcing` with lazy-loaded route splitting
+- `SourcingLayout` wrapper with sub-navigation tabs and breadcrumbs
+- TypeScript interfaces for all 20+ sourcing domain models
+- TanStack Query hooks with query key factory for all CRUD operations
+- `sourcingApi.ts` typed API client module
+
+---
+
+## Part XIV: Scalability & Future-Proofing
 
 ### 11.1 Architecture Evaluation
 
@@ -707,7 +951,7 @@ Production-ready for small to medium scale (thousands of concurrent users).
 
 ---
 
-## Part XII: Engineering Best Practices Established
+## Part XV: Engineering Best Practices Established
 
 ### 12.1 Code Patterns
 
@@ -750,19 +994,22 @@ Production-ready for small to medium scale (thousands of concurrent users).
 - No hardcoded versions in `build.gradle.kts`
 - Consistent versions across all modules
 
-**Key Versions:**
+**Key Versions (as of February 2026):**
 - Kotlin: 2.3.0
 - Ktor: 3.4.0
 - Exposed: 1.0.0
 - React: 19.2.0
 - TypeScript: 5.8.3
+- Vite: 7.1.7
+- Playwright: (E2E testing)
+- Python: 3.12+ (PDF extraction)
 - PostgreSQL: 15+ (dev pinned via Docker Compose)
 
 ---
 
-## Part XIII: Metrics & Achievements Summary
+## Part XVI: Metrics & Achievements Summary
 
-### 13.1 Performance Metrics
+### 16.1 Performance Metrics
 
 | Metric | Before | After | Improvement |
 |--------|--------|-------|-------------|
@@ -772,7 +1019,7 @@ Production-ready for small to medium scale (thousands of concurrent users).
 | Onboarding time | 2.5-4.5 hours | < 30 minutes | 90% reduction |
 | Hook execution time | N/A | < 500ms | Fast validation |
 
-### 13.2 Quality Metrics
+### 16.2 Quality Metrics
 
 | Metric | Target | Achieved |
 |--------|--------|----------|
@@ -782,7 +1029,7 @@ Production-ready for small to medium scale (thousands of concurrent users).
 | Environment consistency | 100% | ✅ 100% |
 | Setup success rate | > 95% | ✅ > 95% |
 
-### 13.3 Code Quality Metrics
+### 16.3 Code Quality Metrics
 
 | Metric | Status |
 |--------|--------|
@@ -792,17 +1039,17 @@ Production-ready for small to medium scale (thousands of concurrent users).
 | Smart diffing implementation | ✅ All collections |
 | Audit logging coverage | ✅ 100% mutations |
 
-### 13.4 Schema Evolution
+### 16.4 Schema Evolution
 
 | Metric | Count |
 |--------|-------|
-| Database migrations | 9 |
-| Core entities | 20+ |
-| Enum types | 6 |
-| Indexes | 15+ |
-| Foreign key constraints | 25+ |
+| Database migrations | 30 |
+| Core entities | 30+ |
+| Enum types | 10+ |
+| Indexes | 25+ |
+| Foreign key constraints | 40+ |
 
-### 13.5 Architecture Decisions
+### 16.5 Architecture Decisions
 
 | ADR | Title | Status | Date |
 |-----|-------|--------|------|
@@ -815,9 +1062,9 @@ Production-ready for small to medium scale (thousands of concurrent users).
 
 ---
 
-## Part XIV: Lessons Learned & Engineering Insights
+## Part XVII: Lessons Learned & Engineering Insights
 
-### 14.1 Performance Optimization
+### 17.1 Performance Optimization
 
 **Key Insight:**
 Modern ORM features (like Exposed's `resultedValues` and `updateReturning`) can provide significant performance improvements with minimal code changes. The upgrade to Exposed RC-4 was a high-leverage decision.
@@ -825,7 +1072,7 @@ Modern ORM features (like Exposed's `resultedValues` and `updateReturning`) can 
 **Takeaway:**
 Always evaluate framework capabilities before implementing workarounds. The `RETURNING` clause support in PostgreSQL + Exposed eliminated entire classes of performance issues.
 
-### 14.2 Developer Experience
+### 17.2 Developer Experience
 
 **Key Insight:**
 Investing in developer tooling (mise, bootstrap scripts, commit hooks) pays dividends in team velocity and reduced support burden.
@@ -833,7 +1080,7 @@ Investing in developer tooling (mise, bootstrap scripts, commit hooks) pays divi
 **Takeaway:**
 "One command to rule them all" philosophy dramatically improves onboarding and reduces environment-related issues. The upfront investment in tooling standardization prevents ongoing friction.
 
-### 14.3 Code Quality
+### 17.3 Code Quality
 
 **Key Insight:**
 Enforcing documentation references in commits creates a virtuous cycle: better documentation → better code → better traceability.
@@ -841,7 +1088,7 @@ Enforcing documentation references in commits creates a virtuous cycle: better d
 **Takeaway:**
 Automated guardrails (Git hooks) are more effective than manual processes. Fast validation (< 500ms) ensures developer adoption.
 
-### 14.4 Architecture Decisions
+### 17.4 Architecture Decisions
 
 **Key Insight:**
 Choosing custom tooling (Rust migration tool) over industry standards (Flyway) can be justified when it provides better integration and developer experience.
@@ -849,7 +1096,7 @@ Choosing custom tooling (Rust migration tool) over industry standards (Flyway) c
 **Takeaway:**
 Evaluate trade-offs carefully. Custom tooling requires more maintenance but can provide better DX and tighter integration with the rest of the toolchain.
 
-### 14.5 Musicological Modeling
+### 17.5 Musicological Modeling
 
 **Key Insight:**
 Respecting musical structure (Pallavi/Anupallavi/Charanams, notation variants, sampradaya) in the data model leads to cleaner, more maintainable code.
@@ -857,49 +1104,75 @@ Respecting musical structure (Pallavi/Anupallavi/Charanams, notation variants, s
 **Takeaway:**
 Domain-driven design principles apply to specialized domains like music. The investment in musicologically correct modeling pays off in query simplicity and data integrity.
 
+### 17.6 Deterministic vs LLM Extraction
+
+**Key Insight:**
+Structured, regex-friendly sources (like blogspot posts with consistent headers) should be parsed deterministically rather than delegated to LLMs. The evolution from `TextBlocker` to `KrithiStructureParser` demonstrated that investing in domain-specific regex patterns yields more reliable, faster, and cheaper results.
+
+**Takeaway:**
+Reserve LLMs for genuinely unstructured or high-variability content. For structured sources, deterministic parsing with well-tuned regex is superior in reliability, speed, and cost.
+
+### 17.7 Cross-Scheme Normalisation
+
+**Key Insight:**
+Indian classical music data arrives in multiple transliteration schemes (IAST, Harvard-Kyoto, ITRANS, simple ASCII). Without a normalisation layer that collapses scheme-specific variations, deduplication is impossible.
+
+**Takeaway:**
+Build normalisation as a core service, not an afterthought. The aspirate collapse table is simple (~10 rules) but eliminates an entire class of false negatives in entity matching.
+
 ---
 
-## Part XV: Current State & Future Roadmap
+## Part XVIII: Current State & Future Roadmap
 
-### 15.1 Current Capabilities
+### 18.1 Current Capabilities
 
 **Production-Ready Features:**
-- ✅ Complete database schema with 9 migrations
+- ✅ Complete database schema with 30 migrations
 - ✅ Optimized data access layer (40-50% query reduction)
 - ✅ Cross-platform development environment (95% setup time reduction)
 - ✅ Commit guardrails and workflow enforcement (100% documentation coverage)
-- ✅ Steel thread testing infrastructure
-- ✅ AI integration for content ingestion
-- ✅ Comprehensive documentation architecture
+- ✅ Steel thread and E2E testing infrastructure (Playwright)
+- ✅ AI integration for content ingestion (Gemini 2.0 Flash)
+- ✅ Comprehensive documentation architecture with guardian audits
+- ✅ JWT-based authentication with role-based access control
+- ✅ Deterministic scraping pipeline (KrithiStructureParser)
+- ✅ PDF extraction service (English diacritics + Sanskrit Velthuis decoding)
+- ✅ Source authority tiers and evidence tracking
+- ✅ Language variant matching with confidence scoring
+- ✅ 9-screen Sourcing & Quality admin UI
+- ✅ Bulk import with idempotency guards
+- ✅ Transliteration-aware entity normalisation
+- ✅ Composer deduplication via alias tables
 
 **In Progress:**
-- 🔄 API coverage improvements (lyric variant endpoints)
-- 🔄 Path standardization (all admin routes to `/v1/admin/`)
-- 🔄 RBAC implementation (fine-grained access control)
-- 🔄 Frontend CRUD operations completion
+- 🔄 Krithi creation from extraction results (TRACK-053)
+- 🔄 Data quality remediation and deduplication (TRACK-040)
+- 🔄 Full re-extraction E2E validation (TRACK-063)
+- 🔄 Frontend E2E test expansion (TRACK-035)
 
-### 15.2 Planned Enhancements
+### 18.2 Planned Enhancements
 
 **High Priority:**
-- API coverage gaps (lyric variant endpoints)
-- Path standardization (all admin routes to `/v1/admin/`)
-- RBAC implementation (fine-grained access control)
-- User management routes
+- End-to-end extraction pipeline validation (Kotlin → extraction_queue → Python → results → INGESTED)
+- Data quality remediation (duplicate cleanup, orphaned section removal)
+- Krithi creation from unmatched extraction results
+- Frontend E2E test coverage expansion
 
 **Medium Priority:**
-- Frontend pagination implementation
-- Server-side filtering (move from client-side)
-- Validation endpoint implementation
+- Caching layer (Redis/Memorystore)
+- Rate limiting on public endpoints
+- Server-side filtering and pagination improvements
+- Mobile app Krithi browsing screens
 
 **Future Considerations:**
-- Caching layer (Redis/Memorystore)
 - CDN integration for static assets
-- Rate limiting on public endpoints
 - Read replicas for database scaling
 - Dedicated search service (Elasticsearch/OpenSearch)
 - Geographic distribution for global scale
+- Additional PDF source integrations
+- Automated quality scoring with confidence thresholds
 
-### 15.3 Scaling Roadmap
+### 18.3 Scaling Roadmap
 
 **Phase 1 (Current):**
 - Monolithic Ktor + Single PostgreSQL
@@ -929,11 +1202,13 @@ Domain-driven design principles apply to specialized domains like music. The inv
 
 Sangeetha Grantha represents a systematic journey from vision to production-ready platform, combining **musicological rigor** with **best-in-class software engineering**. The evolution demonstrates:
 
-1. **Thoughtful Architecture**: Every decision documented and justified
+1. **Thoughtful Architecture**: Every decision documented and justified across 6+ ADRs
 2. **Performance Excellence**: 40-50% query reduction through modern patterns
-3. **Developer Experience**: 95% reduction in setup time via standardization
+3. **Developer Experience**: 95% reduction in setup time via standardisation
 4. **Code Quality**: 100% documentation coverage with automated enforcement
-5. **Scalability Planning**: Clear roadmap from boutique to global scale
+5. **Data Quality**: Deterministic parsing, multi-source voting, and transliteration-aware normalisation
+6. **Scalability Planning**: Clear roadmap from boutique to global scale
+7. **Production-Grade Ingestion**: PDF extraction decoding garbled fonts, language variant matching, and source provenance tracking
 
 The project stands as a testament to **domain-driven design**, **systematic optimization**, and **engineering excellence**. It respects both **musical tradition** and **modern software practices**, creating a platform that is both **musicologically correct** and **technically sound**.
 
@@ -944,13 +1219,15 @@ The project stands as a testament to **domain-driven design**, **systematic opti
 - Developer experience as priority
 - Security and audit by default
 - Scalability from the start
+- Deterministic-first extraction (LLM as enrichment, not parser)
+- Source provenance and authority tracking
 
 **Next Steps:**
-- Continue API coverage improvements
-- Implement RBAC system
+- Complete Krithi creation from extraction results
+- Run full re-extraction E2E validation
+- Expand frontend E2E test coverage
 - Begin scaling infrastructure planning
-- Expand integration testing coverage
-- Complete frontend CRUD operations
+- Launch data quality remediation campaign
 
 ---
 
@@ -969,6 +1246,13 @@ The project stands as a testament to **domain-driven design**, **systematic opti
 - Commit Guardrails and Workflow Enforcement System
 - Exposed RC-4 Features Testing
 - API Coverage Implementation Plan
+- KrithiStructureParser Deterministic Extraction (TRACK-036)
+- Source Authority & Evidence Tracking (TRACK-041)
+- PDF Extraction Diacritic Normalisation (TRACK-054)
+- Velthuis Sanskrit Font Decoder (TRACK-055)
+- Language Variant Matching & Enrichment API (TRACK-056)
+- Transliteration-Aware Name Normalisation (TRACK-061)
+- Bulk Import Idempotency & Source Evidence (TRACK-062)
 
 ### Scaling & Architecture
 - Scaling Evaluation & Strategy
@@ -982,9 +1266,11 @@ The project stands as a testament to **domain-driven design**, **systematic opti
 - Database Schema Overview
 - API Contract
 - Tech Stack Documentation
+- Krithi Data Sourcing & Quality Strategy
+- PDF Diacritic Extraction Analysis
 
 ---
 
 **Document Status**: Current  
-**Last Updated**: 2026-01-16  
-**Next Review**: 2026-04-16 (quarterly review)
+**Last Updated**: 2026-02-11  
+**Next Review**: 2026-05-11 (quarterly review)

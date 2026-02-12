@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-02-09 |
 | **Author** | Sangita Grantha Architect |
 
 # TRACK-040: Krithi Data Remediation & Deduplication
@@ -16,9 +16,11 @@ Systematically clean up the `krithis` database by merging redundant lyric varian
 - **Strategy**: [Krithi Data Sourcing & Quality Strategy](../application_documentation/01-requirements/krithi-data-sourcing/quality-strategy.md) — Section 6.4
 
 ## 3. Implementation Plan
-- [ ] Develop `DeduplicationService` to identify near-identical lyric variants.
-- [ ] Create `MetadataCleanupTask` to strip boilerplate from `krithi_lyric_sections`.
-- [ ] Implement `StructuralNormalizationLogic` to align variants to a canonical template.
+- [x] Develop `RemediationService` orchestrator with variant-level deduplication (Levenshtein >90% similarity).
+- [x] Create `MetadataCleanupService` to strip boilerplate from `krithi_lyric_sections` (URLs, source attributions, copyright, page numbers, meaning markers, BOM, excessive whitespace).
+- [x] Implement `StructuralNormalizationService` to analyze variant alignment to canonical template (gap detection, extra section detection).
+- [x] Create REST API routes: preview (`GET /v1/admin/quality/remediation/preview`), execute (`POST /v1/admin/quality/remediation/execute`), plus individual preview endpoints for cleanup, dedup, and normalization.
+- [x] Wire all services into DI (`AppModule.kt`) and routing (`Routing.kt`).
 - [ ] Run remediation on `Dikshitar` compositions (High Priority).
 - [ ] Run remediation on `Tyagaraja` compositions.
 - [ ] Re-run `QualityScoringService` on all remediated Krithis.
@@ -39,6 +41,10 @@ Systematically clean up the `krithis` database by merging redundant lyric varian
 | Remediation plan | `application_documentation/07-quality/remediation-implementation-plan-2026-02.md` | Detailed checklist with cleanup + hardening tasks |
 | Source evidence table | `database/migrations/24__krithi_source_evidence.sql` | Per-source tracking for remediation comparison |
 | Sourcing strategy report | `application_documentation/07-quality/reports/sourcing-strategy-2026.md` | Progress tracking for remediation prerequisites |
+| MetadataCleanupService | `modules/backend/api/.../services/MetadataCleanupService.kt` | Boilerplate detection and removal from lyric sections |
+| StructuralNormalizationService | `modules/backend/api/.../services/StructuralNormalizationService.kt` | Variant-to-canonical alignment analysis |
+| RemediationService | `modules/backend/api/.../services/RemediationService.kt` | Orchestrator: cleanup + normalization + deduplication |
+| Remediation API routes | `modules/backend/api/.../routes/RemediationRoutes.kt` | REST API for preview and execution |
 
 ## 6. Progress Log
 - **2026-02-07**: Track created following TRACK-039 audit conclusion.
@@ -49,3 +55,10 @@ Systematically clean up the `krithis` database by merging redundant lyric varian
   - Updated remediation checklist (`application_documentation/07-quality/remediation-implementation-plan-2026-02.md`) to reflect completed sourcing-logic hardening; cleanup services remain pending.
   - Remediation implementation deferred to Phase 4 (per strategy) — depends on TRACK-039 audit execution and TRACK-041 structural voting.
   - Updated all relevant documentation: schema.md (new tables §10.4), remediation plan, sourcing strategy report, and README files across application_documentation/.
+- **2026-02-09**: Implemented all three remediation services and API layer:
+  - **MetadataCleanupService**: Detects and strips 8 boilerplate pattern types (URLs, source attributions, copyright, page numbers, meaning markers, BOM, excessive whitespace, boilerplate headers). Supports preview mode and composer-filtered execution.
+  - **StructuralNormalizationService**: Analyzes variant alignment against canonical section structure. Reports gaps (missing sections) and extras per variant, with composer-level filtering.
+  - **RemediationService**: Orchestrates all three remediation phases — cleanup, normalization analysis, and variant deduplication. Deduplication uses Levenshtein distance (>90% threshold) on normalized lyric text to find near-identical variants in the same language, keeping the longer/more complete variant.
+  - **API routes**: Preview (`GET /v1/admin/quality/remediation/preview`), execute (`POST /v1/admin/quality/remediation/execute`), plus individual endpoints for cleanup-preview, dedup-preview, and normalization analysis.
+  - All services wired into DI and routing. Audit logging for all mutation operations.
+  - Remaining: Run remediation against production data for Dikshitar and Tyagaraja compositions.

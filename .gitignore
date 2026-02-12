@@ -61,3 +61,9 @@ tools/sangita-cli/Cargo.lock
 
 # Temporary binary documents
 *.docx
+**/**__pycache**/
+**/**__pytest_cache**/
+**/pdf-extractor/cache/**/
+**/**egg-info**/
+
+**/tools/pdf-extractor/cache/**

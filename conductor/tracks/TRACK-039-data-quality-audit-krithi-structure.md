@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-02-09 |
 | **Author** | Sangita Grantha Architect |
 
 # TRACK-039: Data Quality Audit – Krithi Structural Consistency
@@ -19,7 +19,9 @@ Identify and document structural inconsistencies in the Krithi database, specifi
 - [x] Write SQL audit query: section count mismatch across lyric variants per Krithi.
 - [x] Write SQL audit query: section label sequence mismatch across variants.
 - [x] Write SQL audit query: orphaned lyric blobs (lyric sections without parent section mapping).
-- [ ] Run all three audits against production database.
+- [x] Build `AuditRunnerService` to execute all three audits programmatically via API.
+- [x] Create API routes: `GET /v1/admin/quality/audit/full`, `section-count`, `label-sequence`, `orphaned-blobs`.
+- [ ] Run all three audits against production database (via API or CLI).
 - [ ] Analyze failure patterns (Source/Language).
 - [ ] Document in `application_documentation/07-quality/results/krithi-structural-audit-2026-02.md`.
 - [ ] Create quality baseline metrics snapshot.
@@ -31,6 +33,8 @@ Identify and document structural inconsistencies in the Krithi database, specifi
 | Section count mismatch audit | `database/audits/audit_section_count_mismatch.sql` | Detects Krithis where variant section counts differ from canonical sections |
 | Label sequence mismatch audit | `database/audits/audit_label_sequence_mismatch.sql` | Detects section label ordering differences across variants |
 | Orphaned lyric blobs audit | `database/audits/audit_orphaned_lyric_blobs.sql` | Finds lyric content without proper section mappings |
+| AuditRunnerService | `modules/backend/api/.../services/AuditRunnerService.kt` | Programmatic audit execution via API endpoints |
+| Audit API routes | `modules/backend/api/.../routes/RemediationRoutes.kt` | REST API for running audits (`/v1/admin/quality/audit/*`) |
 | Interim audit results | `application_documentation/07-quality/results/krithi-structural-audit-2026-02.md` | Case studies and sourcing hierarchy proposal |
 | Remediation plan | `application_documentation/07-quality/remediation-implementation-plan-2026-02.md` | Remediation checklist driven by audit findings |
 
@@ -45,3 +49,8 @@ Identify and document structural inconsistencies in the Krithi database, specifi
   - Documented interim findings in `application_documentation/07-quality/results/krithi-structural-audit-2026-02.md` with case studies (Section Count Drift, Metadata Pollution, Redundant Variants) and proposed sourcing hierarchy.
   - These audit queries serve as the automated quality gate for Phase 2 (Structural Validation) in the [Krithi Data Sourcing & Quality Strategy](../../application_documentation/01-requirements/krithi-data-sourcing/quality-strategy.md#63-track-039-integration-structural-auditing).
   - Updated documentation: schema.md, backend-system-design.md, 07-quality README, and root README with links to audit artifacts.
+- **2026-02-09**: Built programmatic audit runner for API-driven execution:
+  - Created `AuditRunnerService.kt` — Kotlin service that embeds all three SQL audit queries and returns structured results (typed DTOs with serialization).
+  - Added API routes in `RemediationRoutes.kt`: `GET /v1/admin/quality/audit/full` (runs all 3 audits), plus individual endpoints for `section-count`, `label-sequence`, and `orphaned-blobs`.
+  - Wired into DI (`AppModule.kt`) and routing (`Routing.kt`).
+  - All audit queries are now executable via the admin API without needing direct DB access. Remaining: run against production, analyze results, and document findings.
