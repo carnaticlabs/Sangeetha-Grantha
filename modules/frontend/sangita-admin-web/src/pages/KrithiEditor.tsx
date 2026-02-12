@@ -9,9 +9,11 @@ import {
     StructureTab,
     LyricsTab,
     TagsTab,
-    AuditTab
+    AuditTab,
+    SourceEvidenceTab
 } from '../components/krithi-editor';
 import NotationTab from '../components/notation/NotationTab'; // Existing component
+import LyricVariantTabs from '../components/krithi-editor/LyricVariantTabs';
 import { formatLanguageCode, getWorkflowStateColor, formatWorkflowState } from '../utils/enums';
 import { MusicalForm, KrithiDetail } from '../types';
 
@@ -203,12 +205,16 @@ const KrithiEditor: React.FC = () => {
                 {/* Tabs */}
                 <div className="border-b border-border-light mb-8">
                     <nav className="flex gap-8 overflow-x-auto">
-                        {(['Metadata', 'Structure', 'Lyrics', 'Notation', 'Tags', 'Audit'] as const).map((tab) => {
+                        {(['Metadata', 'Structure', 'Lyrics', 'Notation', 'Tags', 'Audit', 'Source Evidence', 'Lyric Variants'] as const).map((tab) => {
                             // Hide Notation for unsupported types
                             if (tab === 'Notation' &&
                                 state.krithi.musicalForm !== MusicalForm.VARNAM &&
                                 state.krithi.musicalForm !== MusicalForm.SWARAJATHI &&
                                 state.krithi.musicalForm !== MusicalForm.KRITHI) {
+                                return null;
+                            }
+                            // Hide Source Evidence and Lyric Variants for new compositions
+                            if ((tab === 'Source Evidence' || tab === 'Lyric Variants') && isNew) {
                                 return null;
                             }
 
@@ -269,6 +275,23 @@ const KrithiEditor: React.FC = () => {
                         <NotationTab
                             krithiId={state.krithi.id}
                             musicalForm={state.krithi.musicalForm}
+                        />
+                    )}
+                    {state.activeTab === 'Source Evidence' && state.krithi.id && (
+                        <SourceEvidenceTab
+                            krithiId={state.krithi.id}
+                            krithiTitle={state.krithi.title}
+                        />
+                    )}
+                    {state.activeTab === 'Lyric Variants' && state.krithi.id && (
+                        <LyricVariantTabs
+                            variants={(state.krithi.lyricVariants || []).map((v, i) => ({
+                                id: v.id || `lv-${i}`,
+                                language: v.language || 'en',
+                                script: v.script || 'latin',
+                                content: v.sections?.map(s => s.text).join('\n\n') || '',
+                                sourceLabel: v.sampradaya?.name || null,
+                            }))}
                         />
                     )}
                 </div>

@@ -10,6 +10,7 @@ import com.sangita.grantha.backend.dal.enums.LanguageCode
 import com.sangita.grantha.backend.dal.enums.MusicalForm
 import com.sangita.grantha.backend.dal.enums.WorkflowState
 import com.sangita.grantha.backend.dal.support.toJavaUuid
+import com.sangita.grantha.backend.dal.support.toKotlinUuid
 import com.sangita.grantha.shared.domain.model.ImportedKrithiDto
 import com.sangita.grantha.shared.domain.model.RagaSectionDto
 import com.sangita.grantha.backend.dal.enums.ScriptCode
@@ -81,6 +82,7 @@ class ImportServiceImpl(
     private val dal: SangitaDal,
     private val environment: ApiEnvironment,
     private val entityResolver: IEntityResolver,
+    private val normalizer: NameNormalizationService,
     private val autoApprovalServiceProvider: () -> AutoApprovalService
 ) : ImportReviewer, IImportService {
     private val structuralVotingEngine = StructuralVotingEngine()
@@ -91,11 +93,12 @@ class ImportServiceImpl(
         "general" to listOf("karnatik.com", "shivkumar.org")
     )
     
+    /**
+     * TRACK-062: Delegate to NameNormalizationService for transliteration-aware normalisation.
+     * Used for title dedup and temple name matching.
+     */
     private fun normalize(value: String): String =
-        value.trim()
-            .lowercase()
-            .replace(Regex("\\s+"), " ")
-            .replace(Regex("[^a-z0-9\\s]"), "")
+        normalizer.normalizeTitle(value) ?: value.trim().lowercase()
     override suspend fun getImports(status: ImportStatus?, batchId: Uuid?): List<ImportedKrithiDto> {
         return if (batchId != null) {
             dal.imports.listByBatch(batchId, status)
@@ -196,7 +199,8 @@ class ImportServiceImpl(
                 // Find or create composer
                 val composerId = if (effectiveComposer != null) {
                     dal.composers.findOrCreate(
-                        name = effectiveComposer
+                        name = effectiveComposer,
+                        nameNormalized = effectiveComposer.let { normalizer.normalizeComposer(it) }
                     ).id.toJavaUuid()
                 } else {
                     throw IllegalArgumentException("Composer is required to create krithi from import")
@@ -205,14 +209,16 @@ class ImportServiceImpl(
                 // Find or create raga (if provided)
                 val ragaId = effectiveRaga?.let { ragaName ->
                     dal.ragas.findOrCreate(
-                        name = ragaName
+                        name = ragaName,
+                        nameNormalized = ragaName.let { normalizer.normalizeRaga(it) }
                     ).id.toJavaUuid()
                 }
                 
                 // Find or create tala (if provided)
                 val talaId = effectiveTala?.let { talaName ->
                     dal.talas.findOrCreate(
-                        name = talaName
+                        name = talaName,
+                        nameNormalized = talaName.let { normalizer.normalizeTala(it) }
                     ).id.toJavaUuid()
                 }
 
@@ -224,9 +230,6 @@ class ImportServiceImpl(
                 var templeId: UUID? = null
                 
                 // 0. Manual Override or Raw Data (Highest Priority if manually set/confirmed)
-                // Note: Currently we don't have a way to distinguish "user confirmed raw" vs "raw". 
-                // But we can check if explicit override was sent.
-                // For now, if override is present, we try to find/create based on that name.
                 if (overrides?.deity != null && overrides.deity.isNotBlank()) {
                      val dName = overrides.deity
                      deityId = dal.deities.findByName(dName)?.id?.toJavaUuid() 
@@ -263,15 +266,9 @@ class ImportServiceImpl(
                         if (!metadata.templeUrl.isNullOrBlank()) {
                             cachedDetails = dal.templeSourceCache.findByUrl(metadata.templeUrl)
                             if (cachedDetails != null) {
-                                // Implicit "HIGH" confidence if scraping succeeded, as we don't store numeric confidence for the scrape itself yet.
-                                // But we can assume if Geocoding succeeded reasonably, it's safer.
-                                // For now, we allow auto-creation if we have a cache hit, enforcing the environment threshold mostly on resolution logic if we had it,
-                                // but here we trust the scraped source if configured to do so.
-                                // Actually, environment.templeAutoCreateConfidence is a Double. Let's assume cache existence = 1.0 confidence for now if error is null.
                                 canAutoCreate = cachedDetails.error == null && environment.templeAutoCreateConfidence <= 1.0
                             }
                         } else if (metadata.templeDetails != null) {
-                             // Direct scraped details without external URL (less likely with new logic but possible)
                              canAutoCreate = true 
                         }
 
@@ -318,231 +315,141 @@ class ImportServiceImpl(
                     }
                 }
                 
-                // Determine language code (default to TE if not provided)
-                val languageCode = when (effectiveLanguage?.lowercase()) {
-                    "sanskrit", "sa" -> LanguageCode.SA
-                    "tamil", "ta" -> LanguageCode.TA
-                    "telugu", "te" -> LanguageCode.TE
-                    "kannada", "kn" -> LanguageCode.KN
-                    "malayalam", "ml" -> LanguageCode.ML
-                    "hindi", "hi" -> LanguageCode.HI
-                    "english", "en" -> LanguageCode.EN
-                    else -> LanguageCode.TE // Default
+                // TRACK-062: Deduplication Check
+                // Before creating, check if a krithi with same title, composer, and raga exists.
+                // Search WITHOUT composer filter first (cross-composer dedup), then WITH.
+                val normalizedTitle = normalize(effectiveTitle)
+
+                val allCandidates = dal.krithis.findDuplicateCandidates(
+                    titleNormalized = normalizedTitle
+                )
+                val composerCandidates = dal.krithis.findDuplicateCandidates(
+                    titleNormalized = normalizedTitle,
+                    composerId = composerId,
+                    ragaId = ragaId
+                )
+
+                val candidates = (composerCandidates + allCandidates).distinctBy { it.id }
+
+                val existingKrithi = candidates
+                    .map { candidate ->
+                        val titleScore = NameNormalizationService.ratio(normalizedTitle, candidate.titleNormalized)
+                        val compressedScore = NameNormalizationService.ratio(
+                            normalizedTitle.replace(" ", ""),
+                            candidate.titleNormalized.replace(" ", "")
+                        )
+                        val bestScore = maxOf(titleScore, compressedScore)
+                        val composerMatch = candidate.composerId.toJavaUuid() == composerId
+                        candidate to (bestScore to composerMatch)
+                    }
+                    .filter { (_, scores) ->
+                        val (score, composerMatch) = scores
+                        if (composerMatch) score > 75 else score > 90
+                    }
+                    .maxByOrNull { it.second.first }
+                    ?.first
+                
+                if (existingKrithi != null) {
+                    // Match found! Use existing ID and skip creation
+                    createdKrithiId = existingKrithi.id.toJavaUuid()
+                    
+                    // TRACK-062: Persist lyrics from this import as a new variant for the existing Krithi
+                    persistLyricVariants(existingKrithi.id, importData, request.overrides)
+
+                    dal.auditLogs.append(
+                        action = "LINK_IMPORT_TO_EXISTING_KRITHI",
+                        entityTable = "krithis",
+                        entityId = existingKrithi.id,
+                        metadata = """{"matchedImportId":"$id","existingKrithiId":"${existingKrithi.id}"}"""
+                    )
+                } else {
+                    // Start creation flow
+                    
+                    // Determine language code (default to TE if not provided)
+                    val languageCode = when (effectiveLanguage?.lowercase()) {
+                        "sanskrit", "sa" -> LanguageCode.SA
+                        "tamil", "ta" -> LanguageCode.TA
+                        "telugu", "te" -> LanguageCode.TE
+                        "kannada", "kn" -> LanguageCode.KN
+                        "malayalam", "ml" -> LanguageCode.ML
+                        "hindi", "hi" -> LanguageCode.HI
+                        "english", "en" -> LanguageCode.EN
+                        else -> LanguageCode.TE // Default
+                    }
+                    
+                    // Create the krithi
+                    val createdKrithi = dal.krithis.create(
+                        KrithiCreateParams(
+                            title = effectiveTitle,
+                            titleNormalized = normalizedTitle,
+                            incipit = null,
+                            incipitNormalized = null,
+                            composerId = composerId,
+                            musicalForm = MusicalForm.KRITHI,
+                            primaryLanguage = languageCode,
+                            primaryRagaId = ragaId,
+                            talaId = talaId,
+                            deityId = deityId,
+                            templeId = templeId,
+                            isRagamalika = false,
+                            ragaIds = if (ragaId != null) listOf(ragaId) else emptyList(),
+                            workflowState = WorkflowState.DRAFT,
+                            sahityaSummary = effectiveLyrics?.take(500), // First 500 chars as summary
+                            notes = "Created from import: ${sourceKey ?: "unknown"}"
+                        )
+                    )
+                    
+                    createdKrithiId = createdKrithi.id.toJavaUuid()
+                    
+                    dal.auditLogs.append(
+                        action = "CREATE_KRITHI_FROM_IMPORT",
+                        entityTable = "krithis",
+                        entityId = createdKrithi.id
+                    )
+    
+                    // Process sections and lyrics
+                    persistLyricVariants(createdKrithi.id, importData, request.overrides)
                 }
                 
-                // Create the krithi
-                val createdKrithi = dal.krithis.create(
-                    KrithiCreateParams(
-                        title = effectiveTitle,
-                        titleNormalized = normalize(effectiveTitle),
-                        incipit = null,
-                        incipitNormalized = null,
-                        composerId = composerId,
-                        musicalForm = MusicalForm.KRITHI,
-                        primaryLanguage = languageCode,
-                        primaryRagaId = ragaId,
-                        talaId = talaId,
-                        deityId = deityId,
-                        templeId = templeId,
-                        isRagamalika = false,
-                        ragaIds = if (ragaId != null) listOf(ragaId) else emptyList(),
-                        workflowState = WorkflowState.DRAFT,
-                        sahityaSummary = effectiveLyrics?.take(500), // First 500 chars as summary
-                        notes = "Created from import: ${sourceKey ?: "unknown"}"
-                    )
-                )
-                
-                createdKrithiId = createdKrithi.id.toJavaUuid()
-                
-                dal.auditLogs.append(
-                    action = "CREATE_KRITHI_FROM_IMPORT",
-                    entityTable = "krithis",
-                    entityId = createdKrithi.id
-                )
-
-                // Process sections and lyrics
-                // If overrides.lyrics is present, we use it as the primary lyric variant content (unstructured)
-                // If overrides.lyrics is NOT present, we try to use the structured metadata from scrape
-                
-                if (overrides?.lyrics != null) {
-                     dal.krithis.createLyricVariant(
-                        krithiId = createdKrithi.id,
-                        language = LanguageCode.valueOf(createdKrithi.primaryLanguage.name),
-                        script = ScriptCode.LATIN,
-                        lyrics = overrides.lyrics,
-                        isPrimary = true,
-                        sourceReference = sourceKey
-                    )
-                } else if (importData.parsedPayload != null) {
+                // TRACK-062: Create Source Evidence
+                // Whether we created a new Krithi or matched an existing one, we should record the evidence.
+                if (createdKrithiId != null) {
                     try {
-                        val metadata = Json.decodeFromString<ScrapedKrithiMetadata>(importData.parsedPayload!!)
-
-                        // TRACK-032: Multi-language lyric variants from scrape
-                        if (!metadata.lyricVariants.isNullOrEmpty()) {
-                            val variants = metadata.lyricVariants.toMutableList()
-                            
-                            // 1. Recover missing sections for each variant using KrithiStructureParser
-                            variants.forEachIndexed { idx, v ->
-                                if (v.sections.isNullOrEmpty() && !v.lyrics.isNullOrBlank()) {
-                                    val recovered = KrithiStructureParser().buildBlocks(v.lyrics.replace("\\n", "\n")).blocks
-                                        .mapNotNull { block: KrithiStructureParser.TextBlock ->
-                                            val type = parseRagaSectionDto(block.label)
-                                            if (type != null && type != RagaSectionDto.OTHER) {
-                                                ScrapedSectionDto(type = type, text = block.lines.joinToString("\n"))
-                                            } else null
-                                        }
-                                    if (recovered.isNotEmpty()) {
-                                        variants[idx] = v.copy(sections = recovered)
-                                    }
-                                }
+                        val krithiId = createdKrithiId.toKotlinUuid()
+                        val sourceUrl = sourceKey ?: "manual-import"
+                        
+                        // Heuristic to determine source name from URL
+                        val sourceName = try {
+                            if (sourceUrl.startsWith("http")) {
+                                URI(sourceUrl).host?.lowercase() ?: "unknown-source"
+                            } else {
+                                "manual"
                             }
-
-                            // 2. Determine canonical section structure
-                            // Deduplicate metadata.sections if they are concatenated language blocks
-                            val rawSections = metadata.sections ?: emptyList()
-                            val deduplicated = mutableListOf<ScrapedSectionDto>()
-                            val seenTypes = mutableListOf<String>()
-                            
-                            // Heuristic: If we see a PALLAVI again after a CHARANAM, it's likely a new language block.
-                            // We only take the first complete block.
-                            var stopDedupe = false
-                            for (s in rawSections) {
-                                if (s.type == RagaSectionDto.PALLAVI && seenTypes.contains("CHARANAM")) {
-                                    stopDedupe = true
-                                }
-                                if (stopDedupe) break
-                                deduplicated.add(s)
-                                seenTypes.add(s.type.name)
-                            }
-
-                            val authoritySource = isAuthoritySourceForComposer(sourceKey, effectiveComposer)
-                            val candidates = mutableListOf<StructuralVotingEngine.SectionCandidate>()
-                            variants.forEach { variant ->
-                                val sections = variant.sections
-                                if (!sections.isNullOrEmpty()) {
-                                    candidates.add(
-                                        StructuralVotingEngine.SectionCandidate(
-                                            sections = sections,
-                                            isAuthoritySource = authoritySource,
-                                            label = "variant:${variant.language}"
-                                        )
-                                    )
-                                }
-                            }
-                            if (deduplicated.isNotEmpty()) {
-                                candidates.add(
-                                    StructuralVotingEngine.SectionCandidate(
-                                        sections = deduplicated,
-                                        isAuthoritySource = authoritySource,
-                                        label = "metadata"
-                                    )
-                                )
-                            }
-
-                            val sectionStructure = structuralVotingEngine.pickBestStructure(candidates)
-
-                            if (sectionStructure.isNotEmpty()) {
-                                val sectionsToSave = sectionStructure.mapIndexed { index, section ->
-                                    Triple(section.type.name, index + 1, null as String?)
-                                }
-                                dal.krithis.saveSections(createdKrithi.id, sectionsToSave)
-                            }
-                            
-                            val savedSections = dal.krithis.getSections(createdKrithi.id)
-                            
-                            // 3. Save each variant and link to sections
-                            variants.forEachIndexed { index, scraped ->
-                                val lang = parseLanguageCode(scraped.language) ?: LanguageCode.valueOf(createdKrithi.primaryLanguage.name)
-                                val script = parseScriptCode(scraped.script) ?: ScriptCode.LATIN
-                                val lyricsText = (scraped.lyrics?.takeIf { it.isNotBlank() }
-                                    ?: scraped.sections?.joinToString("\n\n") { "[${it.type.name}]\n${it.text}" }.takeIf { it?.isNotBlank() == true }
-                                    ?: "").replace("\\n", "\n")
-                                
-                                val createdVariant = dal.krithis.createLyricVariant(
-                                    krithiId = createdKrithi.id,
-                                    language = lang,
-                                    script = script,
-                                    lyrics = lyricsText,
-                                    isPrimary = index == 0,
-                                    sourceReference = sourceKey
-                                )
-                                
-                                val variantSections = scraped.sections
-                                if (!variantSections.isNullOrEmpty() && savedSections.isNotEmpty()) {
-                                    val lyricSections = savedSections.mapNotNull { savedSection ->
-                                        // Find matching section by type and approximate index
-                                        // Use orderIndex to pick from variantSections
-                                        val match = variantSections.getOrNull(savedSection.orderIndex - 1)
-                                        if (match != null && match.text.isNotBlank()) {
-                                            savedSection.id.toJavaUuid() to match.text
-                                        } else null
-                                    }
-                                    if (lyricSections.isNotEmpty()) {
-                                        dal.krithis.saveLyricVariantSections(createdVariant.id, lyricSections)
-                                    }
-                                } else if (!scraped.lyrics.isNullOrBlank() && savedSections.isNotEmpty()) {
-                                    // FALLBACK: Stanza-based mapping if TextBlocker failed to find headers
-                                    val stanzas = scraped.lyrics.replace("\\n", "\n").split(Regex("\\n\\s*\\n")).filter { it.isNotBlank() }
-                                    val lyricSections = savedSections.mapIndexedNotNull { idx, savedSection ->
-                                        // Find a stanza that matches this section. 
-                                        // If no headers, we assume stanzas align with canonical sections.
-                                        val stanza = stanzas.getOrNull(idx)
-                                        if (stanza != null) {
-                                            savedSection.id.toJavaUuid() to stanza
-                                        } else null
-                                    }
-                                    if (lyricSections.isNotEmpty()) {
-                                        dal.krithis.saveLyricVariantSections(createdVariant.id, lyricSections)
-                                    }
-                                }
-                            }
-                        } else {
-                            // Single primary variant (existing behaviour)
-                            val effectiveSections = when {
-                                !metadata.sections.isNullOrEmpty() -> metadata.sections
-                                !metadata.lyrics.isNullOrBlank() -> parseSectionHeadersFromLyrics(metadata.lyrics.replace("\\n", "\n"))
-                                else -> emptyList()
-                            }
-                            if (effectiveSections.isNotEmpty()) {
-                                val sectionsToSave = effectiveSections.mapIndexed { idx, section ->
-                                    Triple(section.type.name, idx + 1, null as String?)
-                                }
-                                dal.krithis.saveSections(createdKrithi.id, sectionsToSave)
-                                val savedSections = dal.krithis.getSections(createdKrithi.id)
-                                val lyricVariant = dal.krithis.createLyricVariant(
-                                    krithiId = createdKrithi.id,
-                                    language = LanguageCode.valueOf(createdKrithi.primaryLanguage.name),
-                                    script = ScriptCode.LATIN,
-                                    lyrics = metadata.lyrics ?: effectiveSections.joinToString("\n\n") { "[${it.type.name}]\n${it.text}" },
-                                    isPrimary = true,
-                                    sourceReference = sourceKey
-                                )
-                                val lyricSections = savedSections.mapNotNull { savedSection ->
-                                    val originalSection = effectiveSections.getOrNull(savedSection.orderIndex - 1)
-                                    if (originalSection != null && !originalSection.text.isBlank()) {
-                                        savedSection.id.toJavaUuid() to originalSection.text
-                                    } else null
-                                }
-                                if (lyricSections.isNotEmpty()) {
-                                    dal.krithis.saveLyricVariantSections(lyricVariant.id, lyricSections)
-                                }
-                            } else if (!metadata.lyrics.isNullOrBlank()) {
-                                dal.krithis.createLyricVariant(
-                                    krithiId = createdKrithi.id,
-                                    language = LanguageCode.valueOf(createdKrithi.primaryLanguage.name),
-                                    script = ScriptCode.LATIN,
-                                    lyrics = metadata.lyrics,
-                                    isPrimary = true,
-                                    sourceReference = sourceKey
-                                )
-                            }
+                        } catch (e: Exception) {
+                            "unknown-source"
                         }
+
+                        dal.sourceEvidence.createEvidence(
+                            krithiId = krithiId,
+                            sourceUrl = sourceUrl,
+                            sourceName = sourceName,
+                            sourceTier = 3, // Default to crowdsourced/low tier for imports
+                            sourceFormat = "HTML",
+                            extractionMethod = "HTML_JSOUP",
+                            confidence = 1.0,
+                            contributedFields = listOfNotNull(
+                                "title".takeIf { effectiveTitle.isNotBlank() },
+                                "composer".takeIf { effectiveComposer != null },
+                                "raga".takeIf { effectiveRaga != null },
+                                "tala".takeIf { effectiveTala != null },
+                                "lyrics".takeIf { effectiveLyrics != null || importData.rawLyrics != null }
+                            )
+                        )
                     } catch (e: Exception) {
-                        // Log error but don't fail the whole import
-                        println("Error processing scraped metadata: ${e.message}")
-                        e.printStackTrace()
+                        println("Failed to create source evidence: ${e.message}")
                     }
                 }
+
             } catch (e: Exception) {
                 // If it's a known error, rethrow it so route can handle it (or wrap it)
                 // If it's unknown, wrap it in a custom exception that route can map to meaningful message
@@ -677,6 +584,154 @@ class ImportServiceImpl(
             "\"${value.replace("\"", "\"\"")}\""
         } else {
             value
+        }
+    }
+
+    // ── Private helpers ─────────────────────────────────────────────────────
+
+    private suspend fun persistLyricVariants(
+        krithiId: Uuid,
+        importData: ImportedKrithiDto,
+        overrides: com.sangita.grantha.backend.api.models.ImportOverridesDto?,
+    ) {
+        val sourceKey = importData.sourceKey
+        
+        if (overrides?.lyrics != null) {
+            // Unstructured override lyrics
+            dal.krithis.createLyricVariant(
+                krithiId = krithiId,
+                language = LanguageCode.EN, // Default for unstructured overrides
+                script = ScriptCode.LATIN,
+                lyrics = overrides.lyrics,
+                isPrimary = false,
+                sourceReference = sourceKey
+            )
+        } else if (importData.parsedPayload != null) {
+            try {
+                val metadata = Json.decodeFromString<ScrapedKrithiMetadata>(importData.parsedPayload!!)
+
+                // TRACK-032: Multi-language lyric variants from scrape
+                if (!metadata.lyricVariants.isNullOrEmpty()) {
+                    val variants = metadata.lyricVariants.toMutableList()
+                    
+                    // 1. Recover missing sections for each variant using KrithiStructureParser
+                    variants.forEachIndexed { idx, v ->
+                        if (v.sections.isNullOrEmpty() && !v.lyrics.isNullOrBlank()) {
+                            val recovered = KrithiStructureParser().buildBlocks(v.lyrics.replace("\\n", "\n")).blocks
+                                .mapNotNull { block: KrithiStructureParser.TextBlock ->
+                                    val type = parseRagaSectionDto(block.label)
+                                    if (type != null && type != RagaSectionDto.OTHER) {
+                                        ScrapedSectionDto(type = type, text = block.lines.joinToString("\n"))
+                                    } else null
+                                }
+                            if (recovered.isNotEmpty()) {
+                                variants[idx] = v.copy(sections = recovered)
+                            }
+                        }
+                    }
+
+                    // 2. Ensure canonical section structure exists
+                    val savedSections = dal.krithis.getSections(krithiId)
+                    if (savedSections.isEmpty()) {
+                        // Determine canonical section structure from metadata/variants
+                        val rawSections = metadata.sections ?: emptyList()
+                        val deduplicated = mutableListOf<ScrapedSectionDto>()
+                        var previousWasCharanam = false
+                        for (s in rawSections) {
+                            if (s.type == RagaSectionDto.PALLAVI && previousWasCharanam) break
+                            if (s.type == RagaSectionDto.CHARANAM || s.type == RagaSectionDto.SAMASHTI_CHARANAM) previousWasCharanam = true
+                            deduplicated.add(s)
+                        }
+
+                        val authoritySource = isAuthoritySourceForComposer(sourceKey, importData.rawComposer)
+                        val candidates = variants.mapNotNull { v ->
+                            v.sections?.let { StructuralVotingEngine.SectionCandidate(it, authoritySource, "variant:${v.language}") }
+                        }.toMutableList()
+                        if (deduplicated.isNotEmpty()) {
+                            candidates.add(StructuralVotingEngine.SectionCandidate(deduplicated, authoritySource, "metadata"))
+                        }
+
+                        val sectionStructure = structuralVotingEngine.pickBestStructure(candidates)
+                        if (sectionStructure.isNotEmpty()) {
+                            val sectionsToSave = sectionStructure.mapIndexed { index, section ->
+                                Triple(section.type.name, index + 1, null as String?)
+                            }
+                            dal.krithis.saveSections(krithiId, sectionsToSave)
+                        }
+                    }
+                    
+                    val updatedSections = dal.krithis.getSections(krithiId)
+                    
+                    // 3. Save each variant and link to sections
+                    variants.forEachIndexed { index, scraped ->
+                        val lang = parseLanguageCode(scraped.language) ?: LanguageCode.TE
+                        val script = parseScriptCode(scraped.script) ?: ScriptCode.LATIN
+                        val lyricsText = (scraped.lyrics?.takeIf { it.isNotBlank() }
+                            ?: scraped.sections?.joinToString("\n\n") { "[${it.type.name}]\n${it.text}" }.takeIf { it?.isNotBlank() == true }
+                            ?: "").replace("\\n", "\n")
+                        
+                        val createdVariant = dal.krithis.createLyricVariant(
+                            krithiId = krithiId,
+                            language = lang,
+                            script = script,
+                            lyrics = lyricsText,
+                            isPrimary = false,
+                            sourceReference = sourceKey
+                        )
+                        
+                        val variantSections = scraped.sections
+                        if (!variantSections.isNullOrEmpty() && updatedSections.isNotEmpty()) {
+                            val lyricSections = updatedSections.mapNotNull { savedSection ->
+                                val match = variantSections.getOrNull(savedSection.orderIndex - 1)
+                                if (match != null && match.text.isNotBlank()) {
+                                    savedSection.id.toJavaUuid() to match.text
+                                } else null
+                            }
+                            if (lyricSections.isNotEmpty()) {
+                                dal.krithis.saveLyricVariantSections(createdVariant.id, lyricSections)
+                            }
+                        }
+                    }
+                } else {
+                    // Single primary variant (existing behaviour)
+                    val effectiveSections = when {
+                        !metadata.sections.isNullOrEmpty() -> metadata.sections
+                        !metadata.lyrics.isNullOrBlank() -> parseSectionHeadersFromLyrics(metadata.lyrics.replace("\\n", "\n"))
+                        else -> emptyList()
+                    }
+                    if (effectiveSections.isNotEmpty()) {
+                        val lyricVariant = dal.krithis.createLyricVariant(
+                            krithiId = krithiId,
+                            language = parseLanguageCode(metadata.language) ?: LanguageCode.TE,
+                            script = ScriptCode.LATIN,
+                            lyrics = metadata.lyrics ?: effectiveSections.joinToString("\n\n") { "[${it.type.name}]\n${it.text}" },
+                            isPrimary = false,
+                            sourceReference = sourceKey
+                        )
+                        val savedSections = dal.krithis.getSections(krithiId)
+                        val lyricSections = savedSections.mapNotNull { savedSection ->
+                            val originalSection = effectiveSections.getOrNull(savedSection.orderIndex - 1)
+                            if (originalSection != null && !originalSection.text.isBlank()) {
+                                savedSection.id.toJavaUuid() to originalSection.text
+                            } else null
+                        }
+                        if (lyricSections.isNotEmpty()) {
+                            dal.krithis.saveLyricVariantSections(lyricVariant.id, lyricSections)
+                        }
+                    } else if (!metadata.lyrics.isNullOrBlank()) {
+                        dal.krithis.createLyricVariant(
+                            krithiId = krithiId,
+                            language = parseLanguageCode(metadata.language) ?: LanguageCode.TE,
+                            script = ScriptCode.LATIN,
+                            lyrics = metadata.lyrics,
+                            isPrimary = false,
+                            sourceReference = sourceKey
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                println("Error processing scraped metadata: ${e.message}")
+            }
         }
     }
 

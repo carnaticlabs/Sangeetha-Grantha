@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   BulkBatchStatus,
   BulkTaskStatus,
@@ -541,6 +542,15 @@ const BulkImportPage: React.FC = () => {
                   </button>
                 </div>
               </div>
+
+              {/* TRACK-052: Extraction Queue cross-link */}
+              <Link
+                to="/admin/sourcing/extractions"
+                className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-primary border border-primary/30 rounded-lg hover:bg-primary-light transition-colors"
+              >
+                <span className="material-symbols-outlined text-sm">queue</span>
+                View Extraction Queue
+              </Link>
 
               {/* TRACK-004: Finalize and Export buttons */}
               {selectedBatch.status === 'SUCCEEDED' && (

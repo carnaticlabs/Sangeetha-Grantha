@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { ImportedKrithi, ImportReviewRequest, ResolutionResult } from '../types';
 import { getImports, reviewImport } from '../api/client';
 import { useToast, ToastContainer } from '../components/Toast';
+import { useSourceDetail } from '../hooks/useSourcingQueries';
+import { TierBadge } from '../components/sourcing/shared';
+import { AuthorityWarning } from '../components/import-review/AuthorityWarning';
 
 const ImportReviewPage: React.FC = () => {
   const { toasts, success, error, removeToast } = useToast();
@@ -20,6 +23,12 @@ const ImportReviewPage: React.FC = () => {
   const [overrideDeity, setOverrideDeity] = useState('');
   const [overrideTemple, setOverrideTemple] = useState('');
   const [overrideLyrics, setOverrideLyrics] = useState('');
+
+  const [warningDismissed, setWarningDismissed] = useState(false);
+
+  // Fetch source detail to get the tier badge for the current import's source
+  const selectedItem = imports.find(i => i.id === selectedId);
+  const { data: sourceDetail } = useSourceDetail(selectedItem?.importSourceId ?? '');
 
   useEffect(() => {
     loadImports();
@@ -42,6 +51,7 @@ const ImportReviewPage: React.FC = () => {
 
   const selectImport = (item: ImportedKrithi) => {
     setSelectedId(item.id);
+    setWarningDismissed(false);
     setOverrideTitle(item.rawTitle || '');
     setOverrideComposer(item.rawComposer || '');
     setOverrideRaga(item.rawRaga || '');
@@ -165,8 +175,6 @@ const ImportReviewPage: React.FC = () => {
     }
   };
 
-
-  const selectedItem = imports.find(i => i.id === selectedId);
 
   const renderResolutionPanel = () => {
     if (!selectedItem?.resolutionData) return null;
@@ -340,7 +348,12 @@ const ImportReviewPage: React.FC = () => {
             <>
               <div className="p-4 border-b border-border-light bg-slate-50 flex justify-between items-center">
                 <div>
-                  <div className="text-xs text-ink-400 uppercase font-bold tracking-wider">Source</div>
+                  <div className="text-xs text-ink-400 uppercase font-bold tracking-wider flex items-center gap-2">
+                    Source
+                    {sourceDetail?.sourceTier != null && (
+                      <TierBadge tier={sourceDetail.sourceTier} />
+                    )}
+                  </div>
                   <a href={selectedItem.sourceKey || '#'} target="_blank" rel="noreferrer" className="text-sm text-primary hover:underline truncate block max-w-md">
                     {selectedItem.sourceKey}
                   </a>
@@ -365,6 +378,20 @@ const ImportReviewPage: React.FC = () => {
 
               <div className="flex-1 overflow-y-auto p-6 space-y-6">
                 {renderResolutionPanel()}
+
+                {/* Authority Validation Warning (TRACK-052 §3.4) */}
+                {sourceDetail && sourceDetail.sourceTier != null && sourceDetail.sourceTier > 2 && (
+                  <AuthorityWarning
+                    currentTier={sourceDetail.sourceTier}
+                    conflicts={[]}
+                    onDismiss={(reason) => {
+                      setWarningDismissed(true);
+                      console.log('Authority warning dismissed:', reason);
+                      // TODO: Log dismissal to audit_log via API
+                    }}
+                    dismissed={warningDismissed}
+                  />
+                )}
 
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-4">
