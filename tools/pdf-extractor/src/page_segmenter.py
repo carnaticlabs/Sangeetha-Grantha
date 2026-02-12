@@ -47,19 +47,29 @@ class PageSegmenter:
 
     # Common patterns for Raga/Tala metadata lines
     RAGA_PATTERN = re.compile(
-        r"(?:raga|raaga|rāga|राग)\s*[:—–-]?\s*",
+        r"(?:raga|raaga|rāga|r\u00AFa+ga|राग)\s*[\u02D9.]?\s*[\u1E41m]?\s*[:—–-]?\s*",
         re.IGNORECASE,
     )
     TALA_PATTERN = re.compile(
-        r"(?:tala|taala|tāla|ताल)\s*[:—–-]?\s*",
+        r"(?:tala|taala|tāla|t\u00AFal\.?\s*a|ताल)\s*[\u02D9.]?\s*[\u1E41m]?\s*[:—–-]?\s*",
         re.IGNORECASE,
     )
 
-    # Pattern for Krithi title detection (heuristic: title is followed by Raga/Tala)
+    # Pattern for Krithi title detection (heuristic: title is followed by Raga/Tala).
+    # Handles standard ASCII, Unicode diacritics, and transliterated Sanskrit
+    # with standalone macrons (¯) found in academic PDF encodings (e.g. r¯aga).
     METADATA_LINE_PATTERN = re.compile(
-        r"(?:raga|tala|raaga|taala|rāga|tāla|deity|kshetra|temple)",
+        r"(?:r[\u00AFā]?a+ga|rāga|राग"
+        r"|t[\u00AFā]?a+l[.\u1E37]?\s*a|tāla|ताल"
+        r"|deity|kshetra|temple)",
         re.IGNORECASE,
     )
+
+    # Dotted leader pattern used to detect table-of-contents pages
+    _TOC_LEADER_PATTERN = re.compile(r"(?:\.\s){4,}")
+
+    # Minimum number of dotted leaders to classify a page as TOC
+    _TOC_LEADER_MIN_COUNT = 3
 
     def __init__(
         self,
@@ -135,19 +145,162 @@ class PageSegmenter:
     ) -> list[tuple[int, TextBlock]]:
         """Find text blocks that appear to be Krithi titles.
 
+        Uses adaptive thresholds: tries the configured threshold first, then
+        progressively relaxes if no titles are found.  This handles PDFs where
+        titles are only slightly larger than body text (e.g. 17pt bold titles
+        with 14.5pt body gives a 1.19× ratio, below the default 1.3×).
+
         Returns list of (page_index, TextBlock) tuples.
         """
-        min_title_size = body_font_size * self.title_font_size_threshold
-        title_positions: list[tuple[int, TextBlock]] = []
+        # Build list of thresholds to try (strict → relaxed)
+        thresholds = [self.title_font_size_threshold]
+        for fallback in (1.15, 1.05):
+            if fallback < self.title_font_size_threshold:
+                thresholds.append(fallback)
 
-        for page_idx, page in enumerate(document.pages):
-            for block in page.blocks:
-                if block.font_size >= min_title_size and block.is_bold:
-                    # Check if followed by Raga/Tala metadata within nearby blocks
-                    if self._has_metadata_nearby(page, block):
-                        title_positions.append((page_idx, block))
+        for threshold in thresholds:
+            min_title_size = body_font_size * threshold
+            candidates: list[tuple[int, TextBlock]] = []
 
-        return title_positions
+            for page_idx, page in enumerate(document.pages):
+                # Skip pages that look like table-of-contents
+                if self._is_toc_page(page):
+                    continue
+
+                for block in page.blocks:
+                    if block.font_size >= min_title_size and block.is_bold:
+                        if self._has_metadata_nearby(page, block):
+                            candidates.append((page_idx, block))
+
+            # Deduplicate close title blocks (handles repeated/italic title lines)
+            deduplicated = self._deduplicate_title_positions(candidates)
+
+            if len(deduplicated) >= 2:
+                logger.info(
+                    "Title detection succeeded",
+                    extra={
+                        "threshold_ratio": threshold,
+                        "min_title_size": round(min_title_size, 2),
+                        "body_font_size": body_font_size,
+                        "raw_candidates": len(candidates),
+                        "deduplicated_titles": len(deduplicated),
+                    },
+                )
+                return deduplicated
+
+        # TRACK-060: Fallback — no bold candidates found at any threshold.
+        # Try font-size-only detection with metadata proximity as gatekeeper.
+        # This handles Devanagari PDFs where fonts lack "Bold" in their name
+        # and PyMuPDF flags may not indicate bold.
+        return self._find_title_positions_by_size_only(document, body_font_size)
+
+    def _find_title_positions_by_size_only(
+        self,
+        document: DocumentContent,
+        body_font_size: float,
+    ) -> list[tuple[int, TextBlock]]:
+        """Fallback title detection using font size only (no bold requirement).
+
+        TRACK-060: For PDFs where bold detection fails (e.g. Devanagari fonts),
+        find title candidates by font size alone, using metadata proximity
+        (_has_metadata_nearby) as a strict gatekeeper to avoid false positives.
+
+        Tries progressively relaxed thresholds (1.3×, 1.15×, 1.05×).
+        """
+        thresholds = [self.title_font_size_threshold]
+        for fallback in (1.15, 1.05):
+            if fallback < self.title_font_size_threshold:
+                thresholds.append(fallback)
+
+        for threshold in thresholds:
+            min_title_size = body_font_size * threshold
+            candidates: list[tuple[int, TextBlock]] = []
+
+            for page_idx, page in enumerate(document.pages):
+                if self._is_toc_page(page):
+                    continue
+
+                for block in page.blocks:
+                    # Size check only — no bold requirement
+                    if block.font_size >= min_title_size:
+                        # Strict gatekeeper: must have raga/tala metadata nearby
+                        if self._has_metadata_nearby(page, block):
+                            candidates.append((page_idx, block))
+
+            deduplicated = self._deduplicate_title_positions(candidates)
+
+            if len(deduplicated) >= 2:
+                logger.info(
+                    "Fallback title detection (size-only) succeeded",
+                    extra={
+                        "threshold_ratio": threshold,
+                        "min_title_size": round(min_title_size, 2),
+                        "body_font_size": body_font_size,
+                        "raw_candidates": len(candidates),
+                        "deduplicated_titles": len(deduplicated),
+                    },
+                )
+                return deduplicated
+
+        return []
+
+    def _is_toc_page(self, page: PageContent) -> bool:
+        """Detect table-of-contents pages by dotted leader patterns.
+
+        TOC pages in anthology PDFs typically contain many dotted leader
+        lines (". . . . . . . . . . 17") connecting titles to page numbers.
+        """
+        leader_count = len(self._TOC_LEADER_PATTERN.findall(page.text))
+        return leader_count >= self._TOC_LEADER_MIN_COUNT
+
+    def _deduplicate_title_positions(
+        self,
+        positions: list[tuple[int, TextBlock]],
+    ) -> list[tuple[int, TextBlock]]:
+        """Merge title blocks that are close together on the same page.
+
+        Anthology PDFs often repeat the title (bold + bold-italic) or place
+        a separate number block (e.g. "1") at the same y-position as the
+        title text.  This groups nearby blocks and picks the best
+        representative (longest meaningful text) from each group.
+        """
+        if not positions:
+            return []
+
+        deduplicated: list[tuple[int, TextBlock]] = []
+        current_group: list[tuple[int, TextBlock]] = [positions[0]]
+
+        for pos in positions[1:]:
+            page_idx, block = pos
+            prev_page, prev_block = current_group[-1]
+
+            # Same page and vertically close → same title group
+            if page_idx == prev_page and abs(block.y0 - prev_block.y0) < 60:
+                current_group.append(pos)
+            else:
+                deduplicated.append(self._pick_best_title(current_group))
+                current_group = [pos]
+
+        deduplicated.append(self._pick_best_title(current_group))
+
+        return deduplicated
+
+    @staticmethod
+    def _pick_best_title(
+        group: list[tuple[int, TextBlock]],
+    ) -> tuple[int, TextBlock]:
+        """Pick the best representative title from a group of close blocks.
+
+        Prefers the block with the longest meaningful text, skipping
+        number-only blocks (like "1", "42") that are Krithi serial numbers
+        rather than actual titles.
+        """
+        # Filter out number-only blocks when there are text blocks available
+        text_blocks = [
+            (idx, b) for idx, b in group if not b.text.strip().isdigit()
+        ]
+        candidates = text_blocks if text_blocks else group
+        return max(candidates, key=lambda x: len(x[1].text))
 
     def _has_metadata_nearby(self, page: PageContent, title_block: TextBlock) -> bool:
         """Check if a title block is followed by Raga/Tala metadata."""

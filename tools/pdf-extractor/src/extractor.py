@@ -15,6 +15,8 @@ from typing import Optional
 
 import fitz  # PyMuPDF
 
+from .velthuis_decoder import VelthuisDecoder
+
 logger = logging.getLogger(__name__)
 
 
@@ -64,6 +66,9 @@ class DocumentContent:
 
 class PdfExtractor:
     """Extract text and positional data from PDF documents using PyMuPDF."""
+
+    def __init__(self) -> None:
+        self._velthuis_decoder = VelthuisDecoder()
 
     def extract_document(
         self,
@@ -141,7 +146,15 @@ class PdfExtractor:
 
                     font_size = span.get("size", 0.0)
                     font_name = span.get("font", "")
-                    is_bold = "Bold" in font_name or "bold" in font_name
+                    # TRACK-060: Use PyMuPDF font flags for bold detection.
+                    # Bit 4 (value 16) = bold in span["flags"].
+                    # Fallback to font name check for compatibility.
+                    font_flags = span.get("flags", 0)
+                    is_bold = bool(font_flags & 16) or "Bold" in font_name or "bold" in font_name
+
+                    # Decode Velthuis Devanagari font spans
+                    if VelthuisDecoder.is_velthuis_font(font_name):
+                        text = self._velthuis_decoder.decode_text(text)
 
                     bbox = span.get("bbox", (0, 0, 0, 0))
                     text_block = TextBlock(
@@ -182,16 +195,21 @@ class PdfExtractor:
     def is_text_extractable(self, pdf_path: str | Path) -> bool:
         """Check if a PDF has extractable text (vs. scanned/image-only).
 
-        Returns True if at least 50% of pages have non-trivial text content.
+        Returns True if at least 50% of pages have non-trivial text content
+        that is NOT mostly replacement characters (Broken encoding).
         """
         doc = fitz.open(str(pdf_path))
+        total_pages = len(doc)
         text_pages = 0
 
         for page in doc:
             text = page.get_text().strip()
-            if len(text) > 50:  # More than just page numbers/headers
-                text_pages += 1
+            if len(text) > 50:
+                # Count replacement characters - sign of broken encoding
+                garbage_count = text.count("\uFFFD")
+                if garbage_count < len(text) * 0.1:  # Threshold: 10% garbage
+                    text_pages += 1
 
         doc.close()
 
-        return text_pages > len(doc) * 0.5 if len(doc) > 0 else False
+        return text_pages > total_pages * 0.5 if total_pages > 0 else False

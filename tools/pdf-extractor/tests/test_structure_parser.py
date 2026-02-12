@@ -13,7 +13,7 @@ Vatapi Ganapatim Bhaje aham
 varanasidhi vinayakam
 
 Anupallavi
-bhoota adi samsevita charanam
+bhoota adi samsevita gajaananam
 paravyoma vihara
 
 Charanam
@@ -118,6 +118,27 @@ def test_no_labels_returns_other() -> None:
     assert sections[0].section_type == SectionType.OTHER
 
 
+def test_garbled_charanam_detection() -> None:
+    """Detect garbled 'caran. am' from Utopia-font PDFs."""
+    parser = StructureParser()
+    text = """
+pallavi
+akhil¯an. d. e´svari raks.a m¯a ˙m
+
+anupallavi
+nikhilalokanity¯atmike vimale
+
+caran. am
+lambodara guruguha p¯ujite
+    """
+    sections = parser.parse_sections(text)
+
+    assert len(sections) == 3
+    assert sections[0].section_type == SectionType.PALLAVI
+    assert sections[1].section_type == SectionType.ANUPALLAVI
+    assert sections[2].section_type == SectionType.CHARANAM
+
+
 def test_canonical_section_conversion() -> None:
     """Verify conversion to canonical section DTOs."""
     parser = StructureParser()
@@ -136,3 +157,66 @@ More text
     assert canonical[0].order == 1
     assert canonical[1].type == SectionType.ANUPALLAVI
     assert canonical[1].order == 2
+
+
+def test_madhyama_kala_detection() -> None:
+
+
+    """Detect Madhyama Kala sections in various formats."""
+
+
+    parser = StructureParser()
+
+
+    text = """Pallavi
+
+
+Some text
+
+
+
+
+
+Charanam
+
+
+Regular charanam lyrics
+
+
+(madhyama kAla sAhityam)
+
+
+Speedy lyrics here
+
+
+"""
+
+
+    sections = parser.parse_sections(text)
+
+
+
+
+
+    # Should detect Pallavi, Charanam, and Madhyama Kala
+
+
+    assert len(sections) == 3
+
+
+    assert sections[0].section_type == SectionType.PALLAVI
+
+
+    assert sections[1].section_type == SectionType.CHARANAM
+
+
+    assert sections[2].section_type == SectionType.MADHYAMA_KALA
+
+
+    assert "Speedy lyrics" in sections[2].text
+
+
+
+
+
+

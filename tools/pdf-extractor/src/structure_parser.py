@@ -36,63 +36,66 @@ SECTION_PATTERNS: list[tuple[SectionType, re.Pattern[str]]] = [
     (
         SectionType.SAMASHTI_CHARANAM,
         re.compile(
-            r"(?:samashti\s*charaa?n[au]m|samashṭi\s*caraṇam|समष्टि\s*चरणम्)",
-            re.IGNORECASE,
+            r"^\s*(?:samashti\s*(?:ch|c)araa?n[au]m|samashṭi\s*caraṇam|समष्टि\s*चरणम्"
+            r"|samash?t\.?\s*i\s*(?:ch|c)ara?n\.\s*am)\b",
+            re.IGNORECASE | re.MULTILINE,
         ),
     ),
     # Chittaswaram
     (
         SectionType.CHITTASWARAM,
         re.compile(
-            r"(?:chitta?\s*swara[mn]?|cittasvaram|चित्तस्वरम्)",
-            re.IGNORECASE,
+            r"^\s*(?:chitta?\s*swara[mn]?|cittasvaram|चित्तस्वरम्)\b",
+            re.IGNORECASE | re.MULTILINE,
         ),
     ),
     # Swara Sahitya
     (
         SectionType.SWARA_SAHITYA,
         re.compile(
-            r"(?:swara\s*sahitya|स्वरसाहित्य)",
-            re.IGNORECASE,
+            r"^\s*(?:swara\s*sahitya|स्वरसाहित्य)\b",
+            re.IGNORECASE | re.MULTILINE,
         ),
     ),
     # Madhyama Kala
     (
         SectionType.MADHYAMA_KALA,
         re.compile(
-            r"(?:madhyama\s*kaa?la|मध्यमकाल)",
-            re.IGNORECASE,
+            r"^\s*\(?\s*\b(?:m\.\s*k|madhyama\s*[kaā]+la)(?:\s*s[aā]hityam)?\b\s*\)?",
+            re.IGNORECASE | re.MULTILINE,
         ),
     ),
     # Pallavi
     (
         SectionType.PALLAVI,
         re.compile(
-            r"(?:pallavi|पल्लवि)",
-            re.IGNORECASE,
+            r"^\s*(?:pallavi|पल्लवि|\b P \b)\b",
+            re.IGNORECASE | re.MULTILINE,
         ),
     ),
     # Anupallavi
     (
         SectionType.ANUPALLAVI,
         re.compile(
-            r"(?:anupallavi|अनुपल्लवि)",
-            re.IGNORECASE,
+            r"^\s*(?:anupallavi|अनुपल्लवि|\b A \b)\b",
+            re.IGNORECASE | re.MULTILINE,
         ),
     ),
     # Charanam (with optional number: Charanam 1, Charanam 2, etc.)
+    # Includes garbled form: caran. am, caran.am (dot + optional space)
     (
         SectionType.CHARANAM,
         re.compile(
-            r"(?:charaa?n[au]m|caraṇam|चरणम्)(?:\s*(\d+))?",
-            re.IGNORECASE,
+            r"^\s*(?:(?:ch|c)araa?n[au]m|caraṇam|चरणम्|(?:ch|c)ara?n\.\s*am|\b C \b)(?:\s*(\d+))?\b",
+            re.IGNORECASE | re.MULTILINE,
         ),
     ),
 ]
 
 # Pattern to detect any section label line
+# Enhanced to handle optional leading parentheses and whitespace common in PDF extraction
 ANY_SECTION_LABEL = re.compile(
-    r"^\s*(?:pallavi|anupallavi|charaa?n[au]m|samashti|chitta?\s*swara|swara\s*sahitya|madhyama|"
+    r"^\s*\(?\s*(?:pallavi|anupallavi|(?:ch|c)araa?n[au]m|caran\.\s*am|samashti|chitta?\s*swara|swara\s*sahitya|madhyama|"
     r"पल्लवि|अनुपल्लवि|चरणम्|समष्टि|चित्तस्वर|स्वरसाहित्य|मध्यमकाल)",
     re.IGNORECASE | re.MULTILINE,
 )
@@ -154,8 +157,8 @@ class StructureParser:
         charanam_counter = 0
 
         for i, (pos, stype, label, match) in enumerate(filtered):
-            # Content starts after the label line
-            content_start = match.end()
+            # Content starts AT the label match (including the label text itself)
+            content_start = match.start()
             # Content ends at the start of the next label, or end of text
             content_end = filtered[i + 1][0] if i + 1 < len(filtered) else len(text)
 

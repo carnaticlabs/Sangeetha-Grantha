@@ -194,8 +194,10 @@ class ExtractionQueueDB:
             )
             self.conn.commit()
         logger.warning(
-            "Task failed",
-            extra={"task_id": str(task_id), "error": error_detail.get("message", "unknown")},
+            "Task %s failed: %s (%s)",
+            task_id,
+            error_detail.get("message", "unknown"),
+            error_detail.get("type", "unknown"),
         )
 
     def get_queue_stats(self) -> QueueStats:

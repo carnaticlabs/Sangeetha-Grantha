@@ -2,7 +2,8 @@
 
 Parses Krithi headers to extract title, raga, tala, deity, and temple
 references. Handles the consistent format used in guruguha.org PDFs
-and similar scholarly publications.
+and similar scholarly publications, including garbled diacritic forms
+from Utopia-family fonts.
 """
 
 from __future__ import annotations
@@ -11,6 +12,8 @@ import logging
 import re
 from dataclasses import dataclass
 from typing import Optional
+
+from .diacritic_normalizer import cleanup_raga_tala_name, normalize_garbled_diacritics
 
 logger = logging.getLogger(__name__)
 
@@ -29,11 +32,36 @@ class KrithiMetadata:
     temple_location: Optional[str] = None
 
 
+# ─── Label patterns that handle all four encoding categories ─────────────
+#
+# 1. Clean ASCII:      raga, raaga
+# 2. Clean IAST:       rāga, rāgaṁ
+# 3. Garbled Utopia:   r¯aga, r¯aga ˙m, r¯aga˙m
+# 4. Devanagari:       राग
+
+_RAGA_LABEL = (
+    r"(?:"
+    r"r[\u00AF\u0101]?a+ga\s*[\u02D9.]?\s*[\u1E41m]?"  # ASCII/IAST/garbled
+    r"|r\u0101ga[\u1E41m]?"                              # Precomposed IAST
+    r"|राग"                                               # Devanagari
+    r")"
+)
+
+_TALA_LABEL = (
+    r"(?:"
+    r"t[\u00AF\u0101]?a+l[.\u1E37]?\s*a\s*[\u02D9.]?\s*[\u1E41m]?"  # ASCII/IAST/garbled
+    r"|t\u0101l[\u1E37]?a[\u1E41m]?"                                  # Precomposed IAST
+    r"|ताल"                                                            # Devanagari
+    r")"
+)
+
+
 class MetadataParser:
     """Extract metadata fields from Krithi header text.
 
     Handles multiple header formats:
     - guruguha.org style: "Title\\nRaga: X — Tala: Y\\nDeity: Z at Temple"
+    - Garbled Utopia: "r¯aga ˙m: juj¯avanti (28)\\nt¯al.a ˙m: ¯adi"
     - Generic style: "Title\\nRaga - Tala\\nComposer"
     - Devanagari headers with corresponding field labels
     """
@@ -41,18 +69,32 @@ class MetadataParser:
     # ─── Regex patterns for field extraction ─────────────────────────────
 
     RAGA_PATTERN = re.compile(
-        r"(?:raa?ga|rāga|राग)\s*[:—–\-]\s*(.+?)(?:\s*[—–\-|]\s*(?:taa?la|tāla|ताल)|$)",
-        re.IGNORECASE,
+        _RAGA_LABEL + r"\s*[:—–\-]\s*" +
+        r"(.+?)"
+        r"(?:\s*\(\d+\)\s*)?"           # Optional mēḷa number: (28)
+        r"(?:"
+        r"\s*[—–\-|]\s*" + _TALA_LABEL +  # Followed by tala label
+        r"|$"                             # Or end of line
+        r")",
+        re.IGNORECASE | re.MULTILINE,
     )
 
     TALA_PATTERN = re.compile(
-        r"(?:taa?la|tāla|ताल)\s*[:—–\-]\s*(.+?)(?:\s*$|\s*[—–\-|])",
-        re.IGNORECASE,
+        _TALA_LABEL + r"\s*[:—–\-]\s*" +
+        r"(.+?)"
+        r"(?:\s*\(\d+\))?"              # Optional number
+        r"(?:\s*$|\s*[—–\-|])",          # End of line or separator
+        re.IGNORECASE | re.MULTILINE,
     )
 
-    # Combined raga-tala on a single line: "Raga: Sankarabharanam — Tala: Adi"
+    # Combined raga-tala on a single line
     RAGA_TALA_COMBINED = re.compile(
-        r"(?:raa?ga|rāga)\s*[:—–\-]\s*(.+?)\s*[—–\-|]\s*(?:taa?la|tāla)\s*[:—–\-]\s*(.+?)$",
+        _RAGA_LABEL + r"\s*[:—–\-]\s*(.+?)" +
+        r"(?:\s*\(\d+\)\s*)?"
+        r"\s*[—–\-|]\s*"
+        + _TALA_LABEL + r"\s*[:—–\-]\s*(.+?)"
+        r"(?:\s*\(\d+\))?"
+        r"$",
         re.IGNORECASE | re.MULTILINE,
     )
 
@@ -94,12 +136,29 @@ class MetadataParser:
             return KrithiMetadata(title=title_hint or "Unknown")
 
         # Title is typically the first line (or provided via title_hint)
-        title = title_hint or lines[0]
+        raw_title = title_hint or lines[0]
+
+        # Normalise garbled diacritics in title (TRACK-059: was previously skipped)
+        title = normalize_garbled_diacritics(raw_title)
 
         # Join remaining lines for field extraction
         metadata_text = "\n".join(lines[1:]) if len(lines) > 1 else ""
 
-        raga, tala = self._extract_raga_tala(metadata_text)
+        # Normalise garbled diacritics in metadata before regex matching
+        normalised_text = normalize_garbled_diacritics(metadata_text)
+
+        raga, tala = self._extract_raga_tala(normalised_text)
+
+        # If normalised text didn't match, try the raw text as fallback
+        if not raga and not tala:
+            raga, tala = self._extract_raga_tala(metadata_text)
+
+        # Clean up extracted names
+        if raga:
+            raga = cleanup_raga_tala_name(raga)
+        if tala:
+            tala = cleanup_raga_tala_name(tala)
+
         deity = self._extract_field(self.DEITY_PATTERN, metadata_text)
         temple = self._extract_field(self.TEMPLE_PATTERN, metadata_text)
         composer = self._extract_field(self.COMPOSER_PATTERN, metadata_text)

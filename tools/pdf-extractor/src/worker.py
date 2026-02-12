@@ -33,6 +33,7 @@ import httpx
 
 from .config import ExtractorConfig, load_config
 from .db import ExtractionQueueDB, ExtractionTask
+from .diacritic_normalizer import cleanup_raga_tala_name, normalize_garbled_diacritics
 from .extractor import PdfExtractor
 from .metadata_parser import MetadataParser
 from .ocr_fallback import OcrFallback
@@ -155,6 +156,13 @@ class ExtractionWorker:
 
         except Exception as e:
             duration_ms = int((time.monotonic() - start_time) * 1000)
+            logger.error(
+                "Task %s failed after %dms: %s",
+                task.id,
+                duration_ms,
+                e,
+                exc_info=True,
+            )
             error_detail = {
                 "message": str(e),
                 "type": type(e).__name__,
@@ -221,29 +229,47 @@ class ExtractionWorker:
         composer_hint = task.request_payload.get("composerHint", "")
 
         for segment in segments:
-            # Parse metadata from header
+            # Step 1: Normalize garbled diacritics in the body text
+            normalized_body = normalize_garbled_diacritics(segment.body_text)
+
+            # Parse metadata from header (uses normalized text internally if needed)
             metadata = self.metadata_parser.parse(
-                segment.body_text[:500],  # First 500 chars likely contain header
+                normalized_body[:500],  # First 500 chars likely contain header
                 title_hint=segment.title_text,
             )
 
-            # Parse section structure
-            detected_sections = self.structure_parser.parse_sections(segment.body_text)
+            # Parse section structure from normalized text
+            detected_sections = self.structure_parser.parse_sections(normalized_body)
             canonical_sections = self.structure_parser.to_canonical_sections(detected_sections)
             lyric_sections = self.structure_parser.to_canonical_lyric_sections(detected_sections)
 
-            # Detect script
-            script = self.transliterator.detect_script(segment.body_text) or "devanagari"
+            # Detect script from normalized text
+            script = self.transliterator.detect_script(normalized_body) or "devanagari"
             language = "sa" if script == "devanagari" else "en"
+
+            # Apply name cleanup to raga/tala (defensive — MetadataParser
+            # already normalises, but this ensures clean output even when
+            # metadata comes from other parsers or fallback paths).
+            raga_name = cleanup_raga_tala_name(metadata.raga) if metadata.raga else "Unknown"
+            tala_name = cleanup_raga_tala_name(metadata.tala) if metadata.tala else "Unknown"
+
+            # For Devanagari titles, produce an IAST alternate title for matching
+            alternate_title = metadata.alternate_title
+            if script == "devanagari" and not alternate_title:
+                iast_title = self.transliterator.transliterate(
+                    metadata.title, "devanagari", "iast"
+                )
+                if iast_title:
+                    alternate_title = iast_title
 
             # Build canonical extraction
             extraction = CanonicalExtraction(
                 title=metadata.title,
-                alternateTitle=metadata.alternate_title,
+                alternateTitle=alternate_title,
                 composer=metadata.composer or composer_hint or "Unknown",
                 musicalForm=MusicalForm.KRITHI,
-                ragas=[CanonicalRaga(name=metadata.raga or "Unknown")],
-                tala=metadata.tala or "Unknown",
+                ragas=[CanonicalRaga(name=raga_name)],
+                tala=tala_name,
                 sections=canonical_sections,
                 lyricVariants=[
                     CanonicalLyricVariant(
