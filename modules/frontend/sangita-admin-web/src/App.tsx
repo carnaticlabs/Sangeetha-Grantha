@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import TopBar from './components/TopBar';
@@ -14,6 +14,18 @@ import BulkImportPage from './pages/BulkImport';
 import ImportReviewPage from './pages/ImportReview';
 import Login from './pages/Login';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+// Sourcing module — lazy-loaded for code splitting
+const SourcingLayout = lazy(() => import('./components/sourcing/SourcingLayout'));
+const SourcingDashboardPage = lazy(() => import('./pages/sourcing/SourcingDashboardPage'));
+const SourceRegistryPage = lazy(() => import('./pages/sourcing/SourceRegistryPage'));
+const SourceDetailPage = lazy(() => import('./pages/sourcing/SourceDetailPage'));
+const ExtractionMonitorPage = lazy(() => import('./pages/sourcing/ExtractionMonitorPage'));
+const ExtractionDetailPage = lazy(() => import('./pages/sourcing/ExtractionDetailPage'));
+const SourceEvidencePage = lazy(() => import('./pages/sourcing/SourceEvidencePage'));
+const StructuralVotingPage = lazy(() => import('./pages/sourcing/StructuralVotingPage'));
+const VotingDetailPage = lazy(() => import('./pages/sourcing/VotingDetailPage'));
+const QualityDashboardPage = lazy(() => import('./pages/sourcing/QualityDashboardPage'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -52,6 +64,24 @@ const App: React.FC = () => {
                 <Route path="/tags" element={<TagsPage />} />
                 <Route path="/users" element={<UsersPage />} />
                 <Route path="/roles" element={<RolesPage />} />
+
+                {/* Sourcing & Quality Module */}
+                <Route path="/admin/sourcing" element={
+                  <Suspense fallback={<div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>}>
+                    <SourcingLayout />
+                  </Suspense>
+                }>
+                  <Route index element={<SourcingDashboardPage />} />
+                  <Route path="sources" element={<SourceRegistryPage />} />
+                  <Route path="sources/:id" element={<SourceDetailPage />} />
+                  <Route path="extractions" element={<ExtractionMonitorPage />} />
+                  <Route path="extractions/:id" element={<ExtractionDetailPage />} />
+                  <Route path="evidence" element={<SourceEvidencePage />} />
+                  <Route path="voting" element={<StructuralVotingPage />} />
+                  <Route path="voting/:id" element={<VotingDetailPage />} />
+                  <Route path="quality" element={<QualityDashboardPage />} />
+                </Route>
+
                 {/* Fallback for other routes */}
                 <Route path="*" element={
                   <div className="flex flex-col items-center justify-center h-full text-ink-500">
