@@ -17,10 +17,29 @@ class KrithiStructureParser {
         val sections: List<ScrapedSection>
     )
 
+    /** Deterministic metadata hints extracted from meta lines (e.g. "abhayAmbA jagadambA - rAgaM kalyANi - tALaM Adi"). */
+    data class MetadataHints(
+        val title: String? = null,
+        val raga: String? = null,
+        val tala: String? = null
+    )
+
     // Matches "1. SrI rAgaM" or "Arabhi rAgaM"
     private val ragaPattern = Regex("""^(\d+\.\s*)?(.+?)\s+rAgaM\s*$""", RegexOption.IGNORE_CASE)
     // Matches "vilOma - mOhana rAgaM"
     private val vilomaPattern = Regex("""^vilOma\s*-\s*(.+?)\s+rAgaM\s*$""", RegexOption.IGNORE_CASE)
+
+    // Matches guru-guha meta line: "abhayAmbA jagadambA - rAgaM kalyANi - tALaM Adi"
+    private val metaRagaTalaPattern = Regex(
+        """^(.+?)\s*[-–—]\s*r[Aa][Aa]?ga[Mm]?\s+(.+?)\s*[-–—]\s*t[Aa][Aa]?[lL]a[Mm]?\s+(.+?)\s*$""",
+        RegexOption.IGNORE_CASE
+    )
+
+    // Matches guru-guha meta line without tala: "abhayAmbA jagadambA - rAgaM kalyANi"
+    private val metaRagaPattern = Regex(
+        """^(.+?)\s*[-–—]\s*r[Aa][Aa]?ga[Mm]?\s+(.+?)\s*$""",
+        RegexOption.IGNORE_CASE
+    )
 
     fun buildBlocks(rawText: String): PromptBlocks {
         val lines = rawText
@@ -40,6 +59,43 @@ class KrithiStructureParser {
 
         val blocks = splitIntoBlocks(bodyLines)
         return PromptBlocks(metaLines = metaLines, blocks = blocks)
+    }
+
+    /**
+     * Extract raga/tala/title hints from meta lines.
+     *
+     * Parses the common guru-guha blogspot pattern:
+     * `abhayAmbA jagadambA - rAgaM kalyANi - tALaM Adi`
+     */
+    fun extractMetadataHints(rawText: String): MetadataHints {
+        val promptBlocks = buildBlocks(rawText)
+        for (line in promptBlocks.metaLines) {
+            val match = metaRagaTalaPattern.find(line.trim())
+            if (match != null) {
+                return MetadataHints(
+                    title = cleanTitle(match.groupValues[1].trim()).takeIf { it.isNotBlank() },
+                    raga = match.groupValues[2].trim().takeIf { it.isNotBlank() },
+                    tala = match.groupValues[3].trim().takeIf { it.isNotBlank() }
+                )
+            }
+            // Fallback for lines without Tala
+            val ragaMatch = metaRagaPattern.find(line.trim())
+            if (ragaMatch != null) {
+                return MetadataHints(
+                    title = cleanTitle(ragaMatch.groupValues[1].trim()).takeIf { it.isNotBlank() },
+                    raga = ragaMatch.groupValues[2].trim().takeIf { it.isNotBlank() },
+                    tala = null
+                )
+            }
+        }
+        return MetadataHints()
+    }
+
+    private fun cleanTitle(title: String): String {
+        return title
+            .replace(Regex("^Guru Guha Vaibhavam:\\s*", RegexOption.IGNORE_CASE), "")
+            .replace(Regex("^Dikshitar Kriti\\s*[-–—]\\s*", RegexOption.IGNORE_CASE), "")
+            .trim()
     }
 
     fun extractSections(rawText: String): List<ScrapedSection> {

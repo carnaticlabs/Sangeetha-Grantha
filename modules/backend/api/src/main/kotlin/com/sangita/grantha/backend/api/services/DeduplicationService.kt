@@ -6,7 +6,6 @@ import com.sangita.grantha.backend.dal.support.toJavaUuid
 import com.sangita.grantha.shared.domain.model.ImportedKrithiDto
 import com.sangita.grantha.shared.domain.model.KrithiDto
 import kotlinx.serialization.Serializable
-import kotlin.math.max
 
 /**
  * Service that detects potential duplicate krithis during import review.
@@ -42,18 +41,34 @@ class DeduplicationService(
 
         // 1. Check against existing Krithis (Canonical)
         if (titleNormalized.isNotEmpty()) {
-            val canonicalCandidates = dal.krithis.findDuplicateCandidates(
-                titleNormalized = titleNormalized,
-                composerId = resolvedComposerId?.toJavaUuid(),
-                ragaId = resolvedRagaId?.toJavaUuid()
-            )
+            val candidatesByMetadata = if (resolvedComposerId != null && resolvedRagaId != null) {
+                dal.krithis.findDuplicateCandidates(titleNormalized, resolvedComposerId.toJavaUuid(), resolvedRagaId.toJavaUuid())
+            } else {
+                emptyList()
+            }
+
+            val candidatesByTitle = dal.krithis.findDuplicateCandidates(titleNormalized)
+            val allCandidates = (candidatesByMetadata + candidatesByTitle).distinctBy { it.id }
             
-            canonicalCandidates.forEach { candidate ->
-                matches.add(DuplicateMatch(
-                    krithiId = candidate.id.toString(),
-                    reason = "Canonical match: ${candidate.title}",
-                    confidence = "HIGH"
-                ))
+            allCandidates.forEach { candidate ->
+                val titleScore = NameNormalizationService.ratio(titleNormalized, candidate.titleNormalized)
+                val compressedScore = NameNormalizationService.ratio(
+                    titleNormalized.replace(" ", ""),
+                    candidate.titleNormalized.replace(" ", "")
+                )
+                val bestScore = maxOf(titleScore, compressedScore)
+                val metadataMatch = resolvedComposerId?.toJavaUuid() == candidate.composerId.toJavaUuid() &&
+                                  resolvedRagaId?.toJavaUuid() == candidate.primaryRagaId?.toJavaUuid()
+
+                val threshold = if (metadataMatch) 75 else 85
+
+                if (bestScore >= threshold) {
+                    matches.add(DuplicateMatch(
+                        krithiId = candidate.id.toString(),
+                        reason = "Canonical match: ${candidate.title} (Score: $bestScore)",
+                        confidence = if (bestScore > 90) "HIGH" else "MEDIUM"
+                    ))
+                }
             }
         }
         
@@ -67,7 +82,7 @@ class DeduplicationService(
         )
         .filter { candidate ->
             val otherTitleNorm = normalizer.normalizeTitle(candidate.rawTitle) ?: ""
-            otherTitleNorm == titleNormalized || ratio(titleNormalized, otherTitleNorm) > 90
+            otherTitleNorm == titleNormalized || NameNormalizationService.ratio(titleNormalized, otherTitleNorm) > 90
         }
         
         stagingCandidates.forEach { candidate ->
@@ -81,28 +96,4 @@ class DeduplicationService(
         return DeduplicationResult(matches)
     }
 
-    private fun ratio(s1: String, s2: String): Int {
-        val rows = s1.length + 1
-        val cols = s2.length + 1
-        val distance = Array(rows) { IntArray(cols) }
-
-        for (i in 0 until rows) distance[i][0] = i
-        for (j in 0 until cols) distance[0][j] = j
-
-        for (i in 1 until rows) {
-            for (j in 1 until cols) {
-                val cost = if (s1[i - 1] == s2[j - 1]) 0 else 1
-                distance[i][j] = minOf(
-                    distance[i - 1][j] + 1,
-                    distance[i][j - 1] + 1,
-                    distance[i - 1][j - 1] + cost
-                )
-            }
-        }
-
-        val maxLen = max(s1.length, s2.length)
-        if (maxLen == 0) return 100
-        val dist = distance[s1.length][s2.length]
-        return ((1.0 - dist.toDouble() / maxLen) * 100).toInt()
-    }
 }

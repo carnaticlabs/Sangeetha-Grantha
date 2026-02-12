@@ -19,7 +19,7 @@ ON CONFLICT (user_id, role_code) DO NOTHING;
 INSERT INTO composers (id, name, name_normalized, birth_year, death_year, created_at, updated_at)
 VALUES 
 (gen_random_uuid(), 'Tyagaraja', 'tyagaraja', 1767, 1847, NOW(), NOW()),
-(gen_random_uuid(), 'Muthuswami Dikshitar', 'muthuswami dikshitar', 1775, 1835, NOW(), NOW()),
+(gen_random_uuid(), 'Muthuswami Dikshitar', 'muttuswami diksitar', 1775, 1835, NOW(), NOW()),
 (gen_random_uuid(), 'Syama Sastri', 'syama sastri', 1762, 1827, NOW(), NOW())
 ON CONFLICT (name_normalized) DO NOTHING;
 

@@ -55,6 +55,37 @@ class DeityRepository {
     }
 
     /**
+     * Find a deity by normalized name.
+     */
+    suspend fun findByNameNormalized(nameNormalized: String): DeityDto? = DatabaseFactory.dbQuery {
+        DeitiesTable
+            .selectAll()
+            .where { DeitiesTable.nameNormalized eq nameNormalized }
+            .map { it.toDeityDto() }
+            .singleOrNull()
+    }
+
+    /**
+     * Find an existing deity or create a new record.
+     */
+    suspend fun findOrCreate(
+        name: String,
+        nameNormalized: String? = null,
+        description: String? = null
+    ): DeityDto {
+        val normalized = nameNormalized ?: normalize(name)
+
+        // Try finding by normalized name first (most robust)
+        findByNameNormalized(normalized)?.let { return it }
+
+        // Then try exact name match
+        findByName(name)?.let { return it }
+
+        // Create new
+        return create(name = name, nameNormalized = normalized, description = description)
+    }
+
+    /**
      * Create a new deity record.
      */
     suspend fun create(

@@ -402,11 +402,25 @@ class KrithiRepository {
         updatedByUserId: UUID? = null
     ): KrithiLyricVariantDto = DatabaseFactory.dbQuery {
         val now = OffsetDateTime.now(ZoneOffset.UTC)
-        val variantId = UUID.randomUUID()
+        val javaKrithiId = krithiId.toJavaUuid()
+
+        // TRACK-062: Idempotency guard — skip if variant with same (krithiId, language, script) already exists
+        val existing = KrithiLyricVariantsTable.selectAll()
+            .andWhere { KrithiLyricVariantsTable.krithiId eq javaKrithiId }
+            .andWhere { KrithiLyricVariantsTable.language eq language }
+            .andWhere { KrithiLyricVariantsTable.script eq script }
+            .limit(1)
+            .singleOrNull()
         
+        if (existing != null) {
+            return@dbQuery existing.toKrithiLyricVariantDto()
+        }
+
+        val variantId = UUID.randomUUID()
+
         KrithiLyricVariantsTable.insert {
             it[id] = variantId
-            it[KrithiLyricVariantsTable.krithiId] = krithiId.toJavaUuid()
+            it[KrithiLyricVariantsTable.krithiId] = javaKrithiId
             it[KrithiLyricVariantsTable.language] = language
             it[KrithiLyricVariantsTable.script] = script
             it[KrithiLyricVariantsTable.transliterationScheme] = transliterationScheme
@@ -760,17 +774,44 @@ class KrithiRepository {
 
     /**
      * Find potential duplicate krithis by normalized title and optional composer/raga.
+     *
+     * ALWAYS filters by compressed title (space-insensitive) to prevent duplicates caused by
+     * spacing differences (e.g. "abayambanayaka" vs "abayamba nayaka").
+     * Optionally narrows further by composer/raga when provided.
      */
     suspend fun findDuplicateCandidates(
         titleNormalized: String,
         composerId: UUID? = null,
         ragaId: UUID? = null
     ): List<KrithiDto> = DatabaseFactory.dbQuery {
+        val titleCompressed = titleNormalized.replace(" ", "")
         val query = KrithisTable.selectAll()
-        query.andWhere { KrithisTable.titleNormalized eq titleNormalized }
+
+        // ALWAYS match by compressed title (handles spacing variants)
+        query.andWhere {
+            (KrithisTable.titleNormalized eq titleNormalized) or
+            (CustomStringFunction("REPLACE", KrithisTable.titleNormalized, stringParam(" "), stringParam("")) eq titleCompressed)
+        }
+
+        // Optionally narrow further by metadata
         composerId?.let { query.andWhere { KrithisTable.composerId eq it } }
         ragaId?.let { query.andWhere { KrithisTable.primaryRagaId eq it } }
-        
+
+        query.map { it.toKrithiDto() }
+    }
+
+    /**
+     * Find candidates by metadata (composer + optional raga) without title filtering.
+     * Used by ExtractionResultProcessor for broad metadata-based search when title matching
+     * alone may miss candidates due to significant title differences.
+     */
+    suspend fun findCandidatesByMetadata(
+        composerId: UUID,
+        ragaId: UUID? = null
+    ): List<KrithiDto> = DatabaseFactory.dbQuery {
+        val query = KrithisTable.selectAll()
+        query.andWhere { KrithisTable.composerId eq composerId }
+        ragaId?.let { query.andWhere { KrithisTable.primaryRagaId eq it } }
         query.map { it.toKrithiDto() }
     }
 }
