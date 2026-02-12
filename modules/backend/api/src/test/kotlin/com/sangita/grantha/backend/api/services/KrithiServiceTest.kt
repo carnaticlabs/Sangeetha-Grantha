@@ -1,34 +1,27 @@
 package com.sangita.grantha.backend.api.services
 
 import com.sangita.grantha.backend.api.models.KrithiCreateRequest
-import com.sangita.grantha.backend.api.support.TestDatabaseFactory
+import com.sangita.grantha.backend.api.support.IntegrationTestBase
 import com.sangita.grantha.backend.api.support.TestFixtures
 import com.sangita.grantha.backend.dal.SangitaDal
 import com.sangita.grantha.shared.domain.model.KrithiSearchRequest
 import com.sangita.grantha.shared.domain.model.LanguageCodeDto
 import com.sangita.grantha.shared.domain.model.MusicalFormDto
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-class KrithiServiceTest {
+class KrithiServiceTest : IntegrationTestBase() {
     private lateinit var dal: SangitaDal
     private lateinit var service: IKrithiService
 
     @BeforeEach
-    fun setup() = runTest {
-        TestDatabaseFactory.connectTestDb()
+    fun setup() {
         dal = com.sangita.grantha.backend.dal.SangitaDalImpl()
         service = KrithiServiceImpl(dal)
-    }
-
-    @AfterEach
-    fun teardown() {
-        TestDatabaseFactory.reset()
     }
 
     @Test

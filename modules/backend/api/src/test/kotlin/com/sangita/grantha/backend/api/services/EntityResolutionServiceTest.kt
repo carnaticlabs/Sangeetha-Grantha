@@ -1,28 +1,21 @@
 package com.sangita.grantha.backend.api.services
 
-import com.sangita.grantha.backend.api.support.TestDatabaseFactory
+import com.sangita.grantha.backend.api.support.IntegrationTestBase
 import com.sangita.grantha.backend.api.support.TestFixtures
 import com.sangita.grantha.backend.dal.SangitaDal
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertTrue
 
-class EntityResolutionServiceTest {
+class EntityResolutionServiceTest : IntegrationTestBase() {
     private lateinit var dal: SangitaDal
     private lateinit var service: IEntityResolver
 
     @BeforeEach
     fun setup() {
-        TestDatabaseFactory.connectTestDb()
         dal = com.sangita.grantha.backend.dal.SangitaDalImpl()
         service = EntityResolutionServiceImpl(dal, NameNormalizationService())
-    }
-
-    @AfterEach
-    fun teardown() {
-        TestDatabaseFactory.reset()
     }
 
     @Test

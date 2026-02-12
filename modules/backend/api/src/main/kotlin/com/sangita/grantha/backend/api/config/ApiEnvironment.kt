@@ -31,6 +31,8 @@ data class ApiEnvironment(
     val geminiRequestTimeoutMs: Long = 90_000L,
     val geminiFallbackModelUrl: String? = null,
     val geminiUseSchemaMode: Boolean = false,
+    /** When true, skip Gemini API calls in WebScrapingService and use deterministic parsing only. */
+    val geminiStubMode: Boolean = false,
     val scrapeCacheTtlHours: Long = 24,
     val scrapeCacheMaxEntries: Long = 500,
     val geoProvider: String = "osm",
@@ -107,6 +109,7 @@ object ApiEnvironmentLoader {
         val geminiRequestTimeoutMs = get("SG_GEMINI_REQUEST_TIMEOUT_MS", "90000")?.toLongOrNull()?.coerceIn(30_000L, 180_000L) ?: 90_000L
         val geminiFallbackModelUrl = get("SG_GEMINI_FALLBACK_MODEL_URL")
         val geminiUseSchemaMode = get("SG_GEMINI_USE_SCHEMA_MODE", "false")?.equals("true", ignoreCase = true) ?: false
+        val geminiStubMode = get("SG_GEMINI_STUB_MODE", "false")?.equals("true", ignoreCase = true) ?: false
         val scrapeCacheTtlHours = get("SG_SCRAPE_CACHE_TTL_HOURS", "24")?.toLongOrNull()?.coerceIn(1L, 168L) ?: 24
         val scrapeCacheMaxEntries = get("SG_SCRAPE_CACHE_MAX_ENTRIES", "500")?.toLongOrNull()?.coerceAtLeast(0L) ?: 500
 
@@ -161,6 +164,7 @@ object ApiEnvironmentLoader {
             geminiRequestTimeoutMs = geminiRequestTimeoutMs,
             geminiFallbackModelUrl = geminiFallbackModelUrl,
             geminiUseSchemaMode = geminiUseSchemaMode,
+            geminiStubMode = geminiStubMode,
             scrapeCacheTtlHours = scrapeCacheTtlHours,
             scrapeCacheMaxEntries = scrapeCacheMaxEntries,
             geoProvider = geoProvider,

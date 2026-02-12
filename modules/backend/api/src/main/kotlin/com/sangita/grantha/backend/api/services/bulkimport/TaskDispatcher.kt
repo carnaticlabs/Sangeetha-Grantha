@@ -51,8 +51,14 @@ class TaskDispatcher(
                 limit = config.batchClaimSize
             )
             if (resolutionTasks.isNotEmpty()) {
+                logger.info("Claimed ${resolutionTasks.size} resolution tasks")
                 anyTaskFound = true
                 resolutionTasks.forEach { resolutionChannel.send(it) }
+            } else {
+                // Periodically log that we are looking
+                if (System.currentTimeMillis() % 10000 < 500) {
+                    logger.debug("Polling for resolution tasks... (anyTaskFound=$anyTaskFound)")
+                }
             }
 
             if (anyTaskFound) {

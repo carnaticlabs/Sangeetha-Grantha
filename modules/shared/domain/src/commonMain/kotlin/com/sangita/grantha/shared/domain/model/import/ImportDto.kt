@@ -6,17 +6,6 @@ import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
 @Serializable
-data class ImportSourceDto(
-    @Serializable(with = UuidSerializer::class)
-    val id: Uuid,
-    val name: String,
-    val baseUrl: String? = null,
-    val description: String? = null,
-    val contactInfo: String? = null,
-    val createdAt: Instant,
-)
-
-@Serializable
 data class ImportedKrithiDto(
     @Serializable(with = UuidSerializer::class)
     val id: Uuid,

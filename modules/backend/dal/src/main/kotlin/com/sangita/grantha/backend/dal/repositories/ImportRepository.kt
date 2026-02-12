@@ -46,6 +46,7 @@ class ImportRepository {
         ImportSourcesTable
             .selectAll()
             .andWhere { ImportSourcesTable.name eq name }
+            .limit(1)
             .map { it[ImportSourcesTable.id].value }
             .singleOrNull()
             ?: run {

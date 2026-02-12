@@ -50,6 +50,22 @@ object LogbackConfig {
         // Attach appender to root logger
         rootLogger.addAppender(consoleAppender)
         
+        // Create a dedicated encoder for the file appender.
+        // Each Logback appender MUST have its own encoder instance — sharing an
+        // encoder between appenders causes the OutputStream to be stolen by the
+        // last appender that starts, silently breaking the other one.
+        val fileEncoder = when (env.environment) {
+            Environment.PROD -> LogstashEncoder().apply {
+                this.context = context
+                start()
+            }
+            else -> PatternLayoutEncoder().apply {
+                this.context = context
+                pattern = "%d{ISO8601} %-5level [%thread] %logger{36} - %msg%n"
+                start()
+            }
+        }
+
         // Create and configure the rolling file appender for Exposed
         val fileAppender = ch.qos.logback.core.rolling.RollingFileAppender<ch.qos.logback.classic.spi.ILoggingEvent>().apply {
             this.context = context
@@ -71,7 +87,7 @@ object LogbackConfig {
             }
             this.rollingPolicy = rollingPolicy
             
-            this.encoder = encoder
+            this.encoder = fileEncoder
             start()
         }
 

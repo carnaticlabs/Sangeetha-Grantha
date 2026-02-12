@@ -14,7 +14,7 @@ export interface KrithiEditorState {
     krithi: Partial<KrithiDetail>;
     isLoading: boolean;
     isSaving: boolean;
-    activeTab: 'Metadata' | 'Structure' | 'Lyrics' | 'Notation' | 'Tags' | 'Audit';
+    activeTab: 'Metadata' | 'Structure' | 'Lyrics' | 'Notation' | 'Tags' | 'Audit' | 'Source Evidence' | 'Lyric Variants';
     sectionsLoaded: boolean;
     lyricVariantsLoaded: boolean;
 }

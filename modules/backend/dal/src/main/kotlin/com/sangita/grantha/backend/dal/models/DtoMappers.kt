@@ -252,7 +252,8 @@ fun ResultRow.toImportSourceDto(): ImportSourceDto = ImportSourceDto(
     baseUrl = this[ImportSourcesTable.baseUrl],
     description = this[ImportSourcesTable.description],
     contactInfo = this[ImportSourcesTable.contactInfo],
-    createdAt = this.kotlinInstant(ImportSourcesTable.createdAt)
+    createdAt = this.kotlinInstant(ImportSourcesTable.createdAt),
+    updatedAt = this.kotlinInstant(ImportSourcesTable.createdAt), // basic table lacks updatedAt
 )
 
 @OptIn(ExperimentalUuidApi::class)

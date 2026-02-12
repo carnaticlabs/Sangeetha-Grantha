@@ -6,6 +6,7 @@ export enum ViewState {
   IMPORTS = 'IMPORTS',
   BULK_IMPORT = 'BULK_IMPORT',
   IMPORT_REVIEW = 'IMPORT_REVIEW',
+  SOURCING = 'SOURCING',
   TAGS = 'TAGS',
 }
 

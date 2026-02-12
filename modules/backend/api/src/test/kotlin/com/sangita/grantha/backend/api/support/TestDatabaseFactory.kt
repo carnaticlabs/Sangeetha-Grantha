@@ -1,114 +1,88 @@
 package com.sangita.grantha.backend.api.support
 
 import com.sangita.grantha.backend.dal.DatabaseFactory
-import com.sangita.grantha.backend.dal.tables.*
-import org.jetbrains.exposed.v1.jdbc.SchemaUtils
+import kotlinx.coroutines.runBlocking
+import java.sql.DriverManager
 
+/**
+ * Migration-based test database factory.
+ *
+ * Uses the actual SQL migration files from `database/migrations/` to set up
+ * the test database, guaranteeing schema parity with production.
+ *
+ * Prefer extending [IntegrationTestBase] for new test classes. This object
+ * is kept for backward compatibility with tests that call it directly.
+ */
 object TestDatabaseFactory {
+    private const val TEST_DB_NAME = "sangita_grantha_test"
+    private const val ADMIN_URL = "jdbc:postgresql://localhost:5432/postgres"
+    private const val TEST_DB_URL = "jdbc:postgresql://localhost:5432/$TEST_DB_NAME"
+    private const val DB_USER = "postgres"
+    private const val DB_PASSWORD = "postgres"
+
+    /**
+     * Ensures the test database exists, runs migrations, and connects Exposed.
+     */
     fun connectTestDb() {
+        ensureTestDatabaseExists()
+        runMigrations()
+
         DatabaseFactory.connect(
             DatabaseFactory.ConnectionConfig(
-                databaseUrl = "jdbc:postgresql://localhost:5432/sangita_grantha_test",
-                username = "postgres",
-                password = "postgres",
+                databaseUrl = TEST_DB_URL,
+                username = DB_USER,
+                password = DB_PASSWORD,
                 driverClassName = "org.postgresql.Driver",
-                enableQueryLogging = false
+                enableQueryLogging = false,
             )
         )
+    }
 
-        kotlinx.coroutines.runBlocking {
+    /**
+     * Truncates all user tables (fast) and closes the connection pool.
+     */
+    fun reset() {
+        runBlocking {
             DatabaseFactory.dbQuery {
-                // Drop existing types to ensure clean slate if reset() wasn't called or failed
-                exec("DROP TYPE IF EXISTS workflow_state_enum CASCADE")
-                exec("DROP TYPE IF EXISTS language_code_enum CASCADE")
-                exec("DROP TYPE IF EXISTS script_code_enum CASCADE")
-                exec("DROP TYPE IF EXISTS raga_section_enum CASCADE")
-                exec("DROP TYPE IF EXISTS import_status_enum CASCADE")
-                exec("DROP TYPE IF EXISTS batch_status_enum CASCADE")
-                exec("DROP TYPE IF EXISTS job_type_enum CASCADE")
-                exec("DROP TYPE IF EXISTS task_status_enum CASCADE")
-                exec("DROP TYPE IF EXISTS musical_form_enum CASCADE")
+                val tables = exec(
+                    """
+                    SELECT tablename FROM pg_tables
+                    WHERE schemaname = 'public'
+                      AND tablename NOT IN ('_sqlx_migrations')
+                    """.trimIndent()
+                ) { rs ->
+                    buildList { while (rs.next()) add(rs.getString(1)) }
+                } ?: emptyList()
 
-                // Create ENUM types
-                exec("CREATE TYPE workflow_state_enum AS ENUM ('draft', 'in_review', 'published', 'archived')")
-                exec("CREATE TYPE language_code_enum AS ENUM ('sa', 'ta', 'te', 'kn', 'ml', 'hi', 'en')")
-                exec("CREATE TYPE script_code_enum AS ENUM ('devanagari', 'tamil', 'telugu', 'kannada', 'malayalam', 'latin')")
-                exec("CREATE TYPE raga_section_enum AS ENUM ('pallavi', 'anupallavi', 'charanam', 'samashti_charanam', 'chittaswaram', 'swara_sahitya', 'madhyama_kala', 'solkattu_swara', 'anubandha', 'muktayi_swara', 'ettugada_swara', 'ettugada_sahitya', 'viloma_chittaswaram', 'other')")
-                exec("CREATE TYPE import_status_enum AS ENUM ('pending', 'in_review', 'approved', 'mapped', 'rejected', 'discarded')")
-                exec("CREATE TYPE musical_form_enum AS ENUM ('KRITHI', 'VARNAM', 'SWARAJATHI')")
-                exec("CREATE TYPE batch_status_enum AS ENUM ('pending', 'running', 'paused', 'succeeded', 'failed', 'cancelled')")
-                exec("CREATE TYPE job_type_enum AS ENUM ('manifest_ingest', 'scrape', 'enrich', 'entity_resolution', 'review_prep')")
-                exec("CREATE TYPE task_status_enum AS ENUM ('pending', 'running', 'succeeded', 'failed', 'retryable', 'blocked', 'cancelled')")
+                if (tables.isNotEmpty()) {
+                    exec("SET session_replication_role = replica")
+                    exec("TRUNCATE TABLE ${tables.joinToString(", ")} CASCADE")
+                    exec("SET session_replication_role = DEFAULT")
+                }
+            }
+        }
+        DatabaseFactory.close()
+    }
 
-                SchemaUtils.create(
-                    RolesTable,
-                    UsersTable,
-                    RoleAssignmentsTable,
-                    ComposersTable,
-                    RagasTable,
-                    TalasTable,
-                    DeitiesTable,
-                    TemplesTable,
-                    TempleNamesTable,
-                    TagsTable,
-                    SampradayasTable,
-                    KrithisTable,
-                    KrithiRagasTable,
-                    KrithiLyricVariantsTable,
-                    KrithiSectionsTable,
-                    KrithiLyricSectionsTable,
-                    KrithiNotationVariantsTable,
-                    KrithiNotationRowsTable,
-                    KrithiTagsTable,
-                    ImportSourcesTable,
-                    ImportedKrithisTable,
-                    AuditLogTable,
-                    ImportBatchTable,
-                    ImportJobTable,
-                    ImportTaskRunTable,
-                    ImportEventTable,
-                    EntityResolutionCacheTable,
-                    TempleSourceCacheTable
-                )
+    private fun ensureTestDatabaseExists() {
+        DriverManager.getConnection(ADMIN_URL, DB_USER, DB_PASSWORD).use { conn ->
+            conn.autoCommit = true
+            val exists = conn.prepareStatement(
+                "SELECT 1 FROM pg_database WHERE datname = ?"
+            ).use { stmt ->
+                stmt.setString(1, TEST_DB_NAME)
+                stmt.executeQuery().next()
+            }
+            if (!exists) {
+                conn.createStatement().use { it.execute("CREATE DATABASE $TEST_DB_NAME") }
             }
         }
     }
 
-    fun reset() {
-        kotlinx.coroutines.runBlocking {
-            DatabaseFactory.dbQuery {
-                SchemaUtils.drop(
-                    TempleSourceCacheTable,
-                    EntityResolutionCacheTable,
-                    ImportEventTable,
-                    ImportTaskRunTable,
-                    ImportJobTable,
-                    ImportBatchTable,
-                    AuditLogTable,
-                    ImportedKrithisTable,
-                    ImportSourcesTable,
-                    KrithiTagsTable,
-                    KrithiNotationRowsTable,
-                    KrithiNotationVariantsTable,
-                    KrithiLyricSectionsTable,
-                    KrithiSectionsTable,
-                    KrithiLyricVariantsTable,
-                    KrithiRagasTable,
-                    KrithisTable,
-                    SampradayasTable,
-                    TagsTable,
-                    TempleNamesTable,
-                    TemplesTable,
-                    DeitiesTable,
-                    TalasTable,
-                    RagasTable,
-                    ComposersTable,
-                    RoleAssignmentsTable,
-                    UsersTable,
-                    RolesTable
-                )
-            }
+    private fun runMigrations() {
+        DriverManager.getConnection(TEST_DB_URL, DB_USER, DB_PASSWORD).use { conn ->
+            val migrations = MigrationRunner.loadMigrations()
+            MigrationRunner.runMigrations(conn, migrations)
         }
-        DatabaseFactory.close()
     }
 }
