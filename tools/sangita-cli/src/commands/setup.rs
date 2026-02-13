@@ -24,10 +24,14 @@ pub async fn run() -> Result<()> {
         print_success("Running in mise-managed environment");
     } else if mise_available() {
         print_warning("Not running via mise. Recommended: 'mise exec cargo run -- setup'");
-        print_info("This ensures correct tool versions (Rust 1.92.0, Java 25, Bun 1.3.0, Docker Compose)");
+        print_info(
+            "This ensures correct tool versions (Rust 1.92.0, Java 25, Bun 1.3.0, Docker Compose)",
+        );
         print_info("See .mise.toml for version requirements");
     } else {
-        print_warning("mise is not installed. Consider installing for better toolchain management.");
+        print_warning(
+            "mise is not installed. Consider installing for better toolchain management.",
+        );
         print_info("Install: curl https://mise.run | sh");
         print_info("Then run: mise install");
     }

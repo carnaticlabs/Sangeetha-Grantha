@@ -1,8 +1,7 @@
 use crate::config::Config;
 use crate::services::{
-    cleanup_ports, ensure_database_running, spawn_backend,
-    spawn_frontend, start_extraction_service, stop_database,
-    stop_extraction_service, wait_for_backend_health,
+    cleanup_ports, ensure_database_running, spawn_backend, spawn_frontend,
+    start_extraction_service, stop_database, stop_extraction_service, wait_for_backend_health,
 };
 use crate::utils::{print_step, print_success, print_warning, project_root};
 use crate::AppConfig;
@@ -30,7 +29,9 @@ pub async fn run(args: DevArgs) -> Result<()> {
     let root = project_root()?;
 
     let app_config = if args.start_db {
-        Some(AppConfig::from_file(&root.join("config/application.local.toml"))?)
+        Some(AppConfig::from_file(
+            &root.join("config/application.local.toml"),
+        )?)
     } else {
         None
     };
@@ -73,7 +74,9 @@ pub async fn run(args: DevArgs) -> Result<()> {
             }
             Err(e) => {
                 print_warning(&format!("Extraction service failed to start: {e}"));
-                print_warning("Continuing without extraction. Start manually: sangita-cli extraction start");
+                print_warning(
+                    "Continuing without extraction. Start manually: sangita-cli extraction start",
+                );
                 false
             }
         }
@@ -86,8 +89,14 @@ pub async fn run(args: DevArgs) -> Result<()> {
     println!("╔══════════════════════════════════════════════════════════════╗");
     println!("║  Sangita Grantha — All services running                    ║");
     println!("╠══════════════════════════════════════════════════════════════╣");
-    println!("║  Admin Web:   http://localhost:{}                        ║", config.frontend_port);
-    println!("║  Backend API: http://{}:{}                          ║", config.api_host, config.api_port);
+    println!(
+        "║  Admin Web:   http://localhost:{}                        ║",
+        config.frontend_port
+    );
+    println!(
+        "║  Backend API: http://{}:{}                          ║",
+        config.api_host, config.api_port
+    );
     if args.start_db {
         println!("║  Database:    localhost:5432                                ║");
     }
@@ -146,8 +155,8 @@ pub async fn run(args: DevArgs) -> Result<()> {
 async fn wait_for_shutdown_signal() {
     #[cfg(unix)]
     {
-        let mut sigterm = unix_signal(SignalKind::terminate())
-            .expect("Failed to register SIGTERM handler");
+        let mut sigterm =
+            unix_signal(SignalKind::terminate()).expect("Failed to register SIGTERM handler");
 
         tokio::select! {
             _ = signal::ctrl_c() => {
@@ -161,7 +170,9 @@ async fn wait_for_shutdown_signal() {
 
     #[cfg(not(unix))]
     {
-        signal::ctrl_c().await.expect("Failed to register Ctrl+C handler");
+        signal::ctrl_c()
+            .await
+            .expect("Failed to register Ctrl+C handler");
         println!("\nReceived Ctrl+C");
     }
 }

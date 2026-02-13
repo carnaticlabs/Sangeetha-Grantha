@@ -78,7 +78,10 @@ async fn show_info() -> Result<()> {
     if let Some(fw) = firewall_status() {
         println!("Firewall: {}", fw);
     } else {
-        println!("Firewall: {}", style("unknown (socketfilterfw not found)").yellow());
+        println!(
+            "Firewall: {}",
+            style("unknown (socketfilterfw not found)").yellow()
+        );
     }
 
     Ok(())
@@ -91,8 +94,12 @@ async fn configure(args: NetConfigureArgs) -> Result<()> {
             .target
             .or_else(|| primary_ipv4_address().ok().flatten())
             .context("No IP detected. Provide one with --target")?,
-        NetMode::Mdns => args.target.unwrap_or_else(|| "sangita-api.local".to_string()),
-        NetMode::Pihole => args.target.unwrap_or_else(|| "api.sangita.home".to_string()),
+        NetMode::Mdns => args
+            .target
+            .unwrap_or_else(|| "sangita-api.local".to_string()),
+        NetMode::Pihole => args
+            .target
+            .unwrap_or_else(|| "api.sangita.home".to_string()),
     };
 
     let mode_label = match args.mode {
@@ -253,12 +260,14 @@ async fn verify() -> Result<()> {
     } else {
         warn(
             "Uploads directory",
-            &format!("Not found at {} (will create on demand)", uploads_dir.display()),
+            &format!(
+                "Not found at {} (will create on demand)",
+                uploads_dir.display()
+            ),
         );
     }
 
-    let android_config =
-        root.join("androidApp/src/main/res/xml/network_security_config.xml");
+    let android_config = root.join("androidApp/src/main/res/xml/network_security_config.xml");
     if android_config.exists() {
         let content = fs::read_to_string(&android_config).unwrap_or_default();
         if content.contains("cleartextTrafficPermitted=\"true\"") {
@@ -312,7 +321,9 @@ async fn verify() -> Result<()> {
     if errors == 0 {
         print_success("Verification complete: no critical blockers.");
     } else {
-        print_error(&format!("Verification complete: {errors} critical issue(s)."));
+        print_error(&format!(
+            "Verification complete: {errors} critical issue(s)."
+        ));
     }
 
     Ok(())

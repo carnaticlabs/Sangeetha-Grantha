@@ -110,9 +110,9 @@ async fn check_commit_message(message: Option<String>) -> Result<()> {
     })?;
 
     // Ensure the path is within application_documentation
-    let doc_root_normalized = doc_root.canonicalize().context(
-        "application_documentation directory not found. Are you in the project root?",
-    )?;
+    let doc_root_normalized = doc_root
+        .canonicalize()
+        .context("application_documentation directory not found. Are you in the project root?")?;
 
     if !normalized_path.starts_with(&doc_root_normalized) {
         print_error(&format!(
@@ -327,7 +327,7 @@ pub async fn scan_sensitive_data() -> Result<()> {
 
     for file_path in files {
         let full_path = root.join(file_path);
-        
+
         // Skip binary files
         if let Ok(metadata) = fs::metadata(&full_path) {
             if metadata.len() > 1_000_000 {
@@ -351,17 +351,23 @@ pub async fn scan_sensitive_data() -> Result<()> {
                 if let Some(cap) = pattern.captures(line) {
                     // Check if this is in a comment or string that might be a placeholder
                     let matched_value = cap.get(1).map(|m| m.as_str()).unwrap_or("");
-                    
+
                     // Skip common placeholder patterns
-                    if matched_value.contains("your-") 
+                    if matched_value.contains("your-")
                         || matched_value.contains("YOUR_")
                         || matched_value == "xxx"
                         || matched_value == "***"
-                        || matched_value.len() < 10 {
+                        || matched_value.len() < 10
+                    {
                         continue;
                     }
 
-                    found_issues.push((file_path.to_string(), line_num + 1, pattern_name.to_string(), line.trim().to_string()));
+                    found_issues.push((
+                        file_path.to_string(),
+                        line_num + 1,
+                        pattern_name.to_string(),
+                        line.trim().to_string(),
+                    ));
                 }
             }
         }
@@ -370,20 +376,21 @@ pub async fn scan_sensitive_data() -> Result<()> {
     if !found_issues.is_empty() {
         print_error("Sensitive data detected in staged files!");
         println!("\nPlease remove or mask the following before committing:\n");
-        
+
         for (file, line, pattern, content) in &found_issues {
             println!("  File: {}:{}", file, line);
             println!("  Pattern: {}", pattern);
-            println!("  Content: {}", 
-                if content.len() > 80 { 
-                    format!("{}...", &content[..80]) 
-                } else { 
-                    content.clone() 
+            println!(
+                "  Content: {}",
+                if content.len() > 80 {
+                    format!("{}...", &content[..80])
+                } else {
+                    content.clone()
                 }
             );
             println!();
         }
-        
+
         println!("Tip: Use environment variables or a secrets manager instead of hardcoding credentials.");
         std::process::exit(1);
     }
@@ -391,4 +398,3 @@ pub async fn scan_sensitive_data() -> Result<()> {
     print_success("No sensitive data detected in staged files");
     Ok(())
 }
-

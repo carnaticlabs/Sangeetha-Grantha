@@ -3,8 +3,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-30 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-02-12 |
 | **Author** | Sangeetha Grantha Team |
 
 A unified command-line tool for the Sangita Grantha project.
@@ -49,6 +49,21 @@ mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db migrat
 
 # Testing
 mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- test steel-thread
+
+# Extraction E2E (backend + queue + Python worker)
+mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- test extraction-e2e --timeout-seconds 600
+
+# Blogspot HTML E2E scenario (auto-picks one URL from Dikshitar-Krithi-Test-20.csv)
+mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- test extraction-e2e --scenario blogspot-html --timeout-seconds 600
+
+# Akhila 3-source regression (Blogspot HTML + Roman PDF + Sanskrit PDF fixtures)
+mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- test extraction-e2e --scenario akhila-three-source --timeout-seconds 600
+
+# Large-set Dikshitar key collision scan (flags first10+raga+tala outliers, continues run)
+mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- \
+  test extraction-e2e --scenario dikshitar-key-collision \
+  --csv-path database/for_import/Dikshitar-Krithi-For-Import.csv \
+  --skip-migrations --skip-extraction-start --timeout-seconds 600
 
 # Setup check
 mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- setup
@@ -218,6 +233,48 @@ cargo run -- docs validate-links
 **Output:** `application_documentation/00-meta/current-versions.md`
 
 ### Testing
+
+#### Extraction E2E Integration Test
+Run full backend extraction integration checks (no Playwright/UI dependency):
+```bash
+cargo run -- test extraction-e2e
+```
+
+What it validates automatically:
+1. Database is running (and migrations/seed unless skipped)
+2. Backend starts and passes `/health`
+3. Extraction worker container is running (or started by the command)
+4. Auth token issuance and extraction submission through API
+5. Queue lifecycle reaches `INGESTED` (`PENDING -> PROCESSING -> DONE -> INGESTED`)
+6. Database integrity checks for the submitted task:
+   - `extraction_queue.status = INGESTED`
+   - non-empty `extraction_method` and `extractor_version`
+   - `result_count` threshold validation
+   - matching `result_payload` sanity checks
+   - source evidence rows in `krithi_source_evidence`
+
+Useful options:
+```bash
+# Run Blogspot HTML scenario (source URL is auto-selected from database/for_import/Dikshitar-Krithi-Test-20.csv)
+cargo run -- test extraction-e2e --scenario blogspot-html
+
+# Run Akhila 3-source convergence regression
+# (uses fixtures in tools/sangita-cli/fixtures/extraction/)
+cargo run -- test extraction-e2e --scenario akhila-three-source
+
+# Run full Dikshitar collision scan and fail only if you request strict mode
+cargo run -- test extraction-e2e --scenario dikshitar-key-collision --max-rows 200
+cargo run -- test extraction-e2e --scenario dikshitar-key-collision --fail-on-collision
+
+# Keep services up for manual debugging after test
+cargo run -- test extraction-e2e --keep-services
+
+# Reuse an already-running worker, skip migration step
+cargo run -- test extraction-e2e --skip-extraction-start --skip-migrations
+
+# Adjust source/page range and assertions
+cargo run -- test extraction-e2e --source-url "<pdf-url>" --page-range "17-18" --min-result-count 1
+```
 
 #### Steel Thread Test
 Run the end-to-end smoke verification:

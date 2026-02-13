@@ -1,4 +1,6 @@
-use crate::utils::{docker_compose_available, print_step, print_success, project_root, run_docker_compose};
+use crate::utils::{
+    docker_compose_available, print_step, print_success, project_root, run_docker_compose,
+};
 use crate::{AppConfig, ConnectionString, DatabaseConfig, DatabaseManager, PostgresInstance};
 use anyhow::{Context, Result};
 use clap::{Args, Subcommand, ValueEnum};
@@ -81,7 +83,8 @@ pub async fn run(args: DbArgs) -> Result<()> {
     load_repo_dotenv(&root);
 
     // AppConfig comes from TOML, but we override DB fields from env if present.
-    let mut app_config = AppConfig::from_file(&config_path).context("Failed to load application config")?;
+    let mut app_config =
+        AppConfig::from_file(&config_path).context("Failed to load application config")?;
     apply_env_overrides(&mut app_config);
 
     let migrations_path = root.join("database/migrations");
@@ -95,7 +98,11 @@ pub async fn run(args: DbArgs) -> Result<()> {
         .with_admin_password(app_config.database.admin_password.clone());
 
     // Create database manager
-    let manager = DatabaseManager::new(db_config, migrations_path.clone(), Some(seed_data_path.clone()));
+    let manager = DatabaseManager::new(
+        db_config,
+        migrations_path.clone(),
+        Some(seed_data_path.clone()),
+    );
 
     match args.command {
         DbCommands::Init { mode } => {
@@ -247,34 +254,37 @@ async fn start_docker_postgres(root: &Path) -> Result<()> {
     }
 
     // Start only the postgres service (dev default).
-    run_docker_compose(root, &["up", "-d", "postgres"]).context("Failed to start postgres via Docker Compose")?;
-    
+    run_docker_compose(root, &["up", "-d", "postgres"])
+        .context("Failed to start postgres via Docker Compose")?;
+
     // Wait for PostgreSQL to be ready
     print_step("Waiting for PostgreSQL to be ready...");
     wait_for_docker_postgres_ready(root).await?;
     print_success("PostgreSQL is ready");
-    
+
     Ok(())
 }
 
 async fn wait_for_docker_postgres_ready(root: &Path) -> Result<()> {
     use std::process::Command;
-    
+
     let max_attempts = 30;
     let interval = Duration::from_secs(2);
-    
+
     for attempt in 1..=max_attempts {
         // Check if container is healthy using docker compose ps
         let output = Command::new("docker")
             .args(["compose", "ps", "--format", "json", "postgres"])
             .current_dir(root)
             .output();
-        
+
         match output {
             Ok(out) if out.status.success() => {
                 let stdout = String::from_utf8_lossy(&out.stdout);
                 // Check if health status indicates ready
-                if stdout.contains("\"Health\":\"healthy\"") || stdout.contains("\"State\":\"running\"") {
+                if stdout.contains("\"Health\":\"healthy\"")
+                    || stdout.contains("\"State\":\"running\"")
+                {
                     // Also try to connect to verify
                     if check_postgres_connection().await.is_ok() {
                         return Ok(());
@@ -283,12 +293,12 @@ async fn wait_for_docker_postgres_ready(root: &Path) -> Result<()> {
             }
             _ => {}
         }
-        
+
         // Fallback: try direct connection check
         if check_postgres_connection().await.is_ok() {
             return Ok(());
         }
-        
+
         if attempt < max_attempts {
             if attempt % 5 == 0 {
                 println!("  Still waiting... (attempt {}/{})", attempt, max_attempts);
@@ -296,25 +306,28 @@ async fn wait_for_docker_postgres_ready(root: &Path) -> Result<()> {
             sleep(interval).await;
         }
     }
-    
-    anyhow::bail!("PostgreSQL did not become ready after {} attempts", max_attempts);
+
+    anyhow::bail!(
+        "PostgreSQL did not become ready after {} attempts",
+        max_attempts
+    );
 }
 
 async fn check_postgres_connection() -> Result<()> {
     use sqlx::postgres::PgConnectOptions;
     use sqlx::ConnectOptions;
     use std::str::FromStr;
-    
+
     // Try to connect to postgres database with default Docker credentials
     // This is a lightweight check to see if the server is accepting connections
     // Using default credentials from compose.yaml: postgres/postgres
     // Note: This uses hardcoded defaults for the health check; actual operations use config values
     let conn_str = "postgres://postgres:postgres@localhost:5432/postgres";
     let mut options = PgConnectOptions::from_str(conn_str)?;
-    
+
     // Set a short timeout for the health check
     options = options.log_statements(log::LevelFilter::Off);
-    
+
     match sqlx::PgPool::connect_with(options).await {
         Ok(pool) => {
             // Try a simple query to ensure the connection is fully ready
@@ -339,7 +352,8 @@ async fn stop_docker_postgres(root: &Path) -> Result<()> {
     }
 
     // Stop only the postgres service.
-    run_docker_compose(root, &["stop", "postgres"]).context("Failed to stop postgres via Docker Compose")?;
+    run_docker_compose(root, &["stop", "postgres"])
+        .context("Failed to stop postgres via Docker Compose")?;
     Ok(())
 }
 
@@ -351,7 +365,8 @@ async fn reset_docker_postgres(root: &Path) -> Result<()> {
     // This wipes the named volume and recreates it.
     // NOTE: Since compose.yaml currently defines only postgres, `down -v` is safe.
     run_docker_compose(root, &["down", "-v"]).context("Failed to docker compose down -v")?;
-    run_docker_compose(root, &["up", "-d", "postgres"]).context("Failed to docker compose up -d postgres")?;
+    run_docker_compose(root, &["up", "-d", "postgres"])
+        .context("Failed to docker compose up -d postgres")?;
     Ok(())
 }
 

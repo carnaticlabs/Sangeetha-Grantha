@@ -1,4 +1,6 @@
-use crate::utils::{docker_compose_available, print_step, print_success, project_root, run_docker_compose};
+use crate::utils::{
+    docker_compose_available, print_step, print_success, project_root, run_docker_compose,
+};
 use anyhow::{Context, Result};
 use clap::{Args, Subcommand};
 use std::path::Path;
@@ -113,8 +115,7 @@ async fn start_extractor(root: &Path, with_db: bool, follow: bool) -> Result<()>
 
     if with_db && !postgres_running {
         print_step("Starting PostgreSQL...");
-        run_docker_compose(root, &["up", "-d", "postgres"])
-            .context("Failed to start postgres")?;
+        run_docker_compose(root, &["up", "-d", "postgres"]).context("Failed to start postgres")?;
 
         // Wait for postgres to be healthy
         print_step("Waiting for PostgreSQL to be ready...");
@@ -124,8 +125,11 @@ async fn start_extractor(root: &Path, with_db: bool, follow: bool) -> Result<()>
     print_step("Starting PDF extractor service...");
 
     // Use --profile extraction to include the pdf-extractor service
-    run_docker_compose(root, &["--profile", "extraction", "up", "-d", "pdf-extractor"])
-        .context("Failed to start pdf-extractor")?;
+    run_docker_compose(
+        root,
+        &["--profile", "extraction", "up", "-d", "pdf-extractor"],
+    )
+    .context("Failed to start pdf-extractor")?;
 
     print_success("PDF extractor service started");
     println!("\n  Container: sangita_pdf_extractor");
@@ -191,7 +195,15 @@ async fn show_status(root: &Path) -> Result<()> {
 
     // Check container status
     let output = Command::new("docker")
-        .args(["compose", "--profile", "extraction", "ps", "--format", "table", "pdf-extractor"])
+        .args([
+            "compose",
+            "--profile",
+            "extraction",
+            "ps",
+            "--format",
+            "table",
+            "pdf-extractor",
+        ])
         .current_dir(root)
         .output();
 
@@ -227,8 +239,7 @@ async fn show_queue_stats() -> Result<()> {
     use std::str::FromStr;
 
     let conn_str = "postgres://postgres:postgres@localhost:5432/sangita_grantha";
-    let options = PgConnectOptions::from_str(conn_str)?
-        .log_statements(log::LevelFilter::Off);
+    let options = PgConnectOptions::from_str(conn_str)?.log_statements(log::LevelFilter::Off);
 
     let pool = sqlx::PgPool::connect_with(options).await?;
 
@@ -292,5 +303,8 @@ async fn wait_for_postgres_healthy(root: &Path) -> Result<()> {
         sleep(interval).await;
     }
 
-    anyhow::bail!("PostgreSQL did not become healthy after {} attempts", max_attempts);
+    anyhow::bail!(
+        "PostgreSQL did not become healthy after {} attempts",
+        max_attempts
+    );
 }

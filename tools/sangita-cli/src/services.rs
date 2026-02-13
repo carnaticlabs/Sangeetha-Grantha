@@ -1,5 +1,8 @@
 use crate::config::Config;
-use crate::utils::{check_command_exists, docker_compose_available, is_windows, print_step, print_success, run_docker_compose};
+use crate::utils::{
+    check_command_exists, docker_compose_available, is_windows, print_step, print_success,
+    run_docker_compose,
+};
 use crate::{AppConfig, PostgresInstance};
 use anyhow::{Context, Result};
 use console;
@@ -21,7 +24,8 @@ pub async fn ensure_database_running(config: &AppConfig) -> Result<()> {
 
     if docker_compose_available() {
         print_step("Starting Postgres via Docker Compose (dev default)...");
-        run_docker_compose(&root, &["up", "-d", "postgres"]).context("Failed to start postgres via Docker Compose")?;
+        run_docker_compose(&root, &["up", "-d", "postgres"])
+            .context("Failed to start postgres via Docker Compose")?;
         print_success("Database is running (docker compose)");
         return Ok(());
     }
@@ -45,7 +49,8 @@ pub async fn stop_database(config: &AppConfig) -> Result<()> {
     let root = crate::utils::project_root()?;
 
     if docker_compose_available() {
-        run_docker_compose(&root, &["stop", "postgres"]).context("Failed to stop postgres via Docker Compose")?;
+        run_docker_compose(&root, &["stop", "postgres"])
+            .context("Failed to stop postgres via Docker Compose")?;
         print_success("Database stopped (docker compose)");
         return Ok(());
     }
@@ -60,8 +65,7 @@ pub async fn stop_database(config: &AppConfig) -> Result<()> {
         Err(err) => {
             eprintln!(
                 "{}",
-                console::style("Warning: failed to stop database cleanly")
-                    .yellow()
+                console::style("Warning: failed to stop database cleanly").yellow()
             );
             Err(err).context("Database stop command failed")
         }
@@ -81,7 +85,11 @@ pub fn spawn_backend(config: &Config, root: &Path, environment: Option<&str>) ->
     }
     println!("{}", console::style("─".repeat(80)).dim());
 
-    let gradlew_name = if is_windows() { "gradlew.bat" } else { "gradlew" };
+    let gradlew_name = if is_windows() {
+        "gradlew.bat"
+    } else {
+        "gradlew"
+    };
     let gradlew_path = root.join(gradlew_name);
     let mut command = if gradlew_path.exists() {
         Command::new(gradlew_path)
@@ -208,7 +216,7 @@ pub fn ensure_process_alive(process: &mut Child, name: &str) -> Result<()> {
 /// correct tool versions. See `.mise.toml` in project root for version requirements.
 pub fn spawn_frontend(config: &Config, root: &Path, silent: bool) -> Result<Child> {
     let frontend_dir = root.join("modules/frontend/sangita-admin-web");
-    
+
     // Check if bun is available
     if !crate::utils::check_command_exists("bun") {
         anyhow::bail!(
@@ -216,7 +224,7 @@ pub fn spawn_frontend(config: &Config, root: &Path, silent: bool) -> Result<Chil
             See .mise.toml for required version (1.3.0)."
         );
     }
-    
+
     let mut command = Command::new("bun");
     command
         .arg("run")
@@ -228,9 +236,9 @@ pub fn spawn_frontend(config: &Config, root: &Path, silent: bool) -> Result<Chil
         command.stdout(Stdio::null()).stderr(Stdio::null());
     }
 
-    command
-        .spawn()
-        .context("Failed to start frontend. Ensure Bun 1.3.0 is installed via mise (see .mise.toml)")
+    command.spawn().context(
+        "Failed to start frontend. Ensure Bun 1.3.0 is installed via mise (see .mise.toml)",
+    )
 }
 
 /// Kill any processes using the specified port.
@@ -245,13 +253,20 @@ pub fn kill_processes_on_port(port: &str, service_name: &str) -> Result<()> {
     match output {
         Ok(output) if output.status.success() => {
             let pids_str = String::from_utf8_lossy(&output.stdout);
-            let pids: Vec<&str> = pids_str.trim().split('\n').filter(|s| !s.is_empty()).collect();
+            let pids: Vec<&str> = pids_str
+                .trim()
+                .split('\n')
+                .filter(|s| !s.is_empty())
+                .collect();
 
             if pids.is_empty() {
                 return Ok(());
             }
 
-            print_step(&format!("Killing existing {} processes on port {}...", service_name, port));
+            print_step(&format!(
+                "Killing existing {} processes on port {}...",
+                service_name, port
+            ));
 
             for pid in &pids {
                 // Try graceful shutdown first (SIGTERM)
@@ -263,19 +278,32 @@ pub fn kill_processes_on_port(port: &str, service_name: &str) -> Result<()> {
 
             // Check if any are still running and force kill (SIGKILL)
             for pid in &pids {
-                 // Check if process still exists by sending signal 0
-                 if Command::new("kill").arg("-0").arg(pid).output().map(|o| o.status.success()).unwrap_or(false) {
-                     eprintln!("{}", console::style(&format!("Process {} still running, force killing...", pid)).yellow());
-                     if let Err(e) = Command::new("kill").arg("-9").arg(pid).output() {
+                // Check if process still exists by sending signal 0
+                if Command::new("kill")
+                    .arg("-0")
+                    .arg(pid)
+                    .output()
+                    .map(|o| o.status.success())
+                    .unwrap_or(false)
+                {
+                    eprintln!(
+                        "{}",
+                        console::style(&format!("Process {} still running, force killing...", pid))
+                            .yellow()
+                    );
+                    if let Err(e) = Command::new("kill").arg("-9").arg(pid).output() {
                         eprintln!(
                             "{}",
-                            console::style(&format!("Warning: failed to kill process {}: {}", pid, e))
-                                .yellow()
+                            console::style(&format!(
+                                "Warning: failed to kill process {}: {}",
+                                pid, e
+                            ))
+                            .yellow()
                         );
                     } else {
                         println!("  Force killed process {} on port {}", pid, port);
                     }
-                 }
+                }
             }
 
             // Give processes a moment to fully terminate
@@ -308,8 +336,18 @@ pub fn start_extraction_service(root: &Path) -> Result<()> {
     if !docker_compose_available() {
         anyhow::bail!("Docker Compose is required for the extraction service");
     }
-    run_docker_compose(root, &["--profile", "extraction", "up", "-d", "--build", "pdf-extractor"])
-        .context("Failed to start extraction service")?;
+    run_docker_compose(
+        root,
+        &[
+            "--profile",
+            "extraction",
+            "up",
+            "-d",
+            "--build",
+            "pdf-extractor",
+        ],
+    )
+    .context("Failed to start extraction service")?;
     Ok(())
 }
 

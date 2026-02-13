@@ -129,23 +129,21 @@ async fn sync_versions(check_only: bool) -> Result<()> {
     print_info("Extracting versions from source files...");
 
     // Parse gradle/libs.versions.toml
-    let gradle_content = fs::read_to_string(&gradle_path)
-        .context("Failed to read gradle/libs.versions.toml")?;
-    let gradle: GradleToml = toml::from_str(&gradle_content)
-        .context("Failed to parse gradle/libs.versions.toml")?;
+    let gradle_content =
+        fs::read_to_string(&gradle_path).context("Failed to read gradle/libs.versions.toml")?;
+    let gradle: GradleToml =
+        toml::from_str(&gradle_content).context("Failed to parse gradle/libs.versions.toml")?;
     let v = &gradle.versions;
 
     // Parse package.json
-    let package_content = fs::read_to_string(&package_json_path)
-        .context("Failed to read package.json")?;
-    let package: PackageJson = serde_json::from_str(&package_content)
-        .context("Failed to parse package.json")?;
+    let package_content =
+        fs::read_to_string(&package_json_path).context("Failed to read package.json")?;
+    let package: PackageJson =
+        serde_json::from_str(&package_content).context("Failed to parse package.json")?;
 
     // Parse .mise.toml
-    let mise_content = fs::read_to_string(&mise_path)
-        .context("Failed to read .mise.toml")?;
-    let mise: MiseToml = toml::from_str(&mise_content)
-        .context("Failed to parse .mise.toml")?;
+    let mise_content = fs::read_to_string(&mise_path).context("Failed to read .mise.toml")?;
+    let mise: MiseToml = toml::from_str(&mise_content).context("Failed to parse .mise.toml")?;
 
     // Helper to get npm dependency version
     let get_npm = |name: &str| -> String {
@@ -402,8 +400,8 @@ Add to your CI pipeline to ensure versions stay in sync:
                 s.lines()
                     .filter(|line| {
                         !line.contains("**Last Updated**")
-                        && !line.contains("**Generated**")
-                        && !line.contains("Auto-generated from source files")
+                            && !line.contains("**Generated**")
+                            && !line.contains("Auto-generated from source files")
                     })
                     .collect::<Vec<_>>()
                     .join("\n")
@@ -423,24 +421,27 @@ Add to your CI pipeline to ensure versions stay in sync:
         }
     } else {
         // Write mode
-        let mut file = fs::File::create(&output_path)
-            .context("Failed to create current-versions.md")?;
+        let mut file =
+            fs::File::create(&output_path).context("Failed to create current-versions.md")?;
         file.write_all(content.as_bytes())?;
 
         print_success(&format!("Generated {}", output_path.display()));
         println!();
         println!("Summary of extracted versions:");
-        println!("  Backend:   Kotlin {}, Ktor {}, Exposed {}",
+        println!(
+            "  Backend:   Kotlin {}, Ktor {}, Exposed {}",
             v.kotlin.as_deref().unwrap_or("?"),
             v.ktor.as_deref().unwrap_or("?"),
             v.exposed.as_deref().unwrap_or("?")
         );
-        println!("  Frontend:  React {}, Vite {}, Tailwind {}",
+        println!(
+            "  Frontend:  React {}, Vite {}, Tailwind {}",
             get_npm("react"),
             get_npm("vite"),
             get_npm("tailwindcss")
         );
-        println!("  Toolchain: Java {}, Rust {}, Bun {}",
+        println!(
+            "  Toolchain: Java {}, Rust {}, Bun {}",
             get_mise(|t| &t.java),
             get_mise(|t| &t.rust),
             get_mise(|t| &t.bun)
