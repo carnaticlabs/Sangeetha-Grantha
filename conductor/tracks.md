@@ -72,5 +72,6 @@
 | [TRACK-061](./tracks/TRACK-061-transliteration-aware-normalisation.md) | Transliteration-Aware Name Normalisation | Completed |
 | [TRACK-062](./tracks/TRACK-062-bulk-import-idempotency-source-evidence.md) | Bulk Import Idempotency & Source Evidence Integration | Completed |
 | [TRACK-063](./tracks/TRACK-063-database-reset-reextraction-e2e.md) | Database Reset & Full Re-Extraction E2E Validation | Completed |
+| [TRACK-064](./tracks/TRACK-064-unified-extraction-engine-migration.md) | Unified Extraction Engine (UEE) Migration | Active |
 
 ## 3. Deprecated Tracks

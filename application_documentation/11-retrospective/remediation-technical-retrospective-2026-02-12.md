@@ -27,8 +27,15 @@ Development productivity was severely hindered by a lack of volume synchronizati
 ### 2.3. Ingestion Logic: Matching vs. Refreshing
 The pipeline favored matching to existing records, which masked logic improvements.
 *   **Issue**: `ExtractionResultProcessor` matched extractions to existing Krithis but only appended `source_evidence`, skipping section/lyric updates.
-*   **Impact**: Even after the extractor was fixed, the database still displayed "dirty" data from previous failed runs.
+*   **Impact**: Even after the extractor was fixed, the database still displayed "dirty data" from previous failed runs.
 *   **Learning**: During development and QA, the pipeline needs a "Force Refresh" mode, or we must prioritize a `db reset` to verify end-to-end correctness.
+
+### 2.4. Orchestration: The 50% Stall (Task Count Mismatch)
+Batches frequently stalled at 50% progress during CSV imports.
+*   **Issue**: `MANIFEST_INGEST` calculated `total_tasks` based only on the initial scrape jobs, failing to account for the `MANIFEST_INGEST` task itself or the subsequent `ENTITY_RESOLUTION` tasks.
+*   **Impact**: The `BatchCompletionHandler` waited for `processed_tasks` to reach an unreachable `total_tasks` count.
+*   **Fix**: Updated `BulkImportRepository.kt` to atomically increment `total_tasks` whenever any new task is created, ensuring the count remains accurate across all job types.
+*   **Learning**: Orchestration counters must be dynamic and "stage-aware" in multi-job pipelines.
 
 ## 3. Prompting & LLM Interaction Lessons
 
