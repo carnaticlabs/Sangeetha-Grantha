@@ -79,6 +79,16 @@ class CanonicalLyricVariant(BaseModel):
     sections: list[CanonicalLyricSection] = Field(default_factory=list)
 
 
+class CanonicalMetadataBoundary(BaseModel):
+    """Boundary where non-lyric metadata starts in source text."""
+
+    label: str = Field(..., description="Boundary label, e.g. MEANING/NOTES")
+    start_offset: int = Field(..., alias="startOffset", ge=0)
+    end_offset: int = Field(..., alias="endOffset", ge=0)
+
+    model_config = {"populate_by_name": True}
+
+
 class CanonicalExtraction(BaseModel):
     """The universal output format for all source adapters.
 
@@ -101,6 +111,10 @@ class CanonicalExtraction(BaseModel):
     # ─── Lyric content ──────────────────────────────────────────────────────
     lyric_variants: list[CanonicalLyricVariant] = Field(
         default_factory=list, alias="lyricVariants"
+    )
+    metadata_boundaries: list[CanonicalMetadataBoundary] = Field(
+        default_factory=list,
+        alias="metadataBoundaries",
     )
 
     # ─── Metadata ───────────────────────────────────────────────────────────

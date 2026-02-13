@@ -25,6 +25,7 @@ import sys
 import time
 import traceback
 from datetime import datetime, timezone
+from hashlib import sha256
 from pathlib import Path
 from typing import Any
 from uuid import UUID
@@ -35,6 +36,8 @@ from .config import ExtractorConfig, load_config
 from .db import ExtractionQueueDB, ExtractionTask
 from .diacritic_normalizer import cleanup_raga_tala_name, normalize_garbled_diacritics
 from .extractor import PdfExtractor
+from .extractor import DocumentContent
+from .html_extractor import HtmlTextExtractor
 from .metadata_parser import MetadataParser
 from .ocr_fallback import OcrFallback
 from .page_segmenter import PageSegmenter
@@ -60,6 +63,7 @@ class ExtractionWorker:
         self.config = config
         self.db = ExtractionQueueDB(config)
         self.pdf_extractor = PdfExtractor()
+        self.html_extractor = HtmlTextExtractor()
         self.page_segmenter = PageSegmenter()
         self.structure_parser = StructureParser()
         self.metadata_parser = MetadataParser()
@@ -122,6 +126,8 @@ class ExtractionWorker:
         try:
             if task.source_format == "PDF":
                 results = self._extract_pdf(task)
+            elif task.source_format == "HTML":
+                results = self._extract_html(task)
             elif task.source_format == "DOCX":
                 results = self._extract_docx(task)
             elif task.source_format == "IMAGE":
@@ -131,6 +137,11 @@ class ExtractionWorker:
 
             duration_ms = int((time.monotonic() - start_time) * 1000)
             result_dicts = [r.to_json_dict() for r in results]
+            extraction_method = (
+                results[0].extraction_method
+                if results
+                else self._extraction_method_for_format(task.source_format)
+            )
 
             # Calculate average confidence
             avg_confidence = 0.7  # Default confidence for pattern-matched extraction
@@ -138,9 +149,7 @@ class ExtractionWorker:
             self.db.mark_done(
                 task_id=task.id,
                 result_payload=result_dicts,
-                extraction_method=ExtractionMethod.PDF_PYMUPDF.value
-                if task.source_format == "PDF"
-                else ExtractionMethod.DOCX_PYTHON.value,
+                extraction_method=extraction_method.value,
                 confidence=avg_confidence,
                 duration_ms=duration_ms,
             )
@@ -172,16 +181,68 @@ class ExtractionWorker:
             }
             self.db.mark_failed(task.id, error_detail)
 
-    def _download_source(self, url: str) -> Path:
+    def _extraction_method_for_format(self, source_format: str) -> ExtractionMethod:
+        if source_format == "PDF":
+            return ExtractionMethod.PDF_PYMUPDF
+        if source_format == "HTML":
+            return ExtractionMethod.HTML_JSOUP
+        if source_format == "DOCX":
+            return ExtractionMethod.DOCX_PYTHON
+        if source_format == "IMAGE":
+            return ExtractionMethod.PDF_OCR
+        raise ValueError(f"Unsupported source format for extraction method mapping: {source_format}")
+
+    def _default_extension_for_format(self, source_format: str) -> str:
+        if source_format == "PDF":
+            return ".pdf"
+        if source_format == "HTML":
+            return ".html"
+        if source_format == "DOCX":
+            return ".docx"
+        if source_format == "IMAGE":
+            return ".img"
+        return ".bin"
+
+    def _truncate_utf8(self, value: str, max_bytes: int = 1800) -> str:
+        """Trim text to a safe UTF-8 byte size for indexed DB columns."""
+        encoded = value.encode("utf-8")
+        if len(encoded) <= max_bytes:
+            return value
+        return encoded[:max_bytes].decode("utf-8", errors="ignore").rstrip()
+
+    def _truncate_lyric_variants(
+        self,
+        variants: list[CanonicalLyricVariant],
+    ) -> list[CanonicalLyricVariant]:
+        trimmed: list[CanonicalLyricVariant] = []
+        for variant in variants:
+            sections = [
+                CanonicalLyricSection(
+                    sectionOrder=section.section_order,
+                    text=self._truncate_utf8(section.text),
+                )
+                for section in variant.sections
+                if section.text.strip()
+            ]
+            if not sections:
+                continue
+            trimmed.append(
+                CanonicalLyricVariant(
+                    language=variant.language,
+                    script=variant.script,
+                    sections=sections,
+                )
+            )
+        return trimmed
+
+    def _download_source(self, url: str, source_format: str = "PDF") -> Path:
         """Download a source document to the cache directory."""
         cache_dir = Path(self.config.cache_dir)
         cache_dir.mkdir(parents=True, exist_ok=True)
 
         # Use URL hash as filename
-        import hashlib
-
-        url_hash = hashlib.sha256(url.encode()).hexdigest()[:16]
-        extension = Path(url).suffix or ".pdf"
+        url_hash = sha256(url.encode()).hexdigest()[:16]
+        extension = Path(url).suffix or self._default_extension_for_format(source_format)
         cached_path = cache_dir / f"{url_hash}{extension}"
 
         if cached_path.exists():
@@ -199,7 +260,7 @@ class ExtractionWorker:
     def _extract_pdf(self, task: ExtractionTask) -> list[CanonicalExtraction]:
         """Extract Krithis from a PDF document."""
         # Download PDF
-        pdf_path = self._download_source(task.source_url)
+        pdf_path = self._download_source(task.source_url, source_format="PDF")
 
         # Parse page range from task
         page_range = None
@@ -220,6 +281,12 @@ class ExtractionWorker:
 
         # Extract text with PyMuPDF
         document = self.pdf_extractor.extract_document(str(pdf_path), page_range)
+        if self._should_force_ocr_for_garbled_devanagari(document):
+            logger.info(
+                "Forcing OCR due to garbled Devanagari text",
+                extra={"task_id": str(task.id)},
+            )
+            return self._extract_pdf_ocr(task, pdf_path, page_range)
 
         # Segment into individual Krithis
         segments = self.page_segmenter.segment(document)
@@ -238,14 +305,34 @@ class ExtractionWorker:
                 title_hint=segment.title_text,
             )
 
-            # Parse section structure from normalized text
-            detected_sections = self.structure_parser.parse_sections(normalized_body)
-            canonical_sections = self.structure_parser.to_canonical_sections(detected_sections)
-            lyric_sections = self.structure_parser.to_canonical_lyric_sections(detected_sections)
+            # Parse lyric structure and metadata boundaries from normalized text.
+            parse_result = self.structure_parser.parse(normalized_body)
+            canonical_sections = self.structure_parser.to_canonical_sections(parse_result.sections)
+            lyric_variants = self.structure_parser.to_canonical_lyric_variants(
+                parse_result.lyric_variants
+            )
+            metadata_boundaries = self.structure_parser.to_canonical_metadata_boundaries(
+                parse_result.metadata_boundaries
+            )
 
-            # Detect script from normalized text
-            script = self.transliterator.detect_script(normalized_body) or "devanagari"
-            language = "sa" if script == "devanagari" else "en"
+            if not lyric_variants and parse_result.sections:
+                fallback_script = self.transliterator.detect_script(normalized_body) or "devanagari"
+                fallback_language = "sa" if fallback_script == "devanagari" else "en"
+                lyric_variants = [
+                    CanonicalLyricVariant(
+                        language=fallback_language,
+                        script=fallback_script,
+                        sections=self.structure_parser.to_canonical_lyric_sections(
+                            parse_result.sections
+                        ),
+                    )
+                ]
+            lyric_variants = self._truncate_lyric_variants(lyric_variants)
+            primary_script = (
+                lyric_variants[0].script
+                if lyric_variants
+                else (self.transliterator.detect_script(normalized_body) or "devanagari")
+            )
 
             # Apply name cleanup to raga/tala (defensive — MetadataParser
             # already normalises, but this ensures clean output even when
@@ -255,7 +342,7 @@ class ExtractionWorker:
 
             # For Devanagari titles, produce an IAST alternate title for matching
             alternate_title = metadata.alternate_title
-            if script == "devanagari" and not alternate_title:
+            if primary_script == "devanagari" and not alternate_title:
                 iast_title = self.transliterator.transliterate(
                     metadata.title, "devanagari", "iast"
                 )
@@ -271,15 +358,8 @@ class ExtractionWorker:
                 ragas=[CanonicalRaga(name=raga_name)],
                 tala=tala_name,
                 sections=canonical_sections,
-                lyricVariants=[
-                    CanonicalLyricVariant(
-                        language=language,
-                        script=script,
-                        sections=lyric_sections,
-                    )
-                ]
-                if lyric_sections
-                else [],
+                lyricVariants=lyric_variants,
+                metadataBoundaries=metadata_boundaries,
                 deity=metadata.deity,
                 temple=metadata.temple,
                 templeLocation=metadata.temple_location,
@@ -295,6 +375,30 @@ class ExtractionWorker:
 
         return results
 
+    def _should_force_ocr_for_garbled_devanagari(self, document: DocumentContent) -> bool:
+        """Detect broken Devanagari extraction and force OCR fallback."""
+        page_text = "\n".join(page.text for page in document.pages if page.text)
+        if not page_text.strip():
+            return False
+
+        non_space_chars = [ch for ch in page_text if not ch.isspace()]
+        if not non_space_chars:
+            return False
+
+        replacement_count = page_text.count("\uFFFD")
+        replacement_ratio = replacement_count / max(1, len(non_space_chars))
+        devanagari_count = sum(1 for ch in page_text if 0x0900 <= ord(ch) <= 0x097F)
+
+        detected_script = self.transliterator.detect_script(page_text)
+        looks_devanagari = detected_script == "devanagari" or devanagari_count >= 20
+        devanagari_garbled = looks_devanagari and replacement_ratio >= 0.05 and replacement_count >= 20
+
+        # Defensive fallback: heavily corrupted text can lose enough script
+        # signal to mis-detect script, but still be unusable for parsing.
+        globally_garbled = replacement_ratio >= 0.20 and replacement_count >= 200
+
+        return devanagari_garbled or globally_garbled
+
     def _extract_pdf_ocr(
         self,
         task: ExtractionTask,
@@ -304,39 +408,65 @@ class ExtractionWorker:
         """Extract from scanned PDF using OCR fallback."""
         page_texts = self.ocr_fallback.extract_document_text(str(pdf_path), page_range)
 
-        # For OCR, treat the entire text as a single extraction
-        # (segmentation is less reliable on OCR'd text)
-        full_text = "\n".join(page_texts.values())
-
-        if not full_text.strip():
+        if not page_texts:
             logger.warning("OCR produced no text", extra={"task_id": str(task.id)})
             return []
 
-        metadata = self.metadata_parser.parse(full_text[:500])
-        detected_sections = self.structure_parser.parse_sections(full_text)
-        canonical_sections = self.structure_parser.to_canonical_sections(detected_sections)
-        lyric_sections = self.structure_parser.to_canonical_lyric_sections(detected_sections)
+        checksum = sha256(pdf_path.read_bytes()).hexdigest()
+        results: list[CanonicalExtraction] = []
 
-        script = self.transliterator.detect_script(full_text) or "devanagari"
-        language = "sa" if script == "devanagari" else "en"
+        for page_num in sorted(page_texts.keys()):
+            page_text = page_texts.get(page_num, "")
+            if not page_text.strip():
+                continue
 
-        start_page = min(page_texts.keys()) if page_texts else 0
-        end_page = max(page_texts.keys()) if page_texts else 0
-        page_range_str = f"{start_page + 1}-{end_page + 1}" if start_page != end_page else str(start_page + 1)
+            metadata = self.metadata_parser.parse(page_text[:500])
+            parse_result = self.structure_parser.parse(page_text)
+            canonical_sections = self.structure_parser.to_canonical_sections(parse_result.sections)
+            lyric_variants = self.structure_parser.to_canonical_lyric_variants(
+                parse_result.lyric_variants
+            )
+            metadata_boundaries = self.structure_parser.to_canonical_metadata_boundaries(
+                parse_result.metadata_boundaries
+            )
 
-        return [
-            CanonicalExtraction(
+            if not lyric_variants and parse_result.sections:
+                fallback_script = self.transliterator.detect_script(page_text) or "devanagari"
+                fallback_language = "sa" if fallback_script == "devanagari" else "en"
+                lyric_variants = [
+                    CanonicalLyricVariant(
+                        language=fallback_language,
+                        script=fallback_script,
+                        sections=self.structure_parser.to_canonical_lyric_sections(
+                            parse_result.sections
+                        ),
+                    )
+                ]
+            lyric_variants = self._truncate_lyric_variants(lyric_variants)
+            primary_script = (
+                lyric_variants[0].script
+                if lyric_variants
+                else (self.transliterator.detect_script(page_text) or "devanagari")
+            )
+            alternate_title = metadata.alternate_title
+            if primary_script == "devanagari" and not alternate_title:
+                iast_title = self.transliterator.transliterate(
+                    metadata.title, "devanagari", "iast"
+                )
+                if iast_title:
+                    alternate_title = iast_title
+
+            results.append(
+                CanonicalExtraction(
                 title=metadata.title,
+                alternateTitle=alternate_title,
                 composer=metadata.composer or task.request_payload.get("composerHint", "Unknown"),
                 musicalForm=MusicalForm.KRITHI,
                 ragas=[CanonicalRaga(name=metadata.raga or "Unknown")],
                 tala=metadata.tala or "Unknown",
                 sections=canonical_sections,
-                lyricVariants=[
-                    CanonicalLyricVariant(language=language, script=script, sections=lyric_sections)
-                ]
-                if lyric_sections
-                else [],
+                lyricVariants=lyric_variants,
+                metadataBoundaries=metadata_boundaries,
                 deity=metadata.deity,
                 temple=metadata.temple,
                 sourceUrl=task.source_url,
@@ -344,7 +474,75 @@ class ExtractionWorker:
                 sourceTier=task.source_tier or 5,
                 extractionMethod=ExtractionMethod.PDF_OCR,
                 extractionTimestamp=datetime.now(timezone.utc).isoformat(),
-                pageRange=page_range_str,
+                pageRange=str(page_num + 1),
+                checksum=checksum,
+            )
+            )
+
+        return results
+
+    def _extract_html(self, task: ExtractionTask) -> list[CanonicalExtraction]:
+        """Extract one canonical composition from an HTML source page."""
+        html_path = self._download_source(task.source_url, source_format="HTML")
+        html_bytes = html_path.read_bytes()
+        html_content = html_bytes.decode("utf-8", errors="ignore")
+        extracted = self.html_extractor.extract(html_content, base_url=task.source_url)
+
+        if not extracted.text.strip():
+            logger.warning("HTML extraction produced no text", extra={"task_id": str(task.id)})
+            return []
+
+        normalized_body = normalize_garbled_diacritics(extracted.text)
+        metadata = self.metadata_parser.parse(
+            normalized_body[:500],
+            title_hint=extracted.title,
+        )
+
+        parse_result = self.structure_parser.parse(normalized_body)
+        canonical_sections = self.structure_parser.to_canonical_sections(parse_result.sections)
+        lyric_variants = self.structure_parser.to_canonical_lyric_variants(
+            parse_result.lyric_variants
+        )
+        metadata_boundaries = self.structure_parser.to_canonical_metadata_boundaries(
+            parse_result.metadata_boundaries
+        )
+        if not lyric_variants and parse_result.sections:
+            fallback_script = self.transliterator.detect_script(normalized_body) or "latin"
+            fallback_language = "sa" if fallback_script == "devanagari" else "en"
+            lyric_variants = [
+                CanonicalLyricVariant(
+                    language=fallback_language,
+                    script=fallback_script,
+                    sections=self.structure_parser.to_canonical_lyric_sections(
+                        parse_result.sections
+                    ),
+                )
+            ]
+        lyric_variants = self._truncate_lyric_variants(lyric_variants)
+
+        raga_name = cleanup_raga_tala_name(metadata.raga) if metadata.raga else "Unknown"
+        tala_name = cleanup_raga_tala_name(metadata.tala) if metadata.tala else "Unknown"
+
+        return [
+            CanonicalExtraction(
+                title=metadata.title,
+                alternateTitle=metadata.alternate_title,
+                composer=metadata.composer or task.request_payload.get("composerHint", "Unknown"),
+                musicalForm=MusicalForm.KRITHI,
+                ragas=[CanonicalRaga(name=raga_name)],
+                tala=tala_name,
+                sections=canonical_sections,
+                lyricVariants=lyric_variants,
+                metadataBoundaries=metadata_boundaries,
+                deity=metadata.deity,
+                temple=metadata.temple,
+                templeLocation=metadata.temple_location,
+                sourceUrl=task.source_url,
+                sourceName=task.source_name or "unknown",
+                sourceTier=task.source_tier or 5,
+                extractionMethod=ExtractionMethod.HTML_JSOUP,
+                extractionTimestamp=datetime.now(timezone.utc).isoformat(),
+                checksum=sha256(html_bytes).hexdigest(),
             )
         ]
 

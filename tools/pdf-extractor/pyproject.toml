@@ -28,6 +28,7 @@ dependencies = [
 
     # HTTP
     "httpx>=0.27.0",            # Async HTTP client for PDF downloads
+    "beautifulsoup4>=4.12.0",   # HTML parsing for blogspot/source pages
 
     # Logging
     "structlog>=24.1.0",        # Structured logging (JSON-formatted for Cloud Logging)

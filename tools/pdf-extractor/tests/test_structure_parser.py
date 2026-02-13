@@ -1,5 +1,8 @@
 """Tests for section structure detection."""
 
+import json
+from pathlib import Path
+
 from src.schema import SectionType
 from src.structure_parser import StructureParser
 
@@ -216,6 +219,92 @@ Speedy lyrics here
     assert "Speedy lyrics" in sections[2].text
 
 
+def test_parse_contract_tracks_metadata_boundaries() -> None:
+    """Parser contract should expose metadata boundaries and isolate lyric text."""
+    parser = StructureParser()
+    text = """
+Pallavi
+akhilandesvari raksha mam
+
+Charanam
+siva sankari jagadambike
+
+Meaning
+This prose block should never become lyric payload.
+"""
+
+    result = parser.parse(text)
+
+    assert len(result.sections) == 2
+    assert len(result.metadata_boundaries) == 1
+    assert result.metadata_boundaries[0].label == "MEANING"
+    assert all("prose block" not in section.text.lower() for section in result.sections)
+
+
+def test_metadata_boundaries_map_to_canonical_aliases() -> None:
+    """Metadata boundaries should serialize with canonical camelCase aliases."""
+    parser = StructureParser()
+    text = """
+Pallavi
+vatapi ganapatim bhaje
+
+Notes
+Editorial note text.
+"""
+
+    result = parser.parse(text)
+    canonical = parser.to_canonical_metadata_boundaries(result.metadata_boundaries)
+
+    assert len(canonical) == 1
+    payload = canonical[0].model_dump(by_alias=True)
+    assert payload["label"] == "NOTES"
+    assert "startOffset" in payload
+    assert "endOffset" in payload
+
+
+def test_fixture_kotlin_parity_multiscript() -> None:
+    parser = StructureParser()
+    fixture_dir = Path(__file__).parent / "fixtures" / "structure_parser"
+    text = (fixture_dir / "kotlin_parity_multiscript.txt").read_text(encoding="utf-8")
+    expected = json.loads(
+        (fixture_dir / "kotlin_parity_multiscript.expected.json").read_text(
+            encoding="utf-8"
+        )
+    )
+
+    result = parser.parse(text)
+
+    assert [section.section_type.value for section in result.sections] == expected["sections"]
+    assert [variant.script for variant in result.lyric_variants] == expected["variantScripts"]
+    assert [variant.language for variant in result.lyric_variants] == expected["variantLanguages"]
+    assert [boundary.label for boundary in result.metadata_boundaries] == expected[
+        "metadataBoundaryLabels"
+    ]
+    assert all(
+        "explanatory prose" not in section.text.lower()
+        for variant in result.lyric_variants
+        for section in variant.sections
+    )
+
+
+def test_fixture_kotlin_parity_tamil_headers() -> None:
+    parser = StructureParser()
+    fixture_dir = Path(__file__).parent / "fixtures" / "structure_parser"
+    text = (fixture_dir / "kotlin_parity_tamil_headers.txt").read_text(encoding="utf-8")
+    expected = json.loads(
+        (fixture_dir / "kotlin_parity_tamil_headers.expected.json").read_text(
+            encoding="utf-8"
+        )
+    )
+
+    result = parser.parse(text)
+
+    assert [section.section_type.value for section in result.sections] == expected["sections"]
+    assert [variant.script for variant in result.lyric_variants] == expected["variantScripts"]
+    assert [variant.language for variant in result.lyric_variants] == expected["variantLanguages"]
+    assert [boundary.label for boundary in result.metadata_boundaries] == expected[
+        "metadataBoundaryLabels"
+    ]
 
 
 

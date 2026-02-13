@@ -22,7 +22,6 @@ from .metadata_parser import MetadataParser
 from .page_segmenter import PageSegmenter
 from .schema import (
     CanonicalExtraction,
-    CanonicalLyricSection,
     CanonicalLyricVariant,
     CanonicalRaga,
     ExtractionMethod,
@@ -95,12 +94,22 @@ def extract(
             segment.body_text[:500],
             title_hint=segment.title_text,
         )
-        detected_sections = structure_parser.parse_sections(segment.body_text)
-        canonical_sections = structure_parser.to_canonical_sections(detected_sections)
-        lyric_sections = structure_parser.to_canonical_lyric_sections(detected_sections)
-
-        script = transliterator.detect_script(segment.body_text) or "devanagari"
-        language = "sa" if script == "devanagari" else "en"
+        parse_result = structure_parser.parse(segment.body_text)
+        canonical_sections = structure_parser.to_canonical_sections(parse_result.sections)
+        lyric_variants = structure_parser.to_canonical_lyric_variants(parse_result.lyric_variants)
+        metadata_boundaries = structure_parser.to_canonical_metadata_boundaries(
+            parse_result.metadata_boundaries
+        )
+        if not lyric_variants and parse_result.sections:
+            fallback_script = transliterator.detect_script(segment.body_text) or "devanagari"
+            fallback_language = "sa" if fallback_script == "devanagari" else "en"
+            lyric_variants = [
+                CanonicalLyricVariant(
+                    language=fallback_language,
+                    script=fallback_script,
+                    sections=structure_parser.to_canonical_lyric_sections(parse_result.sections),
+                )
+            ]
 
         extraction = CanonicalExtraction(
             title=metadata.title,
@@ -110,15 +119,8 @@ def extract(
             ragas=[CanonicalRaga(name=metadata.raga or "Unknown")],
             tala=metadata.tala or "Unknown",
             sections=canonical_sections,
-            lyricVariants=[
-                CanonicalLyricVariant(
-                    language=language,
-                    script=script,
-                    sections=lyric_sections,
-                )
-            ]
-            if lyric_sections
-            else [],
+            lyricVariants=lyric_variants,
+            metadataBoundaries=metadata_boundaries,
             deity=metadata.deity,
             temple=metadata.temple,
             templeLocation=metadata.temple_location,

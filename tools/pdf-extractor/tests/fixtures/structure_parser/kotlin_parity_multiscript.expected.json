@@ -1,0 +1,6 @@
+{
+  "sections": ["PALLAVI", "ANUPALLAVI", "CHARANAM"],
+  "variantScripts": ["latin", "devanagari"],
+  "variantLanguages": ["en", "sa"],
+  "metadataBoundaryLabels": ["MEANING"]
+}

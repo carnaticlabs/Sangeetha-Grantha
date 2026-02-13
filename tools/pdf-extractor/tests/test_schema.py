@@ -4,6 +4,7 @@ from src.schema import (
     CanonicalExtraction,
     CanonicalLyricSection,
     CanonicalLyricVariant,
+    CanonicalMetadataBoundary,
     CanonicalRaga,
     CanonicalSection,
     ExtractionMethod,
@@ -56,6 +57,9 @@ def test_full_extraction_with_sections() -> None:
                 ],
             )
         ],
+        metadataBoundaries=[
+            CanonicalMetadataBoundary(label="MEANING", startOffset=120, endOffset=127),
+        ],
         deity="Ganapati",
         temple="Vatapi",
         sourceUrl="https://guruguha.org/mdskt.pdf",
@@ -70,6 +74,8 @@ def test_full_extraction_with_sections() -> None:
     assert extraction.sections[2].type == SectionType.SAMASHTI_CHARANAM
     assert len(extraction.lyric_variants) == 1
     assert len(extraction.lyric_variants[0].sections) == 3
+    assert len(extraction.metadata_boundaries) == 1
+    assert extraction.metadata_boundaries[0].label == "MEANING"
     assert extraction.deity == "Ganapati"
 
 
@@ -91,6 +97,7 @@ def test_json_serialization_camel_case() -> None:
     assert "sourceTier" in json_dict
     assert "extractionMethod" in json_dict
     assert "musicalForm" in json_dict
+    assert "metadataBoundaries" in json_dict
     # Ensure snake_case is NOT in the output
     assert "source_url" not in json_dict
     assert "source_name" not in json_dict
