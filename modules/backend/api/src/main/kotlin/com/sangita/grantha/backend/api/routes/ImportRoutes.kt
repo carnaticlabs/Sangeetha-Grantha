@@ -5,7 +5,6 @@ import com.sangita.grantha.backend.api.models.ImportReviewRequest
 import com.sangita.grantha.backend.api.models.ImportOverridesDto
 import com.sangita.grantha.backend.api.services.IImportService
 import com.sangita.grantha.backend.api.services.IWebScraper
-import com.sangita.grantha.backend.api.services.ScrapedKrithiMetadata
 import com.sangita.grantha.backend.dal.enums.ImportStatus
 import com.sangita.grantha.shared.domain.model.ScrapeRequest
 import com.sangita.grantha.shared.domain.model.ImportStatusDto
@@ -20,8 +19,6 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.get
 import io.ktor.server.routing.route
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.encodeToJsonElement
 import org.slf4j.LoggerFactory
 import kotlin.uuid.Uuid
 
@@ -29,6 +26,11 @@ fun Route.importRoutes(
     importService: IImportService,
     webScrapingService: IWebScraper
 ) {
+    // TRACK-064: Legacy inline scraper endpoint now enqueues HTML extraction via ImportService.
+    // Keep IWebScraper in signature for backward-compatibility with DI wiring.
+    @Suppress("UNUSED_VARIABLE")
+    val unused = webScrapingService
+
     route("/v1/admin/imports") {
         // List imports
         get {
@@ -56,31 +58,18 @@ fun Route.importRoutes(
 
         post("/scrape") {
             val request = call.receive<ScrapeRequest>()
-            
-            // 1. Scrape the content
-            val scraped: ScrapedKrithiMetadata = webScrapingService.scrapeKrithi(request.url)
 
-            // 2. Prepare the import request
+            // TRACK-064: Queue HTML extraction instead of scraping inline in Kotlin.
             val importRequest = ImportKrithiRequest(
                 source = "WebScraper",
                 sourceKey = request.url,
-                rawTitle = scraped.title,
-                rawLyrics = scraped.lyrics,
-                rawComposer = scraped.composer,
-                rawRaga = scraped.raga,
-                rawTala = scraped.tala,
-                rawDeity = scraped.deity,
-                rawTemple = scraped.temple,
-                rawLanguage = scraped.language,
-                rawPayload = Json.encodeToJsonElement(scraped)
             )
 
-            // 3. Submit for import review
             val createdList = importService.submitImports(listOf(importRequest))
             val created = createdList.firstOrNull() 
                 ?: return@post call.respondText("Failed to create import", status = HttpStatusCode.InternalServerError)
 
-            call.respond(HttpStatusCode.Created, created)
+            call.respond(HttpStatusCode.Accepted, created)
         }
 
         // TRACK-012: Bulk review endpoint

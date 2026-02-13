@@ -20,6 +20,8 @@ import com.sangita.grantha.backend.api.services.scraping.KrithiStructureParser
 import com.sangita.grantha.backend.api.services.scraping.StructuralVotingEngine
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import java.net.URI
 import java.util.UUID
 import kotlin.uuid.Uuid
@@ -99,6 +101,47 @@ class ImportServiceImpl(
      */
     private fun normalize(value: String): String =
         normalizer.normalizeTitle(value) ?: value.trim().lowercase()
+
+    private fun parseBatchIdOrNull(batchId: String?): UUID? =
+        batchId?.let {
+            try {
+                UUID.fromString(it)
+            } catch (_: Exception) {
+                null
+            }
+        }
+
+    private fun inferSourceFormat(sourceKey: String?): String? {
+        val url = sourceKey?.trim()?.lowercase() ?: return null
+        if (url.isBlank()) return null
+
+        return when {
+            url.endsWith(".pdf") -> "PDF"
+            url.endsWith(".docx") -> "DOCX"
+            url.endsWith(".jpg") || url.endsWith(".jpeg") || url.endsWith(".png") || url.endsWith(".webp") -> "IMAGE"
+            url.startsWith("http://") || url.startsWith("https://") -> "HTML"
+            else -> null
+        }
+    }
+
+    private fun shouldEnqueueHtmlExtraction(request: ImportKrithiRequest, existingImport: ImportedKrithiDto?): Boolean {
+        if (existingImport != null) return false
+        if (request.rawPayload != null) return false
+        if (!request.rawLyrics.isNullOrBlank()) return false
+        return inferSourceFormat(request.sourceKey) == "HTML"
+    }
+
+    private fun mapToIsoLanguage(rawLanguage: String?): String? = when (rawLanguage?.trim()?.lowercase()) {
+        "sa", "sanskrit" -> "sa"
+        "ta", "tamil" -> "ta"
+        "te", "telugu" -> "te"
+        "kn", "kannada" -> "kn"
+        "ml", "malayalam" -> "ml"
+        "hi", "hindi" -> "hi"
+        "en", "english" -> "en"
+        else -> null
+    }
+
     override suspend fun getImports(status: ImportStatus?, batchId: Uuid?): List<ImportedKrithiDto> {
         return if (batchId != null) {
             dal.imports.listByBatch(batchId, status)
@@ -129,11 +172,14 @@ class ImportServiceImpl(
         return requests.map { request ->
             // Find or create the import source
             val sourceId = dal.imports.findOrCreateSource(request.source)
+            val sourceKey = request.sourceKey?.trim()?.takeIf { it.isNotBlank() }
+            val importBatchId = parseBatchIdOrNull(request.batchId)
+            val existingImport = sourceKey?.let { dal.imports.findBySourceAndKey(sourceId, it) }
             
             // Create the import record
-            val importDto = dal.imports.createImport(
+            val importDto = existingImport ?: dal.imports.createImport(
                 sourceId = sourceId,
-                sourceKey = request.sourceKey,
+                sourceKey = sourceKey,
                 rawTitle = request.rawTitle,
                 rawLyrics = request.rawLyrics,
                 rawComposer = request.rawComposer,
@@ -143,21 +189,54 @@ class ImportServiceImpl(
                 rawTemple = request.rawTemple,
                 rawLanguage = request.rawLanguage,
                 parsedPayload = request.rawPayload?.toString(),
-                importBatchId = request.batchId?.let { 
-                    try { 
-                        java.util.UUID.fromString(it) 
-                    } catch (e: Exception) { 
-                        null 
-                    } 
-                }
+                importBatchId = importBatchId
             )
+
+            // TRACK-064: HTML-first import flow.
+            // When import payload has just the source URL (no scraped payload yet),
+            // enqueue extraction_queue task and let Python perform HTML parsing.
+            if (shouldEnqueueHtmlExtraction(request, existingImport) && sourceKey != null) {
+                val queuePayload = buildJsonObject {
+                    put("importId", importDto.id.toString())
+                    put("source", "import-flow")
+                    request.rawTitle?.takeIf { it.isNotBlank() }?.let { put("titleHint", it) }
+                    request.rawComposer?.takeIf { it.isNotBlank() }?.let { put("composerHint", it) }
+                }.toString()
+
+                val extraction = dal.extractionQueue.create(
+                    sourceUrl = sourceKey,
+                    sourceFormat = "HTML",
+                    importBatchId = importBatchId,
+                    composerHint = request.rawComposer,
+                    requestPayload = queuePayload,
+                    contentLanguage = mapToIsoLanguage(request.rawLanguage),
+                )
+
+                dal.auditLogs.append(
+                    action = "ENQUEUE_HTML_EXTRACTION_FROM_IMPORT",
+                    entityTable = "extraction_queue",
+                    entityId = extraction.id,
+                    metadata = """{"importId":"${importDto.id}","sourceKey":"$sourceKey"}""",
+                )
+            }
             
             // Trigger entity resolution for the newly created import
-            val resolutionResult = entityResolver.resolve(importDto)
-            
-            // Save the resolution data back to the import record
-            val resolutionJson = Json.encodeToString(resolutionResult)
-            dal.imports.saveResolution(importDto.id, resolutionJson)
+            val hasInlineMetadata = !request.rawTitle.isNullOrBlank()
+                || !request.rawComposer.isNullOrBlank()
+                || !request.rawRaga.isNullOrBlank()
+                || !request.rawTala.isNullOrBlank()
+                || !request.rawDeity.isNullOrBlank()
+                || !request.rawTemple.isNullOrBlank()
+                || !request.rawLanguage.isNullOrBlank()
+                || request.rawPayload != null
+
+            if (hasInlineMetadata) {
+                val resolutionResult = entityResolver.resolve(importDto)
+
+                // Save the resolution data back to the import record
+                val resolutionJson = Json.encodeToString(resolutionResult)
+                dal.imports.saveResolution(importDto.id, resolutionJson)
+            }
             
             // Return the updated import with resolution data
             dal.imports.findById(importDto.id) ?: importDto

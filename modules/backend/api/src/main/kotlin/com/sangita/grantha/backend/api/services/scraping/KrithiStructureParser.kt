@@ -207,6 +207,12 @@ class KrithiStructureParser {
 
             // If we are inside a language context, accumulate sections/lyrics
             if (currentLanguage != null) {
+                // If we encounter a meaning or notes block, stop accumulating for this language
+                if (block.label in setOf("MEANING", "GIST", "NOTES", "WORD_DIVISION", "VARIATIONS")) {
+                    flushVariant()
+                    continue
+                }
+
                 val blockText = block.lines.joinToString("\n").trim()
                 if (blockText.isBlank()) continue
 
@@ -444,7 +450,14 @@ class KrithiStructureParser {
             Regex("^\\s*അനുപല്ലവി(?:\\s|:|\\-|\\.|\\)|]|\$)", RegexOption.IGNORE_CASE) to "ANUPALLAVI",
             Regex("^\\s*ചരണം(?:\\s|:|\\-|\\.|\\)|]|\$)", RegexOption.IGNORE_CASE) to "CHARANAM",
             Regex("^\\s*സമഷ്ടി\\s+ചരണം(?:\\s|:|\\-|\\.|\\)|]|\$)", RegexOption.IGNORE_CASE) to "SAMASHTI_CHARANAM",
-            Regex("^\\s*[(]?മധ്യമ\\s+കാല\\s+സാഹിത്യമ്[)]?(?:\\s|:|\\-|\\.|\\)|]|\$)", RegexOption.IGNORE_CASE) to "MADHYAMAKALA"
+            Regex("^\\s*[(]?മധ്യമ\\s+കാല\\s+സാഹിത്യമ്[)]?(?:\\s|:|\\-|\\.|\\)|]|\$)", RegexOption.IGNORE_CASE) to "MADHYAMAKALA",
+
+            // Non-Lyric Headers (Metadata/Meaning)
+            Regex("${prefix}meaning$suffix", RegexOption.IGNORE_CASE) to "MEANING",
+            Regex("${prefix}notes$suffix", RegexOption.IGNORE_CASE) to "NOTES",
+            Regex("${prefix}gist$suffix", RegexOption.IGNORE_CASE) to "GIST",
+            Regex("${prefix}word\\s+division$suffix", RegexOption.IGNORE_CASE) to "WORD_DIVISION",
+            Regex("${prefix}variations$suffix", RegexOption.IGNORE_CASE) to "VARIATIONS"
         )
 
         for ((regex, label) in patterns) {

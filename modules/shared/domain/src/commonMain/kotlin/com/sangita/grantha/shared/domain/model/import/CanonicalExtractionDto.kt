@@ -37,6 +37,9 @@ data class CanonicalExtractionDto(
     /** Lyric variants by language/script */
     val lyricVariants: List<CanonicalLyricVariantDto> = emptyList(),
 
+    /** Boundaries where non-lyric metadata blocks begin in source text */
+    val metadataBoundaries: List<CanonicalMetadataBoundaryDto> = emptyList(),
+
     /** Deity name (optional, extracted or inferred) */
     val deity: String? = null,
 
@@ -113,6 +116,18 @@ data class CanonicalLyricSectionDto(
 
     /** Lyric text for this section in this language/script */
     val text: String,
+)
+
+@Serializable
+data class CanonicalMetadataBoundaryDto(
+    /** Boundary label, e.g. MEANING/NOTES/GIST */
+    val label: String,
+
+    /** Start offset of the boundary marker in original extraction text */
+    val startOffset: Int,
+
+    /** End offset of the boundary marker in original extraction text */
+    val endOffset: Int,
 )
 
 // ─── Enums ─────────────────────────────────────────────────────────────────

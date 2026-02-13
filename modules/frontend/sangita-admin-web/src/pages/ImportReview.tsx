@@ -377,6 +377,17 @@ const ImportReviewPage: React.FC = () => {
               </div>
 
               <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                {/* Manual Resolution Prompt (Entity Resolution Mode) */}
+                {selectedItem?.resolutionData && !JSON.parse(selectedItem.resolutionData).resolved && (
+                  <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg flex items-center gap-3">
+                    <span className="material-symbols-outlined text-amber-600">contact_support</span>
+                    <div className="text-sm text-amber-900">
+                      <p className="font-bold">Manual Resolution Required</p>
+                      <p>Some entities (Raga/Composer) could not be automatically matched. Please select the correct candidates from the panel below or provide overrides.</p>
+                    </div>
+                  </div>
+                )}
+
                 {renderResolutionPanel()}
 
                 {/* Authority Validation Warning (TRACK-052 §3.4) */}

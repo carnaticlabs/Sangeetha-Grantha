@@ -195,6 +195,31 @@ class ExtractionQueueRepository {
         } > 0
     }
 
+    /**
+     * Mark an extraction task as DONE with worker payload metadata.
+     */
+    suspend fun markDone(
+        id: Uuid,
+        resultPayload: String,
+        resultCount: Int,
+        extractionMethod: String,
+        extractorVersion: String,
+        durationMs: Int? = null,
+    ): Boolean = DatabaseFactory.dbQuery {
+        val now = OffsetDateTime.now(ZoneOffset.UTC)
+        T.update({ T.id eq id.toJavaUuid() }) {
+            it[T.status] = ExtractionStatus.DONE
+            it[T.resultPayload] = resultPayload
+            it[T.resultCount] = resultCount
+            it[T.extractionMethod] = extractionMethod
+            it[T.extractorVersion] = extractorVersion
+            it[T.durationMs] = durationMs
+            it[T.errorDetail] = null
+            it[T.lastErrorAt] = null
+            it[T.updatedAt] = now
+        } > 0
+    }
+
     suspend fun retryAllFailed(): Int = DatabaseFactory.dbQuery {
         val now = OffsetDateTime.now(ZoneOffset.UTC)
         T.update({ T.status eq ExtractionStatus.FAILED }) {

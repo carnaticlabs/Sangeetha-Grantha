@@ -35,9 +35,11 @@ import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.UUID
 import kotlin.uuid.Uuid
+import org.jetbrains.exposed.v1.exceptions.ExposedSQLException
 import org.jetbrains.exposed.v1.jdbc.*
 import org.jetbrains.exposed.v1.core.*
 import org.jetbrains.exposed.v1.core.JoinType
+import org.slf4j.LoggerFactory
 
 data class KrithiSearchFilters(
     val query: String? = null,
@@ -99,6 +101,34 @@ class KrithiRepository {
     companion object {
         const val MIN_PAGE_SIZE = 1
         const val MAX_PAGE_SIZE = 200
+        private const val LYRICS_INDEX_SAFE_UTF8_BYTES = 1800
+
+        private val logger = LoggerFactory.getLogger(KrithiRepository::class.java)
+
+        private fun truncateUtf8ByBytes(input: String, maxBytes: Int): String {
+            val bytes = input.toByteArray(Charsets.UTF_8)
+            if (bytes.size <= maxBytes) return input
+
+            var end = maxBytes.coerceAtMost(bytes.size)
+            while (end > 0 && (bytes[end - 1].toInt() and 0b1100_0000) == 0b1000_0000) {
+                end--
+            }
+            if (end <= 0) return ""
+            return String(bytes, 0, end, Charsets.UTF_8).trimEnd()
+        }
+
+        private fun isLyricsIndexRowSizeOverflow(error: Throwable): Boolean {
+            val messages = buildList {
+                var current: Throwable? = error
+                while (current != null) {
+                    current.message?.let(::add)
+                    current = current.cause
+                }
+            }.joinToString(" ")
+
+            return messages.contains("idx_krithi_lyric_variants_lyrics", ignoreCase = true) &&
+                messages.contains("index row size", ignoreCase = true)
+        }
     }
     /**
      * Find a krithi by ID.
@@ -418,26 +448,47 @@ class KrithiRepository {
 
         val variantId = UUID.randomUUID()
 
-        KrithiLyricVariantsTable.insert {
-            it[id] = variantId
-            it[KrithiLyricVariantsTable.krithiId] = javaKrithiId
-            it[KrithiLyricVariantsTable.language] = language
-            it[KrithiLyricVariantsTable.script] = script
-            it[KrithiLyricVariantsTable.transliterationScheme] = transliterationScheme
-            it[KrithiLyricVariantsTable.sampradayaId] = sampradayaId
-            it[KrithiLyricVariantsTable.variantLabel] = variantLabel
-            it[KrithiLyricVariantsTable.sourceReference] = sourceReference
-            it[KrithiLyricVariantsTable.lyrics] = lyrics
-            it[KrithiLyricVariantsTable.isPrimary] = isPrimary
-            it[KrithiLyricVariantsTable.createdByUserId] = createdByUserId
-            it[KrithiLyricVariantsTable.updatedByUserId] = updatedByUserId
-            it[KrithiLyricVariantsTable.createdAt] = now
-            it[KrithiLyricVariantsTable.updatedAt] = now
+        fun insertVariant(lyricsValue: String): KrithiLyricVariantDto {
+            return KrithiLyricVariantsTable.insert {
+                it[id] = variantId
+                it[KrithiLyricVariantsTable.krithiId] = javaKrithiId
+                it[KrithiLyricVariantsTable.language] = language
+                it[KrithiLyricVariantsTable.script] = script
+                it[KrithiLyricVariantsTable.transliterationScheme] = transliterationScheme
+                it[KrithiLyricVariantsTable.sampradayaId] = sampradayaId
+                it[KrithiLyricVariantsTable.variantLabel] = variantLabel
+                it[KrithiLyricVariantsTable.sourceReference] = sourceReference
+                it[KrithiLyricVariantsTable.lyrics] = lyricsValue
+                it[KrithiLyricVariantsTable.isPrimary] = isPrimary
+                it[KrithiLyricVariantsTable.createdByUserId] = createdByUserId
+                it[KrithiLyricVariantsTable.updatedByUserId] = updatedByUserId
+                it[KrithiLyricVariantsTable.createdAt] = now
+                it[KrithiLyricVariantsTable.updatedAt] = now
+            }
+                .resultedValues
+                ?.single()
+                ?.toKrithiLyricVariantDto()
+                ?: error("Failed to insert lyric variant")
         }
-            .resultedValues
-            ?.single()
-            ?.toKrithiLyricVariantDto()
-            ?: error("Failed to insert lyric variant")
+
+        try {
+            insertVariant(lyrics)
+        } catch (e: ExposedSQLException) {
+            if (!isLyricsIndexRowSizeOverflow(e)) throw e
+
+            val truncated = truncateUtf8ByBytes(lyrics, LYRICS_INDEX_SAFE_UTF8_BYTES)
+            if (truncated.isBlank()) throw e
+
+            logger.warn(
+                "Retrying lyric variant insert with truncated lyrics due to oversized btree index row (krithiId={}, language={}, script={}, originalBytes={}, truncatedBytes={})",
+                krithiId,
+                language,
+                script,
+                lyrics.toByteArray(Charsets.UTF_8).size,
+                truncated.toByteArray(Charsets.UTF_8).size
+            )
+            insertVariant(truncated)
+        }
     }
 
     /**
@@ -798,6 +849,37 @@ class KrithiRepository {
         ragaId?.let { query.andWhere { KrithisTable.primaryRagaId eq it } }
 
         query.map { it.toKrithiDto() }
+    }
+
+    /**
+     * Find near-title candidates by compressed-title prefix.
+     *
+     * This is a bounded fallback for OCR/transliteration drift where exact compressed title
+     * comparison fails (for example, single-vowel substitutions in Devanagari OCR output).
+     */
+    suspend fun findNearTitleCandidates(
+        titleNormalized: String,
+        limit: Int = 200
+    ): List<KrithiDto> = DatabaseFactory.dbQuery {
+        val titleCompressed = titleNormalized.replace(" ", "")
+        if (titleCompressed.length < 5) {
+            return@dbQuery emptyList()
+        }
+
+        val prefixLength = minOf(8, titleCompressed.length)
+        val prefix = titleCompressed.take(prefixLength)
+        val compressedTitleExpr = CustomStringFunction(
+            "REPLACE",
+            KrithisTable.titleNormalized,
+            stringParam(" "),
+            stringParam("")
+        )
+
+        KrithisTable
+            .selectAll()
+            .where { compressedTitleExpr like "$prefix%" }
+            .limit(limit)
+            .map { it.toKrithiDto() }
     }
 
     /**

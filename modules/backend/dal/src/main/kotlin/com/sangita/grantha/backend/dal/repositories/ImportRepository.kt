@@ -186,6 +186,28 @@ class ImportRepository {
     }
 
     /**
+     * Find imports by source key, optionally filtered by status values.
+     */
+    suspend fun findBySourceKey(
+        sourceKey: String,
+        statuses: List<ImportStatus>? = null,
+        limit: Int = 100,
+    ): List<ImportedKrithiDto> = DatabaseFactory.dbQuery {
+        var query = ImportedKrithisTable
+            .selectAll()
+            .andWhere { ImportedKrithisTable.sourceKey eq sourceKey }
+
+        statuses?.takeIf { it.isNotEmpty() }?.let { filtered ->
+            query = query.andWhere { ImportedKrithisTable.importStatus inList filtered }
+        }
+
+        query
+            .orderBy(ImportedKrithisTable.createdAt to SortOrder.ASC)
+            .limit(limit)
+            .map { it.toImportedKrithiDto() }
+    }
+
+    /**
      * Persist resolution data for an import.
      */
     suspend fun saveResolution(

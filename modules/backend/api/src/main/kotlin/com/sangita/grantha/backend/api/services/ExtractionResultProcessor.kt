@@ -1,11 +1,15 @@
 package com.sangita.grantha.backend.api.services
 
+import com.sangita.grantha.backend.dal.enums.LanguageCode
+import com.sangita.grantha.backend.dal.enums.ScriptCode
 import com.sangita.grantha.backend.api.services.scraping.StructuralVotingEngine
 import com.sangita.grantha.backend.dal.SangitaDal
+import com.sangita.grantha.backend.dal.enums.ImportStatus
 import com.sangita.grantha.backend.dal.support.toJavaUuid
 import com.sangita.grantha.shared.domain.model.import.CanonicalExtractionDto
 import com.sangita.grantha.shared.domain.model.import.CanonicalExtractionMethod
 import com.sangita.grantha.shared.domain.model.import.CanonicalSectionType
+import com.sangita.grantha.shared.domain.model.ImportStatusDto
 import com.sangita.grantha.shared.domain.model.RagaSectionDto
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
@@ -121,6 +125,11 @@ class ExtractionResultProcessor(
                 for (extraction in extractions) {
                     val result = processExtractionResult(extraction, task.id)
                     if (result != null) {
+                        linkImportsForSourceUrl(
+                            sourceUrl = extraction.sourceUrl,
+                            krithiId = result.krithiId,
+                            extractionTaskId = task.id,
+                        )
                         taskEvidenceCount++
                         affectedKrithiIds.add(result.krithiId)
                         if (result.wasCreated) krithisCreated++ else krithisMatched++
@@ -172,6 +181,50 @@ class ExtractionResultProcessor(
         val wasCreated: Boolean,
     )
 
+    private suspend fun linkImportsForSourceUrl(
+        sourceUrl: String,
+        krithiId: Uuid,
+        extractionTaskId: Uuid,
+    ) {
+        val importsToLink = dal.imports.findBySourceKey(
+            sourceKey = sourceUrl,
+            statuses = listOf(ImportStatus.PENDING, ImportStatus.IN_REVIEW),
+        )
+        if (importsToLink.isEmpty()) return
+
+        var linked = 0
+        importsToLink.forEach { import ->
+            val alreadyLinkedToSameKrithi =
+                import.importStatus == ImportStatusDto.MAPPED && import.mappedKrithiId == krithiId
+            if (alreadyLinkedToSameKrithi) return@forEach
+
+            val updated = dal.imports.reviewImport(
+                id = import.id,
+                status = ImportStatus.MAPPED,
+                mappedKrithiId = krithiId.toJavaUuid(),
+                reviewerNotes = "Auto-linked by extraction task $extractionTaskId",
+            ) ?: return@forEach
+
+            dal.auditLogs.append(
+                action = "LINK_IMPORT_FROM_EXTRACTION",
+                entityTable = "imported_krithis",
+                entityId = updated.id,
+                metadata = """{"sourceUrl":"$sourceUrl","krithiId":"$krithiId","extractionTaskId":"$extractionTaskId"}""",
+            )
+            linked++
+        }
+
+        if (linked > 0) {
+            logger.info(
+                "Linked {} import(s) for sourceUrl={} to krithi={} via extraction task {}",
+                linked,
+                sourceUrl,
+                krithiId,
+                extractionTaskId,
+            )
+        }
+    }
+
     /**
      * Process a single extraction result: match to an existing Krithi or create a new one.
      * Returns the Krithi ID and whether it was newly created, or null if processing failed.
@@ -180,14 +233,16 @@ class ExtractionResultProcessor(
         extraction: CanonicalExtractionDto,
         extractionTaskId: Uuid,
     ): ExtractionProcessingResult? {
-        val titleNormalized = normalizer.normalizeTitle(extraction.title) ?: return null
+        val titleNormalized = normalizeExtractionTitle(extraction) ?: return null
         
         // 1. Resolve Composer and Raga IDs if possible
         val composerNormalized = normalizer.normalizeComposer(extraction.composer)
         val resolvedComposer = composerNormalized?.let { dal.composers.findByNameNormalized(it) }
         val composerId = resolvedComposer?.id?.toJavaUuid()
 
-        val ragaNormalized = extraction.ragas.firstOrNull()?.let { normalizer.normalizeRaga(it.name) }
+        val ragaNormalized = extraction.ragas.firstOrNull()
+            ?.let { normalizer.normalizeRaga(it.name) }
+            ?.takeUnless { isPlaceholderRagaNormalized(it) }
         val resolvedRaga = ragaNormalized?.let { dal.ragas.findByNameNormalized(it) }
         val ragaId = resolvedRaga?.id?.toJavaUuid()
 
@@ -201,6 +256,7 @@ class ExtractionResultProcessor(
 
         // B. Compressed title match (catches spacing variants across any composer)
         val candidatesByTitle = dal.krithis.findDuplicateCandidates(titleNormalized)
+        val candidatesByNearTitle = dal.krithis.findNearTitleCandidates(titleNormalized)
 
         // C. Title match narrowed by composer (high-confidence combo)
         val candidatesByTitleAndComposer = if (composerId != null) {
@@ -209,15 +265,29 @@ class ExtractionResultProcessor(
             emptyList()
         }
 
-        // Merge and deduplicate candidates by ID
-        val allCandidates = (candidatesByTitleAndComposer + candidatesByMetadata + candidatesByTitle).distinctBy { it.id }
+        // Merge and deduplicate candidates by ID.
+        // Include bounded near-title candidates to recover from OCR vowel drift even when
+        // an exact-but-wrong duplicate also exists.
+        val allCandidates =
+            (candidatesByTitleAndComposer + candidatesByMetadata + candidatesByTitle + candidatesByNearTitle)
+                .distinctBy { it.id }
 
         if (allCandidates.isEmpty()) {
             return createNewKrithi(extraction, titleNormalized, extractionTaskId)
         }
 
+        val evidenceCounts = dal.sourceEvidence.countByKrithiIds(allCandidates.map { it.id })
+        val unknownRagaId = dal.ragas.findByNameNormalized("unknown")?.id?.toJavaUuid()
+        data class CandidateEvaluation(
+            val candidate: com.sangita.grantha.shared.domain.model.KrithiDto,
+            val score: Int,
+            val isMetadataMatch: Boolean,
+            val hasKnownRaga: Boolean,
+            val evidenceCount: Int,
+        )
+
         // 3. Score Candidates — compare both raw and compressed (space-removed) titles
-        val bestMatch = allCandidates
+        val evaluations = allCandidates
             .map { candidate ->
                 val titleScore = NameNormalizationService.ratio(titleNormalized, candidate.titleNormalized)
                 val compressedScore = NameNormalizationService.ratio(
@@ -230,21 +300,56 @@ class ExtractionResultProcessor(
                 val dbRagaId = candidate.primaryRagaId?.toJavaUuid()
 
                 val composerMatch = (composerId != null && dbComposerId == composerId)
-                val ragaMatch = (ragaId != null && dbRagaId == ragaId)
+                val ragaMatch = (ragaId == null) || (dbRagaId == ragaId)
 
                 val isMetadataMatch = composerMatch && ragaMatch
-                candidate to (bestTitleScore to isMetadataMatch)
+                val hasKnownRaga = candidate.primaryRagaId
+                    ?.toJavaUuid()
+                    ?.let { candidateRagaId ->
+                        unknownRagaId == null || candidateRagaId != unknownRagaId
+                    }
+                    ?: false
+                CandidateEvaluation(
+                    candidate = candidate,
+                    score = bestTitleScore,
+                    isMetadataMatch = isMetadataMatch,
+                    hasKnownRaga = hasKnownRaga,
+                    evidenceCount = evidenceCounts[candidate.id] ?: 0,
+                )
             }
-            .filter { (_, scorePair) ->
-                val (score, isMetadataMatch) = scorePair
+            .filter { evaluation ->
+                val score = evaluation.score
+                val isMetadataMatch = evaluation.isMetadataMatch
                 if (isMetadataMatch) {
                     score > 75 // Lower threshold if Raga+Composer match (handles typos like "Ananada")
                 } else {
                     score > 85 // Higher threshold if only title matches
                 }
             }
-            .maxByOrNull { it.second.first }
-            ?.first
+        val maxScore = evaluations.maxOfOrNull { it.score }
+        val bestMatch = if (maxScore == null) {
+            null
+        } else {
+            val shortlist = evaluations
+                .asSequence()
+                .filter { (maxScore - it.score) <= 5 }
+            val bestEvaluation = if (ragaId != null) {
+                shortlist.maxWithOrNull(
+                    compareByDescending<CandidateEvaluation> { it.isMetadataMatch }
+                        .thenByDescending { it.score }
+                        .thenByDescending { it.hasKnownRaga }
+                        .thenByDescending { it.evidenceCount }
+                )
+            } else {
+                shortlist.maxWithOrNull(
+                    compareByDescending<CandidateEvaluation> { it.hasKnownRaga }
+                        .thenByDescending { it.score }
+                        .thenByDescending { it.evidenceCount }
+                        .thenByDescending { it.isMetadataMatch }
+                )
+            }
+            bestEvaluation?.candidate
+        }
 
         if (bestMatch == null) {
             return createNewKrithi(extraction, titleNormalized, extractionTaskId)
@@ -253,6 +358,9 @@ class ExtractionResultProcessor(
         val matched = bestMatch
         logger.info("Matched extraction '${extraction.title}' to existing Krithi '${matched.title}' " +
             "(Score: High, RagaMatch: ${ragaId != null && matched.primaryRagaId?.toJavaUuid() == ragaId})")
+
+        // If this source brings a new script/language variant, persist it on the matched Krithi.
+        persistMissingLyricVariants(matched.id, extraction)
 
         // Determine contributed fields
         val contributedFields = buildContributedFields(extraction)
@@ -287,6 +395,70 @@ class ExtractionResultProcessor(
         )
 
         return ExtractionProcessingResult(krithiId = matched.id, wasCreated = false)
+    }
+
+    private fun normalizeExtractionTitle(extraction: CanonicalExtractionDto): String? {
+        val primary = normalizer.normalizeTitle(extraction.title)?.takeIf { it.isNotBlank() }
+        if (primary != null) return primary
+        return extraction.alternateTitle
+            ?.let { normalizer.normalizeTitle(it) }
+            ?.takeIf { it.isNotBlank() }
+    }
+
+    private fun isPlaceholderRagaNormalized(normalized: String): Boolean {
+        val value = normalized.trim().lowercase()
+        return value.isBlank() || value in setOf("unknown", "na", "n a", "none")
+    }
+
+    private suspend fun persistMissingLyricVariants(
+        krithiId: Uuid,
+        extraction: CanonicalExtractionDto,
+    ) {
+        if (extraction.lyricVariants.isEmpty()) return
+
+        val existingKeys = dal.krithis.getLyricVariants(krithiId)
+            .map { "${it.variant.language.name}:${it.variant.script.name}" }
+            .toSet()
+            .toMutableSet()
+        val savedSections = dal.krithis.getSections(krithiId)
+
+        for (variant in extraction.lyricVariants) {
+            val language = runCatching { LanguageCode.valueOf(variant.language.uppercase()) }.getOrNull()
+            val script = runCatching { ScriptCode.valueOf(variant.script.uppercase()) }.getOrNull()
+            if (language == null || script == null) continue
+
+            val variantKey = "${language.name}:${script.name}"
+            if (variantKey in existingKeys) continue
+
+            val fullLyrics = variant.sections
+                .sortedBy { it.sectionOrder }
+                .joinToString("\n\n") { it.text }
+            if (fullLyrics.isBlank()) continue
+
+            val lyricVariant = dal.krithis.createLyricVariant(
+                krithiId = krithiId,
+                language = language,
+                script = script,
+                lyrics = fullLyrics,
+                isPrimary = false,
+                sourceReference = extraction.sourceUrl,
+            )
+
+            if (savedSections.isNotEmpty() && variant.sections.isNotEmpty()) {
+                val sectionPairs = variant.sections.mapNotNull { lyricSection ->
+                    val matchingSection = savedSections.find {
+                        it.orderIndex == lyricSection.sectionOrder - 1
+                    }
+                    matchingSection?.let { it.id.toJavaUuid() to lyricSection.text }
+                }
+                if (sectionPairs.isNotEmpty()) {
+                    dal.krithis.saveLyricVariantSections(lyricVariant.id, sectionPairs)
+                }
+            }
+
+            existingKeys.add(variantKey)
+            logger.info("Added missing lyric variant {} for matched Krithi {}", variantKey, krithiId)
+        }
     }
 
     private suspend fun createNewKrithi(

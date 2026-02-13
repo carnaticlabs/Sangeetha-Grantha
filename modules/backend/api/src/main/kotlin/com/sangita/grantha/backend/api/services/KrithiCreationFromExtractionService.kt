@@ -56,15 +56,17 @@ class KrithiCreationFromExtractionService(
         logger.debug("Resolved composer '${extraction.composer}' -> ${composer.id} (${composer.name})")
 
         // ── 2. Resolve ragas ────────────────────────────────────────────────
-        val ragaJavaIds = extraction.ragas.map { ragaDto ->
+        val ragaJavaIds = extraction.ragas.mapNotNull { ragaDto ->
             val ragaNormalized = normalizer.normalizeRaga(ragaDto.name)
+                ?.takeUnless { isPlaceholderRagaNormalized(it) }
+                ?: return@mapNotNull null
             val raga = dal.ragas.findOrCreate(
                 name = ragaDto.name,
                 nameNormalized = ragaNormalized,
             )
             logger.debug("Resolved raga '${ragaDto.name}' -> ${raga.id} (${raga.name})")
             raga.id.toJavaUuid()
-        }
+        }.distinct()
 
         // ── 3. Resolve tala ─────────────────────────────────────────────────
         val talaNormalized = normalizer.normalizeTala(extraction.tala)
@@ -92,7 +94,7 @@ class KrithiCreationFromExtractionService(
             CanonicalMusicalForm.SWARAJATHI -> MusicalForm.SWARAJATHI
         }
 
-        val isRagamalika = extraction.ragas.size > 1
+        val isRagamalika = ragaJavaIds.size > 1
 
         // Infer primary language from the first lyric variant, default to Sanskrit
         val primaryLanguage = extraction.lyricVariants.firstOrNull()?.language?.let { lang ->
@@ -101,6 +103,10 @@ class KrithiCreationFromExtractionService(
 
         // ── 6. Normalise title ──────────────────────────────────────────────
         val titleNormalized = normalizer.normalizeTitle(extraction.title)
+            ?.takeIf { it.isNotBlank() }
+            ?: extraction.alternateTitle
+                ?.let { normalizer.normalizeTitle(it) }
+                ?.takeIf { it.isNotBlank() }
             ?: extraction.title.trim().lowercase()
 
         // ── 7. Create Krithi ────────────────────────────────────────────────
@@ -239,5 +245,10 @@ class KrithiCreationFromExtractionService(
         CanonicalExtractionMethod.DOCX_PYTHON -> "DOCX"
         CanonicalExtractionMethod.MANUAL -> "MANUAL"
         CanonicalExtractionMethod.TRANSLITERATION -> "HTML"
+    }
+
+    private fun isPlaceholderRagaNormalized(normalized: String): Boolean {
+        val value = normalized.trim().lowercase()
+        return value.isBlank() || value in setOf("unknown", "na", "n a", "none")
     }
 }

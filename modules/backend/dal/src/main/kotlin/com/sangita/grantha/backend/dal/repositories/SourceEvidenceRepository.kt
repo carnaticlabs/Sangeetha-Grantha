@@ -109,6 +109,22 @@ class SourceEvidenceRepository {
     }
 
     /**
+     * Count evidence records for each Krithi in a batch.
+     */
+    suspend fun countByKrithiIds(krithiIds: List<Uuid>): Map<Uuid, Int> = DatabaseFactory.dbQuery {
+        if (krithiIds.isEmpty()) return@dbQuery emptyMap()
+        val javaIds = krithiIds.map { it.toJavaUuid() }
+        val countExpr = E.id.count()
+
+        E.select(E.krithiId, countExpr)
+            .where { E.krithiId inList javaIds }
+            .groupBy(E.krithiId)
+            .associate { row ->
+                row[E.krithiId].toKotlinUuid() to row[countExpr].toInt()
+            }
+    }
+
+    /**
      * TRACK-041 / TRACK-053: Create a source evidence record linking a Krithi to a contributing source.
      *
      * Resolves the import_source_id by:

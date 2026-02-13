@@ -302,10 +302,18 @@ class BulkImportRepository {
             it[ImportTaskRunTable.createdAt] = now
             it[ImportTaskRunTable.updatedAt] = now
         }
-            .resultedValues
-            ?.single()
-            ?.toImportTaskRunDto()
-            ?: error("Failed to create import task")
+
+        // PERMANENT FIX: Increment totalTasks in the batch record
+        ImportBatchTable.update(where = { ImportBatchTable.id eq javaBatchId }) {
+            it.update(ImportBatchTable.totalTasks, ImportBatchTable.totalTasks + 1)
+            it[ImportBatchTable.updatedAt] = now
+        }
+
+        ImportTaskRunTable
+            .selectAll()
+            .andWhere { ImportTaskRunTable.id eq taskId }
+            .single()
+            .toImportTaskRunDto()
     }
     
     /**
@@ -354,7 +362,7 @@ class BulkImportRepository {
         val toInsert = preparedTasks.filterNot { it.idempotencyKey in existingKeys }
         if (toInsert.isEmpty()) return@dbQuery emptyList()
 
-        toInsert.map { task ->
+        val insertedTasks = toInsert.map { task ->
             ImportTaskRunTable.insert {
                 it[id] = task.taskId
                 it[ImportTaskRunTable.jobId] = javaJobId
@@ -371,6 +379,14 @@ class BulkImportRepository {
                 ?.toImportTaskRunDto()
                 ?: error("Failed to create import task")
         }
+
+        // PERMANENT FIX: Increment totalTasks in the batch record for all new tasks
+        ImportBatchTable.update(where = { ImportBatchTable.id eq javaBatchId }) {
+            it.update(ImportBatchTable.totalTasks, ImportBatchTable.totalTasks + insertedTasks.size)
+            it[ImportBatchTable.updatedAt] = now
+        }
+
+        insertedTasks
     }
     
     /**

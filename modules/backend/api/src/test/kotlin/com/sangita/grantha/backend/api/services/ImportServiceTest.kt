@@ -158,6 +158,48 @@ class ImportServiceTest : IntegrationTestBase() {
         assertEquals("example.com", evidence.sources.first().sourceName)
     }
 
+    @Test
+    fun `submitImports enqueues HTML extraction task for url-only import`() = runTest {
+        val sourceUrl = "http://guru-guha.blogspot.com/2007/07/dikshitar-kriti-abhayaambaa-jagadambaa.html"
+
+        val created = service.submitImports(
+            listOf(
+                ImportKrithiRequest(
+                    source = "WebScraper",
+                    sourceKey = sourceUrl
+                )
+            )
+        )
+
+        assertEquals(1, created.size)
+        assertEquals(sourceUrl, created.first().sourceKey)
+
+        val (tasks, _) = dal.extractionQueue.list(format = listOf("HTML"), limit = 200)
+        val matching = tasks.filter { it.sourceUrl == sourceUrl }
+        assertEquals(1, matching.size)
+        assertEquals("PENDING", matching.first().status)
+    }
+
+    @Test
+    fun `submitImports url-only idempotency avoids duplicate HTML queue tasks`() = runTest {
+        val sourceUrl = "http://guru-guha.blogspot.com/2007/07/dikshitar-kriti-akhilandesvari-raksha.html"
+        val request = ImportKrithiRequest(
+            source = "WebScraper",
+            sourceKey = sourceUrl
+        )
+
+        val first = service.submitImports(listOf(request))
+        val second = service.submitImports(listOf(request))
+
+        assertEquals(1, first.size)
+        assertEquals(1, second.size)
+        assertEquals(first.first().id, second.first().id)
+
+        val (tasks, _) = dal.extractionQueue.list(format = listOf("HTML"), limit = 200)
+        val matching = tasks.filter { it.sourceUrl == sourceUrl }
+        assertEquals(1, matching.size)
+    }
+
     // TRACK-062: Idempotency Tests
 
     @Test
