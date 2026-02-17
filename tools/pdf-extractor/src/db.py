@@ -11,7 +11,6 @@ from __future__ import annotations
 import json
 import logging
 from dataclasses import dataclass
-from datetime import datetime
 from typing import Any, Optional
 from uuid import UUID
 
@@ -79,6 +78,11 @@ class ExtractionQueueDB:
         assert self._conn is not None
         return self._conn
 
+    @property
+    def is_connected(self) -> bool:
+        """Whether the database connection is currently open."""
+        return self._conn is not None and not self._conn.closed
+
     def claim_pending_task(self) -> Optional[ExtractionTask]:
         """Claim one PENDING task using SELECT ... FOR UPDATE SKIP LOCKED.
 
@@ -126,7 +130,11 @@ class ExtractionQueueDB:
                 source_format=row["source_format"],
                 source_name=row["source_name"],
                 source_tier=row["source_tier"],
-                request_payload=row["request_payload"] if isinstance(row["request_payload"], dict) else json.loads(row["request_payload"]),
+                request_payload=(
+                    row["request_payload"]
+                    if isinstance(row["request_payload"], dict)
+                    else json.loads(row["request_payload"])
+                ),
                 page_range=row["page_range"],
                 import_batch_id=row["import_batch_id"],
                 import_task_run_id=row["import_task_run_id"],
@@ -215,6 +223,55 @@ class ExtractionQueueDB:
                 status = row["status"].lower()
                 setattr(stats, status, row["cnt"])
             return stats
+
+    def list_composer_reference_rows(self) -> list[dict[str, Any]]:
+        """Load composer reference rows (with aliases where available)."""
+        with self.conn.cursor() as cur:
+            try:
+                cur.execute(
+                    """
+                    SELECT
+                        c.id::text AS entity_id,
+                        c.name AS name,
+                        COALESCE(
+                            array_agg(ca.alias_normalized) FILTER (WHERE ca.alias_normalized IS NOT NULL),
+                            '{}'
+                        ) AS aliases
+                    FROM composers c
+                    LEFT JOIN composer_aliases ca
+                      ON ca.composer_id = c.id
+                    GROUP BY c.id, c.name
+                    """
+                )
+            except Exception:
+                self.conn.rollback()
+                cur.execute(
+                    """
+                    SELECT
+                        c.id::text AS entity_id,
+                        c.name AS name,
+                        '{}'::text[] AS aliases
+                    FROM composers c
+                    """
+                )
+            rows = cur.fetchall()
+            self.conn.rollback()
+            return rows
+
+    def list_raga_reference_rows(self) -> list[dict[str, Any]]:
+        """Load raga reference rows used by identity candidate discovery."""
+        with self.conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT
+                    r.id::text AS entity_id,
+                    r.name AS name
+                FROM ragas r
+                """
+            )
+            rows = cur.fetchall()
+            self.conn.rollback()
+            return rows
 
     def health_check(self) -> bool:
         """Verify database connectivity."""

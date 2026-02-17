@@ -6,7 +6,6 @@ All source adapters (PDF, DOCX, OCR) must produce output conforming to this sche
 
 from __future__ import annotations
 
-from datetime import datetime
 from enum import Enum
 from typing import Optional
 
@@ -89,6 +88,42 @@ class CanonicalMetadataBoundary(BaseModel):
     model_config = {"populate_by_name": True}
 
 
+class CanonicalIdentityCandidate(BaseModel):
+    """A fuzzy-matched reference entity candidate for identity resolution."""
+
+    entity_id: str = Field(..., alias="entityId")
+    name: str = Field(..., description="Canonical entity name from reference data")
+    score: int = Field(..., ge=0, le=100, description="RapidFuzz score (0-100)")
+    confidence: str = Field(..., description="HIGH, MEDIUM, or LOW")
+    matched_on: Optional[str] = Field(
+        None,
+        alias="matchedOn",
+        description="Which token matched best: canonical or alias",
+    )
+
+    model_config = {"populate_by_name": True}
+
+
+class CanonicalIdentityCandidates(BaseModel):
+    """Identity candidate sets for extracted composer/raga values."""
+
+    composers: list[CanonicalIdentityCandidate] = Field(default_factory=list)
+    ragas: list[CanonicalIdentityCandidate] = Field(default_factory=list)
+
+
+class CanonicalMetadataEnrichment(BaseModel):
+    """Metadata enrichment outcome emitted by the optional Gemini phase."""
+
+    provider: str = Field(..., description="Enrichment provider, e.g. google-generativeai")
+    model: Optional[str] = Field(None, description="Model name used for enrichment")
+    applied: bool = Field(False, description="Whether any canonical metadata field was updated")
+    confidence: Optional[float] = Field(None, ge=0.0, le=1.0)
+    fields_updated: list[str] = Field(default_factory=list, alias="fieldsUpdated")
+    warnings: list[str] = Field(default_factory=list)
+
+    model_config = {"populate_by_name": True}
+
+
 class CanonicalExtraction(BaseModel):
     """The universal output format for all source adapters.
 
@@ -115,6 +150,14 @@ class CanonicalExtraction(BaseModel):
     metadata_boundaries: list[CanonicalMetadataBoundary] = Field(
         default_factory=list,
         alias="metadataBoundaries",
+    )
+    identity_candidates: Optional[CanonicalIdentityCandidates] = Field(
+        None,
+        alias="identityCandidates",
+    )
+    metadata_enrichment: Optional[CanonicalMetadataEnrichment] = Field(
+        None,
+        alias="metadataEnrichment",
     )
 
     # ─── Metadata ───────────────────────────────────────────────────────────

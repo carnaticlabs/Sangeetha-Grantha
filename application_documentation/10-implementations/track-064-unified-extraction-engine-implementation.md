@@ -78,6 +78,10 @@ Covers Phase 0 (E2E Harness), Phase 1 (HTML Vertical Slice), and Phase 2 (Heuris
 | `tests/test_schema.py` | Schema validation tests |
 | `tests/test_structure_parser.py` | Fixture-backed parity tests for Kotlin regex port |
 | `tests/fixtures/structure_parser/` | **[NEW]** Test fixtures for multi-script and Tamil header parity checks |
+| `src/gemini_enricher.py` | **[NEW]** Schema-Driven Enrichment (`response_schema`) + Exponential Backoff Retries |
+| `src/identity_candidates.py` | **[NEW]** RapidFuzz identity matching for Raga/Composer |
+| `tests/test_schema_enrichment.py` | **[NEW]** Verification for schema-driven prompt and response parsing |
+| `tests/test_identity_candidates.py` | **[NEW]** Fuzzy matching logic tests |
 
 ### Rust CLI — E2E Harness & Commands
 
@@ -120,6 +124,7 @@ Covers Phase 0 (E2E Harness), Phase 1 (HTML Vertical Slice), and Phase 2 (Heuris
 - Kotlin backend tests: `ExtractionResultProcessorTest` + `ImportServiceTest` passed
 - E2E: `blogspot-html` scenario passed (`minSections=11`, `minVariants=1`)
 - E2E: `pdf-smoke` scenario passed (`minSections=3`, `minVariants=1`)
+- Gemini Enrichment: Validated via `tests/test_schema_enrichment.py` + E2E integration (HTTP 200/429 handling)
 - Metadata coverage: `total_rows=200`, `keyed_rows=200`, `metadata_missing_rows=0`
 
 ## Commit Reference

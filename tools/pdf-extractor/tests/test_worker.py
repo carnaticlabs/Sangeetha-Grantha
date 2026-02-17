@@ -2,7 +2,12 @@ from src.config import ExtractorConfig
 from src.extractor import DocumentContent, PageContent
 from src.html_extractor import ExtractedHtmlContent
 from src.metadata_parser import KrithiMetadata
-from src.schema import ExtractionMethod
+from src.schema import (
+    CanonicalIdentityCandidate,
+    CanonicalIdentityCandidates,
+    CanonicalMetadataEnrichment,
+    ExtractionMethod,
+)
 from src.worker import ExtractionWorker
 
 
@@ -166,3 +171,53 @@ metadata block should not be lyrics
         for variant in extraction.lyric_variants
         for section in variant.sections
     )
+
+
+def test_extract_html_attaches_phase3_signals(tmp_path) -> None:
+    worker = _build_worker()
+    task = type("Task", (), {})()
+    task.source_url = "https://example.com/phase3"
+    task.source_name = "fixture"
+    task.source_tier = 5
+    task.request_payload = {"composerHint": "Muttuswami Dikshitar"}
+
+    html_path = tmp_path / "fixture.html"
+    html_path.write_text("<html><body>fixture</body></html>", encoding="utf-8")
+    worker._download_source = lambda *_args, **_kwargs: html_path
+    worker.html_extractor.extract = lambda *_args, **_kwargs: ExtractedHtmlContent(
+        text="Pallavi\nakhilandesvari raksha mam\nCharanam\nsiva sankari",
+        title="akhilandesvari",
+    )
+    worker.metadata_parser.parse = lambda *_args, **_kwargs: KrithiMetadata(
+        title="akhilandesvari",
+        raga="Unknown",
+        tala="Unknown",
+        composer="Unknown",
+    )
+    worker._discover_identity_candidates = lambda *_args, **_kwargs: CanonicalIdentityCandidates(
+        composers=[
+            CanonicalIdentityCandidate(
+                entityId="composer-1",
+                name="Muttuswami Dikshitar",
+                score=96,
+                confidence="HIGH",
+                matchedOn="alias",
+            )
+        ],
+        ragas=[],
+    )
+    worker.gemini_enricher.enrich = lambda *_args, **_kwargs: CanonicalMetadataEnrichment(
+        provider="google-generativeai",
+        model="gemini-2.0-flash",
+        applied=True,
+        fieldsUpdated=["composer"],
+    )
+
+    results = worker._extract_html(task)
+
+    assert len(results) == 1
+    extraction = results[0]
+    assert extraction.identity_candidates is not None
+    assert extraction.identity_candidates.composers[0].name == "Muttuswami Dikshitar"
+    assert extraction.metadata_enrichment is not None
+    assert extraction.metadata_enrichment.applied is True

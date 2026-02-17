@@ -1,7 +1,7 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.7.0 |
+| **Version** | 1.8.0 |
 | **Last Updated** | 2026-02-13 |
 | **Author** | Sangita Grantha Architect |
 
@@ -72,8 +72,8 @@ Following the retrospective's key lesson: **Build one working slice first, then 
 - [x] Regression suite includes at least one HTML and one PDF source proving parity.
 
 ### Phase 3: Identity & Enrichment
-- [ ] **Python**: Integrate `google-generativeai` SDK for Gemini metadata enrichment (replacing `GeminiApiClient.kt`).
-- [ ] **Python**: Implement "Identity Candidate Discovery" (proposing Raga/Composer matches via RapidFuzz).
+- [x] **Python**: Integrate `google-generativeai` SDK for Gemini metadata enrichment (replacing `GeminiApiClient.kt`).
+- [x] **Python**: Implement "Identity Candidate Discovery" (proposing Raga/Composer matches via RapidFuzz).
 
 ### Phase 4: Orchestration & Cleanup
 - [ ] **Kotlin**: Update `BulkImportRepository.kt` to atomically increment `total_tasks` for all job transitions (Fixing the 50% stall).
@@ -99,9 +99,21 @@ Following the retrospective's key lesson: **Build one working slice first, then 
 - **2026-02-13**: Added migration `35__add_krithi_source_evidence_krithi_source_url_index.sql` for `(krithi_id, source_url)` lookup performance and validated SQL execution shape (`BEGIN`/`ROLLBACK` parse check).
 - **2026-02-13**: Started Phase 2 implementation by freezing the parser contract: Python structure parser now emits `sections` plus deterministic `metadata_boundaries`, worker/CLI propagate these as `metadataBoundaries` in `CanonicalExtraction`, and regression tests confirm meaning/notes boundaries do not leak into lyric sections.
 - **2026-02-13**: Completed Phase 2 heuristic consolidation: ported Kotlin section/header regex coverage into Python with fixture-backed parity tests, added deterministic metadata hard-stop boundaries, enabled deterministic multi-script variant extraction, routed HTML/PDF/PDF-OCR worker outputs through parser-emitted variants, and upgraded CLI extraction-e2e validation to fail on section/variant/metadata-leak regressions.
+- **2026-02-13**: Started/closed Phase 3 kickoff slice in Python extraction worker:
+  - Added optional Gemini metadata enrichment service (`google-generativeai`) with fail-open behavior and extraction-method tagging (`HTML_JSOUP_GEMINI`) when metadata updates apply.
+  - Added deterministic RapidFuzz identity candidate discovery for composer/raga with DB-backed reference catalog caching and canonical payload emission (`identityCandidates`).
+  - Extended canonical extraction contracts (`CanonicalExtraction` Python schema + shared Kotlin DTO + canonical JSON schema) with `identityCandidates` and `metadataEnrichment`.
+  - Hardened E2E payload validation in `sangita-cli test extraction-e2e` to validate Phase 3 payload shape when signals are present.
+  - Added test coverage: `test_identity_candidates.py`, `test_gemini_enricher.py`, worker/schema assertions for Phase 3 fields.
 - **2026-02-13**: Validation snapshot after Phase 2 closure:
   - `uv run python -m pytest` -> `97 passed`
   - `cargo check --manifest-path tools/sangita-cli/Cargo.toml` -> passed
   - `./gradlew :modules:backend:api:test --tests \"com.sangita.grantha.backend.api.services.ExtractionResultProcessorTest\" --tests \"com.sangita.grantha.backend.api.services.ImportServiceTest\"` -> passed
   - `cargo run --manifest-path tools/sangita-cli/Cargo.toml -- test extraction-e2e --scenario blogspot-html --skip-migrations --timeout-seconds 240 --poll-interval-seconds 5` -> passed (`minSections=11`, `minVariants=1`)
   - `cargo run --manifest-path tools/sangita-cli/Cargo.toml -- test extraction-e2e --scenario pdf-smoke --skip-migrations --timeout-seconds 300 --poll-interval-seconds 5` -> passed (`minSections=3`, `minVariants=1`)
+  - `cargo run --manifest-path tools/sangita-cli/Cargo.toml -- test extraction-e2e --scenario pdf-smoke --skip-migrations --timeout-seconds 300 --poll-interval-seconds 5` -> passed (`minSections=3`, `minVariants=1`)
+- **2026-02-17**: Enhanced Phase 3 (Enrichment Hardening):
+  - Replaced Regex-based prompt logic with **Schema-Driven Extraction** (`response_schema`) for structured, robust metadata (including `ragaMudra`).
+  - Implemented **Exponential Backoff Retry Logic** for `429 ResourceExhausted` errors in `gemini_enricher.py`.
+  - Refined prompt engineering with a "Musicologist" persona for better inference of implicit metadata (e.g., Temple from Deity/Title).
+  - Validated via `tests/test_schema_enrichment.py` and E2E `blogspot-html` scenario.

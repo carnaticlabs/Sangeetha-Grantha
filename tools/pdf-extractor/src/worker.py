@@ -10,6 +10,8 @@ Usage:
 Environment variables:
     DATABASE_URL: PostgreSQL connection string
     SG_GEMINI_API_KEY: Gemini API key for LLM refinement
+    SG_ENABLE_GEMINI_ENRICHMENT: Enable optional Gemini metadata fill for missing fields
+    SG_ENABLE_IDENTITY_DISCOVERY: Enable RapidFuzz identity candidates for composer/raga
     EXTRACTION_POLL_INTERVAL_S: Seconds between poll attempts (default: 5)
     EXTRACTION_BATCH_SIZE: Max tasks to process per cycle (default: 10)
     EXTRACTION_MAX_CONCURRENT: Max concurrent extractions (default: 3)
@@ -18,35 +20,34 @@ Environment variables:
 
 from __future__ import annotations
 
-import json
 import logging
 import signal
 import sys
 import time
 import traceback
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from hashlib import sha256
 from pathlib import Path
 from typing import Any
-from uuid import UUID
 
 import httpx
 
 from .config import ExtractorConfig, load_config
 from .db import ExtractionQueueDB, ExtractionTask
 from .diacritic_normalizer import cleanup_raga_tala_name, normalize_garbled_diacritics
-from .extractor import PdfExtractor
-from .extractor import DocumentContent
+from .extractor import DocumentContent, PdfExtractor
+from .gemini_enricher import GeminiEnricherConfig, GeminiMetadataEnricher
 from .html_extractor import HtmlTextExtractor
+from .identity_candidates import IdentityCandidateDiscovery, ReferenceEntity
 from .metadata_parser import MetadataParser
 from .ocr_fallback import OcrFallback
 from .page_segmenter import PageSegmenter
 from .schema import (
     CanonicalExtraction,
+    CanonicalIdentityCandidates,
     CanonicalLyricSection,
     CanonicalLyricVariant,
     CanonicalRaga,
-    CanonicalSection,
     ExtractionMethod,
     MusicalForm,
 )
@@ -69,6 +70,15 @@ class ExtractionWorker:
         self.metadata_parser = MetadataParser()
         self.ocr_fallback = OcrFallback()
         self.transliterator = Transliterator()
+        self.gemini_enricher = GeminiMetadataEnricher(
+            GeminiEnricherConfig(
+                enabled=config.enable_gemini_enrichment,
+                api_key=config.gemini_api_key,
+                model=config.gemini_model,
+            )
+        )
+        self._identity_discovery: IdentityCandidateDiscovery | None = None
+        self._identity_catalog_loaded_at_monotonic = 0.0
         self._shutdown = False
 
     def run(self) -> None:
@@ -257,6 +267,92 @@ class ExtractionWorker:
 
         return cached_path
 
+    def _finalize_extraction(
+        self,
+        extraction: CanonicalExtraction,
+        source_text: str,
+        source_format: str,
+    ) -> CanonicalExtraction:
+        """Apply optional Phase 3 identity and enrichment signals."""
+        identity_candidates = self._discover_identity_candidates(extraction)
+        if identity_candidates is not None:
+            extraction.identity_candidates = identity_candidates
+
+        enrichment = self.gemini_enricher.enrich(
+            extraction,
+            source_text,
+            source_format=source_format,
+        )
+        if enrichment is not None:
+            extraction.metadata_enrichment = enrichment
+
+        return extraction
+
+    def _discover_identity_candidates(
+        self,
+        extraction: CanonicalExtraction,
+    ) -> CanonicalIdentityCandidates | None:
+        if not self.config.enable_identity_discovery:
+            return None
+
+        discovery = self._get_identity_discovery()
+        if discovery is None:
+            return None
+
+        composer = extraction.composer if extraction.composer else None
+        raga_names = [raga.name for raga in extraction.ragas if raga.name]
+        return discovery.discover(composer=composer, ragas=raga_names)
+
+    def _get_identity_discovery(self) -> IdentityCandidateDiscovery | None:
+        now = time.monotonic()
+        ttl_seconds = max(30, self.config.identity_cache_ttl_seconds)
+        should_refresh = (
+            self._identity_discovery is None
+            or (now - self._identity_catalog_loaded_at_monotonic) >= ttl_seconds
+        )
+        if not should_refresh:
+            return self._identity_discovery
+
+        if not self.db.is_connected:
+            return self._identity_discovery
+
+        try:
+            composer_rows = self.db.list_composer_reference_rows()
+            raga_rows = self.db.list_raga_reference_rows()
+        except Exception:
+            logger.warning(
+                "Failed loading identity reference rows; keeping previous cache",
+                exc_info=True,
+            )
+            return self._identity_discovery
+
+        composers = [
+            ReferenceEntity(
+                entity_id=row["entity_id"],
+                name=row["name"],
+                aliases=tuple(row.get("aliases") or []),
+            )
+            for row in composer_rows
+            if row.get("entity_id") and row.get("name")
+        ]
+        ragas = [
+            ReferenceEntity(
+                entity_id=row["entity_id"],
+                name=row["name"],
+                aliases=(),
+            )
+            for row in raga_rows
+            if row.get("entity_id") and row.get("name")
+        ]
+        self._identity_discovery = IdentityCandidateDiscovery(
+            composers=composers,
+            ragas=ragas,
+            min_score=self.config.identity_candidate_min_score,
+            max_candidates=self.config.identity_candidate_max_count,
+        )
+        self._identity_catalog_loaded_at_monotonic = now
+        return self._identity_discovery
+
     def _extract_pdf(self, task: ExtractionTask) -> list[CanonicalExtraction]:
         """Extract Krithis from a PDF document."""
         # Download PDF
@@ -367,13 +463,94 @@ class ExtractionWorker:
                 sourceName=task.source_name or "unknown",
                 sourceTier=task.source_tier or 5,
                 extractionMethod=ExtractionMethod.PDF_PYMUPDF,
-                extractionTimestamp=datetime.now(timezone.utc).isoformat(),
+                extractionTimestamp=datetime.now(UTC).isoformat(),
                 pageRange=segment.page_range_str,
                 checksum=document.checksum,
             )
-            results.append(extraction)
+
+            if not self._is_valid_segment_title(extraction.title):
+                logger.info(
+                    "Skipping invalid segment title: %s",
+                    extraction.title,
+                    extra={"task_id": str(task.id)},
+                )
+                continue
+
+            results.append(
+                self._finalize_extraction(
+                    extraction=extraction,
+                    source_text=normalized_body,
+                    source_format="PDF",
+                )
+            )
 
         return results
+
+    def _is_valid_segment_title(self, title: str) -> bool:
+        """Check if title is likely a section header or metadata artifact."""
+        import unicodedata
+
+        if not title:
+            return False
+            
+        normalized = title.lower().strip()
+        # Remove diacritics
+        normalized = "".join(
+            c for c in unicodedata.normalize("NFD", normalized)
+            if unicodedata.category(c) != "Mn"
+        )
+        # Remove common separators or noise
+        normalized = normalized.replace("-", "").replace(" ", "")
+        
+        # Blocklist of known section headers often mistaken for titles
+        # Includes variations like 'madhyamakālasāhityam' -> 'madhyamakalasahityam'
+        # (assuming heavy normalization happens or we check substrings)
+        
+        # Basic exact checks on normalized string
+        invalid_exact = {
+            "pallavi",
+            "anupallavi",
+            "charanam",
+            "caranam",
+            "samasticharanam",
+            "samasticaranam",
+            "madhyamakalasahityam",
+            "madhyamakalasahitya",
+            "cittaswara",
+            "cittaswaram",
+            "cittam",
+            "chittaswara",
+            "chittaswaram",
+            "chittam",
+            "muktayiswara",
+            "muktayiswaram",
+            "sahityam",
+            "sahitya",
+            "swaram",
+            "swara",
+            "meaningofkriti",
+            "englishtranslation",
+            "devanagari",
+            "tamil",
+            "telugu",
+            "kannada",
+            "malayalam",
+        }
+        
+        if normalized in invalid_exact:
+            return False
+            
+        # Check for specific prefixes/substrings that indicate metadata dumps
+        if normalized.startswith("meaningof"):
+            return False
+        if "translation" in normalized:
+            return False
+            
+        # Check specifically for "madhyama" + "kala" combination which is common
+        if "madhyama" in normalized and "kala" in normalized:
+            return False
+
+        return True
 
     def _should_force_ocr_for_garbled_devanagari(self, document: DocumentContent) -> bool:
         """Detect broken Devanagari extraction and force OCR fallback."""
@@ -456,8 +633,7 @@ class ExtractionWorker:
                 if iast_title:
                     alternate_title = iast_title
 
-            results.append(
-                CanonicalExtraction(
+            extraction = CanonicalExtraction(
                 title=metadata.title,
                 alternateTitle=alternate_title,
                 composer=metadata.composer or task.request_payload.get("composerHint", "Unknown"),
@@ -473,10 +649,16 @@ class ExtractionWorker:
                 sourceName=task.source_name or "unknown",
                 sourceTier=task.source_tier or 5,
                 extractionMethod=ExtractionMethod.PDF_OCR,
-                extractionTimestamp=datetime.now(timezone.utc).isoformat(),
+                extractionTimestamp=datetime.now(UTC).isoformat(),
                 pageRange=str(page_num + 1),
                 checksum=checksum,
             )
+            results.append(
+                self._finalize_extraction(
+                    extraction=extraction,
+                    source_text=page_text,
+                    source_format="PDF",
+                )
             )
 
         return results
@@ -523,26 +705,31 @@ class ExtractionWorker:
         raga_name = cleanup_raga_tala_name(metadata.raga) if metadata.raga else "Unknown"
         tala_name = cleanup_raga_tala_name(metadata.tala) if metadata.tala else "Unknown"
 
+        extraction = CanonicalExtraction(
+            title=metadata.title,
+            alternateTitle=metadata.alternate_title,
+            composer=metadata.composer or task.request_payload.get("composerHint", "Unknown"),
+            musicalForm=MusicalForm.KRITHI,
+            ragas=[CanonicalRaga(name=raga_name)],
+            tala=tala_name,
+            sections=canonical_sections,
+            lyricVariants=lyric_variants,
+            metadataBoundaries=metadata_boundaries,
+            deity=metadata.deity,
+            temple=metadata.temple,
+            templeLocation=metadata.temple_location,
+            sourceUrl=task.source_url,
+            sourceName=task.source_name or "unknown",
+            sourceTier=task.source_tier or 5,
+            extractionMethod=ExtractionMethod.HTML_JSOUP,
+            extractionTimestamp=datetime.now(UTC).isoformat(),
+            checksum=sha256(html_bytes).hexdigest(),
+        )
         return [
-            CanonicalExtraction(
-                title=metadata.title,
-                alternateTitle=metadata.alternate_title,
-                composer=metadata.composer or task.request_payload.get("composerHint", "Unknown"),
-                musicalForm=MusicalForm.KRITHI,
-                ragas=[CanonicalRaga(name=raga_name)],
-                tala=tala_name,
-                sections=canonical_sections,
-                lyricVariants=lyric_variants,
-                metadataBoundaries=metadata_boundaries,
-                deity=metadata.deity,
-                temple=metadata.temple,
-                templeLocation=metadata.temple_location,
-                sourceUrl=task.source_url,
-                sourceName=task.source_name or "unknown",
-                sourceTier=task.source_tier or 5,
-                extractionMethod=ExtractionMethod.HTML_JSOUP,
-                extractionTimestamp=datetime.now(timezone.utc).isoformat(),
-                checksum=sha256(html_bytes).hexdigest(),
+            self._finalize_extraction(
+                extraction=extraction,
+                source_text=normalized_body,
+                source_format="HTML",
             )
         ]
 

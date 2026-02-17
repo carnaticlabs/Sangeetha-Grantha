@@ -2,9 +2,12 @@
 
 from src.schema import (
     CanonicalExtraction,
+    CanonicalIdentityCandidate,
+    CanonicalIdentityCandidates,
     CanonicalLyricSection,
     CanonicalLyricVariant,
     CanonicalMetadataBoundary,
+    CanonicalMetadataEnrichment,
     CanonicalRaga,
     CanonicalSection,
     ExtractionMethod,
@@ -151,3 +154,48 @@ def test_ragamalika_extraction() -> None:
     )
     assert len(extraction.ragas) == 3
     assert extraction.ragas[1].section == "Anupallavi"
+
+
+def test_identity_candidates_and_metadata_enrichment_serialization() -> None:
+    extraction = CanonicalExtraction(
+        title="Akhilandesvari",
+        composer="Unknown",
+        ragas=[CanonicalRaga(name="Unknown")],
+        tala="Unknown",
+        sourceUrl="https://example.com",
+        sourceName="fixture",
+        sourceTier=5,
+        extractionMethod=ExtractionMethod.HTML_JSOUP,
+        identityCandidates=CanonicalIdentityCandidates(
+            composers=[
+                CanonicalIdentityCandidate(
+                    entityId="composer-1",
+                    name="Muttuswami Dikshitar",
+                    score=97,
+                    confidence="HIGH",
+                    matchedOn="alias",
+                )
+            ],
+            ragas=[
+                CanonicalIdentityCandidate(
+                    entityId="raga-1",
+                    name="Dwijavanti",
+                    score=93,
+                    confidence="HIGH",
+                    matchedOn="canonical",
+                )
+            ],
+        ),
+        metadataEnrichment=CanonicalMetadataEnrichment(
+            provider="google-generativeai",
+            model="gemini-2.0-flash",
+            applied=True,
+            confidence=0.91,
+            fieldsUpdated=["composer", "raga"],
+        ),
+    )
+
+    payload = extraction.to_json_dict()
+    assert payload["identityCandidates"]["composers"][0]["entityId"] == "composer-1"
+    assert payload["metadataEnrichment"]["provider"] == "google-generativeai"
+    assert payload["metadataEnrichment"]["fieldsUpdated"] == ["composer", "raga"]

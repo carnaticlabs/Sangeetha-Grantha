@@ -7,6 +7,13 @@ import socket
 from dataclasses import dataclass, field
 
 
+def _env_bool(name: str, default: bool) -> bool:
+    value = os.environ.get(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
 @dataclass(frozen=True)
 class ExtractorConfig:
     """Configuration loaded from environment variables."""
@@ -22,6 +29,26 @@ class ExtractorConfig:
     # Gemini API
     gemini_api_key: str = field(
         default_factory=lambda: os.environ.get("SG_GEMINI_API_KEY", "")
+    )
+    gemini_model: str = field(
+        default_factory=lambda: os.environ.get("SG_GEMINI_MODEL", "gemini-2.0-flash")
+    )
+    enable_gemini_enrichment: bool = field(
+        default_factory=lambda: _env_bool("SG_ENABLE_GEMINI_ENRICHMENT", False)
+    )
+
+    # Identity candidate discovery
+    enable_identity_discovery: bool = field(
+        default_factory=lambda: _env_bool("SG_ENABLE_IDENTITY_DISCOVERY", True)
+    )
+    identity_candidate_min_score: int = field(
+        default_factory=lambda: int(os.environ.get("SG_IDENTITY_MIN_SCORE", "60"))
+    )
+    identity_candidate_max_count: int = field(
+        default_factory=lambda: int(os.environ.get("SG_IDENTITY_MAX_COUNT", "5"))
+    )
+    identity_cache_ttl_seconds: int = field(
+        default_factory=lambda: int(os.environ.get("SG_IDENTITY_CACHE_TTL_SECONDS", "900"))
     )
 
     # Worker behaviour

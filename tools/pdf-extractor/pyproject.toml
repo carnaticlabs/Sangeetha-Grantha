@@ -25,6 +25,7 @@ dependencies = [
 
     # LLM integration
     "google-generativeai>=0.8.0",  # Gemini API client
+    "rapidfuzz>=3.9.0",            # Fast fuzzy matching for identity candidates
 
     # HTTP
     "httpx>=0.27.0",            # Async HTTP client for PDF downloads
