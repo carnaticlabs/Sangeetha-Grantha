@@ -84,7 +84,7 @@ As the guardian, you are expected to be proactive:
 The `application_documentation` folder follows a strict numbering and naming convention to ensure discoverability and order.
 
 - **Convention**: `XX-name-of-folder` (e.g., `01-requirements`, `10-implementations`).
-- **Index Alignment**: Every new top-level folder **MUST** be added to the [README.md](file:///Users/seshadri/project/sangeetha-grantha/application_documentation/README.md) and [standards.md](file:///Users/seshadri/project/sangeetha-grantha/application_documentation/00-meta/standards.md).
+- **Index Alignment**: Every new top-level folder **MUST** be added to the [README.md](../../../application_documentation/README.md) and [standards.md](../../../application_documentation/00-meta/standards.md).
 - **Subfolder consistency**: Maintain logical subfolders (e.g., `features/`, `decisions/`) across different components where applicable.
 
 ## 6. Logical Grouping & Merging
@@ -97,7 +97,7 @@ To prevent documentation bloat, periodically identify documents that cover overl
 
 ## 7. Archiving & Retention
 
-As the project evolves, older documentation becomes obsolete. Refer to the [Retention Plan](file:///Users/seshadri/project/sangeetha-grantha/application_documentation/00-meta/retention-plan.md) for details.
+As the project evolves, older documentation becomes obsolete. Refer to the [Retention Plan](../../../application_documentation/00-meta/retention-plan.md) for details.
 
 - **Identification**: Identify files that:
   - Reference deprecated features.
