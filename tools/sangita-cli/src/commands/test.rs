@@ -2133,6 +2133,103 @@ async fn validate_extraction_outcome(
                 ));
             }
 
+            if let Some(identity) = item.get("identityCandidates") {
+                let composers = identity
+                    .get("composers")
+                    .and_then(Value::as_array)
+                    .ok_or_else(|| {
+                        anyhow!(
+                            "Payload regression: extraction[{}].identityCandidates.composers is missing/invalid for task {}",
+                            idx,
+                            task_id
+                        )
+                    })?;
+                let ragas = identity
+                    .get("ragas")
+                    .and_then(Value::as_array)
+                    .ok_or_else(|| {
+                        anyhow!(
+                            "Payload regression: extraction[{}].identityCandidates.ragas is missing/invalid for task {}",
+                            idx,
+                            task_id
+                        )
+                    })?;
+                for candidate in composers.iter().chain(ragas.iter()) {
+                    let score = candidate
+                        .get("score")
+                        .and_then(Value::as_i64)
+                        .ok_or_else(|| {
+                            anyhow!(
+                                "Payload regression: extraction[{}].identityCandidates contains candidate without numeric score for task {}",
+                                idx,
+                                task_id
+                            )
+                        })?;
+                    if !(0..=100).contains(&score) {
+                        pool.close().await;
+                        return Err(anyhow!(
+                            "Payload regression: extraction[{}].identityCandidates score={} out of range [0,100] for task {}",
+                            idx,
+                            score,
+                            task_id
+                        ));
+                    }
+                    let confidence = candidate
+                        .get("confidence")
+                        .and_then(Value::as_str)
+                        .unwrap_or_default();
+                    if !matches!(confidence, "HIGH" | "MEDIUM" | "LOW") {
+                        pool.close().await;
+                        return Err(anyhow!(
+                            "Payload regression: extraction[{}].identityCandidates has invalid confidence '{}' for task {}",
+                            idx,
+                            confidence,
+                            task_id
+                        ));
+                    }
+                }
+            }
+
+            if let Some(enrichment) = item.get("metadataEnrichment") {
+                let provider = enrichment
+                    .get("provider")
+                    .and_then(Value::as_str)
+                    .unwrap_or_default()
+                    .trim()
+                    .to_string();
+                if provider.is_empty() {
+                    pool.close().await;
+                    return Err(anyhow!(
+                        "Payload regression: extraction[{}].metadataEnrichment.provider is missing for task {}",
+                        idx,
+                        task_id
+                    ));
+                }
+                let applied = enrichment
+                    .get("applied")
+                    .and_then(Value::as_bool)
+                    .ok_or_else(|| {
+                        anyhow!(
+                            "Payload regression: extraction[{}].metadataEnrichment.applied is missing/invalid for task {}",
+                            idx,
+                            task_id
+                        )
+                    })?;
+                let fields_updated = enrichment
+                    .get("fieldsUpdated")
+                    .and_then(Value::as_array)
+                    .cloned()
+                    .unwrap_or_default();
+                if applied && fields_updated.is_empty() {
+                    pool.close().await;
+                    return Err(anyhow!(
+                        "Payload regression: extraction[{}].metadataEnrichment.applied=true but fieldsUpdated empty for task {}",
+                        idx,
+                        task_id
+                    ));
+                }
+            }
+
             let variant_items = item
                 .get("lyricVariants")
                 .and_then(Value::as_array)
