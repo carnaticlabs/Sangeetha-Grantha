@@ -107,6 +107,75 @@
         }
       }
     },
+    "metadataBoundaries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["label", "startOffset", "endOffset"],
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "startOffset": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "endOffset": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "identityCandidates": {
+      "type": "object",
+      "properties": {
+        "composers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/identityCandidate"
+          }
+        },
+        "ragas": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/identityCandidate"
+          }
+        }
+      }
+    },
+    "metadataEnrichment": {
+      "type": "object",
+      "required": ["provider", "applied"],
+      "properties": {
+        "provider": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "applied": {
+          "type": "boolean"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "fieldsUpdated": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "deity": {
       "type": "string",
       "description": "Optional deity name"
@@ -135,7 +204,7 @@
     },
     "extractionMethod": {
       "type": "string",
-      "enum": ["PDF_PYMUPDF", "PDF_OCR", "HTML_JSOUP", "HTML_JSOUP_GEMINI", "DOCX_PYTHON", "MANUAL"],
+      "enum": ["PDF_PYMUPDF", "PDF_OCR", "HTML_JSOUP", "HTML_JSOUP_GEMINI", "DOCX_PYTHON", "MANUAL", "TRANSLITERATION"],
       "description": "Extraction method identifier (required)"
     },
     "extractionTimestamp": {
@@ -150,6 +219,33 @@
     "checksum": {
       "type": "string",
       "description": "Optional SHA-256 checksum of source content"
+    }
+  },
+  "definitions": {
+    "identityCandidate": {
+      "type": "object",
+      "required": ["entityId", "name", "score", "confidence"],
+      "properties": {
+        "entityId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "score": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "confidence": {
+          "type": "string",
+          "enum": ["HIGH", "MEDIUM", "LOW"]
+        },
+        "matchedOn": {
+          "type": "string",
+          "enum": ["canonical", "alias"]
+        }
+      }
     }
   }
 }

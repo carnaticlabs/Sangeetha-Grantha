@@ -40,6 +40,12 @@ data class CanonicalExtractionDto(
     /** Boundaries where non-lyric metadata blocks begin in source text */
     val metadataBoundaries: List<CanonicalMetadataBoundaryDto> = emptyList(),
 
+    /** Optional identity-resolution candidates from extraction-time RapidFuzz discovery */
+    val identityCandidates: CanonicalIdentityCandidatesDto? = null,
+
+    /** Optional metadata-enrichment result from Gemini */
+    val metadataEnrichment: CanonicalMetadataEnrichmentDto? = null,
+
     /** Deity name (optional, extracted or inferred) */
     val deity: String? = null,
 
@@ -128,6 +134,31 @@ data class CanonicalMetadataBoundaryDto(
 
     /** End offset of the boundary marker in original extraction text */
     val endOffset: Int,
+)
+
+@Serializable
+data class CanonicalIdentityCandidatesDto(
+    val composers: List<CanonicalIdentityCandidateDto> = emptyList(),
+    val ragas: List<CanonicalIdentityCandidateDto> = emptyList(),
+)
+
+@Serializable
+data class CanonicalIdentityCandidateDto(
+    val entityId: String,
+    val name: String,
+    val score: Int,
+    val confidence: String,
+    val matchedOn: String? = null,
+)
+
+@Serializable
+data class CanonicalMetadataEnrichmentDto(
+    val provider: String,
+    val model: String? = null,
+    val applied: Boolean = false,
+    val confidence: Double? = null,
+    val fieldsUpdated: List<String> = emptyList(),
+    val warnings: List<String> = emptyList(),
 )
 
 // ─── Enums ─────────────────────────────────────────────────────────────────
