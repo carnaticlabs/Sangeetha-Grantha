@@ -10,6 +10,7 @@ import java.time.ZoneOffset
 import java.util.UUID
 import kotlin.uuid.Uuid
 import org.jetbrains.exposed.v1.core.*
+import org.jetbrains.exposed.v1.exceptions.ExposedSQLException
 import org.jetbrains.exposed.v1.jdbc.*
 
 /**
@@ -45,36 +46,9 @@ class EntityResolutionCacheRepository {
         confidence: Int
     ): UUID = DatabaseFactory.dbQuery {
         val now = OffsetDateTime.now(ZoneOffset.UTC)
+        val id = UUID.randomUUID()
 
-        // Exposed 1.0.0-rc-2 doesn't reliably expose an insert-on-conflict API here; do a safe
-        // "select then update/insert" instead (unique constraint enforced in DB).
-        val existingId =
-            EntityResolutionCacheTable
-                .selectAll()
-                .andWhere {
-                    (EntityResolutionCacheTable.entityType eq entityType) and
-                        (EntityResolutionCacheTable.normalizedName eq normalizedName)
-                }
-                .limit(1)
-                .singleOrNull()
-                ?.get(EntityResolutionCacheTable.id)
-                ?.value
-
-        if (existingId != null) {
-            EntityResolutionCacheTable.update(
-                where = {
-                    (EntityResolutionCacheTable.entityType eq entityType) and
-                        (EntityResolutionCacheTable.normalizedName eq normalizedName)
-                }
-            ) { stmt ->
-                stmt[EntityResolutionCacheTable.rawName] = rawName
-                stmt[EntityResolutionCacheTable.resolvedEntityId] = resolvedEntityId.toJavaUuid()
-                stmt[EntityResolutionCacheTable.confidence] = confidence
-                stmt[EntityResolutionCacheTable.updatedAt] = now
-            }
-            existingId
-        } else {
-            val id = UUID.randomUUID()
+        try {
             EntityResolutionCacheTable.insert { stmt ->
                 stmt[EntityResolutionCacheTable.id] = id
                 stmt[EntityResolutionCacheTable.entityType] = entityType
@@ -86,7 +60,50 @@ class EntityResolutionCacheRepository {
                 stmt[EntityResolutionCacheTable.updatedAt] = now
             }
             id
+        } catch (e: ExposedSQLException) {
+            if (!isTypeAndNameUniqueViolation(e)) throw e
+
+            EntityResolutionCacheTable
+                .updateReturning(
+                    where = {
+                        (EntityResolutionCacheTable.entityType eq entityType) and
+                            (EntityResolutionCacheTable.normalizedName eq normalizedName)
+                    }
+                ) { stmt ->
+                    stmt[EntityResolutionCacheTable.rawName] = rawName
+                    stmt[EntityResolutionCacheTable.resolvedEntityId] = resolvedEntityId.toJavaUuid()
+                    stmt[EntityResolutionCacheTable.confidence] = confidence
+                    stmt[EntityResolutionCacheTable.updatedAt] = now
+                }
+                .singleOrNull()
+                ?.get(EntityResolutionCacheTable.id)
+                ?.value
+                ?: error(
+                    "Failed to update existing entity_resolution_cache row for " +
+                        "entityType=$entityType normalizedName=$normalizedName"
+                )
         }
+    }
+
+    private fun isTypeAndNameUniqueViolation(e: ExposedSQLException): Boolean {
+        val sqlState =
+            generateSequence<Throwable>(e) { it.cause }
+                .filterIsInstance<java.sql.SQLException>()
+                .mapNotNull { it.sqlState }
+                .firstOrNull()
+
+        val combinedMessage =
+            buildString {
+                append(e.message.orEmpty())
+                append(' ')
+                append(e.cause?.message.orEmpty())
+            }
+
+        return sqlState == "23505" &&
+            combinedMessage.contains(
+                "entity_resolution_cache_entity_type_normalized_name_key",
+                ignoreCase = true
+            )
     }
 
     /**

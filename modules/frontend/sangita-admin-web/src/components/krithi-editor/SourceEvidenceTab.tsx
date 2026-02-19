@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useKrithiEvidence } from '../../hooks/useSourcingQueries';
+import { useKrithiEvidence, useFieldComparison } from '../../hooks/useSourcingQueries';
 import { TierBadge, ConfidenceBar, FieldComparisonTable, StructureVisualiser } from '../sourcing/shared';
 
 interface SourceEvidenceTabProps {
@@ -15,6 +15,11 @@ interface SourceEvidenceTabProps {
  */
 export const SourceEvidenceTab: React.FC<SourceEvidenceTabProps> = ({ krithiId, krithiTitle }) => {
   const { data: evidence, isLoading, error } = useKrithiEvidence(krithiId);
+  const {
+    data: fieldComparison,
+    isLoading: isFieldComparisonLoading,
+    error: fieldComparisonError,
+  } = useFieldComparison(krithiId, true);
 
   if (isLoading) {
     return (
@@ -56,22 +61,6 @@ export const SourceEvidenceTab: React.FC<SourceEvidenceTabProps> = ({ krithiId, 
       </div>
     );
   }
-
-  // Build field comparison data from sources
-  const fieldNames = ['title', 'composer', 'raga', 'tala', 'language', 'deity', 'temple'] as const;
-  const comparisonSources = sources.map(s => ({
-    name: s.sourceName,
-    tier: s.sourceTier,
-  }));
-
-  const comparisonFields = fieldNames.map(field => ({
-    name: field.charAt(0).toUpperCase() + field.slice(1),
-    values: sources.map(s => {
-      const contributed = s.contributedFields ?? [];
-      const hasField = contributed.includes(field);
-      return hasField ? (s.extractedData?.[field] ?? '—') : null;
-    }),
-  }));
 
   return (
     <div className="space-y-6">
@@ -128,16 +117,21 @@ export const SourceEvidenceTab: React.FC<SourceEvidenceTabProps> = ({ krithiId, 
       </div>
 
       {/* Field Provenance Comparison */}
-      {comparisonFields.some(f => f.values.some(v => v != null)) && (
+      {!hasNoEvidence && (
         <div className="bg-white rounded-xl border border-border-light p-5">
           <h3 className="text-sm font-bold text-ink-800 mb-4">Field Provenance</h3>
           <p className="text-xs text-ink-500 mb-3">
             Shows which source provided each field value. Conflicts are highlighted.
           </p>
-          <FieldComparisonTable
-            sources={comparisonSources.map(s => s.name)}
-            fields={comparisonFields}
-          />
+          {isFieldComparisonLoading ? (
+            <div className="text-sm text-ink-400">Loading field comparison...</div>
+          ) : fieldComparisonError ? (
+            <div className="text-sm text-red-600">Failed to load field comparison data.</div>
+          ) : !fieldComparison || fieldComparison.fields.length === 0 ? (
+            <div className="text-sm text-ink-400 italic">No comparison data available</div>
+          ) : (
+            <FieldComparisonTable fields={fieldComparison.fields} />
+          )}
         </div>
       )}
 
