@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 3.2.0 |
-| **Last Updated** | 2026-02-10 |
+| **Version** | 3.2.1 |
+| **Last Updated** | 2026-02-19 |
 | **Author** | Sangeetha Grantha Team |
 | **Related Tracks** | TRACK-041, TRACK-053, TRACK-054–TRACK-058 (proposed) |
 | **Scope** | PDF extraction quality — garbled diacritic handling, metadata recovery, section detection, Devanagari font decoding |
@@ -502,10 +502,10 @@ The raw extracted body text (used for lyric content) is **not** normalised — t
 
 | File | Change Type | Description |
 |:---|:---|:---|
-| `tools/pdf-extractor/src/metadata_parser.py` | **Major** | Add `normalize_garbled_diacritics()`, update all raga/tala regex patterns, add name cleanup |
-| `tools/pdf-extractor/src/structure_parser.py` | **Moderate** | Add garbled section label patterns (`caran. am`, `samash.t.i caran. am`) |
-| `tools/pdf-extractor/src/page_segmenter.py` | **Minor** | Update `METADATA_LINE_PATTERN` to match garbled forms |
-| `tools/pdf-extractor/src/worker.py` | **Minor** | Apply name cleanup to raga/tala names in `_extract_pdf()` |
+| `tools/krithi-extract-enrich-worker/src/metadata_parser.py` | **Major** | Add `normalize_garbled_diacritics()`, update all raga/tala regex patterns, add name cleanup |
+| `tools/krithi-extract-enrich-worker/src/structure_parser.py` | **Moderate** | Add garbled section label patterns (`caran. am`, `samash.t.i caran. am`) |
+| `tools/krithi-extract-enrich-worker/src/page_segmenter.py` | **Minor** | Update `METADATA_LINE_PATTERN` to match garbled forms |
+| `tools/krithi-extract-enrich-worker/src/worker.py` | **Minor** | Apply name cleanup to raga/tala names in `_extract_pdf()` |
 
 No database migrations required. No Kotlin backend changes required. No frontend changes required.
 
@@ -897,10 +897,10 @@ However, the deterministic regex + normalisation approach is preferred for relia
 | [TRACK-041](../../../conductor/tracks/TRACK-041-enhanced-sourcing-logic.md) | Enhanced sourcing — this fix enables the PDF extraction pipeline to produce usable data |
 | [TRACK-053](../../../conductor/tracks/TRACK-053-krithi-creation-from-extraction.md) | Krithi creation from extraction — created the 419 Krithis that surfaced this quality gap |
 | **TRACK-054–058** (proposed) | Section 11 — Conductor track breakdown for diacritic fix, Sanskrit decoder, variant backend/UI, E2E QA |
-| `tools/pdf-extractor/src/metadata_parser.py` | Primary file to modify (English PDF garbled diacritics) |
-| `tools/pdf-extractor/src/structure_parser.py` | Secondary file to modify (section label patterns) |
-| `tools/pdf-extractor/src/page_segmenter.py` | Minor update needed (metadata detection pattern) |
-| `tools/pdf-extractor/src/extractor.py` | Sanskrit PDF: font encoding decoder integration point |
+| `tools/krithi-extract-enrich-worker/src/metadata_parser.py` | Primary file to modify (English PDF garbled diacritics) |
+| `tools/krithi-extract-enrich-worker/src/structure_parser.py` | Secondary file to modify (section label patterns) |
+| `tools/krithi-extract-enrich-worker/src/page_segmenter.py` | Minor update needed (metadata detection pattern) |
+| `tools/krithi-extract-enrich-worker/src/extractor.py` | Sanskrit PDF: font encoding decoder integration point |
 
 ---
 
@@ -1293,12 +1293,12 @@ The extractor passes these through to the result payload so the Kotlin `Extracti
 
 | # | Task | File(s) | Effort |
 |:---|:---|:---|:---|
-| 1.1 | Create `diacritic_normalizer.py` with `normalize_garbled_diacritics()` | `tools/pdf-extractor/src/diacritic_normalizer.py` | S |
-| 1.2 | Unit test normaliser against all known garbled→clean mappings | `tools/pdf-extractor/tests/test_diacritic_normalizer.py` | S |
-| 1.3 | Update `MetadataParser` — normalise text before regex, add garbled-form patterns | `tools/pdf-extractor/src/metadata_parser.py` | M |
-| 1.4 | Update `StructureParser` — add `caran. am`, `samash.t.i` patterns | `tools/pdf-extractor/src/structure_parser.py` | S |
-| 1.5 | Update `PageSegmenter.METADATA_LINE_PATTERN` for garbled forms | `tools/pdf-extractor/src/page_segmenter.py` | S |
-| 1.6 | Update `Worker` — apply name cleanup to raga/tala before CanonicalExtraction | `tools/pdf-extractor/src/worker.py` | S |
+| 1.1 | Create `diacritic_normalizer.py` with `normalize_garbled_diacritics()` | `tools/krithi-extract-enrich-worker/src/diacritic_normalizer.py` | S |
+| 1.2 | Unit test normaliser against all known garbled→clean mappings | `tools/krithi-extract-enrich-worker/tests/test_diacritic_normalizer.py` | S |
+| 1.3 | Update `MetadataParser` — normalise text before regex, add garbled-form patterns | `tools/krithi-extract-enrich-worker/src/metadata_parser.py` | M |
+| 1.4 | Update `StructureParser` — add `caran. am`, `samash.t.i` patterns | `tools/krithi-extract-enrich-worker/src/structure_parser.py` | S |
+| 1.5 | Update `PageSegmenter.METADATA_LINE_PATTERN` for garbled forms | `tools/krithi-extract-enrich-worker/src/page_segmenter.py` | S |
+| 1.6 | Update `Worker` — apply name cleanup to raga/tala before CanonicalExtraction | `tools/krithi-extract-enrich-worker/src/worker.py` | S |
 | 1.7 | Reset extraction → re-extract English PDF | CLI / DB | S |
 | 1.8 | Verify: SQL queries from Section 6.2 | Manual | S |
 
@@ -1314,11 +1314,11 @@ The extractor passes these through to the result payload so the Kotlin `Extracti
 
 | # | Task | File(s) | Effort |
 |:---|:---|:---|:---|
-| 2.1 | Create `velthuis_decoder.py` — encoding extraction + byte→Unicode mapping | `tools/pdf-extractor/src/velthuis_decoder.py` | L |
-| 2.2 | Implement mātrā reordering and vowel merging post-processing | `tools/pdf-extractor/src/velthuis_decoder.py` | M |
-| 2.3 | Unit test decoder against page 17, 18, 100 known text | `tools/pdf-extractor/tests/test_velthuis_decoder.py` | M |
-| 2.4 | Integrate decoder into `PdfExtractor` — detect Velthuis, decode spans | `tools/pdf-extractor/src/extractor.py` | M |
-| 2.5 | Enhance `Worker` language/script detection for Devanagari | `tools/pdf-extractor/src/worker.py` | S |
+| 2.1 | Create `velthuis_decoder.py` — encoding extraction + byte→Unicode mapping | `tools/krithi-extract-enrich-worker/src/velthuis_decoder.py` | L |
+| 2.2 | Implement mātrā reordering and vowel merging post-processing | `tools/krithi-extract-enrich-worker/src/velthuis_decoder.py` | M |
+| 2.3 | Unit test decoder against page 17, 18, 100 known text | `tools/krithi-extract-enrich-worker/tests/test_velthuis_decoder.py` | M |
+| 2.4 | Integrate decoder into `PdfExtractor` — detect Velthuis, decode spans | `tools/krithi-extract-enrich-worker/src/extractor.py` | M |
+| 2.5 | Enhance `Worker` language/script detection for Devanagari | `tools/krithi-extract-enrich-worker/src/worker.py` | S |
 | 2.6 | Test extraction of full `mdskt.pdf` in dev environment | Manual | M |
 | 2.7 | Spot-check 10 Krithis against PDF rendering | Manual | S |
 
@@ -1466,12 +1466,12 @@ This section provides a detailed, track-ready breakdown for registering and exec
 
 | Task ID | Description | Acceptance Criteria | File(s) |
 |:---|:---|:---|:---|
-| T54.1 | Create `normalize_garbled_diacritics()` utility | All mappings from Section 4.1 (¯a→ā, ˙m→ṁ, etc.) pass unit tests; optional whitespace between diacritic and base handled. | `tools/pdf-extractor/src/diacritic_normalizer.py` (new) |
-| T54.2 | Add unit tests for diacritic normaliser | Tests for r¯aga ˙m, t¯al.a ˙m, juj¯avanti, ¯adi, mi´sra c¯apu, n¯ıl¯ambari, caran. am. | `tools/pdf-extractor/tests/test_diacritic_normalizer.py` (new) |
-| T54.3 | Update MetadataParser — normalise before regex; add garbled-form patterns | Raga/tala extracted from body_text containing r¯aga ˙m, t¯al.a ˙m; mēḷa number stripped. | `tools/pdf-extractor/src/metadata_parser.py` |
-| T54.4 | Update StructureParser — add caran. am, samashti variants | Section type CHARANAM detected when label is caran. am or caran.am. | `tools/pdf-extractor/src/structure_parser.py` |
-| T54.5 | Update PageSegmenter METADATA_LINE_PATTERN | Pattern matches r¯aga, t¯al.a, raga, tala, राग, ताल. | `tools/pdf-extractor/src/page_segmenter.py` |
-| T54.6 | Apply name cleanup in Worker before CanonicalExtraction | Raga/tala names in output are title-cased, diacritics normalised, (28) etc. stripped. | `tools/pdf-extractor/src/worker.py` |
+| T54.1 | Create `normalize_garbled_diacritics()` utility | All mappings from Section 4.1 (¯a→ā, ˙m→ṁ, etc.) pass unit tests; optional whitespace between diacritic and base handled. | `tools/krithi-extract-enrich-worker/src/diacritic_normalizer.py` (new) |
+| T54.2 | Add unit tests for diacritic normaliser | Tests for r¯aga ˙m, t¯al.a ˙m, juj¯avanti, ¯adi, mi´sra c¯apu, n¯ıl¯ambari, caran. am. | `tools/krithi-extract-enrich-worker/tests/test_diacritic_normalizer.py` (new) |
+| T54.3 | Update MetadataParser — normalise before regex; add garbled-form patterns | Raga/tala extracted from body_text containing r¯aga ˙m, t¯al.a ˙m; mēḷa number stripped. | `tools/krithi-extract-enrich-worker/src/metadata_parser.py` |
+| T54.4 | Update StructureParser — add caran. am, samashti variants | Section type CHARANAM detected when label is caran. am or caran.am. | `tools/krithi-extract-enrich-worker/src/structure_parser.py` |
+| T54.5 | Update PageSegmenter METADATA_LINE_PATTERN | Pattern matches r¯aga, t¯al.a, raga, tala, राग, ताल. | `tools/krithi-extract-enrich-worker/src/page_segmenter.py` |
+| T54.6 | Apply name cleanup in Worker before CanonicalExtraction | Raga/tala names in output are title-cased, diacritics normalised, (28) etc. stripped. | `tools/krithi-extract-enrich-worker/src/worker.py` |
 | T54.7 | Re-extract English PDF and verify | ≤5 Krithis with Unknown raga (vs 480 before); ≥430 Krithis with 3+ sections (vs 0 before). | Manual / SQL (Section 6.2) |
 
 **Progress Log:** (To be maintained in track file.)
@@ -1488,13 +1488,13 @@ This section provides a detailed, track-ready breakdown for registering and exec
 
 | Task ID | Description | Acceptance Criteria | File(s) |
 |:---|:---|:---|:---|
-| T55.1 | Create VelthuisDecoder — extract encoding from Type1 font program | Encoding vector parsed from font stream; 155 byte→glyph mappings built. | `tools/pdf-extractor/src/velthuis_decoder.py` (new) |
-| T55.2 | Implement byte→Unicode decode with glyph table | Decode produces correct Unicode for page 17 title, raga, tala, section labels (Section 7.5). | `tools/pdf-extractor/src/velthuis_decoder.py` |
-| T55.3 | Implement left-side mātrā reordering and vowel merging | ि after consonant in output; a + aamatra → आ where applicable. | `tools/pdf-extractor/src/velthuis_decoder.py` |
-| T55.4 | Add unit tests (page 17, 18, 100 samples) | Known Devanagari strings match decoded output within agreed tolerance. | `tools/pdf-extractor/tests/test_velthuis_decoder.py` (new) |
-| T55.5 | Integrate decoder into PdfExtractor — detect Velthuis, decode spans | Pages using Velthuis-dvng* fonts return decoded Unicode text; other fonts unchanged. | `tools/pdf-extractor/src/extractor.py` |
-| T55.6 | Set language/script in Worker for Devanagari output | CanonicalLyricVariant has language=sa, script=devanagari for Sanskrit PDFs. | `tools/pdf-extractor/src/worker.py` |
-| T55.7 | Optional: add IAST title to CanonicalExtractionDto (for matching) | If Python transliteration chosen (Design Decision 5), add `titleLatin` or equivalent for Kotlin matching. | `tools/pdf-extractor/src/schema.py`, `worker.py` |
+| T55.1 | Create VelthuisDecoder — extract encoding from Type1 font program | Encoding vector parsed from font stream; 155 byte→glyph mappings built. | `tools/krithi-extract-enrich-worker/src/velthuis_decoder.py` (new) |
+| T55.2 | Implement byte→Unicode decode with glyph table | Decode produces correct Unicode for page 17 title, raga, tala, section labels (Section 7.5). | `tools/krithi-extract-enrich-worker/src/velthuis_decoder.py` |
+| T55.3 | Implement left-side mātrā reordering and vowel merging | ि after consonant in output; a + aamatra → आ where applicable. | `tools/krithi-extract-enrich-worker/src/velthuis_decoder.py` |
+| T55.4 | Add unit tests (page 17, 18, 100 samples) | Known Devanagari strings match decoded output within agreed tolerance. | `tools/krithi-extract-enrich-worker/tests/test_velthuis_decoder.py` (new) |
+| T55.5 | Integrate decoder into PdfExtractor — detect Velthuis, decode spans | Pages using Velthuis-dvng* fonts return decoded Unicode text; other fonts unchanged. | `tools/krithi-extract-enrich-worker/src/extractor.py` |
+| T55.6 | Set language/script in Worker for Devanagari output | CanonicalLyricVariant has language=sa, script=devanagari for Sanskrit PDFs. | `tools/krithi-extract-enrich-worker/src/worker.py` |
+| T55.7 | Optional: add IAST title to CanonicalExtractionDto (for matching) | If Python transliteration chosen (Design Decision 5), add `titleLatin` or equivalent for Kotlin matching. | `tools/krithi-extract-enrich-worker/src/schema.py`, `worker.py` |
 | T55.8 | Spot-check 10 Krithis vs PDF rendering | Character accuracy ≥95%; no systematic misordering. | Manual |
 
 **Progress Log:** (To be maintained in track file.)

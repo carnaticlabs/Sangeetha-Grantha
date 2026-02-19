@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Version** | 1.1.1 |
+| **Last Updated** | 2026-02-19 |
 | **Author** | Sangeetha Grantha Team |
 | **Related Tracks** | TRACK-039, TRACK-040, TRACK-041 |
 | **Scope** | Multi-format sourcing, quality framework, enrichment pipeline |
@@ -304,7 +304,7 @@ The recommended approach is a standalone Python extraction service:
 
 ```text
 tools/
-  pdf-extractor/
+  krithi-extract-enrich-worker/
     pyproject.toml
     src/
       cli.py                    # CLI entry point
@@ -607,7 +607,7 @@ CREATE TABLE extraction_runs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     source_document_id UUID NOT NULL REFERENCES source_documents(id),
     extractor_type TEXT NOT NULL,       -- PDF_PYMUPDF, PDF_OCR, HTML_JSOUP, HTML_GEMINI
-    extractor_version TEXT NOT NULL,    -- e.g. 'pdf-extractor:1.2.0'
+    extractor_version TEXT NOT NULL,    -- e.g. 'krithi-extract-enrich-worker:1.2.0'
     status TEXT NOT NULL DEFAULT 'PENDING',
     confidence DECIMAL(5,4),
     result_payload JSONB,              -- canonical extraction JSON
@@ -684,11 +684,11 @@ services:
       timeout: 5s
       retries: 10
 
-  pdf-extractor:
+  krithi-extract-enrich-worker:
     build:
-      context: ./tools/pdf-extractor
+      context: ./tools/krithi-extract-enrich-worker
       dockerfile: Dockerfile
-    container_name: sangita_pdf_extractor
+    container_name: sangita_krithi_extract_enrich_worker
     depends_on:
       postgres:
         condition: service_healthy
@@ -716,7 +716,7 @@ volumes:
 #### 8.2.2 Dockerfile (Python Extraction Service)
 
 ```dockerfile
-# tools/pdf-extractor/Dockerfile
+# tools/krithi-extract-enrich-worker/Dockerfile
 FROM python:3.11-slim
 
 # Install system dependencies for OCR and Indic text
@@ -745,25 +745,25 @@ ENTRYPOINT ["python", "-m", "src.worker"]
 For production on GCP, the extraction service runs as a Kubernetes Deployment in the same namespace as the backend, connecting to Cloud SQL via the Cloud SQL Proxy sidecar:
 
 ```yaml
-# k8s/pdf-extractor-deployment.yaml
+# k8s/krithi-extract-enrich-worker-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pdf-extractor
+  name: krithi-extract-enrich-worker
   namespace: sangita-grantha
 spec:
   replicas: 2    # scale based on queue depth
   selector:
     matchLabels:
-      app: pdf-extractor
+      app: krithi-extract-enrich-worker
   template:
     metadata:
       labels:
-        app: pdf-extractor
+        app: krithi-extract-enrich-worker
     spec:
       containers:
-        - name: pdf-extractor
-          image: gcr.io/sangita-grantha/pdf-extractor:latest
+        - name: krithi-extract-enrich-worker
+          image: gcr.io/sangita-grantha/krithi-extract-enrich-worker:latest
           env:
             - name: DATABASE_URL
               valueFrom:
@@ -806,12 +806,12 @@ Horizontal Pod Autoscaler can scale replicas based on queue depth:
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: pdf-extractor-hpa
+  name: krithi-extract-enrich-worker-hpa
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: pdf-extractor
+    name: krithi-extract-enrich-worker
   minReplicas: 1
   maxReplicas: 5
   metrics:
@@ -904,7 +904,7 @@ CREATE TABLE extraction_queue (
     result_payload JSONB,                   -- array of CanonicalExtractionDto
     result_count INTEGER,                   -- number of Krithis extracted
     extraction_method TEXT,                 -- PDF_PYMUPDF, PDF_OCR, DOCX_PYTHON
-    extractor_version TEXT,                 -- e.g. 'pdf-extractor:1.2.0'
+    extractor_version TEXT,                 -- e.g. 'krithi-extract-enrich-worker:1.2.0'
     confidence DECIMAL(5,4),
     duration_ms INTEGER,
 
@@ -934,7 +934,7 @@ CREATE INDEX idx_eq_status_done ON extraction_queue(status, updated_at)
 The Python container runs a simple polling loop:
 
 ```python
-# tools/pdf-extractor/src/worker.py (conceptual)
+# tools/krithi-extract-enrich-worker/src/worker.py (conceptual)
 async def worker_loop():
     while True:
         async with db.transaction():

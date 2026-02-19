@@ -1,4 +1,4 @@
-"""Environment-based configuration for the PDF extraction service."""
+"""Environment-based configuration for the Krithi extraction/enrichment worker."""
 
 from __future__ import annotations
 
@@ -76,7 +76,9 @@ class ExtractorConfig:
     hostname: str = field(default_factory=socket.gethostname)
 
     # Extractor version tag
-    extractor_version: str = f"pdf-extractor:{os.environ.get('EXTRACTOR_VERSION', '1.0.0')}"
+    extractor_version: str = (
+        f"krithi-extract-enrich-worker:{os.environ.get('EXTRACTOR_VERSION', '1.0.0')}"
+    )
 
 
 def load_config() -> ExtractorConfig:

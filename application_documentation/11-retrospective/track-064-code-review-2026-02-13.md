@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-02-13 |
+| **Version** | 1.0.1 |
+| **Last Updated** | 2026-02-19 |
 | **Author** | Claude Code Review |
 
 # TRACK-064 Code Review & Validation (2026-02-13)
@@ -115,12 +115,12 @@ The architecture is sound — intelligence is moving to Python, Kotlin is becomi
 - `modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/repositories/BulkImportRepository.kt`
 - `modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/repositories/KrithiRepository.kt`
 - `modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/repositories/SourceEvidenceRepository.kt`
-- `tools/pdf-extractor/src/worker.py`
-- `tools/pdf-extractor/src/metadata_parser.py`
-- `tools/pdf-extractor/src/html_extractor.py`
-- `tools/pdf-extractor/tests/test_html_extractor.py`
-- `tools/pdf-extractor/tests/test_metadata_parser.py`
-- `tools/pdf-extractor/tests/test_worker.py`
+- `tools/krithi-extract-enrich-worker/src/worker.py`
+- `tools/krithi-extract-enrich-worker/src/metadata_parser.py`
+- `tools/krithi-extract-enrich-worker/src/html_extractor.py`
+- `tools/krithi-extract-enrich-worker/tests/test_html_extractor.py`
+- `tools/krithi-extract-enrich-worker/tests/test_metadata_parser.py`
+- `tools/krithi-extract-enrich-worker/tests/test_worker.py`
 - `database/migrations/31__extraction_queue_html_support.sql`
 - `database/migrations/32__normalize_entity_resolution_cache_confidence.sql`
 - `modules/frontend/sangita-admin-web/src/pages/ImportReview.tsx`

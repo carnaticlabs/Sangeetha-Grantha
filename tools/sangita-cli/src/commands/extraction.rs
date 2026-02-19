@@ -6,6 +6,9 @@ use clap::{Args, Subcommand};
 use std::path::Path;
 use std::process::Command;
 
+const EXTRACTION_SERVICE_NAME: &str = "krithi-extract-enrich-worker";
+const EXTRACTION_CONTAINER_NAME: &str = "sangita_krithi_extract_enrich_worker";
+
 #[derive(Args)]
 pub struct ExtractionArgs {
     #[command(subcommand)]
@@ -14,7 +17,7 @@ pub struct ExtractionArgs {
 
 #[derive(Subcommand)]
 enum ExtractionCommands {
-    /// Build the PDF extractor Docker image
+    /// Build the extraction worker Docker image
     Build {
         /// Don't use cache when building
         #[arg(long)]
@@ -81,17 +84,17 @@ fn build_extractor(root: &Path, no_cache: bool) -> Result<()> {
         );
     }
 
-    print_step("Building PDF extractor Docker image...");
+    print_step("Building extraction worker Docker image...");
 
     let mut args = vec!["build"];
     if no_cache {
         args.push("--no-cache");
     }
-    args.push("pdf-extractor");
+    args.push(EXTRACTION_SERVICE_NAME);
 
-    run_docker_compose(root, &args).context("Failed to build pdf-extractor image")?;
+    run_docker_compose(root, &args).context("Failed to build extraction worker image")?;
 
-    print_success("PDF extractor image built successfully");
+    print_success("Extraction worker image built successfully");
     Ok(())
 }
 
@@ -122,17 +125,17 @@ async fn start_extractor(root: &Path, with_db: bool, follow: bool) -> Result<()>
         wait_for_postgres_healthy(root).await?;
     }
 
-    print_step("Starting PDF extractor service...");
+    print_step("Starting extraction worker service...");
 
-    // Use --profile extraction to include the pdf-extractor service
+    // Use --profile extraction to include the extraction worker service
     run_docker_compose(
         root,
-        &["--profile", "extraction", "up", "-d", "pdf-extractor"],
+        &["--profile", "extraction", "up", "-d", EXTRACTION_SERVICE_NAME],
     )
-    .context("Failed to start pdf-extractor")?;
+    .context("Failed to start extraction worker")?;
 
-    print_success("PDF extractor service started");
-    println!("\n  Container: sangita_pdf_extractor");
+    print_success("Extraction worker service started");
+    println!("\n  Container: {EXTRACTION_CONTAINER_NAME}");
     println!("  Logs: sangita-cli extraction logs -f");
     println!("  Status: sangita-cli extraction status");
 
@@ -149,13 +152,16 @@ fn stop_extractor(root: &Path) -> Result<()> {
         anyhow::bail!("Docker Compose not available.");
     }
 
-    print_step("Stopping PDF extractor service...");
+    print_step("Stopping extraction worker service...");
 
-    // Stop only the pdf-extractor service
-    run_docker_compose(root, &["--profile", "extraction", "stop", "pdf-extractor"])
-        .context("Failed to stop pdf-extractor")?;
+    // Stop only the extraction worker service
+    run_docker_compose(
+        root,
+        &["--profile", "extraction", "stop", EXTRACTION_SERVICE_NAME],
+    )
+    .context("Failed to stop extraction worker")?;
 
-    print_success("PDF extractor service stopped");
+    print_success("Extraction worker service stopped");
     Ok(())
 }
 
@@ -168,7 +174,7 @@ fn show_logs(root: &Path, follow: bool, tail: &str) -> Result<()> {
 
     args.push("--tail");
     args.push(tail);
-    args.push("pdf-extractor");
+    args.push(EXTRACTION_SERVICE_NAME);
 
     // For logs, we want to stream output directly to terminal
     let status = Command::new("docker")
@@ -202,7 +208,7 @@ async fn show_status(root: &Path) -> Result<()> {
             "ps",
             "--format",
             "table",
-            "pdf-extractor",
+            EXTRACTION_SERVICE_NAME,
         ])
         .current_dir(root)
         .output();

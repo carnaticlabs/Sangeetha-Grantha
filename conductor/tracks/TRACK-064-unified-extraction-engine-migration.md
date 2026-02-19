@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.8.0 |
-| **Last Updated** | 2026-02-13 |
+| **Version** | 1.8.1 |
+| **Last Updated** | 2026-02-19 |
 | **Author** | Sangita Grantha Architect |
 
 # TRACK-064: Unified Extraction Engine (UEE) Migration
@@ -78,7 +78,7 @@ Following the retrospective's key lesson: **Build one working slice first, then 
 ### Phase 4: Orchestration & Cleanup
 - [ ] **Kotlin**: Update `BulkImportRepository.kt` to atomically increment `total_tasks` for all job transitions (Fixing the 50% stall).
 - [ ] **Kotlin**: Decommission `KrithiStructureParser.kt`, `DeterministicWebScraper.kt`, and `GeminiApiClient.kt`.
-- [ ] **DevOps**: Update `compose.yaml` to mount `tools/pdf-extractor/src` as a volume for instant logic updates.
+- [ ] **DevOps**: Update `compose.yaml` to mount `tools/krithi-extract-enrich-worker/src` as a volume for instant logic updates.
 
 ## 4. Acceptance Criteria
 - [ ] All extraction (PDF & HTML) is performed by the Python service.

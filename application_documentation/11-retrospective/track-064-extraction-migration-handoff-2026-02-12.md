@@ -1,4 +1,13 @@
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 1.0.0 |
+| **Last Updated** | 2026-02-19 |
+| **Author** | Sangita Grantha Team |
+
 # TRACK-064 Unified Extraction Migration Handoff (2026-02-12)
+
+---
 
 ## Purpose
 This document captures the implementation status, validation runs, detailed non-convergence analysis, and next actions for the extraction unification work (HTML + PDF + queue/worker/ingest).
@@ -46,13 +55,13 @@ Use this as the starting context for the next session.
   - Duplicate and near-title candidate queries support space-insensitive matching and bounded prefix fallback.
 
 ## 3) Python extractor (HTML + OCR fallback + metadata parsing)
-- `tools/pdf-extractor/src/html_extractor.py`
+- `tools/krithi-extract-enrich-worker/src/html_extractor.py`
   - Added structured HTML extractor (boilerplate removal, preferred selectors, link preservation).
-- `tools/pdf-extractor/src/worker.py`
+- `tools/krithi-extract-enrich-worker/src/worker.py`
   - Handles `source_format=HTML`.
   - Adds `_should_force_ocr_for_garbled_devanagari(...)` heuristic and routes PDFs to OCR when text is corrupted.
   - Maps extraction methods correctly (`HTML_JSOUP`, `PDF_PYMUPDF`, `PDF_OCR`).
-- `tools/pdf-extractor/src/metadata_parser.py`
+- `tools/krithi-extract-enrich-worker/src/metadata_parser.py`
   - Title normalization strips known blog prefixes (for example `Guru Guha Vaibhavam: ...`).
   - Handles inline metadata forms such as `rAgaM kumudakriyA - tALaM - rUpakaM`.
   - Supports using first line metadata when `title_hint` is present.
@@ -68,9 +77,9 @@ Use this as the starting context for the next session.
   - Updated examples for extraction E2E and multi-source scenarios.
 
 ## 5) New tests
-- `tools/pdf-extractor/tests/test_html_extractor.py`
-- `tools/pdf-extractor/tests/test_metadata_parser.py`
-- `tools/pdf-extractor/tests/test_worker.py`
+- `tools/krithi-extract-enrich-worker/tests/test_html_extractor.py`
+- `tools/krithi-extract-enrich-worker/tests/test_metadata_parser.py`
+- `tools/krithi-extract-enrich-worker/tests/test_worker.py`
 
 Recent worker/parser verification:
 - `uv run pytest tests/test_metadata_parser.py tests/test_worker.py` -> passed (`9 passed`).
@@ -267,10 +276,10 @@ ORDER BY ordinality;
 - `modules/backend/api/src/test/kotlin/com/sangita/grantha/backend/api/routes/ImportRoutesTest.kt`
 - `modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/ExtractionResultProcessor.kt`
 - `modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/repositories/KrithiRepository.kt`
-- `tools/pdf-extractor/src/worker.py`
-- `tools/pdf-extractor/src/metadata_parser.py`
-- `tools/pdf-extractor/src/html_extractor.py`
-- `tools/pdf-extractor/tests/test_metadata_parser.py`
-- `tools/pdf-extractor/tests/test_worker.py`
+- `tools/krithi-extract-enrich-worker/src/worker.py`
+- `tools/krithi-extract-enrich-worker/src/metadata_parser.py`
+- `tools/krithi-extract-enrich-worker/src/html_extractor.py`
+- `tools/krithi-extract-enrich-worker/tests/test_metadata_parser.py`
+- `tools/krithi-extract-enrich-worker/tests/test_worker.py`
 - `tools/sangita-cli/src/commands/test.rs`
 - `tools/sangita-cli/README.md`

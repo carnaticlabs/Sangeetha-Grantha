@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.2.0 |
-| **Last Updated** | 2026-02-09 |
+| **Version** | 1.2.1 |
+| **Last Updated** | 2026-02-19 |
 | **Author** | Sangita Grantha Architect |
 
 # TRACK-041: Enhanced Sourcing Logic & Structural Voting
@@ -42,7 +42,7 @@ Harden the Krithi import pipeline by implementing multi-source structural voting
 | ImportService (enhanced) | `modules/backend/api/.../services/ImportService.kt` | ComposerSourcePriority, structural voting integration |
 | KrithiStructureParser (enhanced) | `modules/backend/api/.../services/scraping/KrithiStructureParser.kt` | Multi-script detection, Madhyama Kala, Tamil subscripts |
 | CanonicalExtractionDto | `modules/shared/domain/.../import/CanonicalExtractionDto.kt` | Universal extraction format (Kotlin) |
-| Canonical schema (Python) | `tools/pdf-extractor/src/schema.py` | Pydantic model matching Kotlin DTO |
+| Canonical schema (Python) | `tools/krithi-extract-enrich-worker/src/schema.py` | Pydantic model matching Kotlin DTO |
 | Canonical JSON schema | `shared/domain/model/import/canonical-extraction-schema.json` | JSON Schema for validation |
 | Migration 23 | `database/migrations/23__source_authority_enhancement.sql` | Source authority model |
 | Migration 24 | `database/migrations/24__krithi_source_evidence.sql` | Source evidence tracking |
@@ -50,9 +50,9 @@ Harden the Krithi import pipeline by implementing multi-source structural voting
 | Migration 26 | `database/migrations/26__import_task_format_tracking.sql` | Format tracking |
 | Migration 27 | `database/migrations/27__extraction_queue.sql` | Kotlin ↔ Python extraction queue |
 | Source registry seed | `database/seed_data/04_import_sources_authority.sql` | Import sources with tier rankings |
-| PDF extraction service | `tools/pdf-extractor/` | Python service (PyMuPDF, OCR, transliteration) |
-| Dockerfile | `tools/pdf-extractor/Dockerfile` | Container image with Tesseract + Indic packs |
-| Docker Compose | `compose.yaml` | Extended with `pdf-extractor` service |
+| PDF extraction service | `tools/krithi-extract-enrich-worker/` | Python service (PyMuPDF, OCR, transliteration) |
+| Dockerfile | `tools/krithi-extract-enrich-worker/Dockerfile` | Container image with Tesseract + Indic packs |
+| Docker Compose | `compose.yaml` | Extended with `krithi-extract-enrich-worker` service |
 | CLI extraction command | `tools/sangita-cli/src/commands/extraction.rs` | sangita-cli extraction start/stop/status/logs |
 | Sourcing UI/UX Plan | `application_documentation/01-requirements/krithi-data-sourcing/ui-ux-plan.md` | UI/UX requirements for sourcing & extraction monitoring screens |
 | ExtractionResultProcessor | `modules/backend/api/.../services/ExtractionResultProcessor.kt` | Processes DONE extraction queue items → source evidence + structural voting |
@@ -70,7 +70,7 @@ Harden the Krithi import pipeline by implementing multi-source structural voting
     - Migration 26: `source_format` and `page_range` columns on `import_task_run`.
     - Migration 27: `extraction_queue` table — database-backed work queue for Kotlin ↔ Python integration using `SELECT ... FOR UPDATE SKIP LOCKED`.
   - **Canonical Extraction Schema**: Defined in both Kotlin (`CanonicalExtractionDto.kt`) and Python (`schema.py`). This is the universal contract between all source adapters and the resolution pipeline.
-  - **Python PDF Extraction Service**: Full project structure created at `tools/pdf-extractor/` with:
+  - **Python PDF Extraction Service**: Full project structure created at `tools/krithi-extract-enrich-worker/` with:
     - `extractor.py` — PyMuPDF text extraction with font-size and position data.
     - `page_segmenter.py` — Krithi boundary detection in anthology PDFs.
     - `structure_parser.py` — Section label detection (P/A/C/SC/Chittaswaram).
@@ -82,7 +82,7 @@ Harden the Krithi import pipeline by implementing multi-source structural voting
     - `cli.py` — CLI for local development and testing.
     - Dockerfile with Tesseract OCR + Indic language packs.
     - Unit tests for schema validation and structure parsing.
-  - **Docker Infrastructure**: `compose.yaml` extended with `pdf-extractor` service (profile-gated, depends on postgres health).
+  - **Docker Infrastructure**: `compose.yaml` extended with `krithi-extract-enrich-worker` service (profile-gated, depends on postgres health).
   - **CLI Tooling**: Added `extraction` command to `sangita-cli` with `build`, `start`, `stop`, `logs`, `status`, and `restart` subcommands.
   - **Documentation Updates**: Updated `application_documentation/` across 12+ files:
     - `04-database/schema.md` — New tables §10.3–10.6, migration summary §14

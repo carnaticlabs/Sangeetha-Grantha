@@ -20,7 +20,7 @@ pub struct DevArgs {
     start_db: bool,
 
     /// Skip starting the extraction service (Docker container)
-    #[arg(long, help = "Run without the PDF extraction worker")]
+    #[arg(long, help = "Run without the extraction worker")]
     no_extraction: bool,
 }
 
@@ -69,7 +69,9 @@ pub async fn run(args: DevArgs) -> Result<()> {
         print_step("Starting extraction service (Docker)...");
         match start_extraction_service(&root) {
             Ok(()) => {
-                print_success("Extraction service started (container: sangita_pdf_extractor)");
+                print_success(
+                    "Extraction service started (container: sangita_krithi_extract_enrich_worker)",
+                );
                 true
             }
             Err(e) => {
@@ -101,10 +103,10 @@ pub async fn run(args: DevArgs) -> Result<()> {
         println!("║  Database:    localhost:5432                                ║");
     }
     if extraction_started {
-        println!("║  Extraction:  sangita_pdf_extractor (Docker)               ║");
+        println!("║  Extraction:  sangita_krithi_extract_enrich_worker (Docker)║");
     }
     println!("╠══════════════════════════════════════════════════════════════╣");
-    println!("║  Extraction logs: docker logs -f sangita_pdf_extractor     ║");
+    println!("║  Extraction logs: sangita-cli extraction logs -f           ║");
     println!("║  Press Ctrl+C to stop all services                         ║");
     println!("╚══════════════════════════════════════════════════════════════╝");
     println!();

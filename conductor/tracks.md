@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.2.0 |
-| **Last Updated** | 2026-02-10 |
+| **Version** | 1.3.2 |
+| **Last Updated** | 2026-02-19 |
 | **Author** | Sangeetha Grantha Team |
 
 # Conductor Tracks Registry
@@ -73,5 +73,6 @@
 | [TRACK-062](./tracks/TRACK-062-bulk-import-idempotency-source-evidence.md) | Bulk Import Idempotency & Source Evidence Integration | Completed |
 | [TRACK-063](./tracks/TRACK-063-database-reset-reextraction-e2e.md) | Database Reset & Full Re-Extraction E2E Validation | Completed |
 | [TRACK-064](./tracks/TRACK-064-unified-extraction-engine-migration.md) | Unified Extraction Engine (UEE) Migration | Active |
+| [TRACK-065](./tracks/TRACK-065-python-extraction-module-promotion.md) | Python Extraction Module First-Class Promotion & Naming | Active |
 
 ## 3. Deprecated Tracks

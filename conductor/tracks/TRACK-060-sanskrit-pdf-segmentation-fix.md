@@ -5,7 +5,7 @@
 | **Status** | Completed |
 | **Priority** | Critical |
 | **Created** | 2026-02-10 |
-| **Updated** | 2026-02-10 |
+| **Updated** | 2026-02-19 |
 | **Depends On** | TRACK-054, TRACK-055 |
 | **Spec Ref** | analysis-extraction-pipeline-failures.md (Finding 3) |
 | **Est. Effort** | 2–3 days |
@@ -61,10 +61,10 @@ which wraps the entire document as one composition.
 
 | Task ID | Description | Acceptance Criteria | File(s) |
 |:---|:---|:---|:---|
-| T60.1 | Fix bold detection: use `span["flags"]` in PdfExtractor | `TextBlock.is_bold` is True for PyMuPDF-flagged bold spans regardless of font name. Existing Latin bold detection still works. | `tools/pdf-extractor/src/extractor.py` |
-| T60.2 | Add fallback title detection in PageSegmenter | When `_find_title_positions()` finds no bold candidates at any threshold, try font-size-only candidates with `_has_metadata_nearby()` as gatekeeper. Return these as title positions. | `tools/pdf-extractor/src/page_segmenter.py` |
-| T60.3 | Unit tests for bold detection with font flags | Test that `is_bold=True` when `flags & 16` even if font name has no "Bold". Test backward compat for Latin fonts. | `tools/pdf-extractor/tests/test_extractor.py` (new or extend) |
-| T60.4 | Unit tests for fallback segmentation | Test that a document with no bold fonts but clear font-size titles + metadata nearby produces correct segments. | `tools/pdf-extractor/tests/test_page_segmenter.py` (new or extend) |
+| T60.1 | Fix bold detection: use `span["flags"]` in PdfExtractor | `TextBlock.is_bold` is True for PyMuPDF-flagged bold spans regardless of font name. Existing Latin bold detection still works. | `tools/krithi-extract-enrich-worker/src/extractor.py` |
+| T60.2 | Add fallback title detection in PageSegmenter | When `_find_title_positions()` finds no bold candidates at any threshold, try font-size-only candidates with `_has_metadata_nearby()` as gatekeeper. Return these as title positions. | `tools/krithi-extract-enrich-worker/src/page_segmenter.py` |
+| T60.3 | Unit tests for bold detection with font flags | Test that `is_bold=True` when `flags & 16` even if font name has no "Bold". Test backward compat for Latin fonts. | `tools/krithi-extract-enrich-worker/tests/test_extractor.py` (new or extend) |
+| T60.4 | Unit tests for fallback segmentation | Test that a document with no bold fonts but clear font-size titles + metadata nearby produces correct segments. | `tools/krithi-extract-enrich-worker/tests/test_page_segmenter.py` (new or extend) |
 | T60.5 | Integration: extract mdskt.pdf sample pages | Extract pages 1–10 of mdskt.pdf; verify >= 3 segments detected with Devanagari titles. | Manual / test script |
 | T60.6 | Full extraction: mdskt.pdf end-to-end | Full PDF segmented into ~484 compositions (tolerance ±10). Title text is Devanagari. Body text correctly split. | Manual / SQL verification |
 
@@ -72,10 +72,10 @@ which wraps the entire document as one composition.
 
 | File | Change |
 |:---|:---|
-| `tools/pdf-extractor/src/extractor.py` | Use `span["flags"] & 16` for bold detection alongside font name |
-| `tools/pdf-extractor/src/page_segmenter.py` | Fallback title detection when no bold candidates found |
-| `tools/pdf-extractor/tests/test_extractor.py` | Bold detection unit tests |
-| `tools/pdf-extractor/tests/test_page_segmenter.py` | Fallback segmentation unit tests |
+| `tools/krithi-extract-enrich-worker/src/extractor.py` | Use `span["flags"] & 16` for bold detection alongside font name |
+| `tools/krithi-extract-enrich-worker/src/page_segmenter.py` | Fallback title detection when no bold candidates found |
+| `tools/krithi-extract-enrich-worker/tests/test_extractor.py` | Bold detection unit tests |
+| `tools/krithi-extract-enrich-worker/tests/test_page_segmenter.py` | Fallback segmentation unit tests |
 
 ## Progress Log
 

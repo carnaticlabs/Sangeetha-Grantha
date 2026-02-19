@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Version** | 1.1.1 |
+| **Last Updated** | 2026-02-19 |
 | **Author** | Sangeetha Grantha Team |
 
 # Sangita Grantha Backend Architecture
@@ -235,7 +235,7 @@ The import pipeline now supports multi-format ingestion (PDF, DOCX, OCR) via a P
 - Uses `SELECT ... FOR UPDATE SKIP LOCKED` for exactly-once processing
 - See [Strategy §8.3](../01-requirements/krithi-data-sourcing/quality-strategy.md#83-integration-via-database-queue-table)
 
-**Python Extraction Service** (`tools/pdf-extractor/`):
+**Python Extraction Service** (`tools/krithi-extract-enrich-worker/`):
 - PyMuPDF for text extraction with positional data
 - Tesseract OCR with Indic language packs (Sanskrit, Tamil, Telugu, Kannada, Malayalam)
 - `indic-transliteration` for script conversion
@@ -244,7 +244,7 @@ The import pipeline now supports multi-format ingestion (PDF, DOCX, OCR) via a P
 - All output conforms to the `CanonicalExtractionDto` schema
 
 **Deployment**:
-- Docker Compose (local): `pdf-extractor` service, profile-gated under `extraction`
+- Docker Compose (local): `krithi-extract-enrich-worker` service, profile-gated under `extraction`
 - Kubernetes (production): Deployment with Cloud SQL Proxy sidecar, HPA based on queue depth
 - See `compose.yaml` and [Strategy §8.2](../01-requirements/krithi-data-sourcing/quality-strategy.md#82-docker-containerised-architecture)
 

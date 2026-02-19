@@ -19,11 +19,11 @@ services:
   # TRACK-041: Multi-format PDF/DOCX extraction service
   # Polls extraction_queue for PENDING tasks, extracts Krithis from documents,
   # writes results back. Communicates with Kotlin backend via shared PostgreSQL.
-  pdf-extractor:
+  krithi-extract-enrich-worker:
     build:
-      context: ./tools/pdf-extractor
+      context: ./tools/krithi-extract-enrich-worker
       dockerfile: Dockerfile
-    container_name: sangita_pdf_extractor
+    container_name: sangita_krithi_extract_enrich_worker
     depends_on:
       postgres:
         condition: service_healthy

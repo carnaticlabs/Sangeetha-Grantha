@@ -1,11 +1,13 @@
-# Sangita CLI
-
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-12 |
+| **Version** | 1.1.1 |
+| **Last Updated** | 2026-02-19 |
 | **Author** | Sangeetha Grantha Team |
+
+# Sangita CLI
+
+---
 
 A unified command-line tool for the Sangita Grantha project.
 
@@ -201,7 +203,7 @@ cargo run -- extraction restart
 ```
 
 **Commands:**
-- `build` - Build the Docker image from `tools/pdf-extractor/`
+- `build` - Build the Docker image from `tools/krithi-extract-enrich-worker/`
 - `start` - Start the extraction worker (use `--with-db` to also start PostgreSQL)
 - `stop` - Stop the extraction worker
 - `logs` - View container logs (`-f` to follow, `-n 50` for tail count)

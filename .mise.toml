@@ -13,8 +13,9 @@
 #
 # Version Sync:
 #   - Java: Must satisfy build.gradle.kts JVM toolchain (Java 25)
-#   - Rust: Must match tools/sangita-cli/rust-toolchain.toml (1.92.0)
-#   - Bun: Frontend package manager (1.3.0)
+#   - Rust: Must match tools/sangita-cli/rust-toolchain.toml (1.93.0)
+#   - Bun: Frontend package manager (1.3.7)
+#   - Python: Must satisfy tools/krithi-extract-enrich-worker/pyproject.toml (>=3.11)
 #   - Docker Compose: For database container management
 #
 # Note: Docker Desktop (macOS/Windows) or Docker Engine (Linux) must be installed
@@ -30,6 +31,9 @@ rust = "1.93.0"
 
 # Bun is used by modules/frontend/sangita-admin-web
 bun = "1.3.7"
+
+# Python is required for the extraction worker in tools/krithi-extract-enrich-worker
+python = "3.11"
 
 # Docker Compose for database container management
 # Note: Docker Desktop/Engine must be installed separately (system requirement)

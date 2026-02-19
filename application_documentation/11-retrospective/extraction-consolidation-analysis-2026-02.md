@@ -1,18 +1,22 @@
-# Analysis: Consolidating All Extraction Logic into the Python Service
-
 | Metadata | Value |
 |:---|:---|
-| **Status** | Proposal |
-| **Date** | 2026-02-12 |
+| **Status** | Active |
+| **Version** | 1.0.0 |
+| **Last Updated** | 2026-02-19 |
 | **Author** | Claude Opus 4.6 (requested by Seshadri) |
-| **Motivation** | Remediation retrospective Finding 2.1 — Architectural Divergence: The Heuristic Split |
-| **Decision Required** | Should HTML extraction move from Kotlin to Python? |
+
+# Analysis: Consolidating All Extraction Logic into the Python Service
 
 ---
 
+## Context Snapshot
+- **Document Date**: 2026-02-12
+- **Motivation**: Remediation retrospective Finding 2.1 — Architectural Divergence: The Heuristic Split
+- **Decision Required**: Should HTML extraction move from Kotlin to Python?
+
 ## 1. Executive Summary
 
-The Kotlin backend currently contains ~1,200 lines of extraction, parsing, and scraping logic spread across 7 files (WebScrapingService, DeterministicWebScraper, KrithiStructureParser, HtmlTextExtractor, GeminiApiClient, TempleScrapingService, ScrapeJsonSanitizer). The Python service (`tools/pdf-extractor/`) contains ~800 lines of parallel extraction logic for PDFs.
+The Kotlin backend currently contains ~1,200 lines of extraction, parsing, and scraping logic spread across 7 files (WebScrapingService, DeterministicWebScraper, KrithiStructureParser, HtmlTextExtractor, GeminiApiClient, TempleScrapingService, ScrapeJsonSanitizer). The Python service (`tools/krithi-extract-enrich-worker/`) contains ~800 lines of parallel extraction logic for PDFs.
 
 The two codebases duplicate domain heuristics — section detection regexes, metadata parsing, diacritic normalisation — in different languages, leading to the persistent MADHYAMAKALA bug and other divergences documented in the remediation retrospective.
 
@@ -260,7 +264,7 @@ For text-heavy, regex-heavy, Unicode-heavy workloads like music lyric extraction
 
 ### Phase 1: HTML Fetching + Text Extraction (1-2 days)
 
-**New file**: `tools/pdf-extractor/src/html_extractor.py`
+**New file**: `tools/krithi-extract-enrich-worker/src/html_extractor.py`
 
 Port `HtmlTextExtractor.kt` logic to Python using BeautifulSoup4:
 - Same selector priority: `div.post-body` > `div.post` > `article` > `div.post-content` > `body`
@@ -273,7 +277,7 @@ Port `HtmlTextExtractor.kt` logic to Python using BeautifulSoup4:
 
 ### Phase 2: Unified Structure Parser (2-3 days)
 
-**Merge into**: `tools/pdf-extractor/src/structure_parser.py`
+**Merge into**: `tools/krithi-extract-enrich-worker/src/structure_parser.py`
 
 Consolidate all 100+ section detection patterns from `KrithiStructureParser.kt` into the Python `StructureParser`:
 - Add all Indic script section headers (Tamil, Telugu, Kannada, Malayalam)
@@ -289,7 +293,7 @@ Consolidate all 100+ section detection patterns from `KrithiStructureParser.kt` 
 
 ### Phase 3: Gemini LLM Integration (1-2 days)
 
-**New file**: `tools/pdf-extractor/src/llm_extractor.py`
+**New file**: `tools/krithi-extract-enrich-worker/src/llm_extractor.py`
 
 Replace the 470-line `GeminiApiClient.kt` + prompt construction with:
 - `google-generativeai` SDK for API calls
@@ -301,7 +305,7 @@ Replace the 470-line `GeminiApiClient.kt` + prompt construction with:
 
 ### Phase 4: Worker Queue Extension (1 day)
 
-**Modify**: `tools/pdf-extractor/src/worker.py`
+**Modify**: `tools/krithi-extract-enrich-worker/src/worker.py`
 
 Extend the existing queue polling worker to handle `source_format = 'HTML'` in addition to `'PDF'`:
 - When format is PDF: existing flow (PyMuPDF -> segmentation -> structure parsing -> metadata)
@@ -328,7 +332,7 @@ Update the import/scraping routes to submit extraction requests to the queue ins
 
 ### Phase 6: Docker + Deployment (0.5 day)
 
-- Update `compose.yaml` to add volume mount for `tools/pdf-extractor/src` (development mode)
+- Update `compose.yaml` to add volume mount for `tools/krithi-extract-enrich-worker/src` (development mode)
 - Ensure `httpx` and `beautifulsoup4[lxml]` are in `pyproject.toml` (httpx already is)
 - Update the `Dockerfile` if new system dependencies are needed (none expected)
 

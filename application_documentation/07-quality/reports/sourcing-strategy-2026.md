@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-02-08 |
+| **Version** | 1.0.1 |
+| **Last Updated** | 2026-02-19 |
 | **Author** | Sangeetha Grantha Team |
 
 # Krithi Data Sourcing & Quality — Progress Report
@@ -21,7 +21,7 @@
 | TRACK-039: Orphaned lyric blobs audit query | Done | `database/audits/audit_orphaned_lyric_blobs.sql` |
 | TRACK-039: Run audits against production database | Pending | — |
 | Canonical extraction schema (Kotlin) | Done | `CanonicalExtractionDto.kt` |
-| Canonical extraction schema (Python) | Done | `tools/pdf-extractor/src/schema.py` |
+| Canonical extraction schema (Python) | Done | `tools/krithi-extract-enrich-worker/src/schema.py` |
 | Migration 23: Source authority enhancement | Done | `database/migrations/23__source_authority_enhancement.sql` |
 | Migration 24: Krithi source evidence | Done | `database/migrations/24__krithi_source_evidence.sql` |
 | Migration 25: Structural vote log | Done | `database/migrations/25__structural_vote_log.sql` |
@@ -34,20 +34,20 @@
 
 | Task | Status | Artifact |
 |:---|:---|:---|
-| Python project structure | Done | `tools/pdf-extractor/` |
-| pyproject.toml with dependencies | Done | `tools/pdf-extractor/pyproject.toml` |
-| Dockerfile with Tesseract + Indic packs | Done | `tools/pdf-extractor/Dockerfile` |
-| config.py (environment configuration) | Done | `tools/pdf-extractor/src/config.py` |
-| db.py (extraction_queue operations) | Done | `tools/pdf-extractor/src/db.py` |
-| extractor.py (PyMuPDF text extraction) | Done | `tools/pdf-extractor/src/extractor.py` |
-| page_segmenter.py (Krithi boundary detection) | Done | `tools/pdf-extractor/src/page_segmenter.py` |
-| structure_parser.py (section label detection) | Done | `tools/pdf-extractor/src/structure_parser.py` |
-| metadata_parser.py (header field extraction) | Done | `tools/pdf-extractor/src/metadata_parser.py` |
-| ocr_fallback.py (Tesseract integration) | Done | `tools/pdf-extractor/src/ocr_fallback.py` |
-| transliterator.py (indic-transliteration) | Done | `tools/pdf-extractor/src/transliterator.py` |
-| worker.py (DB-queue polling worker) | Done | `tools/pdf-extractor/src/worker.py` |
-| cli.py (CLI entry point) | Done | `tools/pdf-extractor/src/cli.py` |
-| Unit tests (schema, structure parser) | Done | `tools/pdf-extractor/tests/` |
+| Python project structure | Done | `tools/krithi-extract-enrich-worker/` |
+| pyproject.toml with dependencies | Done | `tools/krithi-extract-enrich-worker/pyproject.toml` |
+| Dockerfile with Tesseract + Indic packs | Done | `tools/krithi-extract-enrich-worker/Dockerfile` |
+| config.py (environment configuration) | Done | `tools/krithi-extract-enrich-worker/src/config.py` |
+| db.py (extraction_queue operations) | Done | `tools/krithi-extract-enrich-worker/src/db.py` |
+| extractor.py (PyMuPDF text extraction) | Done | `tools/krithi-extract-enrich-worker/src/extractor.py` |
+| page_segmenter.py (Krithi boundary detection) | Done | `tools/krithi-extract-enrich-worker/src/page_segmenter.py` |
+| structure_parser.py (section label detection) | Done | `tools/krithi-extract-enrich-worker/src/structure_parser.py` |
+| metadata_parser.py (header field extraction) | Done | `tools/krithi-extract-enrich-worker/src/metadata_parser.py` |
+| ocr_fallback.py (Tesseract integration) | Done | `tools/krithi-extract-enrich-worker/src/ocr_fallback.py` |
+| transliterator.py (indic-transliteration) | Done | `tools/krithi-extract-enrich-worker/src/transliterator.py` |
+| worker.py (DB-queue polling worker) | Done | `tools/krithi-extract-enrich-worker/src/worker.py` |
+| cli.py (CLI entry point) | Done | `tools/krithi-extract-enrich-worker/src/cli.py` |
+| Unit tests (schema, structure parser) | Done | `tools/krithi-extract-enrich-worker/tests/` |
 | Docker Compose extension | Done | `compose.yaml` |
 | PoC: 10 Dikshitar Krithis from mdskt.pdf | Pending | — |
 | Kotlin ExtractionQueueRepository | Pending | — |
@@ -70,4 +70,4 @@
 3. Insert source registry seed data.
 4. Prototype: Extract 10 Dikshitar Krithis from guruguha.org mdskt.pdf using CLI.
 5. Build Kotlin-side integration (ExtractionQueueRepository, ExtractionQueueService, ExtractionResultProcessor).
-6. Validate three-container stack: postgres + pdf-extractor + Kotlin backend.
+6. Validate three-container stack: postgres + krithi-extract-enrich-worker + Kotlin backend.

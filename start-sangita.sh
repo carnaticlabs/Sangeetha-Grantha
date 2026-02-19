@@ -6,7 +6,7 @@
 #
 # Logs are written to:
 #   sangita_logs.txt            — main CLI + backend + frontend output
-#   sangita_extraction_logs.txt — PDF extraction Docker container logs
+#   sangita_extraction_logs.txt — extraction worker Docker container logs
 #   exposed_queries.log         — Exposed SQL queries (written by backend Logback)
 #
 # Usage:  ./start-sangita.sh                    (full stack)
@@ -45,7 +45,7 @@ if [[ ! " $* " =~ " --no-extraction " ]]; then
         sleep 45
         # Retry a few times in case the container isn't ready yet
         for _ in {1..5}; do
-            if docker logs -f sangita_pdf_extractor >> "$EXTRACTION_LOG" 2>&1; then
+            if docker logs -f sangita_krithi_extract_enrich_worker >> "$EXTRACTION_LOG" 2>&1; then
                 break
             fi
             sleep 10

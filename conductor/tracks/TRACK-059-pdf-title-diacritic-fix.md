@@ -5,7 +5,7 @@
 | **Status** | Completed |
 | **Priority** | Critical |
 | **Created** | 2026-02-10 |
-| **Updated** | 2026-02-10 |
+| **Updated** | 2026-02-19 |
 | **Depends On** | TRACK-054 |
 | **Spec Ref** | analysis-extraction-pipeline-failures.md (Finding 1) |
 | **Est. Effort** | 2 days |
@@ -61,19 +61,19 @@ raw garbled diacritics (e.g. `akhil¯an. d. e´svari raks.a m¯am` instead of
 
 | Task ID | Description | Acceptance Criteria | File(s) |
 |:---|:---|:---|:---|
-| T59.1 | Implement Rule 8 in `diacritic_normalizer.py` | `n. ` → ṇ, `d. ` → ḍ, `s. ` → ṣ, `t. ` → ṭ, `l. ` → ḷ; handles optional whitespace between consonant-dot and next char; all existing tests still pass. | `tools/pdf-extractor/src/diacritic_normalizer.py` |
-| T59.2 | Add Rule 8 unit tests | Tests for: `raks.a` → `rakṣa`, `n. d. e` → `ṇḍe`, `pat.t.` → `paṭṭ`, `t¯al.a` → `tāḷa`; edge cases (decimal numbers, abbreviations not affected). | `tools/pdf-extractor/tests/test_diacritic_normalizer.py` |
-| T59.3 | Apply `normalize_garbled_diacritics()` to title in `MetadataParser.parse()` | `title` field in returned `KrithiMetadata` has diacritics normalised; `akhil¯an. d. e´svari raks.a m¯am` → `akhilāṇḍeśvari rakṣa mām`. | `tools/pdf-extractor/src/metadata_parser.py` |
-| T59.4 | Verify title normalisation flows through worker | `CanonicalExtraction.title` in `result_payload` contains clean IAST titles for all ~484 compositions. | `tools/pdf-extractor/src/worker.py` (verify, may not need changes) |
+| T59.1 | Implement Rule 8 in `diacritic_normalizer.py` | `n. ` → ṇ, `d. ` → ḍ, `s. ` → ṣ, `t. ` → ṭ, `l. ` → ḷ; handles optional whitespace between consonant-dot and next char; all existing tests still pass. | `tools/krithi-extract-enrich-worker/src/diacritic_normalizer.py` |
+| T59.2 | Add Rule 8 unit tests | Tests for: `raks.a` → `rakṣa`, `n. d. e` → `ṇḍe`, `pat.t.` → `paṭṭ`, `t¯al.a` → `tāḷa`; edge cases (decimal numbers, abbreviations not affected). | `tools/krithi-extract-enrich-worker/tests/test_diacritic_normalizer.py` |
+| T59.3 | Apply `normalize_garbled_diacritics()` to title in `MetadataParser.parse()` | `title` field in returned `KrithiMetadata` has diacritics normalised; `akhil¯an. d. e´svari raks.a m¯am` → `akhilāṇḍeśvari rakṣa mām`. | `tools/krithi-extract-enrich-worker/src/metadata_parser.py` |
+| T59.4 | Verify title normalisation flows through worker | `CanonicalExtraction.title` in `result_payload` contains clean IAST titles for all ~484 compositions. | `tools/krithi-extract-enrich-worker/src/worker.py` (verify, may not need changes) |
 | T59.5 | Integration: re-extract mdeng.pdf sample page and verify | Sample page 1 title is `akhilāṇḍeśvari rakṣa mām` (not garbled). Raga/tala still correct. | Manual / test script |
 
 ## Files Changed
 
 | File | Change |
 |:---|:---|
-| `tools/pdf-extractor/src/diacritic_normalizer.py` | Add Rule 8 consonant-dot patterns |
-| `tools/pdf-extractor/tests/test_diacritic_normalizer.py` | Rule 8 unit tests |
-| `tools/pdf-extractor/src/metadata_parser.py` | Apply normalisation to title (not just body) |
+| `tools/krithi-extract-enrich-worker/src/diacritic_normalizer.py` | Add Rule 8 consonant-dot patterns |
+| `tools/krithi-extract-enrich-worker/tests/test_diacritic_normalizer.py` | Rule 8 unit tests |
+| `tools/krithi-extract-enrich-worker/src/metadata_parser.py` | Apply normalisation to title (not just body) |
 
 ## Progress Log
 

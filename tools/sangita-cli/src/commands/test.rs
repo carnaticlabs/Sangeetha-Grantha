@@ -1861,7 +1861,7 @@ fn is_extraction_service_running(root: &Path) -> bool {
             "ps",
             "--format",
             "json",
-            "pdf-extractor",
+            "krithi-extract-enrich-worker",
         ])
         .current_dir(root)
         .output();

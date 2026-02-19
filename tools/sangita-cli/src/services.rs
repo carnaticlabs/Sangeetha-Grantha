@@ -331,7 +331,7 @@ pub fn kill_processes_on_port(port: &str, service_name: &str) -> Result<()> {
 
 // ─── Extraction service (Docker container) ──────────────────────────────────
 
-/// Start the PDF extraction Docker container (requires postgres to be running).
+/// Start the extraction worker Docker container (requires postgres to be running).
 pub fn start_extraction_service(root: &Path) -> Result<()> {
     if !docker_compose_available() {
         anyhow::bail!("Docker Compose is required for the extraction service");
@@ -344,19 +344,22 @@ pub fn start_extraction_service(root: &Path) -> Result<()> {
             "up",
             "-d",
             "--build",
-            "pdf-extractor",
+            "krithi-extract-enrich-worker",
         ],
     )
     .context("Failed to start extraction service")?;
     Ok(())
 }
 
-/// Stop the PDF extraction Docker container.
+/// Stop the extraction worker Docker container.
 pub fn stop_extraction_service(root: &Path) -> Result<()> {
     if !docker_compose_available() {
         return Ok(()); // nothing to stop
     }
-    run_docker_compose(root, &["--profile", "extraction", "stop", "pdf-extractor"])
+    run_docker_compose(
+        root,
+        &["--profile", "extraction", "stop", "krithi-extract-enrich-worker"],
+    )
         .context("Failed to stop extraction service")?;
     Ok(())
 }

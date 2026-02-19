@@ -46,7 +46,7 @@ for i in {1..60}; do
 done
 
 echo ">>> Step 4: Python Extractor Worker (Running in Docker)..."
-# cd tools/pdf-extractor
+# cd tools/krithi-extract-enrich-worker
 # source .venv/bin/activate
 # export DATABASE_URL=$DB_URL
 # # Run in background
@@ -54,7 +54,7 @@ echo ">>> Step 4: Python Extractor Worker (Running in Docker)..."
 # WORKER_PID=$!
 # echo "Worker PID: $WORKER_PID"
 # cd ../..
-echo "Skipping local worker start (assuming docker container 'sangita_pdf_extractor' is running)"
+echo "Skipping local worker start (assuming docker container 'sangita_krithi_extract_enrich_worker' is running)"
 
 echo ">>> Step 5: generating Auth Token..."
 ADMIN_USER_ID=$(psql "$DB_URL" -t -c "SELECT id FROM users WHERE email='admin@sangitagrantha.org'" | xargs)
@@ -182,4 +182,3 @@ echo "Checking imported_krithis status for 'Ananada'..."
 psql "$DB_URL" -c "SELECT id, title, status, resolution_status FROM imported_krithis WHERE title LIKE '%Ananada%'"
 
 echo "Done!"
-

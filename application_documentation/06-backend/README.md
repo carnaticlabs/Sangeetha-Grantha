@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Version** | 1.1.1 |
+| **Last Updated** | 2026-02-19 |
 | **Author** | Sangeetha Grantha Team |
 
 # 06 Backend
@@ -39,7 +39,7 @@ New services added as part of the [Krithi Data Sourcing & Quality Strategy](../0
 
 ### Containerised PDF Extraction Service
 
-A standalone Python service (`tools/pdf-extractor/`) handles PDF/DOCX/OCR extraction. Communicates with the Kotlin backend via the `extraction_queue` database table (no HTTP coupling).
+A standalone Python service (`tools/krithi-extract-enrich-worker/`) handles PDF/DOCX/OCR extraction. Communicates with the Kotlin backend via the `extraction_queue` database table (no HTTP coupling).
 
 - **Architecture**: [Backend System Design §5.8](../02-architecture/backend-system-design.md)
 - **Strategy**: [Krithi Data Sourcing Strategy §8](../01-requirements/krithi-data-sourcing/quality-strategy.md#8-technology-decisions--containerised-deployment)

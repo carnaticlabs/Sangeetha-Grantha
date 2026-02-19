@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Final |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-02-12 |
+| **Version** | 1.0.1 |
+| **Last Updated** | 2026-02-19 |
 | **Author** | Sangita Grantha Architect |
 
 # Technical Retrospective: Multi-Source Import Remediation
@@ -50,7 +50,7 @@ Batches frequently stalled at 50% progress during CSV imports.
 ## 4. Operational Recommendations
 1.  **Centralize Heuristics**: Move structure detection regexes into a shared YAML/JSON manifest.
 2.  **Harden Tools**: Add `sangita-cli extraction build` to streamline the rebuild/restart cycle.
-3.  **Mandatory Voluming**: Update `compose.yaml` to mount `tools/pdf-extractor/src` into the container.
+3.  **Mandatory Voluming**: Update `compose.yaml` to mount `tools/krithi-extract-enrich-worker/src` into the container.
 4.  **Data Cleanliness**: Always delete targeted test data records before verifying an extraction fix to avoid matching stale entities.
 
 ---

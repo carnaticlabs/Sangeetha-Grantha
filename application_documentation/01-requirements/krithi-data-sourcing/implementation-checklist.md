@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Version** | 1.1.1 |
+| **Last Updated** | 2026-02-19 |
 | **Author** | Sangeetha Grantha Team |
 | **Parent Document** | [quality-strategy.md](./quality-strategy.md) |
 | **Related Tracks** | TRACK-039, TRACK-040, TRACK-041 |
@@ -53,7 +53,7 @@ This checklist provides a detailed, actionable breakdown of every task required 
 - [x] Create Kotlin data class `CanonicalExtractionDto` matching the schema
   - **File**: `modules/shared/domain/src/commonMain/kotlin/com/sangita/grantha/shared/domain/model/import/CanonicalExtractionDto.kt`
 - [x] Create Python dataclass/Pydantic model matching the schema
-  - **File**: `tools/pdf-extractor/src/schema.py`
+  - **File**: `tools/krithi-extract-enrich-worker/src/schema.py`
 - [x] Write unit tests validating schema compliance for sample Dikshitar and Thyagaraja Krithis
 
 ### 0.3 Database Schema Extensions
@@ -102,7 +102,7 @@ This checklist provides a detailed, actionable breakdown of every task required 
 
 - [x] Initialise Python project structure:
   ```
-  tools/pdf-extractor/
+  tools/krithi-extract-enrich-worker/
     pyproject.toml
     src/
       __init__.py
@@ -150,7 +150,7 @@ This checklist provides a detailed, actionable breakdown of every task required 
   - `DATABASE_URL`, `SG_GEMINI_API_KEY`, `EXTRACTION_POLL_INTERVAL_S`, `EXTRACTION_BATCH_SIZE`, `EXTRACTION_MAX_CONCURRENT`, `LOG_LEVEL`
 - [x] **Verify setup**: `sangita-cli extraction start --with-db` starts and polls extraction_queue
   - Added `extraction` command to sangita-cli with build/start/stop/logs/status subcommands
-- [ ] **Verify setup**: `python -m pytest tools/pdf-extractor/tests/` runs clean locally
+- [ ] **Verify setup**: `python -m pytest tools/krithi-extract-enrich-worker/tests/` runs clean locally
 
 ### 1.2 PDF Extraction — Core (guruguha.org mdskt.pdf)
 
@@ -193,7 +193,7 @@ This checklist provides a detailed, actionable breakdown of every task required 
 
 - [ ] Create Gemini prompt template for PDF-extracted text (distinct from HTML prompt)
   - **Differences from HTML prompt**: Handle page headers/footers, footnotes, index entries, scholarly annotations
-  - **File**: `tools/pdf-extractor/src/prompts/pdf_extraction_prompt.txt`
+  - **File**: `tools/krithi-extract-enrich-worker/src/prompts/pdf_extraction_prompt.txt`
 - [ ] Implement LLM refinement step in extraction pipeline
   - **Approach**: Pattern-matched extraction first, LLM validates and corrects
 - [ ] **Acceptance**: LLM catches and corrects >90% of pattern-matching errors in 20 sample Krithis
@@ -319,7 +319,7 @@ The Kotlin backend writes extraction requests to the `extraction_queue` table. T
 ### 3.3 Transliteration Service
 
 - [ ] Implement Python transliteration wrapper around `indic-transliteration` library
-  - **File**: `tools/pdf-extractor/src/transliterator.py`
+  - **File**: `tools/krithi-extract-enrich-worker/src/transliterator.py`
   - **Interface**: `transliterate(text, from_script, to_script) -> str`
   - **Supported conversions**: Devanagari ↔ Tamil, Telugu, Kannada, Malayalam, Latin (IAST)
 - [ ] Create Kotlin integration (subprocess or HTTP call)
@@ -482,38 +482,38 @@ The Kotlin backend writes extraction requests to the `extraction_queue` table. T
 
 ### Docker & Container Infrastructure
 
-- [x] Extend `compose.yaml` with `pdf-extractor` service (see strategy Section 8.2.1)
+- [x] Extend `compose.yaml` with `krithi-extract-enrich-worker` service (see strategy Section 8.2.1)
   - **Depends on**: postgres (service_healthy)
   - **Environment**: DATABASE_URL, SG_GEMINI_API_KEY, poll/batch/concurrency config
   - **Volume**: `extraction_cache` for downloaded PDFs
   - **Profile**: `extraction` (opt-in: `docker compose --profile extraction up`)
-- [x] Create `tools/pdf-extractor/Dockerfile` with Tesseract OCR + Indic language packs
+- [x] Create `tools/krithi-extract-enrich-worker/Dockerfile` with Tesseract OCR + Indic language packs
   - **Base**: python:3.11-slim
   - **System deps**: tesseract-ocr-san, tesseract-ocr-tam, tesseract-ocr-tel, tesseract-ocr-kan, tesseract-ocr-mal, libpq-dev
-  - **Acceptance**: `docker build -t sangita-pdf-extractor tools/pdf-extractor/` succeeds; container starts and polls extraction_queue
-- [ ] Create `tools/pdf-extractor/docker-compose.override.yml` for standalone testing (pdf-extractor + postgres only)
+  - **Acceptance**: `docker build -t sangita-krithi-extract-enrich-worker tools/krithi-extract-enrich-worker/` succeeds; container starts and polls extraction_queue
+- [ ] Create `tools/krithi-extract-enrich-worker/docker-compose.override.yml` for standalone testing (krithi-extract-enrich-worker + postgres only)
 - [ ] Verify three-container local stack: `sangita-cli extraction start --with-db` + Kotlin backend via Gradle
   - **Acceptance**: Kotlin submits extraction task → Python processes → result appears in extraction_queue
-- [ ] Add `pdf-extractor` to `.mise.toml` tool configuration if applicable
+- [ ] Add `krithi-extract-enrich-worker` to `.mise.toml` tool configuration if applicable
 - [ ] Configure `extraction_cache` volume retention policy (delete after 30 days, configurable)
 
 ### Kubernetes / GCP Production Deployment
 
-- [ ] Create `k8s/pdf-extractor-deployment.yaml` (see strategy Section 8.2.3)
+- [ ] Create `k8s/krithi-extract-enrich-worker-deployment.yaml` (see strategy Section 8.2.3)
   - Replicas: 2 (baseline), with Cloud SQL Proxy sidecar
   - Resource limits: 2 CPU, 4Gi memory (OCR + PDF parsing is memory-intensive)
   - Volume: emptyDir with 10Gi sizeLimit for extraction cache
-- [ ] Create `k8s/pdf-extractor-hpa.yaml` — HorizontalPodAutoscaler
+- [ ] Create `k8s/krithi-extract-enrich-worker-hpa.yaml` — HorizontalPodAutoscaler
   - Scale on `extraction_queue_pending_count` custom metric
   - Min: 1, Max: 5 replicas
-- [ ] Create `k8s/pdf-extractor-configmap.yaml` for non-secret configuration
-- [ ] Add pdf-extractor secrets to Google Secret Manager:
+- [ ] Create `k8s/krithi-extract-enrich-worker-configmap.yaml` for non-secret configuration
+- [ ] Add krithi-extract-enrich-worker secrets to Google Secret Manager:
   - `sangita-db-credentials/connection-string`
   - `sangita-gemini/api-key`
-- [ ] Build and push container image to GCR: `gcr.io/sangita-grantha/pdf-extractor`
+- [ ] Build and push container image to GCR: `gcr.io/sangita-grantha/krithi-extract-enrich-worker`
 - [ ] Test deployment in staging namespace before production rollout
 - [ ] Document pod lifecycle: startup → poll → graceful SIGTERM shutdown
-- [ ] Add `pdf-extractor` to Cloud Run / GKE deployment documentation
+- [ ] Add `krithi-extract-enrich-worker` to Cloud Run / GKE deployment documentation
 
 ### Observability & Operations
 
@@ -529,7 +529,7 @@ The Kotlin backend writes extraction requests to the `extraction_queue` table. T
   - Error rate > 20% over 1-hour window
   - Sudden confidence drop by source
   - Python container unhealthy / not polling
-- [ ] Create operational runbook: `application_documentation/08-operations/pdf-extractor-runbook.md`
+- [ ] Create operational runbook: `application_documentation/08-operations/krithi-extract-enrich-worker-runbook.md`
   - Troubleshooting stuck tasks
   - Manual retry procedures
   - Container restart and scaling
@@ -554,8 +554,8 @@ The Kotlin backend writes extraction requests to the `extraction_queue` table. T
 - [ ] Add non-regression tests for existing CSV + HTML pathway (ensure no breakage)
 - [ ] Add remediation dry-run verification tests
 - [ ] Performance test: Full batch import of mdskt.pdf (484 Krithis) completes in <30 minutes
-- [ ] CI pipeline: Python tests (`pytest tools/pdf-extractor/tests/`) added to build
-- [ ] CI pipeline: Docker build for pdf-extractor added to build
+- [ ] CI pipeline: Python tests (`pytest tools/krithi-extract-enrich-worker/tests/`) added to build
+- [ ] CI pipeline: Docker build for krithi-extract-enrich-worker added to build
 - [ ] CI pipeline: Kotlin integration tests for new queue services
 
 ### Documentation
@@ -563,7 +563,7 @@ The Kotlin backend writes extraction requests to the `extraction_queue` table. T
 - [ ] Update `application_documentation/02-architecture/backend-system-design.md` with containerised architecture and extraction queue pattern
 - [ ] Update `application_documentation/04-database/schema.md` with new tables (extraction_queue, source_documents, extraction_runs, field_assertions)
 - [ ] Update `application_documentation/06-backend/` with new service documentation
-- [ ] Update `application_documentation/08-operations/deployment.md` with pdf-extractor Docker/K8s deployment
+- [ ] Update `application_documentation/08-operations/deployment.md` with krithi-extract-enrich-worker Docker/K8s deployment
 - [x] Create `application_documentation/01-requirements/krithi-data-sourcing/README.md` linking all documents
 - [~] Update `conductor/tracks/TRACK-039` progress log as audits complete
 - [~] Update `conductor/tracks/TRACK-040` progress log as remediation runs
@@ -593,7 +593,7 @@ Phase 0 (Foundation)
   └── 0.4 Source Registry ───────────────────────────────┤
                                                           │
 Cross-Cutting: Docker & Container Infrastructure ─────────┤
-  ├── Dockerfile for pdf-extractor                        │
+  ├── Dockerfile for krithi-extract-enrich-worker                        │
   ├── compose.yaml extension ◄── 0.3 (extraction_queue)  │
   └── K8s manifests (can be deferred to production)       │
                                                           │

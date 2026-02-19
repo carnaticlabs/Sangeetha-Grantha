@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-02-12 |
+| **Version** | 1.0.1 |
+| **Last Updated** | 2026-02-19 |
 | **Author** | Sangeetha Grantha Team |
 
 # Krithi Data Sourcing & Quality — Document Index
@@ -37,9 +37,9 @@ This directory contains the strategy, implementation plan, and supporting analys
 | Database Migrations 23–27 | `database/migrations/23__*` through `27__*` | Source authority, source evidence, vote log, format tracking, extraction queue |
 | Source Registry Seed | `database/seed_data/04_import_sources_authority.sql` | Import sources with tier rankings for all target sources |
 | Canonical Extraction DTO (Kotlin) | `modules/shared/domain/.../import/CanonicalExtractionDto.kt` | Kotlin data class for the universal extraction format |
-| Canonical Extraction Schema (Python) | `tools/pdf-extractor/src/schema.py` | Pydantic model matching the Kotlin DTO |
-| PDF Extraction Service | `tools/pdf-extractor/` | Python service for PDF/DOCX/OCR extraction |
-| Docker Compose | `compose.yaml` | Extended with `pdf-extractor` service |
+| Canonical Extraction Schema (Python) | `tools/krithi-extract-enrich-worker/src/schema.py` | Pydantic model matching the Kotlin DTO |
+| PDF Extraction Service | `tools/krithi-extract-enrich-worker/` | Python service for PDF/DOCX/OCR extraction |
+| Docker Compose | `compose.yaml` | Extended with `krithi-extract-enrich-worker` service |
 
 ## Phase Overview
 

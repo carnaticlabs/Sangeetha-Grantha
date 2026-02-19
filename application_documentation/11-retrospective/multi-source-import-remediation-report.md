@@ -1,10 +1,13 @@
-# Multi-Source Import Remediation Report
 | Metadata | Value |
 |:---|:---|
 | **Status** | Final |
-| **Version** | 1.2.0 |
-| **Last Updated** | 2026-02-11 |
+| **Version** | 1.2.1 |
+| **Last Updated** | 2026-02-19 |
 | **Author** | Sangita Grantha Architect |
+
+# Multi-Source Import Remediation Report
+
+---
 
 ## 1. Executive Summary
 Following the initial E2E validation of TRACK-063, several critical failures were identified in the multi-source ingestion pipeline. Specifically, the system failed to correctly ingest Sanskrit variants from `mdskt.pdf`, produced garbled text in English variants, and created duplicate records due to composer identity mismatches. 
@@ -16,7 +19,7 @@ Through a multi-stage remediation process involving Python extractor patches, Ko
 ### 2.1. Garbled Body Text (English PDF)
 *   **Problem**: Lyrics contained raw PDF combining marks (e.g., `p¯ujite`) instead of proper IAST (`pūjite`).
 *   **Cause**: The `normalize_garbled_diacritics` utility was correctly applied to titles, but the **body text extractor** in the Python worker was skipping this step.
-*   **Resolution**: Patched `tools/pdf-extractor/src/worker.py` to normalize the entire segment text block.
+*   **Resolution**: Patched `tools/krithi-extract-enrich-worker/src/worker.py` to normalize the entire segment text block.
 *   **Post-Fix Data**: Cleaned 13 existing garbled variants in the database using `tools/fix_db_garbled.py`.
 
 ### 2.2. Sanskrit Ingestion Failures (`mdskt.pdf`)
