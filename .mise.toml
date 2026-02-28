@@ -41,3 +41,5 @@ docker-compose = "latest"
 
 [env]
 _.file = "./config/postgres-local.env"
+# Use a single mise-managed virtualenv for the Python extraction worker
+_.python.venv = { path = ".venv", create = true }

@@ -1,0 +1,273 @@
+{
+  "counts": {
+    "comparisonCsvRows": 479,
+    "englishJson": 479,
+    "finalEnglishMarkdown": 479,
+    "finalSanskritMarkdown": 478,
+    "sanskritJson": 478
+  },
+  "expectedCount": 479,
+  "hardFailures": [],
+  "metadataIntegrity": {
+    "anyUnknownMetadataCount": 0,
+    "engUnknownTalaCount": 0,
+    "sampleUnknownMetadataIds": [],
+    "sktUnknownTalaCount": 0
+  },
+  "sectionIntegrity": {
+    "engMissingPallaviCount": 64,
+    "missingAnySectionCount": 96,
+    "sampleMissingAnySectionIds": [],
+    "sampleMissingPallaviIds": [],
+    "sktMissingPallaviCount": 96
+  },
+  "semanticAlignment": {
+    "rows": 479,
+    "thresholds": {
+      "title_min_score": 70,
+      "raga_min_score": 80,
+      "tala_min_score": 70
+    },
+    "averages": {
+      "title_avg": 79.8093,
+      "raga_avg": 90.2549,
+      "tala_avg": 69.2041
+    },
+    "mismatches": {
+      "title_count": 151,
+      "raga_count": 65,
+      "tala_count": 159,
+      "title_ratio": 0.31524,
+      "raga_ratio": 0.135699,
+      "tala_ratio": 0.331942
+    },
+    "samples": {
+      "title": [
+        {
+          "index": 8,
+          "score": 66.67,
+          "english": "abhayāmbā jagadambā",
+          "sanskrit": "अभयाम्बानायक वरदायक"
+        },
+        {
+          "index": 19,
+          "score": 51.28,
+          "english": "avyājakaruṇākatākṣi",
+          "sanskrit": "दिव्यालंकृताङ्गश्रिये"
+        },
+        {
+          "index": 29,
+          "score": 50.0,
+          "english": "ekadantam bhaje'ham",
+          "sanskrit": "एकाग्रनाथाय"
+        },
+        {
+          "index": 30,
+          "score": 0.0,
+          "english": "kāmajanakapūjitāya kamanīyakandharāya",
+          "sanskrit": "53"
+        },
+        {
+          "index": 47,
+          "score": 30.3,
+          "english": "kalāvatī kamalāsanayuvatī",
+          "sanskrit": "काञ्चीशम्"
+        },
+        {
+          "index": 48,
+          "score": 32.0,
+          "english": "kāñcīśam",
+          "sanskrit": "कादम्बरीप्रियायै"
+        },
+        {
+          "index": 49,
+          "score": 55.56,
+          "english": "kādambarīpriyāyai",
+          "sanskrit": "कामकोटिपीठवासिनि"
+        },
+        {
+          "index": 50,
+          "score": 68.57,
+          "english": "kāmakotipīthavāsini",
+          "sanskrit": "कामाक्षि कामकोटि"
+        },
+        {
+          "index": 59,
+          "score": 64.29,
+          "english": "kāsīviśālāksīm",
+          "sanskrit": "काशीविश्वेश्वर"
+        },
+        {
+          "index": 76,
+          "score": 25.71,
+          "english": "vāṇīramaṇānandam varadam vadane dviradam varabāla guruguham",
+          "sanskrit": "गणनायकम्"
+        },
+        {
+          "index": 81,
+          "score": 37.84,
+          "english": "girijayā ajayā",
+          "sanskrit": "गीतिचक्ररथस्थितायै"
+        },
+        {
+          "index": 82,
+          "score": 0.0,
+          "english": "gīticakrarathasthitāyai",
+          "sanskrit": "107"
+        }
+      ],
+      "raga": [
+        {
+          "index": 24,
+          "score": 40.0,
+          "english": "amr",
+          "sanskrit": "अमृतवर्षणि (६६)"
+        },
+        {
+          "index": 72,
+          "score": 30.77,
+          "english": "nā",
+          "sanskrit": "नाटकुरञ्जि (२८)"
+        },
+        {
+          "index": 190,
+          "score": 30.77,
+          "english": "nā",
+          "sanskrit": "नाटकुरञ्जि (२८)"
+        },
+        {
+          "index": 207,
+          "score": 66.67,
+          "english": "vātīvasan",
+          "sanskrit": "वाटीवसन्तमैरवि (१४)"
+        },
+        {
+          "index": 215,
+          "score": 30.77,
+          "english": "nā",
+          "sanskrit": "नाटकुरञ्जि (२८)"
+        },
+        {
+          "index": 217,
+          "score": 30.77,
+          "english": "nā",
+          "sanskrit": "नाटकुरञ्जि (२८)"
+        },
+        {
+          "index": 224,
+          "score": 44.44,
+          "english": "lali",
+          "sanskrit": "ललितपञ्चमम् (१४)"
+        },
+        {
+          "index": 242,
+          "score": 18.18,
+          "english": "s",
+          "sanskrit": "स्तवराजम् (४४)"
+        },
+        {
+          "index": 257,
+          "score": 44.44,
+          "english": "dhau",
+          "sanskrit": "धौतपञ्चमम् (६९)"
+        },
+        {
+          "index": 305,
+          "score": 52.63,
+          "english": "gangā",
+          "sanskrit": "गङ्गातरङ्गिणि (३३)"
+        },
+        {
+          "index": 321,
+          "score": 72.73,
+          "english": "ābheri",
+          "sanskrit": "आमेरि (२०)"
+        },
+        {
+          "index": 337,
+          "score": 30.77,
+          "english": "nā",
+          "sanskrit": "नाटकुरञ्जि (२८)"
+        }
+      ],
+      "tala": [
+        {
+          "index": 6,
+          "score": 0.0,
+          "english": "Unknown",
+          "sanskrit": "आदि"
+        },
+        {
+          "index": 13,
+          "score": 0.0,
+          "english": "rūpakam",
+          "sanskrit": "Unknown"
+        },
+        {
+          "index": 20,
+          "score": 0.0,
+          "english": "Unknown",
+          "sanskrit": "मिश्र चापु"
+        },
+        {
+          "index": 24,
+          "score": 30.77,
+          "english": "miśra cāpu",
+          "sanskrit": "आदि"
+        },
+        {
+          "index": 25,
+          "score": 0.0,
+          "english": "Unknown",
+          "sanskrit": "मिश्र चापु"
+        },
+        {
+          "index": 28,
+          "score": 0.0,
+          "english": "Unknown",
+          "sanskrit": "आदि"
+        },
+        {
+          "index": 34,
+          "score": 0.0,
+          "english": "Unknown",
+          "sanskrit": "आदि"
+        },
+        {
+          "index": 37,
+          "score": 0.0,
+          "english": "Unknown",
+          "sanskrit": "Unknown"
+        },
+        {
+          "index": 40,
+          "score": 0.0,
+          "english": "Unknown",
+          "sanskrit": "तिश्र त्रिपुट"
+        },
+        {
+          "index": 43,
+          "score": 0.0,
+          "english": "Unknown",
+          "sanskrit": "अट"
+        },
+        {
+          "index": 45,
+          "score": 0.0,
+          "english": "Unknown",
+          "sanskrit": "चतुरश्र एकम्"
+        },
+        {
+          "index": 48,
+          "score": 60.0,
+          "english": "miśra cāpu",
+          "sanskrit": "तिश्र एकम्"
+        }
+      ]
+    }
+  },
+  "skipRegenerate": false,
+  "skipSemanticAlignment": false,
+  "strictIngestionGates": false,
+  "track": "TRACK-068"
+}
