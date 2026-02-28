@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-02-28 |
 | **Author** | Sangeetha Grantha Team |
 
 # Sangita Grantha – Schema Overview
@@ -172,7 +172,7 @@ Includes:
 Represents **all compositions**, regardless of musical form.
 
 Key fields:
-- `title`, `incipit`
+- `title`, `title_normalized`, `incipit`, `incipit_normalized`
 - `composer_id`
 - `musical_form`
 - `primary_language`
@@ -212,6 +212,7 @@ CHARANAM
 MUKTAAYI_SWARAM
 CHITTASWARAM
 JATHI
+SAMASHTI_CHARANAM
 SWARA_SAHITYA
 MADHYAMA_KALA
 OTHER
@@ -439,10 +440,24 @@ All admin mutations MUST write an audit entry.
 
 ---
 
-## 12. Indexing & Performance
+## 12. SQL Functions
+
+### 12.1 `strip_diacritics(text)`
+
+PL/pgSQL function that converts IAST diacritics to ASCII equivalents for search normalisation. Used to populate `title_normalized` and `incipit_normalized` columns, enabling ASCII search queries against diacritics-rich Carnatic music titles (e.g., searching "akhilandesvari" matches "akhilāṇḍeśvaryai").
+
+Mappings include:
+- Macron vowels: ā→a, ī→i, ū→u, ē→e, ō→o
+- Retroflex/palatal consonants: ṭ→t, ḍ→d, ṇ→n, ṅ→n, ñ→n, ś→s, ṣ→s
+- Anusvara/visarga: ṃ→m, ḥ→h
+- Chandrabindu and other marks stripped
+
+---
+
+## 13. Indexing & Performance
 
 - Trigram indexes on lyric text
-- Normalized name indexes on reference data
+- Normalized name indexes on reference data (`title_normalized`, `incipit_normalized`, `name_normalized`)
 - Ordered indexes on sections and notation rows
 
 Target:
@@ -451,7 +466,7 @@ Target:
 
 ---
 
-## 13. DTO Alignment
+## 14. DTO Alignment
 
 Shared DTOs in `modules/shared/domain` mirror this schema:
 
@@ -469,7 +484,7 @@ Any schema change MUST:
 
 ---
 
-## 14. Recent Migrations (Feb 2026)
+## 15. Recent Migrations (Feb 2026)
 
 | Migration | Table/Columns | Purpose |
 |:---|:---|:---|
@@ -483,7 +498,7 @@ See [Krithi Data Sourcing Quality Strategy](../01-requirements/krithi-data-sourc
 
 ---
 
-## 15. Future Extensions
+## 16. Future Extensions
 
 Planned but out of scope for v1:
 - Audio / notation synchronization
@@ -494,7 +509,7 @@ Planned but out of scope for v1:
 
 ---
 
-## 15. Guiding Principle
+## 17. Guiding Principle
 
 > Sangita Grantha stores Carnatic music **as it is taught, learned, and performed** — not merely as text.
 
