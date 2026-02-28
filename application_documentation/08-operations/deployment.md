@@ -124,7 +124,7 @@ VITE_API_URL=http://localhost:8080
 ```bash
 # Create Cloud SQL instance (one-time)
 gcloud sql instances create sangita-grantha-staging \
-  --database-version=POSTGRES_15 \
+  --database-version=POSTGRES_18 \
   --tier=db-f1-micro \
   --region=us-central1 \
   --storage-size=10GB
@@ -207,7 +207,7 @@ DATABASE_URL=postgres://sangita:<password>@localhost:5433/sangita_grantha \
 ```bash
 # Production Cloud SQL (higher tier)
 gcloud sql instances create sangita-grantha-prod \
-  --database-version=POSTGRES_15 \
+  --database-version=POSTGRES_18 \
   --tier=db-custom-2-8192 \
   --region=us-central1 \
   --storage-size=100GB \

@@ -17,9 +17,9 @@ This runbook provides procedures for database operations, maintenance, backup, a
 
 | Environment | Engine | Version | Instance |
 |-------------|--------|---------|----------|
-| Local | PostgreSQL | 15 | Docker container |
-| Staging | Cloud SQL | 15 | db-f1-micro |
-| Production | Cloud SQL | 15 | db-custom-2-8192 |
+| Local | PostgreSQL | 18 | Docker container |
+| Staging | Cloud SQL | 18 | db-f1-micro |
+| Production | Cloud SQL | 18 | db-custom-2-8192 |
 
 ### 1.2 Connection Information
 

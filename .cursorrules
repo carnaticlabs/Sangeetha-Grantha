@@ -59,7 +59,7 @@ For current toolchain and library versions, see **[Current Versions](application
 - **React**: 19 + TypeScript
 - **Ktor**: (Netty server)
 - **Exposed**: (ORM)
-- **PostgreSQL**: 15+ (migrations via Rust tool)
+- **PostgreSQL**: 18+ (migrations via Rust tool)
 
 ## Key Patterns to Follow
 

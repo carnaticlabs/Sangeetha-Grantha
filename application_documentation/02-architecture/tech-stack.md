@@ -17,7 +17,7 @@ For current toolchain and library versions, see **[Current Versions](../00-meta/
 - **Language**: Kotlin
 - **HTTP Server**: Ktor (Netty)
 - **ORM**: Exposed (DSL-based)
-- **Database**: PostgreSQL 15+
+- **Database**: PostgreSQL 18+
 - **Security**: JWT (Auth0)
 - **Dependency Injection**: Koin
 

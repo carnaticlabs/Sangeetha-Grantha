@@ -1121,7 +1121,7 @@ async fn run_extraction_e2e(args: ExtractionE2eArgs) -> Result<()> {
         }
 
         print_step("PHASE 4: Authentication");
-        let jwt_auth = issue_admin_jwt(&client, &api_base, &config.admin_token).await?;
+        let token = issue_admin_jwt(&client, &api_base, &config.admin_token).await?;
         print_success("Admin JWT issued");
 
         print_step("PHASE 5: Submit extraction task");
@@ -1385,7 +1385,7 @@ async fn run_dikshitar_a_series_convergence(args: ExtractionE2eArgs) -> Result<(
         );
 
         print_step("PHASE 5: Authentication");
-        let jwt_auth = issue_admin_jwt(&client, &api_base, &config.admin_token).await?;
+        let token = issue_admin_jwt(&client, &api_base, &config.admin_token).await?;
         print_success("Admin JWT issued");
 
         print_step("PHASE 6: Submit PDF baselines");
@@ -1660,7 +1660,7 @@ async fn run_dikshitar_key_collision_scan(args: ExtractionE2eArgs) -> Result<()>
         }
 
         print_step("PHASE 4: Authentication");
-        let jwt_auth = issue_admin_jwt(&client, &api_base, &config.admin_token).await?;
+        let token = issue_admin_jwt(&client, &api_base, &config.admin_token).await?;
         print_success("Admin JWT issued");
 
         print_step("PHASE 5: Submit HTML rows from CSV");
@@ -1880,7 +1880,7 @@ async fn run_akhila_three_source_e2e(args: ExtractionE2eArgs) -> Result<()> {
         let sanskrit_pdf_source_url = format!("{}?run={}", sanskrit_pdf_url, run_tag);
 
         print_step("PHASE 5: Authentication");
-        let jwt_auth = issue_admin_jwt(&client, &api_base, &config.admin_token).await?;
+        let token = issue_admin_jwt(&client, &api_base, &config.admin_token).await?;
         print_success("Admin JWT issued");
 
         print_step("PHASE 6: Submit and ingest all 3 sources");

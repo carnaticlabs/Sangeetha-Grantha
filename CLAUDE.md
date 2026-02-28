@@ -78,7 +78,7 @@ modules/
 - `react-router-dom` for navigation
 
 **Database**
-- PostgreSQL 15+ (dev via Docker Compose)
+- PostgreSQL 18+ (dev via Docker Compose)
 - Migrations via Rust CLI (`tools/sangita-cli`), NOT Flyway
 - Migration files in `database/migrations/`
 

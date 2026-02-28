@@ -75,6 +75,7 @@
 | [TRACK-064](./tracks/TRACK-064-unified-extraction-engine-migration.md) | Unified Extraction Engine (UEE) Migration | Active |
 | [TRACK-065](./tracks/TRACK-065-python-extraction-module-promotion.md) | Python Extraction Module First-Class Promotion & Naming | Active |
 | [TRACK-071](./tracks/TRACK-071-toc-based-krithi-import.md) | TOC-Based Dikshitar Krithi Import (484 krithis) | Completed |
+| [TRACK-072](./tracks/TRACK-072-postgresql-18-upgrade.md) | PostgreSQL 18 Upgrade (15 → 18.3) | Active |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)
