@@ -84,11 +84,21 @@ export const login = async (
 
 // --- Public / Search ---
 
-export const searchKrithis = (query?: string) => {
+export const searchKrithis = (opts?: {
+    query?: string;
+    ragaId?: string;
+    composerId?: string;
+    language?: string;
+    page?: number;
+    pageSize?: number;
+}) => {
     const params = new URLSearchParams();
-    if (query && query.trim()) {
-        params.append('query', query.trim());
-    }
+    if (opts?.query?.trim()) params.append('query', opts.query.trim());
+    if (opts?.ragaId) params.append('ragaId', opts.ragaId);
+    if (opts?.composerId) params.append('composerId', opts.composerId);
+    if (opts?.language) params.append('primaryLanguage', opts.language);
+    if (opts?.page !== undefined) params.append('page', String(opts.page));
+    if (opts?.pageSize !== undefined) params.append('pageSize', String(opts.pageSize));
     const queryString = params.toString();
     return request<KrithiSearchResult>(`/krithis/search${queryString ? `?${queryString}` : ''}`);
 };

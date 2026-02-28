@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 2.0.0 |
-| **Last Updated** | 2026-02-08 |
+| **Version** | 2.1.0 |
+| **Last Updated** | 2026-02-28 |
 | **Author** | Sangeetha Grantha Team |
 
 # React Admin Web — UI Specifications
@@ -329,7 +329,22 @@ Single `api/client.ts` module with:
 
 ## 8. Key Feature Implementations
 
-### 8.1 Krithi Editor
+### 8.1 Krithi List (Search, Filter, Pagination)
+
+**Component**: `KrithiList.tsx`
+
+**Architecture**:
+- **Debounced search**: 300ms debounce on text input; resets to page 1 on query change.
+- **Filter panel**: Collapsible panel with Raga, Composer, and Language dropdowns. Active filter count shown as badge on the toggle button. Dropdowns populated from reference data API endpoints (`/composers`, `/ragas`).
+- **Server-side pagination**: 25 items per page. Ellipsis-style page navigator with first/last/prev/next controls. `KrithiSearchResult` response includes `items`, `total`, `page`, `pageSize`.
+- **Raga display**: Renders `item.ragas` array as chip badges (supports ragamalika display).
+- **Search normalisation**: Backend uses `strip_diacritics()` SQL function so ASCII queries match IAST titles (e.g., "akhilandesvari" finds "akhilāṇḍeśvaryai").
+
+**API**: `searchKrithis(query, ragaId, composerId, language, page, pageSize)`
+
+---
+
+### 8.2 Krithi Editor
 
 **Component**: `KrithiEditor.tsx` (wrapped in `ErrorBoundary`)
 
@@ -351,7 +366,7 @@ Single `api/client.ts` module with:
 | Tags | `TagsTab` | `getKrithiTags` + `getAllTags` | Assign/unassign from catalog |
 | Audit | `AuditTab` | `getKrithiAuditLogs` | Timeline of field-level changes |
 
-### 8.2 Reference Data
+### 8.3 Reference Data
 
 **Component**: `ReferenceData.tsx`
 
@@ -362,7 +377,7 @@ Single `api/client.ts` module with:
 
 **Generic pattern**: `useEntityCrud` hook provides `loadStats`, `loadData`, `saveEntity`, `deleteEntity` for all entity types.
 
-### 8.3 Bulk Import
+### 8.4 Bulk Import
 
 **Component**: `BulkImport.tsx`
 
@@ -373,7 +388,7 @@ Single `api/client.ts` module with:
 - Batch detail includes pipeline stepper (MANIFEST_INGEST → SCRAPE → ENTITY_RESOLUTION), job list, task list (filterable by status), and event log.
 - Task log viewer: Full-screen slide-in drawer with task overview, error details, and copy-to-clipboard.
 
-### 8.4 Import Review Queue
+### 8.5 Import Review Queue
 
 **Component**: `ImportReview.tsx`
 
@@ -383,7 +398,7 @@ Single `api/client.ts` module with:
 - Detail panel: editable metadata form, AI resolution candidates panel (Composer, Raga, Deity, Temple with confidence scores), lyrics preview textarea.
 - Bulk operations: Approve Selected, Reject Selected with confirmation.
 
-### 8.5 Web Scraping
+### 8.6 Web Scraping
 
 **Component**: `ImportsPage.tsx`
 
@@ -562,7 +577,7 @@ Task statuses: `PENDING` (grey), `RUNNING` (blue), `SUCCEEDED` (green), `FAILED`
 | App shell & navigation | `App.tsx`, `Sidebar.tsx`, `TopBar.tsx` |
 | Login / Authentication | `Login.tsx`, `api/client.ts` (login) |
 | Dashboard | `Dashboard.tsx`, `StatCard.tsx`, `RecentItem.tsx` |
-| Krithi listing & search | `KrithiList.tsx` |
+| Krithi listing, search, filter & pagination | `KrithiList.tsx` |
 | Krithi Editor (6 tabs) | `KrithiEditor.tsx`, `MetadataTab`, `StructureTab`, `LyricsTab`, `NotationTab`, `TagsTab`, `AuditTab` |
 | Notation management | `NotationTab.tsx`, `NotationVariantList`, `NotationVariantModal`, `NotationRowsEditor` |
 | Reference Data CRUD | `ReferenceData.tsx`, `EntityList.tsx`, 5× entity forms |
@@ -594,8 +609,8 @@ Task statuses: `PENDING` (grey), `RUNNING` (blue), `SUCCEEDED` (green), `FAILED`
 
 | Feature | Priority | Notes |
 |:---|:---|:---|
-| Advanced search filters | Medium | Filter button exists in KrithiList; modal/dropdown UI not yet built |
-| Pagination (server-side) | Medium | Client-side display only; API pagination params available but not wired |
+| ~~Advanced search filters~~ | ~~Medium~~ | Completed in TRACK-071: Raga, Composer, Language filter dropdowns |
+| ~~Pagination (server-side)~~ | ~~Medium~~ | Completed in TRACK-071: 25 items/page with ellipsis navigator |
 | User & role CRUD | Low | Backend endpoints exist; UI needs implementation |
 | Sourcing & extraction monitoring | High | See [Sourcing UI/UX Plan](../../01-requirements/krithi-data-sourcing/ui-ux-plan.md) |
 | Quality dashboard | Medium | Planned for Phase 4 of sourcing strategy |

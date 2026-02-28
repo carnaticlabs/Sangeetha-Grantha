@@ -1,71 +1,82 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { searchKrithis } from '../api/client';
-import { KrithiSummary } from '../types';
+import { searchKrithis, getRagas, getComposers } from '../api/client';
+import { KrithiSummary, Raga, Composer } from '../types';
+
+const PAGE_SIZE = 25;
 
 const KrithiList: React.FC = () => {
   const navigate = useNavigate();
+
+  // Search & filter state
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedRagaId, setSelectedRagaId] = useState('');
+  const [selectedComposerId, setSelectedComposerId] = useState('');
+  const [selectedLanguage, setSelectedLanguage] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+
+  // Data state
   const [krithis, setKrithis] = useState<KrithiSummary[]>([]);
   const [loading, setLoading] = useState(false);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(0); // 0-indexed for backend
 
-  // Pagination State
-  const [page, setPage] = useState(1);
-  const [limit] = useState(20);
-  // const [total, setTotal] = useState(0);
+  // Reference data for filter dropdowns
+  const [ragas, setRagas] = useState<Raga[]>([]);
+  const [composers, setComposers] = useState<Composer[]>([]);
+
+  // Load reference data once
+  useEffect(() => {
+    getRagas().then(r => setRagas(r.sort((a, b) => a.name.localeCompare(b.name)))).catch(() => {});
+    getComposers().then(c => setComposers(c.sort((a, b) => a.name.localeCompare(b.name)))).catch(() => {});
+  }, []);
+
+  // Reset to page 0 when filters/search change
+  useEffect(() => {
+    setPage(0);
+  }, [searchTerm, selectedRagaId, selectedComposerId, selectedLanguage]);
+
+  // Load krithis
+  const loadKrithis = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await searchKrithis({
+        query: searchTerm || undefined,
+        ragaId: selectedRagaId || undefined,
+        composerId: selectedComposerId || undefined,
+        language: selectedLanguage || undefined,
+        page,
+        pageSize: PAGE_SIZE,
+      });
+      setKrithis(data.items || []);
+      setTotal(data.total || 0);
+    } catch (e) {
+      console.error('Failed to load krithis', e);
+      setKrithis([]);
+      setTotal(0);
+    } finally {
+      setLoading(false);
+    }
+  }, [searchTerm, selectedRagaId, selectedComposerId, selectedLanguage, page]);
 
   useEffect(() => {
-    // Reset to page 1 when search changes
-    setPage(1);
-  }, [searchTerm]);
-
-  useEffect(() => {
-    const loadKrithis = async () => {
-      setLoading(true);
-      try {
-        // searchKrithis currently only takes query. If we want pagination, we need to update searchKrithis or the API.
-        // Assuming searchKrithis returns all or has a limit inside.
-        // If the API doesn't support pagination params in the search endpoint yet, we might client-side paginate or just show all.
-        // Looking at api/client.ts: export const searchKrithis = (query?: string) => ... params.append('query', query)
-        // It does NOT accepted limit/offset.
-        // However, let's look at `KrithiSearchResult`. If it has `total`, maybe we can add params.
-        // If not, we just display what we get.
-
-        // Use the existing client function for now. If refactoring API is out of scope, 
-        // we can implement client-side pagination if the list is small, or assume backend handles it.
-        // We'll invoke the search.
-        const data = await searchKrithis(searchTerm);
-
-        // Checking type definition next. Assuming data has items.
-        setKrithis(data.items || []);
-        // setTotal(data.total || (data.items || []).length);
-
-      } catch (e) {
-        console.error("Failed to load krithis", e);
-        setKrithis([]);
-        // setTotal(0);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const delay = searchTerm === '' ? 0 : 500;
+    const delay = searchTerm === '' ? 0 : 400;
     const timer = setTimeout(loadKrithis, delay);
     return () => clearTimeout(timer);
-  }, [searchTerm, page, limit]); // We can't really paginate effectively without API support but we structure it.
+  }, [loadKrithis]);
 
-  // Helper for pagination rendering (Client side for now if API doesn't support offset)
-  // Actually, if API returns limited set, we can't paginate client side beyond first page.
-  // If API returns ALL, we can paginate client side.
-  // Let's assume API returns a "search result" which is likely paginated by backend default 
-  // or returns all.
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const activeFilterCount = [selectedRagaId, selectedComposerId, selectedLanguage].filter(Boolean).length;
 
-  // For this refactor, let's keep it simple and clean up the UI.
-
-  // const totalPages = Math.ceil(total / limit);
+  const clearFilters = () => {
+    setSelectedRagaId('');
+    setSelectedComposerId('');
+    setSelectedLanguage('');
+  };
 
   return (
     <div className="max-w-7xl mx-auto h-full flex flex-col space-y-6 animate-fadeIn pb-12">
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <h1 className="font-display text-3xl font-bold text-ink-900 tracking-tight">Kritis</h1>
@@ -93,11 +104,80 @@ const KrithiList: React.FC = () => {
               className="w-full pl-10 pr-4 py-2 bg-white border border-border-light rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent transition-shadow outline-none"
             />
           </div>
-          <button className="flex items-center gap-2 px-4 py-2 bg-white border border-border-light text-ink-700 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors">
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className={`flex items-center gap-2 px-4 py-2 border rounded-lg text-sm font-medium transition-colors ${
+              showFilters || activeFilterCount > 0
+                ? 'bg-primary/10 border-primary/30 text-primary'
+                : 'bg-white border-border-light text-ink-700 hover:bg-slate-50'
+            }`}
+          >
             <span className="material-symbols-outlined text-[20px]">filter_list</span>
             Filter
+            {activeFilterCount > 0 && (
+              <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-primary text-white text-xs font-bold">
+                {activeFilterCount}
+              </span>
+            )}
           </button>
         </div>
+
+        {/* Filter Panel */}
+        {showFilters && (
+          <div className="p-4 border-b border-border-light bg-slate-50/30 space-y-3">
+            <div className="flex flex-wrap gap-4">
+              <div className="flex flex-col gap-1 min-w-[200px]">
+                <label className="text-xs font-semibold uppercase tracking-wider text-ink-400">Raga</label>
+                <select
+                  value={selectedRagaId}
+                  onChange={(e) => setSelectedRagaId(e.target.value)}
+                  className="px-3 py-2 bg-white border border-border-light rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                >
+                  <option value="">All Ragas</option>
+                  {ragas.map(r => (
+                    <option key={r.id} value={r.id}>{r.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex flex-col gap-1 min-w-[200px]">
+                <label className="text-xs font-semibold uppercase tracking-wider text-ink-400">Composer</label>
+                <select
+                  value={selectedComposerId}
+                  onChange={(e) => setSelectedComposerId(e.target.value)}
+                  className="px-3 py-2 bg-white border border-border-light rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                >
+                  <option value="">All Composers</option>
+                  {composers.map(c => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex flex-col gap-1 min-w-[140px]">
+                <label className="text-xs font-semibold uppercase tracking-wider text-ink-400">Language</label>
+                <select
+                  value={selectedLanguage}
+                  onChange={(e) => setSelectedLanguage(e.target.value)}
+                  className="px-3 py-2 bg-white border border-border-light rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                >
+                  <option value="">All Languages</option>
+                  <option value="SA">Sanskrit</option>
+                  <option value="TE">Telugu</option>
+                  <option value="TA">Tamil</option>
+                  <option value="KN">Kannada</option>
+                </select>
+              </div>
+            </div>
+            {activeFilterCount > 0 && (
+              <button
+                onClick={clearFilters}
+                className="text-xs text-primary hover:text-primary-dark font-medium flex items-center gap-1"
+              >
+                <span className="material-symbols-outlined text-[16px]">close</span>
+                Clear all filters
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Table */}
         <div className="overflow-x-auto">
@@ -153,16 +233,53 @@ const KrithiList: React.FC = () => {
           </table>
         </div>
 
-        {/* Pagination - Placeholder for now as API doesn't support full pagination params yet */}
+        {/* Pagination */}
         <div className="p-4 border-t border-border-light bg-white flex items-center justify-between text-sm text-ink-500">
-          <span>Showing {krithis.length} results</span>
-          {/* 
-          <div className="flex gap-2">
-            <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="px-3 py-1.5 border border-border-light rounded-md bg-white disabled:opacity-50 hover:bg-slate-50 transition-colors">Previous</button>
-            <span className="flex items-center px-2">Page {page}</span>
-            <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} className="px-3 py-1.5 border border-border-light rounded-md bg-white hover:bg-slate-50 transition-colors">Next</button>
-          </div>
-          */}
+          <span>
+            {total > 0
+              ? `Showing ${page * PAGE_SIZE + 1}\u2013${Math.min((page + 1) * PAGE_SIZE, total)} of ${total} results`
+              : 'No results'}
+          </span>
+          {totalPages > 1 && (
+            <div className="flex items-center gap-2">
+              <button
+                disabled={page <= 0}
+                onClick={() => setPage(p => p - 1)}
+                className="px-3 py-1.5 border border-border-light rounded-md bg-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors text-sm"
+              >
+                Previous
+              </button>
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i).map(i => {
+                  if (i === 0 || i === totalPages - 1 || Math.abs(i - page) <= 1) {
+                    return (
+                      <button
+                        key={i}
+                        onClick={() => setPage(i)}
+                        className={`w-8 h-8 flex items-center justify-center rounded-md text-sm transition-colors ${
+                          i === page
+                            ? 'bg-primary text-white font-semibold'
+                            : 'hover:bg-slate-100 text-ink-600'
+                        }`}
+                      >
+                        {i + 1}
+                      </button>
+                    );
+                  }
+                  if (i === 1 && page > 2) return <span key={i} className="px-1 text-ink-400">&hellip;</span>;
+                  if (i === totalPages - 2 && page < totalPages - 3) return <span key={i} className="px-1 text-ink-400">&hellip;</span>;
+                  return null;
+                })}
+              </div>
+              <button
+                disabled={page >= totalPages - 1}
+                onClick={() => setPage(p => p + 1)}
+                className="px-3 py-1.5 border border-border-light rounded-md bg-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors text-sm"
+              >
+                Next
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
