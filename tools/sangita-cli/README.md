@@ -278,6 +278,40 @@ cargo run -- test extraction-e2e --skip-extraction-start --skip-migrations
 cargo run -- test extraction-e2e --source-url "<pdf-url>" --page-range "17-18" --min-result-count 1
 ```
 
+#### TRACK-068 Markdown Ingestion Harness
+Run focused harness checks for the TRACK-068 markdown workflow (`mdskt.md`/`mdeng.md`):
+```bash
+# Regenerate parser outputs + validate parity/artifacts
+cargo run -- test track068-harness
+
+# Validate existing artifacts only (skip parser/generator rerun)
+cargo run -- test track068-harness --skip-regenerate
+
+# Enforce strict ingestion gates (fail on unknown metadata/missing pallavi)
+cargo run -- test track068-harness --enforce-ingestion-gates
+
+# Skip semantic EN<->SA title/raga/tala alignment gate (diagnostics only)
+cargo run -- test track068-harness --skip-semantic-alignment
+```
+
+What it verifies:
+1. Parser/generator scripts run successfully (unless `--skip-regenerate`)
+2. `skt_krithis.json` and `eng_krithis.json` both contain the expected count (default `479`)
+3. ID parity is contiguous (`1..N`) and identical across Sanskrit/English datasets
+4. Generated artifacts exist and align with expected counts:
+   - `final_mdskt.md`
+   - `final_mdeng.md`
+   - `krithi_comparison_report.csv`
+5. Semantic EN↔SA alignment scoring from `krithi_comparison_report.csv`:
+   - Transliteration-aware fuzzy checks for title/raga/tala
+   - Fails by default if mismatch ratios exceed configured thresholds
+6. Writes a structured summary report:
+   - `database/for_import/track_068_harness_report.json`
+
+Requirements for semantic scoring:
+- `uv` must be installed
+- Python dependencies from `tools/krithi-extract-enrich-worker/pyproject.toml` must be available
+
 #### Steel Thread Test
 Run the end-to-end smoke verification:
 ```bash

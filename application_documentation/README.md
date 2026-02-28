@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-02-28 |
 | **Author** | Sangeetha Grantha Team |
 
 # Sangita Grantha Documentation Index
@@ -104,3 +104,4 @@ Historical / inherited drafts from earlier projects, and any future archival doc
 - **[10 Implementations](./10-implementations/README.md)**
   - [Platform Standardization](./10-implementations/01-platform/environment-variable-standardization.md)
   - [Dependency Updates (Feb 2026)](./10-implementations/01-platform/dependency-updates-feb-2026.md)
+  - [Dikshitar Krithi Import Pipeline (TRACK-071)](./10-implementations/track-071-dikshitar-import-pipeline.md)

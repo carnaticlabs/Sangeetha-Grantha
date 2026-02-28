@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.3.2 |
-| **Last Updated** | 2026-02-19 |
+| **Version** | 1.3.3 |
+| **Last Updated** | 2026-02-28 |
 | **Author** | Sangeetha Grantha Team |
 
 # Conductor Tracks Registry
@@ -74,5 +74,11 @@
 | [TRACK-063](./tracks/TRACK-063-database-reset-reextraction-e2e.md) | Database Reset & Full Re-Extraction E2E Validation | Completed |
 | [TRACK-064](./tracks/TRACK-064-unified-extraction-engine-migration.md) | Unified Extraction Engine (UEE) Migration | Active |
 | [TRACK-065](./tracks/TRACK-065-python-extraction-module-promotion.md) | Python Extraction Module First-Class Promotion & Naming | Active |
+| [TRACK-071](./tracks/TRACK-071-toc-based-krithi-import.md) | TOC-Based Dikshitar Krithi Import (484 krithis) | Completed |
 
 ## 3. Deprecated Tracks
+- [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)
+- [TRACK-067](tracks/TRACK-067-sarvam-mdeng-extraction.md): Sarvam API English PDF Extraction (Completed)
+- [TRACK-068](tracks/TRACK-068-md-ingestion-analysis.md): Markdown Krithi Ingestion Analysis (Completed)
+- [TRACK-069](tracks/TRACK-069-catalog-data-quality-observations.md): Catalog Data Quality — Browser Observations (Superseded by TRACK-071)
+- [TRACK-070](tracks/TRACK-070-import-pipeline-fix-checklist.md): Import Pipeline Fix Checklist (Superseded by TRACK-071)

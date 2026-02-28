@@ -8,10 +8,12 @@ use crate::{AppConfig, ConnectionString, DatabaseConfig, DatabaseManager};
 use anyhow::{anyhow, Context, Result};
 use clap::{Args, Subcommand, ValueEnum};
 use reqwest::{Client, StatusCode};
+use serde::Deserialize;
 use serde_json::{json, Value};
 use sqlx::postgres::PgConnectOptions;
 use sqlx::{ConnectOptions, Row};
 use std::collections::{BTreeMap, BTreeSet};
+use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
 use std::str::FromStr;
@@ -30,6 +32,8 @@ enum TestCommands {
     SteelThread,
     /// Full backend E2E extraction integration test (DB + backend + extractor + queue checks)
     ExtractionE2e(ExtractionE2eArgs),
+    /// TRACK-068 markdown ingestion harness (parser + parity + generated artifacts)
+    Track068Harness(Track068HarnessArgs),
     /// Quick connectivity smoke test (health + search)
     Upload(UploadArgs),
 }
@@ -108,6 +112,49 @@ pub struct ExtractionE2eArgs {
     fail_on_collision: bool,
 }
 
+#[derive(Args)]
+pub struct Track068HarnessArgs {
+    /// Expected krithi count in both Sanskrit and English datasets
+    #[arg(long, default_value_t = 479)]
+    expected_count: usize,
+
+    /// Skip running parser/generator scripts and validate existing artifacts only
+    #[arg(long)]
+    skip_regenerate: bool,
+
+    /// Enforce strict ingestion readiness gates (missing metadata/pallavi becomes failure)
+    #[arg(long)]
+    enforce_ingestion_gates: bool,
+
+    /// Skip semantic EN<->SA alignment scoring over krithi_comparison_report.csv
+    #[arg(long)]
+    skip_semantic_alignment: bool,
+
+    /// Minimum fuzzy score for Title EN<->SA alignment (0-100)
+    #[arg(long, default_value_t = 70)]
+    semantic_title_min_score: i64,
+
+    /// Minimum fuzzy score for Raga EN<->SA alignment (0-100)
+    #[arg(long, default_value_t = 80)]
+    semantic_raga_min_score: i64,
+
+    /// Minimum fuzzy score for Tala EN<->SA alignment (0-100)
+    #[arg(long, default_value_t = 70)]
+    semantic_tala_min_score: i64,
+
+    /// Maximum allowed mismatch ratio for Title EN<->SA alignment
+    #[arg(long, default_value_t = 0.15)]
+    max_title_mismatch_ratio: f64,
+
+    /// Maximum allowed mismatch ratio for Raga EN<->SA alignment
+    #[arg(long, default_value_t = 0.10)]
+    max_raga_mismatch_ratio: f64,
+
+    /// Maximum allowed mismatch ratio for Tala EN<->SA alignment
+    #[arg(long, default_value_t = 0.10)]
+    max_tala_mismatch_ratio: f64,
+}
+
 #[derive(Copy, Clone, Debug, Eq, PartialEq, ValueEnum)]
 enum ExtractionScenario {
     PdfSmoke,
@@ -142,8 +189,780 @@ pub async fn run(args: TestArgs) -> Result<()> {
     match args.command {
         TestCommands::SteelThread => run_steel_thread().await,
         TestCommands::ExtractionE2e(extraction_args) => run_extraction_e2e(extraction_args).await,
+        TestCommands::Track068Harness(track_068_args) => run_track_068_harness(track_068_args).await,
         TestCommands::Upload(upload_args) => run_smoke_test(upload_args).await,
     }
+}
+
+async fn run_track_068_harness(args: Track068HarnessArgs) -> Result<()> {
+    let root = project_root()?;
+    let for_import_dir = root.join("database/for_import");
+    let parser_script = for_import_dir.join("verification_parser.py");
+    let generator_script = for_import_dir.join("generate_clean_markdown_from_json.py");
+    let skt_json_path = for_import_dir.join("skt_krithis.json");
+    let eng_json_path = for_import_dir.join("eng_krithis.json");
+    let final_skt_path = for_import_dir.join("final_mdskt.md");
+    let final_eng_path = for_import_dir.join("final_mdeng.md");
+    let comparison_csv_path = for_import_dir.join("krithi_comparison_report.csv");
+    let report_path = for_import_dir.join("track_068_harness_report.json");
+    let mut hard_failures: Vec<String> = Vec::new();
+
+    print_step("TRACK-068 HARNESS: Preflight checks");
+    for required in [
+        for_import_dir.join("mdskt.md"),
+        for_import_dir.join("mdeng.md"),
+        parser_script.clone(),
+        generator_script.clone(),
+    ] {
+        if !required.exists() {
+            return Err(anyhow!("Required file not found: {}", required.display()));
+        }
+    }
+
+    let python_check = Command::new("python3")
+        .arg("--version")
+        .current_dir(&root)
+        .output()
+        .context("Failed to execute python3 --version. Install Python 3 first.")?;
+    if !python_check.status.success() {
+        return Err(anyhow!(
+            "python3 --version failed: {}",
+            String::from_utf8_lossy(&python_check.stderr)
+        ));
+    }
+    print_success(&format!(
+        "Python runtime detected: {}",
+        String::from_utf8_lossy(&python_check.stdout).trim()
+    ));
+
+    if args.skip_regenerate {
+        print_warning("Skipping parser/generator execution (--skip-regenerate)");
+    } else {
+        print_step("TRACK-068 HARNESS: Running verification parser");
+        run_python_script(&for_import_dir, &parser_script)?;
+        print_success("verification_parser.py completed");
+
+        print_step("TRACK-068 HARNESS: Regenerating final markdown + CSV");
+        run_python_script(&for_import_dir, &generator_script)?;
+        print_success("generate_clean_markdown_from_json.py completed");
+    }
+
+    print_step("TRACK-068 HARNESS: Validating JSON parity and section integrity");
+    let skt_json = fs::read_to_string(&skt_json_path)
+        .with_context(|| format!("Failed to read {}", skt_json_path.display()))?;
+    let eng_json = fs::read_to_string(&eng_json_path)
+        .with_context(|| format!("Failed to read {}", eng_json_path.display()))?;
+
+    let skt_krithis = parse_track_068_json(&skt_json, "skt_krithis.json")?;
+    let eng_krithis = parse_track_068_json(&eng_json, "eng_krithis.json")?;
+
+    let skt_count = skt_krithis.len();
+    let eng_count = eng_krithis.len();
+    if skt_count != args.expected_count || eng_count != args.expected_count {
+        hard_failures.push(format!(
+            "Count parity gate failed: expected {} each, got skt={}, eng={}",
+            args.expected_count,
+            skt_count,
+            eng_count
+        ));
+        print_warning(&hard_failures.last().cloned().unwrap_or_default());
+    } else {
+        print_success(&format!(
+            "Count parity passed: skt={}, eng={} (expected={})",
+            skt_count, eng_count, args.expected_count
+        ));
+    }
+
+    let skt_ids: BTreeSet<usize> = skt_krithis.iter().map(|item| item.id).collect();
+    let eng_ids: BTreeSet<usize> = eng_krithis.iter().map(|item| item.id).collect();
+    let expected_ids: BTreeSet<usize> = (1..=args.expected_count).collect();
+    if skt_ids != expected_ids {
+        hard_failures.push(format!(
+            "skt_krithis.json id set is not contiguous 1..{}",
+            args.expected_count
+        ));
+    }
+    if eng_ids != expected_ids {
+        hard_failures.push(format!(
+            "eng_krithis.json id set is not contiguous 1..{}",
+            args.expected_count
+        ));
+    }
+    if skt_ids != eng_ids {
+        hard_failures.push("ID parity failed: Sanskrit and English ID sets differ".to_string());
+    }
+    if skt_ids == expected_ids && eng_ids == expected_ids && skt_ids == eng_ids {
+        print_success("ID parity passed: both datasets contain contiguous IDs with full overlap");
+    } else {
+        print_warning("ID parity failed; see harness report hardFailures");
+    }
+
+    let section_report = compute_track_068_section_report(&skt_krithis, &eng_krithis);
+    let metadata_report = compute_track_068_metadata_report(&skt_krithis, &eng_krithis);
+
+    print_info(&format!(
+        "Section coverage: sktMissingPallavi={}, engMissingPallavi={}, missingAnySection={} ids",
+        section_report.skt_missing_pallavi_count,
+        section_report.eng_missing_pallavi_count,
+        section_report.missing_any_section_count
+    ));
+    print_info(&format!(
+        "Metadata coverage: sktUnknownTala={}, engUnknownTala={}, rowsWithAnyUnknownMeta={}",
+        metadata_report.skt_unknown_tala_count,
+        metadata_report.eng_unknown_tala_count,
+        metadata_report.any_unknown_metadata_count
+    ));
+
+    print_step("TRACK-068 HARNESS: Validating generated artifact structure");
+    let final_skt = fs::read_to_string(&final_skt_path)
+        .with_context(|| format!("Failed to read {}", final_skt_path.display()))?;
+    let final_eng = fs::read_to_string(&final_eng_path)
+        .with_context(|| format!("Failed to read {}", final_eng_path.display()))?;
+    let final_skt_count = count_markdown_krithis(&final_skt);
+    let final_eng_count = count_markdown_krithis(&final_eng);
+    if final_skt_count != args.expected_count || final_eng_count != args.expected_count {
+        hard_failures.push(format!(
+            "Final markdown gate failed: expected {} entries each, got final_mdskt={}, final_mdeng={}",
+            args.expected_count,
+            final_skt_count,
+            final_eng_count
+        ));
+    }
+
+    let csv_content = fs::read_to_string(&comparison_csv_path)
+        .with_context(|| format!("Failed to read {}", comparison_csv_path.display()))?;
+    let csv_rows = csv_content.lines().count().saturating_sub(1); // minus header
+    if csv_rows != args.expected_count {
+        hard_failures.push(format!(
+            "Comparison CSV gate failed: expected {} rows, found {}",
+            args.expected_count,
+            csv_rows
+        ));
+    }
+
+    print_step("TRACK-068 HARNESS: Semantic EN<->SA alignment scoring");
+    let semantic_alignment = run_track_068_semantic_alignment(
+        &root,
+        &comparison_csv_path,
+        args.semantic_title_min_score,
+        args.semantic_raga_min_score,
+        args.semantic_tala_min_score,
+    )?;
+
+    print_info(&format!(
+        "Semantic averages: title={:.2}, raga={:.2}, tala={:.2}",
+        semantic_alignment.averages.title_avg,
+        semantic_alignment.averages.raga_avg,
+        semantic_alignment.averages.tala_avg
+    ));
+    print_info(&format!(
+        "Semantic mismatch ratios: title={:.3}, raga={:.3}, tala={:.3}",
+        semantic_alignment.mismatches.title_ratio,
+        semantic_alignment.mismatches.raga_ratio,
+        semantic_alignment.mismatches.tala_ratio
+    ));
+
+    if args.skip_semantic_alignment {
+        print_warning("Skipping semantic alignment gate (--skip-semantic-alignment)");
+    } else {
+        let mut semantic_failures: Vec<String> = Vec::new();
+        if semantic_alignment.mismatches.title_ratio > args.max_title_mismatch_ratio {
+            semantic_failures.push(format!(
+                "title mismatch ratio {:.3} > max {:.3}",
+                semantic_alignment.mismatches.title_ratio, args.max_title_mismatch_ratio
+            ));
+        }
+        if semantic_alignment.mismatches.raga_ratio > args.max_raga_mismatch_ratio {
+            semantic_failures.push(format!(
+                "raga mismatch ratio {:.3} > max {:.3}",
+                semantic_alignment.mismatches.raga_ratio, args.max_raga_mismatch_ratio
+            ));
+        }
+        if semantic_alignment.mismatches.tala_ratio > args.max_tala_mismatch_ratio {
+            semantic_failures.push(format!(
+                "tala mismatch ratio {:.3} > max {:.3}",
+                semantic_alignment.mismatches.tala_ratio, args.max_tala_mismatch_ratio
+            ));
+        }
+        if !semantic_failures.is_empty() {
+            hard_failures.push(format!(
+                "Semantic alignment gate failed: {}",
+                semantic_failures.join("; ")
+            ));
+        }
+    }
+
+    if args.enforce_ingestion_gates {
+        let mut strict_failures: Vec<String> = Vec::new();
+        if section_report.skt_missing_pallavi_count > 0 || section_report.eng_missing_pallavi_count > 0 {
+            strict_failures.push(format!(
+                "Missing pallavi sections (skt={}, eng={})",
+                section_report.skt_missing_pallavi_count, section_report.eng_missing_pallavi_count
+            ));
+        }
+        if section_report.missing_any_section_count > 0 {
+            strict_failures.push(format!(
+                "Krithis without any extracted sections={}",
+                section_report.missing_any_section_count
+            ));
+        }
+        if metadata_report.any_unknown_metadata_count > 0 {
+            strict_failures.push(format!(
+                "Rows with unknown metadata={}",
+                metadata_report.any_unknown_metadata_count
+            ));
+        }
+        if !strict_failures.is_empty() {
+            hard_failures.push(format!(
+                "Strict ingestion gates failed: {}",
+                strict_failures.join("; ")
+            ));
+        }
+        print_success("Strict ingestion gates passed");
+    } else {
+        if section_report.skt_missing_pallavi_count > 0 || section_report.eng_missing_pallavi_count > 0 {
+            print_warning("Strict pallavi gate is not enforced (use --enforce-ingestion-gates to fail on this)");
+        }
+        if metadata_report.any_unknown_metadata_count > 0 {
+            print_warning("Unknown metadata exists but strict gate is disabled (use --enforce-ingestion-gates)");
+        }
+    }
+
+    let report = json!({
+        "track": "TRACK-068",
+        "expectedCount": args.expected_count,
+        "skipRegenerate": args.skip_regenerate,
+        "strictIngestionGates": args.enforce_ingestion_gates,
+        "skipSemanticAlignment": args.skip_semantic_alignment,
+        "hardFailures": hard_failures,
+        "counts": {
+            "sanskritJson": skt_count,
+            "englishJson": eng_count,
+            "finalSanskritMarkdown": final_skt_count,
+            "finalEnglishMarkdown": final_eng_count,
+            "comparisonCsvRows": csv_rows
+        },
+        "sectionIntegrity": {
+            "sktMissingPallaviCount": section_report.skt_missing_pallavi_count,
+            "engMissingPallaviCount": section_report.eng_missing_pallavi_count,
+            "missingAnySectionCount": section_report.missing_any_section_count,
+            "sampleMissingPallaviIds": section_report.sample_missing_pallavi_ids,
+            "sampleMissingAnySectionIds": section_report.sample_missing_any_section_ids
+        },
+        "metadataIntegrity": {
+            "sktUnknownTalaCount": metadata_report.skt_unknown_tala_count,
+            "engUnknownTalaCount": metadata_report.eng_unknown_tala_count,
+            "anyUnknownMetadataCount": metadata_report.any_unknown_metadata_count,
+            "sampleUnknownMetadataIds": metadata_report.sample_unknown_metadata_ids
+        },
+        "semanticAlignment": semantic_alignment
+    });
+    fs::write(&report_path, serde_json::to_string_pretty(&report)?)
+        .with_context(|| format!("Failed writing {}", report_path.display()))?;
+
+    print_success(&format!(
+        "TRACK-068 harness completed. Report written to {}",
+        report_path.display()
+    ));
+    let hard_failures = report
+        .get("hardFailures")
+        .and_then(Value::as_array)
+        .cloned()
+        .unwrap_or_default();
+    if !hard_failures.is_empty() {
+        let summary = hard_failures
+            .iter()
+            .filter_map(Value::as_str)
+            .collect::<Vec<_>>()
+            .join(" | ");
+        return Err(anyhow!("TRACK-068 harness failed: {}", summary));
+    }
+    Ok(())
+}
+
+fn run_python_script(cwd: &Path, script_path: &Path) -> Result<()> {
+    let output = Command::new("python3")
+        .arg(script_path)
+        .current_dir(cwd)
+        .output()
+        .with_context(|| format!("Failed running python3 {}", script_path.display()))?;
+
+    if !output.status.success() {
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        return Err(anyhow!(
+            "Python script failed: {}\nstdout:\n{}\nstderr:\n{}",
+            script_path.display(),
+            stdout,
+            stderr
+        ));
+    }
+
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    if !stdout.trim().is_empty() {
+        let trimmed = stdout.trim();
+        let preview = if trimmed.chars().count() > 1200 {
+            format!("{}...", trimmed.chars().take(1200).collect::<String>())
+        } else {
+            trimmed.to_string()
+        };
+        print_info(&format!(
+            "{} output: {}",
+            script_path
+                .file_name()
+                .and_then(|s| s.to_str())
+                .unwrap_or("script"),
+            preview
+        ));
+    }
+    Ok(())
+}
+
+#[derive(Debug, Deserialize, serde::Serialize)]
+struct Track068SemanticThresholds {
+    title_min_score: i64,
+    raga_min_score: i64,
+    tala_min_score: i64,
+}
+
+#[derive(Debug, Deserialize, serde::Serialize)]
+struct Track068SemanticAverages {
+    title_avg: f64,
+    raga_avg: f64,
+    tala_avg: f64,
+}
+
+#[derive(Debug, Deserialize, serde::Serialize)]
+struct Track068SemanticMismatches {
+    title_count: usize,
+    raga_count: usize,
+    tala_count: usize,
+    title_ratio: f64,
+    raga_ratio: f64,
+    tala_ratio: f64,
+}
+
+#[derive(Debug, Deserialize, serde::Serialize)]
+struct Track068SemanticSample {
+    index: usize,
+    score: f64,
+    english: String,
+    sanskrit: String,
+}
+
+#[derive(Debug, Deserialize, serde::Serialize)]
+struct Track068SemanticSamples {
+    title: Vec<Track068SemanticSample>,
+    raga: Vec<Track068SemanticSample>,
+    tala: Vec<Track068SemanticSample>,
+}
+
+#[derive(Debug, Deserialize, serde::Serialize)]
+struct Track068SemanticUnknownCounts {
+    title_en_unknown: usize,
+    title_sa_unknown: usize,
+    raga_en_unknown: usize,
+    raga_sa_unknown: usize,
+    tala_en_unknown: usize,
+    tala_sa_unknown: usize,
+}
+
+#[derive(Debug, Deserialize, serde::Serialize)]
+struct Track068SemanticAlignment {
+    rows: usize,
+    thresholds: Track068SemanticThresholds,
+    averages: Track068SemanticAverages,
+    mismatches: Track068SemanticMismatches,
+    unknown_counts: Track068SemanticUnknownCounts,
+    samples: Track068SemanticSamples,
+}
+
+const TRACK_068_SEMANTIC_ALIGNMENT_PY: &str = r#"
+import csv
+import json
+import re
+import sys
+import unicodedata
+from indic_transliteration import sanscript
+from indic_transliteration.sanscript import transliterate
+from rapidfuzz import fuzz
+
+if len(sys.argv) < 6:
+    raise SystemExit('Usage: <csv_path> <title_min> <raga_min> <tala_min> <sample_limit>')
+
+csv_path = sys.argv[1]
+title_min = int(sys.argv[2])
+raga_min = int(sys.argv[3])
+tala_min = int(sys.argv[4])
+sample_limit = max(1, int(sys.argv[5]))
+
+def has_devanagari(text: str) -> bool:
+    return any('\u0900' <= ch <= '\u097F' for ch in text)
+
+def dev_to_iast(text: str) -> str:
+    text = (text or '').strip()
+    if not text:
+        return ''
+    if has_devanagari(text):
+        try:
+            return transliterate(text, sanscript.DEVANAGARI, sanscript.IAST)
+        except Exception:
+            return text
+    return text
+
+def normalize(text: str) -> str:
+    text = dev_to_iast((text or '').strip().lower())
+    text = unicodedata.normalize('NFKD', text)
+    text = ''.join(ch for ch in text if not unicodedata.combining(ch))
+    text = re.sub(r'\([^)]*\)', ' ', text)
+    text = re.sub(r'[^a-z0-9\s]', ' ', text)
+    text = re.sub(r'\b(sync|synced|unknown|null|none)\b', ' ', text)
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text
+
+def is_unknown(value: str) -> bool:
+    norm = normalize(value)
+    return norm in ('', 'unknown', 'null', 'none')
+
+def score(a: str, b: str) -> float:
+    na = normalize(a)
+    nb = normalize(b)
+    if not na or not nb:
+        return 0.0
+    return float(fuzz.token_sort_ratio(na, nb))
+
+rows = list(csv.DictReader(open(csv_path, encoding='utf-8')))
+n = len(rows)
+
+title_scores = []
+raga_scores = []
+tala_scores = []
+title_mismatch = 0
+raga_mismatch = 0
+tala_mismatch = 0
+
+title_samples = []
+raga_samples = []
+tala_samples = []
+
+unknown_counts = {
+    'title_en_unknown': 0,
+    'title_sa_unknown': 0,
+    'raga_en_unknown': 0,
+    'raga_sa_unknown': 0,
+    'tala_en_unknown': 0,
+    'tala_sa_unknown': 0,
+}
+
+for row in rows:
+    idx = int(row.get('Index') or 0)
+    title_en = row.get('Title-EN', '')
+    title_sa = row.get('Title-SA', '')
+    raga_en = row.get('Raga-EN', '')
+    raga_sa = row.get('Raga-SA', '')
+    tala_en = row.get('Tala-EN', '')
+    tala_sa = row.get('Tala-SA', '')
+
+    if is_unknown(title_en):
+        unknown_counts['title_en_unknown'] += 1
+    if is_unknown(title_sa):
+        unknown_counts['title_sa_unknown'] += 1
+    if is_unknown(raga_en):
+        unknown_counts['raga_en_unknown'] += 1
+    if is_unknown(raga_sa):
+        unknown_counts['raga_sa_unknown'] += 1
+    if is_unknown(tala_en):
+        unknown_counts['tala_en_unknown'] += 1
+    if is_unknown(tala_sa):
+        unknown_counts['tala_sa_unknown'] += 1
+
+    title_score = score(title_en, title_sa)
+    raga_score = score(raga_en, raga_sa)
+    tala_score = score(tala_en, tala_sa)
+
+    title_scores.append(title_score)
+    raga_scores.append(raga_score)
+    tala_scores.append(tala_score)
+
+    if title_score < title_min:
+        title_mismatch += 1
+        if len(title_samples) < sample_limit:
+            title_samples.append({
+                'index': idx,
+                'score': round(title_score, 2),
+                'english': title_en,
+                'sanskrit': title_sa,
+            })
+    if raga_score < raga_min:
+        raga_mismatch += 1
+        if len(raga_samples) < sample_limit:
+            raga_samples.append({
+                'index': idx,
+                'score': round(raga_score, 2),
+                'english': raga_en,
+                'sanskrit': raga_sa,
+            })
+    if tala_score < tala_min:
+        tala_mismatch += 1
+        if len(tala_samples) < sample_limit:
+            tala_samples.append({
+                'index': idx,
+                'score': round(tala_score, 2),
+                'english': tala_en,
+                'sanskrit': tala_sa,
+            })
+
+def avg(values):
+    if not values:
+        return 0.0
+    return float(sum(values) / len(values))
+
+result = {
+    'rows': n,
+    'thresholds': {
+        'title_min_score': title_min,
+        'raga_min_score': raga_min,
+        'tala_min_score': tala_min,
+    },
+    'averages': {
+        'title_avg': round(avg(title_scores), 4),
+        'raga_avg': round(avg(raga_scores), 4),
+        'tala_avg': round(avg(tala_scores), 4),
+    },
+    'mismatches': {
+        'title_count': title_mismatch,
+        'raga_count': raga_mismatch,
+        'tala_count': tala_mismatch,
+        'title_ratio': round((title_mismatch / n) if n else 0.0, 6),
+        'raga_ratio': round((raga_mismatch / n) if n else 0.0, 6),
+        'tala_ratio': round((tala_mismatch / n) if n else 0.0, 6),
+    },
+    'unknown_counts': unknown_counts,
+    'samples': {
+        'title': title_samples,
+        'raga': raga_samples,
+        'tala': tala_samples,
+    },
+}
+
+print(json.dumps(result, ensure_ascii=False))
+"#;
+
+fn run_track_068_semantic_alignment(
+    root: &Path,
+    comparison_csv_path: &Path,
+    title_min_score: i64,
+    raga_min_score: i64,
+    tala_min_score: i64,
+) -> Result<Track068SemanticAlignment> {
+    let worker_project = root.join("tools/krithi-extract-enrich-worker");
+    if !worker_project.exists() {
+        return Err(anyhow!(
+            "Missing worker project required for semantic comparison: {}",
+            worker_project.display()
+        ));
+    }
+
+    let output = Command::new("uv")
+        .arg("run")
+        .arg("--project")
+        .arg(&worker_project)
+        .arg("python")
+        .arg("-c")
+        .arg(TRACK_068_SEMANTIC_ALIGNMENT_PY)
+        .arg(comparison_csv_path)
+        .arg(title_min_score.to_string())
+        .arg(raga_min_score.to_string())
+        .arg(tala_min_score.to_string())
+        .arg("12")
+        .current_dir(root)
+        .env("TMPDIR", "/tmp")
+        .output()
+        .context("Failed executing semantic alignment scoring via uv")?;
+
+    if !output.status.success() {
+        return Err(anyhow!(
+            "Semantic alignment scoring failed.\nstdout:\n{}\nstderr:\n{}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        ));
+    }
+
+    let stdout = String::from_utf8(output.stdout)
+        .context("Semantic alignment output was not valid UTF-8")?;
+    let parsed: Track068SemanticAlignment = serde_json::from_str(stdout.trim()).with_context(|| {
+        format!(
+            "Failed parsing semantic alignment JSON output. Raw output: {}",
+            stdout.trim()
+        )
+    })?;
+    Ok(parsed)
+}
+
+#[derive(Clone)]
+struct Track068Krithi {
+    id: usize,
+    raga: String,
+    tala: String,
+    sections: BTreeMap<String, String>,
+}
+
+fn parse_track_068_json(contents: &str, label: &str) -> Result<Vec<Track068Krithi>> {
+    let raw: Vec<Value> = serde_json::from_str(contents)
+        .with_context(|| format!("Failed parsing {}", label))?;
+
+    raw.into_iter()
+        .enumerate()
+        .map(|(idx, item)| {
+            let id = item
+                .get("id")
+                .and_then(Value::as_u64)
+                .ok_or_else(|| anyhow!("{} row {} missing numeric id", label, idx + 1))?
+                as usize;
+            let raga = item
+                .get("raga")
+                .and_then(Value::as_str)
+                .unwrap_or_default()
+                .trim()
+                .to_string();
+            let tala = item
+                .get("tala")
+                .and_then(Value::as_str)
+                .unwrap_or_default()
+                .trim()
+                .to_string();
+            let sections = item
+                .get("sections")
+                .and_then(Value::as_object)
+                .map(|map| {
+                    map.iter()
+                        .map(|(k, v)| (k.to_string(), v.as_str().unwrap_or_default().trim().to_string()))
+                        .collect::<BTreeMap<_, _>>()
+                })
+                .unwrap_or_default();
+
+            Ok(Track068Krithi { id, raga, tala, sections })
+        })
+        .collect()
+}
+
+struct Track068SectionReport {
+    skt_missing_pallavi_count: usize,
+    eng_missing_pallavi_count: usize,
+    missing_any_section_count: usize,
+    sample_missing_pallavi_ids: Vec<usize>,
+    sample_missing_any_section_ids: Vec<usize>,
+}
+
+fn compute_track_068_section_report(
+    skt_krithis: &[Track068Krithi],
+    eng_krithis: &[Track068Krithi],
+) -> Track068SectionReport {
+    let mut skt_missing_pallavi = 0usize;
+    let mut eng_missing_pallavi = 0usize;
+    let mut missing_any_section = 0usize;
+    let mut sample_missing_pallavi_ids = Vec::new();
+    let mut sample_missing_any_section_ids = Vec::new();
+
+    for (skt, eng) in skt_krithis.iter().zip(eng_krithis.iter()) {
+        let skt_has_pallavi = has_non_empty_section(&skt.sections, "pallavi");
+        let eng_has_pallavi = has_non_empty_section(&eng.sections, "pallavi");
+        if !skt_has_pallavi {
+            skt_missing_pallavi += 1;
+            if sample_missing_pallavi_ids.len() < 12 {
+                sample_missing_pallavi_ids.push(skt.id);
+            }
+        }
+        if !eng_has_pallavi {
+            eng_missing_pallavi += 1;
+            if sample_missing_pallavi_ids.len() < 12 {
+                sample_missing_pallavi_ids.push(eng.id);
+            }
+        }
+
+        let skt_has_any = skt.sections.values().any(|text| !text.trim().is_empty());
+        let eng_has_any = eng.sections.values().any(|text| !text.trim().is_empty());
+        if !skt_has_any || !eng_has_any {
+            missing_any_section += 1;
+            if sample_missing_any_section_ids.len() < 12 {
+                sample_missing_any_section_ids.push(skt.id);
+            }
+        }
+    }
+
+    sample_missing_pallavi_ids.sort_unstable();
+    sample_missing_pallavi_ids.dedup();
+    sample_missing_any_section_ids.sort_unstable();
+    sample_missing_any_section_ids.dedup();
+
+    Track068SectionReport {
+        skt_missing_pallavi_count: skt_missing_pallavi,
+        eng_missing_pallavi_count: eng_missing_pallavi,
+        missing_any_section_count: missing_any_section,
+        sample_missing_pallavi_ids,
+        sample_missing_any_section_ids,
+    }
+}
+
+struct Track068MetadataReport {
+    skt_unknown_tala_count: usize,
+    eng_unknown_tala_count: usize,
+    any_unknown_metadata_count: usize,
+    sample_unknown_metadata_ids: Vec<usize>,
+}
+
+fn compute_track_068_metadata_report(
+    skt_krithis: &[Track068Krithi],
+    eng_krithis: &[Track068Krithi],
+) -> Track068MetadataReport {
+    let mut skt_unknown_tala = 0usize;
+    let mut eng_unknown_tala = 0usize;
+    let mut any_unknown_meta = 0usize;
+    let mut sample_unknown_ids = Vec::new();
+
+    for (skt, eng) in skt_krithis.iter().zip(eng_krithis.iter()) {
+        let skt_unknown = is_unknown_field(&skt.raga) || is_unknown_field(&skt.tala);
+        let eng_unknown = is_unknown_field(&eng.raga) || is_unknown_field(&eng.tala);
+
+        if is_unknown_field(&skt.tala) {
+            skt_unknown_tala += 1;
+        }
+        if is_unknown_field(&eng.tala) {
+            eng_unknown_tala += 1;
+        }
+        if skt_unknown || eng_unknown {
+            any_unknown_meta += 1;
+            if sample_unknown_ids.len() < 12 {
+                sample_unknown_ids.push(skt.id);
+            }
+        }
+    }
+
+    Track068MetadataReport {
+        skt_unknown_tala_count: skt_unknown_tala,
+        eng_unknown_tala_count: eng_unknown_tala,
+        any_unknown_metadata_count: any_unknown_meta,
+        sample_unknown_metadata_ids: sample_unknown_ids,
+    }
+}
+
+fn has_non_empty_section(sections: &BTreeMap<String, String>, key: &str) -> bool {
+    sections
+        .get(key)
+        .map(|text| !text.trim().is_empty())
+        .unwrap_or(false)
+}
+
+fn is_unknown_field(value: &str) -> bool {
+    let normalized = value.trim().to_lowercase();
+    normalized.is_empty() || normalized == "unknown" || normalized == "null" || normalized == "none"
+}
+
+fn count_markdown_krithis(markdown: &str) -> usize {
+    markdown
+        .lines()
+        .filter(|line| line.starts_with("# "))
+        .count()
 }
 
 async fn run_steel_thread() -> Result<()> {
@@ -302,7 +1121,7 @@ async fn run_extraction_e2e(args: ExtractionE2eArgs) -> Result<()> {
         }
 
         print_step("PHASE 4: Authentication");
-        let token = issue_admin_token(&client, &api_base, &config.admin_token).await?;
+        let jwt_auth = issue_admin_jwt(&client, &api_base, &config.admin_token).await?;
         print_success("Admin JWT issued");
 
         print_step("PHASE 5: Submit extraction task");
@@ -566,7 +1385,7 @@ async fn run_dikshitar_a_series_convergence(args: ExtractionE2eArgs) -> Result<(
         );
 
         print_step("PHASE 5: Authentication");
-        let token = issue_admin_token(&client, &api_base, &config.admin_token).await?;
+        let jwt_auth = issue_admin_jwt(&client, &api_base, &config.admin_token).await?;
         print_success("Admin JWT issued");
 
         print_step("PHASE 6: Submit PDF baselines");
@@ -841,7 +1660,7 @@ async fn run_dikshitar_key_collision_scan(args: ExtractionE2eArgs) -> Result<()>
         }
 
         print_step("PHASE 4: Authentication");
-        let token = issue_admin_token(&client, &api_base, &config.admin_token).await?;
+        let jwt_auth = issue_admin_jwt(&client, &api_base, &config.admin_token).await?;
         print_success("Admin JWT issued");
 
         print_step("PHASE 5: Submit HTML rows from CSV");
@@ -1061,7 +1880,7 @@ async fn run_akhila_three_source_e2e(args: ExtractionE2eArgs) -> Result<()> {
         let sanskrit_pdf_source_url = format!("{}?run={}", sanskrit_pdf_url, run_tag);
 
         print_step("PHASE 5: Authentication");
-        let token = issue_admin_token(&client, &api_base, &config.admin_token).await?;
+        let jwt_auth = issue_admin_jwt(&client, &api_base, &config.admin_token).await?;
         print_success("Admin JWT issued");
 
         print_step("PHASE 6: Submit and ingest all 3 sources");
@@ -1877,7 +2696,7 @@ fn is_extraction_service_running(root: &Path) -> bool {
     }
 }
 
-async fn issue_admin_token(client: &Client, api_base: &str, admin_token: &str) -> Result<String> {
+async fn issue_admin_jwt(client: &Client, api_base: &str, admin_token: &str) -> Result<String> {
     let token_url = format!("{api_base}/v1/auth/token");
     let response = client
         .post(&token_url)
