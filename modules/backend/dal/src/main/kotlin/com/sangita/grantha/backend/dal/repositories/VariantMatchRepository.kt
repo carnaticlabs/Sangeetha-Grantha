@@ -25,16 +25,11 @@ class VariantMatchRepository {
     private fun toInstant(odt: OffsetDateTime): kotlin.time.Instant =
         odt.toInstant().let { kotlin.time.Instant.fromEpochSeconds(it.epochSecond, it.nano) }
 
-    private fun ResultRow.toDto(): VariantMatchDto {
-        val krithiId = this[VM.krithiId]
-        val krithiTitle = K.selectAll()
-            .andWhere { K.id eq krithiId }
-            .singleOrNull()?.get(K.title) ?: "Unknown"
-
+    private fun ResultRow.toDto(krithiTitle: String): VariantMatchDto {
         return VariantMatchDto(
             id = this[VM.id].value.toKotlinUuid(),
             extractionId = this[VM.extractionId].toKotlinUuid(),
-            krithiId = krithiId.toKotlinUuid(),
+            krithiId = this[VM.krithiId].toKotlinUuid(),
             krithiTitle = krithiTitle,
             confidence = this[VM.confidence].toDouble(),
             confidenceTier = this[VM.confidenceTier],
@@ -47,14 +42,26 @@ class VariantMatchRepository {
         )
     }
 
+    /** Resolve krithi titles for a list of rows in a single batch query. */
+    private fun batchResolveTitles(rows: List<ResultRow>): Map<java.util.UUID, String> {
+        val krithiIds = rows.map { it[VM.krithiId] }.distinct()
+        if (krithiIds.isEmpty()) return emptyMap()
+        return K.select(K.id, K.title)
+            .where { K.id inList krithiIds }
+            .associate { it[K.id].value to it[K.title] }
+    }
+
     /**
      * Find a variant match by ID.
      */
     suspend fun findById(id: Uuid): Pair<VariantMatchDto, String?>? = DatabaseFactory.dbQuery {
-        VM.selectAll()
+        val row = VM.selectAll()
             .andWhere { VM.id eq id.toJavaUuid() }
-            .map { it.toDto() to it[VM.extractionPayload] }
-            .singleOrNull()
+            .singleOrNull() ?: return@dbQuery null
+        val title = K.selectAll()
+            .andWhere { K.id eq row[VM.krithiId] }
+            .singleOrNull()?.get(K.title) ?: "Unknown"
+        row.toDto(title) to row[VM.extractionPayload]
     }
 
     /**
@@ -74,11 +81,13 @@ class VariantMatchRepository {
         }
 
         val total = query.count().toInt()
-        val items = query
+        val rows = query
             .orderBy(VM.confidence to SortOrder.DESC)
             .limit(limit)
             .offset(offset.toLong())
-            .map { it.toDto() }
+            .toList()
+        val titleMap = batchResolveTitles(rows)
+        val items = rows.map { it.toDto(titleMap[it[VM.krithiId]] ?: "Unknown") }
 
         Pair(items, total)
     }
@@ -94,11 +103,13 @@ class VariantMatchRepository {
             .andWhere { VM.matchStatus eq "PENDING" }
 
         val total = query.count().toInt()
-        val items = query
+        val rows = query
             .orderBy(VM.createdAt to SortOrder.DESC)
             .limit(limit)
             .offset(offset.toLong())
-            .map { it.toDto() }
+            .toList()
+        val titleMap = batchResolveTitles(rows)
+        val items = rows.map { it.toDto(titleMap[it[VM.krithiId]] ?: "Unknown") }
 
         Pair(items, total)
     }
@@ -135,10 +146,13 @@ class VariantMatchRepository {
             it[VM.updatedAt] = now
         }
 
-        VM.selectAll()
+        val row = VM.selectAll()
             .andWhere { VM.id eq matchId }
-            .map { it.toDto() }
             .single()
+        val title = K.selectAll()
+            .andWhere { K.id eq krithiId.toJavaUuid() }
+            .singleOrNull()?.get(K.title) ?: "Unknown"
+        row.toDto(title)
     }
 
     /**

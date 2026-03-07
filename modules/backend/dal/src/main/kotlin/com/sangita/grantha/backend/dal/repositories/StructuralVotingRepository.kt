@@ -27,15 +27,10 @@ class StructuralVotingRepository {
     private fun toInstant(odt: java.time.OffsetDateTime): kotlin.time.Instant =
         odt.toInstant().let { kotlin.time.Instant.fromEpochSeconds(it.epochSecond, it.nano) }
 
-    private fun ResultRow.toDecisionDto(): VotingDecisionDto {
-        val krithiId = this[V.krithiId]
-        val krithiTitle = K.selectAll()
-            .andWhere { K.id eq krithiId }
-            .singleOrNull()?.get(K.title) ?: "Unknown"
-
+    private fun ResultRow.toDecisionDto(krithiTitle: String): VotingDecisionDto {
         return VotingDecisionDto(
             id = this[V.id].value.toKotlinUuid(),
-            krithiId = krithiId.toKotlinUuid(),
+            krithiId = this[V.krithiId].toKotlinUuid(),
             krithiTitle = krithiTitle,
             votedAt = toInstant(this[V.votedAt]),
             consensusType = this[V.consensusType],
@@ -55,22 +50,34 @@ class StructuralVotingRepository {
         limit: Int = 20,
         offset: Int = 0,
     ): Pair<List<VotingDecisionDto>, Int> = DatabaseFactory.dbQuery {
-        var query = V.selectAll()
+        var baseQuery = V.selectAll()
 
         consensusType?.takeIf { it.isNotEmpty() }?.let { types ->
-            query = query.andWhere { V.consensusType inList types }
+            baseQuery = baseQuery.andWhere { V.consensusType inList types }
         }
 
         confidence?.takeIf { it.isNotEmpty() }?.let { levels ->
-            query = query.andWhere { V.confidence inList levels }
+            baseQuery = baseQuery.andWhere { V.confidence inList levels }
         }
 
-        val total = query.count().toInt()
-        val items = query
+        val total = baseQuery.count().toInt()
+        val rows = baseQuery
             .orderBy(V.votedAt to SortOrder.DESC)
             .limit(limit)
             .offset(offset.toLong())
-            .map { it.toDecisionDto() }
+            .toList()
+
+        // Batch-load krithi titles to avoid N+1 queries
+        val krithiIds = rows.map { it[V.krithiId] }.distinct()
+        val titleMap = if (krithiIds.isNotEmpty()) {
+            K.select(K.id, K.title)
+                .where { K.id inList krithiIds }
+                .associate { it[K.id].value to it[K.title] }
+        } else emptyMap()
+
+        val items = rows.map { row ->
+            row.toDecisionDto(titleMap[row[V.krithiId]] ?: "Unknown")
+        }
 
         Pair(items, total)
     }

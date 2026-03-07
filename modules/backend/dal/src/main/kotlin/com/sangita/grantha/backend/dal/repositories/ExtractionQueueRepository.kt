@@ -133,6 +133,7 @@ class ExtractionQueueRepository {
     suspend fun create(
         sourceUrl: String,
         sourceFormat: String,
+        sourceName: String? = null,
         importBatchId: UUID? = null,
         pageRange: String? = null,
         composerHint: String? = null,
@@ -145,10 +146,16 @@ class ExtractionQueueRepository {
         val now = OffsetDateTime.now(ZoneOffset.UTC)
         val taskId = UUID.randomUUID()
 
+        // Derive source name from URL domain if not explicitly provided
+        val resolvedSourceName = sourceName ?: try {
+            java.net.URI(sourceUrl).host?.removePrefix("www.")
+        } catch (_: Exception) { null }
+
         T.insert {
             it[T.id] = taskId
             it[T.sourceUrl] = sourceUrl
             it[T.sourceFormat] = sourceFormat
+            it[T.sourceName] = resolvedSourceName
             it[T.importBatchId] = importBatchId
             it[T.pageRange] = pageRange
             it[T.requestPayload] = requestPayload
@@ -180,6 +187,18 @@ class ExtractionQueueRepository {
         val now = OffsetDateTime.now(ZoneOffset.UTC)
         T.update({ T.id eq id.toJavaUuid() }) {
             it[T.status] = ExtractionStatus.CANCELLED
+            it[T.updatedAt] = now
+        } > 0
+    }
+
+    /**
+     * TRACK-059-fix: Atomically transition DONE → INGESTING to prevent concurrent processing.
+     * Returns true only if this caller won the race (status was DONE).
+     */
+    suspend fun claimForIngestion(id: Uuid): Boolean = DatabaseFactory.dbQuery {
+        val now = OffsetDateTime.now(ZoneOffset.UTC)
+        T.update({ (T.id eq id.toJavaUuid()) and (T.status eq ExtractionStatus.DONE) }) {
+            it[T.status] = ExtractionStatus.INGESTED
             it[T.updatedAt] = now
         } > 0
     }

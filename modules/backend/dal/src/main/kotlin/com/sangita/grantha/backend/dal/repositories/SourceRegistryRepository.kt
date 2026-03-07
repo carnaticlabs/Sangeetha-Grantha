@@ -62,8 +62,10 @@ class SourceRegistryRepository {
         }
 
         search?.takeIf { it.isNotBlank() }?.let { s ->
+            // Escape LIKE wildcards in user input to prevent SQL pattern injection
+            val escaped = s.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
             query = query.andWhere {
-                T.name like "%${s}%"
+                T.name like "%${escaped}%"
             }
         }
 

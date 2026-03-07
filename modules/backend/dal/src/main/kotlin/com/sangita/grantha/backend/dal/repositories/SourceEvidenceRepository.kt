@@ -37,28 +37,37 @@ class SourceEvidenceRepository {
         limit: Int = 20,
         offset: Int = 0,
     ): Pair<List<SourceEvidenceSummaryDto>, Int> = DatabaseFactory.dbQuery {
-        // Get Krithis that have evidence
-        val krithiIds = E.select(E.krithiId, E.krithiId.count())
-            .groupBy(E.krithiId)
-            .let { query ->
-                if (minSourceCount != null && minSourceCount > 1) {
-                    query.having { E.krithiId.count() greaterEq minSourceCount.toLong() }
-                } else query
-            }
-            .orderBy(E.krithiId.count() to SortOrder.DESC)
-            .map { it[E.krithiId] to it[E.krithiId.count()].toInt() }
+        val countExpr = E.krithiId.count()
 
-        val total = krithiIds.size
-        val page = krithiIds.drop(offset).take(limit)
+        // Build grouped query with optional HAVING filter
+        var groupedQuery = E.select(E.krithiId, countExpr)
+            .groupBy(E.krithiId)
+        if (minSourceCount != null && minSourceCount > 1) {
+            groupedQuery = groupedQuery.having { countExpr greaterEq minSourceCount.toLong() }
+        }
+
+        // Count total matching groups
+        val total = groupedQuery.count().toInt()
+
+        // Apply pagination at SQL level instead of loading all then slicing in-memory
+        val page = groupedQuery
+            .orderBy(countExpr to SortOrder.DESC)
+            .limit(limit)
+            .offset(offset.toLong())
+            .map { it[E.krithiId] to it[countExpr].toInt() }
+
+        // Batch-load krithi titles in a single query (eliminates N+1)
+        val krithiIds = page.map { it.first }
+        val titleMap = if (krithiIds.isNotEmpty()) {
+            K.select(K.id, K.title)
+                .where { K.id inList krithiIds }
+                .associate { it[K.id].value to it[K.title] }
+        } else emptyMap()
 
         val summaries = page.map { (krithiId, count) ->
-            val krithi = K.selectAll()
-                .andWhere { K.id eq krithiId }
-                .singleOrNull()
-
             SourceEvidenceSummaryDto(
                 krithiId = krithiId.toKotlinUuid(),
-                krithiTitle = krithi?.get(K.title) ?: "Unknown",
+                krithiTitle = titleMap[krithiId] ?: "Unknown",
                 sourceCount = count,
                 topSourceName = "",
                 topSourceTier = 5,
@@ -80,17 +89,24 @@ class SourceEvidenceRepository {
         val evidenceRows = E.selectAll()
             .andWhere { E.krithiId eq javaId }
             .orderBy(E.extractedAt to SortOrder.DESC)
+            .toList()
+
+        // Batch-load import sources in a single query (eliminates N+1)
+        val sourceIds = evidenceRows.map { it[E.importSourceId].toKotlinUuid() }.distinct()
+        val sourceMap = if (sourceIds.isNotEmpty()) {
+            S.selectAll()
+                .where { S.id inList sourceIds }
+                .associate { it[S.id].toJavaUuid() to (it[S.name] to it[S.sourceTier]) }
+        } else emptyMap()
 
         val sources = evidenceRows.map { row ->
             val sourceId = row[E.importSourceId]
-            val source = S.selectAll()
-                .andWhere { S.id eq sourceId.toKotlinUuid() }
-                .singleOrNull()
+            val (sourceName, sourceTier) = sourceMap[sourceId] ?: ("Unknown" to 5)
 
             KrithiEvidenceSourceDto(
                 importSourceId = sourceId.toKotlinUuid(),
-                sourceName = source?.get(S.name) ?: "Unknown",
-                sourceTier = source?.get(S.sourceTier) ?: 5,
+                sourceName = sourceName,
+                sourceTier = sourceTier,
                 sourceFormat = row[E.sourceFormat],
                 sourceUrl = row[E.sourceUrl],
                 extractionMethod = row[E.extractionMethod],

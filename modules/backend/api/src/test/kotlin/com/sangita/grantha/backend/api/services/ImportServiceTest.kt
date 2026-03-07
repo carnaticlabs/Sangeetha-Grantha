@@ -36,7 +36,7 @@ class ImportServiceTest : IntegrationTestBase() {
         )
         normalizer = NameNormalizationService()
         val entityResolver = EntityResolutionServiceImpl(dal, normalizer)
-        service = ImportServiceImpl(dal, env, entityResolver, normalizer) { autoApproval }
+        service = ImportServiceImpl(dal, env, entityResolver, normalizer, ImportReportGenerator(), LyricVariantPersistenceService(dal)) { autoApproval }
     }
 
     @Test
@@ -119,7 +119,7 @@ class ImportServiceTest : IntegrationTestBase() {
         assertEquals(existingKrithi.id, reviewed.mappedKrithiId!!)
 
         // Assert: No new krithi created (count should be 1)
-        val krithiCount: Long = dal.krithis.countAll()
+        val krithiCount: Long = dal.krithiSearch.countAll()
         assertEquals(1L, krithiCount)
 
         // Assert: Source Evidence created even for deduplicated
@@ -265,7 +265,7 @@ class ImportServiceTest : IntegrationTestBase() {
         assertEquals(krithiId, secondReview.mappedKrithiId)
 
         // Verify only one krithi exists
-        val krithiCount: Long = dal.krithis.countAll()
+        val krithiCount: Long = dal.krithiSearch.countAll()
         assertEquals(1L, krithiCount)
     }
 
@@ -321,7 +321,7 @@ class ImportServiceTest : IntegrationTestBase() {
         )
 
         // Create tasks with same URLs twice
-        val tasks1 = dal.bulkImport.createTasks(
+        val tasks1 = dal.bulkImportTasks.createTasks(
             jobId = job.id,
             batchId = batch.id,
             tasks = listOf(
@@ -332,7 +332,7 @@ class ImportServiceTest : IntegrationTestBase() {
         assertEquals(2, tasks1.size)
 
         // Create same tasks again — should be deduplicated
-        val tasks2 = dal.bulkImport.createTasks(
+        val tasks2 = dal.bulkImportTasks.createTasks(
             jobId = job.id,
             batchId = batch.id,
             tasks = listOf(
@@ -343,7 +343,7 @@ class ImportServiceTest : IntegrationTestBase() {
         assertEquals(0, tasks2.size) // all already exist
 
         // Verify total task count
-        val allTasks = dal.bulkImport.listTasksByJob(job.id)
+        val allTasks = dal.bulkImportTasks.listTasksByJob(job.id)
         assertEquals(2, allTasks.size)
     }
 }

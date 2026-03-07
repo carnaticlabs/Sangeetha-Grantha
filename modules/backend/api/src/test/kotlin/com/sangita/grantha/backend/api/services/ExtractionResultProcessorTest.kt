@@ -41,13 +41,15 @@ class ExtractionResultProcessorTest : IntegrationTestBase() {
         val env = ApiEnvironment(adminToken = "test", geminiApiKey = "test")
         val normalizer = NameNormalizationService()
         val entityResolver = EntityResolutionServiceImpl(dal, normalizer)
-        importService = ImportServiceImpl(dal, env, entityResolver, normalizer) { autoApproval }
+        importService = ImportServiceImpl(dal, env, entityResolver, normalizer, ImportReportGenerator(), LyricVariantPersistenceService(dal)) { autoApproval }
 
         val krithiCreationService = KrithiCreationFromExtractionService(dal, normalizer)
+        val krithiMatcherService = KrithiMatcherService(dal, normalizer, krithiCreationService)
+        val structuralVotingProcessor = StructuralVotingProcessor(dal, com.sangita.grantha.backend.api.services.scraping.StructuralVotingEngine())
         extractionProcessor = ExtractionResultProcessor(
             dal = dal,
-            normalizer = normalizer,
-            krithiCreationService = krithiCreationService,
+            krithiMatcherService = krithiMatcherService,
+            structuralVotingProcessor = structuralVotingProcessor,
         )
     }
 
