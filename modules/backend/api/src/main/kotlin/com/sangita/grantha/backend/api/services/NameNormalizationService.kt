@@ -1,14 +1,14 @@
 package com.sangita.grantha.backend.api.services
 
-import com.sangita.grantha.shared.domain.support.TransliterationCollapse
 import org.slf4j.LoggerFactory
 
 /**
  * Service for normalizing composer, raga, tala, and title strings.
  *
- * TRACK-061: Added transliteration-aware collapse so that different
- * romanisation schemes (IAST, Harvard-Kyoto, ITRANS, simple ASCII)
- * all produce the same normalised matching key.
+ * Simplified in Phase 3 (Simplify and Ship): transliteration collapse
+ * is now handled by the Python normalizer (single source of truth).
+ * This service retains basic normalization for API search queries
+ * and the Levenshtein ratio for fuzzy scoring.
  */
 class NameNormalizationService {
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -53,32 +53,30 @@ class NameNormalizationService {
 
         return when {
             // Canonical Mapping — all known spellings of the Trinity + key composers.
-            // Note: after transliteration collapse in basicNormalize(),
-            //   "Muthuswami Dikshitar" → "muttuswami diksitar"
-            //   "Muthuswami Dikshithar" → "muttuswami diksitar"  (th→t)
-            //   "Thyagaraja" → "tyagaraja"  (th→t)
-            //   "Shyama Shastri" → "syama sastri"  (sh→s, sh→s)
-            normalized == "tyagaraja" -> "tyagaraja"
-            normalized == "tyagarajar" -> "tyagaraja"
+            // Includes both collapsed (th→t, sh→s) and un-collapsed forms since
+            // transliteration collapse is now handled by Python normalizer.
+            normalized == "tyagaraja" || normalized == "thyagaraja" -> "tyagaraja"
+            normalized == "tyagarajar" || normalized == "thyagarajar" -> "tyagaraja"
 
-            normalized == "diksitar" -> "muttuswami diksitar"
-            normalized == "muttuswami diksitar" -> "muttuswami diksitar"
-            normalized == "muttuswamy diksitar" -> "muttuswami diksitar"
-            // Handle "Muthuswami" -> "mutuswami" (th->t)
-            normalized == "mutuswami diksitar" -> "muttuswami diksitar"
-            normalized == "muthuswami diksitar" -> "muttuswami diksitar"
+            normalized == "diksitar" || normalized == "dikshitar" -> "muttuswami diksitar"
+            normalized == "muttuswami diksitar" || normalized == "muttuswami dikshitar" -> "muttuswami diksitar"
+            normalized == "muttuswamy diksitar" || normalized == "muttuswamy dikshitar" -> "muttuswami diksitar"
+            normalized == "mutuswami diksitar" || normalized == "muthuswami dikshitar" -> "muttuswami diksitar"
+            normalized == "muthuswami diksitar" || normalized == "muthuswami dikshithar" -> "muttuswami diksitar"
 
-            normalized == "syama sastri" -> "syama sastri"
-            normalized == "syama sastry" -> "syama sastri"
+            normalized == "syama sastri" || normalized == "shyama shastri" -> "syama sastri"
+            normalized == "syama sastry" || normalized == "shyama shastry" -> "syama sastri"
 
             normalized == "papanasam sivan" -> "papanasam sivan"
 
-            // Catch-all for any variant of Dikshitar not already matched above
+            // Catch-all for any variant of Dikshitar
             normalized.contains("diksitar") || normalized.contains("dikshitar") -> "muttuswami diksitar"
 
             // General Suffix Standardization
-            normalized.endsWith(" sastry") -> normalized.replace(" sastry", " sastri")
-            normalized.endsWith(" sastri") -> normalized // already canonical
+            normalized.endsWith(" sastry") || normalized.endsWith(" shastry") -> normalized
+                .replace(" shastry", " sastri").replace(" sastry", " sastri")
+            normalized.endsWith(" sastri") || normalized.endsWith(" shastri") -> normalized
+                .replace(" shastri", " sastri")
 
             else -> normalized
         }
@@ -161,20 +159,19 @@ class NameNormalizationService {
      * 3. Lowercase
      * 4. Remove honorific prefixes
      * 5. Remove special characters
-     * 6. TRACK-061: Transliteration collapse (sh→s, th→t, ksh→ks, etc.)
-     * 7. Collapse whitespace
+     * 6. Collapse whitespace
+     *
+     * Note: Transliteration collapse (sh→s, th→t, etc.) is now handled
+     * by the Python normalizer. This method is retained for API search queries.
      */
     private fun basicNormalize(value: String): String {
-        var result = java.text.Normalizer.normalize(value, java.text.Normalizer.Form.NFD)
-        result = result.replace(Regex("\\p{M}"), "") // Remove combining diacritics
+        return java.text.Normalizer.normalize(value, java.text.Normalizer.Form.NFD)
+            .replace(Regex("\\p{M}"), "")
             .trim()
             .lowercase()
-            .replace(Regex("\\b(saint|sri|swami|sir|dr|prof|smt)\\b", RegexOption.IGNORE_CASE), "") // Remove honorifics
-            .replace(Regex("[^a-zA-Z0-9\\s]"), "") // Remove special chars
+            .replace(Regex("\\b(saint|sri|swami|sir|dr|prof|smt)\\b", RegexOption.IGNORE_CASE), "")
+            .replace(Regex("[^a-zA-Z0-9\\s]"), "")
             .replace(Regex("\\s+"), " ")
             .trim()
-
-        // TRACK-061: Transliteration collapse — longest match first
-        return TransliterationCollapse.collapse(result)
     }
 }

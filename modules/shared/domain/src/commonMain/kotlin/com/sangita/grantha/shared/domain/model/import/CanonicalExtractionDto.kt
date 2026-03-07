@@ -1,5 +1,6 @@
 package com.sangita.grantha.shared.domain.model.import
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
@@ -77,6 +78,24 @@ data class CanonicalExtractionDto(
 
     /** SHA-256 of source content for change detection */
     val checksum: String? = null,
+
+    // ─── Pre-normalized matching keys (set by Python extraction worker) ──────
+
+    /** Pre-normalized title key for variant matching */
+    @SerialName("title_normalized")
+    val titleNormalized: String? = null,
+
+    /** Pre-normalized composer key for variant matching */
+    @SerialName("composer_normalized")
+    val composerNormalized: String? = null,
+
+    /** Pre-normalized raga key for variant matching */
+    @SerialName("raga_normalized")
+    val ragaNormalized: String? = null,
+
+    /** Pre-normalized tala key for variant matching */
+    @SerialName("tala_normalized")
+    val talaNormalized: String? = null,
 )
 
 @Serializable

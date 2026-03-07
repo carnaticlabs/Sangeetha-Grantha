@@ -1,53 +1,64 @@
 services:
-  postgres:
-    image: postgres:18
-    container_name: sangita_postgres
-    ports:
-      - "5432:5432"
+  db:
+    image: postgres:18.3-alpine
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: sangita_grantha
+    ports:
+      - "5432:5432"
     volumes:
-      - sangita_postgres_data:/var/lib/postgresql
+      - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d sangita_grantha"]
-      interval: 2s
-      timeout: 3s
-      retries: 30
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
-  # TRACK-041: Multi-format PDF/DOCX extraction service
-  # Polls extraction_queue for PENDING tasks, extracts Krithis from documents,
-  # writes results back. Communicates with Kotlin backend via shared PostgreSQL.
-  krithi-extract-enrich-worker:
+  backend:
+    profiles: [ "dev", "prod" ]
+    build:
+      context: .
+      dockerfile: modules/backend/api/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: sangita_grantha
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+    depends_on:
+      db:
+        condition: service_healthy
+
+  extraction:
+    profiles: [ "dev", "prod" ]
     build:
       context: ./tools/krithi-extract-enrich-worker
-      dockerfile: Dockerfile
-    container_name: sangita_krithi_extract_enrich_worker
-    depends_on:
-      postgres:
-        condition: service_healthy
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/sangita_grantha
-      SG_GEMINI_API_KEY: ${SG_GEMINI_API_KEY:-}
-      SG_GEMINI_MODEL: ${SG_GEMINI_MODEL:-gemini-2.0-flash}
-      SG_ENABLE_GEMINI_ENRICHMENT: ${SG_ENABLE_GEMINI_ENRICHMENT:-false}
-      SG_ENABLE_IDENTITY_DISCOVERY: ${SG_ENABLE_IDENTITY_DISCOVERY:-true}
-      SG_IDENTITY_MIN_SCORE: ${SG_IDENTITY_MIN_SCORE:-60}
-      SG_IDENTITY_MAX_COUNT: ${SG_IDENTITY_MAX_COUNT:-5}
-      SG_IDENTITY_CACHE_TTL_SECONDS: ${SG_IDENTITY_CACHE_TTL_SECONDS:-900}
-      EXTRACTION_POLL_INTERVAL_S: "5"
-      EXTRACTION_BATCH_SIZE: "10"
-      EXTRACTION_MAX_CONCURRENT: "3"
-      LOG_LEVEL: INFO
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: sangita_grantha
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+    depends_on:
+      db:
+        condition: service_healthy
     volumes:
-      - extraction_cache:/app/cache
-    restart: unless-stopped
-    profiles:
-      - extraction  # Only starts when explicitly requested: docker compose --profile extraction up
+      - ./tools/krithi-extract-enrich-worker/src:/app/src:ro
+
+  frontend:
+    profiles: [ "dev" ]
+    build:
+      context: ./modules/frontend/sangita-admin-web
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./modules/frontend/sangita-admin-web/src:/app/src:ro
+    environment:
+      VITE_API_URL: http://localhost:8080
 
 volumes:
-  sangita_postgres_data:
-    name: sangita_postgres_data
-  extraction_cache:
-    name: sangita_extraction_cache
+  pgdata:

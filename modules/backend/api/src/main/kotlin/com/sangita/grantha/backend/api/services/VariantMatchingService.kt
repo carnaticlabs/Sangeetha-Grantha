@@ -32,7 +32,7 @@ class VariantMatchingService(
     private val json = Json { ignoreUnknownKeys = true }
 
     companion object {
-        private const val HIGH_CONFIDENCE_THRESHOLD = 0.85
+        private const val HIGH_CONFIDENCE_THRESHOLD = 0.75
         private const val MEDIUM_CONFIDENCE_THRESHOLD = 0.50
 
         // Signal weights — must sum to 1.0
@@ -90,9 +90,10 @@ class VariantMatchingService(
         primaryKrithiIds: Set<Uuid>,
         positionIndex: Int,
     ) {
-        val primaryNormalized = normalizer.normalizeTitle(extraction.title)
-        val alternateNormalized = extraction.alternateTitle?.let { normalizer.normalizeTitle(it) }
-        val titleNormalized = if (!primaryNormalized.isNullOrEmpty()) primaryNormalized else alternateNormalized
+        // Prefer pre-normalized keys from Python extraction worker (Phase 3: single source of truth)
+        val titleNormalized = extraction.titleNormalized?.takeIf { it.isNotBlank() }
+            ?: normalizer.normalizeTitle(extraction.title)
+            ?: extraction.alternateTitle?.let { normalizer.normalizeTitle(it) }
 
         if (titleNormalized.isNullOrEmpty()) {
             logger.info("No valid normalized title for variant '${extraction.title}' (alternate: '${extraction.alternateTitle}')")

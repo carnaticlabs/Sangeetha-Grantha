@@ -34,12 +34,13 @@ import httpx
 
 from .config import ExtractorConfig, load_config
 from .db import ExtractionQueueDB, ExtractionTask
-from .diacritic_normalizer import cleanup_raga_tala_name, normalize_garbled_diacritics
+from .diacritic_normalizer import cleanup_raga_tala_name
 from .extractor import DocumentContent, PdfExtractor
 from .gemini_enricher import GeminiEnricherConfig, GeminiMetadataEnricher
 from .html_extractor import HtmlTextExtractor
 from .identity_candidates import IdentityCandidateDiscovery, ReferenceEntity
 from .metadata_parser import MetadataParser
+from .normalizer import normalize_for_matching, normalize_garbled_diacritics
 from .ocr_fallback import OcrFallback
 from .page_segmenter import PageSegmenter
 from .schema import (
@@ -285,6 +286,12 @@ class ExtractionWorker:
         )
         if enrichment is not None:
             extraction.metadata_enrichment = enrichment
+
+        primary_raga = extraction.ragas[0].name if extraction.ragas else ""
+        extraction.title_normalized = normalize_for_matching(extraction.title, "title")
+        extraction.composer_normalized = normalize_for_matching(extraction.composer, "composer")
+        extraction.raga_normalized = normalize_for_matching(primary_raga, "raga")
+        extraction.tala_normalized = normalize_for_matching(extraction.tala, "tala")
 
         return extraction
 

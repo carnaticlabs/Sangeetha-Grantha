@@ -135,12 +135,16 @@ class CanonicalExtraction(BaseModel):
     # ─── Identity ───────────────────────────────────────────────────────────
     title: str = Field(..., description="Composition title")
     alternate_title: Optional[str] = Field(None, alias="alternateTitle", description="Transliterated form")
+    title_normalized: str | None = None
     composer: str = Field(..., description="Raw composer name, resolved downstream")
+    composer_normalized: str | None = None
     musical_form: MusicalForm = Field(MusicalForm.KRITHI, alias="musicalForm")
 
     # ─── Musical structure ──────────────────────────────────────────────────
     ragas: list[CanonicalRaga] = Field(..., min_length=1)
+    raga_normalized: str | None = None
     tala: str = Field(..., description="Tala name (raw, resolved downstream)")
+    tala_normalized: str | None = None
     sections: list[CanonicalSection] = Field(default_factory=list)
 
     # ─── Lyric content ──────────────────────────────────────────────────────

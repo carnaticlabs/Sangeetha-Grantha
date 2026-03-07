@@ -1,0 +1,19 @@
+FROM oven/bun:latest
+
+WORKDIR /app
+
+# We don't COPY here because we will use a volume mount for dev.
+# Usually bun install is done at container start to sync dependencies, 
+# or we can assume node_modules is populated by bun install.
+# Let's do a standard setup, but rely on binding.
+
+COPY package.json bun.lock* ./
+RUN bun install
+
+# The source will be volume mounted over /app/src, but standard practice is:
+COPY . .
+
+EXPOSE 5001
+
+# Start the dev server
+CMD ["bun", "run", "dev", "--host"]
