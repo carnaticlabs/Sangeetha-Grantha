@@ -8,23 +8,21 @@ Sangeetha Grantha is a digital compendium of Carnatic classical music compositio
 - **Mobile**: Kotlin Multiplatform (iOS & Android)
 - **Backend**: Kotlin + Ktor + Exposed ORM
 - **Admin Web**: React 19 + TypeScript + Vite + Tailwind CSS
-- **CLI Tooling**: Rust-based `sangita-cli` for database and development workflows
+- **CLI Tooling**: Python `db-migrate` for migrations + Makefile for dev workflows
 
 ## Essential Commands
 
-### Development Workflow (via mise - recommended)
+### Development Workflow (via Makefile)
 ```bash
-# Full stack (DB + Backend + Frontend)
-mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- dev --start-db
-
-# Database reset (drop → create → migrate → seed)
-mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db reset
-
-# Run migrations only
-mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db migrate
-
-# End-to-end smoke test
-mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- test steel-thread
+make dev            # Full stack via Docker Compose (DB + Backend + Frontend + Extraction)
+make dev-down       # Stop dev stack
+make db             # Start database only
+make db-reset       # Drop → create → migrate
+make seed           # Seed reference data
+make migrate        # Run pending migrations
+make test           # Backend tests
+make test-frontend  # Frontend tests
+make clean          # Remove all containers and volumes
 ```
 
 ### Build & Test
@@ -45,7 +43,6 @@ bun run build    # production build
 ```bash
 ./gradlew :modules:backend:api:run        # Run backend
 ./gradlew :modules:backend:api:runDev     # Run backend in dev mode
-./gradlew :modules:backend:api:seedDatabase  # Seed database
 ```
 
 ## Architecture
@@ -79,18 +76,17 @@ modules/
 
 **Database**
 - PostgreSQL 18+ (dev via Docker Compose)
-- Migrations via Rust CLI (`tools/sangita-cli`), NOT Flyway
+- Migrations via Python `db-migrate` (`make migrate` / `make db-reset`), NOT Flyway
 - Migration files in `database/migrations/`
 
 ## Critical Rules
 
-1. **Never use Flyway or Liquibase** - always use `tools/sangita-cli` for migrations
+1. **Never use Flyway or Liquibase** - always use `make migrate` or `make db-reset` for migrations
 2. **Dependency versions** - use `gradle/libs.versions.toml`, no hardcoded versions in build.gradle.kts
 3. **Audit logging** - all backend mutations must log to `AUDIT_LOG` table
 4. **Commit format** - every commit must include `Ref: application_documentation/...` line
-5. **Version updates require documentation sync** - when updating dependency versions, run `sangita-cli docs sync-versions` and update any files that reference `current-versions.md`:
-   - `application_documentation/00-meta/current-versions.md` (auto-generated)
-   - `.cursorrules` (Core Technologies section)
+5. **Version updates require documentation sync** - update any files that reference `current-versions.md`:
+   - `application_documentation/00-meta/current-versions.md`
    - `application_documentation/02-architecture/tech-stack.md`
    - `application_documentation/00-onboarding/getting-started.md`
 
@@ -114,4 +110,5 @@ For current toolchain and library versions, see [Current Versions](application_d
 - Architecture: `application_documentation/02-architecture/`
 - Database schema: `application_documentation/04-database/schema.md`
 - API spec: `openapi/sangita-grantha.openapi.yaml`
-- CLI reference: `tools/sangita-cli/README.md`
+- Migration tool: `tools/db-migrate/README.md`
+- Rust CLI (archived): `tools/sangita-cli-archived/`
