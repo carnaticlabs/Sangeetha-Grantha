@@ -59,10 +59,7 @@ object DatabaseFactory {
             jdbcUrl = config.databaseUrl
             this.username = config.username
             this.password = config.password
-            this.driverClassName = config.driverClassName ?: when {
-                jdbcUrl.startsWith("jdbc:h2:") -> "org.h2.Driver"
-                else -> "org.postgresql.Driver"
-            }
+            this.driverClassName = config.driverClassName ?: "org.postgresql.Driver"
             maximumPoolSize = config.maxPoolSize
             minimumIdle = minOf(config.minIdle, config.maxPoolSize)
             isAutoCommit = false

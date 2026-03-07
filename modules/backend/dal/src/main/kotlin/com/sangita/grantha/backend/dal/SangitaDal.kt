@@ -1,7 +1,9 @@
 package com.sangita.grantha.backend.dal
 
 import com.sangita.grantha.backend.dal.repositories.AuditLogRepository
+import com.sangita.grantha.backend.dal.repositories.BulkImportEventRepository
 import com.sangita.grantha.backend.dal.repositories.BulkImportRepository
+import com.sangita.grantha.backend.dal.repositories.BulkImportTaskRepository
 import com.sangita.grantha.backend.dal.repositories.ComposerAliasRepository
 import com.sangita.grantha.backend.dal.repositories.ComposerRepository
 import com.sangita.grantha.backend.dal.repositories.DeityRepository
@@ -9,7 +11,9 @@ import com.sangita.grantha.backend.dal.repositories.EntityResolutionCacheReposit
 import com.sangita.grantha.backend.dal.repositories.ExtractionQueueRepository
 import com.sangita.grantha.backend.dal.repositories.ImportRepository
 import com.sangita.grantha.backend.dal.repositories.KrithiNotationRepository
+import com.sangita.grantha.backend.dal.repositories.KrithiLyricRepository
 import com.sangita.grantha.backend.dal.repositories.KrithiRepository
+import com.sangita.grantha.backend.dal.repositories.KrithiSearchRepository
 //import com.sangita.grantha.backend.dal.repositories.NotationRepository
 import com.sangita.grantha.backend.dal.repositories.QualityDashboardRepository
 import com.sangita.grantha.backend.dal.repositories.RagaRepository
@@ -31,6 +35,8 @@ interface SangitaDal {
 //    val roles: RoleRepository
 //    val userRoles: UserRoleRepository
     val krithis: KrithiRepository
+    val krithiSearch: KrithiSearchRepository
+    val krithiLyrics: KrithiLyricRepository
     val composerAliases: ComposerAliasRepository
     val composers: ComposerRepository
     val ragas: RagaRepository
@@ -40,6 +46,8 @@ interface SangitaDal {
     val imports: ImportRepository
     val auditLogs: AuditLogRepository
     val bulkImport: BulkImportRepository
+    val bulkImportTasks: BulkImportTaskRepository
+    val bulkImportEvents: BulkImportEventRepository
 //    val notations: NotationRepository
     val entityResolutionCache: EntityResolutionCacheRepository
     val templeSourceCache: TempleSourceCacheRepository
@@ -61,6 +69,8 @@ class SangitaDalImpl : SangitaDal {
 //    override val roles = RoleRepository()
 //    override val userRoles = UserRoleRepository()
     override val krithis = KrithiRepository()
+    override val krithiSearch = KrithiSearchRepository()
+    override val krithiLyrics = KrithiLyricRepository()
     override val composerAliases = ComposerAliasRepository()
     override val composers = ComposerRepository(composerAliases)
     override val ragas = RagaRepository()
@@ -70,6 +80,8 @@ class SangitaDalImpl : SangitaDal {
     override val imports = ImportRepository()
     override val auditLogs = AuditLogRepository()
     override val bulkImport = BulkImportRepository()
+    override val bulkImportTasks = BulkImportTaskRepository()
+    override val bulkImportEvents = BulkImportEventRepository()
 //    override val notations = NotationRepository()
     override val entityResolutionCache = EntityResolutionCacheRepository()
     override val templeSourceCache = TempleSourceCacheRepository()
