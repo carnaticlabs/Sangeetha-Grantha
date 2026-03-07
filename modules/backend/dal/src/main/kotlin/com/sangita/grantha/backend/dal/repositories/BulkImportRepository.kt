@@ -153,6 +153,22 @@ class BulkImportRepository {
             ?.toImportBatchDto()
     }
 
+    /**
+     * Atomically increments total_tasks using SQL addition (race-safe).
+     * Use this when adding tasks for subsequent job types (EXTRACTION, ENRICHMENT)
+     * to avoid the read-then-write race that causes the 50% stall bug.
+     */
+    suspend fun incrementBatchTotalTasks(
+        id: Uuid,
+        delta: Int,
+    ) = DatabaseFactory.dbQuery {
+        val now = OffsetDateTime.now(ZoneOffset.UTC)
+        ImportBatchTable.update(where = { ImportBatchTable.id eq id.toJavaUuid() }) { stmt ->
+            stmt.update(ImportBatchTable.totalTasks, ImportBatchTable.totalTasks + delta)
+            stmt[ImportBatchTable.updatedAt] = now
+        }
+    }
+
     // --- Job Operations ---
 
     suspend fun createJob(

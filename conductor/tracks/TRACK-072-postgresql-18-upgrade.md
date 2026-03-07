@@ -2,7 +2,7 @@
 |:---|:---|
 | **Track ID** | TRACK-072 |
 | **Title** | PostgreSQL 18 Upgrade (15 → 18.3) |
-| **Status** | Active |
+| **Status** | Completed |
 | **Created** | 2026-02-28 |
 | **Author** | Sangeetha Grantha Team |
 
@@ -72,3 +72,7 @@ mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- dev --sta
 | 2026-02-28 | Created track, updated all version references |
 | 2026-02-28 | Added migration 37: switch 27 tables from gen_random_uuid() to uuidv7() |
 | 2026-02-28 | Fixed compose.yaml volume mount for PG 18 data directory layout change (`/data` → parent dir) |
+
+---
+
+All migrations apply cleanly against PG18. UUIDv7 defaults active.

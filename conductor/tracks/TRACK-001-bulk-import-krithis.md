@@ -1,6 +1,6 @@
 # Track: Bulk Import - Backend Orchestration
 **ID:** TRACK-001
-**Status:** In Progress
+**Status:** Completed
 **Owner:** Sangita Grantha Architect
 **Created:** 2026-01-20
 **Updated:** 2026-01-21
@@ -76,3 +76,7 @@ Build the backend orchestration engine for bulk importing Krithis. This includes
 - ✅ Worker improvements: dedupe manifest rows, reuse scrape jobs per batch, task idempotency on insert
 - ✅ Scrape loop: rate limiting (per-domain/global), retryable errors until max attempts, terminal failures increment counters
 - ✅ Watchdog loop: marks stuck RUNNING tasks as `RETRYABLE` with audit events
+
+---
+
+Phase E (Hardening) descoped to post-launch. See conductor/handoff-simplify-and-ship.md

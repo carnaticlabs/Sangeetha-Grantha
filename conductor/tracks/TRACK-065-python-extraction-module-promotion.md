@@ -1,13 +1,13 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Active |
+| **Status** | Deferred |
 | **Version** | 1.2.0 |
 | **Last Updated** | 2026-02-19 |
 | **Author** | Sangeetha Grantha Team |
 
 # TRACK-065: Python Extraction Module First-Class Promotion & Naming
 **ID:** TRACK-065
-**Status:** Active
+**Status:** Deferred
 **Owner:** Platform / Extraction Team
 **Created:** 2026-02-19
 **Updated:** 2026-02-19
@@ -105,3 +105,7 @@ This balances semantic clarity with delivery risk.
   - Updated all markdown references to the new worker path/service/container naming.
   - Refreshed documentation metadata headers (`Version`/`Last Updated`) for touched files.
   - Normalized retrospective/header formatting in updated documents for consistency.
+
+---
+
+Deferred to post-launch. Renaming is cosmetic — extraction pipeline consolidation prioritised instead.

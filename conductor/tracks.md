@@ -9,7 +9,7 @@
 
 | ID | Name | Status |
 |:---|:---|:---|
-| [TRACK-001](./tracks/TRACK-001-bulk-import-krithis.md) | Bulk Import - Backend Orchestration | In Progress |
+| [TRACK-001](./tracks/TRACK-001-bulk-import-krithis.md) | Bulk Import - Backend Orchestration | Completed |
 | [TRACK-002](./tracks/TRACK-002-doc-header-standardizations.md) | Doc Header Standardizations | Planned |
 | [TRACK-003](./tracks/TRACK-003-bulk-import-dashboard.md) | Bulk Import - Admin Dashboard | Completed |
 | [TRACK-004](./tracks/TRACK-004-bulk-import-review-ui.md) | Bulk Import - Review UI | Completed |
@@ -72,14 +72,15 @@
 | [TRACK-061](./tracks/TRACK-061-transliteration-aware-normalisation.md) | Transliteration-Aware Name Normalisation | Completed |
 | [TRACK-062](./tracks/TRACK-062-bulk-import-idempotency-source-evidence.md) | Bulk Import Idempotency & Source Evidence Integration | Completed |
 | [TRACK-063](./tracks/TRACK-063-database-reset-reextraction-e2e.md) | Database Reset & Full Re-Extraction E2E Validation | Completed |
-| [TRACK-064](./tracks/TRACK-064-unified-extraction-engine-migration.md) | Unified Extraction Engine (UEE) Migration | Active |
-| [TRACK-065](./tracks/TRACK-065-python-extraction-module-promotion.md) | Python Extraction Module First-Class Promotion & Naming | Active |
+| [TRACK-064](./tracks/TRACK-064-unified-extraction-engine-migration.md) | Unified Extraction Engine (UEE) Migration | Completed |
+| [TRACK-065](./tracks/TRACK-065-python-extraction-module-promotion.md) | Python Extraction Module First-Class Promotion & Naming | Deferred |
 | [TRACK-071](./tracks/TRACK-071-toc-based-krithi-import.md) | TOC-Based Dikshitar Krithi Import (484 krithis) | Completed |
-| [TRACK-072](./tracks/TRACK-072-postgresql-18-upgrade.md) | PostgreSQL 18 Upgrade (15 → 18.3) | Active |
+| [TRACK-072](./tracks/TRACK-072-postgresql-18-upgrade.md) | PostgreSQL 18 Upgrade (15 → 18.3) | Completed |
 | [TRACK-073](./tracks/TRACK-073-refactor-shared-dtos-dal-mappers.md) | Refactor Shared DTOs + DAL Mappers | Completed |
 | [TRACK-074](./tracks/TRACK-074-refactor-dal-repositories.md) | Refactor DAL Repositories | Completed |
 | [TRACK-075](./tracks/TRACK-075-refactor-core-services.md) | Refactor Core Services | Completed |
 | [TRACK-076](./tracks/TRACK-076-refactor-infrastructure-services.md) | Refactor Infrastructure Services | Completed |
+| [TRACK-077](./tracks/TRACK-077-devanagari-aware-normalizer.md) | Devanagari-Aware Normalizer for Variant Matching | Superseded |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)

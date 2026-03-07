@@ -67,10 +67,7 @@ class BatchCompletionHandler(
                             tasks = newTasks
                         )
 
-                        val updatedBatch = dal.bulkImport.findBatchById(job.batchId)
-                        if (updatedBatch != null) {
-                            dal.bulkImport.setBatchTotals(updatedBatch.id, updatedBatch.totalTasks + newTasks.size)
-                        }
+                        dal.bulkImport.incrementBatchTotalTasks(job.batchId, newTasks.size)
                     } else {
                         maybeCompleteBatch(job.batchId)
                     }

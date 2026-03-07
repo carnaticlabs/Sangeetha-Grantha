@@ -2,6 +2,7 @@ package com.sangita.grantha.backend.api.services.scraping
 
 import com.sangita.grantha.shared.domain.model.RagaSectionDto
 
+@Deprecated("Superseded by Python extraction worker structure_parser.py. See conductor/handoff-simplify-and-ship.md")
 class KrithiStructureParser {
     data class TextBlock(val label: String, val lines: List<String>)
     data class PromptBlocks(
