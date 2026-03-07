@@ -7,6 +7,8 @@ import com.sangita.grantha.backend.dal.SangitaDalImpl
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import java.io.File
 
@@ -54,6 +56,8 @@ class WebScrapingServiceTest : IntegrationTestBase() {
         assertTrue(metadata.lyrics?.isNotBlank() == true, "Lyrics should not be blank")
     }
 
+    @Disabled("Requires real Gemini API key + network access — E2E test, not unit test")
+    @Tag("integration")
     @Test
     fun `test scrapeKrithi with templeNet embedded link`() = runBlocking {
         val configDir = File("config")
