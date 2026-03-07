@@ -25,7 +25,7 @@ class TaskDispatcher(
         while (isActive()) {
             var anyTaskFound = false
 
-            val manifestTasks = dal.bulkImport.claimNextPendingTasks(
+            val manifestTasks = dal.bulkImportTasks.claimNextPendingTasks(
                 jobType = JobType.MANIFEST_INGEST,
                 allowedBatchStatuses = setOf(BatchStatus.PENDING, BatchStatus.RUNNING),
                 limit = 1
@@ -35,7 +35,7 @@ class TaskDispatcher(
                 manifestTasks.forEach { manifestChannel.send(it) }
             }
 
-            val scrapeTasks = dal.bulkImport.claimNextPendingTasks(
+            val scrapeTasks = dal.bulkImportTasks.claimNextPendingTasks(
                 jobType = JobType.SCRAPE,
                 allowedBatchStatuses = setOf(BatchStatus.RUNNING),
                 limit = config.batchClaimSize
@@ -45,7 +45,7 @@ class TaskDispatcher(
                 scrapeTasks.forEach { scrapeChannel.send(it) }
             }
 
-            val resolutionTasks = dal.bulkImport.claimNextPendingTasks(
+            val resolutionTasks = dal.bulkImportTasks.claimNextPendingTasks(
                 jobType = JobType.ENTITY_RESOLUTION,
                 allowedBatchStatuses = setOf(BatchStatus.RUNNING),
                 limit = config.batchClaimSize

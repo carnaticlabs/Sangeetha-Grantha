@@ -13,16 +13,10 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
-import java.io.IOException
-import java.net.ConnectException
-import java.net.SocketTimeoutException
-import java.net.UnknownHostException
 import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.atomic.LongAdder
 import kotlin.math.min
-import kotlin.random.Random
 import kotlinx.coroutines.delay
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import org.slf4j.LoggerFactory
@@ -45,6 +39,7 @@ class GeminiApiClient(
     @PublishedApi
     internal val logger = LoggerFactory.getLogger(javaClass)
     private val client: HttpClient
+    private val retryStrategy = GeminiRetryStrategy(maxRetries, maxRetryWindowMs)
     private val rateLimiter = GeminiRateLimiter(
         minIntervalMs = minIntervalMs,
         qpsLimit = qpsLimit,
@@ -260,8 +255,8 @@ class GeminiApiClient(
             } catch (e: Exception) {
                 rateLimiter.release()
                 released = true
-                if (isRetriableException(e) && shouldRetry(attempt, startTimeMs)) {
-                    val waitMs = jitteredDelay(currentDelayMs)
+                if (retryStrategy.isRetriableException(e) && retryStrategy.shouldRetry(attempt, startTimeMs)) {
+                    val waitMs = retryStrategy.jitteredDelay(currentDelayMs)
                     logger.warn(
                         "Gemini network error for {} (attempt {}/{}). Retrying in {}ms.",
                         requestId,
@@ -288,21 +283,22 @@ class GeminiApiClient(
             when (response.status.value) {
                 429 -> {
                     throttled429Count.increment()
-                    handleThrottle(
+                    retryStrategy.handleThrottle(
                         requestId,
                         attempt,
                         response.status.value,
                         bodyText,
                         currentDelayMs,
-                        startTimeMs
+                        startTimeMs,
+                        logger
                     )
-                    val retryAfterMs = parseRetryAfterMs(response.headers["Retry-After"])
+                    val retryAfterMs = retryStrategy.parseRetryAfterMs(response.headers["Retry-After"])
                     rateLimiter.onThrottle(retryAfterMs)
-                    if (!shouldRetry(attempt, startTimeMs)) {
+                    if (!retryStrategy.shouldRetry(attempt, startTimeMs)) {
                         failureCount.increment()
                         throw GeminiThrottleException("Gemini 429 after retries", 429)
                     }
-                    val waitMs = retryAfterMs ?: jitteredDelay(currentDelayMs)
+                    val waitMs = retryAfterMs ?: retryStrategy.jitteredDelay(currentDelayMs)
                     logger.warn(
                         "Gemini 429 for {} (attempt {}/{}). Retrying in {}ms.",
                         requestId,
@@ -316,21 +312,22 @@ class GeminiApiClient(
                 }
                 503 -> {
                     throttled503Count.increment()
-                    handleThrottle(
+                    retryStrategy.handleThrottle(
                         requestId,
                         attempt,
                         response.status.value,
                         bodyText,
                         currentDelayMs,
-                        startTimeMs
+                        startTimeMs,
+                        logger
                     )
-                    val retryAfterMs = parseRetryAfterMs(response.headers["Retry-After"])
+                    val retryAfterMs = retryStrategy.parseRetryAfterMs(response.headers["Retry-After"])
                     rateLimiter.onThrottle(retryAfterMs)
-                    if (!shouldRetry(attempt, startTimeMs)) {
+                    if (!retryStrategy.shouldRetry(attempt, startTimeMs)) {
                         failureCount.increment()
                         throw GeminiThrottleException("Gemini 503 after retries", 503)
                     }
-                    val waitMs = retryAfterMs ?: jitteredDelay(currentDelayMs)
+                    val waitMs = retryAfterMs ?: retryStrategy.jitteredDelay(currentDelayMs)
                     logger.warn(
                         "Gemini 503 for {} (attempt {}/{}). Retrying in {}ms.",
                         requestId,
@@ -350,7 +347,7 @@ class GeminiApiClient(
                     "Gemini API error for {}. Status={}, Body={}",
                     requestId,
                     response.status,
-                    truncate(bodyText)
+                    retryStrategy.truncate(bodyText)
                 )
                 throw RuntimeException("Gemini API request failed with status ${response.status}")
             }
@@ -377,53 +374,6 @@ class GeminiApiClient(
         }
     }
 
-    private fun shouldRetry(attempt: Int, startTimeMs: Long): Boolean {
-        if (attempt >= maxRetries) return false
-        return System.currentTimeMillis() - startTimeMs < maxRetryWindowMs
-    }
-
-    private fun handleThrottle(
-        requestId: String,
-        attempt: Int,
-        status: Int,
-        bodyText: String,
-        currentDelayMs: Long,
-        startTimeMs: Long
-    ) {
-        val elapsed = System.currentTimeMillis() - startTimeMs
-        logger.warn(
-            "Gemini throttle {} status={} attempt={}/{} elapsedMs={} nextDelayMs={} body={}",
-            requestId,
-            status,
-            attempt,
-            maxRetries,
-            elapsed,
-            currentDelayMs,
-            truncate(bodyText)
-        )
-    }
-
-    private fun parseRetryAfterMs(header: String?): Long? {
-        val value = header?.trim() ?: return null
-        return value.toLongOrNull()?.let { seconds -> seconds * 1000L }
-    }
-
-    private fun jitteredDelay(baseDelayMs: Long): Long {
-        val jitter = Random.nextLong(0, 1000L)
-        return baseDelayMs + jitter
-    }
-
-    private fun isRetriableException(e: Exception): Boolean {
-        return e is IOException ||
-            e is SocketTimeoutException ||
-            e is ConnectException ||
-            e is UnknownHostException
-    }
-
-    private fun truncate(body: String, maxChars: Int = 1200): String {
-        return if (body.length <= maxChars) body else body.take(maxChars) + "..."
-    }
-
     private fun averageLatencyMs(): Long {
         val success = successCount.sum()
         if (success == 0L) return 0L
@@ -432,40 +382,3 @@ class GeminiApiClient(
 
     private fun nextRequestId(): String = "gemini-${requestCounter.incrementAndGet()}"
 }
-
-class GeminiThrottleException(message: String, val status: Int) : RuntimeException(message)
-
-@Serializable
-data class GeminiRequest(
-    val contents: List<Content>,
-    val generationConfig: GenerationConfig? = null
-)
-
-@Serializable
-data class GenerationConfig(
-    val responseMimeType: String? = null,
-    val responseSchema: JsonObject? = null
-)
-
-@Serializable
-data class Content(
-    val parts: List<Part>,
-    val role: String = "user"
-)
-
-@Serializable
-data class Part(
-    val text: String
-)
-
-@Serializable
-data class GeminiResponse(
-    val candidates: List<Candidate>
-)
-
-@Serializable
-data class Candidate(
-    val content: Content,
-    val finishReason: String? = null,
-    val index: Int = 0
-)

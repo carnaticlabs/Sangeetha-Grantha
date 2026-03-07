@@ -17,7 +17,9 @@ import com.sangita.grantha.backend.api.services.IReferenceDataService
 import com.sangita.grantha.backend.api.services.ITransliterator
 import com.sangita.grantha.backend.api.services.IWebScraper
 import com.sangita.grantha.backend.api.services.ImportReviewer
+import com.sangita.grantha.backend.api.services.ImportReportGenerator
 import com.sangita.grantha.backend.api.services.ImportServiceImpl
+import com.sangita.grantha.backend.api.services.LyricVariantPersistenceService
 import com.sangita.grantha.backend.api.services.KrithiNotationService
 import com.sangita.grantha.backend.api.services.KrithiServiceImpl
 import com.sangita.grantha.backend.api.services.NameNormalizationService
@@ -74,9 +76,11 @@ fun appModule(env: ApiEnvironment, metricsRegistry: PrometheusMeterRegistry) = m
     single { DeduplicationService(get(), get()) }
     single<IQualityScorer> { QualityScoringServiceImpl() }
 
+    single { ImportReportGenerator() }
+    single { LyricVariantPersistenceService(get()) }
     single<IImportService> {
         val scope = this
-        ImportServiceImpl(get(), get(), get(), get()) { scope.get<AutoApprovalService>() }
+        ImportServiceImpl(get(), get(), get(), get(), get(), get()) { scope.get<AutoApprovalService>() }
     }
     single<ImportReviewer> { get<IImportService>() as ImportReviewer }
     single { AutoApprovalService(get()) }
@@ -124,18 +128,39 @@ fun appModule(env: ApiEnvironment, metricsRegistry: PrometheusMeterRegistry) = m
             normalizer = get(),
         )
     }
-    // TRACK-056: Variant matching service
+    // TRACK-056: Variant scoring and matching
     single {
-        com.sangita.grantha.backend.api.services.VariantMatchingService(
+        com.sangita.grantha.backend.api.services.VariantScorer(
             dal = get(),
             normalizer = get(),
         )
     }
     single {
-        com.sangita.grantha.backend.api.services.ExtractionResultProcessor(
+        com.sangita.grantha.backend.api.services.VariantMatchingService(
+            dal = get(),
+            normalizer = get(),
+            scorer = get(),
+        )
+    }
+    // TRACK-075: Extracted from ExtractionResultProcessor
+    single {
+        com.sangita.grantha.backend.api.services.KrithiMatcherService(
             dal = get(),
             normalizer = get(),
             krithiCreationService = get(),
+        )
+    }
+    single {
+        com.sangita.grantha.backend.api.services.StructuralVotingProcessor(
+            dal = get(),
+            votingEngine = com.sangita.grantha.backend.api.services.scraping.StructuralVotingEngine(),
+        )
+    }
+    single {
+        com.sangita.grantha.backend.api.services.ExtractionResultProcessor(
+            dal = get(),
+            krithiMatcherService = get(),
+            structuralVotingProcessor = get(),
             variantMatchingService = get(),
         )
     }

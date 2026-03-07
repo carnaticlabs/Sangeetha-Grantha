@@ -11,6 +11,8 @@ import com.sangita.grantha.shared.domain.model.import.CanonicalExtractionDto
 import com.sangita.grantha.shared.domain.model.import.CanonicalExtractionMethod
 import com.sangita.grantha.shared.domain.model.import.CanonicalMusicalForm
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import org.slf4j.LoggerFactory
 import java.util.UUID
 import kotlin.uuid.Uuid
@@ -109,7 +111,20 @@ class KrithiCreationFromExtractionService(
                 ?.takeIf { it.isNotBlank() }
             ?: extraction.title.trim().lowercase()
 
-        // ── 7. Create Krithi ────────────────────────────────────────────────
+        // ── 7. Create Krithi (with dedup guard) ─────────────────────────────
+        // TRACK-059-fix: Check if a Krithi with the same normalized title + composer already exists.
+        // This guards against duplicates from within-batch races or payload duplicates.
+        val existingDuplicates = dal.krithiSearch.findDuplicateCandidates(
+            titleNormalized = titleNormalized,
+            composerId = composer.id.toJavaUuid(),
+        )
+        if (existingDuplicates.isNotEmpty()) {
+            val existing = existingDuplicates.first()
+            logger.info("Dedup guard: Krithi '${extraction.title}' already exists as ${existing.id} " +
+                "(title_normalized='$titleNormalized'), skipping creation")
+            return existing.id
+        }
+
         val krithi = dal.krithis.create(
             KrithiCreateParams(
                 title = extraction.title,
@@ -159,20 +174,21 @@ class KrithiCreationFromExtractionService(
             rawExtraction = rawExtractionJson,
         )
 
-        // ── 11. Audit log ───────────────────────────────────────────────────
+        // ── 11. Audit log (use buildJsonObject for safe escaping) ──────────
+        val auditMetadata = buildJsonObject {
+            put("sourceUrl", extraction.sourceUrl)
+            put("sourceName", extraction.sourceName)
+            put("extractionTaskId", extractionTaskId.toString())
+            put("composerResolved", composer.name)
+            put("ragaCount", ragaJavaIds.size)
+            put("sectionCount", extraction.sections.size)
+            put("lyricVariantCount", extraction.lyricVariants.size)
+        }
         dal.auditLogs.append(
             action = "CREATE_KRITHI_FROM_EXTRACTION",
             entityTable = "krithis",
             entityId = krithi.id,
-            metadata = buildString {
-                append("""{"sourceUrl":"${extraction.sourceUrl}",""")
-                append(""""sourceName":"${extraction.sourceName}",""")
-                append(""""extractionTaskId":"$extractionTaskId",""")
-                append(""""composerResolved":"${composer.name}",""")
-                append(""""ragaCount":${ragaJavaIds.size},""")
-                append(""""sectionCount":${extraction.sections.size},""")
-                append(""""lyricVariantCount":${extraction.lyricVariants.size}}""")
-            },
+            metadata = auditMetadata.toString(),
         )
 
         return krithi.id
@@ -202,7 +218,7 @@ class KrithiCreationFromExtractionService(
                 .sortedBy { it.sectionOrder }
                 .joinToString("\n\n") { it.text }
 
-            val lyricVariant = dal.krithis.createLyricVariant(
+            val lyricVariant = dal.krithiLyrics.createLyricVariant(
                 krithiId = krithiId,
                 language = language,
                 script = script,
@@ -221,7 +237,7 @@ class KrithiCreationFromExtractionService(
                     matchingSection?.let { it.id.toJavaUuid() to lyricSection.text }
                 }
                 if (sectionPairs.isNotEmpty()) {
-                    dal.krithis.saveLyricVariantSections(lyricVariant.id, sectionPairs)
+                    dal.krithiLyrics.saveLyricVariantSections(lyricVariant.id, sectionPairs)
                 }
             }
         }

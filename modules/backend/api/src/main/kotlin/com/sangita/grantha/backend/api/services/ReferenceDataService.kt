@@ -6,199 +6,13 @@ import com.sangita.grantha.backend.dal.SangitaDal
 import com.sangita.grantha.shared.domain.model.ComposerDto
 import com.sangita.grantha.shared.domain.model.DeityDto
 import com.sangita.grantha.shared.domain.model.RagaDto
+import com.sangita.grantha.shared.domain.model.ReferenceDataStatsDto
 import com.sangita.grantha.shared.domain.model.SampradayaDto
 import com.sangita.grantha.shared.domain.model.TagDto
 import com.sangita.grantha.shared.domain.model.TagCategoryDto
 import com.sangita.grantha.shared.domain.model.TalaDto
 import com.sangita.grantha.shared.domain.model.TempleDto
 import kotlin.uuid.Uuid
-
-interface IReferenceDataService {
-    /**
-     * List all composers.
-     */
-    suspend fun listComposers(): List<ComposerDto>
-
-    /**
-     * Fetch a composer by ID.
-     */
-    suspend fun getComposer(id: Uuid): ComposerDto?
-
-    /**
-     * Create a composer.
-     */
-    suspend fun createComposer(request: ComposerCreateRequest): ComposerDto
-
-    /**
-     * Update a composer.
-     */
-    suspend fun updateComposer(id: Uuid, request: ComposerUpdateRequest): ComposerDto?
-
-    /**
-     * Delete a composer by ID.
-     */
-    suspend fun deleteComposer(id: Uuid): Boolean
-
-    /**
-     * List all ragas.
-     */
-    suspend fun listRagas(): List<RagaDto>
-
-    /**
-     * Fetch a raga by ID.
-     */
-    suspend fun getRaga(id: Uuid): RagaDto?
-
-    /**
-     * Create a raga.
-     */
-    suspend fun createRaga(request: RagaCreateRequest): RagaDto
-
-    /**
-     * Update a raga.
-     */
-    suspend fun updateRaga(id: Uuid, request: RagaUpdateRequest): RagaDto?
-
-    /**
-     * Delete a raga by ID.
-     */
-    suspend fun deleteRaga(id: Uuid): Boolean
-
-    /**
-     * List all talas.
-     */
-    suspend fun listTalas(): List<TalaDto>
-
-    /**
-     * Fetch a tala by ID.
-     */
-    suspend fun getTala(id: Uuid): TalaDto?
-
-    /**
-     * Create a tala.
-     */
-    suspend fun createTala(request: TalaCreateRequest): TalaDto
-
-    /**
-     * Update a tala.
-     */
-    suspend fun updateTala(id: Uuid, request: TalaUpdateRequest): TalaDto?
-
-    /**
-     * Delete a tala by ID.
-     */
-    suspend fun deleteTala(id: Uuid): Boolean
-
-    /**
-     * List all temples.
-     */
-    suspend fun listTemples(): List<TempleDto>
-
-    /**
-     * Fetch a temple by ID.
-     */
-    suspend fun getTemple(id: Uuid): TempleDto?
-
-    /**
-     * Create a temple.
-     */
-    suspend fun createTemple(request: TempleCreateRequest): TempleDto
-
-    /**
-     * Update a temple.
-     */
-    suspend fun updateTemple(id: Uuid, request: TempleUpdateRequest): TempleDto?
-
-    /**
-     * Delete a temple by ID.
-     */
-    suspend fun deleteTemple(id: Uuid): Boolean
-
-    /**
-     * List all deities.
-     */
-    suspend fun listDeities(): List<DeityDto>
-
-    /**
-     * Fetch a deity by ID.
-     */
-    suspend fun getDeity(id: Uuid): DeityDto?
-
-    /**
-     * Create a deity.
-     */
-    suspend fun createDeity(request: DeityCreateRequest): DeityDto
-
-    /**
-     * Update a deity.
-     */
-    suspend fun updateDeity(id: Uuid, request: DeityUpdateRequest): DeityDto?
-
-    /**
-     * Delete a deity by ID.
-     */
-    suspend fun deleteDeity(id: Uuid): Boolean
-
-    /**
-     * List all tags.
-     */
-    suspend fun listTags(): List<TagDto>
-
-    /**
-     * Fetch a tag by ID.
-     */
-    suspend fun getTag(id: Uuid): TagDto?
-
-    /**
-     * Create a tag.
-     */
-    suspend fun createTag(request: TagCreateRequest): TagDto
-
-    /**
-     * Update a tag.
-     */
-    suspend fun updateTag(id: Uuid, request: TagUpdateRequest): TagDto?
-
-    /**
-     * Delete a tag.
-     */
-    suspend fun deleteTag(id: Uuid): Boolean
-
-    /**
-     * List all sampradayas.
-     */
-    suspend fun listSampradayas(): List<SampradayaDto>
-
-    /**
-     * Fetch a sampradaya by ID.
-     */
-    suspend fun getSampradaya(id: Uuid): SampradayaDto?
-
-    /**
-     * Create a sampradaya.
-     */
-    suspend fun createSampradaya(request: SampradayaCreateRequest): SampradayaDto
-
-    /**
-     * Update a sampradaya.
-     */
-    suspend fun updateSampradaya(id: Uuid, request: SampradayaUpdateRequest): SampradayaDto?
-
-    /**
-     * Delete a sampradaya.
-     */
-    suspend fun deleteSampradaya(id: Uuid): Boolean
-
-    /**
-     * List tag categories.
-     */
-    suspend fun listTagCategories(): List<TagCategoryDto>
-
-    /**
-     * Fetch reference data counts for dashboards and health.
-     */
-    suspend fun getStats(): com.sangita.grantha.shared.domain.model.ReferenceDataStatsDto
-}
 
 class ReferenceDataServiceImpl(private val dal: SangitaDal) : IReferenceDataService {
 
@@ -565,8 +379,8 @@ class ReferenceDataServiceImpl(private val dal: SangitaDal) : IReferenceDataServ
         return deleted
     }
 
-    override suspend fun getStats(): com.sangita.grantha.shared.domain.model.ReferenceDataStatsDto {
-        return com.sangita.grantha.shared.domain.model.ReferenceDataStatsDto(
+    override suspend fun getStats(): ReferenceDataStatsDto {
+        return ReferenceDataStatsDto(
             composerCount = dal.composers.countAll(),
             ragaCount = dal.ragas.countAll(),
             talaCount = dal.talas.countAll(),

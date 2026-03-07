@@ -27,7 +27,7 @@ class BatchCompletionHandler(
             return
         }
 
-        val tasks = dal.bulkImport.listTasksByJob(jobId)
+        val tasks = dal.bulkImportTasks.listTasksByJob(jobId)
         val isComplete = tasks.all {
             val s = TaskStatus.valueOf(it.status.name)
             s == TaskStatus.SUCCEEDED || s == TaskStatus.FAILED || s == TaskStatus.BLOCKED || s == TaskStatus.CANCELLED
@@ -61,7 +61,7 @@ class BatchCompletionHandler(
                     }
 
                     if (newTasks.isNotEmpty()) {
-                        dal.bulkImport.createTasks(
+                        dal.bulkImportTasks.createTasks(
                             jobId = resolutionJob.id,
                             batchId = job.batchId,
                             tasks = newTasks
@@ -89,7 +89,7 @@ class BatchCompletionHandler(
 
         val finalStatus = if (batch.failedTasks == 0 && batch.blockedTasks == 0) BatchStatus.SUCCEEDED else BatchStatus.FAILED
         dal.bulkImport.updateBatchStatus(id = batchId, status = finalStatus, completedAt = OffsetDateTime.now(ZoneOffset.UTC))
-        dal.bulkImport.createEvent(
+        dal.bulkImportEvents.createEvent(
             refType = "batch",
             refId = batchId,
             eventType = "BATCH_COMPLETED",

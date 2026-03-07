@@ -20,12 +20,12 @@ class AdminDashboardService(private val dal: SangitaDal) {
      * Compute dashboard totals for krithis, composers, ragas, and pending review.
      */
     suspend fun getStats(): DashboardStatsDto {
-        val krithis = dal.krithis.countAll()
+        val krithis = dal.krithiSearch.countAll()
         val composers = dal.composers.countAll()
         val ragas = dal.ragas.countAll()
         // Count both DRAFT and IN_REVIEW as pending review
-        val draftCount = dal.krithis.countByState(WorkflowState.DRAFT)
-        val inReviewCount = dal.krithis.countByState(WorkflowState.IN_REVIEW)
+        val draftCount = dal.krithiSearch.countByState(WorkflowState.DRAFT)
+        val inReviewCount = dal.krithiSearch.countByState(WorkflowState.IN_REVIEW)
         val pending = draftCount + inReviewCount
 
         return DashboardStatsDto(

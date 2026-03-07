@@ -20,8 +20,6 @@ jwt = "4.5.0"
 commonsCsv = "1.14.1"
 koin = "4.1.1"
 micrometer = "1.15.2"
-h2 = "2.2.224"
-
 shadow = "9.3.1"
 awsSdk = "2.41.22"
 googleAuth = "1.41.0"
@@ -98,8 +96,6 @@ commons-csv = { module = "org.apache.commons:commons-csv", version.ref = "common
 koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koin" }
 koin-logger-slf4j = { module = "io.insert-koin:koin-logger-slf4j", version.ref = "koin" }
 micrometer-registry-prometheus = { module = "io.micrometer:micrometer-registry-prometheus", version.ref = "micrometer" }
-h2 = { module = "com.h2database:h2", version.ref = "h2" }
-
 google-auth = { module = "com.google.auth:google-auth-library-oauth2-http", version.ref = "googleAuth" }
 aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "awsSdk" }
 dotenv-kotlin = { module = "io.github.cdimascio:dotenv-kotlin", version.ref = "dotenvKotlin" }

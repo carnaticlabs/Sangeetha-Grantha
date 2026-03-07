@@ -42,12 +42,12 @@ class DeduplicationService(
         // 1. Check against existing Krithis (Canonical)
         if (titleNormalized.isNotEmpty()) {
             val candidatesByMetadata = if (resolvedComposerId != null && resolvedRagaId != null) {
-                dal.krithis.findDuplicateCandidates(titleNormalized, resolvedComposerId.toJavaUuid(), resolvedRagaId.toJavaUuid())
+                dal.krithiSearch.findDuplicateCandidates(titleNormalized, resolvedComposerId.toJavaUuid(), resolvedRagaId.toJavaUuid())
             } else {
                 emptyList()
             }
 
-            val candidatesByTitle = dal.krithis.findDuplicateCandidates(titleNormalized)
+            val candidatesByTitle = dal.krithiSearch.findDuplicateCandidates(titleNormalized)
             val allCandidates = (candidatesByMetadata + candidatesByTitle).distinctBy { it.id }
             
             allCandidates.forEach { candidate ->

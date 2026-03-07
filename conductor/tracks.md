@@ -76,6 +76,10 @@
 | [TRACK-065](./tracks/TRACK-065-python-extraction-module-promotion.md) | Python Extraction Module First-Class Promotion & Naming | Active |
 | [TRACK-071](./tracks/TRACK-071-toc-based-krithi-import.md) | TOC-Based Dikshitar Krithi Import (484 krithis) | Completed |
 | [TRACK-072](./tracks/TRACK-072-postgresql-18-upgrade.md) | PostgreSQL 18 Upgrade (15 → 18.3) | Active |
+| [TRACK-073](./tracks/TRACK-073-refactor-shared-dtos-dal-mappers.md) | Refactor Shared DTOs + DAL Mappers | Completed |
+| [TRACK-074](./tracks/TRACK-074-refactor-dal-repositories.md) | Refactor DAL Repositories | Completed |
+| [TRACK-075](./tracks/TRACK-075-refactor-core-services.md) | Refactor Core Services | Completed |
+| [TRACK-076](./tracks/TRACK-076-refactor-infrastructure-services.md) | Refactor Infrastructure Services | Completed |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)

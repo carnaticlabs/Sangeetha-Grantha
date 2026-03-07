@@ -15,12 +15,23 @@
 
 set -euo pipefail
 
-PROJECT_HOME="${HOME}/project/sangeetha-grantha"
+PROJECT_HOME="$(cd "$(dirname "$0")" && pwd)"
 CARGO_MANIFEST="${PROJECT_HOME}/tools/sangita-cli/Cargo.toml"
 
 LOG_FILE="${PROJECT_HOME}/sangita_logs.txt"
 EXTRACTION_LOG="${PROJECT_HOME}/sangita_extraction_logs.txt"
 EXPOSED_LOG="${PROJECT_HOME}/exposed_queries.log"
+
+# ── Parse arguments: strip --no-extraction, pass the rest to cargo ────────────
+NO_EXTRACTION=false
+ARGS=()
+for arg in "$@"; do
+    if [[ "$arg" == "--no-extraction" ]]; then
+        NO_EXTRACTION=true
+    else
+        ARGS+=("$arg")
+    fi
+done
 
 # ── Truncate log files so they reflect this run ─────────────────────────────
 echo "===== Sangita startup: $(date '+%Y-%m-%d %H:%M:%S') =====" > "$LOG_FILE"
@@ -29,37 +40,43 @@ echo "===== Sangita startup: $(date '+%Y-%m-%d %H:%M:%S') =====" > "$EXTRACTION_
 
 # ── PID tracking for cleanup ────────────────────────────────────────────────
 EXTRACTION_LOG_PID=""
+CARGO_PID=""
 
 cleanup() {
+    # Forward signal to cargo process if it's still running
+    if [[ -n "$CARGO_PID" ]]; then
+        kill "$CARGO_PID" 2>/dev/null || true
+        wait "$CARGO_PID" 2>/dev/null || true
+    fi
     if [[ -n "$EXTRACTION_LOG_PID" ]]; then
         kill "$EXTRACTION_LOG_PID" 2>/dev/null || true
         wait "$EXTRACTION_LOG_PID" 2>/dev/null || true
     fi
 }
-trap cleanup EXIT
+trap cleanup EXIT INT TERM
 
 # ── Stream extraction container logs in background (unless --no-extraction) ──
-if [[ ! " $* " =~ " --no-extraction " ]]; then
+if [[ "$NO_EXTRACTION" == false ]]; then
     (
-        # Wait for the CLI to start the Docker container (~45s for backend + build)
-        sleep 45
-        # Retry a few times in case the container isn't ready yet
-        for _ in {1..5}; do
-            if docker logs -f sangita_krithi_extract_enrich_worker >> "$EXTRACTION_LOG" 2>&1; then
+        # Poll until the container is running instead of a fixed sleep
+        for _ in {1..30}; do
+            if docker inspect -f '{{.State.Running}}' sangita_krithi_extract_enrich_worker 2>/dev/null | grep -q true; then
+                docker logs -f sangita_krithi_extract_enrich_worker >> "$EXTRACTION_LOG" 2>&1
                 break
             fi
-            sleep 10
+            sleep 5
         done
     ) &
     EXTRACTION_LOG_PID=$!
 fi
 
 # ── Start the CLI, teeing output to the log file ────────────────────────────
-# `tee -a` appends to the log file while still showing output in the terminal.
-# Allow non-zero exit (SIGINT → 130) so the script shuts down cleanly.
+# Run cargo in background so we can capture its PID for signal forwarding.
 set +e
-mise exec -- cargo run --manifest-path "${CARGO_MANIFEST}" -- dev --start-db "$@" 2>&1 | tee -a "$LOG_FILE"
-EXIT_CODE=${PIPESTATUS[0]}
+mise exec -- cargo run --manifest-path "${CARGO_MANIFEST}" -- dev --start-db ${ARGS[@]+"${ARGS[@]}"} 2>&1 | tee -a "$LOG_FILE" &
+CARGO_PID=$!
+wait "$CARGO_PID"
+EXIT_CODE=$?
 set -e
 
-exit "${EXIT_CODE:-0}"
+exit "$EXIT_CODE"

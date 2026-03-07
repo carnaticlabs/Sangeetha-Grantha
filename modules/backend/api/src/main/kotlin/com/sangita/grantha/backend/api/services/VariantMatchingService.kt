@@ -4,7 +4,6 @@ import com.sangita.grantha.backend.dal.SangitaDal
 import com.sangita.grantha.backend.dal.enums.LanguageCode
 import com.sangita.grantha.backend.dal.enums.ScriptCode
 import com.sangita.grantha.backend.dal.support.toJavaUuid
-import com.sangita.grantha.shared.domain.model.KrithiDto
 import com.sangita.grantha.shared.domain.model.VariantMatchDto
 import com.sangita.grantha.shared.domain.model.VariantMatchReportDto
 import com.sangita.grantha.shared.domain.model.import.CanonicalExtractionDto
@@ -19,7 +18,7 @@ import kotlin.uuid.Uuid
  *
  * When a language variant (e.g. Sanskrit PDF) is submitted as an ENRICH extraction,
  * this service matches each extracted Krithi to existing Krithis using multi-signal
- * confidence scoring: title transliteration, raga+tala match, and page position.
+ * confidence scoring. Scoring logic is delegated to [VariantScorer].
  *
  * Matches with confidence >= 0.85 are auto-approved. Lower confidence matches
  * require manual review via the variant match review UI.
@@ -27,6 +26,7 @@ import kotlin.uuid.Uuid
 class VariantMatchingService(
     private val dal: SangitaDal,
     private val normalizer: NameNormalizationService,
+    private val scorer: VariantScorer,
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
     private val json = Json { ignoreUnknownKeys = true }
@@ -99,24 +99,41 @@ class VariantMatchingService(
             return
         }
 
-        // Search for candidate Krithis by normalized title
-        val candidates = dal.krithis.findDuplicateCandidates(
+        // Search for candidate Krithis: exact match first, then fuzzy fallback
+        var candidates = dal.krithiSearch.findDuplicateCandidates(
             titleNormalized = titleNormalized,
         )
+
+        // TRACK-059-fix: If exact match fails, try near-title fuzzy search.
+        // Sanskrit/Devanagari titles may normalize differently from English/IAST titles.
+        if (candidates.isEmpty()) {
+            candidates = dal.krithiSearch.findNearTitleCandidates(titleNormalized)
+                .filter { candidate ->
+                    // Apply length-ratio guard and minimum fuzzy score
+                    val minLen = minOf(titleNormalized.length, candidate.titleNormalized.length)
+                    val maxLen = maxOf(titleNormalized.length, candidate.titleNormalized.length)
+                    if (maxLen > 0 && minLen.toDouble() / maxLen < 0.7) return@filter false
+                    val score = NameNormalizationService.ratio(titleNormalized, candidate.titleNormalized)
+                    score > 85
+                }
+            if (candidates.isNotEmpty()) {
+                logger.info("Fuzzy fallback found ${candidates.size} candidates for variant '${extraction.title}'")
+            }
+        }
 
         if (candidates.isEmpty()) {
             logger.info("No Krithi match for variant '${extraction.title}' (normalised: '$titleNormalized')")
             return
         }
 
-        // Score each candidate
-        val scoredCandidates = mutableListOf<ScoredCandidate>()
+        // Score each candidate via VariantScorer
+        val scoredCandidates = mutableListOf<VariantScorer.ScoredCandidate>()
         for (candidate in candidates) {
-            val signals = computeMatchSignals(extraction, candidate, primaryKrithiIds, positionIndex, titleNormalized)
+            val signals = scorer.computeMatchSignals(extraction, candidate, primaryKrithiIds, positionIndex, titleNormalized)
             val compositeScore = signals.titleScore * WEIGHT_TITLE +
                 signals.ragaTalaScore * WEIGHT_RAGA_TALA +
                 signals.pagePositionScore * WEIGHT_PAGE_POSITION
-            scoredCandidates.add(ScoredCandidate(candidate.id, compositeScore, signals))
+            scoredCandidates.add(VariantScorer.ScoredCandidate(candidate.id, compositeScore, signals))
         }
         scoredCandidates.sortByDescending { it.score }
 
@@ -129,9 +146,8 @@ class VariantMatchingService(
         val matchStatus = if (confidenceTier == "HIGH") "AUTO_APPROVED" else "PENDING"
         val isAnomaly = primaryKrithiIds.isNotEmpty() && best.krithiId !in primaryKrithiIds
 
-        // Check structural mismatch
         val candidateKrithi = candidates.first { it.id == best.krithiId }
-        val structureMismatch = checkStructureMismatch(extraction, candidateKrithi)
+        val structureMismatch = scorer.checkStructureMismatch(extraction, candidateKrithi)
 
         val signalsJson = buildJsonObject {
             put("titleScore", best.signals.titleScore)
@@ -170,84 +186,6 @@ class VariantMatchingService(
     }
 
     /**
-     * Compute match signals between an extraction and a candidate Krithi.
-     */
-    private suspend fun computeMatchSignals(
-        extraction: CanonicalExtractionDto,
-        candidate: KrithiDto,
-        primaryKrithiIds: Set<Uuid>,
-        positionIndex: Int,
-        extractedTitleNormalized: String,
-    ): MatchSignals {
-        // Title match: compare normalized titles
-        val extractedTitle = extractedTitleNormalized
-        val candidateTitle = candidate.titleNormalized
-        val titleScore = if (extractedTitle.isNotEmpty() && candidateTitle.isNotEmpty()) {
-            if (extractedTitle == candidateTitle) 1.0
-            else levenshteinSimilarity(extractedTitle, candidateTitle)
-        } else {
-            0.0
-        }
-
-        // Raga+Tala match: look up candidate names from reference data
-        val extractedRaga = normalizer.normalizeTitle(extraction.ragas.firstOrNull()?.name) ?: ""
-        val candidateRagaName = candidate.primaryRagaId?.let { ragaId ->
-            dal.ragas.findById(ragaId)?.name
-        }
-        val candidateRaga = candidateRagaName?.let { normalizer.normalizeTitle(it) } ?: ""
-        val ragaMatch = if (extractedRaga.isNotEmpty() && candidateRaga.isNotEmpty()) {
-            if (extractedRaga == candidateRaga) 1.0 else levenshteinSimilarity(extractedRaga, candidateRaga)
-        } else {
-            0.0
-        }
-
-        val extractedTala = normalizer.normalizeTitle(extraction.tala) ?: ""
-        val candidateTalaName = candidate.talaId?.let { talaId ->
-            dal.talas.findById(talaId)?.name
-        }
-        val candidateTala = candidateTalaName?.let { normalizer.normalizeTitle(it) } ?: ""
-        val talaMatch = if (extractedTala.isNotEmpty() && candidateTala.isNotEmpty()) {
-            if (extractedTala == candidateTala) 1.0 else levenshteinSimilarity(extractedTala, candidateTala)
-        } else {
-            0.0
-        }
-
-        val ragaTalaScore = if (ragaMatch > 0 || talaMatch > 0) {
-            (ragaMatch + talaMatch) / 2.0
-        } else {
-            0.0
-        }
-
-        // Page position match: if the Krithi was in the primary extraction scope, give a bonus
-        val pagePositionScore = if (primaryKrithiIds.isNotEmpty() && candidate.id in primaryKrithiIds) {
-            1.0
-        } else if (primaryKrithiIds.isEmpty()) {
-            0.5 // No related extraction — neutral
-        } else {
-            0.0 // Anomaly: not in the primary scope
-        }
-
-        return MatchSignals(titleScore, ragaTalaScore, pagePositionScore)
-    }
-
-    /**
-     * Check whether the extraction has a different section structure than the existing Krithi.
-     * Uses the sections count from the Krithi's stored sections.
-     */
-    private suspend fun checkStructureMismatch(
-        extraction: CanonicalExtractionDto,
-        candidate: KrithiDto,
-    ): Boolean {
-        val extractedSectionCount = extraction.sections.size
-        if (extractedSectionCount == 0) return false
-
-        // Look up stored section count for this Krithi
-        val krithiSections = dal.krithis.getSections(candidate.id)
-        val candidateSectionCount = krithiSections.size
-        return candidateSectionCount > 0 && extractedSectionCount != candidateSectionCount
-    }
-
-    /**
      * Get Krithi IDs that were linked from a primary extraction via source evidence.
      */
     private suspend fun getPrimaryExtractionKrithiIds(extractionId: Uuid): Set<Uuid> {
@@ -258,7 +196,7 @@ class VariantMatchingService(
             val extractions = json.decodeFromString<List<CanonicalExtractionDto>>(resultPayload)
             extractions.mapNotNull { extraction ->
                 val titleNormalized = normalizer.normalizeTitle(extraction.title) ?: return@mapNotNull null
-                val candidates = dal.krithis.findDuplicateCandidates(titleNormalized = titleNormalized)
+                val candidates = dal.krithiSearch.findDuplicateCandidates(titleNormalized = titleNormalized)
                 candidates.firstOrNull()?.id
             }.toSet()
         } catch (e: Exception) {
@@ -321,7 +259,7 @@ class VariantMatchingService(
                 .sortedBy { it.sectionOrder }
                 .joinToString("\n\n") { it.text }
 
-            val lyricVariant = dal.krithis.createLyricVariant(
+            val lyricVariant = dal.krithiLyrics.createLyricVariant(
                 krithiId = krithiId,
                 language = language,
                 script = script,
@@ -339,7 +277,7 @@ class VariantMatchingService(
                     matchingSection?.let { it.id.toJavaUuid() to lyricSection.text }
                 }
                 if (sectionPairs.isNotEmpty()) {
-                    dal.krithis.saveLyricVariantSections(lyricVariant.id, sectionPairs)
+                    dal.krithiLyrics.saveLyricVariantSections(lyricVariant.id, sectionPairs)
                 }
             }
         }
@@ -378,43 +316,4 @@ class VariantMatchingService(
         return com.sangita.grantha.shared.domain.model.PaginatedResponse(items, total, page, pageSize)
     }
 
-    // =========================================================================
-    // Internal helpers
-    // =========================================================================
-
-    private data class ScoredCandidate(
-        val krithiId: Uuid,
-        val score: Double,
-        val signals: MatchSignals,
-    )
-
-    private data class MatchSignals(
-        val titleScore: Double,
-        val ragaTalaScore: Double,
-        val pagePositionScore: Double,
-    )
-
-    /**
-     * Compute Levenshtein similarity (0.0 = completely different, 1.0 = identical).
-     */
-    private fun levenshteinSimilarity(a: String, b: String): Double {
-        if (a == b) return 1.0
-        val maxLen = maxOf(a.length, b.length)
-        if (maxLen == 0) return 1.0
-        val distance = levenshteinDistance(a, b)
-        return 1.0 - distance.toDouble() / maxLen
-    }
-
-    private fun levenshteinDistance(a: String, b: String): Int {
-        val dp = Array(a.length + 1) { IntArray(b.length + 1) }
-        for (i in 0..a.length) dp[i][0] = i
-        for (j in 0..b.length) dp[0][j] = j
-        for (i in 1..a.length) {
-            for (j in 1..b.length) {
-                val cost = if (a[i - 1] == b[j - 1]) 0 else 1
-                dp[i][j] = minOf(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost)
-            }
-        }
-        return dp[a.length][b.length]
-    }
 }

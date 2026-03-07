@@ -6,7 +6,9 @@ import com.sangita.grantha.backend.api.services.EntityResolutionServiceImpl
 import com.sangita.grantha.backend.api.services.IImportService
 import com.sangita.grantha.backend.api.services.IWebScraper
 import com.sangita.grantha.backend.api.services.ImportReviewer
+import com.sangita.grantha.backend.api.services.ImportReportGenerator
 import com.sangita.grantha.backend.api.services.ImportServiceImpl
+import com.sangita.grantha.backend.api.services.LyricVariantPersistenceService
 import com.sangita.grantha.backend.api.services.NameNormalizationService
 import com.sangita.grantha.backend.api.services.ScrapedKrithiMetadata
 import com.sangita.grantha.backend.api.support.IntegrationTestBase
@@ -51,7 +53,7 @@ class ImportRoutesTest : IntegrationTestBase() {
         val env = ApiEnvironment(adminToken = "test", geminiApiKey = "test")
         val normalizer = NameNormalizationService()
         val entityResolver = EntityResolutionServiceImpl(dal, normalizer)
-        importService = ImportServiceImpl(dal, env, entityResolver, normalizer) { autoApproval }
+        importService = ImportServiceImpl(dal, env, entityResolver, normalizer, ImportReportGenerator(), LyricVariantPersistenceService(dal)) { autoApproval }
     }
 
     @Test

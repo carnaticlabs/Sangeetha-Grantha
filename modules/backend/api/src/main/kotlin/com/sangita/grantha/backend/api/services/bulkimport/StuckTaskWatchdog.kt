@@ -15,7 +15,7 @@ class StuckTaskWatchdog(
     suspend fun run(config: BulkImportWorkerConfig, isActive: () -> Boolean) {
         while (isActive()) {
             val threshold = OffsetDateTime.now(ZoneOffset.UTC).minus(Duration.ofMillis(config.stuckTaskThresholdMs))
-            val stuckTasks = dal.bulkImport.markStuckRunningTasks(threshold, config.maxAttempts)
+            val stuckTasks = dal.bulkImportTasks.markStuckRunningTasks(threshold, config.maxAttempts)
             if (stuckTasks.isNotEmpty()) {
                 logger.warn("Watchdog marked {} stuck tasks as retryable (threshold={}ms)", stuckTasks.size, config.stuckTaskThresholdMs)
                 stuckTasks.forEach { task ->
@@ -23,7 +23,7 @@ class StuckTaskWatchdog(
                     val batchId = job?.batchId
                     if (batchId != null) {
                         runCatching {
-                            dal.bulkImport.createEvent(
+                            dal.bulkImportEvents.createEvent(
                                 refType = "batch",
                                 refId = batchId,
                                 eventType = "TASK_MARKED_RETRYABLE",

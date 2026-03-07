@@ -34,10 +34,10 @@ class ResolutionWorker(
 
     private suspend fun process(task: ImportTaskRunDto, config: BulkImportWorkerConfig) {
         val startedAt = OffsetDateTime.now(ZoneOffset.UTC)
-        dal.bulkImport.markTaskStarted(task.id, startedAt)
+        dal.bulkImportTasks.markTaskStarted(task.id, startedAt)
         val job = dal.bulkImport.findJobById(task.jobId)
             ?: run {
-                dal.bulkImport.updateTaskStatus(id = task.id, status = TaskStatus.FAILED, error = """{"message":"Missing job"}""")
+                dal.bulkImportTasks.updateTaskStatus(id = task.id, status = TaskStatus.FAILED, error = """{"message":"Missing job"}""")
                 return
             }
         val batchId = job.batchId
@@ -51,7 +51,7 @@ class ResolutionWorker(
             val importedKrithi = dal.imports.findBySourceAndKey(sourceId, task.sourceUrl ?: "")
 
             if (importedKrithi == null) {
-                dal.bulkImport.updateTaskStatus(
+                dal.bulkImportTasks.updateTaskStatus(
                     id = task.id,
                     status = TaskStatus.FAILED,
                     error = errorBuilder.build(code = "import_missing", message = "ImportedKrithi not found", url = task.sourceUrl),
@@ -102,7 +102,7 @@ class ResolutionWorker(
                 autoApprovalService.autoApproveIfHighConfidence(finalImported)
             }
 
-            dal.bulkImport.updateTaskStatus(
+            dal.bulkImportTasks.updateTaskStatus(
                 id = task.id,
                 status = TaskStatus.SUCCEEDED,
                 durationMs = elapsedMsSince(startedAt),
@@ -111,7 +111,7 @@ class ResolutionWorker(
             dal.bulkImport.incrementBatchCounters(id = batchId, processedDelta = 1, succeededDelta = 1)
             completionHandler.checkAndTriggerNextStage(job.id)
         } catch (e: Exception) {
-            dal.bulkImport.updateTaskStatus(
+            dal.bulkImportTasks.updateTaskStatus(
                 id = task.id,
                 status = TaskStatus.FAILED,
                 error = errorBuilder.build(code = "resolution_failed", message = "Resolution failed", cause = e.message),

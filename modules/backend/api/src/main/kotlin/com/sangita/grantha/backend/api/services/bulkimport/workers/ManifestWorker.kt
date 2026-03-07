@@ -42,12 +42,12 @@ class ManifestWorker(
 
     private suspend fun process(task: ImportTaskRunDto, config: BulkImportWorkerConfig) {
         val startedAt = OffsetDateTime.now(ZoneOffset.UTC)
-        dal.bulkImport.markTaskStarted(task.id, startedAt)
+        dal.bulkImportTasks.markTaskStarted(task.id, startedAt)
 
         val job: ImportJobDto = dal.bulkImport.findJobById(task.jobId)
             ?: run {
                 logger.warn("Manifest task {} has missing job {}", task.id, task.jobId)
-                dal.bulkImport.updateTaskStatus(id = task.id, status = TaskStatus.FAILED, error = """{"message":"Missing job"}""")
+                dal.bulkImportTasks.updateTaskStatus(id = task.id, status = TaskStatus.FAILED, error = """{"message":"Missing job"}""")
                 return
             }
 
@@ -55,10 +55,10 @@ class ManifestWorker(
         dal.bulkImport.updateJobStatus(id = job.id, status = TaskStatus.RUNNING, startedAt = startedAt)
         dal.bulkImport.updateBatchStatus(id = batchId, status = BatchStatus.RUNNING, startedAt = startedAt)
 
-        val attemptRow = dal.bulkImport.incrementTaskAttempt(task.id)
+        val attemptRow = dal.bulkImportTasks.incrementTaskAttempt(task.id)
         val attempt = attemptRow?.attempt ?: task.attempt
         if (attempt > config.maxAttempts) {
-            dal.bulkImport.updateTaskStatus(
+            dal.bulkImportTasks.updateTaskStatus(
                 id = task.id,
                 status = TaskStatus.FAILED,
                 error = errorBuilder.build(
@@ -121,7 +121,7 @@ class ManifestWorker(
                 payload = json.encodeToString(mapOf("sourceManifestPath" to manifestPath))
             )
 
-            val createdTasks = dal.bulkImport.createTasks(
+            val createdTasks = dal.bulkImportTasks.createTasks(
                 jobId = scrapeJob.id,
                 batchId = batchId,
                 tasks = dedupedRows.map { row ->
@@ -130,9 +130,9 @@ class ManifestWorker(
                 }
             )
 
-            val totalTasks = dal.bulkImport.listTasksByJob(scrapeJob.id).size
+            val totalTasks = dal.bulkImportTasks.listTasksByJob(scrapeJob.id).size
             dal.bulkImport.setBatchTotals(id = batchId, totalTasks = totalTasks)
-            dal.bulkImport.createEvent(
+            dal.bulkImportEvents.createEvent(
                 refType = "batch",
                 refId = batchId,
                 eventType = "MANIFEST_INGEST_SUCCEEDED",
@@ -144,7 +144,7 @@ class ManifestWorker(
                 }.toString()
             )
 
-            dal.bulkImport.updateTaskStatus(
+            dal.bulkImportTasks.updateTaskStatus(
                 id = task.id,
                 status = TaskStatus.SUCCEEDED,
                 durationMs = elapsedMsSince(startedAt),
@@ -172,7 +172,7 @@ class ManifestWorker(
 
     private suspend fun failManifestTask(task: ImportTaskRunDto, job: ImportJobDto, startedAt: OffsetDateTime, errorJson: String) {
         val now = OffsetDateTime.now(ZoneOffset.UTC)
-        dal.bulkImport.updateTaskStatus(
+        dal.bulkImportTasks.updateTaskStatus(
             id = task.id,
             status = TaskStatus.FAILED,
             error = errorJson,
@@ -180,7 +180,7 @@ class ManifestWorker(
             completedAt = now
         )
         dal.bulkImport.updateJobStatus(id = job.id, status = TaskStatus.FAILED, result = errorJson, completedAt = now)
-        dal.bulkImport.createEvent(refType = "batch", refId = job.batchId, eventType = "MANIFEST_INGEST_FAILED", data = errorJson)
+        dal.bulkImportEvents.createEvent(refType = "batch", refId = job.batchId, eventType = "MANIFEST_INGEST_FAILED", data = errorJson)
         dal.bulkImport.updateBatchStatus(id = job.batchId, status = BatchStatus.FAILED, completedAt = now)
     }
 

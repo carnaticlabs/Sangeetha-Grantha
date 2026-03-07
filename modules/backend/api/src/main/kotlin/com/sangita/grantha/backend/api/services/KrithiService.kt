@@ -109,7 +109,7 @@ class KrithiServiceImpl(private val dal: SangitaDal) : IKrithiService {
             lyric = request.lyric,
             primaryLanguage = request.language?.let { LanguageCode.valueOf(it.name) }
         )
-        return dal.krithis.search(filters, request.page, request.pageSize, publishedOnly = publishedOnly)
+        return dal.krithiSearch.search(filters, request.page, request.pageSize, publishedOnly = publishedOnly)
     }
 
     override suspend fun getKrithi(id: Uuid): KrithiDto? = dal.krithis.findById(id)
@@ -209,7 +209,7 @@ class KrithiServiceImpl(private val dal: SangitaDal) : IKrithiService {
 
     override suspend fun getKrithiSections(id: Uuid): List<KrithiSectionDto> = dal.krithis.getSections(id)
 
-    override suspend fun getKrithiLyricVariants(id: Uuid): List<KrithiLyricVariantWithSectionsDto> = dal.krithis.getLyricVariants(id)
+    override suspend fun getKrithiLyricVariants(id: Uuid): List<KrithiLyricVariantWithSectionsDto> = dal.krithiLyrics.getLyricVariants(id)
 
     override suspend fun getKrithiTags(id: Uuid): List<TagDto> = dal.krithis.getTags(id)
 
@@ -238,7 +238,7 @@ class KrithiServiceImpl(private val dal: SangitaDal) : IKrithiService {
         
         val sampradayaId = request.sampradayaId?.toJavaUuidOrThrow("sampradayaId")
         
-        val created = dal.krithis.createLyricVariant(
+        val created = dal.krithiLyrics.createLyricVariant(
             krithiId = krithiId,
             language = LanguageCode.valueOf(request.language.name),
             script = ScriptCode.valueOf(request.script.name),
@@ -269,7 +269,7 @@ class KrithiServiceImpl(private val dal: SangitaDal) : IKrithiService {
     ): KrithiLyricVariantDto {
         val sampradayaId = request.sampradayaId?.toJavaUuidOrThrow("sampradayaId")
         
-        val updated = dal.krithis.updateLyricVariant(
+        val updated = dal.krithiLyrics.updateLyricVariant(
             variantId = variantId,
             language = request.language?.let { LanguageCode.valueOf(it.name) },
             script = request.script?.let { ScriptCode.valueOf(it.name) },
@@ -297,14 +297,14 @@ class KrithiServiceImpl(private val dal: SangitaDal) : IKrithiService {
         sections: List<LyricVariantSectionRequest>
     ) {
         // Verify variant exists
-        val variant = dal.krithis.findLyricVariantById(variantId)
+        val variant = dal.krithiLyrics.findLyricVariantById(variantId)
             ?: throw NoSuchElementException("Lyric variant not found")
         
         val sectionsData = sections.map {
             it.sectionId.toJavaUuidOrThrow("sectionId") to it.text
         }
         
-        dal.krithis.saveLyricVariantSections(variantId, sectionsData)
+        dal.krithiLyrics.saveLyricVariantSections(variantId, sectionsData)
         
         dal.auditLogs.append(
             action = "UPDATE_LYRIC_VARIANT_SECTIONS",

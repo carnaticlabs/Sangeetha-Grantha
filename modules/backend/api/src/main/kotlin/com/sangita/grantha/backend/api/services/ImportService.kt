@@ -12,12 +12,7 @@ import com.sangita.grantha.backend.dal.enums.WorkflowState
 import com.sangita.grantha.backend.dal.support.toJavaUuid
 import com.sangita.grantha.backend.dal.support.toKotlinUuid
 import com.sangita.grantha.shared.domain.model.ImportedKrithiDto
-import com.sangita.grantha.shared.domain.model.RagaSectionDto
-import com.sangita.grantha.backend.dal.enums.ScriptCode
-import com.sangita.grantha.backend.dal.enums.RagaSection
 import com.sangita.grantha.backend.dal.repositories.KrithiCreateParams
-import com.sangita.grantha.backend.api.services.scraping.KrithiStructureParser
-import com.sangita.grantha.backend.api.services.scraping.StructuralVotingEngine
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
@@ -85,15 +80,10 @@ class ImportServiceImpl(
     private val environment: ApiEnvironment,
     private val entityResolver: IEntityResolver,
     private val normalizer: NameNormalizationService,
+    private val reportGenerator: ImportReportGenerator,
+    private val lyricVariantPersistence: LyricVariantPersistenceService,
     private val autoApprovalServiceProvider: () -> AutoApprovalService
 ) : ImportReviewer, IImportService {
-    private val structuralVotingEngine = StructuralVotingEngine()
-    private val composerSourcePriority = mapOf(
-        "muthuswami dikshitar" to listOf("guruguha.org"),
-        "tyagaraja" to listOf("thyagarajavaibhavam.blogspot.com"),
-        "swathi thirunal" to listOf("swathithirunalfestival.org"),
-        "general" to listOf("karnatik.com", "shivkumar.org")
-    )
     
     /**
      * TRACK-062: Delegate to NameNormalizationService for transliteration-aware normalisation.
@@ -399,10 +389,10 @@ class ImportServiceImpl(
                 // Search WITHOUT composer filter first (cross-composer dedup), then WITH.
                 val normalizedTitle = normalize(effectiveTitle)
 
-                val allCandidates = dal.krithis.findDuplicateCandidates(
+                val allCandidates = dal.krithiSearch.findDuplicateCandidates(
                     titleNormalized = normalizedTitle
                 )
-                val composerCandidates = dal.krithis.findDuplicateCandidates(
+                val composerCandidates = dal.krithiSearch.findDuplicateCandidates(
                     titleNormalized = normalizedTitle,
                     composerId = composerId,
                     ragaId = ragaId
@@ -433,7 +423,7 @@ class ImportServiceImpl(
                     createdKrithiId = existingKrithi.id.toJavaUuid()
                     
                     // TRACK-062: Persist lyrics from this import as a new variant for the existing Krithi
-                    persistLyricVariants(existingKrithi.id, importData, request.overrides)
+                    lyricVariantPersistence.persistLyricVariants(existingKrithi.id, importData, request.overrides)
 
                     dal.auditLogs.append(
                         action = "LINK_IMPORT_TO_EXISTING_KRITHI",
@@ -487,7 +477,7 @@ class ImportServiceImpl(
                     )
     
                     // Process sections and lyrics
-                    persistLyricVariants(createdKrithi.id, importData, request.overrides)
+                    lyricVariantPersistence.persistLyricVariants(createdKrithi.id, importData, request.overrides)
                 }
                 
                 // TRACK-062: Create Source Evidence
@@ -587,320 +577,10 @@ class ImportServiceImpl(
         val batch = dal.bulkImport.findBatchById(batchId)
 
         return when (format.lowercase()) {
-            "json" -> generateJsonReport(batch, imports)
-            "csv" -> generateCsvReport(batch, imports)
+            "json" -> reportGenerator.generateJsonReport(batch, imports)
+            "csv" -> reportGenerator.generateCsvReport(batch, imports)
             else -> throw IllegalArgumentException("Unsupported format: $format")
         }
     }
 
-    private fun generateJsonReport(batch: Any?, imports: List<com.sangita.grantha.shared.domain.model.ImportedKrithiDto>): String {
-        val avgQualityScore: Double? = imports.mapNotNull { it.qualityScore }.average().takeIf { !it.isNaN() }
-        val qualityTierCounts: Map<String?, Int> = imports.groupBy { it.qualityTier }.mapValues { it.value.size }
-        
-        // Extract batch info safely
-        val batchIdStr = when (batch) {
-            is com.sangita.grantha.shared.domain.model.ImportBatchDto -> batch.id.toString()
-            else -> null
-        }
-        val sourceManifest = when (batch) {
-            is com.sangita.grantha.shared.domain.model.ImportBatchDto -> batch.sourceManifest
-            else -> null
-        }
-        
-        val summary = mapOf<String, Any?>(
-            "batchId" to batchIdStr,
-            "sourceManifest" to sourceManifest,
-            "totalImports" to imports.size,
-            "approved" to imports.count { it.importStatus == com.sangita.grantha.shared.domain.model.ImportStatusDto.APPROVED },
-            "rejected" to imports.count { it.importStatus == com.sangita.grantha.shared.domain.model.ImportStatusDto.REJECTED },
-            "pending" to imports.count { it.importStatus == com.sangita.grantha.shared.domain.model.ImportStatusDto.PENDING },
-            "avgQualityScore" to avgQualityScore,
-            "qualityTierCounts" to qualityTierCounts
-        )
-
-        val items = imports.map { import ->
-            mapOf(
-                "id" to import.id.toString(),
-                "title" to import.rawTitle,
-                "composer" to import.rawComposer,
-                "raga" to import.rawRaga,
-                "tala" to import.rawTala,
-                "status" to import.importStatus.name,
-                "qualityScore" to import.qualityScore,
-                "qualityTier" to import.qualityTier,
-                "sourceKey" to import.sourceKey
-            )
-        }
-
-        return Json.encodeToString(
-            mapOf(
-                "summary" to summary,
-                "items" to items
-            )
-        )
-    }
-
-    private fun generateCsvReport(batch: Any?, imports: List<com.sangita.grantha.shared.domain.model.ImportedKrithiDto>): String {
-        val header = "ID,Title,Composer,Raga,Tala,Status,Quality Score,Quality Tier,Source\n"
-        val rows = imports.joinToString("\n") { import ->
-            listOf(
-                import.id.toString(),
-                escapeCsv(import.rawTitle ?: ""),
-                escapeCsv(import.rawComposer ?: ""),
-                escapeCsv(import.rawRaga ?: ""),
-                escapeCsv(import.rawTala ?: ""),
-                import.importStatus.name,
-                import.qualityScore?.toString() ?: "",
-                import.qualityTier ?: "",
-                escapeCsv(import.sourceKey ?: "")
-            ).joinToString(",")
-        }
-        return header + rows
-    }
-
-    private fun escapeCsv(value: String): String {
-        return if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
-            "\"${value.replace("\"", "\"\"")}\""
-        } else {
-            value
-        }
-    }
-
-    // ── Private helpers ─────────────────────────────────────────────────────
-
-    private suspend fun persistLyricVariants(
-        krithiId: Uuid,
-        importData: ImportedKrithiDto,
-        overrides: com.sangita.grantha.backend.api.models.ImportOverridesDto?,
-    ) {
-        val sourceKey = importData.sourceKey
-        
-        if (overrides?.lyrics != null) {
-            // Unstructured override lyrics
-            dal.krithis.createLyricVariant(
-                krithiId = krithiId,
-                language = LanguageCode.EN, // Default for unstructured overrides
-                script = ScriptCode.LATIN,
-                lyrics = overrides.lyrics,
-                isPrimary = false,
-                sourceReference = sourceKey
-            )
-        } else if (importData.parsedPayload != null) {
-            try {
-                val metadata = Json.decodeFromString<ScrapedKrithiMetadata>(importData.parsedPayload!!)
-
-                // TRACK-032: Multi-language lyric variants from scrape
-                if (!metadata.lyricVariants.isNullOrEmpty()) {
-                    val variants = metadata.lyricVariants.toMutableList()
-                    
-                    // 1. Recover missing sections for each variant using KrithiStructureParser
-                    variants.forEachIndexed { idx, v ->
-                        if (v.sections.isNullOrEmpty() && !v.lyrics.isNullOrBlank()) {
-                            val recovered = KrithiStructureParser().buildBlocks(v.lyrics.replace("\\n", "\n")).blocks
-                                .mapNotNull { block: KrithiStructureParser.TextBlock ->
-                                    val type = parseRagaSectionDto(block.label)
-                                    if (type != null && type != RagaSectionDto.OTHER) {
-                                        ScrapedSectionDto(type = type, text = block.lines.joinToString("\n"))
-                                    } else null
-                                }
-                            if (recovered.isNotEmpty()) {
-                                variants[idx] = v.copy(sections = recovered)
-                            }
-                        }
-                    }
-
-                    // 2. Ensure canonical section structure exists
-                    val savedSections = dal.krithis.getSections(krithiId)
-                    if (savedSections.isEmpty()) {
-                        // Determine canonical section structure from metadata/variants
-                        val rawSections = metadata.sections ?: emptyList()
-                        val deduplicated = mutableListOf<ScrapedSectionDto>()
-                        var previousWasCharanam = false
-                        for (s in rawSections) {
-                            if (s.type == RagaSectionDto.PALLAVI && previousWasCharanam) break
-                            if (s.type == RagaSectionDto.CHARANAM || s.type == RagaSectionDto.SAMASHTI_CHARANAM) previousWasCharanam = true
-                            deduplicated.add(s)
-                        }
-
-                        val authoritySource = isAuthoritySourceForComposer(sourceKey, importData.rawComposer)
-                        val candidates = variants.mapNotNull { v ->
-                            v.sections?.let { StructuralVotingEngine.SectionCandidate(it, authoritySource, "variant:${v.language}") }
-                        }.toMutableList()
-                        if (deduplicated.isNotEmpty()) {
-                            candidates.add(StructuralVotingEngine.SectionCandidate(deduplicated, authoritySource, "metadata"))
-                        }
-
-                        val sectionStructure = structuralVotingEngine.pickBestStructure(candidates)
-                        if (sectionStructure.isNotEmpty()) {
-                            val sectionsToSave = sectionStructure.mapIndexed { index, section ->
-                                Triple(section.type.name, index + 1, null as String?)
-                            }
-                            dal.krithis.saveSections(krithiId, sectionsToSave)
-                        }
-                    }
-                    
-                    val updatedSections = dal.krithis.getSections(krithiId)
-                    
-                    // 3. Save each variant and link to sections
-                    variants.forEachIndexed { index, scraped ->
-                        val lang = parseLanguageCode(scraped.language) ?: LanguageCode.TE
-                        val script = parseScriptCode(scraped.script) ?: ScriptCode.LATIN
-                        val lyricsText = (scraped.lyrics?.takeIf { it.isNotBlank() }
-                            ?: scraped.sections?.joinToString("\n\n") { "[${it.type.name}]\n${it.text}" }.takeIf { it?.isNotBlank() == true }
-                            ?: "").replace("\\n", "\n")
-                        
-                        val createdVariant = dal.krithis.createLyricVariant(
-                            krithiId = krithiId,
-                            language = lang,
-                            script = script,
-                            lyrics = lyricsText,
-                            isPrimary = false,
-                            sourceReference = sourceKey
-                        )
-                        
-                        val variantSections = scraped.sections
-                        if (!variantSections.isNullOrEmpty() && updatedSections.isNotEmpty()) {
-                            val lyricSections = updatedSections.mapNotNull { savedSection ->
-                                val match = variantSections.getOrNull(savedSection.orderIndex - 1)
-                                if (match != null && match.text.isNotBlank()) {
-                                    savedSection.id.toJavaUuid() to match.text
-                                } else null
-                            }
-                            if (lyricSections.isNotEmpty()) {
-                                dal.krithis.saveLyricVariantSections(createdVariant.id, lyricSections)
-                            }
-                        }
-                    }
-                } else {
-                    // Single primary variant (existing behaviour)
-                    val effectiveSections = when {
-                        !metadata.sections.isNullOrEmpty() -> metadata.sections
-                        !metadata.lyrics.isNullOrBlank() -> parseSectionHeadersFromLyrics(metadata.lyrics.replace("\\n", "\n"))
-                        else -> emptyList()
-                    }
-                    if (effectiveSections.isNotEmpty()) {
-                        val lyricVariant = dal.krithis.createLyricVariant(
-                            krithiId = krithiId,
-                            language = parseLanguageCode(metadata.language) ?: LanguageCode.TE,
-                            script = ScriptCode.LATIN,
-                            lyrics = metadata.lyrics ?: effectiveSections.joinToString("\n\n") { "[${it.type.name}]\n${it.text}" },
-                            isPrimary = false,
-                            sourceReference = sourceKey
-                        )
-                        val savedSections = dal.krithis.getSections(krithiId)
-                        val lyricSections = savedSections.mapNotNull { savedSection ->
-                            val originalSection = effectiveSections.getOrNull(savedSection.orderIndex - 1)
-                            if (originalSection != null && !originalSection.text.isBlank()) {
-                                savedSection.id.toJavaUuid() to originalSection.text
-                            } else null
-                        }
-                        if (lyricSections.isNotEmpty()) {
-                            dal.krithis.saveLyricVariantSections(lyricVariant.id, lyricSections)
-                        }
-                    } else if (!metadata.lyrics.isNullOrBlank()) {
-                        dal.krithis.createLyricVariant(
-                            krithiId = krithiId,
-                            language = parseLanguageCode(metadata.language) ?: LanguageCode.TE,
-                            script = ScriptCode.LATIN,
-                            lyrics = metadata.lyrics,
-                            isPrimary = false,
-                            sourceReference = sourceKey
-                        )
-                    }
-                }
-            } catch (e: Exception) {
-                println("Error processing scraped metadata: ${e.message}")
-            }
-        }
-    }
-
-    /** TRACK-032: Map scraped language string (SA, TA, etc.) to LanguageCode. */
-    private fun parseLanguageCode(value: String?): LanguageCode? {
-        if (value.isNullOrBlank()) return null
-        return when (value.trim().uppercase()) {
-            "SA" -> LanguageCode.SA
-            "TA" -> LanguageCode.TA
-            "TE" -> LanguageCode.TE
-            "KN" -> LanguageCode.KN
-            "ML" -> LanguageCode.ML
-            "HI" -> LanguageCode.HI
-            "EN" -> LanguageCode.EN
-            else -> null
-        }
-    }
-
-    /** TRACK-032: Map scraped script string (devanagari, tamil, etc.) to ScriptCode. */
-    private fun parseScriptCode(value: String?): ScriptCode? {
-        if (value.isNullOrBlank()) return null
-        return when (value.trim().lowercase()) {
-            "devanagari" -> ScriptCode.DEVANAGARI
-            "tamil" -> ScriptCode.TAMIL
-            "telugu" -> ScriptCode.TELUGU
-            "kannada" -> ScriptCode.KANNADA
-            "malayalam" -> ScriptCode.MALAYALAM
-            "latin" -> ScriptCode.LATIN
-            else -> null
-        }
-    }
-
-    /** TRACK-032: Map TextBlocker label to RagaSectionDto. */
-    private fun parseRagaSectionDto(label: String): RagaSectionDto? {
-        return when (label.uppercase()) {
-            "PALLAVI" -> RagaSectionDto.PALLAVI
-            "ANUPALLAVI" -> RagaSectionDto.ANUPALLAVI
-            "CHARANAM", "CARANAM" -> RagaSectionDto.CHARANAM
-            "SAMASHTI_CHARANAM" -> RagaSectionDto.SAMASHTI_CHARANAM
-            "CHITTASWARAM" -> RagaSectionDto.CHITTASWARAM
-            "SWARA_SAHITYA" -> RagaSectionDto.SWARA_SAHITYA
-            "MADHYAMAKALA", "MADHYAMA_KALA" -> RagaSectionDto.MADHYAMA_KALA
-            "SOLKATTU_SWARA" -> RagaSectionDto.SOLKATTU_SWARA
-            "ANUBANDHA" -> RagaSectionDto.ANUBANDHA
-            "MUKTAYI_SWARA" -> RagaSectionDto.MUKTAYI_SWARA
-            "ETTUGADA_SWARA" -> RagaSectionDto.ETTUGADA_SWARA
-            "ETTUGADA_SAHITYA" -> RagaSectionDto.ETTUGADA_SAHITYA
-            "VILOMA_CHITTASWARAM" -> RagaSectionDto.VILOMA_CHITTASWARAM
-            else -> null
-        }
-    }
-
-    /**
-     * Parse section headers (Pallavi, Anupallavi, Charanam, Samashti Charanam, etc.) from lyrics text
-     * when the scraper did not return structured sections. Used as fallback so Lyrics tab shows sections.
-     */
-    private fun parseSectionHeadersFromLyrics(lyrics: String): List<ScrapedSectionDto> {
-        val pattern = Regex("""(?mi)^\s*(Pallavi|Anupallavi|Charanam|Samashti\s+Charanam|Chittaswaram)\s*:?\s*$""")
-        val matches = pattern.findAll(lyrics).toList()
-        if (matches.isEmpty()) return emptyList()
-        val sectionTypeMap: (String) -> RagaSectionDto = { raw ->
-            when (raw.trim().lowercase()) {
-                "pallavi" -> RagaSectionDto.PALLAVI
-                "anupallavi" -> RagaSectionDto.ANUPALLAVI
-                "charanam" -> RagaSectionDto.CHARANAM
-                "samashti charanam" -> RagaSectionDto.SAMASHTI_CHARANAM
-                "chittaswaram" -> RagaSectionDto.CHITTASWARAM
-                else -> RagaSectionDto.OTHER
-            }
-        }
-        return matches.mapIndexed { i, match ->
-            val type = sectionTypeMap(match.groupValues[1])
-            val text = lyrics.substring(
-                match.range.last + 1,
-                if (i + 1 < matches.size) matches[i + 1].range.first else lyrics.length
-            ).trim()
-            ScrapedSectionDto(type = type, text = text)
-        }.filter { it.text.isNotBlank() }
-    }
-
-    private fun isAuthoritySourceForComposer(sourceKey: String?, composer: String?): Boolean {
-        if (sourceKey.isNullOrBlank() || composer.isNullOrBlank()) return false
-        val normalizedComposer = composer.trim().lowercase()
-        val authorityHosts = composerSourcePriority[normalizedComposer] ?: composerSourcePriority["general"] ?: emptyList()
-        val host = try {
-            URI(sourceKey).host?.lowercase()
-        } catch (e: Exception) {
-            null
-        }
-        if (host.isNullOrBlank()) return false
-        return authorityHosts.any { host.contains(it) }
-    }
 }

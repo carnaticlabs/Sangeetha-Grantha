@@ -37,21 +37,21 @@ class ScrapeWorker(
 
     private suspend fun process(task: ImportTaskRunDto, config: BulkImportWorkerConfig, isActive: () -> Boolean) {
         val startedAt = OffsetDateTime.now(ZoneOffset.UTC)
-        dal.bulkImport.markTaskStarted(task.id, startedAt)
+        dal.bulkImportTasks.markTaskStarted(task.id, startedAt)
 
         val job = dal.bulkImport.findJobById(task.jobId)
             ?: run {
-                dal.bulkImport.updateTaskStatus(id = task.id, status = TaskStatus.FAILED, error = """{"message":"Missing job"}""")
+                dal.bulkImportTasks.updateTaskStatus(id = task.id, status = TaskStatus.FAILED, error = """{"message":"Missing job"}""")
                 return
             }
 
         val batchId = job.batchId
-        val attemptRow = dal.bulkImport.incrementTaskAttempt(task.id)
+        val attemptRow = dal.bulkImportTasks.incrementTaskAttempt(task.id)
         val attempt = attemptRow?.attempt ?: task.attempt
 
         val url = task.sourceUrl
         if (url.isNullOrBlank()) {
-            dal.bulkImport.updateTaskStatus(
+            dal.bulkImportTasks.updateTaskStatus(
                 id = task.id,
                 status = TaskStatus.FAILED,
                 error = errorBuilder.build(code = "missing_source_url", message = "Task missing sourceUrl", attempt = attempt),
@@ -63,7 +63,7 @@ class ScrapeWorker(
         }
 
         if (attempt > config.maxAttempts) {
-            dal.bulkImport.updateTaskStatus(
+            dal.bulkImportTasks.updateTaskStatus(
                 id = task.id,
                 status = TaskStatus.FAILED,
                 error = errorBuilder.build(
@@ -103,7 +103,7 @@ class ScrapeWorker(
 
             importService.submitImports(listOf(importRequest))
 
-            dal.bulkImport.updateTaskStatus(
+            dal.bulkImportTasks.updateTaskStatus(
                 id = task.id,
                 status = TaskStatus.SUCCEEDED,
                 durationMs = elapsedMsSince(startedAt),
@@ -120,7 +120,7 @@ class ScrapeWorker(
                 cause = e.message
             )
             val finalAttempt = attempt >= config.maxAttempts
-            dal.bulkImport.updateTaskStatus(
+            dal.bulkImportTasks.updateTaskStatus(
                 id = task.id,
                 status = if (finalAttempt) TaskStatus.FAILED else TaskStatus.RETRYABLE,
                 error = errorJson,
@@ -132,7 +132,7 @@ class ScrapeWorker(
                 dal.bulkImport.incrementBatchCounters(id = batchId, processedDelta = 1, failedDelta = 1)
                 completionHandler.checkAndTriggerNextStage(job.id)
             } else {
-                dal.bulkImport.createEvent(
+                dal.bulkImportEvents.createEvent(
                     refType = "batch",
                     refId = batchId,
                     eventType = "TASK_RETRY_SCHEDULED",

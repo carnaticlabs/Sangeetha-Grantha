@@ -65,7 +65,6 @@ dependencies {
     testImplementation(libs.kotlinx.serialization.json)
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.mockk)
-    testImplementation(libs.h2)
 }
 
 // Simple dev run task (no frontend coupling yet)

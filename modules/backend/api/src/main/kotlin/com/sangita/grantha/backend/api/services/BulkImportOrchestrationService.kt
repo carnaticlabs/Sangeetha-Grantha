@@ -39,14 +39,14 @@ class BulkImportOrchestrationService(
             jobType = JobType.MANIFEST_INGEST,
             payload = Json.encodeToString(ManifestJobPayload(sourceManifestPath))
         )
-        dal.bulkImport.createTask(
+        dal.bulkImportTasks.createTask(
             jobId = manifestJob.id,
             batchId = batch.id,
             krithiKey = "manifest:${sourceManifestPath.substringAfterLast('/')}",
             sourceUrl = null
         )
 
-        dal.bulkImport.createEvent(
+        dal.bulkImportEvents.createEvent(
             refType = "batch",
             refId = batch.id,
             eventType = "BATCH_CREATED",
@@ -87,13 +87,13 @@ class BulkImportOrchestrationService(
         status: TaskStatus? = null,
         limit: Int = 1000,
         offset: Int = 0,
-    ): List<ImportTaskRunDto> = dal.bulkImport.listTasksByBatch(batchId = id, status = status, limit = limit, offset = offset)
+    ): List<ImportTaskRunDto> = dal.bulkImportTasks.listTasksByBatch(batchId = id, status = status, limit = limit, offset = offset)
 
     /**
      * List events for a batch.
      */
     suspend fun getBatchEvents(id: Uuid, limit: Int = 200): List<ImportEventDto> =
-        dal.bulkImport.listEventsByRef(refType = "batch", refId = id, limit = limit)
+        dal.bulkImportEvents.listEventsByRef(refType = "batch", refId = id, limit = limit)
 
     /**
      * Pause a running batch.
@@ -102,7 +102,7 @@ class BulkImportOrchestrationService(
         val updated = dal.bulkImport.updateBatchStatus(id = id, status = BatchStatus.PAUSED)
             ?: throw NoSuchElementException("Batch not found")
 
-        dal.bulkImport.createEvent(refType = "batch", refId = id, eventType = "BATCH_PAUSED")
+        dal.bulkImportEvents.createEvent(refType = "batch", refId = id, eventType = "BATCH_PAUSED")
         dal.auditLogs.append(action = "BULK_IMPORT_BATCH_PAUSE", entityTable = "import_batch", entityId = id)
         return updated
     }
@@ -114,7 +114,7 @@ class BulkImportOrchestrationService(
         val updated = dal.bulkImport.updateBatchStatus(id = id, status = BatchStatus.RUNNING)
             ?: throw NoSuchElementException("Batch not found")
 
-        dal.bulkImport.createEvent(refType = "batch", refId = id, eventType = "BATCH_RESUMED")
+        dal.bulkImportEvents.createEvent(refType = "batch", refId = id, eventType = "BATCH_RESUMED")
         dal.auditLogs.append(action = "BULK_IMPORT_BATCH_RESUME", entityTable = "import_batch", entityId = id)
         
         workerService?.wakeUp()
@@ -129,7 +129,7 @@ class BulkImportOrchestrationService(
         val updated = dal.bulkImport.updateBatchStatus(id = id, status = BatchStatus.CANCELLED)
             ?: throw NoSuchElementException("Batch not found")
 
-        dal.bulkImport.createEvent(refType = "batch", refId = id, eventType = "BATCH_CANCELLED")
+        dal.bulkImportEvents.createEvent(refType = "batch", refId = id, eventType = "BATCH_CANCELLED")
         dal.auditLogs.append(action = "BULK_IMPORT_BATCH_CANCEL", entityTable = "import_batch", entityId = id)
         return updated
     }
@@ -146,9 +146,9 @@ class BulkImportOrchestrationService(
             if (includeFailed) add(TaskStatus.FAILED)
         }
 
-        val updatedCount = dal.bulkImport.requeueTasksForBatch(batchId = id, fromStatuses = fromStatuses)
+        val updatedCount = dal.bulkImportTasks.requeueTasksForBatch(batchId = id, fromStatuses = fromStatuses)
 
-        dal.bulkImport.createEvent(
+        dal.bulkImportEvents.createEvent(
             refType = "batch",
             refId = id,
             eventType = "BATCH_RETRIED",
@@ -176,7 +176,7 @@ class BulkImportOrchestrationService(
         // Assuming I need to add it or use a generic delete.
         // If not available, I should add it to Repo first.
         
-        dal.bulkImport.deleteBatch(id)
+        dal.bulkImportEvents.deleteBatch(id)
         dal.auditLogs.append(action = "BULK_IMPORT_BATCH_DELETE", entityTable = "import_batch", entityId = id)
     }
 }

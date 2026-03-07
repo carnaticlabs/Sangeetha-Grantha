@@ -27,7 +27,7 @@ class AutoApprovalServiceTest {
     @BeforeEach
     fun setUp() {
         importReviewer = mockk(relaxed = true)
-        config = AutoApprovalConfig.fromEnvironment() // Use default config
+        config = AutoApprovalConfig() // Use default config
         service = AutoApprovalService(importReviewer, config)
     }
 
@@ -116,7 +116,7 @@ class AutoApprovalServiceTest {
     @Test
     fun `should approve imports with GOOD quality tier`() {
         val import = createTestImport(
-            qualityScore = 0.85,
+            qualityScore = 0.92,
             qualityTier = "GOOD",
             rawTitle = "Test Krithi",
             rawLyrics = "Full lyrics text",

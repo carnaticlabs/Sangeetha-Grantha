@@ -3,6 +3,9 @@ package com.sangita.grantha.backend.api.services
 import com.sangita.grantha.backend.dal.SangitaDal
 import com.sangita.grantha.backend.dal.enums.ExtractionIntent
 import com.sangita.grantha.shared.domain.model.*
+import io.ktor.server.plugins.BadRequestException
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import kotlin.uuid.Uuid
 
 /**
@@ -77,13 +80,17 @@ class SourcingService(private val dal: SangitaDal) {
     }
 
     suspend fun deactivateSource(id: Uuid, actorUserId: Uuid?) {
-        // Soft deactivate via update
-        dal.sourceRegistry.update(id = id)
+        // NOTE: import_sources has no isActive column, so deactivation is recorded
+        // only in the audit log. A future migration should add soft-delete support.
+        // For now, verify the source exists before logging.
+        val source = dal.sourceRegistry.findDetailById(id)
+            ?: throw BadRequestException("Source not found: $id")
         dal.auditLogs.append(
             action = "DEACTIVATE_SOURCE",
             entityTable = "import_sources",
             entityId = id,
             actorUserId = actorUserId,
+            metadata = buildJsonObject { put("sourceName", source.name) }.toString(),
         )
     }
 
@@ -111,23 +118,19 @@ class SourcingService(private val dal: SangitaDal) {
         request: CreateExtractionRequestDto,
         actorUserId: Uuid?,
     ): ExtractionDetailDto {
-        val requestPayload = buildString {
-            append("{")
-            request.composerHint?.let { append("\"composerHint\":\"$it\",") }
-            request.expectedKrithiCount?.let { append("\"expectedKrithiCount\":$it,") }
-            request.pageRange?.let { append("\"pageRange\":\"$it\",") }
-            append("}")
-        }.replace(",}", "}")
+        val requestPayload = buildJsonObject {
+            request.composerHint?.let { put("composerHint", it) }
+            request.expectedKrithiCount?.let { put("expectedKrithiCount", it) }
+            request.pageRange?.let { put("pageRange", it) }
+        }.toString()
 
-        val intent = try {
-            ExtractionIntent.entries.first { it.dbValue == request.extractionIntent }
-        } catch (_: Exception) {
-            ExtractionIntent.PRIMARY
-        }
+        val intent = ExtractionIntent.entries.firstOrNull { it.dbValue == request.extractionIntent }
+            ?: throw BadRequestException("Invalid extractionIntent: '${request.extractionIntent}'. Must be one of: ${ExtractionIntent.entries.map { it.dbValue }}")
 
         val result = dal.extractionQueue.create(
             sourceUrl = request.sourceUrl,
             sourceFormat = request.sourceFormat,
+            sourceName = request.sourceName,
             importBatchId = request.importBatchId?.let { java.util.UUID.fromString(it.toString()) },
             pageRange = request.pageRange,
             composerHint = request.composerHint,
