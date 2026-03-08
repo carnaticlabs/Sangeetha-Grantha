@@ -232,7 +232,13 @@ export const LyricsTab: React.FC<TabProps> = ({ krithi, onChange, referenceData,
                                             <div className="mt-4">
                                                 {variant.sections.length > 0 ? (
                                                     <div className="space-y-3">
-                                                        {variant.sections.map((lyricSection, secIdx) => {
+                                                        {[...variant.sections]
+                                                            .sort((a, b) => {
+                                                                const orderA = krithi.sections?.findIndex(s => s.id === a.sectionId) ?? 0;
+                                                                const orderB = krithi.sections?.findIndex(s => s.id === b.sectionId) ?? 0;
+                                                                return orderA - orderB;
+                                                            })
+                                                            .map((lyricSection, secIdx) => {
                                                             const section = krithi.sections?.find(s => s.id === lyricSection.sectionId);
                                                             return (
                                                                 <div key={secIdx} className="text-sm">

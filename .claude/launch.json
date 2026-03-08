@@ -1,0 +1,30 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "frontend",
+      "runtimeExecutable": "bun",
+      "runtimeArgs": ["run", "dev"],
+      "port": 5001,
+      "cwd": "modules/frontend/sangita-admin-web"
+    },
+    {
+      "name": "backend",
+      "runtimeExecutable": "./gradlew",
+      "runtimeArgs": [":modules:backend:api:runDev"],
+      "port": 8080
+    },
+    {
+      "name": "full-stack",
+      "runtimeExecutable": "make",
+      "runtimeArgs": ["dev"],
+      "port": 5001
+    },
+    {
+      "name": "full-stack-backend",
+      "runtimeExecutable": "make",
+      "runtimeArgs": ["dev"],
+      "port": 8080
+    }
+  ]
+}

@@ -13,7 +13,7 @@ export default defineConfig(({ mode }) => {
       host: '0.0.0.0',
       proxy: {
         '/v1': {
-          target: 'http://localhost:8080',
+          target: process.env.API_PROXY_TARGET || 'http://localhost:8080',
           changeOrigin: true,
         }
       },

@@ -1,16 +1,12 @@
-# Build stage
-FROM gradle:8.5.0-jdk21 AS build
+# Build stage — JDK 25 required by jvmToolchain(25)
+FROM eclipse-temurin:25-jdk AS build
 WORKDIR /app
 COPY . .
-# We assume the context is the whole monorepo, so we can run gradlew
-# RUN ./gradlew :modules:backend:api:shadowJar # Example of building fat jar
-RUN ./gradlew :modules:backend:api:build -x test
+RUN ./gradlew :modules:backend:api:build -x test --no-daemon
 
 # Run stage
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:25-jre
 WORKDIR /app
-# We need to copy the built jar from the build stage. 
-# Typical location is build/libs/api-all.jar. Let's assume Ktor standard fat jar plugin
 COPY --from=build /app/modules/backend/api/build/libs/*-all.jar /app/app.jar
 
 EXPOSE 8080

@@ -111,6 +111,11 @@ class ExtractionWorker:
                 break
             except Exception:
                 logger.exception("Unexpected error in worker loop")
+                # Rollback to clear any aborted transaction state
+                try:
+                    self.db.conn.rollback()
+                except Exception:
+                    pass
                 time.sleep(self.config.poll_interval_s)
 
         self.db.close()

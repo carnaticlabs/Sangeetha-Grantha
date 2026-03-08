@@ -12,6 +12,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import org.slf4j.LoggerFactory
+import java.util.UUID
 import kotlin.uuid.Uuid
 
 /**
@@ -31,7 +32,6 @@ data class ExtractionProcessingResult(
 class KrithiMatcherService(
     private val dal: SangitaDal,
     private val normalizer: NameNormalizationService,
-    private val krithiCreationService: KrithiCreationFromExtractionService,
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
     private val json = Json { ignoreUnknownKeys = true }
@@ -82,7 +82,7 @@ class KrithiMatcherService(
                 .distinctBy { it.id }
 
         if (allCandidates.isEmpty()) {
-            return createNewKrithi(extraction, titleNormalized, extractionTaskId)
+            return createPendingImport(extraction, titleNormalized)
         }
 
         val evidenceCounts = dal.sourceEvidence.countByKrithiIds(allCandidates.map { it.id })
@@ -164,7 +164,7 @@ class KrithiMatcherService(
         }
 
         if (bestMatch == null) {
-            return createNewKrithi(extraction, titleNormalized, extractionTaskId)
+            return createPendingImport(extraction, titleNormalized)
         }
 
         val matched = bestMatch
@@ -278,19 +278,51 @@ class KrithiMatcherService(
         }
     }
 
-    private suspend fun createNewKrithi(
+    /**
+     * When no existing Krithi matches, create a PENDING imported_krithis record
+     * for manual curator review instead of auto-creating a new Krithi.
+     */
+    private suspend fun createPendingImport(
         extraction: CanonicalExtractionDto,
         titleNormalized: String,
-        extractionTaskId: Uuid
     ): ExtractionProcessingResult? {
-        logger.info("No Krithi match for '${extraction.title}' (normalised: '$titleNormalized'), creating new Krithi")
-        val createdId = try {
-            krithiCreationService.createFromExtraction(extraction, extractionTaskId)
+        try {
+            val sourceId = getOrCreateUnmatchedImportSourceId()
+            val sourceKey = "${extraction.sourceUrl}::${extraction.title}"
+            val parsedPayload = json.encodeToString(CanonicalExtractionDto.serializer(), extraction)
+
+            dal.imports.createImport(
+                sourceId = sourceId,
+                sourceKey = sourceKey,
+                rawTitle = extraction.title,
+                rawLyrics = null,
+                rawComposer = extraction.composer,
+                rawRaga = extraction.ragas.firstOrNull()?.name,
+                rawTala = extraction.tala,
+                rawDeity = extraction.deity,
+                rawTemple = extraction.temple,
+                rawLanguage = extraction.lyricVariants.firstOrNull()?.language,
+                parsedPayload = parsedPayload,
+            )
+            logger.info("No match for '${extraction.title}' (normalised: '$titleNormalized'), " +
+                "created pending import for manual review")
         } catch (e: Exception) {
-            logger.error("Failed to create Krithi for '${extraction.title}': ${e.message}", e)
-            null
+            logger.error("Failed to create pending import for '${extraction.title}': ${e.message}", e)
         }
-        return createdId?.let { ExtractionProcessingResult(krithiId = it, wasCreated = true) }
+        return null
+    }
+
+    private var cachedUnmatchedSourceId: UUID? = null
+
+    private suspend fun getOrCreateUnmatchedImportSourceId(): UUID {
+        cachedUnmatchedSourceId?.let { return it }
+        val source = dal.sourceRegistry.findByName("PDF Extraction (Unmatched)")
+            ?: throw IllegalStateException(
+                "Import source 'PDF Extraction (Unmatched)' not found. Run 'make seed' to create it."
+            )
+        val javaId = source.id.toJavaUuid()
+        cachedUnmatchedSourceId = javaId
+        return javaId
     }
 
     fun buildContributedFields(extraction: CanonicalExtractionDto): List<String> {

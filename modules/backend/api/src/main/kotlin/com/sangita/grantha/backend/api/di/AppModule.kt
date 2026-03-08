@@ -147,7 +147,6 @@ fun appModule(env: ApiEnvironment, metricsRegistry: PrometheusMeterRegistry) = m
         com.sangita.grantha.backend.api.services.KrithiMatcherService(
             dal = get(),
             normalizer = get(),
-            krithiCreationService = get(),
         )
     }
     single {

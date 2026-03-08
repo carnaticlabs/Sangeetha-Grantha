@@ -15,8 +15,54 @@ services:
       timeout: 5s
       retries: 5
 
-  backend:
+  # Run migrations before any app service starts
+  migrate:
     profiles: [ "dev", "prod" ]
+    image: python:3.11-slim
+    working_dir: /app
+    command: >
+      sh -c "pip install -q 'psycopg[binary]>=3.1.0' && python -m db_migrate migrate"
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: sangita_grantha
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      PYTHONPATH: /app/tools/db-migrate
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./tools/db-migrate:/app/tools/db-migrate:ro
+      - ./database/migrations:/app/database/migrations:ro
+
+  # Dev backend: mounts source + Gradle cache, runs via gradlew (fast incremental builds)
+  backend:
+    profiles: [ "dev" ]
+    image: eclipse-temurin:25-jdk
+    working_dir: /app
+    command: ./gradlew :modules:backend:api:run --no-daemon
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: sangita_grantha
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      GRADLE_USER_HOME: /gradle-cache
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    volumes:
+      - .:/app
+      - gradle-cache:/gradle-cache
+
+  # Prod backend: builds fat JAR via Dockerfile
+  backend-prod:
+    profiles: [ "prod" ]
     build:
       context: .
       dockerfile: modules/backend/api/Dockerfile
@@ -31,22 +77,23 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
 
   extraction:
     profiles: [ "dev", "prod" ]
     build:
       context: ./tools/krithi-extract-enrich-worker
     environment:
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_NAME: sangita_grantha
-      DB_USER: postgres
-      DB_PASSWORD: postgres
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/sangita_grantha
     depends_on:
       db:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     volumes:
       - ./tools/krithi-extract-enrich-worker/src:/app/src:ro
+      - extraction-cache:/app/cache
 
   frontend:
     profiles: [ "dev" ]
@@ -59,6 +106,9 @@ services:
       - ./modules/frontend/sangita-admin-web/src:/app/src:ro
     environment:
       VITE_API_URL: http://localhost:8080
+      API_PROXY_TARGET: http://backend:8080
 
 volumes:
   pgdata:
+  gradle-cache:
+  extraction-cache:

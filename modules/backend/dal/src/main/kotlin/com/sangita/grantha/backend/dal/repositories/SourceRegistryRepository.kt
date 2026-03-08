@@ -79,6 +79,13 @@ class SourceRegistryRepository {
         Pair(items, total)
     }
 
+    suspend fun findByName(name: String): ImportSourceDto? = DatabaseFactory.dbQuery {
+        T.selectAll()
+            .andWhere { T.name eq name }
+            .map { it.toImportSourceDto() }
+            .singleOrNull()
+    }
+
     suspend fun findById(id: Uuid): ImportSourceDto? = DatabaseFactory.dbQuery {
         T.selectAll()
             .andWhere { T.id eq id }

@@ -45,3 +45,8 @@ VALUES
 (gen_random_uuid(), 'Ganesha', 'ganesha', NOW(), NOW()),
 (gen_random_uuid(), 'Krishna', 'krishna', NOW(), NOW())
 ON CONFLICT (name_normalized) DO NOTHING;
+
+-- Import Source for unmatched PDF extractions (used by KrithiMatcherService)
+INSERT INTO import_sources (name, description, source_tier, supported_formats)
+VALUES ('PDF Extraction (Unmatched)', 'Auto-created for unmatched PDF extraction results requiring manual review', 3, '{PDF}')
+ON CONFLICT DO NOTHING;

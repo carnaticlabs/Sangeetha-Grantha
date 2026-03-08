@@ -181,29 +181,47 @@ SECTION_HEADER_PATTERNS: list[tuple[re.Pattern[str], str]] = [
     # Devanagari full headers.
     (re.compile(r"^\s*पल्लवि(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "PALLAVI"),
     (re.compile(r"^\s*अनुपल्लवि(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "ANUPALLAVI"),
-    (re.compile(r"^\s*चरणम्(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "CHARANAM"),
-    (re.compile(r"^\s*समष्टि\s+चरणम्(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "SAMASHTI_CHARANAM"),
-    (re.compile(r"^\s*[(]?मध्यम\s+काल\s+साहित्यम्[)]?(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "MADHYAMAKALA"),
+    (re.compile(r"^\s*चरण[म्ंम]+(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "CHARANAM"),
+    (re.compile(r"^\s*समष्टि\s+चरण[म्ंम]+(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "SAMASHTI_CHARANAM"),
+    (re.compile(r"^\s*[(]?मध्यम\s+काल\s+साहित्य[म्ंम]*[)]?(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "MADHYAMAKALA"),
     # Tamil full headers.
     (re.compile(r"^\s*பல்லவி(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "PALLAVI"),
     (re.compile(r"^\s*அனுபல்லவி(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "ANUPALLAVI"),
     (re.compile(r"^\s*சரணம்(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "CHARANAM"),
     (re.compile(r"^\s*ஸமஷ்டி\s+சரணம்(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "SAMASHTI_CHARANAM"),
-    # Telugu full headers.
+    # Telugu full headers (both anusvara చరణం and explicit చరణమ్ forms).
     (re.compile(r"^\s*పల్లవి(?:\s|:|\-|\)|]|$)", re.IGNORECASE), "PALLAVI"),
     (re.compile(r"^\s*అనుపల్లవి(?:\s|:|\-|\)|]|$)", re.IGNORECASE), "ANUPALLAVI"),
     (re.compile(r"^\s*చరణం(?:\s|:|\-|\)|]|$)", re.IGNORECASE), "CHARANAM"),
-    (re.compile(r"^\s*సమష్టి\s+చరణం(?:\s|:|\-|\)|]|$)", re.IGNORECASE), "SAMASHTI_CHARANAM"),
-    # Kannada full headers.
+    (re.compile(r"^\s*చరణమ్(?:\s|:|\-|\)|]|$)", re.IGNORECASE), "CHARANAM"),
+    (re.compile(r"^\s*సమష్టి\s+చరణ[ంమ్]+(?:\s|:|\-|\)|]|$)", re.IGNORECASE), "SAMASHTI_CHARANAM"),
+    # Kannada full headers (both short ಚರಣ and full ಚರಣಮ್/ಚರಣಂ forms).
     (re.compile(r"^\s*ಪಲ್ಲವಿ(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "PALLAVI"),
     (re.compile(r"^\s*ಅನುಪಲ್ಲವಿ(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "ANUPALLAVI"),
-    (re.compile(r"^\s*ಚರಣ(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "CHARANAM"),
-    (re.compile(r"^\s*ಸಮಷ್ಟಿ\s+ಚರಣ(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "SAMASHTI_CHARANAM"),
-    # Malayalam full headers.
+    (re.compile(r"^\s*ಚರಣ[ಮ್ಂ]*(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "CHARANAM"),
+    (re.compile(r"^\s*ಸಮಷ್ಟಿ\s+ಚರಣ[ಮ್ಂ]*(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "SAMASHTI_CHARANAM"),
+    # Malayalam full headers (both ചരണം and ചരണമ് forms).
     (re.compile(r"^\s*പല്ലവി(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "PALLAVI"),
     (re.compile(r"^\s*അനുപല്ലവി(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "ANUPALLAVI"),
-    (re.compile(r"^\s*ചരണം(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "CHARANAM"),
-    (re.compile(r"^\s*സമഷ്ടി\s+ചരണം(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "SAMASHTI_CHARANAM"),
+    (re.compile(r"^\s*ചരണ[ംമ്]+(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "CHARANAM"),
+    (re.compile(r"^\s*സമഷ്ടി\s+ചരണ[ംമ്]+(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "SAMASHTI_CHARANAM"),
+    # Telugu parenthesized MKS: (మధ్యమ కాల సాహిత్యం)
+    (re.compile(r"^\s*[(]మధ్యమ\s+కాల\s+సాహిత్య[ంమ్]+[)]\s*$", re.IGNORECASE), "MADHYAMAKALA"),
+    # Kannada parenthesized MKS: (ಮಧ್ಯಮ ಕಾಲ ಸಾಹಿತ್ಯಂ)
+    (re.compile(r"^\s*[(]ಮಧ್ಯಮ\s+ಕಾಲ\s+ಸಾಹಿತ್ಯ[ಂಮ್]*[)]\s*$", re.IGNORECASE), "MADHYAMAKALA"),
+    # Malayalam parenthesized MKS: (മധ്യമ കാല സാഹിത്യം)
+    (re.compile(r"^\s*[(]മധ്യമ\s+കാല\s+സാഹിത്യ[ംമ്]+[)]\s*$", re.IGNORECASE), "MADHYAMAKALA"),
+    # Tamil parenthesized MKS: (மத்யம கால ஸாஹித்யம்)
+    (re.compile(r"^\s*[(]மத்யம\s+கால\s+ஸாஹித்ய[ம்]+[)]\s*$", re.IGNORECASE), "MADHYAMAKALA"),
+    # Bracket-format headers with underscores (from stored lyrics).
+    (re.compile(r"^\s*\[PALLAVI\]\s*$", re.IGNORECASE), "PALLAVI"),
+    (re.compile(r"^\s*\[ANUPALLAVI\]\s*$", re.IGNORECASE), "ANUPALLAVI"),
+    (re.compile(r"^\s*\[CHARANAM\]\s*$", re.IGNORECASE), "CHARANAM"),
+    (re.compile(r"^\s*\[SAMASHTI_CHARANAM\]\s*$", re.IGNORECASE), "SAMASHTI_CHARANAM"),
+    (re.compile(r"^\s*\[CHITTASWARAM\]\s*$", re.IGNORECASE), "CHITTASWARAM"),
+    (re.compile(r"^\s*\[MADHYAMA_KALA\]\s*$", re.IGNORECASE), "MADHYAMAKALA"),
+    (re.compile(r"^\s*\[SWARA_SAHITYA\]\s*$", re.IGNORECASE), "SWARA_SAHITYA"),
+    (re.compile(r"^\s*\[SOLKATTU_SWARA\]\s*$", re.IGNORECASE), "SOLKATTU_SWARA"),
     # Non-lyric metadata headers.
     (re.compile(r"^\s*[\-–—•*()=\[\]]*\s*meaning(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE), "MEANING"),
     (re.compile(r"^\s*[\-–—•*()=\[\]]*\s*notes?(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE), "NOTES"),
@@ -412,6 +430,8 @@ class StructureParser:
                 )
 
         if sections:
+            sections = self._demote_mks(sections)
+            sections = self._merge_dual_format(sections)
             return sections
 
         trimmed = lyric_text.strip()
@@ -427,6 +447,139 @@ class StructureParser:
                 end_pos=len(lyric_text),
             )
         ]
+
+    def _demote_mks(self, sections: list[DetectedSection]) -> list[DetectedSection]:
+        """Rule 1: MKS is never a top-level section — attach to preceding parent.
+
+        If the MKS block contains an inline section header (e.g. చరణమ్ for Charanam),
+        split it: text before the header is MKS of the parent, text after is a new section.
+        """
+        result: list[DetectedSection] = []
+        for section in sections:
+            if section.section_type == SectionType.MADHYAMA_KALA:
+                # Check for inline section headers within MKS text
+                split_sections = self._split_mks_inline_headers(section)
+                if split_sections:
+                    mks_text, new_sections = split_sections
+                    # Attach MKS text to parent
+                    if result and mks_text.strip():
+                        parent = result[-1]
+                        result[-1] = DetectedSection(
+                            section_type=parent.section_type,
+                            order=parent.order,
+                            label=parent.label,
+                            text=parent.text + "\n\n[Madhyama Kala Sahitya]\n" + mks_text,
+                            start_pos=parent.start_pos,
+                            end_pos=section.end_pos,
+                        )
+                    elif mks_text.strip() and not result:
+                        # No parent — keep as OTHER
+                        result.append(DetectedSection(
+                            section_type=SectionType.OTHER,
+                            order=0, label="Madhyama Kala",
+                            text=mks_text, start_pos=section.start_pos,
+                            end_pos=section.end_pos,
+                        ))
+                    # Add the extracted sections
+                    result.extend(new_sections)
+                elif result:
+                    parent = result[-1]
+                    result[-1] = DetectedSection(
+                        section_type=parent.section_type,
+                        order=parent.order,
+                        label=parent.label,
+                        text=parent.text + "\n\n[Madhyama Kala Sahitya]\n" + section.text,
+                        start_pos=parent.start_pos,
+                        end_pos=section.end_pos,
+                    )
+                # else: standalone MKS with no parent and no inline headers — drop it
+            else:
+                result.append(section)
+        # Re-index order sequentially
+        for i, s in enumerate(result):
+            result[i] = DetectedSection(
+                section_type=s.section_type,
+                order=i + 1,
+                label=s.label,
+                text=s.text,
+                start_pos=s.start_pos,
+                end_pos=s.end_pos,
+            )
+        return result
+
+    def _split_mks_inline_headers(
+        self, mks_section: DetectedSection
+    ) -> tuple[str, list[DetectedSection]] | None:
+        """Check if MKS text contains inline section headers (e.g. చరణమ్).
+
+        Returns (mks_text_before_header, [new_sections]) or None if no inline header found.
+        """
+        lines = mks_section.text.splitlines()
+        for i, line in enumerate(lines):
+            header = self._detect_section_header(line.strip())
+            if header is not None and header.label not in METADATA_LABELS:
+                section_type = SECTION_LABEL_TO_TYPE.get(header.label)
+                if section_type and section_type != SectionType.MADHYAMA_KALA:
+                    mks_text = "\n".join(lines[:i]).strip()
+                    section_text_lines = []
+                    if header.remainder:
+                        section_text_lines.append(header.remainder)
+                    section_text_lines.extend(lines[i + 1:])
+                    section_text = "\n".join(section_text_lines).strip()
+
+                    new_sections = []
+                    if section_text:
+                        new_sections.append(DetectedSection(
+                            section_type=section_type,
+                            order=0,
+                            label=section_type.value.replace("_", " ").title(),
+                            text=section_text,
+                            start_pos=mks_section.start_pos,
+                            end_pos=mks_section.end_pos,
+                        ))
+                    return (mks_text, new_sections)
+        return None
+
+    def _merge_dual_format(self, sections: list[DetectedSection]) -> list[DetectedSection]:
+        """Rule 3: Merge dual-format (continuous + word-division) duplicates."""
+        if len(sections) < 2:
+            return sections
+        result: list[DetectedSection] = []
+        skip_next = False
+        for i, section in enumerate(sections):
+            if skip_next:
+                skip_next = False
+                continue
+            if i + 1 < len(sections):
+                next_section = sections[i + 1]
+                if section.section_type == next_section.section_type:
+                    norm_a = re.sub(r"\s+", "", section.text)
+                    norm_b = re.sub(r"\s+", "", next_section.text)
+                    if norm_a and norm_b:
+                        overlap = sum(1 for ca, cb in zip(norm_a, norm_b) if ca == cb)
+                        max_len = max(len(norm_a), len(norm_b))
+                        if max_len > 0 and overlap / max_len > 0.9:
+                            # Keep the longer one (word-division has more spaces)
+                            kept = next_section if len(next_section.text) >= len(section.text) else section
+                            result.append(DetectedSection(
+                                section_type=kept.section_type,
+                                order=len(result) + 1,
+                                label=kept.label,
+                                text=kept.text,
+                                start_pos=kept.start_pos,
+                                end_pos=kept.end_pos,
+                            ))
+                            skip_next = True
+                            continue
+            result.append(DetectedSection(
+                section_type=section.section_type,
+                order=len(result) + 1,
+                label=section.label,
+                text=section.text,
+                start_pos=section.start_pos,
+                end_pos=section.end_pos,
+            ))
+        return result
 
     def _split_ragamalika_subsections(
         self,
@@ -512,7 +665,9 @@ class StructureParser:
                 flush()
                 current_label = block.label
                 if block.lines:
-                    current_blocks.append(_TextBlock("UNLABELED", block.lines, block.start_pos, block.end_pos))
+                    # Re-parse lines to detect inline section headers within variant text
+                    sub_blocks = self._reparse_lines_for_sections(block.lines, block.start_pos, block.end_pos)
+                    current_blocks.extend(sub_blocks)
                 continue
 
             if current_label is not None:
@@ -529,43 +684,92 @@ class StructureParser:
         if not blocks:
             return []
 
-        order_by_type: dict[SectionType, list[int]] = {}
-        for section in canonical_sections:
-            order_by_type.setdefault(section.section_type, []).append(section.order)
-
-        used_orders: set[int] = set()
-        sections: list[DetectedSection] = []
-        next_order = 1
-
+        # Collect raw parsed sections from blocks, applying MKS demotion
+        raw_sections: list[DetectedSection] = []
         for block in blocks:
             text = "\n".join(line.text for line in block.lines).strip()
             if not text:
                 continue
-
             section_type = SECTION_LABEL_TO_TYPE.get(block.label, SectionType.OTHER)
-            order = next_order
-            if section_type in order_by_type:
-                for candidate in order_by_type[section_type]:
-                    if candidate not in used_orders:
-                        order = candidate
-                        break
-
-            used_orders.add(order)
-            next_order = max(next_order, order + 1)
-            label = section_type.value.replace("_", " ").title() if section_type != SectionType.OTHER else "Other"
-            sections.append(
+            raw_sections.append(
                 DetectedSection(
                     section_type=section_type,
-                    order=order,
-                    label=label,
+                    order=0,
+                    label=section_type.value.replace("_", " ").title() if section_type != SectionType.OTHER else "Other",
                     text=text,
                     start_pos=block.start_pos,
                     end_pos=block.end_pos,
                 )
             )
 
-        sections.sort(key=lambda s: s.order)
+        # Apply MKS demotion and dual-format merging to variant too
+        raw_sections = self._demote_mks(raw_sections)
+        raw_sections = self._merge_dual_format(raw_sections)
+
+        # Map to canonical structure by matching type and sequential occurrence
+        if not canonical_sections:
+            return raw_sections
+
+        type_queues: dict[SectionType, list[DetectedSection]] = {}
+        for s in raw_sections:
+            type_queues.setdefault(s.section_type, []).append(s)
+
+        sections: list[DetectedSection] = []
+        for canonical in canonical_sections:
+            queue = type_queues.get(canonical.section_type, [])
+            if queue:
+                matched = queue.pop(0)
+                sections.append(
+                    DetectedSection(
+                        section_type=canonical.section_type,
+                        order=canonical.order,
+                        label=canonical.label,
+                        text=matched.text,
+                        start_pos=matched.start_pos,
+                        end_pos=matched.end_pos,
+                    )
+                )
+
         return sections
+
+    def _reparse_lines_for_sections(
+        self,
+        lines: list[_LineToken],
+        block_start: int,
+        block_end: int,
+    ) -> list[_TextBlock]:
+        """Re-parse lines within a language block to detect inline section headers."""
+        blocks: list[_TextBlock] = []
+        current_label = "UNLABELED"
+        current_lines: list[_LineToken] = []
+
+        def flush() -> None:
+            nonlocal current_lines
+            if current_lines:
+                blocks.append(_TextBlock(
+                    label=current_label,
+                    lines=current_lines,
+                    start_pos=current_lines[0].start_pos,
+                    end_pos=current_lines[-1].end_pos,
+                ))
+                current_lines = []
+
+        for line in lines:
+            header = self._detect_section_header(line.text)
+            if header is not None:
+                flush()
+                current_label = header.label
+                if header.remainder:
+                    current_lines.append(_LineToken(
+                        text=header.remainder,
+                        start_pos=line.start_pos,
+                        end_pos=line.end_pos,
+                    ))
+            else:
+                current_lines.append(line)
+
+        flush()
+        return blocks
 
     def _extract_script_split_variants(
         self,
@@ -648,6 +852,11 @@ class StructureParser:
         if "a i i u u" in lowered or "ch j jh" in lowered or "ph b bh m" in lowered:
             return True
         if "pronunciation guide" in lowered:
+            return True
+        # Filter nOTTu-svara header — it's metadata not lyric content
+        if re.match(r"^\s*\(?n[oō]t+u[\s-]*svara\s+s[aā]hityam?\)?\.?\s*$", lowered):
+            return True
+        if lowered.startswith("updated on "):
             return True
         return any(
             marker in lowered

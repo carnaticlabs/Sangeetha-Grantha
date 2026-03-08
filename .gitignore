@@ -63,7 +63,17 @@ tools/sangita-cli/Cargo.lock
 *.docx
 **/**__pycache**/
 **/**__pytest_cache**/
-**/pdf-extractor/cache/**/
+**/krithi-extract-enrich-worker/cache/**/
 **/**egg-info**/
 
-**/tools/pdf-extractor/cache/**
+**/tools/krithi-extract-enrich-worker/cache/**
+
+# Python virtual environments
+.venv/
+.pdf-venv/
+**/.venv/
+
+# Claude Code - track shared config, ignore local/ephemeral files
+.claude/settings.local.json
+.claude/plan.md
+.claude/worktrees/

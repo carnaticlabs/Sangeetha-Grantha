@@ -14,13 +14,16 @@ import com.sangita.grantha.shared.domain.model.import.CanonicalLyricVariantDto
 import com.sangita.grantha.shared.domain.model.import.CanonicalRagaDto
 import com.sangita.grantha.shared.domain.model.import.CanonicalSectionDto
 import com.sangita.grantha.shared.domain.model.import.CanonicalSectionType
+import com.sangita.grantha.backend.dal.DatabaseFactory
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.jetbrains.exposed.v1.jdbc.transactions.TransactionManager
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class ExtractionResultProcessorTest : IntegrationTestBase() {
@@ -43,18 +46,29 @@ class ExtractionResultProcessorTest : IntegrationTestBase() {
         val entityResolver = EntityResolutionServiceImpl(dal, normalizer)
         importService = ImportServiceImpl(dal, env, entityResolver, normalizer, ImportReportGenerator(), LyricVariantPersistenceService(dal)) { autoApproval }
 
-        val krithiCreationService = KrithiCreationFromExtractionService(dal, normalizer)
-        val krithiMatcherService = KrithiMatcherService(dal, normalizer, krithiCreationService)
+        val krithiMatcherService = KrithiMatcherService(dal, normalizer)
         val structuralVotingProcessor = StructuralVotingProcessor(dal, com.sangita.grantha.backend.api.services.scraping.StructuralVotingEngine())
         extractionProcessor = ExtractionResultProcessor(
             dal = dal,
             krithiMatcherService = krithiMatcherService,
             structuralVotingProcessor = structuralVotingProcessor,
         )
+
+        // Seed the "PDF Extraction (Unmatched)" import source required by KrithiMatcherService
+        kotlinx.coroutines.runBlocking {
+            DatabaseFactory.dbQuery {
+                TransactionManager.current().connection.prepareStatement(
+                    """INSERT INTO import_sources (name, description, source_tier, supported_formats)
+                       VALUES ('PDF Extraction (Unmatched)', 'For unmatched extraction results', 3, '{PDF}')
+                       ON CONFLICT DO NOTHING""",
+                    false
+                ).executeUpdate()
+            }
+        }
     }
 
     @Test
-    fun `html import url flows through ingestion and links import to evidence-backed krithi`() = runTest {
+    fun `unmatched extraction creates pending import for manual review`() = runTest {
         val sourceUrl = "http://guru-guha.blogspot.com/2007/07/dikshitar-kriti-akhilandesvari-raksha.html"
 
         val submitted = importService.submitImports(
@@ -66,7 +80,6 @@ class ExtractionResultProcessorTest : IntegrationTestBase() {
             )
         )
         assertEquals(1, submitted.size)
-        val importId = submitted.first().id
 
         val (tasks, _) = dal.extractionQueue.list(format = listOf("HTML"), limit = 50)
         val queuedTask = tasks.single { it.sourceUrl == sourceUrl }
@@ -116,13 +129,16 @@ class ExtractionResultProcessorTest : IntegrationTestBase() {
         assertNotNull(queueAfter)
         assertEquals("INGESTED", queueAfter.status)
 
-        val updatedImport = dal.imports.findById(importId)
-        assertNotNull(updatedImport)
-        assertEquals(ImportStatusDto.MAPPED, updatedImport.importStatus)
-        assertNotNull(updatedImport.mappedKrithiId)
-
-        val evidence = dal.sourceEvidence.getKrithiEvidence(updatedImport.mappedKrithiId!!)
-        assertNotNull(evidence)
-        assertTrue(evidence.sources.any { it.sourceUrl == sourceUrl })
+        // With no pre-existing krithis to match, unmatched extractions should create
+        // a pending import for manual curator review — NOT auto-create a new krithi
+        val pendingImports = dal.imports.listImports(
+            status = com.sangita.grantha.backend.dal.enums.ImportStatus.PENDING,
+        )
+        val unmatchedImport = pendingImports.find {
+            it.sourceKey == "$sourceUrl::Akhilandesvari Rakshamaam"
+        }
+        assertNotNull(unmatchedImport, "Expected a pending import for unmatched extraction")
+        assertEquals("Akhilandesvari Rakshamaam", unmatchedImport.rawTitle)
+        assertNull(unmatchedImport.mappedKrithiId, "Unmatched extraction should not be auto-mapped to a krithi")
     }
 }

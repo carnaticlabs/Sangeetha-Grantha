@@ -15,8 +15,7 @@ class ExtractionResultProcessorUnitTest {
 
     private val dal: SangitaDal = mockk(relaxed = true)
     private val normalizer = NameNormalizationService()
-    private val krithiCreationService: KrithiCreationFromExtractionService = mockk(relaxed = true)
-    private val krithiMatcherService = KrithiMatcherService(dal, normalizer, krithiCreationService)
+    private val krithiMatcherService = KrithiMatcherService(dal, normalizer)
     private val structuralVotingProcessor = StructuralVotingProcessor(dal, com.sangita.grantha.backend.api.services.scraping.StructuralVotingEngine())
     private lateinit var processor: ExtractionResultProcessor
 

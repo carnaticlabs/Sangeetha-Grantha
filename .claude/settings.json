@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew:*)",
+      "Bash(bun run:*)",
+      "Bash(bun install:*)",
+      "Bash(cargo build:*)",
+      "Bash(cargo run:*)",
+      "Bash(cargo check:*)",
+      "Bash(mise exec:*)",
+      "Bash(mise trust)",
+      "Bash(mise install)",
+      "Bash(docker compose:*)",
+      "Bash(docker exec:*)",
+      "Bash(npx playwright test:*)",
+      "Bash(curl:*)",
+      "Bash(psql:*)",
+      "Bash(git status:*)",
+      "Bash(git log:*)",
+      "Bash(git diff:*)",
+      "Bash(git branch:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git checkout:*)",
+      "Bash(git stash:*)",
+      "Bash(git restore:*)",
+      "Bash(lsof -i:*)",
+      "mcp__postgres__query",
+      "mcp__Claude_Preview__preview_start"
+    ],
+    "deny": []
+  }
+}

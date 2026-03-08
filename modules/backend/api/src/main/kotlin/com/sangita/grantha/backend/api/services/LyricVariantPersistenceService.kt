@@ -90,6 +90,8 @@ class LyricVariantPersistenceService(
                         }
 
                         val sectionStructure = structuralVotingEngine.pickBestStructure(candidates)
+                            // Rule 1: MKS is never a top-level section — exclude from canonical skeleton
+                            .filter { it.type != RagaSectionDto.MADHYAMA_KALA }
                         if (sectionStructure.isNotEmpty()) {
                             val sectionsToSave = sectionStructure.mapIndexed { index, section ->
                                 Triple(section.type.name, index + 1, null as String?)
@@ -119,9 +121,16 @@ class LyricVariantPersistenceService(
 
                         val variantSections = scraped.sections
                         if (!variantSections.isNullOrEmpty() && updatedSections.isNotEmpty()) {
+                            // Match variant sections to canonical by type + sequential occurrence
+                            val typeQueues = variantSections
+                                .filter { it.text.isNotBlank() }
+                                .groupBy { it.type }
+                                .mapValues { (_, v) -> v.toMutableList() }
                             val lyricSections = updatedSections.mapNotNull { savedSection ->
-                                val match = variantSections.getOrNull(savedSection.orderIndex - 1)
-                                if (match != null && match.text.isNotBlank()) {
+                                val sectionType = parseRagaSectionDto(savedSection.sectionType)
+                                val queue = if (sectionType != null) typeQueues[sectionType] else null
+                                val match = queue?.removeFirstOrNull()
+                                if (match != null) {
                                     savedSection.id.toJavaUuid() to match.text
                                 } else null
                             }

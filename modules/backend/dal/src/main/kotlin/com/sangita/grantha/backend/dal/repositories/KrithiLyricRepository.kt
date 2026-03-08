@@ -8,6 +8,7 @@ import com.sangita.grantha.backend.dal.models.toKrithiLyricSectionDto
 import com.sangita.grantha.backend.dal.support.toJavaUuid
 import com.sangita.grantha.backend.dal.tables.KrithiLyricVariantsTable
 import com.sangita.grantha.backend.dal.tables.KrithiLyricSectionsTable
+import com.sangita.grantha.backend.dal.tables.KrithiSectionsTable
 import com.sangita.grantha.shared.domain.model.KrithiLyricVariantDto
 import com.sangita.grantha.shared.domain.model.KrithiLyricVariantWithSectionsDto
 import java.time.OffsetDateTime
@@ -68,8 +69,12 @@ class KrithiLyricRepository {
         val variantIds = variants.map { it.id.toJavaUuid() }
         val sections = if (variantIds.isNotEmpty()) {
             KrithiLyricSectionsTable
+                .join(KrithiSectionsTable, org.jetbrains.exposed.v1.core.JoinType.LEFT,
+                    onColumn = KrithiLyricSectionsTable.sectionId,
+                    otherColumn = KrithiSectionsTable.id)
                 .selectAll()
                 .where { KrithiLyricSectionsTable.lyricVariantId inList variantIds }
+                .orderBy(KrithiSectionsTable.orderIndex)
                 .map { it.toKrithiLyricSectionDto() }
                 .groupBy { it.lyricVariantId }
         } else {

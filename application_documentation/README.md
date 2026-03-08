@@ -1,9 +1,9 @@
-| Metadata | Value |
-|:---|:---|
-| **Status** | Active |
-| **Version** | 1.2.0 |
-| **Last Updated** | 2026-02-28 |
-| **Author** | Sangeetha Grantha Team |
+| Metadata         | Value                  |
+| :--------------- | :--------------------- |
+| **Status**       | Active                 |
+| **Version**      | 1.2.0                  |
+| **Last Updated** | 2026-02-28             |
+| **Author**       | Sangeetha Grantha Team |
 
 # Sangita Grantha Documentation Index
 
