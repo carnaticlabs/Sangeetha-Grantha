@@ -2,7 +2,7 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-03-10 |
 | **Author** | Sangeetha Grantha Team |
 
 # Tech Stack
@@ -32,10 +32,17 @@ For current toolchain and library versions, see **[Current Versions](../00-meta/
 - **UI Framework**: Compose Multiplatform
 - **Logic**: Shared Kotlin domain models and services
 
+### Extraction & Enrichment (Python)
+- **Worker**: krithi-extract-enrich-worker (Python 3.11+)
+- **PDF Extraction**: PyMuPDF (fitz)
+- **HTTP Client**: httpx
+- **OCR Fallback**: Tesseract (via pytesseract)
+
 ### Tooling & Infrastructure
-- **Version Manager**: `mise` (Java, Rust, Bun)
-- **CLI Tool**: `sangita-cli` (Rust) for migrations and dev orchestration
-- **Containerization**: Docker Compose for local database
+- **Version Manager**: `mise` (Java, Bun)
+- **Migration Tool**: `db-migrate` (Python) for database migrations
+- **Dev Orchestration**: Makefile + Docker Compose (DB, backend, frontend, extraction)
+- **Containerization**: Docker Compose for full dev stack
 - **Package Manager**: `bun` for frontend, `gradle` for backend/mobile
 
 ---

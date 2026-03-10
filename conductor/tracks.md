@@ -2,7 +2,7 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.3.3 |
-| **Last Updated** | 2026-02-28 |
+| **Last Updated** | 2026-03-10 |
 | **Author** | Sangeetha Grantha Team |
 
 # Conductor Tracks Registry
@@ -10,7 +10,7 @@
 | ID | Name | Status |
 |:---|:---|:---|
 | [TRACK-001](./tracks/TRACK-001-bulk-import-krithis.md) | Bulk Import - Backend Orchestration | Completed |
-| [TRACK-002](./tracks/TRACK-002-doc-header-standardizations.md) | Doc Header Standardizations | Planned |
+| [TRACK-002](./tracks/TRACK-002-doc-header-standardizations.md) | Doc Header Standardizations | Deferred |
 | [TRACK-003](./tracks/TRACK-003-bulk-import-dashboard.md) | Bulk Import - Admin Dashboard | Completed |
 | [TRACK-004](./tracks/TRACK-004-bulk-import-review-ui.md) | Bulk Import - Review UI | Completed |
 | [TRACK-005](./tracks/TRACK-005-bulk-import-revamp.md) | Bulk Import Revamp (Holistic Fix) | Completed |
@@ -22,7 +22,7 @@
 | [TRACK-011](./tracks/TRACK-011-bulk-import-quality-scoring-system.md) | Bulk Import Quality Scoring System | Completed |
 | [TRACK-012](./tracks/TRACK-012-bulk-import-review-workflow-completion.md) | Bulk Import Review Workflow Completion | Completed |
 | [TRACK-013](./tracks/TRACK-013-bulk-import-performance-scalability.md) | Bulk Import Performance & Scalability Improvements | Completed |
-| [TRACK-014](./tracks/TRACK-014-bulk-import-testing-quality-assurance.md) | Bulk Import Testing & Quality Assurance | Proposed |
+| [TRACK-014](./tracks/TRACK-014-bulk-import-testing-quality-assurance.md) | Bulk Import Testing & Quality Assurance | Deferred |
 | [TRACK-015](./tracks/TRACK-015-ktor-upgrade-3.4.0.md) | Ktor Upgrade to 3.4.0 | Completed |
 | [TRACK-016](./tracks/TRACK-016-exposed-upgrade-1.0.0.md) | Exposed Upgrade to 1.0.0 | Completed |
 | [TRACK-017](./tracks/TRACK-017-doc-dependency-update.md) | Documentation Dependency Updates | Completed |
@@ -43,14 +43,14 @@
 | [TRACK-032](./tracks/TRACK-032-multi-language-lyric-extraction-analysis.md) | Multi-Language Lyric Extraction from Web Sources | Completed |
 | [TRACK-033](./tracks/TRACK-033-cli-docs-command.md) | Sangita CLI – Docs Command | Completed |
 | [TRACK-034](./tracks/TRACK-034-fix-text-blocker-parsing.md) | Fix TextBlocker Section Parsing | Completed |
-| [TRACK-035](./tracks/TRACK-035-frontend-e2e-testing.md) | Frontend E2E Testing with Playwright | In Progress |
+| [TRACK-035](./tracks/TRACK-035-frontend-e2e-testing.md) | Frontend E2E Testing with Playwright | Deferred |
 | [TRACK-036](./tracks/TRACK-036-enhanced-text-blocker-extraction.md) | Enhanced TextBlocker Extraction Strategy | Completed |
 | [TRACK-037](./tracks/TRACK-037-environment-variables.md) | Environment Variables & Config Standardisation | Completed |
 | [TRACK-038](./tracks/TRACK-038-dependency-updates-feb-2026.md) | Dependency Updates (Feb 2026) | Completed |
 | [TRACK-039](./tracks/TRACK-039-data-quality-audit-krithi-structure.md) | Data Quality Audit – Krithi Structural Consistency | Completed |
 | [TRACK-040](./tracks/TRACK-040-krithi-remediation-deduplication.md) | Krithi Data Remediation & Deduplication | Completed |
 | [TRACK-041](./tracks/TRACK-041-enhanced-sourcing-logic.md) | Enhanced Sourcing Logic & Structural Voting | Completed |
-| [TRACK-042](./tracks/TRACK-042-mcp-database-tooling-optimization.md) | MCP Database Tooling Optimization | Proposed |
+| [TRACK-042](./tracks/TRACK-042-mcp-database-tooling-optimization.md) | MCP Database Tooling Optimization | Deferred |
 | [TRACK-043](./tracks/TRACK-043-documentation-guardian-audit.md) | Documentation Guardian Audit & Repair | Completed |
 | [TRACK-044](./tracks/TRACK-044-sourcing-ui-foundation.md) | Sourcing UI Foundation & Design System Components | Completed |
 | [TRACK-045](./tracks/TRACK-045-sourcing-backend-api.md) | Sourcing Backend API Layer | Completed |

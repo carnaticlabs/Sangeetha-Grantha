@@ -2,7 +2,7 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-03-10 |
 | **Author** | Sangeetha Grantha Team |
 
 # Getting Started with Sangita Grantha
@@ -20,10 +20,10 @@ For current toolchain and library versions, see **[Current Versions](../00-meta/
 Ensure you have the following installed on your system:
 
 - **[mise](https://mise.jafp.info/)**: Our tool version manager (replaces `asdf`, `nvm`, etc.).
-- **Docker & Docker Compose**: For running the PostgreSQL database.
-- **Rust Toolchain**: To build and run the `sangita-cli`.
+- **Docker & Docker Compose**: For running the full dev stack (DB, backend, frontend, extraction).
+- **Python 3.11+**: For the `db-migrate` migration tool and extraction worker.
 - **Bun**: For frontend package management and building.
-- **JDK**: For Kotlin and Android development. (See [Current Versions](../00-meta/current-versions.md))
+- **JDK 25 (Temurin)**: For Kotlin and Android development. (See [Current Versions](../00-meta/current-versions.md))
 - **Android Studio / Xcode**: For mobile development.
 
 ## 3. Local Environment Setup
@@ -36,27 +36,20 @@ Run the following command to install the required tool versions managed by `mise
 mise install
 ```
 
-### 3.2 Initialize the CLI
-The `sangita-cli` is central to our development process. Build it and ensure it's functional:
+### 3.2 Database Setup
+We use Docker Compose to run PostgreSQL. Migrations are managed by the Python `db-migrate` tool:
 ```bash
-cargo build --manifest-path tools/sangita-cli/Cargo.toml
+# Full stack start (DB + Backend + Frontend + Extraction)
+make dev
+
+# Or database only
+make db
+
+# Reset DB (drop → create → migrate → seed)
+make db-reset
 ```
 
-### 3.3 Database Setup
-We use Docker Compose to run PostgreSQL. The CLI manages migrations and seeding:
-```bash
-# Start the database container and run migrations/seed
-mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db reset
-```
-
-### 3.4 Configuration
-Copy the sample configuration (if available) or create a local overrides file:
-```bash
-# Ensure config/application.local.toml exists with your local settings
-# (Refer to config/ for templates)
-```
-
-### 3.5 Frontend Dependencies
+### 3.3 Frontend Dependencies
 Install dependencies for the admin web module using `bun`:
 ```bash
 cd modules/frontend/sangita-admin-web
@@ -67,23 +60,24 @@ bun install
 
 ### 4.1 Running the Application
 
-- **Backend (API):**
+- **Full Dev Stack (recommended):**
+```bash
+  make dev          # Docker Compose: DB + Backend + Frontend + Extraction
+  make dev-down     # Stop all services
+```
+- **Backend only:**
 ```bash
   ./gradlew :modules:backend:api:run
 ```
-- **Frontend (Admin):**
+- **Frontend only:**
 ```bash
   cd modules/frontend/sangita-admin-web
-  bun dev
+  bun run dev
 ```
-- **Database Dev Mode:**
-```bash
-  mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- dev --start-db
-```
-
 - **Database Migrations:**
 ```bash
-  mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db migrate
+  make migrate      # Run pending migrations
+  make db-reset     # Drop → create → migrate → seed
 ```
 
 ### 4.2 The Conductor System
@@ -95,8 +89,9 @@ All work MUST be tracked via the Conductor system located in the `conductor/` di
 ### 4.3 Database Migrations
 **NEVER** use Flyway or standard SQL executors for schema changes.
 - All migrations live in `database/migrations/`.
-- Run migrations via: `mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db migrate`
-- Reset the DB (Drop + Create + Migrate + Seed) via: `mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db reset`
+- Run migrations via: `make migrate`
+- Reset the DB (Drop + Create + Migrate + Seed) via: `make db-reset`
+- Migration tool: Python `db-migrate` in `tools/db-migrate/`
 
 ## 5. Coding Standards & Mandates
 
@@ -125,7 +120,8 @@ Ref: application_documentation/01-requirements/features/bulk-import/01-strategy/
 - `modules/backend/`: Ktor API and services.
 - `modules/frontend/sangita-admin-web/`: React admin interface.
 - `modules/shared/domain/`: KMP module with shared DTOs and logic.
-- `tools/sangita-cli/`: Rust-based developer tool.
+- `tools/db-migrate/`: Python migration tool.
+- `tools/krithi-extract-enrich-worker/`: Python extraction & enrichment worker.
 
 ## 7. Useful Links
 - [Product Definition](../../conductor/product.md)
