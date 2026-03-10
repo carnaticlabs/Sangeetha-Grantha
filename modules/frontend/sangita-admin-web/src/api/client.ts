@@ -608,6 +608,41 @@ export const getAutoApproveQueue = (params?: {
 };
 
 
+// --- Curator Review API ---
+
+export interface CuratorStats {
+    totalPending: number;
+    totalApproved: number;
+    totalRejected: number;
+    totalKrithis: number;
+    sectionIssuesCount: number;
+}
+
+export interface SectionIssue {
+    krithiId: string;
+    title: string;
+    language: string;
+    expectedSections: number;
+    actualSections: number;
+    issueType: string;
+}
+
+export interface SectionIssuesPage {
+    items: SectionIssue[];
+    total: number;
+    page: number;
+    size: number;
+}
+
+export const getCuratorStats = () => request<CuratorStats>('/admin/curator/stats');
+
+export const getCuratorSectionIssues = (page = 0, size = 50) => {
+    const params = new URLSearchParams();
+    params.append('page', String(page));
+    params.append('size', String(size));
+    return request<SectionIssuesPage>(`/admin/curator/section-issues?${params}`);
+};
+
 // --- Notation API ---
 
 export const getAdminKrithiNotation = async (krithiId: string, form: MusicalForm): Promise<NotationResponse> => {

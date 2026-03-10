@@ -90,6 +90,7 @@ fun appModule(env: ApiEnvironment, metricsRegistry: PrometheusMeterRegistry) = m
     single<IReferenceDataService> { ReferenceDataServiceImpl(get()) }
     single { AuditLogService(get()) }
     single { AdminDashboardService(get()) }
+    single { com.sangita.grantha.backend.api.services.CuratorService(get()) }
     single { UserManagementService(get()) }
 
     single<IBulkImportWorker> {

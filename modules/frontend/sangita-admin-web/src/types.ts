@@ -8,6 +8,7 @@ export enum ViewState {
   IMPORT_REVIEW = 'IMPORT_REVIEW',
   SOURCING = 'SOURCING',
   TAGS = 'TAGS',
+  CURATOR_REVIEW = 'CURATOR_REVIEW',
 }
 
 export enum MusicalForm {
@@ -294,6 +295,14 @@ export interface ImportedKrithi {
   reviewerNotes: string | null;
   reviewedAt: string | null;
   createdAt: string;
+
+  // TRACK-011: Quality scoring fields
+  qualityScore?: number | null;
+  qualityTier?: string | null;
+  completenessScore?: number | null;
+  resolutionConfidence?: number | null;
+  sourceQuality?: number | null;
+  validationScore?: number | null;
 
   // Computed (Parsed from resolutionData)
   resolution?: ResolutionResult;

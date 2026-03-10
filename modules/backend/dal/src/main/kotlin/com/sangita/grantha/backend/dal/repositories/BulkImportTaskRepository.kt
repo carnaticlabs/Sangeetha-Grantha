@@ -25,6 +25,7 @@ class BulkImportTaskRepository {
 
     private fun buildIdempotencyKey(
         batchId: UUID,
+        jobId: UUID,
         krithiKey: String?,
         sourceUrl: String?,
         fallbackId: UUID,
@@ -32,7 +33,7 @@ class BulkImportTaskRepository {
         val base = sourceUrl?.takeIf { it.isNotBlank() }
             ?: krithiKey?.takeIf { it.isNotBlank() }
             ?: fallbackId.toString()
-        return "${batchId}::${base}"
+        return "${batchId}::${jobId}::${base}"
     }
 
     private fun resolveBatchIdForJob(jobId: Uuid): UUID {
@@ -61,6 +62,7 @@ class BulkImportTaskRepository {
         val javaBatchId = batchId?.toJavaUuid() ?: resolveBatchIdForJob(jobId)
         val finalIdempotencyKey = idempotencyKey ?: buildIdempotencyKey(
             batchId = javaBatchId,
+            jobId = javaJobId,
             krithiKey = krithiKey,
             sourceUrl = sourceUrl,
             fallbackId = taskId
@@ -125,6 +127,7 @@ class BulkImportTaskRepository {
                 sourceUrl = sourceUrl,
                 idempotencyKey = buildIdempotencyKey(
                     batchId = javaBatchId,
+                    jobId = javaJobId,
                     krithiKey = krithiKey,
                     sourceUrl = sourceUrl,
                     fallbackId = taskId

@@ -6,6 +6,7 @@ import com.sangita.grantha.backend.api.routes.adminNotationRoutes
 import com.sangita.grantha.backend.api.routes.authRefreshRoutes
 import com.sangita.grantha.backend.api.routes.authRoutes
 import com.sangita.grantha.backend.api.routes.auditRoutes
+import com.sangita.grantha.backend.api.routes.curatorRoutes
 import com.sangita.grantha.backend.api.routes.bulkImportRoutes
 import com.sangita.grantha.backend.api.routes.healthRoutes
 import com.sangita.grantha.backend.api.routes.importRoutes
@@ -19,6 +20,7 @@ import com.sangita.grantha.backend.api.config.ApiEnvironment
 import com.sangita.grantha.backend.api.config.JwtConfig
 import com.sangita.grantha.backend.api.services.AdminDashboardService
 import com.sangita.grantha.backend.api.services.AuditLogService
+import com.sangita.grantha.backend.api.services.CuratorService
 import com.sangita.grantha.backend.api.services.BulkImportOrchestrationService
 import com.sangita.grantha.backend.api.services.IImportService
 import com.sangita.grantha.backend.api.services.IKrithiService
@@ -56,6 +58,7 @@ fun Application.configureRouting() {
     val auditRunnerService by inject<AuditRunnerService>()
     val remediationService by inject<RemediationService>()
     val extractionProcessor by inject<ExtractionResultProcessor>()
+    val curatorService by inject<CuratorService>()
     val metricsRegistry by inject<PrometheusMeterRegistry>()
     val env by inject<ApiEnvironment>()
     val jwtConfig by inject<JwtConfig>()
@@ -77,6 +80,7 @@ fun Application.configureRouting() {
             userManagementRoutes(userManagementService)
             sourcingRoutes(sourcingService, variantMatchingService)
             remediationRoutes(auditRunnerService, remediationService, extractionProcessor)
+            curatorRoutes(curatorService)
             metricsRoutes(metricsRegistry)
         }
         

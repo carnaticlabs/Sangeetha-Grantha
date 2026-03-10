@@ -1,5 +1,6 @@
 import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+
 import Sidebar from './components/Sidebar';
 import TopBar from './components/TopBar';
 import Dashboard from './pages/Dashboard';
@@ -12,6 +13,7 @@ import UsersPage from './pages/UsersPage';
 import RolesPage from './pages/RolesPage';
 import BulkImportPage from './pages/BulkImport';
 import ImportReviewPage from './pages/ImportReview';
+import CuratorReviewPage from './pages/CuratorReviewPage';
 import Login from './pages/Login';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
@@ -60,7 +62,8 @@ const App: React.FC = () => {
                 <Route path="/reference" element={<ReferenceData />} />
                 <Route path="/imports" element={<ImportsPage />} />
                 <Route path="/bulk-import" element={<BulkImportPage />} />
-                <Route path="/bulk-import/review" element={<ImportReviewPage />} />
+                <Route path="/bulk-import/review" element={<Navigate to="/curator-review" replace />} />
+                <Route path="/curator-review" element={<CuratorReviewPage />} />
                 <Route path="/tags" element={<TagsPage />} />
                 <Route path="/users" element={<UsersPage />} />
                 <Route path="/roles" element={<RolesPage />} />
