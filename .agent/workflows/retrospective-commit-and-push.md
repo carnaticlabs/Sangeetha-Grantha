@@ -19,23 +19,24 @@ git status
 git diff --stat
 ```
 
-List every **modified** and **untracked** file (exclude `config/development.env` from any staging or commit).
+List every **modified** and **untracked** file (exclude `config/development.env` and `config/local.env` from any staging or commit).
 
 ---
 
 ## 2. Categorize into Changesets
 
-Group files into **Changesets** by feature or track. Use these heuristics for this repo:
+Group files into **Changesets** by feature or track. Use these heuristics:
 
 | Pattern / Content | Likely Changeset | Ref Doc Location |
 |:---|:---|:---|
-| `database/migrations/*.sql`, `*TempleSourceCache*`, `GeocodingService`, `TempleScrapingService`, `ApiEnvironment` (geo/gemini), `ImportReview.tsx`/`BulkImport.tsx` (temple/deity), `NameNormalizationService`, bulk-import workers | **TRACK-029** (Kshetra/Temple) | `application_documentation/01-requirements/features/bulk-import/02-implementation/kshetra-temple-mapping-implementation.md` |
-| `composer_aliases`, `ComposerAliasRepository`, `ComposerRepository` (findOrCreate alias), `EntityResolutionService` (alias map) | **TRACK-031** (Composer deduplication) | `application_documentation/01-requirements/features/bulk-import/02-implementation/composer-deduplication-implementation.md` |
-| `ScrapedLyricVariantDto`, `lyricVariants`, `WebScrapingService` prompt, `ImportService` (lyricVariants), `GeminiApiClient` (escape newlines) | **TRACK-032** (Multi-language lyrics) | `application_documentation/01-requirements/features/bulk-import/02-implementation/multi-language-lyric-extraction-implementation.md` |
-| `application_documentation/**` (onboarding, meta, architecture, api, quality, operations), `.agent/workflows/*.md`, `conductor/tracks/TRACK-028*`, `TRACK-030*` | **Documentation & diagrams** | `application_documentation/00-meta/documentation-and-diagram-updates-2026-01.md` |
-| `tools/sangita-cli/**`, `commands/docs.rs` | **TRACK-033** (CLI docs) | `application_documentation/08-operations/cli-docs-command.md` |
+| `database/migrations/*.sql`, Exposed table definitions, DAL repositories | **Database/Schema** | `application_documentation/04-database/schema.md` or an implementation doc |
+| `modules/backend/api/.../routes/`, `services/`, `AppModule.kt`, `Routing.kt` | **Backend API** | `application_documentation/10-implementations/track-NNN-*.md` |
+| `modules/frontend/sangita-admin-web/src/pages/`, `components/`, `api/client.ts` | **Frontend UI** | `application_documentation/01-requirements/admin-web/prd.md` or implementation doc |
+| `tools/krithi-extract-enrich-worker/src/` | **Extraction Pipeline** | `application_documentation/10-implementations/track-NNN-*.md` |
+| `compose.yaml`, `Makefile`, `.claude/`, `.agent/` | **Infrastructure/Tooling** | `application_documentation/02-architecture/tech-stack.md` or implementation doc |
+| `application_documentation/**`, `conductor/tracks/*` | **Documentation** | The documentation file itself |
 
-- **Unmatched files:** Either assign to an existing track/Ref or create a new implementation summary under `application_documentation/` and (if needed) a new `conductor/tracks/TRACK-XXX-*.md`.
+- **Unmatched files:** Either assign to an existing track/Ref or create a new implementation summary under `application_documentation/10-implementations/` and (if needed) a new `conductor/tracks/TRACK-XXX-*.md`.
 - **One Ref per commit:** Each changeset must have exactly one documentation file in `application_documentation/` that will be the `Ref:` for that commit.
 
 ---
@@ -45,19 +46,15 @@ Group files into **Changesets** by feature or track. Use these heuristics for th
 For **each** changeset:
 
 1. **Track file**
-   - If a conductor track already exists (e.g. `conductor/tracks/TRACK-029-*.md`), ensure it’s updated (progress log, status).
-   - If the change set is a new feature and has no track, create `conductor/tracks/TRACK-XXX-<slug>.md` (see existing tracks for format) and add a row to `conductor/tracks.md`.
+   - If a conductor track already exists, ensure it's updated (progress log, status).
+   - If the change is new, create `conductor/tracks/TRACK-XXX-<slug>.md` (see existing tracks for format) and add a row to `conductor/tracks.md`.
 
 2. **Implementation summary**
-   - Create or update a **single** markdown file in `application_documentation/` that will serve as the commit Ref:
-     - **Bulk-import features:** `application_documentation/01-requirements/features/bulk-import/02-implementation/<feature>-implementation.md`
-     - **Documentation/diagram batch:** `application_documentation/00-meta/documentation-and-diagram-updates-2026-01.md` (or a dated equivalent)
-     - **CLI/tooling:** `application_documentation/08-operations/cli-docs-command.md` (or another ops doc)
+   - Create or update a markdown file in `application_documentation/10-implementations/` that will serve as the commit Ref.
    - Use the standard metadata table (Status, Version, Last Updated, Author) and include:
      - Purpose
-     - Categorization of changes (DB, DAL, API, Frontend, etc.)
-     - Code changes summary (retrospective table: File | Change)
-     - Exact **Commit Reference** line: `Ref: application_documentation/.../filename.md`
+     - Code changes summary (table: File | Change)
+     - Exact `Ref:` line
 
 ---
 
@@ -65,7 +62,7 @@ For **each** changeset:
 
 Before committing any changeset that includes documentation:
 
-- In **any** staged markdown, replace literal secrets (e.g. `JWT_SECRET=...`, `ADMIN_TOKEN=...`, `API_KEY=...`) with placeholders such as `<set-via-env-or-secrets-manager>` or `<secret-ref>`.
+- Replace literal secrets (e.g. `JWT_SECRET=...`, `ADMIN_TOKEN=...`, `API_KEY=...`) with placeholders such as `<set-via-env-or-secrets-manager>`.
 - Re-run or rely on pre-commit hooks that block Secret/Password/Token patterns.
 
 ---
@@ -74,57 +71,37 @@ Before committing any changeset that includes documentation:
 
 For **each** changeset, in order:
 
-1. **Stage only that changeset’s files**
-   - Never stage `config/development.env`.
-   - Example (TRACK-029):
-     ```bash
-     git add database/migrations/21__create_temple_source_cache.sql \
-       modules/backend/dal/.../TempleSourceCacheTable.kt \
-       ... (all files in this changeset)
-       application_documentation/.../kshetra-temple-mapping-implementation.md
-       conductor/tracks/TRACK-029-*.md
-     ```
+1. **Stage only that changeset's files** — never stage `config/development.env` or `config/local.env`.
 
-2. **Commit with Ref**
-   - Message format:
-     ```text
-     <Short title>: <Summary>
+2. **Commit with Ref** using the format:
+   ```text
+   <TRACK-ID>: <Short Summary>
 
-     Ref: application_documentation/<path-to-summary-doc>.md
+   Ref: application_documentation/<path-to-summary-doc>.md
 
-     - <Bullet 1>
-     - <Bullet 2>
-     ```
-   - The `Ref:` path must match the implementation summary doc created in step 3.
-   - Run: `git commit -m "<message>"`.
+   - <Bullet 1>
+   - <Bullet 2>
+   ```
 
-3. **If pre-commit fails** (e.g. sensitive data): fix the reported file (mask secrets), `git add` it again, and retry the commit.
+3. **If pre-commit fails** (e.g. sensitive data): fix the reported file, `git add` it again, and retry.
 
-4. **Repeat** for the next changeset until all categorized changes are committed.
+4. **Repeat** for the next changeset.
 
 ---
 
 ## 6. Exclude Local Config (If Ever Staged)
 
-If `config/development.env` was staged by mistake:
-
 ```bash
-git restore --staged config/development.env
+git restore --staged config/development.env config/local.env
 ```
-
-Do **not** commit it.
 
 ---
 
 ## 7. Push
 
-After all changesets are committed:
-
 ```bash
 git push origin main
 ```
-
-(Or your default branch and remote.)
 
 ---
 
@@ -134,18 +111,3 @@ If some modified or untracked files did **not** fit any changeset:
 
 - Do **not** commit them in this run.
 - Report the list to the user and ask whether to create a new track/Ref or leave them uncommitted.
-
----
-
-## Quick Reference
-
-| Step | Action |
-|:---|:---|
-| 1 | `git status` + `git diff --stat` |
-| 2 | Group files into changesets (TRACK-029, TRACK-031, TRACK-032, docs, TRACK-033, etc.) |
-| 3 | Create/update conductor track + implementation summary doc in `application_documentation/` |
-| 4 | Mask secrets in any staged docs |
-| 5 | For each changeset: `git add <files>`, `git commit -m "..."` with `Ref: application_documentation/...` |
-| 6 | `git restore --staged config/development.env` if needed |
-| 7 | `git push origin main` |
-| 8 | Report uncommitted leftovers to user |

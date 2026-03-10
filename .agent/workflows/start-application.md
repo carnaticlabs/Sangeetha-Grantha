@@ -1,25 +1,27 @@
 ---
-description: Start the full stack application (Database, Backend, Frontend) and redirect logs.
+description: Start the full stack application (Database, Backend, Frontend, Extraction) via Docker Compose.
 ---
 
-1. Start the application using the convenience script. This truncates the log files and
-   redirects output so `sangita_logs.txt`, `sangita_extraction_logs.txt`, and
-   `exposed_queries.log` are always fresh for the current run.
+1. Start the application using the Makefile. This runs Docker Compose with the dev profile,
+   starting PostgreSQL, running migrations, then launching the backend, frontend, and extraction worker.
 
 ```bash
-./start-sangita.sh            # full stack (DB + Backend + Frontend + Extraction)
-./start-sangita.sh --no-extraction   # skip the PDF extraction Docker container
+make dev                     # full stack (DB + Backend + Frontend + Extraction)
 ```
 
-Alternatively, run the CLI directly (output goes to terminal only, no log files):
+Alternatively, start only the database:
 
 ```bash
-mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- dev --start-db
+make db                      # database only on port 5432
 ```
 
-2. Wait for the services to initialize. The frontend typically runs on port 5001 and backend on 8080.
+2. Wait for the services to initialize:
+   - Database: `localhost:5432`
+   - Backend API: `localhost:8080`
+   - Frontend: `localhost:5001`
 
-3. Log files created:
-   - `sangita_logs.txt` — main CLI + backend + frontend output (terminal + file via tee)
-   - `sangita_extraction_logs.txt` — PDF extraction Docker container logs
-   - `exposed_queries.log` — Exposed SQL queries (written directly by backend Logback)
+3. Stop the stack when done:
+
+```bash
+make dev-down                # stop all services
+```

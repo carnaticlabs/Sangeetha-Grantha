@@ -10,6 +10,7 @@
       "Bash(mise exec:*)",
       "Bash(mise trust)",
       "Bash(mise install)",
+      "Bash(make:*)",
       "Bash(docker compose:*)",
       "Bash(docker exec:*)",
       "Bash(npx playwright test:*)",
@@ -18,16 +19,40 @@
       "Bash(git status:*)",
       "Bash(git log:*)",
       "Bash(git diff:*)",
+      "Bash(git diff-tree:*)",
       "Bash(git branch:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git checkout:*)",
       "Bash(git stash:*)",
       "Bash(git restore:*)",
+      "Bash(git push:*)",
       "Bash(lsof -i:*)",
       "mcp__postgres__query",
       "mcp__Claude_Preview__preview_start"
     ],
     "deny": []
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "case \"$TOOL_INPUT\" in *config/development.env*|*config/local.env*|*.env.production*|*config/.env*) echo 'BLOCKED: Cannot edit environment config files containing secrets. Add to .gitignore instead.' >&2; exit 1;; esac; exit 0"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE_PATH=$(echo \"$TOOL_INPUT\" | grep -o '\"file_path\"[[:space:]]*:[[:space:]]*\"[^\"]*\"' | head -1 | sed 's/.*\"\\([^\"]*\\)\"$/\\1/'); case \"$FILE_PATH\" in */database/migrations/*) BASENAME=$(basename \"$FILE_PATH\"); if ! echo \"$BASENAME\" | grep -qE '^[0-9]+__[a-z_]+\\.sql$'; then echo \"BLOCKED: Migration filename must match NN__description.sql (e.g. 39__add_new_table.sql)\" >&2; exit 1; fi;; esac; exit 0"
+          }
+        ]
+      }
+    ]
   }
 }

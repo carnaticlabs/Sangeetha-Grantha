@@ -86,6 +86,7 @@
 | [TRACK-080](./tracks/TRACK-080-curator-review-ui.md) | Curator Review UI & Section Issue Tracking | Completed |
 | [TRACK-081](./tracks/TRACK-081-extraction-file-path-support.md) | Extraction Worker Local File Path Support | Completed |
 | [TRACK-082](./tracks/TRACK-082-documentation-track-cleanup.md) | Documentation Update & Conductor Track Cleanup | Completed |
+| [TRACK-083](./tracks/TRACK-083-agent-skills-workflows-update.md) | Agent Skills, Workflows & Hooks Modernization | Completed |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)

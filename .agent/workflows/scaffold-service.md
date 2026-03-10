@@ -82,13 +82,11 @@ class <ServiceName>Test {
 }
 ```
 
-## 4. Register in DI (If Koin is active)
+## 4. Register in DI (Koin 4.1.1)
 
-*Note: If manual DI is still in use in `App.kt`, instruct the user to wire it there.*
+Register the service in `modules/backend/api/src/main/kotlin/.../di/AppModule.kt`:
 
-If `di/AppModule.kt` exists:
-1.  Read `modules/backend/api/src/main/kotlin/.../di/AppModule.kt`.
-2.  Add `single<I<ServiceName>> { <ServiceName>Impl(get()) }` to the module definition.
+Add `single<I<ServiceName>> { <ServiceName>Impl(get()) }` to the module definition.
 
 ## 5. Review & Refine
 

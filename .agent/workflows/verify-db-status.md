@@ -8,14 +8,20 @@ description: Verify that the local database schema is in sync with the migration
 ls -1 database/migrations | tail -n 5
 ```
 
-2. Run the `sangita-cli` migration command to ensure all pending migrations are applied.
+2. Run pending migrations using the Python db-migrate tool via Makefile.
 
 ```bash
-cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db migrate
+make migrate
 ```
 
 3. Query the database directly to confirm the latest migration version matches the file system.
 
 ```sql
-SELECT * FROM _sqlx_migrations ORDER BY version DESC LIMIT 1;
+SELECT * FROM schema_migrations ORDER BY version DESC LIMIT 1;
+```
+
+4. Full reset if needed (drop → create → migrate → seed):
+
+```bash
+make db-reset
 ```

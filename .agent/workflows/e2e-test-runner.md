@@ -6,11 +6,14 @@ description: Runs frontend E2E tests using Playwright, with options for headed m
 
 This workflow guides execution of frontend end-to-end tests using Playwright.
 
+> [!NOTE]
+> TRACK-035 (Frontend E2E Testing) is currently **Deferred**. This workflow is retained for when E2E testing resumes.
+
 ## Prerequisites
 
 Ensure the full stack is running before executing E2E tests:
 ```bash
-mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- dev --start-db
+make dev
 ```
 
 Or verify services are already running:
@@ -68,8 +71,6 @@ cd modules/frontend/sangita-admin-web && bun run test:e2e:debug
 cd modules/frontend/sangita-admin-web && bun run test:e2e:report
 ```
 
-This opens the Playwright HTML report in your browser.
-
 ## 5. Troubleshoot Failures
 
 ### Common Issues
@@ -84,10 +85,10 @@ This opens the Playwright HTML report in your browser.
 
 **Backend Not Responding:**
 - Verify backend is running: `curl http://localhost:8080/health`
-- Check logs: `mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- dev --start-db`
+- Check Docker logs: `docker compose logs backend`
 
 **Database State Issues:**
-- Reset database: `mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db reset`
+- Reset database: `make db-reset`
 - E2E tests use `e2e/fixtures/db-helpers.ts` for cleanup
 
 ### Analyzing Failures
@@ -103,7 +104,6 @@ For CI environments, tests run with:
 - `retries: 1` (one retry on failure)
 - Trace captured on first retry
 
-Set `CI=true` environment variable to enable CI mode:
 ```bash
 CI=true bun run test:e2e
 ```

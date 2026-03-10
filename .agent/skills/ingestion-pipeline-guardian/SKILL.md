@@ -19,13 +19,13 @@ To prevent logic divergence across the Kotlin backend and Python extraction serv
 
 To avoid the "Shadow Container" problem where old code persists in Docker:
 
-- **Volume Mounts**: During development, verify that `compose.yaml` mounts the `src/` directory as a volume (`./tools/pdf-extractor/src:/app/src`).
-- **Rebuild vs. Restart**: Never trust `sangita-cli extraction restart` to pick up code changes if volumes aren't mounted. Use `docker compose --profile extraction build pdf-extractor` to be certain.
+- **Volume Mounts**: During development, verify that `compose.yaml` mounts the `src/` directory as a volume (`./tools/krithi-extract-enrich-worker/src:/app/src:ro`).
+- **Rebuild vs. Restart**: Never trust `docker compose restart extraction` to pick up code changes if volumes aren't mounted. Use `docker compose build extraction` to be certain.
 - **Version Verification**: Always include a version string or a unique log marker when patching extractor logic to confirm the fix is active in the running container.
 
 ## 3. Data & Ingestion Mandates
 
-- **Matching vs. Refreshing**: Be aware that `ExtractionResultProcessor` matches extractions to *existing* records. If you are fixing structural logic (e.g., section splitting), you MUST delete the targeted test records or perform a `db reset` before re-running the extraction.
+- **Matching vs. Refreshing**: Be aware that `ExtractionResultProcessor` matches extractions to *existing* records. If you are fixing structural logic (e.g., section splitting), you MUST delete the targeted test records or perform a `make db-reset` before re-running the extraction.
 - **Idempotency**: All ingestion paths (Bulk CSV and PDF Extraction) must share the same `findDuplicateCandidates` logic and apply consistent idempotency guards.
 - **Clean Slate Verification**: Verify logic fixes against raw database queries (e.g., `SELECT COUNT(*) FROM krithi_sections`) rather than UI reports which may use cached or stale data.
 

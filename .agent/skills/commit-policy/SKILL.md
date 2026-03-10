@@ -1,37 +1,50 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-26 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-03-10 |
 | **Author** | Sangeetha Grantha Team |
 
 # Commit Policy
 
-You are responsible for ensuring that all changes committed to the repository adhere to the strict `commit-guardrails-workflow`. 
+You are responsible for ensuring that all changes committed to the repository adhere to strict traceability and security guardrails.
 
 ## 1. Traceability (The Reference Rule)
 
 **EVERY** commit must be linked to a specific documentation file in `application_documentation`. This ensures that every line of code exists for a documented reason.
 
 ### Commit Message Format
-Your commit messages must follow this structure:
+
+The preferred format includes a TRACK-ID prefix when a conductor track exists:
 
 ```text
-<Title>: <Short Summary>
+<TRACK-ID>: <Short Summary>
 
 Ref: application_documentation/<path-to-file>.md
 
-<Detailed Description (bullet points)>
+- <Bullet 1>
+- <Bullet 2>
+```
+
+If no track exists (e.g. a small documentation fix), omit the TRACK-ID:
+
+```text
+<Short Summary>
+
+Ref: application_documentation/<path-to-file>.md
+
+- <Bullet 1>
 ```
 
 ### Rules
 1.  **Mandatory Reference**: You CANNOT suggest a commit message without a `Ref:` line.
-2.  **Reference Hierarchy**: 
-    - **Priority**: Always reference a file in `application_documentation/` (e.g., `tech-stack.md`, `architecture.md`).
-    - **Fallback**: Reference a `conductor/tracks/TRACK-*.md` file *only* if no relevant architectural spec exists.
+2.  **Reference Hierarchy**:
+    - **Priority**: Always reference a file in `application_documentation/` — preferably in `application_documentation/10-implementations/` for implementation work.
+    - **Fallback**: Reference a `conductor/tracks/TRACK-*.md` file *only* if no relevant implementation doc exists.
 3.  **Accuracy Check**: The `<Title>`, `<Short Summary>`, and `<Detailed Description>` MUST strictly match the actual changes in the `git diff`. Hallucinating version numbers or unintended changes is a critical failure.
-4.  **Existing File**: The file referenced in `Ref:` MUST exist.
+4.  **Existing File**: The file referenced in `Ref:` MUST exist. If it doesn't, create an implementation doc first.
 5.  **One Reference Per Commit**: A commit should address only one feature or requirement file. Do not combine unrelated changes.
+6.  **Track ID**: Include the TRACK-ID in the commit title when a conductor track exists for the work.
 
 ## 2. Security (The No-Secrets Rule)
 
@@ -51,18 +64,21 @@ Before suggesting `git commit`, mentally (or actually) check:
 ## 3. Workflow
 
 When you are ready to commit changes for the user:
-1.  **Stage**: `git add <files>`
-2.  **Identify Reference**: Find the relevant markdown file in `application_documentation` that describes why this change is happening.
-3.  **Draft Message**: detailed message with the `Ref:` tag.
-4.  **Execute**: `git commit -m "..."` (or ask user to approve).
+1.  **Categorize**: Group changes into logical changesets (see `change-mapper` skill).
+2.  **Create/Update Docs**: Ensure an implementation doc exists in `application_documentation/10-implementations/`.
+3.  **Create/Update Track**: Ensure a conductor track exists in `conductor/tracks/` and is registered in `conductor/tracks.md`.
+4.  **Stage**: `git add <specific files>` — never `git add .` unless verified.
+5.  **Draft Message**: Compose message with TRACK-ID, Ref, and bullet points matching the diff.
+6.  **Execute**: `git commit -m "..."` (or ask user to approve).
 
 **Example of a Good Commit:**
 ```bash
-git commit -m "Implement user login rate limiting
+git commit -m "TRACK-080: Add curator review UI with section issue tracking
 
-Ref: application_documentation/01-requirements/features/security-hardening.md
+Ref: application_documentation/10-implementations/track-080-curator-review-ui.md
 
-- Added RateLimiter service
-- Updated LoginController to use RateLimiter
-- Added unit tests"
+- CuratorRoutes.kt: GET /v1/admin/curator/stats, GET /v1/admin/curator/section-issues
+- CuratorService.kt: stats aggregation, section issue detection per variant
+- CuratorReviewPage.tsx: two-tab UI (Pending Matches, Section Issues)
+- BulkImportTaskRepository.kt: fixed idempotency key to include jobType"
 ```
