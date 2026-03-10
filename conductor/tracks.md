@@ -81,6 +81,11 @@
 | [TRACK-075](./tracks/TRACK-075-refactor-core-services.md) | Refactor Core Services | Completed |
 | [TRACK-076](./tracks/TRACK-076-refactor-infrastructure-services.md) | Refactor Infrastructure Services | Completed |
 | [TRACK-077](./tracks/TRACK-077-devanagari-aware-normalizer.md) | Devanagari-Aware Normalizer for Variant Matching | Superseded |
+| [TRACK-078](./tracks/TRACK-078-rust-cli-archive.md) | Archive Rust CLI — Replace with Python db-migrate + Makefile | Completed |
+| [TRACK-079](./tracks/TRACK-079-e2e-pipeline-section-fix.md) | E2E Pipeline Validation & Lyric Section Consistency Fix | Completed |
+| [TRACK-080](./tracks/TRACK-080-curator-review-ui.md) | Curator Review UI & Section Issue Tracking | Completed |
+| [TRACK-081](./tracks/TRACK-081-extraction-file-path-support.md) | Extraction Worker Local File Path Support | Completed |
+| [TRACK-082](./tracks/TRACK-082-documentation-track-cleanup.md) | Documentation Update & Conductor Track Cleanup | Completed |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)
