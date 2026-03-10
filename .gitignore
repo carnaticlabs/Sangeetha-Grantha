@@ -61,6 +61,7 @@ tools/sangita-cli/Cargo.lock
 
 # Temporary binary documents
 *.docx
+data/pdfs/*.pdf
 **/**__pycache**/
 **/**__pytest_cache**/
 **/krithi-extract-enrich-worker/cache/**/

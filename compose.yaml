@@ -94,6 +94,7 @@ services:
     volumes:
       - ./tools/krithi-extract-enrich-worker/src:/app/src:ro
       - extraction-cache:/app/cache
+      - ./data/pdfs:/app/pdfs:ro
 
   frontend:
     profiles: [ "dev" ]

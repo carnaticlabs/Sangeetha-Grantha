@@ -252,7 +252,15 @@ class ExtractionWorker:
         return trimmed
 
     def _download_source(self, url: str, source_format: str = "PDF") -> Path:
-        """Download a source document to the cache directory."""
+        """Download a source document to the cache directory, or resolve a local file path."""
+        # Support local file paths (bare paths and file:// URIs)
+        local_path = self._resolve_local_path(url)
+        if local_path is not None:
+            if not local_path.exists():
+                raise FileNotFoundError(f"Local source file not found: {local_path}")
+            logger.info(f"Using local source file: {local_path}")
+            return local_path
+
         cache_dir = Path(self.config.cache_dir)
         cache_dir.mkdir(parents=True, exist_ok=True)
 
@@ -272,6 +280,15 @@ class ExtractionWorker:
             cached_path.write_bytes(response.content)
 
         return cached_path
+
+    @staticmethod
+    def _resolve_local_path(url: str) -> Path | None:
+        """Return a Path if the URL is a local file reference, else None."""
+        if url.startswith("file://"):
+            return Path(url[7:])
+        if url.startswith("/"):
+            return Path(url)
+        return None
 
     def _finalize_extraction(
         self,
