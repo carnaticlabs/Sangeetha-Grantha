@@ -74,15 +74,16 @@ HAVING COUNT(klv.id) != 6
 ORDER BY variant_count, k.title;
 ```
 
-## 6. Missing Pallavi Check
+## 6. Missing Structure Check
 
-Krithis without a PALLAVI section (every krithi must have at minimum a Pallavi):
+Krithis without a PALLAVI or STANZA section. Standard krithis require at minimum a Pallavi, while Nottusvara Sahityams use STANZA sections instead of the Pallavi/Anupallavi/Charanam structure:
 
 ```sql
 SELECT k.title FROM krithis k
 WHERE NOT EXISTS (
     SELECT 1 FROM krithi_sections ks
-    WHERE ks.krithi_id = k.id AND ks.section_type = 'PALLAVI'
+    WHERE ks.krithi_id = k.id
+      AND ks.section_type IN ('PALLAVI', 'STANZA')
 )
 ORDER BY k.title;
 ```
@@ -101,7 +102,7 @@ SELECT status, count(*) FROM extraction_queue GROUP BY status ORDER BY status;
 | Zero-section variants | 0 rows | Re-extract affected krithis or run repair script |
 | Evidence coverage | 0 rows (ideally) | Submit missing sources for extraction |
 | Variant completeness | 0 rows with != 6 | Check extraction pipeline for missing languages |
-| Missing Pallavi | 0 rows | Structural parser bug — investigate source HTML/PDF |
+| Missing structure | 0 rows | Structural parser bug — investigate source (Nottusvara Sahityams use STANZA, not PALLAVI) |
 
 ## Usage
 
