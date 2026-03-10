@@ -62,10 +62,12 @@ tools/sangita-cli/Cargo.lock
 # Temporary binary documents
 *.docx
 data/pdfs/*.pdf
-**/**__pycache**/
-**/**__pytest_cache**/
+**/__pycache__/
+**/.pytest_cache/
+**/.ruff_cache/
+**/uv.lock
 **/krithi-extract-enrich-worker/cache/**/
-**/**egg-info**/
+**/*.egg-info/
 
 **/tools/krithi-extract-enrich-worker/cache/**
 
@@ -78,3 +80,8 @@ data/pdfs/*.pdf
 .claude/settings.local.json
 .claude/plan.md
 .claude/worktrees/
+.obsidian/app.json
+.obsidian/appearance.json
+.obsidian/core-plugins.json
+.obsidian/graph.json
+.obsidian/workspace.json
