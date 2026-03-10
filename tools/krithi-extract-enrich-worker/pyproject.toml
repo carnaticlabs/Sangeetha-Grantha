@@ -3,7 +3,7 @@ name = "sangita-pdf-extractor"
 version = "1.0.0"
 description = "Multi-format document extraction service for Sangeetha Grantha. Extracts Krithi data from PDF, DOCX, and scanned documents into the canonical extraction format."
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.14"
 license = {text = "MIT"}
 
 dependencies = [
@@ -59,7 +59,7 @@ where = ["."]
 include = ["src*"]
 
 [tool.ruff]
-target-version = "py311"
+target-version = "py314"
 line-length = 120
 
 [tool.ruff.lint]
@@ -70,5 +70,5 @@ testpaths = ["tests"]
 asyncio_mode = "auto"
 
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.14"
 strict = true

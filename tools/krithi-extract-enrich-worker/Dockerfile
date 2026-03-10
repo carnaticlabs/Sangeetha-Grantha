@@ -2,7 +2,7 @@
 # Multi-format document extraction: PDF (PyMuPDF), OCR (Tesseract), DOCX
 # Runs as a Docker container alongside PostgreSQL, polling extraction_queue
 
-FROM python:3.11-slim
+FROM python:3.14-slim
 
 LABEL maintainer="Sangita Grantha <sangita-grantha@example.com>"
 LABEL description="Multi-format document extraction service for Carnatic music compositions"
