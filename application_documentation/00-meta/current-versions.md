@@ -23,7 +23,7 @@
 |------|---------|-------|
 | Java | `temurin-25` | Temurin distribution, JVM toolchain |
 | Bun | `1.3.6` | Frontend package manager & runtime |
-| Python | `3.11+` | Migration tool & extraction worker |
+| Python | `3.14+` | Migration tool & extraction worker |
 | Docker Compose | `latest` | Container orchestration |
 
 ---
@@ -53,13 +53,13 @@
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| PostgreSQL Driver | `42.7.9` | JDBC driver |
+| PostgreSQL Driver | `42.7.10` | JDBC driver |
 | HikariCP | `7.0.2` | Connection pooling |
-| Logback | `1.5.27` | Logging framework |
+| Logback | `1.5.32` | Logging framework |
 | Logstash Encoder | `8.0` | JSON log formatting |
 | Commons CSV | `1.14.1` | CSV parsing |
-| Jsoup | `1.18.1` | HTML parsing |
-| Caffeine | `3.1.8` | In-memory caching |
+| Jsoup | `1.22.1` | HTML parsing |
+| Caffeine | `3.2.3` | In-memory caching |
 | dotenv-kotlin | `6.5.1` | Environment variable loading |
 
 ### Security & Auth
@@ -100,14 +100,14 @@
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| Tailwind CSS | `4.1.18` | Utility-first CSS |
+| Tailwind CSS | `4.2.1` | Utility-first CSS |
 
 ### Routing & State
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| React Router | `7.13.0` | Client-side routing |
-| TanStack Query | `5.90.20` | Data fetching & caching |
+| React Router | `7.13.1` | Client-side routing |
+| TanStack Query | `5.90.21` | Data fetching & caching |
 | Google GenAI | `1.34.0` | AI integration |
 
 ### Development & Testing
@@ -117,6 +117,47 @@
 | ESLint | `9.39.2` | Code linting |
 | Vitest | `4.0.18` | Unit testing |
 | Playwright | `1.40.0` | E2E testing |
+
+---
+
+## Python Tools
+
+### Extraction Worker (`tools/krithi-extract-enrich-worker`)
+
+*Source: `tools/krithi-extract-enrich-worker/pyproject.toml` · Lock: `uv.lock`*
+
+#### Core Libraries
+
+| Library | Version | Purpose |
+|---------|---------|---------|
+| PyMuPDF | `1.27.1` | Primary PDF text extraction |
+| pdfplumber | `0.11.9` | Tabular PDF extraction fallback |
+| pytesseract | `0.3.13` | Tesseract OCR wrapper |
+| indic-transliteration | `2.3.76` | Script conversion (Devanagari ↔ Tamil/Telugu/etc.) |
+| Pydantic | `2.12.5` | Schema validation |
+| psycopg | `3.3.2` | PostgreSQL driver (async-capable) |
+| google-generativeai | `0.8.6` | Gemini API client |
+| RapidFuzz | `3.14.3` | Fast fuzzy matching |
+| HTTPX | `0.28.1` | Async HTTP client |
+| BeautifulSoup4 | `4.14.3` | HTML parsing |
+| structlog | `25.5.0` | Structured JSON logging |
+| Click | `8.3.1` | CLI framework |
+
+#### Development & Testing
+
+| Library | Version | Purpose |
+|---------|---------|---------|
+| pytest | `9.0.2` | Test framework |
+| Ruff | `0.15.0` | Linter & formatter |
+| mypy | `1.19.1` | Static type checker |
+
+### Migration Tool (`tools/db-migrate`)
+
+*Source: `tools/db-migrate/pyproject.toml`*
+
+| Library | Version | Purpose |
+|---------|---------|---------|
+| psycopg | `>=3.1` | PostgreSQL driver |
 
 ---
 
@@ -156,6 +197,8 @@
 
 | Date | Change |
 |------|--------|
+| 2026-03-10 | Added Python tools section (extraction worker + db-migrate) with resolved versions from uv.lock |
+| 2026-03-10 | Dependency updates: PostgreSQL 42.7.10, Logback 1.5.32, Jsoup 1.22.1, Caffeine 3.2.3, Tailwind 4.2.1, React Router 7.13.1, TanStack Query 5.90.21 |
 | 2026-03-10 | Synced all versions from source files (gradle/libs.versions.toml, package.json, compose.yaml) |
 | 2026-01-30 | Initial auto-generated from source files |
 

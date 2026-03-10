@@ -91,6 +91,7 @@
 | [TRACK-085](./tracks/TRACK-085-sourcing-tab-consolidation.md) | Sourcing Tab Consolidation & Import Detail Cleanup | Completed |
 | [TRACK-086](./tracks/TRACK-086-collection-review-ux-polish.md) | Collection Review UX Polish | Completed |
 | [TRACK-087](./tracks/TRACK-087-documentation-audit-sync.md) | Documentation Audit & Sync | Completed |
+| [TRACK-088](./tracks/TRACK-088-current-versions-update.md) | Current Versions & Gitignore Update | Completed |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)
