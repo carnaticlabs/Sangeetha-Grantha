@@ -11,6 +11,7 @@ data class AuditLogDto(
     val id: Uuid,
     @Serializable(with = UuidSerializer::class)
     val actorUserId: Uuid? = null,
+    val actorName: String? = null,
     val actorIp: String? = null,
     val action: String,
     val entityTable: String,

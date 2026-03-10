@@ -4,6 +4,33 @@ import { useQuery } from '@tanstack/react-query';
 import { getAuditLogs, getDashboardStats } from '../api/client';
 import { StatCard, RecentItem } from '../components/dashboard';
 
+
+const ENTITY_TABLE_LABELS: Record<string, string> = {
+  krithis: "Krithi",
+  krithi_lyric_variants: "Lyric Variant",
+  krithi_lyric_sections: "Lyric Sections",
+  krithi_sections: "Sections",
+  composers: "Composer",
+  ragas: "Raga",
+  talas: "Tala",
+  deities: "Deity",
+  temples: "Temple",
+  tags: "Tag",
+  notation_variants: "Notation",
+  notation_rows: "Notation Row",
+};
+
+function formatEntityTable(table: string): string {
+  return ENTITY_TABLE_LABELS[table] || table.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function formatAction(action: string): string {
+  return action
+    .replace(/_/g, " ")
+    .toLowerCase()
+    .replace(/\b\w/g, c => c.toUpperCase());
+}
+
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
 
@@ -115,10 +142,10 @@ const Dashboard: React.FC = () => {
             {activities.slice(0, 5).map(activity => (
               <RecentItem
                 key={activity.id}
-                title={activity.entityType || 'Unknown Entity'}
-                subtitle={`${activity.action || 'Unknown Action'} by ${activity.actor || 'Unknown User'}`}
-                time={activity.timestamp ? new Date(activity.timestamp).toLocaleDateString() : 'Unknown Date'}
-                status={activity.action || 'Unknown'} // Mapping action to status pill for now
+                title={formatEntityTable(activity.entityTable)}
+                subtitle={`${formatAction(activity.action)} by ${activity.actorName || 'System'}`}
+                time={activity.changedAt ? new Date(activity.changedAt).toLocaleDateString() : 'Unknown Date'}
+                status={formatAction(activity.action)}
               />
             ))}
             {activities.length === 0 && (

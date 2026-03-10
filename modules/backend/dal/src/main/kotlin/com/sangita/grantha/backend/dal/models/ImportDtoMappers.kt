@@ -1,7 +1,6 @@
 package com.sangita.grantha.backend.dal.models
 
 import com.sangita.grantha.backend.dal.support.toKotlinUuid
-import com.sangita.grantha.backend.dal.tables.AuditLogTable
 import com.sangita.grantha.backend.dal.tables.EntityResolutionCacheTable
 import com.sangita.grantha.backend.dal.tables.ImportBatchTable
 import com.sangita.grantha.backend.dal.tables.ImportEventTable
@@ -9,7 +8,6 @@ import com.sangita.grantha.backend.dal.tables.ImportJobTable
 import com.sangita.grantha.backend.dal.tables.ImportSourcesTable
 import com.sangita.grantha.backend.dal.tables.ImportTaskRunTable
 import com.sangita.grantha.backend.dal.tables.ImportedKrithisTable
-import com.sangita.grantha.shared.domain.model.AuditLogDto
 import com.sangita.grantha.shared.domain.model.EntityResolutionCacheDto
 import com.sangita.grantha.shared.domain.model.ImportBatchDto
 import com.sangita.grantha.shared.domain.model.ImportEventDto
@@ -67,19 +65,6 @@ fun ResultRow.toImportedKrithiDto(): ImportedKrithiDto = ImportedKrithiDto(
     resolutionConfidence = this[ImportedKrithisTable.resolutionConfidence]?.toDouble(),
     sourceQuality = this[ImportedKrithisTable.sourceQuality]?.toDouble(),
     validationScore = this[ImportedKrithisTable.validationScore]?.toDouble()
-)
-
-@OptIn(ExperimentalUuidApi::class)
-fun ResultRow.toAuditLogDto(): AuditLogDto = AuditLogDto(
-    id = this[AuditLogTable.id].value.toKotlinUuid(),
-    actorUserId = this[AuditLogTable.actorUserId]?.toKotlinUuid(),
-    actorIp = this[AuditLogTable.actorIp],
-    action = this[AuditLogTable.action],
-    entityTable = this[AuditLogTable.entityTable],
-    entityId = this[AuditLogTable.entityId]?.toKotlinUuid(),
-    changedAt = this.kotlinInstant(AuditLogTable.changedAt),
-    diff = this[AuditLogTable.diff],
-    metadata = this[AuditLogTable.metadata]
 )
 
 @OptIn(ExperimentalUuidApi::class)

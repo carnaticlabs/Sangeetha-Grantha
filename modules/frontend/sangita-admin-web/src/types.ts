@@ -232,12 +232,15 @@ export interface KrithiDetail {
 
 export interface AuditLog {
   id: string;
-  entityType: string;
-  entityId: string;
+  actorUserId: string | null;
+  actorName: string | null;
+  actorIp: string | null;
   action: string;
-  actor: string;
-  timestamp: string;
-  diff?: Record<string, { before?: any; after?: any }> | null;
+  entityTable: string;
+  entityId: string | null;
+  changedAt: string;
+  diff?: string | null;
+  metadata?: string | null;
 }
 
 export interface NotationRow {

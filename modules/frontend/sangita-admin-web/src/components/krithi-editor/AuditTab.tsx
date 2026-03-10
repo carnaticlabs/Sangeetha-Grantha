@@ -4,6 +4,21 @@ import { getKrithiAuditLogs } from '../../api/client';
 import { AuditLog } from '../../types';
 import { Skeleton, SectionHeader } from '../common';
 
+function formatAction(action: string): string {
+    return action
+        .replace(/_/g, ' ')
+        .toLowerCase()
+        .replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function actionIcon(action: string): string {
+    const lower = action.toLowerCase();
+    if (lower.includes('create')) return 'add';
+    if (lower.includes('update')) return 'edit';
+    if (lower.includes('delete')) return 'delete';
+    return 'history';
+}
+
 export const AuditTab: React.FC<TabProps> = ({ krithi }) => {
     const [logs, setLogs] = useState<AuditLog[]>([]);
     const [loading, setLoading] = useState(false);
@@ -43,17 +58,17 @@ export const AuditTab: React.FC<TabProps> = ({ krithi }) => {
                                         <div className="relative flex space-x-3">
                                             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 ring-8 ring-white border border-slate-200">
                                                 <span className="material-symbols-outlined text-sm text-slate-400">
-                                                    {log.action === 'CREATE' ? 'add' : log.action === 'UPDATE' ? 'edit' : 'history'}
+                                                    {actionIcon(log.action)}
                                                 </span>
                                             </div>
                                             <div className="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
                                                 <div>
                                                     <p className="text-sm text-slate-600">
-                                                        <span className="font-semibold text-slate-900">{log.action}</span> by <span className="font-medium text-slate-900">{log.actor}</span>
+                                                        <span className="font-semibold text-slate-900">{formatAction(log.action)}</span> by <span className="font-medium text-slate-900">{log.actorName || 'System'}</span>
                                                     </p>
                                                 </div>
                                                 <div className="whitespace-nowrap text-right text-sm text-slate-400 tabular-nums">
-                                                    <time dateTime={log.timestamp}>{new Date(log.timestamp).toLocaleString()}</time>
+                                                    <time dateTime={log.changedAt}>{new Date(log.changedAt).toLocaleString()}</time>
                                                 </div>
                                             </div>
                                         </div>
