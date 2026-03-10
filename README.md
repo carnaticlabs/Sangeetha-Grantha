@@ -1,10 +1,10 @@
-# 🎶 Sangeetha Grantha
+# Sangeetha Grantha
 
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-03 |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-03-10 |
 | **Author** | Sangeetha Grantha Team |
 
 ---
@@ -13,17 +13,17 @@
 
 ---
 
-## 📖 Overview
+## Overview
 
 **Sangeetha Grantha** is an open, authoritative, multi-platform digital compendium of **Carnatic classical music compositions (Krithis)**.
 
-The project aims to unify scattered, semi-structured sources into a **single, searchable, multilingual, and musicologically correct system**, with strong editorial governance and production-grade engineering.
+The project unifies scattered, semi-structured sources into a **single, searchable, multilingual, and musicologically correct system**, with strong editorial governance and production-grade engineering.
 
 It is designed to become the **system of record** for Carnatic Krithis — supporting composers, ragas, talas, sahitya, sampradaya, temples, and themes in a structured and extensible manner.
 
 ---
 
-## 🎯 Key Objectives
+## Key Objectives
 
 - Consolidate Carnatic Krithi data from multiple legacy sources
 - Enable fast, accurate search across:
@@ -36,27 +36,27 @@ It is designed to become the **system of record** for Carnatic Krithis — suppo
   - Temple / Kshetram
 - Preserve **musicological correctness**:
   - Pallavi / Anupallavi / multiple Charanams
-  - Sampradaya (pāṭhāntaram / bani)
+  - Sampradaya (pathantaram / bani)
   - Primary language of composition
 - Provide a clean **editorial workflow** for curation and review
 - Deliver a modern, scalable, cloud-ready platform
 
 ---
 
-## 🧱 System Architecture
+## System Architecture
 
-### 📱 Clients
+### Clients
 
 - **Mobile App**: Android & iOS using **Kotlin Multiplatform (KMM)**
 - **Admin Web Console**: React + TypeScript + Tailwind CSS
 
-### ⚙️ Backend
+### Backend
 
 - **API**: Kotlin + Ktor (REST)
-- **Database**: PostgreSQL 15+
-- **Migrations**: Rust-based CLI tool (`tools/sangita-cli`) for database management (no Flyway)
+- **Database**: PostgreSQL 18+
+- **Migrations**: Python `db-migrate` tool (`tools/db-migrate`) — no Flyway
 
-### ☁️ Infrastructure
+### Infrastructure
 
 - AWS or Google Cloud
 - CI/CD via GitHub Actions
@@ -64,7 +64,7 @@ It is designed to become the **system of record** for Carnatic Krithis — suppo
 
 ---
 
-## ✨ Core Features
+## Core Features
 
 ### Public (Read-only)
 
@@ -90,22 +90,22 @@ It is designed to become the **system of record** for Carnatic Krithis — suppo
   - Tags / themes
   - Sampradaya
 - Editorial workflow:
-  - `DRAFT → IN_REVIEW → PUBLISHED → ARCHIVED`
+  - `DRAFT -> IN_REVIEW -> PUBLISHED -> ARCHIVED`
 - Data ingestion & normalization pipeline
 - Full audit trail for all mutations
 
 ---
 
-## 🗂️ Data Model
- 
-For the authoritative schema definition and detailed relationship models, please refer to:
+## Data Model
+
+For the authoritative schema definition and detailed relationship models, see:
 - **[Schema Overview](./application_documentation/04-database/schema.md)**
 
 ---
 
-## 🧩 Tech Stack & Versions
+## Tech Stack
 
-For a complete and specific list of versions and dependencies, please see **[Current Versions](./application_documentation/00-meta/current-versions.md)**.
+For a complete and specific list of versions and dependencies, see **[Current Versions](./application_documentation/00-meta/current-versions.md)**.
 
 ### Core Technologies
 
@@ -113,83 +113,111 @@ For a complete and specific list of versions and dependencies, please see **[Cur
 |-------|------------|
 | **Mobile** | Kotlin Multiplatform (KMM) + Compose Multiplatform |
 | **Backend** | Kotlin + Ktor + Exposed |
-| **Database** | PostgreSQL 15+ |
-| **Migrations** | Rust CLI (`tools/sangita-cli`) |
+| **Database** | PostgreSQL 18+ |
+| **Migrations** | Python `db-migrate` (`tools/db-migrate`) |
+| **Extraction** | Python worker (`tools/krithi-extract-enrich-worker`) |
 | **Admin Web** | React + TypeScript + Tailwind + Vite |
 | **Build** | Gradle (Backend/Mobile), Bun (Frontend) |
+| **Orchestration** | Docker Compose (`compose.yaml`) |
 | **Toolchain** | Managed via [mise](https://mise.jdx.dev/) |
 
 ---
 
-## 📂 Repository Structure
+## Repository Structure
 
 ```text
 ├── modules/
-│   ├── shared/                  # Shared domain models & UI (KMM)
+│   ├── shared/                          # Shared domain models & UI (KMM)
+│   │   ├── domain/                      # @Serializable DTOs
+│   │   └── presentation/               # Shared UI components
 │   ├── backend/
-│   │   ├── api/                 # Ktor REST APIs
-│   │   └── dal/                 # Data access layer (Exposed)
+│   │   ├── api/                         # Ktor REST APIs
+│   │   └── dal/                         # Data access layer (Exposed)
 │   └── frontend/
-│       └── sangita-admin-web/   # Admin web (React + TS)
+│       └── sangita-admin-web/           # Admin web (React + TS)
 ├── database/
-│   ├── migrations/              # SQL migration files
-│   └── seed_data/               # Seed SQL files
+│   ├── migrations/                      # SQL migration files
+│   ├── seed_data/                       # Seed SQL files
+│   ├── audits/                          # Data audit queries
+│   └── for_import/                      # Import data & scripts
 ├── tools/
-│   └── sangita-cli/             # Rust CLI for DB management, dev workflow, testing
-├── openapi/                     # OpenAPI specifications
-├── application_documentation/   # PRDs, ERDs, architecture docs
-├── config/                      # Environment configuration (TOML)
-└── gradle/libs.versions.toml    # Centralized dependency management
+│   ├── db-migrate/                      # Python DB migration tool
+│   ├── krithi-extract-enrich-worker/    # Python extraction pipeline
+│   └── sangita-cli-archived/            # Archived Rust CLI (legacy)
+├── openapi/                             # OpenAPI specifications
+├── application_documentation/           # PRDs, ERDs, architecture docs
+├── conductor/                           # Project tracking (tracks & phases)
+├── config/                              # Environment configuration
+└── gradle/libs.versions.toml            # Centralized dependency management
 ```
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
-> **💡 Quick Setup**: For complete setup instructions, see [Getting Started](./application_documentation/00-onboarding/getting-started.md).
+> For complete setup instructions, see [Getting Started](./application_documentation/00-onboarding/getting-started.md).
 
 **Prerequisites**:
 - [mise](https://mise.jdx.dev/) (toolchain version manager)
 - Docker Desktop (macOS/Windows) or Docker Engine (Linux)
 
-**One-command setup** (after installing mise):
+**Development workflow (via Makefile)**:
 ```bash
-# Unix/Linux/macOS
-./tools/bootstrap
+# Start full dev stack (DB + Backend + Frontend + Extraction)
+make dev
 
-# Windows
-powershell -ExecutionPolicy Bypass -File .\tools\bootstrap.ps1
+# Stop dev stack
+make dev-down
+
+# Database operations
+make db              # Start database only
+make db-reset        # Drop + create + migrate
+make seed            # Seed reference data
+make migrate         # Run pending migrations
+
+# Testing
+make test            # Backend tests
+make test-frontend   # Frontend tests
+make steel-thread    # E2E steel thread test
+
+# Cleanup
+make clean           # Remove all containers and volumes
 ```
 
-This will set up the required toolchain and development environment.
-
-**Start development stack** (recommended via mise):
+**Manual frontend development**:
 ```bash
-# Via mise (ensures correct tool versions)
-
-# Reset Database (Drop -> Create -> Migrate -> Seed)
-mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db reset
-
-# Start development stack with database
-mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- dev --start-db
+cd modules/frontend/sangita-admin-web
+bun install
+bun run dev          # Dev server on port 5001
 ```
 
-For detailed setup, usage guides, troubleshooting, and CLI commands, see:
+For detailed setup, usage guides, and troubleshooting, see:
 - **[Getting Started](./application_documentation/00-onboarding/getting-started.md)** — Complete setup guide
-- **[Sangita CLI README](./tools/sangita-cli/README.md)** — Development workflow and commands
+- **[Migration Tool](./tools/db-migrate/README.md)** — Database migration commands
 
 ---
 
-## 📜 Documentation
+## Default Ports
 
-- **Product Requirements Document**: [Sangita Grantha PRD](./application_documentation/01-requirements/product-requirements-document.md)
+| Service | Port |
+|---------|------|
+| Database (PostgreSQL) | 5432 |
+| Backend API | 8080 |
+| Frontend Dev Server | 5001 |
+
+---
+
+## Documentation
+
+- **Product Requirements**: [Sangita Grantha PRD](./application_documentation/01-requirements/product-requirements-document.md)
 - **API Spec**: [API Contract](./application_documentation/03-api/api-contract.md)
 - **Database Schema**: [Schema Overview](./application_documentation/04-database/schema.md)
 - **Architecture**: [Backend System Design](./application_documentation/02-architecture/backend-system-design.md)
+- **Current Versions**: [Tech Versions](./application_documentation/00-meta/current-versions.md)
 
 ---
 
-## 🤖 AI & Vibe Coding Usage
+## AI & Vibe Coding Usage
 
 This repository is designed to work seamlessly with AI coding assistants.
 
@@ -197,28 +225,22 @@ For comprehensive references and coding patterns, see: **[AI & Vibe Coding Refer
 
 ---
 
-## 🛣️ Roadmap
+## Roadmap
 
-- ✅ Core schema & ingestion pipeline
-- ✅ Admin editorial workflow
-- ✅ AI Transliteration & Web Scraping
-- 🔄 Mobile app development
-- 🔄 Advanced lyric search & ranking
-- 🔮 Media management (audio/notation)
-- 🔮 Public read-only web experience
+- Done: Core schema & ingestion pipeline
+- Done: Admin editorial workflow
+- Done: AI Transliteration & Web Scraping
+- Done: PostgreSQL 18 upgrade
+- Done: Python migration & extraction tooling
+- In Progress: Mobile app development
+- In Progress: Advanced lyric search & ranking
+- Planned: Media management (audio/notation)
+- Planned: Public read-only web experience
 
 ---
 
-## 🙏 Credits & Inspiration
+## Credits & Inspiration
 
 This project draws inspiration from decades of Carnatic scholarship and legacy sources such as karnatik.com, shivkumar.org, and various composer-centric archives.
 
 **Sangeetha Grantha** exists to preserve, structure, and respectfully modernize this knowledge for future generations.
-
----
-
-<div align="center">
-
-**Sangeetha Grantha** — *where tradition meets thoughtful engineering* 🎵
-
-</div>
