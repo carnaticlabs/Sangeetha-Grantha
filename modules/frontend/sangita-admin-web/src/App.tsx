@@ -20,12 +20,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 // Sourcing module — lazy-loaded for code splitting
 const SourcingLayout = lazy(() => import('./components/sourcing/SourcingLayout'));
 const SourcingDashboardPage = lazy(() => import('./pages/sourcing/SourcingDashboardPage'));
-const SourceRegistryPage = lazy(() => import('./pages/sourcing/SourceRegistryPage'));
+const SourcesAndProcessingPage = lazy(() => import('./pages/sourcing/SourcesAndProcessingPage'));
 const SourceDetailPage = lazy(() => import('./pages/sourcing/SourceDetailPage'));
-const ExtractionMonitorPage = lazy(() => import('./pages/sourcing/ExtractionMonitorPage'));
 const ExtractionDetailPage = lazy(() => import('./pages/sourcing/ExtractionDetailPage'));
-const SourceEvidencePage = lazy(() => import('./pages/sourcing/SourceEvidencePage'));
-const StructuralVotingPage = lazy(() => import('./pages/sourcing/StructuralVotingPage'));
+const EvidenceAndVerificationPage = lazy(() => import('./pages/sourcing/EvidenceAndVerificationPage'));
 const VotingDetailPage = lazy(() => import('./pages/sourcing/VotingDetailPage'));
 const QualityDashboardPage = lazy(() => import('./pages/sourcing/QualityDashboardPage'));
 
@@ -75,12 +73,12 @@ const App: React.FC = () => {
                   </Suspense>
                 }>
                   <Route index element={<SourcingDashboardPage />} />
-                  <Route path="sources" element={<SourceRegistryPage />} />
+                  <Route path="sources" element={<SourcesAndProcessingPage />} />
                   <Route path="sources/:id" element={<SourceDetailPage />} />
-                  <Route path="extractions" element={<ExtractionMonitorPage />} />
+                  <Route path="extractions" element={<Navigate to="/admin/sourcing/sources" replace />} />
                   <Route path="extractions/:id" element={<ExtractionDetailPage />} />
-                  <Route path="evidence" element={<SourceEvidencePage />} />
-                  <Route path="voting" element={<StructuralVotingPage />} />
+                  <Route path="evidence" element={<EvidenceAndVerificationPage />} />
+                  <Route path="voting" element={<Navigate to="/admin/sourcing/evidence" replace />} />
                   <Route path="voting/:id" element={<VotingDetailPage />} />
                   <Route path="quality" element={<QualityDashboardPage />} />
                 </Route>

@@ -6,7 +6,8 @@
       "runtimeExecutable": "bun",
       "runtimeArgs": ["run", "dev"],
       "port": 5001,
-      "cwd": "modules/frontend/sangita-admin-web"
+      "cwd": "modules/frontend/sangita-admin-web",
+      "autoPort": false
     },
     {
       "name": "backend",
@@ -18,7 +19,8 @@
       "name": "full-stack",
       "runtimeExecutable": "make",
       "runtimeArgs": ["dev"],
-      "port": 5001
+      "port": 5001,
+      "autoPort": false
     },
     {
       "name": "full-stack-backend",

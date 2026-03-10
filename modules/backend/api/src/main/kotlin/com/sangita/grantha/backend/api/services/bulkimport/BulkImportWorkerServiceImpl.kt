@@ -45,7 +45,10 @@ class BulkImportWorkerServiceImpl(
     private var resolutionChannel: Channel<ImportTaskRunDto>? = null
 
     private val errorBuilder = TaskErrorBuilder()
-    private val completionHandler = BatchCompletionHandler(dal)
+    private val completionHandler = BatchCompletionHandler(
+        dal = dal,
+        onNewTasksCreated = { wakeUpChannel.trySend(Unit) }
+    )
     private val rateLimiter = RateLimiter()
     private val manifestParser = ManifestParser(logger)
     private val dispatcher = TaskDispatcher(dal, logger)

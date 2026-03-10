@@ -35,7 +35,7 @@ const SourceRegistryPage: React.FC = () => {
   };
 
   const handleDeactivate = async (id: string) => {
-    if (!confirm('Are you sure you want to deactivate this source?')) return;
+    if (!confirm('Are you sure you want to remove this source from active use?')) return;
     await deactivateSource.mutateAsync(id);
   };
 
@@ -43,15 +43,15 @@ const SourceRegistryPage: React.FC = () => {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-display font-bold text-ink-900">Source Registry</h1>
-          <p className="text-sm text-ink-500 mt-1">Manage import sources and authority tiers</p>
+          <h1 className="text-2xl font-display font-bold text-ink-900">Sources</h1>
+          <p className="text-sm text-ink-500 mt-1">Manage where compositions come from and their trust levels</p>
         </div>
         <button
           onClick={() => { setEditSource(null); setShowModal(true); }}
           className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
         >
           <span className="material-symbols-outlined text-lg">add</span>
-          Register New Source
+          Add New Source
         </button>
       </div>
 
@@ -68,7 +68,7 @@ const SourceRegistryPage: React.FC = () => {
           <table className="w-full">
             <thead>
               <tr className="border-b border-border-light bg-slate-50">
-                {['Name', 'URL', 'Tier', 'Formats', 'Krithis', 'Last Harvested', 'Actions'].map((h) => (
+                {['Name', 'URL', 'Tier', 'Formats', 'Krithis', 'Last Imported', 'Actions'].map((h) => (
                   <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-ink-500 uppercase tracking-wider">{h}</th>
                 ))}
               </tr>
@@ -87,8 +87,8 @@ const SourceRegistryPage: React.FC = () => {
       ) : data?.items.length === 0 ? (
         <div className="bg-white rounded-xl border border-border-light p-12 text-center">
           <span className="material-symbols-outlined text-5xl text-ink-200 mb-3 block">source</span>
-          <h3 className="text-lg font-semibold text-ink-700 mb-1">No sources registered yet</h3>
-          <p className="text-sm text-ink-500 mb-4">Click "Register New Source" to get started.</p>
+          <h3 className="text-lg font-semibold text-ink-700 mb-1">No sources added yet</h3>
+          <p className="text-sm text-ink-500 mb-4">Click "Add New Source" to get started.</p>
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-border-light overflow-hidden">
@@ -100,7 +100,7 @@ const SourceRegistryPage: React.FC = () => {
                 <th className="px-4 py-3 text-left text-xs font-semibold text-ink-500 uppercase tracking-wider">Tier</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-ink-500 uppercase tracking-wider">Formats</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-ink-500 uppercase tracking-wider">Krithis</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-ink-500 uppercase tracking-wider">Last Harvested</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-ink-500 uppercase tracking-wider">Last Imported</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-ink-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>

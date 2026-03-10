@@ -12,9 +12,9 @@ const Sidebar: React.FC<SidebarProps> = () => {
     { id: ViewState.KRITHIS, label: 'Kritis', icon: 'music_note' }, // Icon updated to match reference
     { id: ViewState.REFERENCE, label: 'Reference Data', icon: 'library_books' }, // Icon updated
     { id: ViewState.IMPORTS, label: 'Imports', icon: 'upload_file' },
-    { id: ViewState.BULK_IMPORT, label: 'Bulk Import', icon: 'inventory_2' },
+    { id: ViewState.BULK_IMPORT, label: 'Add Compositions', icon: 'inventory_2' },
 { id: ViewState.CURATOR_REVIEW, label: 'Curator Review', icon: 'fact_check' },
-    { id: ViewState.SOURCING, label: 'Sourcing & Quality', icon: 'hub' },
+    { id: ViewState.SOURCING, label: 'Collection Review', icon: 'hub' },
     { id: ViewState.TAGS, label: 'Tags', icon: 'label' },
   ];
 

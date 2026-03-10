@@ -38,6 +38,56 @@ const taskChip: Record<BulkTaskStatus, string> = {
   CANCELLED: 'bg-slate-100 text-slate-500 border border-slate-200'
 };
 
+const batchStatusLabel: Record<BulkBatchStatus, string> = {
+  PENDING: 'Waiting',
+  RUNNING: 'In Progress',
+  PAUSED: 'Paused',
+  SUCCEEDED: 'Completed',
+  FAILED: 'Failed',
+  CANCELLED: 'Cancelled'
+};
+
+const taskStatusLabel: Record<BulkTaskStatus, string> = {
+  PENDING: 'Waiting',
+  RUNNING: 'In Progress',
+  SUCCEEDED: 'Completed',
+  FAILED: 'Failed',
+  RETRYABLE: 'Will Retry',
+  BLOCKED: 'Blocked',
+  CANCELLED: 'Cancelled'
+};
+
+const jobTypeLabel: Record<string, string> = {
+  MANIFEST_INGEST: 'Reading File',
+  SCRAPE: 'Fetching Content',
+  ENTITY_RESOLUTION: 'Matching',
+};
+
+const eventTypeLabel: Record<string, string> = {
+  BATCH_CREATED: 'Import created',
+  BATCH_STARTED: 'Import started',
+  BATCH_COMPLETED: 'Import completed',
+  BATCH_FAILED: 'Import failed',
+  BATCH_CANCELLED: 'Import cancelled',
+  BATCH_PAUSED: 'Import paused',
+  BATCH_RESUMED: 'Import resumed',
+  MANIFEST_INGEST_STARTED: 'Reading file started',
+  MANIFEST_INGEST_SUCCEEDED: 'File read successfully',
+  MANIFEST_INGEST_FAILED: 'File reading failed',
+  SCRAPE_STARTED: 'Fetching content started',
+  SCRAPE_SUCCEEDED: 'Content fetched successfully',
+  SCRAPE_FAILED: 'Content fetching failed',
+  ENTITY_RESOLUTION_STARTED: 'Matching started',
+  ENTITY_RESOLUTION_SUCCEEDED: 'Matching completed',
+  ENTITY_RESOLUTION_FAILED: 'Matching failed',
+};
+
+const formatDuration = (ms?: number | null): string => {
+  if (ms == null) return '—';
+  if (ms < 1000) return `${ms}ms`;
+  return `${(ms / 1000).toFixed(1)}s`;
+};
+
 const formatDate = (value?: string | null) => (value ? new Date(value).toLocaleString() : '—');
 
 /** Show filename only (no full path) for manifest display. */
@@ -94,9 +144,8 @@ const BulkImportPage: React.FC = () => {
 
   const currentStage = useMemo(() => {
     if (!jobs.length) return 'Initializing';
-    if (jobs.some(j => j.jobType === 'ENTITY_RESOLUTION' && j.status === 'RUNNING')) return 'Resolving Entities';
-    if (jobs.some(j => j.jobType === 'SCRAPE' && j.status === 'RUNNING')) return 'Scraping Content';
-    if (jobs.some(j => j.jobType === 'MANIFEST_INGEST' && j.status === 'RUNNING')) return 'Analyzing Manifest';
+    if (jobs.some(j => j.jobType === 'SCRAPE' && j.status === 'RUNNING')) return 'Fetching Content';
+    if (jobs.some(j => j.jobType === 'MANIFEST_INGEST' && j.status === 'RUNNING')) return 'Reading File';
     if (selectedBatch?.status === 'SUCCEEDED') return 'Completed';
     if (selectedBatch?.status === 'FAILED') return 'Failed';
     return 'Processing';
@@ -249,7 +298,7 @@ const BulkImportPage: React.FC = () => {
           >
             <div className="px-6 py-4 border-b border-border-light bg-slate-50 flex justify-between items-center">
               <div>
-                <h3 className="text-lg font-bold text-ink-900">Task Log Viewer</h3>
+                <h3 className="text-lg font-bold text-ink-900">Composition Details</h3>
                 <p className="text-xs text-ink-500 truncate max-w-md">{selectedTaskForLog.sourceUrl || selectedTaskForLog.krithiKey}</p>
               </div>
               <button
@@ -263,25 +312,21 @@ const BulkImportPage: React.FC = () => {
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
               {/* Task Overview */}
               <div className="bg-slate-50 rounded-lg p-4 space-y-3">
-                <h4 className="text-sm font-bold text-ink-900">Task Overview</h4>
+                <h4 className="text-sm font-bold text-ink-900">Overview</h4>
                 <div className="grid grid-cols-2 gap-4 text-xs">
-                  <div>
-                    <div className="text-ink-500 font-semibold mb-1">Task ID</div>
-                    <div className="font-mono text-[10px] text-ink-700">{selectedTaskForLog.id}</div>
-                  </div>
                   <div>
                     <div className="text-ink-500 font-semibold mb-1">Status</div>
                     <span className={`px-2 py-1 rounded-full text-[10px] font-bold ${taskChip[selectedTaskForLog.status]}`}>
-                      {selectedTaskForLog.status}
+                      {taskStatusLabel[selectedTaskForLog.status]}
                     </span>
                   </div>
                   <div>
-                    <div className="text-ink-500 font-semibold mb-1">Attempt</div>
+                    <div className="text-ink-500 font-semibold mb-1">Try #</div>
                     <div className="text-ink-700">{selectedTaskForLog.attempt}</div>
                   </div>
                   <div>
-                    <div className="text-ink-500 font-semibold mb-1">Duration</div>
-                    <div className="text-ink-700">{selectedTaskForLog.durationMs ?? '—'}ms</div>
+                    <div className="text-ink-500 font-semibold mb-1">Time Taken</div>
+                    <div className="text-ink-700">{formatDuration(selectedTaskForLog.durationMs)}</div>
                   </div>
                   <div className="col-span-2">
                     <div className="text-ink-500 font-semibold mb-1">Source URL</div>
@@ -332,7 +377,7 @@ const BulkImportPage: React.FC = () => {
                   }}
                   className="flex-1 px-4 py-2 text-sm font-medium text-primary border border-primary rounded-lg hover:bg-primary-light"
                 >
-                  Copy Task JSON
+                  Copy Details
                 </button>
                 <button
                   onClick={() => setSelectedTaskForLog(null)}
@@ -353,15 +398,15 @@ const BulkImportPage: React.FC = () => {
       */}
 
       <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-display font-bold text-ink-900">Bulk Import Orchestration</h1>
+        <h1 className="text-2xl font-display font-bold text-ink-900">Add Compositions</h1>
         <p className="text-sm text-ink-500">
-          Manage CSV-driven bulk imports with progress tracking, retries, and task drill-down.
+          Upload a list of compositions and track their progress.
         </p>
       </div>
 
       <div className="bg-white border border-border-light rounded-xl shadow-sm p-4 md:p-6 flex flex-col gap-4">
         <div>
-          <label className="text-xs font-semibold text-ink-600 mb-1 block">Upload CSV Manifest</label>
+          <label className="text-xs font-semibold text-ink-600 mb-1 block">Upload Composition List</label>
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <input
               type="file"
@@ -374,11 +419,11 @@ const BulkImportPage: React.FC = () => {
               disabled={creating || !selectedFile}
               className="shrink-0 px-4 py-2.5 h-[42px] box-border bg-primary text-white rounded-lg font-medium shadow-sm hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
             >
-              {creating ? 'Uploading…' : 'Start Import'}
+              {creating ? 'Uploading…' : 'Upload & Process'}
             </button>
           </div>
           <p className="text-[11px] text-ink-400 mt-1">
-            Select a CSV file with columns: Krithi, Raga, Hyperlink.
+            Your CSV should have columns for composition name, raga, and source link.
           </p>
         </div>
       </div>
@@ -388,7 +433,7 @@ const BulkImportPage: React.FC = () => {
           <div className="flex items-center justify-between px-4 py-3 border-b border-border-light">
             <div>
               <h3 className="text-sm font-bold text-ink-900">Batches</h3>
-              <p className="text-xs text-ink-500">Recent batch runs with progress and status.</p>
+              <p className="text-xs text-ink-500">Recent uploads and their progress.</p>
             </div>
             <button
               onClick={() => refreshBatches()}
@@ -429,11 +474,11 @@ const BulkImportPage: React.FC = () => {
                           <div className="font-semibold text-ink-900 truncate" title={batch.sourceManifest}>
                             {basename(batch.sourceManifest || '') || batch.sourceManifest}
                           </div>
-                          <div className="text-[11px] text-ink-500">#{batch.id.slice(0, 8)}</div>
+                          <div className="text-[11px] text-ink-500">{formatDate(batch.createdAt)?.split(',')[0]}</div>
                         </td>
                         <td className="px-4 py-3">
                           <span className={`px-2 py-1 rounded-full text-[11px] font-semibold ${statusChip[batch.status]}`}>
-                            {batch.status}
+                            {batchStatusLabel[batch.status]}
                           </span>
                         </td>
                         <td className="px-4 py-3">
@@ -512,30 +557,35 @@ const BulkImportPage: React.FC = () => {
                 <div className="flex flex-wrap gap-2">
                   <button
                     onClick={() => triggerAction('approveAll', selectedBatch.id)}
+                    title="Accept all completed compositions into the collection"
                     className="px-2.5 py-1.5 text-xs rounded-md border border-green-200 text-green-700 bg-green-50 hover:bg-green-100 font-bold"
                   >
                     Approve All
                   </button>
                   <button
                     onClick={() => triggerAction('rejectAll', selectedBatch.id)}
+                    title="Mark all compositions in this batch as rejected"
                     className="px-2.5 py-1.5 text-xs rounded-md border border-amber-200 text-amber-700 bg-amber-50 hover:bg-amber-100"
                   >
                     Reject All
                   </button>
                   <button
                     onClick={() => triggerAction('retry', selectedBatch.id)}
+                    title="Re-process any compositions that failed"
                     className="px-2.5 py-1.5 text-xs rounded-md border border-border-light text-primary font-semibold hover:border-primary"
                   >
                     Retry Failed
                   </button>
                   <button
                     onClick={() => triggerAction('cancel', selectedBatch.id)}
+                    title="Stop processing remaining compositions"
                     className="px-2.5 py-1.5 text-xs rounded-md border border-rose-200 text-rose-700 bg-rose-50"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={() => triggerAction('delete', selectedBatch.id)}
+                    title="Remove this batch and all its data"
                     className="px-2.5 py-1.5 text-xs rounded-md border border-slate-200 text-slate-700 bg-slate-50 hover:bg-slate-100"
                   >
                     Delete
@@ -549,7 +599,7 @@ const BulkImportPage: React.FC = () => {
                 className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-primary border border-primary/30 rounded-lg hover:bg-primary-light transition-colors"
               >
                 <span className="material-symbols-outlined text-sm">queue</span>
-                View Extraction Queue
+                View Processing Queue
               </Link>
 
               {/* TRACK-004: Finalize and Export buttons */}
@@ -573,13 +623,13 @@ const BulkImportPage: React.FC = () => {
               {/* Task breakdown: explains "other N" when progress is 8/14 (e.g. 6 are RETRYABLE/PENDING) */}
               {selectedBatch.totalTasks > 0 && (
                 <div className="p-3 rounded-lg bg-slate-50 border border-border-light">
-                  <div className="text-ink-500 font-semibold text-xs mb-1">Task breakdown</div>
+                  <div className="text-ink-500 font-semibold text-xs mb-1">Progress breakdown</div>
                   <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-ink-700">
-                    <span>Succeeded: {selectedBatch.succeededTasks}</span>
+                    <span>Completed: {selectedBatch.succeededTasks}</span>
                     <span>Failed: {selectedBatch.failedTasks}</span>
-                    {taskBreakdown.RETRYABLE > 0 && <span>Retryable: {taskBreakdown.RETRYABLE}</span>}
-                    {taskBreakdown.PENDING > 0 && <span>Pending: {taskBreakdown.PENDING}</span>}
-                    {taskBreakdown.RUNNING > 0 && <span>Running: {taskBreakdown.RUNNING}</span>}
+                    {taskBreakdown.RETRYABLE > 0 && <span>Will retry: {taskBreakdown.RETRYABLE}</span>}
+                    {taskBreakdown.PENDING > 0 && <span>Waiting: {taskBreakdown.PENDING}</span>}
+                    {taskBreakdown.RUNNING > 0 && <span>In progress: {taskBreakdown.RUNNING}</span>}
                     {notCompleteCount > 0 && (
                       <span className="text-ink-600">
                         ({notCompleteCount} not yet complete)
@@ -600,7 +650,7 @@ const BulkImportPage: React.FC = () => {
                   <div className="text-ink-500 font-semibold">Status</div>
                   <div className="mt-1 flex items-center gap-2">
                     <span className={`px-2 py-1 rounded-full text-[11px] font-semibold ${statusChip[selectedBatch.status]}`}>
-                      {selectedBatch.status}
+                      {batchStatusLabel[selectedBatch.status]}
                     </span>
                     {selectedBatch.status === 'RUNNING' && (
                       <span className="text-xs text-ink-600 font-medium border border-border-light bg-white px-2 py-0.5 rounded-full">
@@ -632,9 +682,9 @@ const BulkImportPage: React.FC = () => {
                 <>
                   {/* Job Pipeline Stepper Visualization */}
                   <div className="border border-border-light rounded-lg p-4 bg-slate-50">
-                    <div className="text-sm font-semibold text-ink-800 mb-3">Pipeline Progress</div>
+                    <div className="text-sm font-semibold text-ink-800 mb-3">Processing Steps</div>
                     <div className="relative flex items-stretch justify-between gap-2">
-                      {['MANIFEST_INGEST', 'SCRAPE', 'ENTITY_RESOLUTION'].map((stage, index) => {
+                      {['MANIFEST_INGEST', 'SCRAPE'].map((stage, index) => {
                         const job = jobs.find(j => j.jobType === stage);
                         const isActive = job?.status === 'RUNNING';
                         const isCompleted = job?.status === 'SUCCEEDED';
@@ -665,11 +715,11 @@ const BulkImportPage: React.FC = () => {
                                 {isCompleted ? '✓' : isFailed ? '✗' : index + 1}
                               </div>
                               <div className="text-[10px] font-semibold text-center leading-tight">
-                                {stage === 'MANIFEST_INGEST' ? 'Ingest' : stage === 'SCRAPE' ? 'Scrape' : 'Resolve'}
+                                {jobTypeLabel[stage] || stage}
                               </div>
                               {job && (
                                 <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold ${taskChip[job.status]}`}>
-                                  {job.status}
+                                  {taskStatusLabel[job.status] || job.status}
                                 </span>
                               )}
                               <div className="min-h-[1.25rem] flex items-center justify-center">
@@ -688,13 +738,13 @@ const BulkImportPage: React.FC = () => {
 
                   {/* Job Details List */}
                   <div className="border border-border-light rounded-lg">
-                    <div className="px-3 py-2 border-b border-border-light text-sm font-semibold text-ink-800">Job Details</div>
+                    <div className="px-3 py-2 border-b border-border-light text-sm font-semibold text-ink-800">Step Details</div>
                     <div className="divide-y divide-border-light max-h-40 overflow-y-auto">
-                      {jobs.map(job => (
+                      {jobs.filter(job => job.jobType !== 'ENTITY_RESOLUTION').map(job => (
                         <div key={job.id} className="px-3 py-2 flex items-center justify-between text-xs">
-                          <span className="font-semibold text-ink-900">{job.jobType}</span>
+                          <span className="font-semibold text-ink-900">{jobTypeLabel[job.jobType] || job.jobType}</span>
                           <span className={`px-2 py-1 rounded-full text-[10px] font-bold ${taskChip[job.status]}`}>
-                            {job.status}
+                            {taskStatusLabel[job.status] || job.status}
                           </span>
                         </div>
                       ))}
@@ -712,9 +762,9 @@ const BulkImportPage: React.FC = () => {
                     className="text-xs border border-border-light rounded-md px-2 py-1"
                   >
                     <option value="ALL">All</option>
-                    {Object.keys(taskChip).map(key => (
+                    {(Object.keys(taskChip) as BulkTaskStatus[]).map(key => (
                       <option key={key} value={key}>
-                        {key}
+                        {taskStatusLabel[key]}
                       </option>
                     ))}
                   </select>
@@ -733,13 +783,13 @@ const BulkImportPage: React.FC = () => {
                           </div>
                           <div className="flex items-center gap-2">
                             <span className={`px-2 py-1 rounded-full text-[10px] font-bold ${taskChip[task.status]}`}>
-                              {task.status}
+                              {taskStatusLabel[task.status]}
                             </span>
                             <span className="material-symbols-outlined text-sm text-ink-400">chevron_right</span>
                           </div>
                         </div>
                         <div className="text-[11px] text-ink-500">
-                          Attempt {task.attempt} · Duration {task.durationMs ?? '—'}ms
+                          Try #{task.attempt} · {formatDuration(task.durationMs)}
                         </div>
                         {task.error && (
                           <div className="text-[11px] text-rose-600 mt-1 truncate">{parseError(task.error)}</div>
@@ -751,22 +801,46 @@ const BulkImportPage: React.FC = () => {
               </div>
 
               <div className="border border-border-light rounded-lg">
-                <div className="px-3 py-2 border-b border-border-light text-sm font-semibold text-ink-800">Events</div>
+                <div className="px-3 py-2 border-b border-border-light text-sm font-semibold text-ink-800">Activity</div>
                 {loadingDetail ? (
-                  <div className="p-4 text-ink-400 text-sm">Loading events…</div>
+                  <div className="p-4 text-ink-400 text-sm">Loading…</div>
                 ) : events.length === 0 ? (
-                  <div className="p-4 text-ink-400 text-sm">No events yet.</div>
+                  <div className="p-4 text-ink-400 text-sm">No activity yet.</div>
                 ) : (
-                  <div className="max-h-48 overflow-y-auto divide-y divide-border-light">
-                    {events.slice(0, 30).map(event => (
-                      <div key={event.id} className="px-3 py-2 text-xs">
-                        <div className="flex items-center justify-between">
-                          <span className="font-semibold text-ink-900">{event.eventType}</span>
-                          <span className="text-ink-500">{formatDate(event.createdAt)}</span>
-                        </div>
-                        {event.data && <div className="text-ink-600 mt-1">{parseError(event.data)}</div>}
-                      </div>
-                    ))}
+                  <div className="max-h-56 overflow-y-auto px-3 py-2">
+                    <div className="relative border-l-2 border-slate-200 ml-2 space-y-3">
+                      {events.slice(0, 30).map(event => {
+                        const isError = event.eventType.includes('FAILED');
+                        const isSuccess = event.eventType.includes('SUCCEEDED') || event.eventType.includes('COMPLETED');
+                        const dotColor = isError ? 'bg-rose-400' : isSuccess ? 'bg-green-400' : 'bg-blue-400';
+                        let parsedData: Record<string, unknown> | null = null;
+                        if (event.data) {
+                          try { parsedData = JSON.parse(event.data) as Record<string, unknown>; } catch { /* use raw */ }
+                        }
+                        return (
+                          <div key={event.id} className="relative pl-5 text-xs">
+                            <div className={`absolute -left-[5px] top-1 w-2.5 h-2.5 rounded-full ${dotColor} border-2 border-white`} />
+                            <div className="flex items-center justify-between">
+                              <span className="font-semibold text-ink-900">{eventTypeLabel[event.eventType] || event.eventType}</span>
+                              <span className="text-ink-400 text-[10px]">{formatDate(event.createdAt)}</span>
+                            </div>
+                            {parsedData && (
+                              <dl className="mt-1 grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 text-[11px]">
+                                {Object.entries(parsedData).map(([k, v]) => (
+                                  <React.Fragment key={k}>
+                                    <dt className="text-ink-400 capitalize">{k.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').trim()}</dt>
+                                    <dd className="text-ink-700 font-medium">{String(v)}</dd>
+                                  </React.Fragment>
+                                ))}
+                              </dl>
+                            )}
+                            {event.data && !parsedData && (
+                              <div className="text-ink-600 mt-1">{parseError(event.data)}</div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
               </div>

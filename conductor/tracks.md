@@ -87,6 +87,9 @@
 | [TRACK-081](./tracks/TRACK-081-extraction-file-path-support.md) | Extraction Worker Local File Path Support | Completed |
 | [TRACK-082](./tracks/TRACK-082-documentation-track-cleanup.md) | Documentation Update & Conductor Track Cleanup | Completed |
 | [TRACK-083](./tracks/TRACK-083-agent-skills-workflows-update.md) | Agent Skills, Workflows & Hooks Modernization | Completed |
+| [TRACK-084](./tracks/TRACK-084-ui-terminology-humanization.md) | UI Terminology Humanization for Musicologist Persona | Completed |
+| [TRACK-085](./tracks/TRACK-085-sourcing-tab-consolidation.md) | Sourcing Tab Consolidation & Import Detail Cleanup | Completed |
+| [TRACK-086](./tracks/TRACK-086-collection-review-ux-polish.md) | Collection Review UX Polish | Completed |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)

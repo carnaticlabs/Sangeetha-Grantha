@@ -11,8 +11,8 @@ const SourceEvidencePage: React.FC = () => {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-display font-bold text-ink-900">Source Evidence</h1>
-          <p className="text-sm text-ink-500 mt-1">Browse provenance data and field-level comparison across sources</p>
+          <h1 className="text-2xl font-display font-bold text-ink-900">Evidence</h1>
+          <p className="text-sm text-ink-500 mt-1">See which sources contributed to each composition and compare their data</p>
         </div>
       </div>
 
@@ -20,7 +20,7 @@ const SourceEvidencePage: React.FC = () => {
       <div className="bg-white rounded-xl border border-border-light p-4 mb-6">
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-ink-500 uppercase">Min Sources</span>
+            <span className="text-xs font-semibold text-ink-500 uppercase">Minimum Sources</span>
             <input
               type="number"
               min={1}
@@ -54,9 +54,9 @@ const SourceEvidencePage: React.FC = () => {
               <th className="px-4 py-3 text-left text-xs font-semibold text-ink-500 uppercase tracking-wider">Krithi</th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-ink-500 uppercase tracking-wider">Sources</th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-ink-500 uppercase tracking-wider">Top Source</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-ink-500 uppercase tracking-wider">Contributed Fields</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-ink-500 uppercase tracking-wider">Avg Confidence</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-ink-500 uppercase tracking-wider">Voting</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-ink-500 uppercase tracking-wider">Fields Provided</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-ink-500 uppercase tracking-wider">Reliability</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-ink-500 uppercase tracking-wider">Verification</th>
             </tr>
           </thead>
           <tbody>
@@ -74,7 +74,7 @@ const SourceEvidencePage: React.FC = () => {
               <tr>
                 <td colSpan={6} className="px-4 py-12 text-center">
                   <span className="material-symbols-outlined text-4xl text-ink-200 mb-2 block">fact_check</span>
-                  <p className="text-sm text-ink-500">No source evidence found — evidence is created during extraction and import.</p>
+                  <p className="text-sm text-ink-500">No evidence found yet. Evidence appears as compositions are processed from multiple sources.</p>
                 </td>
               </tr>
             ) : (
@@ -113,7 +113,7 @@ const SourceEvidencePage: React.FC = () => {
                     {item.votingStatus ? (
                       <span className="text-xs font-semibold text-primary">{item.votingStatus}</span>
                     ) : (
-                      <span className="text-xs text-ink-400">No Vote</span>
+                      <span className="text-xs text-ink-400">Not yet verified</span>
                     )}
                   </td>
                 </tr>

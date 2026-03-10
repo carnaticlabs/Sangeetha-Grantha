@@ -2,12 +2,10 @@ import React from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 
 const sourcingNavItems = [
-  { path: '/admin/sourcing', label: 'Dashboard', icon: 'dashboard', end: true },
-  { path: '/admin/sourcing/sources', label: 'Source Registry', icon: 'source' },
-  { path: '/admin/sourcing/extractions', label: 'Extraction Queue', icon: 'manufacturing' },
-  { path: '/admin/sourcing/evidence', label: 'Source Evidence', icon: 'fact_check' },
-  { path: '/admin/sourcing/voting', label: 'Structural Voting', icon: 'how_to_vote' },
-  { path: '/admin/sourcing/quality', label: 'Quality Dashboard', icon: 'analytics' },
+  { path: '/admin/sourcing', label: 'Overview', icon: 'dashboard', end: true },
+  { path: '/admin/sourcing/sources', label: 'Sources & Processing', icon: 'source' },
+  { path: '/admin/sourcing/evidence', label: 'Evidence & Verification', icon: 'fact_check' },
+  { path: '/admin/sourcing/quality', label: 'Collection Health', icon: 'analytics' },
 ];
 
 const SourcingLayout: React.FC = () => {
@@ -22,7 +20,7 @@ const SourcingLayout: React.FC = () => {
 
   // Build breadcrumbs
   const breadcrumbs = [
-    { label: 'Sourcing & Quality', path: '/admin/sourcing' },
+    { label: 'Collection Review', path: '/admin/sourcing' },
   ];
 
   if (currentItem && !currentItem.end) {

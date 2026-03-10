@@ -62,8 +62,8 @@ const ExtractionMonitorPage: React.FC = () => {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-display font-bold text-ink-900">Extraction Queue</h1>
-          <p className="text-sm text-ink-500 mt-1">Monitor and manage the extraction pipeline</p>
+          <h1 className="text-2xl font-display font-bold text-ink-900">Processing Queue</h1>
+          <p className="text-sm text-ink-500 mt-1">Track and manage composition processing from sources</p>
         </div>
         <div className="flex gap-2">
           <button
@@ -72,7 +72,7 @@ const ExtractionMonitorPage: React.FC = () => {
             className="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-border-light text-ink-700 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors disabled:opacity-50"
           >
             <span className="material-symbols-outlined text-lg">play_arrow</span>
-            Process Pending
+            Process Waiting
           </button>
           {(stats?.failed ?? 0) > 0 && (
             <button
@@ -89,7 +89,7 @@ const ExtractionMonitorPage: React.FC = () => {
             className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
           >
             <span className="material-symbols-outlined text-lg">add</span>
-            New Extraction Request
+            Process New Source
           </button>
         </div>
       </div>
@@ -106,8 +106,8 @@ const ExtractionMonitorPage: React.FC = () => {
               <th className="px-4 py-3 text-left text-xs font-semibold text-ink-500 uppercase tracking-wider">Format</th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-ink-500 uppercase tracking-wider">Status</th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-ink-500 uppercase tracking-wider">Krithis</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-ink-500 uppercase tracking-wider">Confidence</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-ink-500 uppercase tracking-wider">Duration</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-ink-500 uppercase tracking-wider">Reliability</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-ink-500 uppercase tracking-wider">Time Taken</th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-ink-500 uppercase tracking-wider">Created</th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-ink-500 uppercase tracking-wider">Actions</th>
             </tr>
@@ -125,7 +125,7 @@ const ExtractionMonitorPage: React.FC = () => {
               <tr>
                 <td colSpan={9} className="px-4 py-12 text-center">
                   <span className="material-symbols-outlined text-4xl text-ink-200 mb-2 block">manufacturing</span>
-                  <p className="text-sm text-ink-500">No extractions yet — submit an extraction request to get started.</p>
+                  <p className="text-sm text-ink-500">No items yet — process a source to get started.</p>
                 </td>
               </tr>
             ) : (
@@ -187,7 +187,7 @@ const ExtractionMonitorPage: React.FC = () => {
 
         {data && data.items.length > 0 && (
           <div className="px-4 py-3 border-t border-border-light bg-slate-50 text-sm text-ink-500">
-            Showing {data.items.length} of {data.total} extractions
+            Showing {data.items.length} of {data.total} items
           </div>
         )}
       </div>

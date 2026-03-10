@@ -7,31 +7,36 @@ interface TierBadgeProps {
   showTooltip?: boolean;
 }
 
-const tierConfig: Record<SourceTier, { label: string; colors: string; definition: string }> = {
+const tierConfig: Record<SourceTier, { label: string; shortName: string; colors: string; definition: string }> = {
   1: {
     label: 'T1',
+    shortName: 'Primary',
     colors: 'bg-amber-100 text-amber-800 border-amber-300',
-    definition: 'Tier 1 — Primary Authority: Official publications, direct composer manuscripts, authenticated institutional sources',
+    definition: 'Primary Authority — Official publications, direct composer manuscripts, authenticated institutional sources',
   },
   2: {
     label: 'T2',
+    shortName: 'Scholarly',
     colors: 'bg-slate-200 text-slate-700 border-slate-300',
-    definition: 'Tier 2 — Scholarly: Peer-reviewed academic works, established musicological references',
+    definition: 'Scholarly — Peer-reviewed academic works, established musicological references',
   },
   3: {
     label: 'T3',
+    shortName: 'Curated',
     colors: 'bg-orange-100 text-orange-800 border-orange-300',
-    definition: 'Tier 3 — Curated: Well-maintained community databases, curated web portals with editorial oversight',
+    definition: 'Curated — Well-maintained community databases, curated web portals with editorial oversight',
   },
   4: {
     label: 'T4',
+    shortName: 'Community',
     colors: 'bg-blue-100 text-blue-700 border-blue-300',
-    definition: 'Tier 4 — Community: Community-contributed content, blogs, personal collections, fan sites',
+    definition: 'Community — Community-contributed content, blogs, personal collections, fan sites',
   },
   5: {
     label: 'T5',
+    shortName: 'Unverified',
     colors: 'bg-slate-100 text-slate-500 border-slate-200',
-    definition: 'Tier 5 — Unverified: Automated scrapes, unverified bulk imports, machine-generated content',
+    definition: 'Unverified — Automated scrapes, unverified bulk imports, machine-generated content',
   },
 };
 
@@ -51,7 +56,7 @@ const TierBadge: React.FC<TierBadgeProps> = ({ tier, size = 'md', showTooltip = 
       role="img"
       aria-label={config.definition}
     >
-      {config.label}
+      {size === 'sm' ? config.label : `${config.label} · ${config.shortName}`}
     </span>
   );
 };

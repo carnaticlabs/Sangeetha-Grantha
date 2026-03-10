@@ -14,8 +14,8 @@ const SourcingDashboardPage: React.FC = () => {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-display font-bold text-ink-900">Sourcing & Quality</h1>
-          <p className="text-sm text-ink-500 mt-1">Pipeline health, recent activity, and quick actions</p>
+          <h1 className="text-2xl font-display font-bold text-ink-900">Collection Review</h1>
+          <p className="text-sm text-ink-500 mt-1">Overview of your collection's sources, processing, and quality</p>
         </div>
       </div>
 
@@ -30,23 +30,23 @@ const SourcingDashboardPage: React.FC = () => {
           loading={sourcesLoading}
         />
         <MetricCard
-          label="Extraction Queue"
+          label="Processing Queue"
           value={extractionStats?.total ?? '—'}
           subtitle={extractionStats ? `${extractionStats.pending} pending, ${extractionStats.processing} processing` : undefined}
           icon={<span className="material-symbols-outlined text-lg text-ink-300">manufacturing</span>}
-          onClick={() => navigate('/admin/sourcing/extractions')}
+          onClick={() => navigate('/admin/sourcing/sources')}
           loading={extractionLoading}
         />
         <MetricCard
-          label="Voting Decisions"
+          label="Verification Decisions"
           value={votingStats?.total ?? '—'}
           subtitle={votingStats?.total ? `${((votingStats.manual / votingStats.total) * 100).toFixed(0)}% manual review` : undefined}
           icon={<span className="material-symbols-outlined text-lg text-ink-300">how_to_vote</span>}
-          onClick={() => navigate('/admin/sourcing/voting')}
+          onClick={() => navigate('/admin/sourcing/evidence')}
           loading={votingLoading}
         />
         <MetricCard
-          label="Corpus Quality"
+          label="Collection Quality"
           value={qualitySummary ? `${qualitySummary.avgQualityScore.toFixed(2)}` : '—'}
           subtitle={qualitySummary ? `${qualitySummary.enrichmentCoveragePercent.toFixed(0)}% coverage` : undefined}
           icon={<span className="material-symbols-outlined text-lg text-ink-300">analytics</span>}
@@ -66,12 +66,12 @@ const SourcingDashboardPage: React.FC = () => {
                   <span className="material-symbols-outlined text-sm text-emerald-600">check_circle</span>
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm text-ink-700">{extractionStats.done} extractions completed</p>
-                  <p className="text-xs text-ink-400">{extractionStats.throughputPerHour.toFixed(1)}/hr throughput</p>
+                  <p className="text-sm text-ink-700">{extractionStats.done} sources processed</p>
+                  <p className="text-xs text-ink-400">{extractionStats.throughputPerHour.toFixed(1)} processed per hour</p>
                 </div>
               </div>
             ) : (
-              <p className="text-sm text-ink-400 italic py-4">No recent activity. Submit an extraction request to get started.</p>
+              <p className="text-sm text-ink-400 italic py-4">No recent activity. Process a source to get started.</p>
             )}
 
             {extractionStats && extractionStats.failed > 0 && (
@@ -80,9 +80,9 @@ const SourcingDashboardPage: React.FC = () => {
                   <span className="material-symbols-outlined text-sm text-red-600">error</span>
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm text-ink-700">{extractionStats.failed} failed extractions need attention</p>
+                  <p className="text-sm text-ink-700">{extractionStats.failed} failed items need attention</p>
                   <button
-                    onClick={() => navigate('/admin/sourcing/extractions')}
+                    onClick={() => navigate('/admin/sourcing/sources')}
                     className="text-xs text-primary hover:underline"
                   >
                     View queue
@@ -97,8 +97,8 @@ const SourcingDashboardPage: React.FC = () => {
                   <span className="material-symbols-outlined text-sm text-blue-600">fact_check</span>
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm text-ink-700">{qualitySummary.multiSourceCount} Krithis have multi-source evidence</p>
-                  <p className="text-xs text-ink-400">{qualitySummary.multiSourcePercent.toFixed(1)}% of corpus</p>
+                  <p className="text-sm text-ink-700">{qualitySummary.multiSourceCount} compositions verified by multiple sources</p>
+                  <p className="text-xs text-ink-400">{qualitySummary.multiSourcePercent.toFixed(1)}% of collection</p>
                 </div>
               </div>
             )}
@@ -113,15 +113,15 @@ const SourcingDashboardPage: React.FC = () => {
               <span className="text-sm font-bold text-ink-800 tabular-nums">{qualitySummary?.totalKrithis ?? '—'}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-ink-600">Multi-Source</span>
+              <span className="text-sm text-ink-600">Multiple Sources</span>
               <span className="text-sm font-bold text-ink-800 tabular-nums">{qualitySummary?.multiSourceCount ?? '—'}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-ink-600">Structural Consensus</span>
+              <span className="text-sm text-ink-600">Structure Agreed</span>
               <span className="text-sm font-bold text-ink-800 tabular-nums">{qualitySummary?.consensusCount ?? '—'}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-ink-600">Voting Decisions</span>
+              <span className="text-sm text-ink-600">Verification Decisions</span>
               <span className="text-sm font-bold text-ink-800 tabular-nums">{votingStats?.total ?? '—'}</span>
             </div>
           </div>
@@ -131,25 +131,25 @@ const SourcingDashboardPage: React.FC = () => {
       {/* Quick Actions */}
       <div className="flex flex-wrap gap-3">
         <button
-          onClick={() => navigate('/admin/sourcing/extractions')}
+          onClick={() => navigate('/admin/sourcing/sources')}
           className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
         >
           <span className="material-symbols-outlined text-lg">add_circle</span>
-          Start New Extraction
+          Process New Source
         </button>
         <button
           onClick={() => navigate('/admin/sourcing/quality')}
           className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-border-light text-ink-700 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors"
         >
           <span className="material-symbols-outlined text-lg">query_stats</span>
-          View Quality Dashboard
+          View Collection Health
         </button>
         <button
-          onClick={() => navigate('/admin/sourcing/voting')}
+          onClick={() => navigate('/admin/sourcing/evidence')}
           className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-border-light text-ink-700 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors"
         >
           <span className="material-symbols-outlined text-lg">rate_review</span>
-          View Voting Decisions
+          View Verification Decisions
         </button>
       </div>
     </div>

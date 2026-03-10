@@ -39,9 +39,17 @@ class SourceEvidenceRepository {
     ): Pair<List<SourceEvidenceSummaryDto>, Int> = DatabaseFactory.dbQuery {
         val countExpr = E.krithiId.count()
 
-        // Build grouped query with optional HAVING filter
-        var groupedQuery = E.select(E.krithiId, countExpr)
+        // Build grouped query with optional search and HAVING filters
+        val baseJoin = if (!search.isNullOrBlank()) {
+            E.innerJoin(K, { E.krithiId }, { K.id })
+        } else {
+            E
+        }
+        var groupedQuery = baseJoin.select(E.krithiId, countExpr)
             .groupBy(E.krithiId)
+        if (!search.isNullOrBlank()) {
+            groupedQuery = groupedQuery.andWhere { K.title.lowerCase() like "%${search.lowercase()}%" }
+        }
         if (minSourceCount != null && minSourceCount > 1) {
             groupedQuery = groupedQuery.having { countExpr greaterEq minSourceCount.toLong() }
         }
@@ -56,23 +64,74 @@ class SourceEvidenceRepository {
             .offset(offset.toLong())
             .map { it[E.krithiId] to it[countExpr].toInt() }
 
-        // Batch-load krithi titles in a single query (eliminates N+1)
         val krithiIds = page.map { it.first }
-        val titleMap = if (krithiIds.isNotEmpty()) {
-            K.select(K.id, K.title)
-                .where { K.id inList krithiIds }
-                .associate { it[K.id].value to it[K.title] }
-        } else emptyMap()
+        if (krithiIds.isEmpty()) return@dbQuery Pair(emptyList(), total)
+
+        // Batch-load krithi titles + raga/tala/composer names
+        val C = ComposersTable
+        val R = RagasTable
+        val T = TalasTable
+        val krithiInfoMap = K
+            .leftJoin(R, { K.primaryRagaId }, { R.id })
+            .leftJoin(T, { K.talaId }, { T.id })
+            .leftJoin(C, { K.composerId }, { C.id })
+            .select(K.id, K.title, R.name, T.name, C.name)
+            .where { K.id inList krithiIds }
+            .associate { row ->
+                row[K.id].value to Triple(
+                    row[K.title],
+                    row.getOrNull(R.name),
+                    row.getOrNull(C.name),
+                )
+            }
+
+        // Batch-load evidence details: top source (lowest tier), avg confidence, contributed fields
+        data class EvidenceAgg(
+            val topSourceName: String,
+            val topSourceTier: Int,
+            val avgConfidence: Double,
+            val contributedFields: Set<String>,
+        )
+
+        val evidenceAggMap = mutableMapOf<UUID, EvidenceAgg>()
+        if (krithiIds.isNotEmpty()) {
+            // Fetch all evidence rows for these krithis joined with import_sources
+            val evidenceRows = E
+                .leftJoin(S, { E.importSourceId }, { S.id })
+                .select(E.krithiId, S.name, S.sourceTier, E.confidence, E.contributedFields)
+                .where { E.krithiId inList krithiIds }
+                .toList()
+
+            // Group and aggregate in-memory (small set — max pageSize * sources per krithi)
+            evidenceRows.groupBy { it[E.krithiId] }.forEach { (kid, rows) ->
+                val bestRow = rows.minByOrNull { it.getOrNull(S.sourceTier) ?: Int.MAX_VALUE }
+                val allFields = rows.flatMap { row ->
+                    row[E.contributedFields].trim('{', '}').split(",").filter { it.isNotBlank() }
+                }.toSet()
+                val avgConf = rows.mapNotNull { it.getOrNull(E.confidence)?.toDouble() }
+                    .let { if (it.isNotEmpty()) it.average() else 0.0 }
+                evidenceAggMap[kid] = EvidenceAgg(
+                    topSourceName = bestRow?.getOrNull(S.name) ?: "",
+                    topSourceTier = bestRow?.getOrNull(S.sourceTier) ?: 5,
+                    avgConfidence = avgConf,
+                    contributedFields = allFields,
+                )
+            }
+        }
 
         val summaries = page.map { (krithiId, count) ->
+            val (title, raga, composer) = krithiInfoMap[krithiId] ?: Triple("Unknown", null, null)
+            val agg = evidenceAggMap[krithiId]
             SourceEvidenceSummaryDto(
                 krithiId = krithiId.toKotlinUuid(),
-                krithiTitle = titleMap[krithiId] ?: "Unknown",
+                krithiTitle = title,
+                krithiRaga = raga,
+                krithiComposer = composer,
                 sourceCount = count,
-                topSourceName = "",
-                topSourceTier = 5,
-                contributedFields = emptyList(),
-                avgConfidence = 0.0,
+                topSourceName = agg?.topSourceName ?: "",
+                topSourceTier = agg?.topSourceTier ?: 5,
+                contributedFields = agg?.contributedFields?.toList() ?: emptyList(),
+                avgConfidence = agg?.avgConfidence ?: 0.0,
             )
         }
 

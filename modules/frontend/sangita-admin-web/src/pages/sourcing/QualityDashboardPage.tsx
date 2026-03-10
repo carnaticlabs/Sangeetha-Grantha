@@ -14,8 +14,8 @@ const QualityDashboardPage: React.FC = () => {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-display font-bold text-ink-900">Corpus Quality Dashboard</h1>
-          <p className="text-sm text-ink-500 mt-1">Quality metrics, coverage analysis, and data gap tracking</p>
+          <h1 className="text-2xl font-display font-bold text-ink-900">Collection Health</h1>
+          <p className="text-sm text-ink-500 mt-1">Quality scores, completeness, and areas needing attention</p>
         </div>
         <button
           onClick={() => runAuditMutation.mutate()}
@@ -23,7 +23,7 @@ const QualityDashboardPage: React.FC = () => {
           className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 disabled:opacity-50 transition-colors"
         >
           <span className="material-symbols-outlined text-lg">{runAuditMutation.isPending ? 'hourglass_empty' : 'query_stats'}</span>
-          {runAuditMutation.isPending ? 'Running...' : 'Run Audit Now'}
+          {runAuditMutation.isPending ? 'Checking...' : 'Check Health Now'}
         </button>
       </div>
 
@@ -35,13 +35,13 @@ const QualityDashboardPage: React.FC = () => {
           loading={summaryLoading}
         />
         <MetricCard
-          label="Multi-Source"
+          label="Multiple Sources"
           value={summary ? `${summary.multiSourceCount}` : '—'}
           subtitle={summary ? `${summary.multiSourcePercent.toFixed(1)}%` : undefined}
           loading={summaryLoading}
         />
         <MetricCard
-          label="Structural Consensus"
+          label="Structure Agreed"
           value={summary ? `${summary.consensusCount}` : '—'}
           subtitle={summary ? `${summary.consensusPercent.toFixed(1)}%` : undefined}
           loading={summaryLoading}
@@ -52,7 +52,7 @@ const QualityDashboardPage: React.FC = () => {
           loading={summaryLoading}
         />
         <MetricCard
-          label="Enrichment Coverage"
+          label="Completeness"
           value={summary ? `${summary.enrichmentCoveragePercent.toFixed(1)}%` : '—'}
           loading={summaryLoading}
         />
@@ -93,7 +93,7 @@ const QualityDashboardPage: React.FC = () => {
                   <div key={tc.tier} className="flex-1 flex flex-col items-center gap-1">
                     <span className="text-xs font-bold text-ink-600 tabular-nums">{tc.count}</span>
                     <div className={`w-full ${tierColors[tc.tier - 1] || 'bg-slate-300'} rounded-t transition-all`} style={{ height: `${height}%`, minHeight: 4 }} />
-                    <span className="text-[10px] text-ink-400">T{tc.tier}</span>
+                    <span className="text-[10px] text-ink-400">{['Primary','Scholarly','Curated','Community','Unverified'][tc.tier - 1] || `T${tc.tier}`}</span>
                   </div>
                 );
               })}
@@ -106,13 +106,13 @@ const QualityDashboardPage: React.FC = () => {
 
       {/* Enrichment Phase Progress */}
       <div className="bg-white rounded-xl border border-border-light p-5 mb-8">
-        <h2 className="text-lg font-semibold text-ink-800 mb-4">Enrichment Phase Progress</h2>
+        <h2 className="text-lg font-semibold text-ink-800 mb-4">Completion Progress</h2>
         {coverage?.phaseProgress && coverage.phaseProgress.length > 0 ? (
           <div className="space-y-3">
             {coverage.phaseProgress.map((phase) => (
               <ProgressBarRow
                 key={phase.phase}
-                label={`P${phase.phase}: ${phase.label}`}
+                label={phase.label}
                 target={phase.target}
                 actual={phase.completed}
                 inProgress={phase.inProgress}
@@ -120,14 +120,14 @@ const QualityDashboardPage: React.FC = () => {
             ))}
           </div>
         ) : (
-          <p className="text-sm text-ink-400 italic">Phase progress will be displayed once enrichment tracking is configured.</p>
+          <p className="text-sm text-ink-400 italic">Progress will appear once completion tracking is configured.</p>
         )}
       </div>
 
       {/* Data Gaps */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
         <div className="lg:col-span-3 bg-white rounded-xl border border-border-light p-5">
-          <h2 className="text-lg font-semibold text-ink-800 mb-4">Data Gaps & Priorities</h2>
+          <h2 className="text-lg font-semibold text-ink-800 mb-4">Areas Needing Attention</h2>
           {gaps?.gaps && gaps.gaps.length > 0 ? (
             <div className="space-y-1">
               {gaps.gaps.map((gap, i) => (
@@ -141,12 +141,12 @@ const QualityDashboardPage: React.FC = () => {
               ))}
             </div>
           ) : (
-            <p className="text-sm text-ink-400 italic">No data gap analysis available yet. Run an audit to generate results.</p>
+            <p className="text-sm text-ink-400 italic">No gaps found yet. Check health to generate results.</p>
           )}
         </div>
         <div className="lg:col-span-2 bg-white rounded-xl border border-border-light p-5">
           <h2 className="text-lg font-semibold text-ink-800 mb-4">Composer Coverage Matrix</h2>
-          <p className="text-sm text-ink-400 italic">Heatmap will be displayed once composer-field coverage data is available.</p>
+          <p className="text-sm text-ink-400 italic">Coverage details will appear once more compositions are processed.</p>
         </div>
       </div>
 
@@ -177,7 +177,7 @@ const QualityDashboardPage: React.FC = () => {
             ))}
           </div>
         ) : (
-          <p className="text-sm text-ink-400 italic">No audit results yet — click "Run Audit Now" to generate the first analysis.</p>
+          <p className="text-sm text-ink-400 italic">No results yet — click "Check Health Now" to run the first analysis.</p>
         )}
       </div>
     </div>

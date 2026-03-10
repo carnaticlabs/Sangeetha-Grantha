@@ -28,14 +28,14 @@ const StructuralVotingPage: React.FC = () => {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-display font-bold text-ink-900">Structural Voting</h1>
-          <p className="text-sm text-ink-500 mt-1">Cross-source voting decisions and manual override controls</p>
+          <h1 className="text-2xl font-display font-bold text-ink-900">Verification</h1>
+          <p className="text-sm text-ink-500 mt-1">How agreement was reached on each composition's structure</p>
         </div>
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
-        <MetricCard label="Total" value={stats?.total ?? '—'} loading={statsLoading} />
+        <MetricCard label="All Decisions" value={stats?.total ?? '—'} loading={statsLoading} />
         <MetricCard label="Unanimous" value={stats?.unanimous ?? '—'} loading={statsLoading} />
         <MetricCard label="Majority" value={stats?.majority ?? '—'} loading={statsLoading} />
         <MetricCard label="Authority" value={stats?.authorityOverride ?? '—'} loading={statsLoading} />
@@ -70,7 +70,7 @@ const StructuralVotingPage: React.FC = () => {
               <tr>
                 <td colSpan={7} className="px-4 py-12 text-center">
                   <span className="material-symbols-outlined text-4xl text-ink-200 mb-2 block">how_to_vote</span>
-                  <p className="text-sm text-ink-500">No structural voting decisions yet — voting occurs automatically during multi-source extraction.</p>
+                  <p className="text-sm text-ink-500">No verification decisions yet. These are created automatically when compositions have multiple sources.</p>
                 </td>
               </tr>
             ) : (

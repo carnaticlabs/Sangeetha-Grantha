@@ -17,7 +17,8 @@ import kotlinx.serialization.json.put
 
 class BatchCompletionHandler(
     private val dal: SangitaDal,
-    private val json: Json = Json
+    private val json: Json = Json,
+    private val onNewTasksCreated: (() -> Unit)? = null
 ) {
     suspend fun checkAndTriggerNextStage(jobId: Uuid) {
         val job = dal.bulkImport.findJobById(jobId) ?: return
@@ -61,13 +62,15 @@ class BatchCompletionHandler(
                     }
 
                     if (newTasks.isNotEmpty()) {
+                        // createTasks() already increments batch.totalTasks internally
                         dal.bulkImportTasks.createTasks(
                             jobId = resolutionJob.id,
                             batchId = job.batchId,
                             tasks = newTasks
                         )
 
-                        dal.bulkImport.incrementBatchTotalTasks(job.batchId, newTasks.size)
+                        // Wake up the dispatcher so it polls for the new resolution tasks
+                        onNewTasksCreated?.invoke()
                     } else {
                         maybeCompleteBatch(job.batchId)
                     }
