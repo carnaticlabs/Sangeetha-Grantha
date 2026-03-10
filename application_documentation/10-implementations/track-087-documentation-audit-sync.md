@@ -28,3 +28,4 @@ Ref: application_documentation/10-implementations/track-087-documentation-audit-
 | `conductor/tracks.md` | Recorded TRACK-087. |
 | `modules/frontend/sangita-admin-web/CLAUDE.md` | Synced context knowledge. |
 | `README.md` | Synced root documentation with the latest infrastructure. |
+| `.gitignore`, `.claude-context.md` | Ignored new Python tools and synced context settings. |
