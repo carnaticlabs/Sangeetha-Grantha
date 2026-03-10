@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 2.0.0 |
-| **Last Updated** | 2026-02-12 |
+| **Version** | 3.0.0 |
+| **Last Updated** | 2026-03-10 |
 | **Author** | Sangeetha Grantha Team |
 
 # Sangeetha Grantha: Complete Engineering Evolution
@@ -10,12 +10,8 @@
 
 ## From Vision to Production-Ready Platform
 
-> **Audience**: Software Engineers & Technical Leaders  
-> **Period**: Project Inception – February 2026  
->| **Status** | Published |
-| **Version** | 1.0 |
-| **Last Updated** | 2026-01-20 |
-| **Author** | User |
+> **Audience**: Software Engineers & Technical Leaders
+> **Period**: Project Inception – March 2026
 
 ---
 
@@ -29,11 +25,16 @@ Sangeetha Grantha represents a systematic journey from concept to production-rea
 - **100% documentation coverage** with commit-level traceability
 - **Zero security incidents** from automated guardrails
 - **Production-ready** testing infrastructure with steel thread and E2E validation
-- **30 database migrations** evolving from baseline to comprehensive sourcing schema
-- **63 conductor tracks** tracking engineering progress
-- **87+ commits** shipped since mid-January 2026 alone
+- **38 database migrations** evolving from baseline to comprehensive sourcing schema
+- **86 conductor tracks** tracking engineering progress (76 completed)
+- **120+ commits** shipped since mid-January 2026
 - **PDF extraction pipeline** decoding Velthuis Sanskrit fonts and garbled diacritics
 - **9-screen Sourcing & Quality UI** for provenance tracking and structural voting
+- **Unified extraction architecture**: Python as single source of truth for all composition parsing
+- **PostgreSQL 18 upgrade** with native UUID v7 support across 27 tables
+- **Rust CLI archived** — simplified to Python db-migrate + Makefile workflow
+- **Major backend refactoring** — 9,000+ lines reorganized into focused, testable modules
+- **92% section inconsistency** discovered and fully remediated across 473 krithis
 
 This is the story of building a system that respects both **musical tradition** and **engineering excellence**.
 
@@ -79,7 +80,7 @@ While the rest of this document is structured thematically, it is useful to anch
 - Advanced krithi notation and AI transliteration features expanded multi-script, notation-centric capabilities.
 - Generic scraping + domain mapping added to support heterogeneous legacy sources.
 - Searchable deity and temple management added, strengthening domain coverage.
-- Steel thread test (`cargo run -- test steel-thread`) wired into the dev workflow, acting as a production-grade smoke test.
+- Steel thread test (`make steel-thread`) wired into the dev workflow, acting as a production-grade smoke test.
 
 ### Phase 6 – Data Quality, Sourcing Pipeline & PDF Extraction (Late Jan – Feb 2026)
 
@@ -97,6 +98,24 @@ While the rest of this document is structured thematically, it is useful to anch
 - **Dependency Updates**: Two upgrade cycles (Q1 2026 + Feb 2026) covering Ktor, Exposed, Kotlin, React, Vite, and Rust toolchains. Environment variable standardisation across monorepo.
 - **Frontend E2E Testing**: Playwright scaffolding with headed/debug mode support.
 - **Documentation**: Documentation Guardian audit & repair (TRACK-043), 12+ doc files updated, comprehensive project README overhaul.
+
+### Phase 7 – Simplification, Consolidation & Data Integrity (Late Feb – Mar 2026)
+
+- **Unified Extraction Engine (TRACK-064)**: Massive consolidation migrating all extraction logic from Kotlin to Python. Created `html_extractor.py` (BeautifulSoup-based), consolidated 100+ Indic regex rules into Python `structure_parser.py`, and added `gemini_enricher.py` with schema-driven enrichment and exponential backoff. Kotlin backend became a pure ingestion orchestrator. 97 passing Python tests.
+- **Python Module Promotion (TRACK-065)**: Renamed `tools/pdf-extractor/` to `tools/krithi-extract-enrich-worker/` reflecting expanded scope (PDF + HTML + OCR + Gemini enrichment). Pinned Python 3.11 in root `.mise.toml`.
+- **Rust CLI Archival (TRACK-078)**: Moved `tools/sangita-cli/` to `tools/sangita-cli-archived/`. Replaced all Rust CLI commands with `make` targets. Updated all Claude Code commands, git hooks, and documentation. Eliminated Rust as a required build dependency.
+- **PostgreSQL 18 Upgrade (TRACK-072)**: Bumped Docker Compose from PostgreSQL 15 to 18.3-alpine. Created migration `37__pg18_uuidv7_defaults.sql` switching 27 tables to native `uuidv7()` defaults. Better sortability and temporal awareness on all UUID-keyed queries.
+- **Major Backend Refactoring (TRACK-073–076)**: Systematic decomposition of monolithic Kotlin files into focused, testable modules:
+  - TRACK-073: Split `SourcingDtos.kt` and `DtoMappers.kt` into domain-specific files
+  - TRACK-074: Extracted `KrithiLyricRepository`, `KrithiSearchRepository`, `BulkImportEventRepository`, `BulkImportTaskRepository` from monolithic repositories
+  - TRACK-075: Extracted `ImportReportGenerator`, `LyricVariantPersistenceService`, `VariantScorer`, `StructuralVotingProcessor`, `KrithiMatcherService`
+  - TRACK-076: Extracted `GeminiModels`, `GeminiRetryStrategy`, `ScrapingPromptBuilder`, `SectionHeaderDetector`
+- **E2E Pipeline Validation (TRACK-079)**: Discovered 435/473 krithis (92%) had inconsistent `krithi_lyric_sections` counts across 6 language variants. Rewrote `structure_parser.py` for MKS demotion, dual-format merge, and Indic anusvara handling. Migration 38 repaired all inconsistencies. Fixed `KrithiMatcherService` to route unmatched extractions to pending review instead of auto-creating krithis.
+- **Curator Review UI (TRACK-080)**: Built `CuratorReviewPage.tsx` with two-tab interface (Pending Matches, Section Issues). Implemented approve/reject/merge workflows with keyboard shortcuts (j/k navigation, a=approve, r=reject). Backend `CuratorRoutes.kt` with stats and section-issue detection endpoints.
+- **Local File Path Support (TRACK-081)**: Added `file://` URI and bare path support to extraction worker. Docker Compose volume mount `./data/pdfs:/app/pdfs:ro` for direct filesystem access.
+- **Agent Skills Modernization (TRACK-083)**: Updated all workflows from Rust CLI to Makefile. Added `data-quality-audit` skill with 7 diagnostic SQL queries and `extraction-debugger` skill. Added protective hooks: config file guard, migration naming check. Fixed Pallavi detection for Nottusvara Sahityams.
+- **UI Humanization (TRACK-084–086)**: Renamed engineering terminology to musicologist-friendly language ("Bulk Import" to "Add Compositions", "Sourcing & Quality" to "Collection Review"). Consolidated sourcing tab navigation. Polished collection review UX.
+- **Documentation Overhaul**: Comprehensive audit and sync of all documentation files. Updated 25+ files with correct versions, tool paths, and commands. Synced `current-versions.md` with actual source files.
 
 The remaining sections of this document dive deeper into each of these themes, connecting them back to the underlying architecture, schema, and tooling decisions.
 
@@ -136,9 +155,9 @@ The foundational technology choices were made with clear rationale:
 |-------|-----------|-----------|
 | **Mobile** | Kotlin Multiplatform + Compose | Shared codebase for Android & iOS, type-safe, modern UI |
 | **Backend** | Kotlin + Ktor | Lightweight, async-first, excellent PostgreSQL support |
-| **Database** | PostgreSQL 15+ | Rich type system (enums, JSONB), full-text search, proven reliability |
+| **Database** | PostgreSQL 18+ | Rich type system (enums, JSONB), full-text search, proven reliability |
 | **Admin Web** | React + TypeScript + Tailwind | Rapid development, large ecosystem, type safety |
-| **Migrations** | Rust CLI (custom) | Fast, cross-platform, unified tooling, no JVM dependency |
+| **Migrations** | Python db-migrate (originally Rust CLI, archived Feb 2026) | Lightweight, no compilation step, shared Python runtime |
 | **Cloud** | AWS or GCP | Scalable, managed services, global distribution |
 
 **Key Principle:**
@@ -299,7 +318,17 @@ Notation is **independent of lyrics**, allowing multiple notation variants per c
 **Migration 29:** Extraction variant support — `content_language`, `extraction_intent`, `related_extraction_id` columns; `variant_match` table
 **Migration 30:** Entity resolution cache schema fix (missing `updated_at` column, `confidence` type)
 
-**Total Evolution:** 30 migrations from baseline to comprehensive sourcing and extraction schema supporting:
+**Migrations 31–38 (Phase 7):**
+
+**Migration 31:** HTML extraction queue support and index improvements
+**Migration 32:** Normalize entity resolution cache confidence type
+**Migration 33-34:** Repair and optimize `krithi_lyric_variants` lyrics index
+**Migration 35:** Add `krithi_source_evidence(krithi_id, source_url)` composite index
+**Migration 36:** Add `strip_diacritics()` PostgreSQL function for search normalization
+**Migration 37:** PostgreSQL 18 UUID v7 defaults across 27 tables
+**Migration 38:** Fix inconsistent lyric sections (MKS demotion, deduplication, re-indexing)
+
+**Total Evolution:** 38 migrations from baseline to comprehensive sourcing and extraction schema supporting:
 - Multiple musical forms (Krithi, Varnam, Swarajathi)
 - Multilingual lyrics with sampradaya variants
 - Notation variants with tala alignment
@@ -334,11 +363,12 @@ Chose **React 19 with TypeScript** for admin web console.
 5. **Separation of Concerns**: Admin web distinct from mobile; shared UI code not primary requirement
 
 **Stack:**
-- React 19.2.0 (functional components, hooks)
-- TypeScript 5.8.3 (strict type safety)
-- Vite 7.1.7 (modern build tool, fast HMR)
-- Tailwind CSS 3.4.13 (utility-first styling)
-- React Router 7.11.0 (client-side routing)
+- React 19.2.4 (functional components, hooks)
+- TypeScript 5.9.x (strict type safety)
+- Vite 7.3.1 (modern build tool, fast HMR)
+- Tailwind CSS 4.1.18 (utility-first styling)
+- React Router 7.13.0 (client-side routing)
+- TanStack Query 5.90.20 (data fetching & caching)
 
 **Impact:**
 - ✅ Rapid development and iteration
@@ -384,6 +414,34 @@ Chose **Rust-based migration tool** using **sqlx** for database migrations.
 - ✅ Fast, reliable migrations
 - ✅ Excellent developer experience
 - ✅ Cross-platform consistency
+
+### 4.2 Course Correction: Rust CLI to Python db-migrate + Makefile (TRACK-078)
+
+**Date:** February 2026
+
+**The Problem:**
+The Rust CLI (`sangita-cli`) had grown beyond its original scope — from a simple migration runner into an orchestration tool for dev workflows, steel thread tests, and extraction management. This introduced Rust as a mandatory build dependency for all developers, even those working solely on the Kotlin backend or React frontend.
+
+**The Decision:**
+Archive the Rust CLI and replace it with:
+1. **Python `db-migrate`** (`tools/db-migrate/`) — lightweight migration runner using `psycopg`
+2. **Makefile** — single entry point for all developer workflows (`make dev`, `make migrate`, `make db-reset`, etc.)
+3. **Docker Compose** (`compose.yaml`) — full-stack orchestration
+
+**Rationale:**
+1. **Reduced toolchain complexity**: Eliminated Rust as a required dependency
+2. **Faster onboarding**: New developers no longer need to compile a Rust binary
+3. **Better composability**: Makefile targets are transparent and easy to extend
+4. **Python alignment**: Extraction worker already required Python; migration tool shares the runtime
+
+**Impact:**
+- ✅ One fewer language in the mandatory toolchain
+- ✅ Migration tool installable via `pip` (no compilation step)
+- ✅ All workflows accessible via `make <target>`
+- ✅ Rust CLI preserved in `tools/sangita-cli-archived/` for historical reference
+
+**Lesson Learned:**
+Custom tooling in a specialized language is justified when the team uses that language broadly. When the Rust CLI became the only Rust artifact in active use, the maintenance burden outweighed the benefits. Simplification to well-understood tools (Python + Make) was the right call.
 
 ---
 
@@ -505,10 +563,10 @@ All 9 repository classes now use `resultedValues` for creates and `updateReturni
 **Problem:**
 Complex monorepo requiring:
 - Java 25 (Kotlin/JVM backend, Android)
-- Rust 1.92.0 (CLI tooling, migrations)
-- Bun 1.3.0 (Frontend package management)
-- PostgreSQL 15 (Database)
-- Docker Compose (Local database)
+- Python 3.11 (Migration tool, extraction worker)
+- Bun 1.3.6 (Frontend package management)
+- PostgreSQL 18 (Database)
+- Docker Compose (Container orchestration)
 
 **Pain Points:**
 - 2-4 hours initial setup time per developer
@@ -529,23 +587,22 @@ Chose **mise** (formerly rtx) as unified toolchain version manager:
 - ✅ Automatic PATH management
 
 **Configuration:**
+```toml
 # .mise.toml
-```kotlin
 [tools]
 java = "temurin-25"      # Matches Gradle toolchain requirement
-rust = "1.92.0"          # Matches CLI toolchain
-bun = "1.3.0"            # Frontend package manager
+python = "3.11"          # Migration tool & extraction worker
+bun = "1.3.6"            # Frontend package manager
 ```
 
 **Bootstrap Scripts:**
 Created unified bootstrap scripts (`tools/bootstrap` for Unix, `tools/bootstrap.ps1` for Windows) that:
-1. Install toolchain via mise (Java, Rust, Bun)
+1. Install toolchain via mise (Java, Python, Bun)
 2. Verify Docker + Docker Compose availability
 3. Create canonical config files from templates
-4. Start PostgreSQL 15 via Docker Compose
-5. Build Rust CLI tool
-6. Run database reset (drop → create → migrate → seed)
-7. Install frontend dependencies
+4. Start PostgreSQL 18 via Docker Compose
+5. Run database reset (drop → create → migrate → seed)
+6. Install frontend dependencies
 
 **Result:**
 - **Single command setup**: `./tools/bootstrap`
@@ -574,10 +631,10 @@ Every code change must be traceable to documented requirements, ensuring:
 - Features are traceable to requirements
 - No accidental secret commits
 
-### 8.2 Rust-Based Git Hooks
+### 8.2 Git Hooks
 
 **Technology Choice:**
-Implemented in Rust (`tools/sangita-cli`) for:
+Originally implemented in Rust (`tools/sangita-cli`, now archived), later maintained via Claude Code hooks and Makefile targets:
 - Fast execution (< 500ms target)
 - Cross-platform compatibility
 - Seamless IDE integration
@@ -662,9 +719,9 @@ End-to-end smoke test that verifies core functionality of the entire stack.
 4. ✅ Admin API endpoints (with authentication)
 5. ✅ Frontend dev server startup
 
-```text
 **Execution:**
-cargo run -- test steel-thread
+```bash
+make steel-thread
 ```
 
 **Phases:**
@@ -788,7 +845,7 @@ A new Python-based PDF extraction service was created to handle authoritative PD
 **Docker Infrastructure:**
 - Dockerfile with Tesseract + Indic language packs for OCR fallback
 - Docker Compose extension for local development
-- CLI commands: `sangita-cli extraction start|stop|status|logs|restart`
+- CLI management via `make dev` (starts extraction worker alongside other services)
 
 ### 12.2 Diacritic Normalisation (English PDFs)
 
@@ -908,9 +965,203 @@ A new Python-based PDF extraction service was created to handle authoritative PD
 
 ---
 
-## Part XIV: Scalability & Future-Proofing
+## Part XIV: Unified Extraction Architecture (TRACK-064)
 
-### 11.1 Architecture Evaluation
+### 14.1 The Heuristic Split Problem
+
+**Discovery Date:** February 2026
+
+**The Problem:**
+Extraction logic was duplicated across two languages: `KrithiStructureParser.kt` (Kotlin) and `structure_parser.py` (Python). Bug fixes in one codebase weren't reflected in the other, causing silent divergence. A `MADHYAMAKALA` splitting fix in Python didn't propagate to Kotlin, leading to section count mismatches.
+
+**Root Cause:**
+The original architecture delegated different extraction formats to different runtimes — Kotlin handled HTML scraping inline, Python handled PDFs. Both implemented their own section detection logic independently.
+
+### 14.2 The Consolidation
+
+**Solution (TRACK-064, three phases):**
+
+1. **Phase 1 — HTML Migration**: Created `html_extractor.py` using BeautifulSoup4, replacing Kotlin's inline HTML scraping. All HTML submissions now routed through the extraction queue, processed by Python.
+2. **Phase 2 — Heuristic Consolidation**: Migrated 100+ Indic script regex rules from Kotlin to Python. Consolidated section detection, metadata parsing, and multi-script header recognition into a single Python codebase.
+3. **Phase 3 — Gemini Enrichment**: Created `gemini_enricher.py` with schema-driven metadata enrichment, exponential backoff retries, and response validation.
+
+**Supporting infrastructure:**
+- `identity_candidates.py` with RapidFuzz fuzzy matching for Raga/Composer resolution
+- `ExtractionResultProcessor.kt` — Kotlin becomes a pure ingestion consumer
+- 5 database migrations for queue support, index improvements, and metadata tracking
+- 97 passing Python tests, validated E2E with blogspot-html and pdf-smoke fixtures
+
+### 14.3 Architecture After Consolidation
+
+```
+Submission (HTML/PDF/OCR)
+    → extraction_queue (PostgreSQL)
+        → Python Worker (krithi-extract-enrich-worker)
+            ├── html_extractor.py (HTML sources)
+            ├── pdf_extractor.py (PDF sources)
+            ├── structure_parser.py (section detection — SINGLE SOURCE OF TRUTH)
+            ├── metadata_parser.py (raga/tala/composer)
+            ├── gemini_enricher.py (AI metadata enrichment)
+            └── identity_candidates.py (fuzzy entity matching)
+        → CanonicalExtractionDto (result)
+    → Kotlin Backend (ExtractionResultProcessor)
+        → Krithi creation / evidence persistence / variant matching
+```
+
+**Key Principle Established:**
+> Intelligence lives in Python. Ingestion lives in Kotlin. Review lives in the Curator UI.
+
+### 14.4 Lessons from the Migration
+
+1. **Heuristic split is a leaky abstraction** — Complex domain logic must be centralized. Duplicating regex patterns across languages guarantees silent divergence.
+2. **Schema mismatches cause silent failures** — The `raga` (scalar) vs `ragas[]` (array) mismatch between Kotlin and Python inflated false collision counts until discovered during code review.
+3. **Container volume mounting is essential** — COPY-based Docker builds created a rebuild-per-change tax. Switching to volume mounts (`./src:/app/src:ro`) restored dev velocity.
+4. **CLI test fixtures beat large-set validation** — Controlled 3-row and 200-row deterministic fixtures catch real issues faster than full-dataset runs.
+
+---
+
+## Part XV: PostgreSQL 18 Upgrade & UUID v7 (TRACK-072)
+
+### 15.1 The Upgrade
+
+**Date:** February 2026
+
+**Changes:**
+- Docker Compose image: `postgres:15-alpine` to `postgres:18.3-alpine`
+- Volume mount path updated for PG18 layout
+- Migration `37__pg18_uuidv7_defaults.sql`: switched 27 tables from `gen_random_uuid()` to `uuidv7()`
+
+### 15.2 UUID v7 Benefits
+
+UUID v7 encodes a millisecond timestamp in the first 48 bits, providing:
+- **Temporal ordering**: UUIDs sort by creation time, improving B-tree index locality
+- **Reduced page splits**: Sequential inserts cluster on the same index pages
+- **Built-in temporal awareness**: Creation timestamp extractable from the UUID itself
+- **Native PostgreSQL 18 support**: No extension or custom function required
+
+### 15.3 Impact
+
+- Better query performance on UUID-keyed tables (insertion-order sorting)
+- Simplified temporal debugging (UUID encodes its creation time)
+- Aligned with modern database best practices
+
+---
+
+## Part XVI: Backend Refactoring Arc (TRACK-073–076)
+
+### 16.1 The Problem: Monolithic Growth
+
+By February 2026, several backend files had grown beyond maintainable size:
+- `SourcingDtos.kt`: 300+ lines of unrelated DTOs
+- `KrithiRepository`: 500+ lines mixing search, lyric, and CRUD operations
+- `BulkImportService`: multiple unrelated responsibilities
+- `GeminiApiClient`: retry logic, model config, and API calls in one class
+
+### 16.2 Systematic Decomposition
+
+**TRACK-073 — Shared DTOs & Mappers:**
+- Split `SourcingDtos.kt` into `SourcingDtos.kt`, `EvidenceVotingDtos.kt`, and domain-specific files
+- Split `DtoMappers.kt` into `CoreEntityMappers.kt`, `ImportDtoMappers.kt`, `KrithiDtoMappers.kt`
+
+**TRACK-074 — DAL Repositories:**
+- Extracted `KrithiLyricRepository` (lyric-specific queries)
+- Extracted `KrithiSearchRepository` (search operations with different query patterns)
+- Extracted `BulkImportEventRepository` and `BulkImportTaskRepository`
+
+**TRACK-075 — Core Services:**
+- Extracted `ImportReportGenerator`, `LyricVariantPersistenceService`, `VariantScorer`
+- Extracted `StructuralVotingProcessor`, `KrithiMatcherService`
+- Added `AuditDataModels` and `AuditSqlQueries`
+
+**TRACK-076 — Infrastructure Services:**
+- Extracted `GeminiModels` and `GeminiRetryStrategy` (injectable retry policy)
+- Extracted `ScrapingPromptBuilder` (reusable across source types)
+- Extracted `SectionHeaderDetector` (independently testable)
+
+### 16.3 Impact
+
+- **9,000+ lines** reorganized into focused, single-responsibility modules
+- Reduced file sizes from 500+ to <300 lines per file
+- Easier testing in isolation
+- Reduced merge conflicts on shared files
+- Clearer onboarding path for new developers
+
+---
+
+## Part XVII: Data Integrity Remediation (TRACK-079)
+
+### 17.1 The Discovery
+
+**Date:** February 2026
+
+During E2E pipeline validation, a critical data integrity issue was uncovered:
+- **435 out of 473 krithis (92%)** had inconsistent `krithi_lyric_sections` counts across their 6 language variants
+- **40 krithis** had zero sections in at least one variant
+- Root cause: `structure_parser.py` parsed section labels differently per script (Devanagari vs Roman vs Tamil)
+
+### 17.2 The Root Causes
+
+1. **Dual-format text handling**: Some PDFs contained both continuous and word-division forms of lyrics. The parser treated these as separate sections.
+2. **MKS (Madhyama Kala Sahityam) classification**: Top-level MKS sections were created instead of being demoted to sub-sections within their parent Charanam.
+3. **Indic anusvara variations**: Different representations of nasal consonants (`ṁ` vs explicit `m`) caused duplicate section detection.
+4. **Index-based matching**: `LyricVariantPersistenceService` used order-index matching instead of type+queue matching, causing misalignment when section counts differed between variants.
+
+### 17.3 The Fix
+
+- Rewrote `structure_parser.py` with MKS demotion, dual-format merge, bracket headers, and Indic anusvara normalization
+- Updated `LyricVariantPersistenceService.kt` to use type+queue matching
+- Fixed `KrithiLyricRepository.kt` ordering via JOIN instead of sub-select
+- **Migration 38** (`fix_inconsistent_lyric_sections.sql`): removed MKS top-level sections, deduplicated, re-indexed
+- Repair scripts filled 34 zero-section krithis, fixed 3 with inconsistent counts
+- **Result: 0 krithis with mismatched section counts** (down from 435)
+
+### 17.4 The Auto-Creation Fix
+
+**Additional discovery:** `KrithiMatcherService` was auto-creating new krithis when no match was found during extraction, bypassing curator review entirely.
+
+**Fix:** Route unmatched extractions to `imported_krithis` as PENDING status, requiring human review before canonicalization.
+
+**Lesson:** Automated systems should never create canonical records without human approval. The curator review gate is a safety boundary, not a convenience feature.
+
+---
+
+## Part XVIII: Curator Review & UI Polish (TRACK-080, 084–086)
+
+### 18.1 Curator Review Interface
+
+**Purpose:** Provide musicologist curators with tools to review unmatched extractions and data quality issues.
+
+**Implementation:**
+- `CuratorReviewPage.tsx` with two-tab interface:
+  - **Pending Matches**: Unmatched extraction results awaiting curator decision
+  - **Section Issues**: Krithis with structural inconsistencies across variants
+- `ConfirmationModal.tsx` for approve/reject/merge workflows
+- Keyboard shortcuts: `j`/`k` navigation, `a`=approve, `r`=reject
+- Backend `CuratorRoutes.kt` with stats and section-issue detection endpoints
+
+### 18.2 UI Terminology Humanization
+
+**The Insight:** The admin UI used engineering terminology that created cognitive friction for musicologist users. "Bulk Import", "Extraction Queue", "Source Evidence" are developer concepts, not music concepts.
+
+**Changes:**
+- "Bulk Import" to "Add Compositions"
+- "Sourcing & Quality" to "Collection Review"
+- Updated 6 sourcing pages with music-domain language
+- Added helper functions (`statusLabel`, `formatDuration`) for human-readable display
+
+### 18.3 Tab Consolidation & UX Polish
+
+- Consolidated sourcing sub-navigation tabs for cleaner information architecture
+- Improved import detail page layout
+- Added collection review UX polish (loading states, empty states, error boundaries)
+
+**Lesson:** UI language should match the user's domain vocabulary. Musicians think in "compositions" and "collections", not "imports" and "extractions".
+
+---
+
+## Part XIX: Scalability & Future-Proofing
+
+### 19.1 Architecture Evaluation
 
 **Current State:**
 Production-ready for small to medium scale (thousands of concurrent users).
@@ -931,7 +1182,7 @@ Production-ready for small to medium scale (thousands of concurrent users).
 - ❌ No geographic distribution
 - ❌ Search relies solely on PostgreSQL (no dedicated search engine)
 
-### 11.2 Scaling Strategy Documents
+### 19.2 Scaling Strategy Documents
 
 **Comprehensive Analysis:**
 - **Scaling Evaluation**: Detailed analysis of current architecture and scaling requirements
@@ -951,9 +1202,9 @@ Production-ready for small to medium scale (thousands of concurrent users).
 
 ---
 
-## Part XV: Engineering Best Practices Established
+## Part XIX-B: Engineering Best Practices Established
 
-### 12.1 Code Patterns
+### 19B.1 Code Patterns
 
 **Database Operations:**
 - ✅ Always use `DatabaseFactory.dbQuery { }` for database access
@@ -978,7 +1229,7 @@ Production-ready for small to medium scale (thousands of concurrent users).
 - ✅ Use transactions for atomic operations
 - ✅ Validate `musicalForm` before allowing notation operations
 
-### 12.2 Documentation Standards
+### 19B.2 Documentation Standards
 
 **Spec-Driven Development:**
 - All features documented in `application_documentation/`
@@ -987,29 +1238,28 @@ Production-ready for small to medium scale (thousands of concurrent users).
 - Database schema documentation
 - Frontend UI specifications
 
-### 12.3 Dependency Management
+### 19B.3 Dependency Management
 
 **Version Catalog:**
 - Centralized dependency management via `gradle/libs.versions.toml`
 - No hardcoded versions in `build.gradle.kts`
 - Consistent versions across all modules
 
-**Key Versions (as of February 2026):**
-- Kotlin: 2.3.0
-- Ktor: 3.4.0
-- Exposed: 1.0.0
-- React: 19.2.0
-- TypeScript: 5.8.3
-- Vite: 7.1.7
-- Playwright: (E2E testing)
-- Python: 3.12+ (PDF extraction)
-- PostgreSQL: 15+ (dev pinned via Docker Compose)
+**Key Versions (as of March 2026):**
+
+For the full, authoritative version list, see [Current Versions](./current-versions.md).
+
+- Kotlin: 2.3.0, Ktor: 3.4.0, Exposed: 1.0.0, Koin: 4.1.1
+- React: 19.2.4, TypeScript: 5.9.x, Vite: 7.3.1, Tailwind CSS: 4.1.18
+- PostgreSQL: 18.3 (Docker, with UUID v7)
+- Python: 3.11 (extraction worker, migrations)
+- Logback: 1.5.27, HikariCP: 7.0.2
 
 ---
 
-## Part XVI: Metrics & Achievements Summary
+## Part XX: Metrics & Achievements Summary
 
-### 16.1 Performance Metrics
+### 20.1 Performance Metrics
 
 | Metric | Before | After | Improvement |
 |--------|--------|-------|-------------|
@@ -1019,7 +1269,7 @@ Production-ready for small to medium scale (thousands of concurrent users).
 | Onboarding time | 2.5-4.5 hours | < 30 minutes | 90% reduction |
 | Hook execution time | N/A | < 500ms | Fast validation |
 
-### 16.2 Quality Metrics
+### 20.2 Quality Metrics
 
 | Metric | Target | Achieved |
 |--------|--------|----------|
@@ -1029,40 +1279,45 @@ Production-ready for small to medium scale (thousands of concurrent users).
 | Environment consistency | 100% | ✅ 100% |
 | Setup success rate | > 95% | ✅ > 95% |
 
-### 16.3 Code Quality Metrics
+### 20.3 Code Quality Metrics
 
 | Metric | Status |
 |--------|--------|
-| DELETE+INSERT anti-patterns | ✅ Eliminated |
-| Repository optimization | ✅ 100% complete |
-| Exposed RC-4 features | ✅ Fully leveraged |
-| Smart diffing implementation | ✅ All collections |
-| Audit logging coverage | ✅ 100% mutations |
+| DELETE+INSERT anti-patterns | Eliminated |
+| Repository optimization | 100% complete |
+| Exposed 1.0.0 features | Fully leveraged |
+| Smart diffing implementation | All collections |
+| Audit logging coverage | 100% mutations |
+| Backend refactoring | 9,000+ lines reorganized (TRACK-073–076) |
+| Extraction heuristic centralization | Python single source of truth |
+| Section consistency | 100% (0 mismatches, down from 435) |
 
-### 16.4 Schema Evolution
+### 20.4 Schema Evolution
 
 | Metric | Count |
 |--------|-------|
-| Database migrations | 30 |
+| Database migrations | 38 |
 | Core entities | 30+ |
 | Enum types | 10+ |
-| Indexes | 25+ |
+| Indexes | 30+ |
 | Foreign key constraints | 40+ |
+| UUID v7 tables | 27 |
 
-### 16.5 Architecture Decisions
+### 20.5 Architecture Decisions
 
 | ADR | Title | Status | Date |
 |-----|-------|--------|------|
 | ADR-001 | Spec-driven documentation architecture | Accepted | 2025-09-15 |
 | ADR-002 | Frontend Architecture Decision - React vs Kotlin/JS | Accepted | 2025-01-27 |
 | ADR-003 | Database Migration Tool Choice - Rust vs Flyway | Accepted | 2025-01-27 |
+| ADR-003.1 | Course Correction: Rust CLI to Python db-migrate + Makefile | Accepted | 2026-02-28 |
 | ADR-004 | Authentication Strategy - JWT with Role-Based Access Control | Accepted | 2025-01-27 |
 | ADR-005 | Graph Database Evaluation for Music-Aware Graph Explorer | Draft | 2025-12-29 |
 | ADR-006 | Integration of Google Gemini for Content Ingestion | Accepted | 2026-01-05 |
 
 ---
 
-## Part XVII: Lessons Learned & Engineering Insights
+## Part XXI: Lessons Learned & Engineering Insights
 
 ### 17.1 Performance Optimization
 
@@ -1120,14 +1375,54 @@ Indian classical music data arrives in multiple transliteration schemes (IAST, H
 **Takeaway:**
 Build normalisation as a core service, not an afterthought. The aspirate collapse table is simple (~10 rules) but eliminates an entire class of false negatives in entity matching.
 
+### 17.8 Heuristic Centralisation (Phase 7)
+
+**Key Insight:**
+Duplicating domain-specific parsing logic across languages (Kotlin and Python) created a "leaky abstraction" — fixes in one didn't propagate to the other, causing 92% of krithis to have inconsistent section counts.
+
+**Takeaway:**
+Complex domain logic must live in exactly one place. The decision to make Python the single source of truth for all composition parsing eliminated an entire class of cross-language divergence bugs.
+
+### 17.9 Toolchain Simplification (Phase 7)
+
+**Key Insight:**
+The Rust CLI grew from a focused migration runner into an orchestration tool, making Rust a mandatory dependency for developers who never wrote Rust code. When the CLI became the only Rust artifact in active use, the complexity tax exceeded the benefit.
+
+**Takeaway:**
+Periodically audit your toolchain for orphaned dependencies. When a tool's language is no longer used elsewhere in the project, consider rewriting it in a language the team already uses. Python + Makefile replaced Rust with zero loss of functionality.
+
+### 17.10 Data Integrity as First-Class Concern (Phase 7)
+
+**Key Insight:**
+The 92% section inconsistency was invisible during normal operation — the UI displayed whichever variant was queried, and no cross-variant consistency check existed. The issue was only discovered during deliberate E2E pipeline validation.
+
+**Takeaway:**
+Build data quality assertions into your pipeline, not just your tests. If a critical invariant (e.g., "all language variants of a krithi must have the same section count") isn't continuously validated, it will silently degrade.
+
+### 17.11 Automated Creation Must Have Human Gates (Phase 7)
+
+**Key Insight:**
+`KrithiMatcherService` auto-created canonical krithis when no match was found, bypassing curator review. This created orphaned records and undermined the editorial workflow.
+
+**Takeaway:**
+Automated systems should never create canonical records without human approval. Route unmatched results to a staging area (PENDING status) and let curators decide. The review gate is a safety boundary, not a convenience feature.
+
+### 17.12 UI Language Must Match User Domain (Phase 7)
+
+**Key Insight:**
+Engineering terminology ("Bulk Import", "Extraction Queue", "Source Evidence") created cognitive friction for musicologist users who think in "compositions", "collections", and "sources".
+
+**Takeaway:**
+Terminology debt is real. Renaming labels is low-risk and high-impact. Do it early and often as you learn how users actually describe their workflows.
+
 ---
 
-## Part XVIII: Current State & Future Roadmap
+## Part XXII: Current State & Future Roadmap
 
-### 18.1 Current Capabilities
+### 22.1 Current Capabilities
 
 **Production-Ready Features:**
-- ✅ Complete database schema with 30 migrations
+- ✅ Complete database schema with 38 migrations (PostgreSQL 18, UUID v7)
 - ✅ Optimized data access layer (40-50% query reduction)
 - ✅ Cross-platform development environment (95% setup time reduction)
 - ✅ Commit guardrails and workflow enforcement (100% documentation coverage)
@@ -1135,44 +1430,47 @@ Build normalisation as a core service, not an afterthought. The aspirate collaps
 - ✅ AI integration for content ingestion (Gemini 2.0 Flash)
 - ✅ Comprehensive documentation architecture with guardian audits
 - ✅ JWT-based authentication with role-based access control
-- ✅ Deterministic scraping pipeline (KrithiStructureParser)
+- ✅ Unified extraction pipeline (Python single source of truth)
 - ✅ PDF extraction service (English diacritics + Sanskrit Velthuis decoding)
+- ✅ HTML extraction via BeautifulSoup (migrated from Kotlin)
 - ✅ Source authority tiers and evidence tracking
 - ✅ Language variant matching with confidence scoring
-- ✅ 9-screen Sourcing & Quality admin UI
+- ✅ 9-screen Collection Review admin UI (humanized terminology)
+- ✅ Curator review interface with approve/reject/merge workflows
 - ✅ Bulk import with idempotency guards
 - ✅ Transliteration-aware entity normalisation
 - ✅ Composer deduplication via alias tables
+- ✅ 100% section consistency across all krithis and language variants
+- ✅ Refactored backend: focused, testable modules (9,000+ lines reorganized)
+- ✅ Simplified toolchain: Python db-migrate + Makefile (Rust CLI archived)
+- ✅ 86 conductor tracks (76 completed, 4 deferred, 5 deprecated, 1 superseded)
 
-**In Progress:**
-- 🔄 Krithi creation from extraction results (TRACK-053)
-- 🔄 Data quality remediation and deduplication (TRACK-040)
-- 🔄 Full re-extraction E2E validation (TRACK-063)
-- 🔄 Frontend E2E test expansion (TRACK-035)
+**In Progress / Deferred:**
+- 🔄 Frontend E2E test expansion (TRACK-035, deferred)
+- 🔄 Mobile app Krithi browsing screens
 
-### 18.2 Planned Enhancements
+### 22.2 Planned Enhancements
 
 **High Priority:**
-- End-to-end extraction pipeline validation (Kotlin → extraction_queue → Python → results → INGESTED)
-- Data quality remediation (duplicate cleanup, orphaned section removal)
-- Krithi creation from unmatched extraction results
-- Frontend E2E test coverage expansion
+- Mobile app development (Compose Multiplatform)
+- Advanced lyric search and ranking
+- Additional PDF source integrations (beyond Dikshitar corpus)
 
 **Medium Priority:**
 - Caching layer (Redis/Memorystore)
 - Rate limiting on public endpoints
 - Server-side filtering and pagination improvements
-- Mobile app Krithi browsing screens
+- Public read-only web experience
 
 **Future Considerations:**
 - CDN integration for static assets
 - Read replicas for database scaling
 - Dedicated search service (Elasticsearch/OpenSearch)
 - Geographic distribution for global scale
-- Additional PDF source integrations
+- Media management (audio/notation)
 - Automated quality scoring with confidence thresholds
 
-### 18.3 Scaling Roadmap
+### 22.3 Scaling Roadmap
 
 **Phase 1 (Current):**
 - Monolithic Ktor + Single PostgreSQL
@@ -1202,13 +1500,15 @@ Build normalisation as a core service, not an afterthought. The aspirate collaps
 
 Sangeetha Grantha represents a systematic journey from vision to production-ready platform, combining **musicological rigor** with **best-in-class software engineering**. The evolution demonstrates:
 
-1. **Thoughtful Architecture**: Every decision documented and justified across 6+ ADRs
-2. **Performance Excellence**: 40-50% query reduction through modern patterns
-3. **Developer Experience**: 95% reduction in setup time via standardisation
-4. **Code Quality**: 100% documentation coverage with automated enforcement
-5. **Data Quality**: Deterministic parsing, multi-source voting, and transliteration-aware normalisation
-6. **Scalability Planning**: Clear roadmap from boutique to global scale
-7. **Production-Grade Ingestion**: PDF extraction decoding garbled fonts, language variant matching, and source provenance tracking
+1. **Thoughtful Architecture**: Every decision documented and justified across 7+ ADRs, including course corrections
+2. **Performance Excellence**: 40-50% query reduction through modern patterns, UUID v7 for temporal ordering
+3. **Developer Experience**: 95% reduction in setup time; further simplified with Makefile + Python toolchain
+4. **Code Quality**: 100% documentation coverage with automated enforcement; 9,000+ lines refactored into focused modules
+5. **Data Integrity**: 92% section inconsistency discovered and fully remediated; curator review gates prevent automated errors
+6. **Architecture Consolidation**: Python as single source of truth for extraction; eliminated heuristic split across languages
+7. **Scalability Planning**: Clear roadmap from boutique to global scale
+8. **Production-Grade Ingestion**: PDF + HTML extraction, garbled font decoding, language variant matching, and source provenance tracking
+9. **Course Corrections**: Willingness to archive tools (Rust CLI), simplify workflows, and humanize terminology when the evidence demanded it
 
 The project stands as a testament to **domain-driven design**, **systematic optimization**, and **engineering excellence**. It respects both **musical tradition** and **modern software practices**, creating a platform that is both **musicologically correct** and **technically sound**.
 
@@ -1221,13 +1521,17 @@ The project stands as a testament to **domain-driven design**, **systematic opti
 - Scalability from the start
 - Deterministic-first extraction (LLM as enrichment, not parser)
 - Source provenance and authority tracking
+- Centralise domain logic — never duplicate heuristics across languages
+- Data integrity assertions in the pipeline, not just in tests
+- Human gates on all canonical record creation
+- UI language matches user domain vocabulary
 
 **Next Steps:**
-- Complete Krithi creation from extraction results
-- Run full re-extraction E2E validation
-- Expand frontend E2E test coverage
-- Begin scaling infrastructure planning
-- Launch data quality remediation campaign
+- Mobile app development with Compose Multiplatform
+- Advanced lyric search and ranking
+- Additional PDF source integrations
+- Public read-only web experience
+- Caching and rate limiting infrastructure
 
 ---
 
@@ -1240,7 +1544,7 @@ The project stands as a testament to **domain-driven design**, **systematic opti
 - ADR-004: Authentication Strategy - JWT with Role-Based Access Control
 - ADR-006: Integration of Google Gemini for Content Ingestion
 
-### Implementation Documents
+### Implementation Documents (Phase 1–6)
 - Database Layer Optimization & Modernization
 - Cross-Platform Development Environment Standardisation
 - Commit Guardrails and Workflow Enforcement System
@@ -1254,6 +1558,27 @@ The project stands as a testament to **domain-driven design**, **systematic opti
 - Transliteration-Aware Name Normalisation (TRACK-061)
 - Bulk Import Idempotency & Source Evidence (TRACK-062)
 
+### Implementation Documents (Phase 7)
+- Unified Extraction Engine Migration (TRACK-064)
+- Python Module Promotion (TRACK-065)
+- PostgreSQL 18 Upgrade Implementation (TRACK-072)
+- Shared DTOs & DAL Mappers Refactoring (TRACK-073)
+- DAL Repository Decomposition (TRACK-074)
+- Core Services Refactoring (TRACK-075)
+- Infrastructure Services Refactoring (TRACK-076)
+- Rust CLI Archival (TRACK-078)
+- E2E Pipeline Validation & Lyric Section Fix (TRACK-079)
+- Curator Review UI (TRACK-080)
+- Extraction File Path Support (TRACK-081)
+- Agent Skills & Workflows Modernization (TRACK-083)
+- UI Terminology Humanization (TRACK-084–086)
+
+### Retrospectives & Course Corrections
+- TRACK-064 Extraction Migration Handoff (2026-02-12)
+- TRACK-064 Code Review (2026-02-13)
+- TRACK-064 Key-Collision Handover (2026-02-13)
+- Remediation Technical Retrospective (2026-02-12)
+
 ### Scaling & Architecture
 - Scaling Evaluation & Strategy
 - Google Cloud Scaling Strategy
@@ -1266,11 +1591,12 @@ The project stands as a testament to **domain-driven design**, **systematic opti
 - Database Schema Overview
 - API Contract
 - Tech Stack Documentation
+- Current Versions (single source of truth)
 - Krithi Data Sourcing & Quality Strategy
 - PDF Diacritic Extraction Analysis
 
 ---
 
-**Document Status**: Current  
-**Last Updated**: 2026-02-11  
-**Next Review**: 2026-05-11 (quarterly review)
+**Document Status**: Current
+**Last Updated**: 2026-03-10
+**Next Review**: 2026-06-10 (quarterly review)

@@ -91,7 +91,7 @@ suspend fun update(id: Uuid, ...): EntityDto? = DatabaseFactory.dbQuery {
 
 ## Technical Requirements
 *   **Framework**: JetBrains Exposed ORM 1.0.0-rc-4 (supports `updateReturning` and `resultedValues`)
-*   **Database**: PostgreSQL 15 (dev pinned via Docker Compose) / 15+ (prod) (fully supports `RETURNING` clause)
+*   **Database**: PostgreSQL 18 (dev pinned via Docker Compose) / 15+ (prod) (fully supports `RETURNING` clause)
 
 ## Impact Analysis
 

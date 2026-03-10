@@ -102,7 +102,7 @@ C4Container
         Container(mobile, "Mobile App", "Kotlin Multiplatform", "iOS/Android app for searching and viewing krithis")
         Container(admin, "Admin Web", "React 19, TypeScript", "Web application for content management")
         Container(api, "Backend API", "Kotlin, Ktor", "REST API serving all clients")
-        ContainerDb(db, "Database", "PostgreSQL 15", "Stores krithis, variants, notation, and audit logs")
+        ContainerDb(db, "Database", "PostgreSQL 18", "Stores krithis, variants, notation, and audit logs")
     }
 
     System_Ext(gemini, "Google Gemini", "AI Services")
@@ -139,7 +139,7 @@ flowchart TB
         end
 
         subgraph Data["Data Layer"]
-            DB[("🗄️ PostgreSQL 15<br/><small>Krithis, Variants<br/>Notation, Audit</small>")]
+            DB[("🗄️ PostgreSQL 18<br/><small>Krithis, Variants<br/>Notation, Audit</small>")]
         end
     end
 
@@ -426,7 +426,7 @@ flowchart TB
         end
 
         subgraph Data["Data Services"]
-            SQL["Cloud SQL<br/><small>PostgreSQL 15</small>"]
+            SQL["Cloud SQL<br/><small>PostgreSQL 18</small>"]
             SEC["Secret Manager"]
         end
 

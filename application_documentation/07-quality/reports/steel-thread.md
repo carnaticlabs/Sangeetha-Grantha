@@ -19,7 +19,7 @@ The Sangita Grantha steel thread test validates end-to-end functionality across 
 
 | Component | Status | Notes |
 |-----------|--------|-------|
-| Database Connectivity | ✅ Pass | PostgreSQL 15 via Docker |
+| Database Connectivity | ✅ Pass | PostgreSQL 18 via Docker |
 | Migrations | ✅ Pass | All 6 migrations applied |
 | Backend Health | ✅ Pass | Ktor server on port 8080 |
 | Public API | ✅ Pass | Search endpoint returns 200 |

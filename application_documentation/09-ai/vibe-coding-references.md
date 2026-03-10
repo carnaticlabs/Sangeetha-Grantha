@@ -2,7 +2,7 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-03-10 |
 | **Author** | Sangeetha Grantha Team |
 
 # 🤖 AI & Vibe Coding References
@@ -43,7 +43,7 @@ This document provides essential references for AI coding assistants (VS Code Co
 ## Database
 
 - [Schema Overview](../04-database/schema.md) - PostgreSQL schema documentation
-- [Migrations](../04-database/migrations.md) - Migration strategy (Rust-based, NOT Flyway)
+- [Migrations](../04-database/migrations.md) - Migration strategy (Python db-migrate, NOT Flyway)
 - [Audit Log](../04-database/audit-log.md) - Audit trail requirements
 
 ---
@@ -67,7 +67,7 @@ This document provides essential references for AI coding assistants (VS Code Co
 ### Database Operations
 - ✅ Use `DatabaseFactory.dbQuery { }` for all database operations
 - ✅ All mutations must write to `AUDIT_LOG` table
-- ❌ Never use Flyway - use Rust migration tool in `tools/sangita-cli`
+- ❌ Never use Flyway - use `make migrate` / `make db-reset` (Python `db-migrate` in `tools/db-migrate`)
 
 ### Dependency Management
 - ✅ Use `gradle/libs.versions.toml` for dependency management
@@ -117,24 +117,23 @@ Conductor resources:
 
 ```bash
 # Database management
-cd tools/sangita-cli
-cargo run -- db migrate          # Run migrations only
-cargo run -- db reset            # Reset database (drop → create → migrate → seed)
-cargo run -- db health           # Check database health
+make migrate      # Run pending migrations
+make db-reset     # Reset database (drop → create → migrate → seed)
 
 # Development workflow
-cargo run -- dev                 # Start Backend + Frontend
-cargo run -- dev --start-db      # Start DB + Backend + Frontend
+make dev          # Start full stack (DB + Backend + Frontend + Extraction)
+make dev-down     # Stop all services
 
 # Testing
-cargo run -- test steel-thread   # Run end-to-end smoke tests
+make test         # Run backend tests
+make test-frontend  # Run frontend tests
 ```
 
 ---
 
 ## Important Constraints
 
-- ❌ **Never suggest Flyway** - use Rust migration tool
+- ❌ **Never suggest Flyway** - use `make migrate` / `make db-reset`
 - ✅ **Always reference version catalog** in build files
 - ✅ **Keep changes minimal and surgical**
 - ✅ **Follow existing patterns in the codebase**

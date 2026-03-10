@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Status** | Superseded by [ADR-010](./ADR-010-migration-tool-course-correction.md) |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-03-10 |
 | **Author** | Sangeetha Grantha Team |
 
 # ADR-003: Database Migration Tool Choice - Rust vs Flyway

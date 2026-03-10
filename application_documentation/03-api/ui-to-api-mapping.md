@@ -17,10 +17,10 @@ This document maps Admin Web UI screens and actions to backend API endpoints.
 ## Frontend Implementation
 
 The Admin Web frontend (`modules/frontend/sangita-admin-web`) uses:
-- **React 19.2.0** with TypeScript
+- **React 19.2.4** with TypeScript
 - **React Query** (TanStack Query) for data fetching and caching
 - **React Router** for navigation
-- **Axios/Fetch** for HTTP requests
+- **Fetch** for HTTP requests
 
 API client is located in `src/api/` with typed request/response interfaces.
 

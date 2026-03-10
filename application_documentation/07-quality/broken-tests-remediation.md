@@ -29,7 +29,7 @@ The primary cause of failure is the usage of PostgreSQL-specific features in the
 Instead of "hacking" H2 to support PostgreSQL features, we should adopt one of the following production-grade testing strategies:
 
 ### Option A: Testcontainers (Recommended)
-Migrate the test suite to use **Testcontainers** with a real PostgreSQL 15+ instance. This ensures:
+Migrate the test suite to use **Testcontainers** with a real PostgreSQL 18+ instance. This ensures:
 - 100% feature parity with production.
 - No need for manual enum or type creation in the test setup.
 - Reliability for JSONB and complex query testing.

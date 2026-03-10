@@ -29,8 +29,8 @@ Choose **React 19 with TypeScript** for the admin web console (`modules/frontend
 The frontend stack includes:
 - **React**: 19.2.0 (functional components, hooks)
 - **TypeScript**: 5.8.3 (strict type safety)
-- **Vite**: 7.1.7 (modern build tool, fast HMR)
-- **Tailwind CSS**: 3.4.13 (utility-first styling)
+- **Vite**: 7.3.1 (modern build tool, fast HMR)
+- **Tailwind CSS**: 4.1.18 (utility-first styling)
 - **React Router**: 7.11.0 (client-side routing)
 
 ## Rationale
@@ -62,7 +62,7 @@ modules/frontend/sangita-admin-web/
 │   ├── api/              # API client utilities
 │   ├── App.tsx           # Main app router
 │   └── index.css         # Tailwind CSS setup
-├── package.json          # Dependencies (React 19.2.0, TypeScript 5.8.3)
+├── package.json          # Dependencies (React 19.2.4, TypeScript 5.9.0)
 ├── vite.config.ts        # Vite configuration
 └── tsconfig.json         # TypeScript strict mode config
 ```

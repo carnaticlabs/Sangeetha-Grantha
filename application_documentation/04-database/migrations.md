@@ -2,7 +2,7 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-03-10 |
 | **Author** | Sangeetha Grantha Team |
 
 # Database Migrations (Sangita Grantha)
@@ -13,7 +13,7 @@
 
 # Database Migrations
 
-Sangita Grantha uses a **Rust-based migration tool** (`tools/sangita-cli`) to manage database schema changes. **Flyway is NOT used** in this project.
+Sangita Grantha uses a **Python migration tool** (`tools/db-migrate`) to manage database schema changes, orchestrated via **Makefile** commands. **Flyway is NOT used** in this project.
 
 ---
 
@@ -80,21 +80,16 @@ Defined in `01__baseline-schema-and-types.sql`:
 
 ## 3. Migration Workflow
 
-### Using Sangita CLI
+### Using Makefile Commands
 
-The Rust-based CLI tool (`tools/sangita-cli`) manages migrations:
+The Python `db-migrate` tool (`tools/db-migrate`) manages migrations, invoked via Makefile:
 
 ```bash
-cd tools/sangita-cli
-
 # Run pending migrations
-cargo run -- db migrate
+make migrate
 
 # Reset database (drop → create → migrate → seed)
-cargo run -- db reset
-
-# Check database health
-cargo run -- db health
+make db-reset
 ```
 
 ### Creating New Migrations
@@ -117,9 +112,8 @@ cargo run -- db health
 
 3. **Test migration**:
 ```bash
-   cd tools/sangita-cli
-   cargo run -- db reset  # Test full reset
-   cargo run -- db migrate  # Test incremental migration
+   make db-reset   # Test full reset
+   make migrate    # Test incremental migration
 ```
 
 4. **Update documentation**:
@@ -135,7 +129,7 @@ cargo run -- db health
 - ✅ **Test rollback** before deploying (uncomment down migration temporarily)
 - ✅ **Document breaking changes** in migration comments
 - ❌ **Never modify existing migrations** that have been applied to production
-- ❌ **Never use Flyway** - use Rust migration tool only
+- ❌ **Never use Flyway** - use `make migrate` / `make db-reset` only
 
 ### Migration Ordering
 
@@ -188,10 +182,10 @@ Migrations are applied in numerical order. Dependencies between migrations:
 
 ## 6. Migration Tool Details
 
-See `tools/sangita-cli/README.md` for complete CLI documentation.
+See `tools/db-migrate/README.md` for complete CLI documentation.
 
-The Rust tool:
+The Python `db-migrate` tool:
 - Reads migrations from `database/migrations/`
 - Applies them in order
-- Tracks applied migrations (implementation-dependent)
-- Supports reset, migrate, and health check commands
+- Tracks applied migrations in a `schema_migrations` table
+- Invoked via `make migrate` and `make db-reset`

@@ -31,7 +31,7 @@ Sangeetha Grantha is a complex monorepo requiring multiple toolchains:
 | **Mobile** | Kotlin Multiplatform | Java 25+ (Android), Xcode (iOS) |
 | **Frontend** | React + TypeScript | Bun 1.3.0 (package manager) |
 | **CLI Tools** | Rust | Rust 1.92.0 (compiler) |
-| **Database** | PostgreSQL | PostgreSQL 15+ |
+| **Database** | PostgreSQL | PostgreSQL 18+ |
 | **Build System** | Gradle | Gradle wrapper (included) |
 
 ### 2.2 Current Pain Points
@@ -404,7 +404,7 @@ powershell -ExecutionPolicy Bypass -File .\tools\bootstrap.ps1
 1. ✅ Installs toolchain via mise (Java 25, Rust 1.92.0, Bun 1.3.0)
 2. ✅ Verifies Docker + Docker Compose availability
 3. ✅ Creates `config/development.env` from template (if missing)
-4. ✅ Starts PostgreSQL 15 via Docker Compose
+4. ✅ Starts PostgreSQL 18 via Docker Compose
 5. ✅ Builds `sangita-cli` Rust tool
 6. ✅ Runs database reset (drop → create → migrate → seed)
 7. ✅ Installs frontend dependencies (bun install)
@@ -557,7 +557,7 @@ else:
 
 ```
 **Phase 4: Database Setup**
-docker compose up -d postgres    # Start PostgreSQL 15
+docker compose up -d postgres    # Start PostgreSQL 18
 wait for health check
 ```text
 
@@ -666,7 +666,7 @@ sangeetha-grantha/
 ### 6.2 Internal Dependencies
 
 - **Sangita CLI** (`tools/sangita-cli`): Rust tool for database management
-- **Docker Compose** (`compose.yaml`): PostgreSQL 15 container definition
+- **Docker Compose** (`compose.yaml`): PostgreSQL 18 container definition
 - **Gradle Wrapper**: Included in repository
 - **Bootstrap Assets**: Template files in `tools/bootstrap-assets/`
 

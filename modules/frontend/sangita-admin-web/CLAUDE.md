@@ -14,7 +14,7 @@ bun run lint         # Lint check
 - Function components with explicit TypeScript interfaces for props
 - Tailwind utility classes — follow shadcn UI patterns
 - `react-router-dom` for routing
-- `axios` for API calls to backend on port 8080
+- TanStack Query (React Query) for data fetching, caching, and mutations to backend on port 8080
 - Strict TypeScript — no implicit `any`
 - Keep DTOs synchronized with backend shared domain models
 

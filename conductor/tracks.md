@@ -90,6 +90,7 @@
 | [TRACK-084](./tracks/TRACK-084-ui-terminology-humanization.md) | UI Terminology Humanization for Musicologist Persona | Completed |
 | [TRACK-085](./tracks/TRACK-085-sourcing-tab-consolidation.md) | Sourcing Tab Consolidation & Import Detail Cleanup | Completed |
 | [TRACK-086](./tracks/TRACK-086-collection-review-ux-polish.md) | Collection Review UX Polish | Completed |
+| [TRACK-087](./tracks/TRACK-087-documentation-audit-sync.md) | Documentation Audit & Sync | Completed |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)

@@ -1,18 +1,17 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Auto-Generated |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-01-30 |
-| **Generated** | 2026-01-30T03:54:07Z |
-| **Tool** | sangita-cli docs sync-versions |
+| **Status** | Active |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-03-10 |
+| **Author** | Sangeetha Grantha Team |
 
 # Current Technology Versions
 
-> **This file is auto-generated.** Do not edit manually.
->
-> Run `sangita-cli docs sync-versions` to regenerate after updating dependencies.
+> **Single source of truth** for all dependency versions across the project.
 >
 > All documentation should reference this file instead of hardcoding version numbers.
+>
+> When updating dependencies, update the source file first, then sync this document.
 
 ---
 
@@ -23,9 +22,9 @@
 | Tool | Version | Notes |
 |------|---------|-------|
 | Java | `temurin-25` | Temurin distribution, JVM toolchain |
-| Rust | `1.93.0` | For sangita-cli tool |
-| Bun | `1.3.6` | Frontend package manager |
-| Docker Compose | `latest` | Database container management |
+| Bun | `1.3.6` | Frontend package manager & runtime |
+| Python | `3.11+` | Migration tool & extraction worker |
+| Docker Compose | `latest` | Container orchestration |
 
 ---
 
@@ -40,7 +39,7 @@
 | Kotlin | `2.3.0` | Language version |
 | Ktor | `3.4.0` | HTTP server & client framework |
 | Exposed | `1.0.0` | SQL ORM (DSL-based) |
-| Koin | `3.5.6` | Dependency injection |
+| Koin | `4.1.1` | Dependency injection |
 
 ### Kotlinx Libraries
 
@@ -56,29 +55,32 @@
 |---------|---------|---------|
 | PostgreSQL Driver | `42.7.9` | JDBC driver |
 | HikariCP | `7.0.2` | Connection pooling |
-| Logback | `1.5.25` | Logging framework |
+| Logback | `1.5.27` | Logging framework |
 | Logstash Encoder | `8.0` | JSON log formatting |
-| Commons CSV | `1.10.0` | CSV parsing |
+| Commons CSV | `1.14.1` | CSV parsing |
+| Jsoup | `1.18.1` | HTML parsing |
+| Caffeine | `3.1.8` | In-memory caching |
+| dotenv-kotlin | `6.5.1` | Environment variable loading |
 
 ### Security & Auth
 
 | Library | Version | Purpose |
 |---------|---------|---------|
 | JWT (Auth0) | `4.5.0` | JWT token handling |
-| Google Auth | `1.23.0` | OAuth2 (future SSO) |
+| Google Auth | `1.41.0` | OAuth2 (future SSO) |
 
 ### Build & Packaging
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| Shadow Plugin | `9.2.2` | Fat JAR packaging |
-| Micrometer | `1.12.3` | Metrics & monitoring |
+| Shadow Plugin | `9.3.1` | Fat JAR packaging |
+| Micrometer | `1.15.2` | Metrics & monitoring |
 
 ### Testing
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| MockK | `1.14.7` | Kotlin mocking framework |
+| MockK | `1.14.9` | Kotlin mocking framework |
 
 ---
 
@@ -90,9 +92,9 @@
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| React | `19.2.3` | UI framework |
-| TypeScript | `5.8.2` | Type-safe JavaScript |
-| Vite | `6.2.0` | Build tool & dev server |
+| React | `19.2.4` | UI framework |
+| TypeScript | `5.9.x` | Type-safe JavaScript |
+| Vite | `7.3.1` | Build tool & dev server |
 
 ### Styling & UI
 
@@ -104,8 +106,9 @@
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| React Router | `7.11.0` | Client-side routing |
+| React Router | `7.13.0` | Client-side routing |
 | TanStack Query | `5.90.20` | Data fetching & caching |
+| Google GenAI | `1.34.0` | AI integration |
 
 ### Development & Testing
 
@@ -113,6 +116,7 @@
 |---------|---------|---------|
 | ESLint | `9.39.2` | Code linting |
 | Vitest | `4.0.18` | Unit testing |
+| Playwright | `1.40.0` | E2E testing |
 
 ---
 
@@ -135,8 +139,16 @@
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| AWS SDK | `2.29.0` | S3 storage (future) |
-| Google Auth | `1.23.0` | SSO integration (future) |
+| AWS SDK | `2.41.22` | S3 storage (future) |
+| Google Auth | `1.41.0` | SSO integration (future) |
+
+---
+
+## Database
+
+| Component | Version | Notes |
+|-----------|---------|-------|
+| PostgreSQL | `18.3` | Docker image: `postgres:18.3-alpine` |
 
 ---
 
@@ -144,7 +156,8 @@
 
 | Date | Change |
 |------|--------|
-| 2026-01-30 | Auto-generated from source files |
+| 2026-03-10 | Synced all versions from source files (gradle/libs.versions.toml, package.json, compose.yaml) |
+| 2026-01-30 | Initial auto-generated from source files |
 
 ---
 
@@ -156,23 +169,10 @@ Instead of hardcoding versions, reference this file:
 
 ```markdown
 For current versions, see [Current Versions](./current-versions.md).
-
-The backend uses Ktor (see [current version](./current-versions.md#core-framework))
-with Exposed ORM for database access.
 ```
 
 ### Updating Versions
 
 1. Update the source file (`gradle/libs.versions.toml`, `package.json`, or `.mise.toml`)
-2. Run `sangita-cli docs sync-versions`
-3. Commit both the source file and the regenerated `current-versions.md`
-
-### CI Integration
-
-Add to your CI pipeline to ensure versions stay in sync:
-
-```yaml
-- name: Verify version sync
-  run: |
-    sangita-cli docs sync-versions --check
-```
+2. Update this file to match
+3. Commit both the source file and the updated `current-versions.md`

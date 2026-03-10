@@ -296,9 +296,9 @@ This feature enhances the user experience for managing Deity and Temple entities
 
 ### 8.2 Backend Dependencies
 
-- Kotlin 2.2.20 (existing)
-- Ktor 3.3.1 (existing)
-- Exposed 1.0.0-rc-2 (existing)
+- Kotlin 2.3.0 (existing)
+- Ktor 3.4.0 (existing)
+- Exposed 1.0.0 (existing)
 - No new dependencies required
 
 ---

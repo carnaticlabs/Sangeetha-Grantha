@@ -2,7 +2,7 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-03-10 |
 | **Author** | Sangeetha Grantha Team |
 
 # Deployment Guide
@@ -53,7 +53,7 @@ This document describes deployment procedures for Sangita Grantha across all env
 
 - Docker & Docker Compose
 - mise (tool version manager)
-- Java 25+, Rust 1.92+, Bun 1.3+
+- Java 25+, Python 3.11+, Bun 1.3+
 
 ### 2.2 Quick Start
 
@@ -66,7 +66,7 @@ cd sangeetha-grantha
 mise install
 
 # Start full stack
-mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- dev --start-db
+make dev
 ```
 
 ### 2.3 Manual Setup
@@ -76,8 +76,7 @@ mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- dev --sta
 docker compose up -d postgres
 
 # 2. Apply migrations
-cd tools/sangita-cli
-cargo run -- db reset
+make db-reset
 
 # 3. Start backend
 ./gradlew :modules:backend:api:runDev
@@ -186,7 +185,7 @@ gcloud sql connect sangita-grantha-staging --user=sangita --database=sangita_gra
 
 # Apply migrations
 DATABASE_URL=postgres://sangita:<password>@localhost:5433/sangita_grantha \
-  cargo run -- db migrate
+  make migrate
 ```
 
 ---

@@ -172,7 +172,7 @@ The architecture follows the same containerised deployment pattern as PostgreSQL
      │  └────────────────────────────────────────────────┘    │
      │                                                        │
      │  ┌────────────────────────────────────────────────┐    │
-     │  │     PostgreSQL 15 (Docker / Cloud SQL)          │    │
+     │  │     PostgreSQL 18 (Docker / Cloud SQL)          │    │
      │  │  ┌──────────────────────────────────────────┐   │    │
      │  │  │  extraction_queue (integration table)     │   │    │
      │  │  │    status: PENDING → PROCESSING → DONE    │   │    │

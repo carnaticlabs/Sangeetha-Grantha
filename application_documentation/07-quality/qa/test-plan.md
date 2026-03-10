@@ -46,7 +46,7 @@ This document defines the testing strategy, environments, and scenarios for Sang
 
 | Component | Configuration |
 |-----------|---------------|
-| **Database** | PostgreSQL 15 via Docker Compose |
+| **Database** | PostgreSQL 18 via Docker Compose |
 | **Backend** | Ktor on port 8080 |
 | **Frontend** | Vite dev server on port 5001 |
 | **CLI** | Rust-based `sangita-cli` |
@@ -79,7 +79,7 @@ mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db reset
 
 | Component | Configuration |
 |-----------|---------------|
-| **Database** | Cloud SQL (PostgreSQL 15) |
+| **Database** | Cloud SQL (PostgreSQL 18) |
 | **Backend** | Cloud Run |
 | **Frontend** | Cloud Storage + CDN |
 | **URL** | `staging.sangitagrantha.org` |

@@ -63,7 +63,7 @@ For current toolchain and library versions, see **[Current Versions](../00-meta/
 - Audit logging
 - Reference data services
 - Admin dashboard service
-- Rust-based migration tool (`tools/sangita-cli`)
+- Python migration tool (`tools/db-migrate`)
 - AI Transliteration Service (Gemini integration)
 - Web Scraping Infrastructure
 
