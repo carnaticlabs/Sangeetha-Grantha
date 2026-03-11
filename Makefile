@@ -1,4 +1,4 @@
-.PHONY: dev dev-down db db-reset seed migrate migrate-status test test-frontend steel-thread clean
+.PHONY: dev dev-down db db-reset seed seed-ragas migrate migrate-status test test-frontend steel-thread clean
 
 PYTHON := mise exec -- python
 DB_MIGRATE := PYTHONPATH=tools/db-migrate $(PYTHON) -m db_migrate
@@ -23,6 +23,10 @@ db-reset:
 # Seed reference data
 seed:
 	@for f in database/seed_data/*.sql; do echo "Seeding $$f..."; $(PSQL) -f "$$f"; done
+
+# Seed raga reference data only
+seed-ragas:
+	@echo "Seeding raga reference data..."; $(PSQL) -f database/seed_data/05_raga_reference_data.sql
 
 # Run pending migrations
 migrate:

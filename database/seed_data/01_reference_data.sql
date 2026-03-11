@@ -23,12 +23,12 @@ VALUES
 (gen_random_uuid(), 'Syama Sastri', 'syama sastri', 1762, 1827, NOW(), NOW())
 ON CONFLICT (name_normalized) DO NOTHING;
 
--- Ragas
-INSERT INTO ragas (id, name, name_normalized, melakarta_number, arohanam, avarohanam, created_at, updated_at)
+-- Ragas (basic samples — comprehensive raga data is in 05_raga_reference_data.sql)
+INSERT INTO ragas (id, name, name_normalized, arohanam, avarohanam, created_at, updated_at)
 VALUES
-(gen_random_uuid(), 'Sri', 'sri', 22, 'S R2 M1 P N2 S', 'S N2 P M1 R2 G2 R2 S', NOW(), NOW()),
-(gen_random_uuid(), 'Hamsadhwani', 'hamsadhwani', 29, 'S R2 G3 P N3 S', 'S N3 P G3 R2 S', NOW(), NOW()),
-(gen_random_uuid(), 'Mohanam', 'mohanam', 28, 'S R2 G3 P D2 S', 'S D2 P G3 R2 S', NOW(), NOW())
+(gen_random_uuid(), 'Sri', 'sri', 'S R2 M1 P N2 S', 'S N2 P M1 R2 G2 R2 S', NOW(), NOW()),
+(gen_random_uuid(), 'Hamsadhwani', 'hamsadhwani', 'S R2 G3 P N3 S', 'S N3 P G3 R2 S', NOW(), NOW()),
+(gen_random_uuid(), 'Mohanam', 'mohanam', 'S R2 G3 P D2 S', 'S D2 P G3 R2 S', NOW(), NOW())
 ON CONFLICT (name_normalized) DO NOTHING;
 
 -- Talas

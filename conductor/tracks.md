@@ -94,6 +94,8 @@
 | [TRACK-088](./tracks/TRACK-088-current-versions-update.md) | Current Versions & Gitignore Update | Completed |
 | [TRACK-089](./tracks/TRACK-089-dependency-updates-mar-2026.md) | Dependency Updates (Mar 2026) | Completed |
 | [TRACK-090](./tracks/TRACK-090-audit-log-display-fix.md) | Audit Log Display Fix — DTO Alignment & Actor Resolution | Completed |
+| [TRACK-091](./tracks/TRACK-091-comprehensive-raga-reference-data.md) | Comprehensive Raga Reference Data | Completed |
+| [TRACK-092](./tracks/TRACK-092-raga-tree-grid-ui.md) | Raga Tree-Grid UI with Melakarta Hierarchy | Completed |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)

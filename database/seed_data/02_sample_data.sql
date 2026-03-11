@@ -18,22 +18,30 @@ BEGIN
     
     IF NOT v_krithi_exists AND v_tyagaraja_id IS NOT NULL AND v_sri_id IS NOT NULL THEN
         INSERT INTO krithis (
-            id, title, title_normalized, composer_id, primary_raga_id, tala_id, deity_id, 
-            primary_language, musical_form, sahitya_summary, 
+            id, title, title_normalized, composer_id, primary_raga_id, tala_id, deity_id,
+            primary_language, musical_form, sahitya_summary,
             created_at, updated_at
         ) VALUES (
-            gen_random_uuid(), 
-            'Endaro Mahanubhavulu', 
-            'endaro mahanubhavulu', 
-            v_tyagaraja_id, 
-            v_sri_id, 
-            v_adi_id, 
-            v_rama_id, 
-            'te', 
-            'KRITHI', 
+            gen_random_uuid(),
+            'Endaro Mahanubhavulu',
+            'endaro mahanubhavulu',
+            v_tyagaraja_id,
+            v_sri_id,
+            v_adi_id,
+            v_rama_id,
+            'te',
+            'KRITHI',
             'Salutations to all great men...',
-            NOW(), 
+            NOW(),
             NOW()
         );
     END IF;
+
+    -- Ensure krithi_ragas junction row exists for the primary raga
+    INSERT INTO krithi_ragas (krithi_id, raga_id, order_index)
+    SELECT k.id, v_sri_id, 0
+    FROM krithis k
+    WHERE k.title = 'Endaro Mahanubhavulu' AND k.composer_id = v_tyagaraja_id
+      AND v_sri_id IS NOT NULL
+    ON CONFLICT DO NOTHING;
 END $$;
