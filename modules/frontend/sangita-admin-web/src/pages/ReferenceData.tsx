@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useEntityCrud, EntityType } from '../hooks/useEntityCrud';
-import { EntityList, ComposerForm, RagaForm, TalaForm, TempleForm, DeityForm } from '../components/reference-data';
+import { EntityList, RagaTreeGrid, ComposerForm, RagaForm, TalaForm, TempleForm, DeityForm } from '../components/reference-data';
 
 type ViewMode = 'HOME' | 'LIST' | 'FORM';
 
@@ -110,16 +110,27 @@ const ReferenceData: React.FC = () => {
 
     if (viewMode === 'LIST' && activeEntity) {
         return (
-            <div className="max-w-5xl mx-auto pb-12">
-                <EntityList
-                    type={activeEntity}
-                    data={entityData}
-                    loading={loading && entityData.length === 0}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                    onCreate={handleCreate}
-                    onBack={handleBack}
-                />
+            <div className={activeEntity === 'Ragas' ? 'max-w-7xl mx-auto pb-12' : 'max-w-5xl mx-auto pb-12'}>
+                {activeEntity === 'Ragas' ? (
+                    <RagaTreeGrid
+                        data={entityData}
+                        loading={loading && entityData.length === 0}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                        onCreate={handleCreate}
+                        onBack={handleBack}
+                    />
+                ) : (
+                    <EntityList
+                        type={activeEntity}
+                        data={entityData}
+                        loading={loading && entityData.length === 0}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                        onCreate={handleCreate}
+                        onBack={handleBack}
+                    />
+                )}
             </div>
         );
     }
