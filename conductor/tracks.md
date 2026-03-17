@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.3.3 |
-| **Last Updated** | 2026-03-10 |
+| **Version** | 1.3.4 |
+| **Last Updated** | 2026-03-15 |
 | **Author** | Sangeetha Grantha Team |
 
 # Conductor Tracks Registry
@@ -96,6 +96,12 @@
 | [TRACK-090](./tracks/TRACK-090-audit-log-display-fix.md) | Audit Log Display Fix — DTO Alignment & Actor Resolution | Completed |
 | [TRACK-091](./tracks/TRACK-091-comprehensive-raga-reference-data.md) | Comprehensive Raga Reference Data | Completed |
 | [TRACK-092](./tracks/TRACK-092-raga-tree-grid-ui.md) | Raga Tree-Grid UI with Melakarta Hierarchy | Completed |
+| [TRACK-093](./tracks/TRACK-093-trinity-krithi-bulk-import.md) | Trinity Krithi Bulk Import (Dikshitar, Syama Sastri, Thyagaraja) | In Progress |
+| [TRACK-094](./tracks/TRACK-094-lyric-persistence-fix-backfill.md) | Lyric Persistence Fix & Backfill (CanonicalExtractionDto Support) | Completed |
+| [TRACK-095](./tracks/TRACK-095-import-pipeline-test-validation.md) | Import Pipeline End-to-End Testing & Validation | Completed |
+| [TRACK-096](./tracks/TRACK-096-payload-format-convergence.md) | Payload Format Convergence — Deprecate ScrapedKrithiMetadata | In Progress |
+| [TRACK-097](./tracks/TRACK-097-guru-guha-blog-source-adapter.md) | Guru-Guha Blog Source Adapter — Fix Extraction & Lyrics | Completed |
+| [TRACK-098](./tracks/TRACK-098-agent-workflow-additions.md) | Agent Workflow Additions & Tooling Cleanup | Completed |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)

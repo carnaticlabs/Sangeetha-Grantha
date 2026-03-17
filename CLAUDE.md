@@ -10,6 +10,8 @@ Sangeetha Grantha is a digital compendium of Carnatic classical music compositio
 - **Admin Web**: React 19 + TypeScript + Vite + Tailwind CSS
 - **CLI Tooling**: Python `db-migrate` for migrations + Makefile for dev workflows
 
+This is a Carnatic Music Krithi Analyser project using: Kotlin backend (Exposed ORM), React/TypeScript frontend, Python data pipeline scripts, PostgreSQL database. Always verify changes compile/build across all three layers before committing.
+
 ## Essential Commands
 
 ### Development Workflow (via Makefile)
@@ -112,3 +114,14 @@ For current toolchain and library versions, see [Current Versions](application_d
 - API spec: `openapi/sangita-grantha.openapi.yaml`
 - Migration tool: `tools/db-migrate/README.md`
 - Rust CLI (archived): `tools/sangita-cli-archived/`
+
+## Debugging Guidelines 
+For CORS/auth issues, always check .env files and VITE_API_BASE_URL first, not TOML config files. Frontend proxy configuration is the most common root cause.
+
+ ## Data & Migrations 
+ Always verify seed data populates junction tables (e.g., krithi_ragas), not just foreign key columns on the main entity. After any seed/migration, confirm data appears correctly through the full stack (DB → API → UI).
+## Git & Commits 
+Follow commit-policy skill conventions strictly: include TRACK references, use proper formatting. Never create commits without checking the project's commit message conventions first.
+
+## Infrastructure & Docker 
+When debugging Docker/infrastructure issues: check Dockerfile base image versions match project requirements, verify volume mount paths for the current DB version, and ensure Gradle caches are cleared before assuming code changes aren't taking effect.

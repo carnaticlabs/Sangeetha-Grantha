@@ -36,20 +36,37 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Write|Edit",
+        "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
-            "command": "case \"$TOOL_INPUT\" in *config/development.env*|*config/local.env*|*.env.production*|*config/.env*) echo 'BLOCKED: Cannot edit environment config files containing secrets. Add to .gitignore instead.' >&2; exit 1;; esac; exit 0"
-          }
-        ]
-      },
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
+            "command": "bash -c 'CMD=$(jq -r .tool.input.command 2>/dev/null || true); echo \"$CMD\" | grep -q \"git commit\" || exit 0; MSG=$(git log -1 --pretty=%B); if ! echo \"$MSG\" | grep -qE \"^Ref: (application_documentation/|conductor/tracks/TRACK-[0-9]+)\"; then echo \"ERROR: Commit must include a valid Ref: line pointing to application_documentation/ or conductor/tracks/ (Commit Policy)\"; exit 1; fi'",
+            "description": "Enforce commit traceability (The Reference Rule from commit-policy)"
+          },
           {
             "type": "command",
-            "command": "FILE_PATH=$(echo \"$TOOL_INPUT\" | grep -o '\"file_path\"[[:space:]]*:[[:space:]]*\"[^\"]*\"' | head -1 | sed 's/.*\"\\([^\"]*\\)\"$/\\1/'); case \"$FILE_PATH\" in */database/migrations/*) BASENAME=$(basename \"$FILE_PATH\"); if ! echo \"$BASENAME\" | grep -qE '^[0-9]+__[a-z_]+\\.sql$'; then echo \"BLOCKED: Migration filename must match NN__description.sql (e.g. 39__add_new_table.sql)\" >&2; exit 1; fi;; esac; exit 0"
+            "command": "bash -c 'CMD=$(jq -r .tool.input.command 2>/dev/null || true); echo \"$CMD\" | grep -q \"git commit\" || exit 0; if git diff --cached --name-only | grep -qE \"(^|/)\\.env|config/.*\\.env\"; then echo \"ERROR: Security policy violation. Committing .env files or config/.env files is blocked.\"; exit 1; fi'",
+            "description": "Prevent secrets from being committed (No-Secrets Rule from commit-policy)"
+          },
+          {
+            "type": "command",
+            "command": "bash -c 'CMD=$(jq -r .tool.input.command 2>/dev/null || true); echo \"$CMD\" | grep -q \"git commit\" || exit 0; for f in $(git diff --cached --name-only --diff-filter=AM | grep \"^application_documentation/.*\\.md$\"); do if ! head -n 5 \"$f\" | grep -q \"| Metadata | Value |\"; then echo \"ERROR: $f is missing the mandatory Header Table (Status, Version, Last Updated, Author).\"; exit 1; fi; done'",
+            "description": "Enforce Documentation Guardian headers for persistent docs"
+          },
+          {
+            "type": "command",
+            "command": "bash -c 'CMD=$(jq -r .tool.input.command 2>/dev/null || true); echo \"$CMD\" | grep -q \"git commit\" || exit 0; for f in $(git diff --cached --name-only --diff-filter=AM | grep \"\\.md$\"); do if grep -qE \"\\]\\(/\" \"$f\"; then echo \"ERROR: $f contains absolute link paths. Use relative links only.\"; exit 1; fi; done'",
+            "description": "Enforce relative links in all markdown documentation"
+          },
+          {
+            "type": "command",
+            "command": "bash -c 'CMD=$(jq -r .tool.input.command 2>/dev/null || true); echo \"$CMD\" | grep -q \"git commit\" || exit 0; BT=$(printf \"\\x60\\x60\\x60\"); for f in $(git diff --cached --name-only --diff-filter=AM | grep \"\\.md$\"); do if grep -qE \"^[[:space:]]*${BT}[[:space:]]*$\" \"$f\"; then echo \"ERROR: $f has code blocks missing language specifiers.\"; exit 1; fi; done'",
+            "description": "Enforce code block language specifiers in markdown (Documentation Guardian)"
+          },
+          {
+            "type": "command",
+            "command": "bash -c 'CMD=$(jq -r .tool.input.command 2>/dev/null || true); echo \"$CMD\" | grep -q \"git commit\" || exit 0; if grep -r \"3\\.11-slim\" Dockerfile 2>/dev/null; then echo \"WARNING: Check Python version in Dockerfile\"; fi'",
+            "description": "Warn about hardcoded Python versions"
           }
         ]
       }
