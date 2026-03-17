@@ -44,7 +44,9 @@ class CuratorService(private val dal: SangitaDal) {
     suspend fun getStats(): CuratorStats = DatabaseFactory.dbQuery {
         val pending = ImportedKrithisTable
             .selectAll()
-            .andWhere { ImportedKrithisTable.importStatus eq ImportStatus.PENDING }
+            .andWhere {
+                ImportedKrithisTable.importStatus inList listOf(ImportStatus.PENDING, ImportStatus.IN_REVIEW)
+            }
             .count()
 
         val approved = ImportedKrithisTable

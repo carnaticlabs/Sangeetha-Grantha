@@ -58,6 +58,11 @@ class HtmlTextExtractor:
         for node in soup.select("script, style, nav, footer, header, form, aside, noscript"):
             node.decompose()
 
+        # TRACK-097: Strip navigation tables from Carnatic music blog pages.
+        # These contain language-switch links (English | Devanagari | Tamil | ...)
+        # that pollute extracted text with non-lyric content.
+        self._strip_navigation_tables(soup)
+
         main_element: Tag = soup.body or soup
         for selector in self.selectors:
             candidate = soup.select_one(selector)
@@ -114,10 +119,26 @@ class HtmlTextExtractor:
                 append_newline()
             elif tag == "a":
                 link_text = node.get_text(" ", strip=True)
-                href = (node.get("href") or "").strip()
-                absolute = urljoin(base_url, href) if href and base_url else href
-                if link_text:
-                    append_text(f"{link_text} ({absolute})" if absolute else link_text)
+                # TRACK-097: Skip navigation/boilerplate links that
+                # produce false metadata boundaries (e.g. "Meaning of Kriti-1")
+                if link_text and self._is_navigation_link(link_text):
+                    pass  # silently drop
+                elif link_text:
+                    href = (node.get("href") or "").strip()
+                    # TRACK-097: For inline links within lyrics (e.g. variation
+                    # references like <a href="#V1">mAyUra nAtha</a>), output
+                    # only the link text — the URL is noise in lyric content.
+                    # Only include URL for truly external links.
+                    is_fragment = href.startswith("#")
+                    is_same_page = href.startswith(base_url or "") if base_url else False
+                    if is_fragment or is_same_page:
+                        append_text(link_text)
+                    else:
+                        absolute = urljoin(base_url, href) if href and base_url else href
+                        if absolute:
+                            append_text(f"{link_text} ({absolute})")
+                        else:
+                            append_text(link_text)
             else:
                 for child in node.children:
                     walk(child)
@@ -127,6 +148,56 @@ class HtmlTextExtractor:
 
         walk(root)
         return "".join(chunks)
+
+    # ─── TRACK-097: Navigation / boilerplate link patterns ────────────────
+    _NAV_LINK_PATTERN = re.compile(
+        r"^(?:meaning\s+of\s+kriti|"
+        r"notation|"
+        r"click\s+here|"
+        r"back\s+to|"
+        r"home\s*page|"
+        r"pronunciation\s+guide|"
+        r"word\s+by\s+word\s+meaning)",
+        re.IGNORECASE,
+    )
+
+    _LANGUAGE_NAV_LABELS = {
+        "english", "devanagari", "tamil", "telugu", "kannada", "malayalam",
+        "sanskrit", "hindi", "word division",
+    }
+
+    def _strip_navigation_tables(self, soup: BeautifulSoup) -> None:
+        """Remove <table> elements that serve as language-switch navigation bars.
+
+        Guru-guha.blogspot.com (and similar Carnatic music blogs) embed per-section
+        navigation as <table> rows with links to language anchors. These produce
+        lines like "English | Devanagari | Tamil | ..." that pollute the extracted
+        text and can cause false metadata-boundary matches.
+
+        A table is considered "navigation" if ≥50% of its cell text consists of
+        known language labels or the table id matches a language label.
+        """
+        for table in soup.find_all("table"):
+            # Fast path: table id matches a language label (guru-guha pattern)
+            table_id = (table.get("id") or "").strip().lower()
+            if table_id in self._LANGUAGE_NAV_LABELS:
+                table.decompose()
+                continue
+
+            # Heuristic: if most cells are language labels, it's navigation
+            cells = table.find_all("td")
+            if not cells:
+                continue
+            nav_count = sum(
+                1 for cell in cells
+                if cell.get_text(strip=True).lower() in self._LANGUAGE_NAV_LABELS
+            )
+            if len(cells) > 0 and nav_count / len(cells) >= 0.5:
+                table.decompose()
+
+    def _is_navigation_link(self, link_text: str) -> bool:
+        """Return True if a link's text is navigation boilerplate, not lyric content."""
+        return bool(self._NAV_LINK_PATTERN.match(link_text.strip()))
 
     def _normalize_text(self, raw: str) -> str:
         return (

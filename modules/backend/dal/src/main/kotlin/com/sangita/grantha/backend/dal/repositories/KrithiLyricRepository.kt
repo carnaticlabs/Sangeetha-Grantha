@@ -280,4 +280,27 @@ class KrithiLyricRepository {
             }
         }
     }
+
+    /**
+     * TRACK-097: Delete all lyric variants and their lyric sections for a krithi.
+     * Used before re-extraction to allow the backfill to re-persist from fresh data.
+     */
+    suspend fun deleteAllVariants(krithiId: Uuid): Int = DatabaseFactory.dbQuery {
+        val javaKrithiId = krithiId.toJavaUuid()
+        val variantIds = KrithiLyricVariantsTable
+            .select(KrithiLyricVariantsTable.id)
+            .where { KrithiLyricVariantsTable.krithiId eq javaKrithiId }
+            .map { it[KrithiLyricVariantsTable.id].value }
+
+        if (variantIds.isNotEmpty()) {
+            // Delete lyric sections first (child rows)
+            KrithiLyricSectionsTable.deleteWhere {
+                KrithiLyricSectionsTable.lyricVariantId inList variantIds
+            }
+        }
+        // Delete variants
+        KrithiLyricVariantsTable.deleteWhere {
+            KrithiLyricVariantsTable.krithiId eq javaKrithiId
+        }
+    }
 }

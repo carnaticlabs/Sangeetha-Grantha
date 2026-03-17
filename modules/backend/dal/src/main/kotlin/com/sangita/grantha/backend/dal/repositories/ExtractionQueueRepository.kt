@@ -130,6 +130,17 @@ class ExtractionQueueRepository {
             .singleOrNull()
     }
 
+    /**
+     * Check if an extraction queue entry already exists for the given source URL.
+     * Used to prevent duplicate enqueuing from concurrent ScrapeWorker calls.
+     */
+    suspend fun existsBySourceUrl(sourceUrl: String): Boolean = DatabaseFactory.dbQuery {
+        T.selectAll()
+            .where { T.sourceUrl eq sourceUrl }
+            .limit(1)
+            .count() > 0
+    }
+
     suspend fun create(
         sourceUrl: String,
         sourceFormat: String,
@@ -179,6 +190,7 @@ class ExtractionQueueRepository {
         val now = OffsetDateTime.now(ZoneOffset.UTC)
         T.update({ T.id eq id.toJavaUuid() }) {
             it[T.status] = ExtractionStatus.PENDING
+            it[T.attempts] = 0
             it[T.updatedAt] = now
         } > 0
     }
@@ -243,6 +255,7 @@ class ExtractionQueueRepository {
         val now = OffsetDateTime.now(ZoneOffset.UTC)
         T.update({ T.status eq ExtractionStatus.FAILED }) {
             it[T.status] = ExtractionStatus.PENDING
+            it[T.attempts] = 0
             it[T.updatedAt] = now
         }
     }
