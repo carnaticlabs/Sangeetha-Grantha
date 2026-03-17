@@ -5,7 +5,6 @@ import com.sangita.grantha.backend.api.services.DeduplicationService
 import com.sangita.grantha.backend.api.services.IEntityResolver
 import com.sangita.grantha.backend.api.services.IImportService
 import com.sangita.grantha.backend.api.services.IQualityScorer
-import com.sangita.grantha.backend.api.services.IWebScraper
 import com.sangita.grantha.backend.api.services.bulkimport.workers.ManifestWorker
 import com.sangita.grantha.backend.api.services.bulkimport.workers.ResolutionWorker
 import com.sangita.grantha.backend.api.services.bulkimport.workers.ScrapeWorker
@@ -29,7 +28,6 @@ interface IBulkImportWorker {
 class BulkImportWorkerServiceImpl(
     private val dal: SangitaDal,
     private val importService: IImportService,
-    private val webScrapingService: IWebScraper,
     private val entityResolutionService: IEntityResolver,
     private val deduplicationService: DeduplicationService,
     private val autoApprovalService: AutoApprovalService,
@@ -58,7 +56,6 @@ class BulkImportWorkerServiceImpl(
     private val scrapeWorker = ScrapeWorker(
         dal = dal,
         importService = importService,
-        webScrapingService = webScrapingService,
         rateLimiter = rateLimiter,
         errorBuilder = errorBuilder,
         completionHandler = completionHandler

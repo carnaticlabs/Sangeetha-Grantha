@@ -97,7 +97,6 @@ fun appModule(env: ApiEnvironment, metricsRegistry: PrometheusMeterRegistry) = m
         BulkImportWorkerServiceImpl(
             dal = get(),
             importService = get(),
-            webScrapingService = get(),
             entityResolutionService = get(),
             deduplicationService = get(),
             autoApprovalService = get(),

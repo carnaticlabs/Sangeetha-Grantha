@@ -22,10 +22,14 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import org.slf4j.LoggerFactory
 
+/**
+ * @deprecated TRACK-096: Kotlin-side HTML scraping is no longer used.
+ * All extraction is now handled by the Python extraction worker.
+ * This interface and its implementations are retained only for DI wiring
+ * backward-compatibility and will be removed in a future cleanup.
+ */
+@Deprecated("TRACK-096: Extraction now handled by Python worker — this interface is unused")
 interface IWebScraper {
-    /**
-     * Scrape and parse a krithi page into structured metadata.
-     */
     suspend fun scrapeKrithi(url: String): ScrapedKrithiMetadata
 }
 
@@ -231,7 +235,12 @@ class WebScrapingServiceImpl(
     private suspend fun fetchAndClean(url: String): String = fetchAndExtract(url).text
 }
 
-/** TRACK-032: One lyric variant per language/script from multi-script pages. */
+/**
+ * TRACK-032: One lyric variant per language/script from multi-script pages.
+ * @deprecated TRACK-096: Use [com.sangita.grantha.shared.domain.model.import.CanonicalLyricVariantDto] instead.
+ * Retained for backward-compatible deserialization of legacy `parsed_payload` values.
+ */
+@Deprecated("TRACK-096: Use CanonicalLyricVariantDto from shared domain model", replaceWith = ReplaceWith("CanonicalLyricVariantDto", "com.sangita.grantha.shared.domain.model.import.CanonicalLyricVariantDto"))
 @Serializable
 data class ScrapedLyricVariantDto(
     val language: String,
@@ -240,6 +249,12 @@ data class ScrapedLyricVariantDto(
     val sections: List<ScrapedSectionDto>? = null
 )
 
+/**
+ * @deprecated TRACK-096: Use [com.sangita.grantha.shared.domain.model.import.CanonicalExtractionDto] instead.
+ * Retained for backward-compatible deserialization of legacy `parsed_payload` values.
+ * New extraction pipelines MUST produce CanonicalExtractionDto — do NOT add fields here.
+ */
+@Deprecated("TRACK-096: Use CanonicalExtractionDto from shared domain model", replaceWith = ReplaceWith("CanonicalExtractionDto", "com.sangita.grantha.shared.domain.model.import.CanonicalExtractionDto"))
 @Serializable
 data class ScrapedKrithiMetadata(
     val title: String,
@@ -258,6 +273,11 @@ data class ScrapedKrithiMetadata(
     val warnings: List<String>? = null
 )
 
+/**
+ * @deprecated TRACK-096: Temple details should be part of CanonicalExtractionDto or a dedicated DTO.
+ * Retained for backward-compatible deserialization of legacy `parsed_payload` values.
+ */
+@Deprecated("TRACK-096: Migrate temple details to CanonicalExtractionDto")
 @Serializable
 data class ScrapedTempleDetails(
     val name: String,
@@ -268,6 +288,11 @@ data class ScrapedTempleDetails(
     val description: String? = null
 )
 
+/**
+ * @deprecated TRACK-096: Use [com.sangita.grantha.shared.domain.model.import.CanonicalSectionDto] instead.
+ * Retained for backward-compatible deserialization and as adapter type for StructuralVotingEngine.
+ */
+@Deprecated("TRACK-096: Use CanonicalSectionDto from shared domain model", replaceWith = ReplaceWith("CanonicalSectionDto", "com.sangita.grantha.shared.domain.model.import.CanonicalSectionDto"))
 @Serializable
 data class ScrapedSectionDto(
     val type: RagaSectionDto,
