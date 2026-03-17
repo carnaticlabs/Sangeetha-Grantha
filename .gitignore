@@ -85,3 +85,8 @@ data/pdfs/*.pdf
 .obsidian/core-plugins.json
 .obsidian/graph.json
 .obsidian/workspace.json
+
+**__pycache__**
+.DS_Store
+**log
+**/cache/**
