@@ -129,16 +129,21 @@ class ExtractionResultProcessorTest : IntegrationTestBase() {
         assertNotNull(queueAfter)
         assertEquals("INGESTED", queueAfter.status)
 
-        // With no pre-existing krithis to match, unmatched extractions should create
-        // a pending import for manual curator review — NOT auto-create a new krithi
-        val pendingImports = dal.imports.listImports(
-            status = com.sangita.grantha.backend.dal.enums.ImportStatus.PENDING,
+        // The original CSV import should be enriched with extraction data (not duplicated).
+        // Since submitImports passes importId in the extraction queue's request_payload,
+        // the processor enriches the existing record instead of creating a new one.
+        val originalImport = dal.imports.findById(submitted.first().id)
+        assertNotNull(originalImport, "Original import should still exist")
+        assertEquals(
+            ImportStatusDto.IN_REVIEW,
+            originalImport.importStatus,
+            "Original import should be updated to IN_REVIEW after enrichment"
         )
-        val unmatchedImport = pendingImports.find {
-            it.sourceKey == "$sourceUrl::Akhilandesvari Rakshamaam"
-        }
-        assertNotNull(unmatchedImport, "Expected a pending import for unmatched extraction")
-        assertEquals("Akhilandesvari Rakshamaam", unmatchedImport.rawTitle)
-        assertNull(unmatchedImport.mappedKrithiId, "Unmatched extraction should not be auto-mapped to a krithi")
+        assertNotNull(originalImport.parsedPayload, "Original import should have parsed_payload from extraction")
+
+        // Verify no duplicate "unmatched" import was created
+        val allImports = dal.imports.listImports()
+        val importsForUrl = allImports.filter { it.sourceKey?.contains(sourceUrl) == true }
+        assertEquals(1, importsForUrl.size, "Should have exactly 1 import for this URL (no duplicates)")
     }
 }

@@ -32,6 +32,7 @@ Add end-to-end testing and runtime validation for the import pipeline so that si
 | File | Change |
 |------|--------|
 | `modules/backend/api/src/test/kotlin/.../services/LyricVariantPersistenceServiceTest.kt` | New: 3 integration tests |
+| `modules/backend/api/src/test/kotlin/.../services/ExtractionResultProcessorTest.kt` | Updated tests to reflect existing payload enrichment |
 | `modules/backend/api/.../services/ImportValidationService.kt` | New: validation logic (section/variant/lyric counts, payload format detection) |
 | `modules/backend/api/.../routes/ImportRoutes.kt` | Validation endpoints |
 

@@ -37,6 +37,7 @@ The TRACK-093 bulk import of 67 krithis appeared successful at every UI touchpoi
 | File | Change |
 |:---|:---|
 | `modules/backend/api/src/test/kotlin/.../services/LyricVariantPersistenceServiceTest.kt` | New: 3 integration tests (canonical, legacy, malformed) |
+| `modules/backend/api/src/test/kotlin/.../services/ExtractionResultProcessorTest.kt` | Updated tests to reflect existing payload enrichment |
 | `modules/backend/api/.../routes/ImportRoutes.kt` | Validation endpoints |
 | `modules/backend/api/.../services/ImportValidationService.kt` | New: validation logic |
 | `modules/frontend/sangita-admin-web/src/pages/CuratorReviewPage.tsx` | Validation indicators |
