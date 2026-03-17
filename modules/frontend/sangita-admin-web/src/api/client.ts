@@ -555,9 +555,11 @@ export const transliterateContent = (krithiId: string, content: string, sourceSc
 
 // --- Imports API ---
 
-export const getImports = (status?: string) => {
+export const getImports = (status?: string, limit?: number, offset?: number) => {
     const params = new URLSearchParams();
     if (status) params.append('status', status);
+    if (limit != null) params.append('limit', String(limit));
+    if (offset != null && offset > 0) params.append('offset', String(offset));
     return request<ImportedKrithi[]>(`/admin/imports?${params}`);
 };
 

@@ -38,6 +38,12 @@ const CuratorReviewPage: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [processing, setProcessing] = useState(false);
 
+    // Pagination & filter state
+    const [statusFilter, setStatusFilter] = useState<string>('IN_REVIEW');
+    const [page, setPage] = useState(0);
+    const pageSize = 50;
+    const [hasMore, setHasMore] = useState(false);
+
     // Form state
     const [overrideTitle, setOverrideTitle] = useState('');
     const [overrideComposer, setOverrideComposer] = useState('');
@@ -59,7 +65,7 @@ const CuratorReviewPage: React.FC = () => {
 
     // Section issues state
     const [sectionPage, setSectionPage] = useState(0);
-    const pageSize = 50;
+    const sectionPageSize = 50;
 
     const selectedItem = imports.find(i => i.id === selectedId);
     const { data: sourceDetail } = useSourceDetail(selectedItem?.importSourceId ?? '');
@@ -71,27 +77,31 @@ const CuratorReviewPage: React.FC = () => {
 
     const { data: sectionIssues, isLoading: sectionsLoading } = useQuery({
         queryKey: ['curatorSectionIssues', sectionPage],
-        queryFn: () => getCuratorSectionIssues(sectionPage, pageSize),
+        queryFn: () => getCuratorSectionIssues(sectionPage, sectionPageSize),
         enabled: activeTab === 'sections',
     });
 
-    // Load pending imports
-    const loadImports = useCallback(async () => {
+    // Load imports with pagination
+    const loadImports = useCallback(async (pageNum = page) => {
         setLoading(true);
         try {
-            const data = await getImports('PENDING');
-            setImports(data);
-            if (data.length > 0 && !selectedId) {
-                selectImport(data[0]);
+            const data = await getImports(statusFilter, pageSize + 1, pageNum * pageSize);
+            const hasNextPage = data.length > pageSize;
+            const pageData = hasNextPage ? data.slice(0, pageSize) : data;
+            setImports(pageData);
+            setHasMore(hasNextPage);
+            if (pageData.length > 0 && !selectedId) {
+                selectImport(pageData[0]);
             }
         } catch (e) {
-            showError('Failed to load pending imports');
+            showError('Failed to load imports');
         } finally {
             setLoading(false);
         }
-    }, [selectedId]);
+    }, [selectedId, statusFilter, page]);
 
-    useEffect(() => { loadImports(); }, []);
+    useEffect(() => { setPage(0); loadImports(0); }, [statusFilter]);
+    useEffect(() => { loadImports(); }, [page]);
 
     const selectImport = (item: ImportedKrithi) => {
         setSelectedId(item.id);
@@ -334,15 +344,34 @@ const CuratorReviewPage: React.FC = () => {
                 <div className="flex-1 flex gap-0 overflow-hidden border border-border-light rounded-xl bg-white shadow-sm">
                     {/* Left: List Panel */}
                     <div className="w-1/3 border-r border-border-light flex flex-col">
-                        <div className="p-3 border-b border-border-light bg-slate-50 flex justify-between items-center">
-                            <div className="flex items-center gap-2">
-                                <input type="checkbox" checked={imports.length > 0 && selectedImportIds.size === imports.length}
-                                    onChange={toggleSelectAll} className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer" />
-                                <span className="text-xs font-bold text-ink-500 uppercase">Pending ({imports.length})</span>
+                        <div className="p-3 border-b border-border-light bg-slate-50 space-y-2">
+                            <div className="flex justify-between items-center">
+                                <div className="flex items-center gap-2">
+                                    <input type="checkbox" checked={imports.length > 0 && selectedImportIds.size === imports.length}
+                                        onChange={toggleSelectAll} className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer" />
+                                    <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
+                                        className="text-xs font-bold text-ink-600 bg-transparent border border-border-light rounded px-2 py-1 focus:ring-1 focus:ring-primary">
+                                        <option value="IN_REVIEW">In Review</option>
+                                        <option value="PENDING">Pending</option>
+                                        <option value="APPROVED">Approved</option>
+                                        <option value="REJECTED">Rejected</option>
+                                        <option value="MAPPED">Mapped</option>
+                                    </select>
+                                    <span className="text-[10px] text-ink-400">({imports.length}{hasMore ? '+' : ''})</span>
+                                </div>
+                                <button onClick={() => loadImports()} className="text-primary hover:text-primary-dark">
+                                    <span className="material-symbols-outlined text-sm">refresh</span>
+                                </button>
                             </div>
-                            <button onClick={loadImports} className="text-primary hover:text-primary-dark">
-                                <span className="material-symbols-outlined text-sm">refresh</span>
-                            </button>
+                            {(page > 0 || hasMore) && (
+                                <div className="flex justify-between items-center">
+                                    <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0}
+                                        className="text-[10px] text-primary disabled:text-ink-300 hover:underline">Previous</button>
+                                    <span className="text-[10px] text-ink-400">Page {page + 1}</span>
+                                    <button onClick={() => setPage(p => p + 1)} disabled={!hasMore}
+                                        className="text-[10px] text-primary disabled:text-ink-300 hover:underline">Next</button>
+                                </div>
+                            )}
                         </div>
                         <div className="flex-1 overflow-y-auto">
                             {loading ? (
@@ -497,7 +526,7 @@ const CuratorReviewPage: React.FC = () => {
                 </div>
             ) : (
                 /* Section Issues Tab */
-                <SectionIssuesTab data={sectionIssues} loading={sectionsLoading} page={sectionPage} onPageChange={setSectionPage} pageSize={pageSize} />
+                <SectionIssuesTab data={sectionIssues} loading={sectionsLoading} page={sectionPage} onPageChange={setSectionPage} pageSize={sectionPageSize} />
             )}
 
             {/* Keyboard hint */}
