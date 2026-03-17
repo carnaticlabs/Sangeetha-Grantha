@@ -11,6 +11,7 @@ import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.UUID
 import kotlin.uuid.Uuid
+import org.jetbrains.exposed.v1.exceptions.ExposedSQLException
 import org.jetbrains.exposed.v1.jdbc.*
 import org.jetbrains.exposed.v1.core.*
 
@@ -21,10 +22,12 @@ class ImportRepository {
     /**
      * List imported krithis with optional status filter.
      */
-    suspend fun listImports(status: ImportStatus? = null): List<ImportedKrithiDto> =
+    suspend fun listImports(status: ImportStatus? = null, limit: Int? = null, offset: Int = 0): List<ImportedKrithiDto> =
         DatabaseFactory.dbQuery {
             val query = ImportedKrithisTable.selectAll()
             status?.let { query.andWhere { ImportedKrithisTable.importStatus eq it } }
+            query.orderBy(ImportedKrithisTable.createdAt to SortOrder.DESC)
+            if (limit != null) query.limit(limit).offset(offset.toLong())
             query.map { it.toImportedKrithiDto() }
         }
 
@@ -41,6 +44,7 @@ class ImportRepository {
 
     /**
      * Find or create an import source and return its ID.
+     * Uses INSERT ... ON CONFLICT to handle concurrent callers racing to create the same source.
      */
     suspend fun findOrCreateSource(name: String): UUID = DatabaseFactory.dbQuery {
         ImportSourcesTable
@@ -52,12 +56,22 @@ class ImportRepository {
             ?: run {
                 val now = OffsetDateTime.now(ZoneOffset.UTC)
                 val sourceId = UUID.randomUUID()
-                ImportSourcesTable.insert {
-                    it[id] = sourceId
-                    it[ImportSourcesTable.name] = name
-                    it[ImportSourcesTable.createdAt] = now
+                try {
+                    ImportSourcesTable.insert {
+                        it[id] = sourceId
+                        it[ImportSourcesTable.name] = name
+                        it[ImportSourcesTable.createdAt] = now
+                    }
+                    sourceId
+                } catch (_: ExposedSQLException) {
+                    // Unique constraint violation — another thread created it first, re-fetch
+                    ImportSourcesTable
+                        .selectAll()
+                        .andWhere { ImportSourcesTable.name eq name }
+                        .limit(1)
+                        .map { it[ImportSourcesTable.id].value }
+                        .single()
                 }
-                sourceId
             }
     }
 
@@ -91,27 +105,41 @@ class ImportRepository {
 
         val importId = UUID.randomUUID()
 
-        ImportedKrithisTable.insert {
-            it[id] = importId
-            it[importSourceId] = sourceId
-            it[ImportedKrithisTable.importBatchId] = importBatchId
-            it[ImportedKrithisTable.sourceKey] = sourceKey
-            it[ImportedKrithisTable.rawTitle] = rawTitle
-            it[ImportedKrithisTable.rawLyrics] = rawLyrics
-            it[ImportedKrithisTable.rawComposer] = rawComposer
-            it[ImportedKrithisTable.rawRaga] = rawRaga
-            it[ImportedKrithisTable.rawTala] = rawTala
-            it[ImportedKrithisTable.rawDeity] = rawDeity
-            it[ImportedKrithisTable.rawTemple] = rawTemple
-            it[ImportedKrithisTable.rawLanguage] = rawLanguage
-            it[ImportedKrithisTable.parsedPayload] = parsedPayload
-            it[ImportedKrithisTable.importStatus] = ImportStatus.PENDING
-            it[ImportedKrithisTable.createdAt] = now
+        try {
+            ImportedKrithisTable.insert {
+                it[id] = importId
+                it[importSourceId] = sourceId
+                it[ImportedKrithisTable.importBatchId] = importBatchId
+                it[ImportedKrithisTable.sourceKey] = sourceKey
+                it[ImportedKrithisTable.rawTitle] = rawTitle
+                it[ImportedKrithisTable.rawLyrics] = rawLyrics
+                it[ImportedKrithisTable.rawComposer] = rawComposer
+                it[ImportedKrithisTable.rawRaga] = rawRaga
+                it[ImportedKrithisTable.rawTala] = rawTala
+                it[ImportedKrithisTable.rawDeity] = rawDeity
+                it[ImportedKrithisTable.rawTemple] = rawTemple
+                it[ImportedKrithisTable.rawLanguage] = rawLanguage
+                it[ImportedKrithisTable.parsedPayload] = parsedPayload
+                it[ImportedKrithisTable.importStatus] = ImportStatus.PENDING
+                it[ImportedKrithisTable.createdAt] = now
+            }
+                .resultedValues
+                ?.single()
+                ?.toImportedKrithiDto()
+                ?: error("Failed to insert imported krithi")
+        } catch (_: ExposedSQLException) {
+            // Unique constraint violation on (import_source_id, source_key) —
+            // another concurrent call already created this import, return it
+            if (!sourceKey.isNullOrBlank()) {
+                ImportedKrithisTable
+                    .selectAll()
+                    .andWhere { (ImportedKrithisTable.importSourceId eq sourceId) and (ImportedKrithisTable.sourceKey eq sourceKey) }
+                    .single()
+                    .toImportedKrithiDto()
+            } else {
+                throw IllegalStateException("Duplicate insert for import with null sourceKey")
+            }
         }
-            .resultedValues
-            ?.single()
-            ?.toImportedKrithiDto()
-            ?: error("Failed to insert imported krithi")
     }
 
     /**
@@ -238,6 +266,41 @@ class ImportRepository {
                 where = { ImportedKrithisTable.id eq javaId }
             ) {
                 it[ImportedKrithisTable.duplicateCandidates] = duplicateCandidates
+            }
+            .singleOrNull()
+            ?.toImportedKrithiDto()
+    }
+
+    /**
+     * Enrich an existing imported krithi with extraction results.
+     * Updates metadata fields from extraction while preserving original CSV data.
+     */
+    suspend fun enrichWithExtraction(
+        id: Uuid,
+        rawTitle: String? = null,
+        rawComposer: String? = null,
+        rawRaga: String? = null,
+        rawTala: String? = null,
+        rawDeity: String? = null,
+        rawTemple: String? = null,
+        rawLanguage: String? = null,
+        parsedPayload: String? = null,
+        status: ImportStatus? = null,
+    ): ImportedKrithiDto? = DatabaseFactory.dbQuery {
+        val javaId = id.toJavaUuid()
+        ImportedKrithisTable
+            .updateReturning(
+                where = { ImportedKrithisTable.id eq javaId }
+            ) { stmt ->
+                rawTitle?.let { stmt[ImportedKrithisTable.rawTitle] = it }
+                rawComposer?.let { stmt[ImportedKrithisTable.rawComposer] = it }
+                rawRaga?.let { stmt[ImportedKrithisTable.rawRaga] = it }
+                rawTala?.let { stmt[ImportedKrithisTable.rawTala] = it }
+                rawDeity?.let { stmt[ImportedKrithisTable.rawDeity] = it }
+                rawTemple?.let { stmt[ImportedKrithisTable.rawTemple] = it }
+                rawLanguage?.let { stmt[ImportedKrithisTable.rawLanguage] = it }
+                parsedPayload?.let { stmt[ImportedKrithisTable.parsedPayload] = it }
+                status?.let { stmt[ImportedKrithisTable.importStatus] = it }
             }
             .singleOrNull()
             ?.toImportedKrithiDto()

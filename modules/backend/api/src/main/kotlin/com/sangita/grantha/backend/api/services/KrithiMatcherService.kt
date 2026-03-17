@@ -43,6 +43,7 @@ class KrithiMatcherService(
     suspend fun processExtractionResult(
         extraction: CanonicalExtractionDto,
         extractionTaskId: Uuid,
+        skipPendingImportCreation: Boolean = false,
     ): ExtractionProcessingResult? {
         val titleNormalized = normalizeExtractionTitle(extraction) ?: return null
 
@@ -82,6 +83,10 @@ class KrithiMatcherService(
                 .distinctBy { it.id }
 
         if (allCandidates.isEmpty()) {
+            if (skipPendingImportCreation) {
+                logger.info("No match for '${extraction.title}' but skipping pending import creation (import already exists)")
+                return null
+            }
             return createPendingImport(extraction, titleNormalized)
         }
 
@@ -164,6 +169,10 @@ class KrithiMatcherService(
         }
 
         if (bestMatch == null) {
+            if (skipPendingImportCreation) {
+                logger.info("No match for '${extraction.title}' but skipping pending import creation (import already exists)")
+                return null
+            }
             return createPendingImport(extraction, titleNormalized)
         }
 

@@ -7,7 +7,9 @@ import com.sangita.grantha.shared.domain.model.import.CanonicalExtractionDto
 import com.sangita.grantha.shared.domain.model.ImportStatusDto
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import org.slf4j.LoggerFactory
 import kotlin.uuid.Uuid
@@ -132,9 +134,20 @@ class ExtractionResultProcessor(
                         "within batch for task ${task.id}")
                 }
 
+                // Check if this extraction task originated from a CSV bulk import (has importId).
+                // If so, enrich the existing imported_krithis record instead of creating a new one.
+                val importId = parseImportIdFromRequestPayload(detail.requestPayload)
+
                 var taskEvidenceCount = 0
                 for (extraction in dedupedExtractions) {
-                    val result = krithiMatcherService.processExtractionResult(extraction, task.id)
+                    // When an importId is present, enrich the existing import record with extraction data
+                    if (importId != null) {
+                        enrichExistingImport(importId, extraction, task.id)
+                    }
+
+                    val result = krithiMatcherService.processExtractionResult(
+                        extraction, task.id, skipPendingImportCreation = importId != null
+                    )
                     if (result != null) {
                         linkImportsForSourceUrl(
                             sourceUrl = extraction.sourceUrl,
@@ -181,6 +194,72 @@ class ExtractionResultProcessor(
         )
         logger.info("Processing complete: $report")
         return report
+    }
+
+    /**
+     * Parse the importId from the extraction task's request_payload JSON.
+     * Returns null if not present (e.g., standalone PDF extractions).
+     */
+    private fun parseImportIdFromRequestPayload(requestPayload: String?): Uuid? {
+        if (requestPayload.isNullOrBlank()) return null
+        return try {
+            val obj = json.decodeFromString<JsonObject>(requestPayload)
+            obj["importId"]?.jsonPrimitive?.content?.let { Uuid.parse(it) }
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /**
+     * Enrich an existing imported_krithis record with extraction results.
+     * This is called when the extraction was triggered by a CSV bulk import (importId in request_payload).
+     * The existing record already has CSV-provided metadata; we add the parsed extraction payload
+     * and update any fields that the extraction discovered (title, raga, tala, etc.).
+     */
+    private suspend fun enrichExistingImport(
+        importId: Uuid,
+        extraction: CanonicalExtractionDto,
+        extractionTaskId: Uuid,
+    ) {
+        try {
+            val existing = dal.imports.findById(importId)
+            if (existing == null) {
+                logger.warn("Import $importId from request_payload not found, skipping enrichment")
+                return
+            }
+
+            val parsedPayload = json.encodeToString(CanonicalExtractionDto.serializer(), extraction)
+
+            // Enrich: extraction data fills in gaps, but doesn't overwrite CSV-provided values
+            dal.imports.enrichWithExtraction(
+                id = importId,
+                rawTitle = if (existing.rawTitle.isNullOrBlank()) extraction.title else null,
+                rawComposer = if (existing.rawComposer.isNullOrBlank()) extraction.composer else null,
+                rawRaga = if (existing.rawRaga.isNullOrBlank()) extraction.ragas.firstOrNull()?.name else null,
+                rawTala = if (existing.rawTala.isNullOrBlank()) extraction.tala else null,
+                rawDeity = if (existing.rawDeity.isNullOrBlank()) extraction.deity else null,
+                rawTemple = if (existing.rawTemple.isNullOrBlank()) extraction.temple else null,
+                rawLanguage = if (existing.rawLanguage.isNullOrBlank()) extraction.lyricVariants.firstOrNull()?.language else null,
+                parsedPayload = parsedPayload,
+                status = ImportStatus.IN_REVIEW,
+            )
+
+            val auditMetadata = buildJsonObject {
+                put("importId", importId.toString())
+                put("extractionTaskId", extractionTaskId.toString())
+                put("sourceUrl", extraction.sourceUrl)
+            }
+            dal.auditLogs.append(
+                action = "ENRICH_IMPORT_FROM_EXTRACTION",
+                entityTable = "imported_krithis",
+                entityId = importId,
+                metadata = auditMetadata.toString(),
+            )
+
+            logger.info("Enriched existing import $importId with extraction from ${extraction.sourceUrl}")
+        } catch (e: Exception) {
+            logger.error("Failed to enrich import $importId: ${e.message}", e)
+        }
     }
 
     suspend fun linkImportsForSourceUrl(

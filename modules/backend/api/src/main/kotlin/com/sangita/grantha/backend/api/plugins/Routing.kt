@@ -26,10 +26,10 @@ import com.sangita.grantha.backend.api.services.IImportService
 import com.sangita.grantha.backend.api.services.IKrithiService
 import com.sangita.grantha.backend.api.services.IReferenceDataService
 import com.sangita.grantha.backend.api.services.ITransliterator
-import com.sangita.grantha.backend.api.services.IWebScraper
 import com.sangita.grantha.backend.api.services.KrithiNotationService
 import com.sangita.grantha.backend.api.services.AuditRunnerService
 import com.sangita.grantha.backend.api.services.ExtractionResultProcessor
+import com.sangita.grantha.backend.api.services.LyricVariantPersistenceService
 import com.sangita.grantha.backend.api.services.RemediationService
 import com.sangita.grantha.backend.api.services.SourcingService
 import com.sangita.grantha.backend.api.services.VariantMatchingService
@@ -50,7 +50,8 @@ fun Application.configureRouting() {
     val auditLogService by inject<AuditLogService>()
     val dashboardService by inject<AdminDashboardService>()
     val transliterationService by inject<ITransliterator>()
-    val webScrapingService by inject<IWebScraper>()
+    val lyricPersistence by inject<LyricVariantPersistenceService>()
+    val dal by inject<com.sangita.grantha.backend.dal.SangitaDal>()
     val userManagementService by inject<UserManagementService>()
     val bulkImportService by inject<BulkImportOrchestrationService>()
     val sourcingService by inject<SourcingService>()
@@ -73,7 +74,7 @@ fun Application.configureRouting() {
             authRefreshRoutes(jwtConfig)
             adminKrithiRoutes(krithiService, transliterationService)
             adminNotationRoutes(notationService)
-            importRoutes(importService, webScrapingService)
+            importRoutes(importService, lyricPersistence, dal)
             bulkImportRoutes(bulkImportService, importService)
             auditRoutes(auditLogService)
             referenceDataRoutes(referenceDataService)
