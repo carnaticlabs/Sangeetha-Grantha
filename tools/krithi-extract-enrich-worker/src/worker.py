@@ -58,6 +58,27 @@ from .transliterator import Transliterator
 logger = logging.getLogger(__name__)
 
 
+# ---------------------------------------------------------------------------
+# URL-based composer inference for well-known Carnatic music blog sources.
+# Used as a last-resort fallback when neither the HTML content nor the
+# request payload provide a composer name.
+# ---------------------------------------------------------------------------
+_URL_COMPOSER_MAP: list[tuple[str, str]] = [
+    ("guru-guha.blogspot", "Muthuswami Dikshitar"),
+    ("syamakrishnavaibhavam.blogspot", "Syama Sastri"),
+    ("thyagaraja-vaibhavam.blogspot", "Tyagaraja"),
+]
+
+
+def infer_composer_from_url(url: str) -> str | None:
+    """Infer composer name from well-known Carnatic music blog URL patterns."""
+    lower = url.lower()
+    for pattern, composer in _URL_COMPOSER_MAP:
+        if pattern in lower:
+            return composer
+    return None
+
+
 class ExtractionWorker:
     """Main worker that polls extraction_queue and processes tasks."""
 
@@ -478,7 +499,7 @@ class ExtractionWorker:
             extraction = CanonicalExtraction(
                 title=metadata.title,
                 alternateTitle=alternate_title,
-                composer=metadata.composer or composer_hint or "Unknown",
+                composer=metadata.composer or composer_hint or infer_composer_from_url(task.source_url) or "Unknown",
                 musicalForm=MusicalForm.KRITHI,
                 ragas=[CanonicalRaga(name=raga_name)],
                 tala=tala_name,
@@ -665,7 +686,7 @@ class ExtractionWorker:
             extraction = CanonicalExtraction(
                 title=metadata.title,
                 alternateTitle=alternate_title,
-                composer=metadata.composer or task.request_payload.get("composerHint", "Unknown"),
+                composer=metadata.composer or task.request_payload.get("composerHint") or infer_composer_from_url(task.source_url) or "Unknown",
                 musicalForm=MusicalForm.KRITHI,
                 ragas=[CanonicalRaga(name=metadata.raga or "Unknown")],
                 tala=metadata.tala or "Unknown",
@@ -731,13 +752,16 @@ class ExtractionWorker:
             ]
         lyric_variants = self._truncate_lyric_variants(lyric_variants)
 
-        raga_name = cleanup_raga_tala_name(metadata.raga) if metadata.raga else "Unknown"
+        raga_hint = task.request_payload.get("ragaHint")
+        raga_name = cleanup_raga_tala_name(metadata.raga) if metadata.raga else (
+            cleanup_raga_tala_name(raga_hint) if raga_hint else "Unknown"
+        )
         tala_name = cleanup_raga_tala_name(metadata.tala) if metadata.tala else "Unknown"
 
         extraction = CanonicalExtraction(
             title=metadata.title,
             alternateTitle=metadata.alternate_title,
-            composer=metadata.composer or task.request_payload.get("composerHint", "Unknown"),
+            composer=metadata.composer or task.request_payload.get("composerHint") or infer_composer_from_url(task.source_url) or "Unknown",
             musicalForm=MusicalForm.KRITHI,
             ragas=[CanonicalRaga(name=raga_name)],
             tala=tala_name,

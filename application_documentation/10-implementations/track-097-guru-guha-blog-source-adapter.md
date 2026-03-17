@@ -40,6 +40,7 @@ Fix the guru-guha.blogspot.com extraction pipeline end-to-end so that all 26+ kr
 |------|--------|
 | `tools/krithi-extract-enrich-worker/src/html_extractor.py` | Navigation table stripping, link filtering |
 | `tools/krithi-extract-enrich-worker/src/structure_parser.py` | Metadata boundary hardening, minimum-content guard |
+| `tools/krithi-extract-enrich-worker/src/worker.py` | URL-based composer inference fallback |
 | `tools/krithi-extract-enrich-worker/tests/test_html_extractor.py` | Guru-guha blog tests |
 | `modules/backend/api/.../services/LyricVariantPersistenceService.kt` | Section upgrade, multi-status backfill |
 | `modules/backend/api/.../routes/ImportRoutes.kt` | Re-extract endpoint, typed response DTOs |
