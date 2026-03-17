@@ -49,3 +49,4 @@ Before this data can be written to the database, the parser must satisfy the fol
 - [x] Cross-validated extracted metadata yielding exactly 479 matched Krithi structures
 - [x] Generated target Markdown files (`final_mdskt.md`, `final_mdeng.md`) and comparison CSV (`krithi_comparison_report.csv`) from the structured JSON
 - [x] Closed TRACK-068
+- [x] Cleaned up 29 legacy extraction scripts, temporary JSON/CSV data files, and intermediate markdown files from `database/for_import/`
