@@ -102,6 +102,7 @@
 | [TRACK-096](./tracks/TRACK-096-payload-format-convergence.md) | Payload Format Convergence — Deprecate ScrapedKrithiMetadata | In Progress |
 | [TRACK-097](./tracks/TRACK-097-guru-guha-blog-source-adapter.md) | Guru-Guha Blog Source Adapter — Fix Extraction & Lyrics | Completed |
 | [TRACK-098](./tracks/TRACK-098-agent-workflow-additions.md) | Agent Workflow Additions & Tooling Cleanup | Completed |
+| [TRACK-099](./tracks/TRACK-099-backend-compiler-warning-cleanup.md) | Backend Compiler Warning Cleanup — Zero Warnings Target | Not Started |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)

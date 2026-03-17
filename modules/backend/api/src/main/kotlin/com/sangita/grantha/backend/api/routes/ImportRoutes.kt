@@ -183,7 +183,7 @@ fun Route.importRoutes(
                 status = listOf("INGESTED", "DONE", "FAILED"),
                 limit = 200,
             )
-            val matching = tasks.filter { it.sourceUrl?.contains(sourcePattern, ignoreCase = true) == true }
+            val matching = tasks.filter { it.sourceUrl.contains(sourcePattern, ignoreCase = true) }
 
             var requeued = 0
             for (task in matching) {

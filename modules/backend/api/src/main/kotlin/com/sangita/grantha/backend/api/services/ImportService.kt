@@ -488,8 +488,7 @@ class ImportServiceImpl(
                 
                 // TRACK-062: Create Source Evidence
                 // Whether we created a new Krithi or matched an existing one, we should record the evidence.
-                if (createdKrithiId != null) {
-                    try {
+                try {
                         val krithiId = createdKrithiId.toKotlinUuid()
                         val sourceUrl = sourceKey ?: "manual-import"
                         
@@ -514,7 +513,7 @@ class ImportServiceImpl(
                             confidence = 1.0,
                             contributedFields = listOfNotNull(
                                 "title".takeIf { effectiveTitle.isNotBlank() },
-                                "composer".takeIf { effectiveComposer != null },
+                                "composer",
                                 "raga".takeIf { effectiveRaga != null },
                                 "tala".takeIf { effectiveTala != null },
                                 "lyrics".takeIf { effectiveLyrics != null || importData.rawLyrics != null }
@@ -523,7 +522,6 @@ class ImportServiceImpl(
                     } catch (e: Exception) {
                         println("Failed to create source evidence: ${e.message}")
                     }
-                }
 
             } catch (e: Exception) {
                 // If it's a known error, rethrow it so route can handle it (or wrap it)

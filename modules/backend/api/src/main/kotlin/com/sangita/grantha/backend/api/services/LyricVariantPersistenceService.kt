@@ -8,7 +8,6 @@ import com.sangita.grantha.shared.domain.model.ImportedKrithiDto
 import com.sangita.grantha.shared.domain.model.RagaSectionDto
 import com.sangita.grantha.shared.domain.model.import.CanonicalExtractionDto
 import com.sangita.grantha.shared.domain.model.import.CanonicalSectionType
-import com.sangita.grantha.backend.api.services.scraping.KrithiStructureParser
 import com.sangita.grantha.backend.api.services.scraping.StructuralVotingEngine
 import kotlinx.serialization.json.Json
 import org.slf4j.LoggerFactory
@@ -68,16 +67,10 @@ class LyricVariantPersistenceService(
                 if (!metadata.lyricVariants.isNullOrEmpty()) {
                     val variants = metadata.lyricVariants.toMutableList()
 
-                    // 1. Recover missing sections for each variant using KrithiStructureParser
+                    // 1. Recover missing sections for each variant using parseSectionHeadersFromLyrics
                     variants.forEachIndexed { idx, v ->
                         if (v.sections.isNullOrEmpty() && !v.lyrics.isNullOrBlank()) {
-                            val recovered = KrithiStructureParser().buildBlocks(v.lyrics.replace("\\n", "\n")).blocks
-                                .mapNotNull { block: KrithiStructureParser.TextBlock ->
-                                    val type = parseRagaSectionDto(block.label)
-                                    if (type != null && type != RagaSectionDto.OTHER) {
-                                        ScrapedSectionDto(type = type, text = block.lines.joinToString("\n"))
-                                    } else null
-                                }
+                            val recovered = parseSectionHeadersFromLyrics(v.lyrics.replace("\\n", "\n"))
                             if (recovered.isNotEmpty()) {
                                 variants[idx] = v.copy(sections = recovered)
                             }

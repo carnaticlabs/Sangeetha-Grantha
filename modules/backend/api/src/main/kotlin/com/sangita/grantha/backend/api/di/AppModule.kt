@@ -15,7 +15,6 @@ import com.sangita.grantha.backend.api.services.IKrithiService
 import com.sangita.grantha.backend.api.services.IQualityScorer
 import com.sangita.grantha.backend.api.services.IReferenceDataService
 import com.sangita.grantha.backend.api.services.ITransliterator
-import com.sangita.grantha.backend.api.services.IWebScraper
 import com.sangita.grantha.backend.api.services.ImportReviewer
 import com.sangita.grantha.backend.api.services.ImportReportGenerator
 import com.sangita.grantha.backend.api.services.ImportServiceImpl
@@ -27,8 +26,6 @@ import com.sangita.grantha.backend.api.services.QualityScoringServiceImpl
 import com.sangita.grantha.backend.api.services.ReferenceDataServiceImpl
 import com.sangita.grantha.backend.api.services.TransliterationServiceImpl
 import com.sangita.grantha.backend.api.services.UserManagementService
-import com.sangita.grantha.backend.api.services.WebScrapingServiceImpl
-import com.sangita.grantha.backend.api.services.DeterministicWebScraper
 import com.sangita.grantha.backend.api.services.GeocodingService
 import com.sangita.grantha.backend.api.services.TempleScrapingService
 import com.sangita.grantha.backend.api.services.bulkimport.BulkImportWorkerServiceImpl
@@ -57,20 +54,6 @@ fun appModule(env: ApiEnvironment, metricsRegistry: PrometheusMeterRegistry) = m
     single<ITransliterator> { TransliterationServiceImpl(get()) }
     single { GeocodingService(get()) }
     single { TempleScrapingService(get(), get(), get()) }
-    single<IWebScraper> {
-        if (env.geminiStubMode) {
-            DeterministicWebScraper()
-        } else {
-            WebScrapingServiceImpl(
-                geminiClient = get(),
-                templeScrapingService = get(),
-                cacheTtlHours = env.scrapeCacheTtlHours,
-                cacheMaxEntries = env.scrapeCacheMaxEntries,
-                useSchemaMode = env.geminiUseSchemaMode
-            )
-        }
-    }
-
     single { NameNormalizationService() }
     single<IEntityResolver> { EntityResolutionServiceImpl(get(), get()) }
     single { DeduplicationService(get(), get()) }
