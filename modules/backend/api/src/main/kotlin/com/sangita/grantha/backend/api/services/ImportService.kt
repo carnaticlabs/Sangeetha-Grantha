@@ -31,7 +31,7 @@ interface IImportService {
     /**
      * List imports optionally filtered by status and/or batch.
      */
-    suspend fun getImports(status: ImportStatus? = null, batchId: Uuid? = null): List<ImportedKrithiDto>
+    suspend fun getImports(status: ImportStatus? = null, batchId: Uuid? = null, limit: Int? = null, offset: Int = 0): List<ImportedKrithiDto>
 
     /**
      * Approve all pending imports in the batch.
@@ -132,11 +132,11 @@ class ImportServiceImpl(
         else -> null
     }
 
-    override suspend fun getImports(status: ImportStatus?, batchId: Uuid?): List<ImportedKrithiDto> {
+    override suspend fun getImports(status: ImportStatus?, batchId: Uuid?, limit: Int?, offset: Int): List<ImportedKrithiDto> {
         return if (batchId != null) {
             dal.imports.listByBatch(batchId, status)
         } else {
-            dal.imports.listImports(status)
+            dal.imports.listImports(status, limit, offset)
         }
     }
 
@@ -164,10 +164,11 @@ class ImportServiceImpl(
             val sourceId = dal.imports.findOrCreateSource(request.source)
             val sourceKey = request.sourceKey?.trim()?.takeIf { it.isNotBlank() }
             val importBatchId = parseBatchIdOrNull(request.batchId)
-            val existingImport = sourceKey?.let { dal.imports.findBySourceAndKey(sourceId, it) }
-            
-            // Create the import record
-            val importDto = existingImport ?: dal.imports.createImport(
+
+            // createImport is idempotent (returns existing if source+key match),
+            // so we rely on it for dedup instead of a separate findBySourceAndKey
+            // which was susceptible to read-then-write race conditions.
+            val importDto = dal.imports.createImport(
                 sourceId = sourceId,
                 sourceKey = sourceKey,
                 rawTitle = request.rawTitle,
@@ -185,12 +186,17 @@ class ImportServiceImpl(
             // TRACK-064: HTML-first import flow.
             // When import payload has just the source URL (no scraped payload yet),
             // enqueue extraction_queue task and let Python perform HTML parsing.
-            if (shouldEnqueueHtmlExtraction(request, existingImport) && sourceKey != null) {
+            // Guard: check extraction_queue to avoid double-enqueuing from concurrent ScrapeWorker calls.
+            val alreadyEnqueued = sourceKey?.let { url ->
+                dal.extractionQueue.existsBySourceUrl(url)
+            } ?: false
+            if (!alreadyEnqueued && shouldEnqueueHtmlExtraction(request, null) && sourceKey != null) {
                 val queuePayload = buildJsonObject {
                     put("importId", importDto.id.toString())
                     put("source", "import-flow")
                     request.rawTitle?.takeIf { it.isNotBlank() }?.let { put("titleHint", it) }
                     request.rawComposer?.takeIf { it.isNotBlank() }?.let { put("composerHint", it) }
+                    request.rawRaga?.takeIf { it.isNotBlank() }?.let { put("ragaHint", it) }
                 }.toString()
 
                 val extraction = dal.extractionQueue.create(

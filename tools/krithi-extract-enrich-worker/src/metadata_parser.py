@@ -141,13 +141,25 @@ class MetadataParser:
     )
 
     # Blog/page-title boilerplate frequently present in HTML sources.
+    # Patterns are applied in order; each strips one layer of boilerplate.
     _TITLE_PREFIX_PATTERNS = [
+        # Dikshitar: "Guru Guha Vaibhavam: Dikshitar Kriti - <title>"
         re.compile(r"^\s*guru\s+guha\s+vaibhavam\s*:\s*", re.IGNORECASE),
         re.compile(r"^\s*dikshitar\s+kriti\s*[-:]\s*", re.IGNORECASE),
+        # Syama Sastri: "Shyama Krishna Vaibhavam: Syama Sastry Kriti - <title>"
+        re.compile(r"^\s*shyama\s+krishna\s+vaibhavam\s*:\s*", re.IGNORECASE),
+        re.compile(r"^\s*syama\s+sastr[iy]\s+kriti\s*[-:]\s*", re.IGNORECASE),
+        # Tyagaraja: "Thyagaraja Vaibhavam: Thyagaraja Kriti - <title>"
+        re.compile(r"^\s*thyagaraja\s+vaibhavam\s*:\s*", re.IGNORECASE),
+        re.compile(r"^\s*thyagaraja\s+kriti\s*[-:]\s*", re.IGNORECASE),
+        # Generic
         re.compile(r"^\s*kriti\s*[-:]\s*", re.IGNORECASE),
     ]
     _TITLE_SUFFIX_PATTERNS = [
         re.compile(r"\s*-\s*raga\s+[^|]+$", re.IGNORECASE),
+        re.compile(r"\s*-\s*\w+(?:\s+\w+)?\s+raga(?:\s*-\s*.*)?$", re.IGNORECASE),  # "- Saveri Raga" / "- Begada Raga - Varnam"
+        re.compile(r"\s*-\s*(?:Tamil|Telugu|Sanskrit|Kannada|Malayalam)\s+Kriti\s*$", re.IGNORECASE),
+        re.compile(r"\s*-\s*Varnam\s*$", re.IGNORECASE),
         re.compile(r"\s*\|\s*[^|]+$", re.IGNORECASE),
     ]
     _TITLE_LEADING_INDEX = re.compile(r"^\s*[0-9०-९]+\s*[-:.)]?\s*")

@@ -230,10 +230,19 @@ SECTION_HEADER_PATTERNS: list[tuple[re.Pattern[str], str]] = [
     (re.compile(r"^\s*[\-–—•*()=\[\]]*\s*variations?(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE), "VARIATIONS"),
 ]
 
+# TRACK-097: Metadata boundary patterns use negative lookaheads to avoid false
+# positives from navigation links like "Meaning of Kriti-1" or "Notes on the composition".
+# A genuine metadata header is a standalone label, optionally followed by `:`, `-`, or newline.
 METADATA_BOUNDARY_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
-    ("MEANING", re.compile(r"^\s*(?:meaning|artha|artham|भावार्थ)\b", re.IGNORECASE | re.MULTILINE)),
+    ("MEANING", re.compile(
+        r"^\s*(?:meaning(?!\s+of\b)|artha|artham|भावार्थ)\b",
+        re.IGNORECASE | re.MULTILINE,
+    )),
     ("GIST", re.compile(r"^\s*(?:gist|summary)\b", re.IGNORECASE | re.MULTILINE)),
-    ("NOTES", re.compile(r"^\s*(?:notes?|tippani)\b", re.IGNORECASE | re.MULTILINE)),
+    ("NOTES", re.compile(
+        r"^\s*(?:notes?(?!\s+(?:on|about|from|by|for)\b)|tippani)\b",
+        re.IGNORECASE | re.MULTILINE,
+    )),
     ("WORD_DIVISION", re.compile(r"^\s*(?:word\s*division|pada\s*ccheda)\b", re.IGNORECASE | re.MULTILINE)),
     ("VARIATIONS", re.compile(r"^\s*(?:variations?|alternate\s*reading)\b", re.IGNORECASE | re.MULTILINE)),
 ]
@@ -268,7 +277,26 @@ class StructureParser:
 
         source_text = text.replace("\\n", "\n")
         metadata_boundaries = self._find_metadata_boundaries(source_text)
-        lyric_window_end = metadata_boundaries[0].start_pos if metadata_boundaries else len(source_text)
+
+        # TRACK-097: Guard against false metadata boundaries that truncate too early.
+        # If the first boundary appears in the first 200 chars of a long document,
+        # it's likely a navigation link ("Meaning of Kriti") not a real section header.
+        # Skip it and use the next boundary, or fall back to full text.
+        _MIN_LYRIC_WINDOW = 200
+        effective_boundaries = metadata_boundaries
+        if (
+            effective_boundaries
+            and effective_boundaries[0].start_pos < _MIN_LYRIC_WINDOW
+            and len(source_text) > _MIN_LYRIC_WINDOW * 3
+        ):
+            logger.info(
+                "Skipping early metadata boundary '%s' at offset %d (likely navigation link)",
+                effective_boundaries[0].label,
+                effective_boundaries[0].start_pos,
+            )
+            effective_boundaries = effective_boundaries[1:]
+
+        lyric_window_end = effective_boundaries[0].start_pos if effective_boundaries else len(source_text)
         lyric_text = source_text[:lyric_window_end]
 
         blocks = self._build_blocks(lyric_text)
@@ -852,6 +880,14 @@ class StructureParser:
         if "a i i u u" in lowered or "ch j jh" in lowered or "ph b bh m" in lowered:
             return True
         if "pronunciation guide" in lowered:
+            return True
+        # Devanagari vowel/consonant mapping lines (e.g. "ऎ,कॆ,चॆ.. - e,ke,ce..(short)")
+        if ("(short)" in lowered or "(long)" in lowered) and re.search(
+            r"[\u0900-\u097F].*-\s*[a-zA-Z]", line
+        ):
+            return True
+        # Lines starting with Devanagari comma-separated character charts
+        if re.match(r"^[\u0900-\u097F],[\u0900-\u097F]", line):
             return True
         # Filter nOTTu-svara header — it's metadata not lyric content
         if re.match(r"^\s*\(?n[oō]t+u[\s-]*svara\s+s[aā]hityam?\)?\.?\s*$", lowered):

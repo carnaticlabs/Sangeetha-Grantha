@@ -2,7 +2,6 @@ package com.sangita.grantha.backend.api.services.bulkimport.workers
 
 import com.sangita.grantha.backend.api.models.ImportKrithiRequest
 import com.sangita.grantha.backend.api.services.IImportService
-import com.sangita.grantha.backend.api.services.IWebScraper
 import com.sangita.grantha.backend.api.services.bulkimport.BatchCompletionHandler
 import com.sangita.grantha.backend.api.services.bulkimport.BulkImportWorkerConfig
 import com.sangita.grantha.backend.api.services.bulkimport.RateLimiter
@@ -13,17 +12,13 @@ import com.sangita.grantha.shared.domain.model.ImportTaskRunDto
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import kotlinx.coroutines.channels.Channel
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.encodeToJsonElement
 
 class ScrapeWorker(
     private val dal: SangitaDal,
     private val importService: IImportService,
-    private val webScrapingService: IWebScraper,
     private val rateLimiter: RateLimiter,
     private val errorBuilder: TaskErrorBuilder,
     private val completionHandler: BatchCompletionHandler,
-    private val json: Json = Json
 ) {
     suspend fun run(
         config: BulkImportWorkerConfig,
@@ -84,21 +79,37 @@ class ScrapeWorker(
         }
 
         try {
-            rateLimiter.throttle(url, config, isActive)
-            val scraped = webScrapingService.scrapeKrithi(url)
+            // Parse CSV-provided metadata from krithiKey ("krithi|raga").
+            // The ScrapeWorker no longer performs Kotlin-side HTML scraping.
+            // Instead, it creates the import record with CSV metadata only,
+            // which triggers the Python extraction worker (via extraction_queue)
+            // to handle HTML scraping, section parsing, and Word Division filtering.
+            val csvKrithi: String?
+            val csvRaga: String?
+            val key = task.krithiKey
+            if (!key.isNullOrBlank() && key.contains("|")) {
+                val parts = key.split("|", limit = 2)
+                csvKrithi = parts[0].trim().ifBlank { null }
+                csvRaga = parts[1].trim().ifBlank { null }
+            } else {
+                csvKrithi = null
+                csvRaga = null
+            }
+
+            // Infer composer from well-known blog URL patterns when the CSV
+            // does not include a composer column.
+            val csvComposer = inferComposerFromUrl(url)
+
             val importRequest = ImportKrithiRequest(
                 source = "BulkImportCSV",
                 sourceKey = url,
                 batchId = batchId.toString(),
-                rawTitle = scraped.title,
-                rawLyrics = scraped.lyrics,
-                rawComposer = scraped.composer,
-                rawRaga = scraped.raga,
-                rawTala = scraped.tala,
-                rawDeity = scraped.deity,
-                rawTemple = scraped.temple,
-                rawLanguage = scraped.language,
-                rawPayload = json.encodeToJsonElement(scraped)
+                rawTitle = csvKrithi,
+                rawRaga = csvRaga,
+                rawComposer = csvComposer,
+                // rawLyrics and rawPayload intentionally left null so that
+                // ImportService.shouldEnqueueHtmlExtraction() returns true,
+                // delegating HTML scraping to the Python extraction worker.
             )
 
             importService.submitImports(listOf(importRequest))
@@ -146,5 +157,25 @@ class ScrapeWorker(
         val now = OffsetDateTime.now(ZoneOffset.UTC)
         val ms = java.time.Duration.between(startedAt, now).toMillis()
         return ms.coerceIn(0, Int.MAX_VALUE.toLong()).toInt()
+    }
+
+    companion object {
+        /**
+         * Infer composer name from well-known Carnatic music blog URL patterns.
+         *
+         * Known mappings:
+         *  - guru-guha.blogspot.com → Muthuswami Dikshitar
+         *  - syamakrishnavaibhavam.blogspot.com → Syama Sastri
+         *  - thyagaraja-vaibhavam.blogspot.com → Tyagaraja
+         */
+        internal fun inferComposerFromUrl(url: String): String? {
+            val lower = url.lowercase()
+            return when {
+                "guru-guha.blogspot" in lower -> "Muthuswami Dikshitar"
+                "syamakrishnavaibhavam.blogspot" in lower -> "Syama Sastri"
+                "thyagaraja-vaibhavam.blogspot" in lower -> "Tyagaraja"
+                else -> null
+            }
+        }
     }
 }
