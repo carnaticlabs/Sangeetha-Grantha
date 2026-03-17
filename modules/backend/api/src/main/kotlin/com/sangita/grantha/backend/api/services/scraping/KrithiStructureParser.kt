@@ -337,6 +337,7 @@ class KrithiStructureParser {
         if (lowered.contains("ph b bh m")) return true
         if (lowered.contains("pronunciation guide")) return true
 
+
         val patterns = listOf(
             "powered by blogger",
             "newer post",

@@ -40,6 +40,7 @@ Kotlin-side HTML scraping produced corrupted lyrics (Devanagari pronunciation gu
 | `database/for_import/*.csv` | Cleaned CSV source files |
 | `database/migrations/39__seed_malavasri_raga.sql` | Mālāvashree raga seed |
 | `database/migrations/40__seed_missing_trinity_ragas.sql` | 9 base raga seeds |
+| `database/migrations/41__unique_import_source_name.sql` | Fixed concurrent import source creation bug causing duplicate krithis |
 | `modules/backend/api/.../bulkimport/workers/ScrapeWorker.kt` | Delegate scraping to Python worker |
 | `tools/krithi-extract-enrich-worker/src/structure_parser.py` | Boilerplate detection |
 

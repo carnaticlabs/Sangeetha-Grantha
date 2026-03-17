@@ -128,6 +128,7 @@ Brindāvana Sāranga              → brindavanasaranga ✓
 - `database/for_import/*.csv` — cleaned
 - `database/migrations/39__seed_malavasri_raga.sql` — Mālāvashree raga
 - `database/migrations/40__seed_missing_trinity_ragas.sql` — 9 base ragas (v1.2.0)
+- `database/migrations/41__unique_import_source_name.sql` — Fixed concurrent import source creation
 - `modules/backend/api/.../bulkimport/workers/ScrapeWorker.kt` — delegate to Python
 - `tools/krithi-extract-enrich-worker/src/structure_parser.py` — boilerplate detection
 - `conductor/tracks.md` — updated
