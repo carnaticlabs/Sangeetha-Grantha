@@ -90,3 +90,5 @@ data/pdfs/*.pdf
 .DS_Store
 **log
 **/cache/**
+*.plugin
+*-review-iter*.html

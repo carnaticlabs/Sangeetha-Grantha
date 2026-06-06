@@ -3,11 +3,13 @@
 This repo ships local agent skills and workflows for consistent changes.
 
 ## Skills
+- `.cursor/skills/agentic-prompt-optimizer/SKILL.md` - rewrite informal tasks into structured, tool-friendly prompts for agentic AI.
 - `.agent/skills/change-mapper/SKILL.md` - change scanning and categorization.
 - `.agent/skills/commit-policy/SKILL.md` - commit rules and reference requirements.
 - `.agent/skills/documentation-guardian/SKILL.md` - doc header, links, and formatting rules.
 
 ## Workflows
+- `.agent/workflows/agentic-prompt-optimizer.md` - rewrite an informal request into a structured, tool-friendly prompt for agentic models (Cursor Composer, Claude, GPT, etc.).
 - `.agent/workflows/bulk-import-testing.md` - comprehensive testing workflow for the bulk import pipeline covering backend unit tests, scraping services, and E2E flows.
 - `.agent/workflows/commit-guardrails.md` - standard workflow for committing changes with documentation guardrails enforcement.
 - `.agent/workflows/conductor-track-manager.md` - manages the lifecycle of Conductor tracks (create, update, close) to streamline project management and documentation.
