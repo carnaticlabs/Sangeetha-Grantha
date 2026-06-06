@@ -105,6 +105,15 @@ LANGUAGE_LABELS = {
 METADATA_LABELS = {"WORD_DIVISION", "MEANING", "GIST", "NOTES", "VARIATIONS"}
 
 LANGUAGE_HEADER_CANDIDATES: list[tuple[str, str]] = [
+    # TRACK-102: Compound "Script - Word Division" headers must appear before simple script entries
+    ("english - word division", "WORD_DIVISION"),
+    ("devanagari - word division", "WORD_DIVISION"),
+    ("tamil - word division", "WORD_DIVISION"),
+    ("telugu - word division", "WORD_DIVISION"),
+    ("kannada - word division", "WORD_DIVISION"),
+    ("malayalam - word division", "WORD_DIVISION"),
+    ("sanskrit - word division", "WORD_DIVISION"),
+    # Simple script entries
     ("devanagari", "DEVANAGARI"),
     ("tamil", "TAMIL"),
     ("telugu", "TELUGU"),
@@ -303,6 +312,15 @@ class StructureParser:
         sections = self._extract_sections(blocks, lyric_text)
         lyric_variants = self._extract_lyric_variants(blocks, lyric_text, sections)
 
+        # TRACK-100: Extract Indic-script variants from post-boundary region.
+        # On many blogs, Indic scripts appear AFTER the first metadata boundary.
+        if effective_boundaries and sections:
+            existing_scripts = {v.script for v in lyric_variants}
+            post_variants = self._extract_post_boundary_variants(
+                source_text, lyric_window_end, sections, existing_scripts
+            )
+            lyric_variants.extend(post_variants)
+
         return StructureParseResult(
             sections=sections,
             lyric_variants=lyric_variants,
@@ -398,6 +416,8 @@ class StructureParser:
             if pattern.search(line):
                 remainder = pattern.sub("", line, count=1).strip()
                 remainder = re.sub(r"^[:\-)\]\.\s]+", "", remainder).strip()
+                # TRACK-101: Strip residual numbers from "caraNam 1" / "svara sAhitya 2" headers
+                remainder = re.sub(r"^\d+\s*", "", remainder).strip()
                 return _HeaderMatch(label=label, remainder=remainder)
         return None
 
@@ -704,6 +724,64 @@ class StructureParser:
         flush()
         return variants
 
+    def _extract_post_boundary_variants(
+        self,
+        source_text: str,
+        boundary_pos: int,
+        canonical_sections: list[DetectedSection],
+        existing_scripts: set[str],
+    ) -> list[DetectedLyricVariant]:
+        """TRACK-100: Extract Indic-script variants from text after the metadata boundary."""
+        all_blocks = self._build_blocks(source_text)
+        post_blocks = [b for b in all_blocks if b.start_pos >= boundary_pos]
+        if not post_blocks:
+            return []
+
+        _INDIC_LABELS = {"DEVANAGARI", "TAMIL", "TELUGU", "KANNADA", "MALAYALAM", "SANSKRIT", "HINDI"}
+
+        variants: list[DetectedLyricVariant] = []
+        current_label: Optional[str] = None
+        current_blocks: list[_TextBlock] = []
+
+        def flush() -> None:
+            nonlocal current_label, current_blocks
+            if current_label is None:
+                return
+            language, script = self._language_script_for_label(current_label)
+            if script not in existing_scripts:
+                sections = self._sections_from_variant_blocks(current_blocks, canonical_sections)
+                if sections:
+                    variants.append(
+                        DetectedLyricVariant(language=language, script=script, sections=sections)
+                    )
+            current_label = None
+            current_blocks = []
+
+        for block in post_blocks:
+            if block.label in METADATA_LABELS:
+                flush()
+                continue
+
+            if block.label in _INDIC_LABELS:
+                flush()
+                current_label = block.label
+                if block.lines:
+                    sub_blocks = self._reparse_lines_for_sections(
+                        block.lines, block.start_pos, block.end_pos
+                    )
+                    current_blocks.extend(sub_blocks)
+                continue
+
+            if block.label in {"ENGLISH", "LATIN"}:
+                flush()
+                continue
+
+            if current_label is not None:
+                current_blocks.append(block)
+
+        flush()
+        return variants
+
     def _sections_from_variant_blocks(
         self,
         blocks: list[_TextBlock],
@@ -877,6 +955,11 @@ class StructureParser:
 
     def _is_boilerplate(self, line: str) -> bool:
         lowered = line.lower()
+        # TRACK-103: Standalone "Back" navigation and "Meaning of Kriti" links
+        if lowered == "back":
+            return True
+        if lowered.startswith("meaning of kriti"):
+            return True
         if "a i i u u" in lowered or "ch j jh" in lowered or "ph b bh m" in lowered:
             return True
         if "pronunciation guide" in lowered:

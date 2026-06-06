@@ -201,22 +201,12 @@ Speedy lyrics here
 
 
 
-    # Should detect Pallavi, Charanam, and Madhyama Kala
-
-
-    assert len(sections) == 3
-
-
+    # MKS is demoted into the preceding Charanam (Rule 1: MKS is never top-level)
+    assert len(sections) == 2
     assert sections[0].section_type == SectionType.PALLAVI
-
-
     assert sections[1].section_type == SectionType.CHARANAM
-
-
-    assert sections[2].section_type == SectionType.MADHYAMA_KALA
-
-
-    assert "Speedy lyrics" in sections[2].text
+    assert "[Madhyama Kala Sahitya]" in sections[1].text
+    assert "Speedy lyrics here" in sections[1].text
 
 
 def test_parse_contract_tracks_metadata_boundaries() -> None:
@@ -285,6 +275,163 @@ def test_fixture_kotlin_parity_multiscript() -> None:
         for variant in result.lyric_variants
         for section in variant.sections
     )
+
+
+def test_fixture_dikshitar_multi_variant() -> None:
+    """TRACK-100: Dikshitar blog produces 6 lyric variants (en + 5 Indic scripts)."""
+    parser = StructureParser()
+    fixture_dir = Path(__file__).parent / "fixtures" / "structure_parser"
+    text = (fixture_dir / "dikshitar_multi_variant.txt").read_text(encoding="utf-8")
+    expected = json.loads(
+        (fixture_dir / "dikshitar_multi_variant.expected.json").read_text(encoding="utf-8")
+    )
+
+    result = parser.parse(text)
+
+    assert [s.section_type.value for s in result.sections] == expected["sections"]
+    assert [v.script for v in result.lyric_variants] == expected["variantScripts"]
+    assert [v.language for v in result.lyric_variants] == expected["variantLanguages"]
+    assert [b.label for b in result.metadata_boundaries] == expected["metadataBoundaryLabels"]
+    # No "Back" navigation text in any variant
+    assert all(
+        "back" != section.text.strip().lower()
+        for variant in result.lyric_variants
+        for section in variant.sections
+    )
+    # No Word Division blocks creating duplicate variants
+    word_div_variants = [v for v in result.lyric_variants if v.script == "word_division"]
+    assert len(word_div_variants) == 0
+
+
+def test_fixture_tyagaraja_multi_variant() -> None:
+    """TRACK-100: Tyagaraja blog with P/A/C abbreviations produces multi-script variants."""
+    parser = StructureParser()
+    fixture_dir = Path(__file__).parent / "fixtures" / "structure_parser"
+    text = (fixture_dir / "tyagaraja_multi_variant.txt").read_text(encoding="utf-8")
+    expected = json.loads(
+        (fixture_dir / "tyagaraja_multi_variant.expected.json").read_text(encoding="utf-8")
+    )
+
+    result = parser.parse(text)
+
+    assert [s.section_type.value for s in result.sections] == expected["sections"]
+    assert [v.script for v in result.lyric_variants] == expected["variantScripts"]
+    assert [v.language for v in result.lyric_variants] == expected["variantLanguages"]
+    assert [b.label for b in result.metadata_boundaries] == expected["metadataBoundaryLabels"]
+
+
+def test_fixture_syama_sastri_numbered() -> None:
+    """TRACK-100: Syama Sastri numbered charanams produce clean section text."""
+    parser = StructureParser()
+    fixture_dir = Path(__file__).parent / "fixtures" / "structure_parser"
+    text = (fixture_dir / "syama_sastri_numbered.txt").read_text(encoding="utf-8")
+    expected = json.loads(
+        (fixture_dir / "syama_sastri_numbered.expected.json").read_text(encoding="utf-8")
+    )
+
+    result = parser.parse(text)
+
+    assert [s.section_type.value for s in result.sections] == expected["sections"]
+    assert [v.script for v in result.lyric_variants] == expected["variantScripts"]
+    assert [v.language for v in result.lyric_variants] == expected["variantLanguages"]
+    assert [b.label for b in result.metadata_boundaries] == expected["metadataBoundaryLabels"]
+
+
+def test_multi_variant_canonical_mapping() -> None:
+    """TRACK-100: Each Indic variant's sections map to the English canonical skeleton."""
+    parser = StructureParser()
+    fixture_dir = Path(__file__).parent / "fixtures" / "structure_parser"
+    text = (fixture_dir / "dikshitar_multi_variant.txt").read_text(encoding="utf-8")
+
+    result = parser.parse(text)
+
+    canonical_types = [s.section_type for s in result.sections]
+    for variant in result.lyric_variants:
+        variant_types = [s.section_type for s in variant.sections]
+        # Each variant's section types should be a subset of the canonical skeleton
+        for vt in variant_types:
+            assert vt in canonical_types, f"Variant {variant.script} has unexpected section type {vt}"
+
+
+def test_numbered_charanam_text_has_no_leading_number() -> None:
+    """TRACK-101: 'caraNam 1\\nlyric text' -> section text is 'lyric text', not '1\\nlyric text'."""
+    parser = StructureParser()
+    text = """
+pallavi
+O jagadamba nanu brova
+
+caraNam 1
+mANikya mayamaiyunna paadamu
+
+caraNam 2
+kunda radanA sundara charaNa
+"""
+    sections = parser.parse_sections(text)
+    charanams = [s for s in sections if s.section_type == SectionType.CHARANAM]
+    for c in charanams:
+        assert not c.text.strip().startswith("1")
+        assert not c.text.strip().startswith("2")
+
+
+def test_numbered_swara_sahitya_text_clean() -> None:
+    """TRACK-101: 'svara sAhitya 2\\nswara text' -> section text is 'swara text'."""
+    parser = StructureParser()
+    text = """
+pallavi
+some lyrics
+
+svara sahitya 2
+swara text here
+"""
+    sections = parser.parse_sections(text)
+    swara = [s for s in sections if s.section_type == SectionType.SWARA_SAHITYA]
+    assert len(swara) == 1
+    assert swara[0].text.strip() == "swara text here"
+
+
+def test_compound_word_division_header_detected() -> None:
+    """TRACK-102: 'English - Word Division' is detected as WORD_DIVISION, not ENGLISH."""
+    parser = StructureParser()
+    header = parser._detect_language_header("English - Word Division")
+    assert header is not None
+    assert header.label == "WORD_DIVISION"
+
+
+def test_compound_devanagari_word_division() -> None:
+    """TRACK-102: 'Devanagari - Word Division' is WORD_DIVISION metadata."""
+    parser = StructureParser()
+    header = parser._detect_language_header("Devanagari - Word Division")
+    assert header is not None
+    assert header.label == "WORD_DIVISION"
+
+
+def test_standalone_back_is_boilerplate() -> None:
+    """TRACK-103: Standalone 'Back' line is filtered as boilerplate."""
+    parser = StructureParser()
+    assert parser._is_boilerplate("Back") is True
+    assert parser._is_boilerplate("back") is True
+
+
+def test_meaning_of_kriti_is_boilerplate() -> None:
+    """TRACK-103: 'Meaning of Kriti-1' navigation link is filtered."""
+    parser = StructureParser()
+    assert parser._is_boilerplate("Meaning of Kriti-1") is True
+    assert parser._is_boilerplate("Meaning of Kriti") is True
+
+
+def test_per_script_variations_excluded_from_lyrics() -> None:
+    """TRACK-104: 'variations' block within a language section doesn't appear in variant text."""
+    parser = StructureParser()
+    fixture_dir = Path(__file__).parent / "fixtures" / "structure_parser"
+    text = (fixture_dir / "dikshitar_multi_variant.txt").read_text(encoding="utf-8")
+
+    result = parser.parse(text)
+
+    for variant in result.lyric_variants:
+        for section in variant.sections:
+            assert "vatapi - vatabi" not in section.text.lower(), (
+                f"Variations content leaked into {variant.script} {section.label}"
+            )
 
 
 def test_fixture_kotlin_parity_tamil_headers() -> None:
