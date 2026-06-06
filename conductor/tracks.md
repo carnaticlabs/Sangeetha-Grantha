@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.3.4 |
-| **Last Updated** | 2026-03-15 |
+| **Version** | 1.4.0 |
+| **Last Updated** | 2026-06-06 |
 | **Author** | Sangeetha Grantha Team |
 
 # Conductor Tracks Registry
@@ -102,7 +102,17 @@
 | [TRACK-096](./tracks/TRACK-096-payload-format-convergence.md) | Payload Format Convergence — Deprecate ScrapedKrithiMetadata | In Progress |
 | [TRACK-097](./tracks/TRACK-097-guru-guha-blog-source-adapter.md) | Guru-Guha Blog Source Adapter — Fix Extraction & Lyrics | Completed |
 | [TRACK-098](./tracks/TRACK-098-agent-workflow-additions.md) | Agent Workflow Additions & Tooling Cleanup | Completed |
-| [TRACK-099](./tracks/TRACK-099-backend-compiler-warning-cleanup.md) | Backend Compiler Warning Cleanup — Zero Warnings Target | Not Started |
+| [TRACK-099](./tracks/TRACK-099-backend-compiler-warning-cleanup.md) | Backend Compiler Warning Cleanup — Zero Warnings Target | Completed |
+| [TRACK-100](./tracks/TRACK-100-multi-pass-indic-script-extraction.md) | Multi-Pass Parsing Architecture for Indic Script Extraction | Completed |
+| [TRACK-101](./tracks/TRACK-101-numbered-section-label-stripping.md) | Strip Residual Numbers from Numbered Section Labels | Completed |
+| [TRACK-102](./tracks/TRACK-102-compound-word-division-headers.md) | Handle "Script - Word Division" Compound Language Headers | Completed |
+| [TRACK-103](./tracks/TRACK-103-standalone-back-boilerplate-filter.md) | Filter Standalone "Back" Link Text as Boilerplate | Completed |
+| [TRACK-104](./tracks/TRACK-104-per-script-variations-handling.md) | Handle Per-Script "Variations" as Intra-Variant Metadata | Completed |
+| [TRACK-105](./tracks/TRACK-105-working-tree-reconciliation.md) | Working Tree Reconciliation & Safe Landing | Not Started |
+| [TRACK-106](./tracks/TRACK-106-registry-doc-resync.md) | Conductor Registry & Documentation Re-Sync | Not Started |
+| [TRACK-107](./tracks/TRACK-107-ai-platform-lifecycle-uplift.md) | AI Platform Lifecycle Uplift (SDK + Model + Structured Output + Batch) | Not Started |
+| [TRACK-108](./tracks/TRACK-108-semantic-search.md) | Semantic Search (Embeddings + pgvector) | Not Started |
+| [TRACK-109](./tracks/TRACK-109-production-readiness-roadmap.md) | Production Readiness Roadmap (Epic) | Not Started |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)
