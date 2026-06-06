@@ -37,7 +37,7 @@ def test_enricher_updates_missing_fields_and_marks_applied() -> None:
         '"deity":"Akhilandesvari","temple":"Tiruvanaikaval","confidence":0.93}'
     )
     enricher = GeminiMetadataEnricher(
-        GeminiEnricherConfig(enabled=True, api_key="test-key", model="gemini-2.0-flash"),
+        GeminiEnricherConfig(enabled=True, api_key="test-key", model="gemini-2.5-flash"),
         client=client,
     )
     extraction = _build_extraction()
@@ -54,7 +54,7 @@ def test_enricher_updates_missing_fields_and_marks_applied() -> None:
 
 def test_enricher_is_noop_when_disabled() -> None:
     enricher = GeminiMetadataEnricher(
-        GeminiEnricherConfig(enabled=False, api_key="", model="gemini-2.0-flash"),
+        GeminiEnricherConfig(enabled=False, api_key="", model="gemini-2.5-flash"),
         client=None,
     )
     extraction = _build_extraction()
@@ -63,3 +63,46 @@ def test_enricher_is_noop_when_disabled() -> None:
 
     assert result is None
     assert extraction.composer == "Unknown"
+
+
+def test_batch_returns_none_list_when_disabled() -> None:
+    enricher = GeminiMetadataEnricher(
+        GeminiEnricherConfig(enabled=False, api_key="", model="gemini-2.5-flash"),
+        client=None,
+    )
+    items = [(_build_extraction(), "text", "HTML"), (_build_extraction(), "text", "HTML")]
+
+    results = enricher.enrich_batch(items)
+
+    assert results == [None, None]
+
+
+def test_batch_falls_back_to_sync_without_raw_client() -> None:
+    client = _FakeClient(
+        '{"composer":"Dikshitar","raga":"Shankarabharanam","tala":"Adi","confidence":0.9}'
+    )
+    enricher = GeminiMetadataEnricher(
+        GeminiEnricherConfig(enabled=True, api_key="test-key", model="gemini-2.5-flash"),
+        client=client,
+    )
+    ext1 = _build_extraction()
+    ext2 = _build_extraction()
+
+    results = enricher.enrich_batch([(ext1, "text1", "HTML"), (ext2, "text2", "HTML")])
+
+    assert len(results) == 2
+    assert all(r is not None and r.applied for r in results)
+    assert ext1.composer == "Dikshitar"
+    assert ext2.composer == "Dikshitar"
+
+
+def test_enricher_provider_label_is_google_genai() -> None:
+    client = _FakeClient('{"composer":"Dikshitar","confidence":0.9}')
+    enricher = GeminiMetadataEnricher(
+        GeminiEnricherConfig(enabled=True, api_key="test-key", model="gemini-2.5-flash"),
+        client=client,
+    )
+    result = enricher.enrich(_build_extraction(), "text", source_format="HTML")
+
+    assert result is not None
+    assert result.provider == "google-genai"

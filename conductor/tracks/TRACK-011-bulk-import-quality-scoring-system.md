@@ -2,7 +2,7 @@
 
 | Metadata | Value |
 |:---|:---|
-| **Status** | Proposed |
+| **Status** | Completed |
 | **Owner** | Backend Team |
 | **Priority** | HIGH |
 | **Created** | 2026-01-23 |

@@ -187,8 +187,8 @@ def test_identity_candidates_and_metadata_enrichment_serialization() -> None:
             ],
         ),
         metadataEnrichment=CanonicalMetadataEnrichment(
-            provider="google-generativeai",
-            model="gemini-2.0-flash",
+            provider="google-genai",
+            model="gemini-2.5-flash",
             applied=True,
             confidence=0.91,
             fieldsUpdated=["composer", "raga"],
@@ -197,5 +197,5 @@ def test_identity_candidates_and_metadata_enrichment_serialization() -> None:
 
     payload = extraction.to_json_dict()
     assert payload["identityCandidates"]["composers"][0]["entityId"] == "composer-1"
-    assert payload["metadataEnrichment"]["provider"] == "google-generativeai"
+    assert payload["metadataEnrichment"]["provider"] == "google-genai"
     assert payload["metadataEnrichment"]["fieldsUpdated"] == ["composer", "raga"]

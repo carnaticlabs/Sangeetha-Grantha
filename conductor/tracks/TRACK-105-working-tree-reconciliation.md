@@ -1,6 +1,6 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Not Started |
+| **Status** | In Progress |
 | **Version** | 1.0.0 |
 | **Last Updated** | 2026-06-06 |
 | **Author** | Principal Data & AI Engineering review (for Seshadri) |

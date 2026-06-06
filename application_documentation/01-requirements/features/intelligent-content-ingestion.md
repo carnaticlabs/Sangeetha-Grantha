@@ -64,10 +64,10 @@ This feature request outlines the integration of **Google Gemini AI** and **Goog
 
 ### 4.1 Cloud Infrastructure
 
-* **API Platform:** Google Gemini API (Flash 2.0 and Pro 1.5).
+* **API Platform:** Google Gemini API (via unified `google-genai` SDK).
 * **Environment Variables:**
 * `SG_GEMINI_API_KEY`: Required for service authentication.
-* `SG_GEMINI_MODEL`: Defaulting to `gemini-2.0-flash-exp`.
+* `SG_GEMINI_MODEL`: Defaulting to `gemini-2.5-flash`.
 
 
 

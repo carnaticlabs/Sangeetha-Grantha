@@ -2,7 +2,7 @@
 
 | Metadata | Value |
 |:---|:---|
-| **Status** | **Completed** |
+| **Status** | Completed |
 | **Owner** | Backend Team |
 | **Priority** | High |
 | **Related Tracks** | TRACK-001 (Bulk Import) |

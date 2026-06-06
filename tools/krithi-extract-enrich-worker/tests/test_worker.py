@@ -207,8 +207,8 @@ def test_extract_html_attaches_phase3_signals(tmp_path) -> None:
         ragas=[],
     )
     worker.gemini_enricher.enrich = lambda *_args, **_kwargs: CanonicalMetadataEnrichment(
-        provider="google-generativeai",
-        model="gemini-2.0-flash",
+        provider="google-genai",
+        model="gemini-2.5-flash",
         applied=True,
         fieldsUpdated=["composer"],
     )

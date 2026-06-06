@@ -2,7 +2,7 @@
 
 | Metadata | Value |
 |:---|:---|
-| **Status** | Proposed |
+| **Status** | Deferred |
 | **Owner** | Backend Team |
 | **Priority** | MEDIUM |
 | **Created** | 2026-01-23 |

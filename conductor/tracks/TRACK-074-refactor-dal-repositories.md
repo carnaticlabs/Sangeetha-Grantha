@@ -2,7 +2,7 @@
 |:---|:---|
 | **Track ID** | TRACK-074 |
 | **Title** | Refactor DAL Repositories |
-| **Status** | Complete |
+| **Status** | Completed |
 | **Created** | 2026-02-28 |
 | **Author** | Sangeetha Grantha Team |
 | **Depends On** | TRACK-073 |

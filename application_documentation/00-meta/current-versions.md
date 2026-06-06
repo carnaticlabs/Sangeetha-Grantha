@@ -2,7 +2,7 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-03-10 |
+| **Last Updated** | 2026-06-06 |
 | **Author** | Sangeetha Grantha Team |
 
 # Current Technology Versions
@@ -22,8 +22,8 @@
 | Tool | Version | Notes |
 |------|---------|-------|
 | Java | `temurin-25` | Temurin distribution, JVM toolchain |
-| Bun | `1.3.6` | Frontend package manager & runtime |
-| Python | `3.14+` | Migration tool & extraction worker |
+| Bun | `1.3.7` | Frontend package manager & runtime |
+| Python | `3.11+` | Migration tool & extraction worker (runtime: 3.14) |
 | Docker Compose | `latest` | Container orchestration |
 
 ---
@@ -136,7 +136,7 @@
 | indic-transliteration | `2.3.76` | Script conversion (Devanagari ↔ Tamil/Telugu/etc.) |
 | Pydantic | `2.12.5` | Schema validation |
 | psycopg | `3.3.2` | PostgreSQL driver (async-capable) |
-| google-generativeai | `0.8.6` | Gemini API client |
+| google-genai | `>=1.0.0` | Unified Gemini SDK (replaced deprecated google-generativeai) |
 | RapidFuzz | `3.14.3` | Fast fuzzy matching |
 | HTTPX | `0.28.1` | Async HTTP client |
 | BeautifulSoup4 | `4.14.3` | HTML parsing |
@@ -197,6 +197,7 @@
 
 | Date | Change |
 |------|--------|
+| 2026-06-06 | TRACK-106 re-sync: Bun 1.3.6→1.3.7, Python version pin corrected to 3.11+ (mise.toml), Last Updated synced |
 | 2026-03-10 | Added Python tools section (extraction worker + db-migrate) with resolved versions from uv.lock |
 | 2026-03-10 | Dependency updates: PostgreSQL 42.7.10, Logback 1.5.32, Jsoup 1.22.1, Caffeine 3.2.3, Tailwind 4.2.1, React Router 7.13.1, TanStack Query 5.90.21 |
 | 2026-03-10 | Synced all versions from source files (gradle/libs.versions.toml, package.json, compose.yaml) |

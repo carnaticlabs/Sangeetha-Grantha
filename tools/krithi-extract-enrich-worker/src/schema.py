@@ -114,7 +114,7 @@ class CanonicalIdentityCandidates(BaseModel):
 class CanonicalMetadataEnrichment(BaseModel):
     """Metadata enrichment outcome emitted by the optional Gemini phase."""
 
-    provider: str = Field(..., description="Enrichment provider, e.g. google-generativeai")
+    provider: str = Field(..., description="Enrichment provider, e.g. google-genai")
     model: Optional[str] = Field(None, description="Model name used for enrichment")
     applied: bool = Field(False, description="Whether any canonical metadata field was updated")
     confidence: Optional[float] = Field(None, ge=0.0, le=1.0)

@@ -1,8 +1,8 @@
 | Metadata         | Value                  |
 | :--------------- | :--------------------- |
 | **Status**       | Active                 |
-| **Version**      | 1.2.0                  |
-| **Last Updated** | 2026-02-28             |
+| **Version**      | 1.3.0                  |
+| **Last Updated** | 2026-06-06             |
 | **Author**       | Sangeetha Grantha Team |
 
 # Sangita Grantha Documentation Index
@@ -94,6 +94,10 @@ Historical / inherited drafts from earlier projects, and any future archival doc
 - **[09 AI](./09-ai/README.md)**
   - [AI Integration](./09-ai/integration-summary.md)
   - [Knowledge Base](./09-ai/gemini-knowledge-base.md)
+
+- **Project Health** *(top-level analysis docs)*
+  - [State of Nation (June 2026)](./sangeetha-grantha-state-of-nation-july-2026.md)
+  - [Uplift Tasks](./sangeetha-grantha-uplift-tasks.md)
 
 - **[Meta](./00-meta/README.md)** (`00-meta/`)
   - [Current Versions](./00-meta/current-versions.md)

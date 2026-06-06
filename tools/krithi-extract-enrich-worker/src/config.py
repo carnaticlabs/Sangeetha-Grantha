@@ -31,7 +31,7 @@ class ExtractorConfig:
         default_factory=lambda: os.environ.get("SG_GEMINI_API_KEY", "")
     )
     gemini_model: str = field(
-        default_factory=lambda: os.environ.get("SG_GEMINI_MODEL", "gemini-2.0-flash")
+        default_factory=lambda: os.environ.get("SG_GEMINI_MODEL", "gemini-2.5-flash")
     )
     enable_gemini_enrichment: bool = field(
         default_factory=lambda: _env_bool("SG_ENABLE_GEMINI_ENRICHMENT", False)

@@ -130,7 +130,7 @@ This checklist provides a detailed, actionable breakdown of every task required 
   - OCR: pytesseract
   - Indic: indic-transliteration, aksharamukha
   - Database: psycopg[binary] (async-capable)
-  - LLM: google-generativeai (Gemini client)
+  - LLM: google-genai (Unified Gemini SDK)
   - Utilities: httpx (for PDF downloads), structlog (logging)
 - [x] Create Dockerfile with Tesseract OCR + Indic language packs (see strategy Section 8.2.2)
   - **Base**: `python:3.11-slim`

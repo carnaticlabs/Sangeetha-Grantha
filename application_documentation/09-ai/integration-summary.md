@@ -157,7 +157,7 @@ This document provides a high-level summary of Google Gemini AI integration oppo
 ```toml
 [ai]
 gemini_auth_token = "${SG_GEMINI_AUTH_TOKEN}"
-gemini_model = "gemini-2.0-flash-exp"
+gemini_model = "gemini-2.5-flash"  # env: SG_GEMINI_MODEL
 ```
 
 ### New Services

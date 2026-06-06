@@ -2,7 +2,7 @@
 |:---|:---|
 | **Track ID** | TRACK-062 |
 | **Title** | Bulk Import Idempotency & Source Evidence Integration |
-| **Status** | Done |
+| **Status** | Completed |
 | **Priority** | High |
 | **Created** | 2026-02-10 |
 | **Updated** | 2026-02-11 |

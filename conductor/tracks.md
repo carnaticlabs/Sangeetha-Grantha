@@ -108,9 +108,9 @@
 | [TRACK-102](./tracks/TRACK-102-compound-word-division-headers.md) | Handle "Script - Word Division" Compound Language Headers | Completed |
 | [TRACK-103](./tracks/TRACK-103-standalone-back-boilerplate-filter.md) | Filter Standalone "Back" Link Text as Boilerplate | Completed |
 | [TRACK-104](./tracks/TRACK-104-per-script-variations-handling.md) | Handle Per-Script "Variations" as Intra-Variant Metadata | Completed |
-| [TRACK-105](./tracks/TRACK-105-working-tree-reconciliation.md) | Working Tree Reconciliation & Safe Landing | Not Started |
-| [TRACK-106](./tracks/TRACK-106-registry-doc-resync.md) | Conductor Registry & Documentation Re-Sync | Not Started |
-| [TRACK-107](./tracks/TRACK-107-ai-platform-lifecycle-uplift.md) | AI Platform Lifecycle Uplift (SDK + Model + Structured Output + Batch) | Not Started |
+| [TRACK-105](./tracks/TRACK-105-working-tree-reconciliation.md) | Working Tree Reconciliation & Safe Landing | In Progress |
+| [TRACK-106](./tracks/TRACK-106-registry-doc-resync.md) | Conductor Registry & Documentation Re-Sync | Completed |
+| [TRACK-107](./tracks/TRACK-107-ai-platform-lifecycle-uplift.md) | AI Platform Lifecycle Uplift (SDK + Model + Structured Output + Batch) | Completed |
 | [TRACK-108](./tracks/TRACK-108-semantic-search.md) | Semantic Search (Embeddings + pgvector) | Not Started |
 | [TRACK-109](./tracks/TRACK-109-production-readiness-roadmap.md) | Production Readiness Roadmap (Epic) | Not Started |
 
