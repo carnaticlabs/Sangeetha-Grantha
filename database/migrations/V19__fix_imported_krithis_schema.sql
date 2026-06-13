@@ -1,5 +1,4 @@
--- 19__fix_imported_krithis_schema.sql
--- Purpose: Add missing import_batch_id column to imported_krithis table
-
--- migrate:up
-ALTER TABLE imported_krithis ADD COLUMN IF NOT EXISTS import_batch_id UUID;
+-- V19__fix_imported_krithis_schema.sql
+-- No-op on a from-scratch Flyway apply: import_batch_id is already added to
+-- imported_krithis by V14. This migration reconciled databases migrated by the
+-- legacy tool; it is retained for version continuity. See TRACK-110 / ADR-013.

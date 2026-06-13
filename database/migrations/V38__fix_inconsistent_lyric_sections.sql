@@ -11,8 +11,10 @@
 --   Step 2: Remove duplicate sections from dual-format parsing
 --   Step 3: Remove orphaned krithi_lyric_sections
 --   Step 4: Re-index order_index sequentially
-
-BEGIN;
+--
+-- Runs inside Flyway's per-migration transaction; no explicit BEGIN/COMMIT
+-- (an explicit BEGIN here raised "transaction already in progress", and the
+-- COMMIT closed Flyway's own transaction early).
 
 -- Step 1: Delete krithi_lyric_sections linked to MKS krithi_sections
 DELETE FROM krithi_lyric_sections
@@ -72,5 +74,3 @@ SELECT 'krithis', k.id, 'REPAIR_SECTIONS',
                           'sections', (SELECT COUNT(*) FROM krithi_sections ks WHERE ks.krithi_id = k.id))
 FROM krithis k
 WHERE EXISTS (SELECT 1 FROM krithi_sections ks WHERE ks.krithi_id = k.id);
-
-COMMIT;

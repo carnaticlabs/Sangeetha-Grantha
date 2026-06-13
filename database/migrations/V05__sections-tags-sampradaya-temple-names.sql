@@ -103,9 +103,10 @@ CREATE TABLE IF NOT EXISTS sampradayas (
     created_at      TIMESTAMPTZ NOT NULL DEFAULT timezone('UTC', now())
 );
 
+-- variant_label is defined on krithi_lyric_variants by V02; only sampradaya_id is added here
+-- (its FK target, sampradayas, is created just above).
 ALTER TABLE krithi_lyric_variants
-    ADD COLUMN IF NOT EXISTS sampradaya_id UUID REFERENCES sampradayas(id),
-    ADD COLUMN IF NOT EXISTS variant_label TEXT;   -- human-readable fallback
+    ADD COLUMN IF NOT EXISTS sampradaya_id UUID REFERENCES sampradayas(id);
 
 
 -- 4️⃣ Temple Names (Multilingual + Aliases)

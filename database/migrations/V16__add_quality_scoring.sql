@@ -1,9 +1,9 @@
 -- TRACK-011: Add quality scoring columns to imported_krithis
 -- Quality scores enable review prioritization, auto-approval automation, and data quality assessment
 
+-- Note: quality_score and quality_tier are created earlier by V15 (quality_tier as
+-- quality_tier_enum); only the four scoring columns unique to this migration are added here.
 ALTER TABLE imported_krithis
-    ADD COLUMN IF NOT EXISTS quality_score DECIMAL(3,2),
-    ADD COLUMN IF NOT EXISTS quality_tier VARCHAR(20),
     ADD COLUMN IF NOT EXISTS completeness_score DECIMAL(3,2),
     ADD COLUMN IF NOT EXISTS resolution_confidence DECIMAL(3,2),
     ADD COLUMN IF NOT EXISTS source_quality DECIMAL(3,2),

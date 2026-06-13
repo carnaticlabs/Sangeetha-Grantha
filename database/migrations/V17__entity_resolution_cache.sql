@@ -1,17 +1,8 @@
 -- TRACK-013: Database-backed Entity Resolution Cache
--- Migration 17: Add entity_resolution_cache table for persistent caching
-
-CREATE TABLE IF NOT EXISTS entity_resolution_cache (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    entity_type VARCHAR(50) NOT NULL,
-    raw_name TEXT NOT NULL,
-    normalized_name TEXT NOT NULL,
-    resolved_entity_id UUID NOT NULL,
-    confidence INTEGER NOT NULL CHECK (confidence >= 0 AND confidence <= 100),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('UTC', now()),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT timezone('UTC', now()),
-    UNIQUE(entity_type, normalized_name)
-);
+-- Migration 17: indexes + documentation for entity_resolution_cache.
+--
+-- The table itself is created earlier by V15; its column shape is reconciled by V30/V32.
+-- This migration adds the lookup/invalidation indexes and column documentation.
 
 -- Index for fast lookups by entity_type and normalized_name (primary use case)
 CREATE INDEX idx_entity_cache_lookup
