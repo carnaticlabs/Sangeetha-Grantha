@@ -67,6 +67,3 @@ BEGIN
     RETURN result;
 END;
 $$;
-
--- migrate:down
-DROP FUNCTION IF EXISTS strip_diacritics(TEXT);

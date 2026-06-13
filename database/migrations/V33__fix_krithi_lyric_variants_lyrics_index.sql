@@ -11,8 +11,3 @@ DROP INDEX IF EXISTS idx_krithi_lyric_variants_lyrics;
 -- Keep a bounded exact-match index if needed for dedupe/debug workflows.
 CREATE INDEX IF NOT EXISTS idx_krithi_lyric_variants_lyrics_md5
   ON krithi_lyric_variants (md5(lyrics));
-
--- migrate:down
-DROP INDEX IF EXISTS idx_krithi_lyric_variants_lyrics_md5;
-CREATE INDEX IF NOT EXISTS idx_krithi_lyric_variants_lyrics
-  ON krithi_lyric_variants (lyrics);

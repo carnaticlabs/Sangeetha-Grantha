@@ -47,23 +47,3 @@ CREATE TABLE IF NOT EXISTS entity_resolution_cache (
 
 CREATE INDEX IF NOT EXISTS idx_entity_cache_type_name 
     ON entity_resolution_cache(entity_type, normalized_name);
-
--- migrate:down
-DROP INDEX IF EXISTS idx_entity_cache_type_name;
-DROP TABLE IF EXISTS entity_resolution_cache;
-
-ALTER TABLE imported_krithis 
-    DROP COLUMN IF EXISTS processing_errors,
-    DROP COLUMN IF EXISTS quality_tier,
-    DROP COLUMN IF EXISTS quality_score,
-    DROP COLUMN IF EXISTS entity_mapping_confidence,
-    DROP COLUMN IF EXISTS extraction_confidence,
-    DROP COLUMN IF EXISTS csv_raga,
-    DROP COLUMN IF EXISTS csv_krithi_name,
-    DROP COLUMN IF EXISTS csv_row_number;
-
-ALTER TABLE import_batch
-    DROP COLUMN IF EXISTS error_summary,
-    DROP COLUMN IF EXISTS composer_context;
-
--- Note: Enum types are generally not dropped in down migrations to avoid breaking dependencies.
