@@ -77,7 +77,7 @@ bun install
 - **Database Migrations:**
 ```bash
   make migrate      # Run pending migrations
-  make db-reset     # Drop → create → migrate → seed
+  make db-reset     # Drop → create → Flyway migrate (schema V__ + reference data R__)
 ```
 
 ### 4.2 The Conductor System
@@ -90,7 +90,7 @@ All work MUST be tracked via the Conductor system located in the `conductor/` di
 **Flyway is the only migration engine** ([ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)). Never use Liquibase, ad-hoc SQL executors, or custom migration runners.
 - All migrations live in `database/migrations/` (`VNN__description.sql`).
 - Run migrations via: `make migrate`
-- Reset the DB (Drop + Create + Migrate + Seed) via: `make db-reset`
+- Reset the DB (Drop → Create → Flyway migrate, which applies schema + `R__` reference data) via: `make db-reset`
 - Reference seed data ships as Flyway repeatable migrations (`R__seed_*.sql`); dev sample data via `make seed-dev`.
 - History: Rust CLI (ADR-003) → Python `db-migrate` (ADR-010) → Flyway (ADR-013) — the SQL files survived every transition.
 

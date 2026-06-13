@@ -154,7 +154,11 @@
 
 ### Migration Tool
 
-Migrations are standardized on **Flyway Community** ([ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)); record the adopted Flyway version here at cutover. The previous Python tool (`tools/db-migrate`, psycopg `>=3.1`) is superseded and pending archival.
+| Component | Version | Notes |
+|---------|---------|---------|
+| Flyway Community | `12.8.1` | Single migration engine ([ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)). Make/dev/CI via `flyway/flyway:12.8.1-alpine`; Kotlin Testcontainers via the Flyway JVM API. Pinned in `gradle/libs.versions.toml` (`flyway`) and `compose.yaml`. |
+
+Migrations are standardized on **Flyway Community** ([ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)). The previous Python tool (`tools/db-migrate`, psycopg `>=3.1`) is superseded and pending archival (TRACK-110 Sub-part B).
 
 ---
 

@@ -19,9 +19,10 @@ This is a Carnatic Music Krithi Analyser project using: Kotlin backend (Exposed 
 make dev            # Full stack via Docker Compose (DB + Backend + Frontend + Extraction)
 make dev-down       # Stop dev stack
 make db             # Start database only
-make db-reset       # Drop → create → migrate
-make seed           # Seed reference data
-make migrate        # Run pending migrations
+make db-reset       # Drop → create → Flyway migrate (schema V__ + reference data R__)
+make seed-dev       # Dev-only sample content (reference data now ships via R__ repeatables)
+make migrate        # Run pending migrations (Flyway)
+make bootstrap-admin # Provision the admin user (argon2id); needs ADMIN_EMAIL / ADMIN_PASSWORD
 make test           # Backend tests
 make test-frontend  # Frontend tests
 make clean          # Remove all containers and volumes
