@@ -1,7 +1,7 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Not Started |
-| **Version** | 1.0.0 |
+| **Status** | Completed |
+| **Version** | 1.1.0 |
 | **Last Updated** | 2026-06-13 |
 | **Author** | Sangeetha Grantha Team |
 | **Priority** | P1 — do before CI activation |
@@ -22,19 +22,19 @@ North-star finding N8: stray vendored trees and build/log artifacts at root, a t
 
 ## Implementation Plan
 
-- [ ] Remove stray vendored trees at root: `org/jetbrains/...`, `Users/seshadri/...` (accidental IDE copies).
-- [ ] Remove build/log artifacts at root: `backend.log`, `out.log`, `*_logs.txt`, `sangita_extraction_logs.txt`, `worker.log`.
-- [ ] **Rotate** the `ADMIN_TOKEN` in tracked `tools/sangita-cli-archived/.env`; purge the value from the tracked file (rotate on principle even though the CLI is archived).
-- [ ] Harden `.gitignore` (logs, `.env`, IDE trees, build outputs) so these cannot recur.
-- [ ] Consolidate the four agent-instruction files (AGENTS/CODEX/GEMINI/GOOSE.md) into pointers to `CLAUDE.md` to prevent silent drift — or confirm out of scope and defer.
-- [ ] Quick `gitleaks`/grep pass to confirm no other secrets are tracked.
+- [x] Removed stray vendored tree `org/jetbrains/...` (4 tracked `.kt` + `.DS_Store`, accidental IDE copy). `Users/seshadri/...` was an empty, untracked dir — removed from disk only.
+- [x] Removed working-dir log clutter (`backend.log`, `out.log`, `backend_test.log`, `old_krithi_editor.log`, `*_logs.txt`). **Note:** these were already gitignored and never tracked — disk housekeeping, not a repo purge.
+- [x] `tools/sangita-cli-archived/.env`: untracked via `git rm --cached` and scrubbed the literal to `<set-via-env-or-secrets-manager>`. **Note:** the value was `dev-admin-token` — the public dev default (also in ~8 docs/examples), not a live secret; purged on principle to keep secret scanners quiet.
+- [x] Hardened `.gitignore`: added root-anchored guards `/org/ /com/ /net/ /io/ /Users/` (these roots are always accidental IDE copies; real source lives under `modules/`). Logs/`.env`/IDE/build were already covered. Removed the confusing self-referential `.gitignore` entry.
+- [~] **Deferred** the AGENTS/CODEX/GEMINI/GOOSE.md consolidation — editorial change, zero CI/secret-scan value, and the files carry tool-specific content (Gemini/Goose persona sections) that needs a considered pass, not a bundled hygiene commit. Spun out as a separate task.
+- [x] Secret pass (grep — `gitleaks` not installed): private-key/AWS/GCP/GitHub/Slack/OpenAI-token/JWT and generic `secret|password|token|api_key` patterns over all tracked files. **No real secrets tracked**; only `dev-admin-token` defaults and `<placeholder>` refs remain.
 
 ## Acceptance Criteria
 
-- Clean repository root (no stray trees, no log artifacts).
-- `ADMIN_TOKEN` rotated and purged from the tracked file.
-- Hardened `.gitignore`.
-- (Optional) single agent-instruction source.
+- [x] Clean repository root (no stray trees, no log artifacts).
+- [x] `ADMIN_TOKEN` purged from the (now-untracked) file; verified no non-example `.env` is tracked.
+- [x] Hardened `.gitignore` with recurrence guards.
+- [~] Single agent-instruction source — deferred to a follow-up task.
 
 ## References
 

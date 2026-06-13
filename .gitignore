@@ -40,9 +40,16 @@ gradlew
 **/node_modules/**
 **/dist/**
 
+# Accidental vendored package trees copied to repo root by IDEs (TRACK-115).
+# All real source lives under modules/ — these roots are always mistakes.
+/org/
+/com/
+/net/
+/io/
+/Users/
+
 build_log*.txt
 build_log_final.txt
-.gitignore
 **/*Cargo.lock
 tools/sangita-cli/Cargo.lock
 # Env and secrets – keep out of repo; set values via system env or config/local.env (gitignored)
