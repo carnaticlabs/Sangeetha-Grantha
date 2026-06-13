@@ -30,6 +30,9 @@ jsoup = "1.22.1"
 caffeine = "3.2.3"
 password4j = "1.8.2"
 
+# Migrations (ADR-013 / TRACK-110). Testcontainers + JUnit added in Sub-part B.
+flyway = "12.8.1"
+
 [plugins]
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

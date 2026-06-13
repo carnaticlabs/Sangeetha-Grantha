@@ -15,26 +15,49 @@ services:
       timeout: 5s
       retries: 5
 
-  # Run migrations before any app service starts
+  # Run migrations before any app service starts (Flyway Community, ADR-013 / TRACK-110).
+  # Applies V__ versioned schema + R__ repeatable reference data from one location.
   migrate:
     profiles: [ "dev", "prod" ]
-    image: python:3.14-slim
+    image: flyway/flyway:12.8.1-alpine
+    command: migrate
+    environment:
+      FLYWAY_URL: jdbc:postgresql://db:5432/sangita_grantha
+      FLYWAY_USER: postgres
+      FLYWAY_PASSWORD: postgres
+      FLYWAY_LOCATIONS: filesystem:/flyway/sql
+      FLYWAY_BASELINE_ON_MIGRATE: "false"
+      FLYWAY_VALIDATE_MIGRATION_NAMING: "true"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./database/migrations:/flyway/sql:ro
+
+  # One-shot admin provisioning (argon2id). Not in the default dev stack: requires ADMIN_PASSWORD.
+  # Run via the `bootstrap` profile, e.g. `ADMIN_PASSWORD=... docker compose --profile bootstrap run --rm bootstrap-admin`.
+  bootstrap-admin:
+    profiles: [ "bootstrap" ]
+    image: eclipse-temurin:25-jdk
     working_dir: /app
-    command: >
-      sh -c "pip install -q 'psycopg[binary]>=3.1.0' && python -m db_migrate migrate"
+    command: ./gradlew :modules:backend:api:bootstrapAdmin --no-daemon
     environment:
       DB_HOST: db
       DB_PORT: 5432
       DB_NAME: sangita_grantha
       DB_USER: postgres
       DB_PASSWORD: postgres
-      PYTHONPATH: /app/tools/db-migrate
+      GRADLE_USER_HOME: /gradle-cache
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@sangitagrantha.org}
+      # Left empty by default so the whole compose file still parses for unrelated commands;
+      # BootstrapAdmin fails fast if ADMIN_PASSWORD is blank.
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
     depends_on:
-      db:
-        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     volumes:
-      - ./tools/db-migrate:/app/tools/db-migrate:ro
-      - ./database/migrations:/app/database/migrations:ro
+      - .:/app
+      - gradle-cache:/gradle-cache
 
   # Dev backend: mounts source + Gradle cache, runs via gradlew (fast incremental builds)
   backend:

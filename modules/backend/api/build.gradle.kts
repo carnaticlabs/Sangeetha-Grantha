@@ -124,3 +124,13 @@ tasks.register<JavaExec>("seedDatabase") {
     systemProperty("io.ktor.development", "true")
     workingDir = rootProject.projectDir
 }
+
+// First-run admin provisioning (TRACK-110). Reads ADMIN_EMAIL / ADMIN_PASSWORD from the
+// environment and upserts the admin user with an argon2id hash via PasswordHasher (TRACK-114).
+tasks.register<JavaExec>("bootstrapAdmin") {
+    group = "application"
+    description = "Provision/update the admin user (argon2id) from ADMIN_EMAIL / ADMIN_PASSWORD"
+    classpath = sourceSets.main.get().runtimeClasspath
+    mainClass.set("com.sangita.grantha.backend.api.tools.BootstrapAdminKt")
+    workingDir = rootProject.projectDir
+}
