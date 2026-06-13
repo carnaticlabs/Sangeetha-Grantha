@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.4.0 |
-| **Last Updated** | 2026-06-06 |
+| **Version** | 1.5.0 |
+| **Last Updated** | 2026-06-13 |
 | **Author** | Sangeetha Grantha Team |
 
 # Conductor Tracks Registry
@@ -22,7 +22,7 @@
 | [TRACK-011](./tracks/TRACK-011-bulk-import-quality-scoring-system.md) | Bulk Import Quality Scoring System | Completed |
 | [TRACK-012](./tracks/TRACK-012-bulk-import-review-workflow-completion.md) | Bulk Import Review Workflow Completion | Completed |
 | [TRACK-013](./tracks/TRACK-013-bulk-import-performance-scalability.md) | Bulk Import Performance & Scalability Improvements | Completed |
-| [TRACK-014](./tracks/TRACK-014-bulk-import-testing-quality-assurance.md) | Bulk Import Testing & Quality Assurance | Deferred |
+| [TRACK-014](./tracks/TRACK-014-bulk-import-testing-quality-assurance.md) | Bulk Import Testing & Quality Assurance | Superseded |
 | [TRACK-015](./tracks/TRACK-015-ktor-upgrade-3.4.0.md) | Ktor Upgrade to 3.4.0 | Completed |
 | [TRACK-016](./tracks/TRACK-016-exposed-upgrade-1.0.0.md) | Exposed Upgrade to 1.0.0 | Completed |
 | [TRACK-017](./tracks/TRACK-017-doc-dependency-update.md) | Documentation Dependency Updates | Completed |
@@ -43,7 +43,7 @@
 | [TRACK-032](./tracks/TRACK-032-multi-language-lyric-extraction-analysis.md) | Multi-Language Lyric Extraction from Web Sources | Completed |
 | [TRACK-033](./tracks/TRACK-033-cli-docs-command.md) | Sangita CLI – Docs Command | Completed |
 | [TRACK-034](./tracks/TRACK-034-fix-text-blocker-parsing.md) | Fix TextBlocker Section Parsing | Completed |
-| [TRACK-035](./tracks/TRACK-035-frontend-e2e-testing.md) | Frontend E2E Testing with Playwright | Deferred |
+| [TRACK-035](./tracks/TRACK-035-frontend-e2e-testing.md) | Frontend E2E Testing with Playwright | Not Started |
 | [TRACK-036](./tracks/TRACK-036-enhanced-text-blocker-extraction.md) | Enhanced TextBlocker Extraction Strategy | Completed |
 | [TRACK-037](./tracks/TRACK-037-environment-variables.md) | Environment Variables & Config Standardisation | Completed |
 | [TRACK-038](./tracks/TRACK-038-dependency-updates-feb-2026.md) | Dependency Updates (Feb 2026) | Completed |
@@ -96,10 +96,10 @@
 | [TRACK-090](./tracks/TRACK-090-audit-log-display-fix.md) | Audit Log Display Fix — DTO Alignment & Actor Resolution | Completed |
 | [TRACK-091](./tracks/TRACK-091-comprehensive-raga-reference-data.md) | Comprehensive Raga Reference Data | Completed |
 | [TRACK-092](./tracks/TRACK-092-raga-tree-grid-ui.md) | Raga Tree-Grid UI with Melakarta Hierarchy | Completed |
-| [TRACK-093](./tracks/TRACK-093-trinity-krithi-bulk-import.md) | Trinity Krithi Bulk Import (Dikshitar, Syama Sastri, Thyagaraja) | In Progress |
+| [TRACK-093](./tracks/TRACK-093-trinity-krithi-bulk-import.md) | Trinity Krithi Bulk Import (Dikshitar, Syama Sastri, Thyagaraja) | Paused |
 | [TRACK-094](./tracks/TRACK-094-lyric-persistence-fix-backfill.md) | Lyric Persistence Fix & Backfill (CanonicalExtractionDto Support) | Completed |
 | [TRACK-095](./tracks/TRACK-095-import-pipeline-test-validation.md) | Import Pipeline End-to-End Testing & Validation | Completed |
-| [TRACK-096](./tracks/TRACK-096-payload-format-convergence.md) | Payload Format Convergence — Deprecate ScrapedKrithiMetadata | In Progress |
+| [TRACK-096](./tracks/TRACK-096-payload-format-convergence.md) | Payload Format Convergence — Deprecate ScrapedKrithiMetadata | Paused |
 | [TRACK-097](./tracks/TRACK-097-guru-guha-blog-source-adapter.md) | Guru-Guha Blog Source Adapter — Fix Extraction & Lyrics | Completed |
 | [TRACK-098](./tracks/TRACK-098-agent-workflow-additions.md) | Agent Workflow Additions & Tooling Cleanup | Completed |
 | [TRACK-099](./tracks/TRACK-099-backend-compiler-warning-cleanup.md) | Backend Compiler Warning Cleanup — Zero Warnings Target | Completed |
@@ -113,6 +113,15 @@
 | [TRACK-107](./tracks/TRACK-107-ai-platform-lifecycle-uplift.md) | AI Platform Lifecycle Uplift (SDK + Model + Structured Output + Batch) | Completed |
 | [TRACK-108](./tracks/TRACK-108-semantic-search.md) | Semantic Search (Embeddings + pgvector) | Not Started |
 | [TRACK-109](./tracks/TRACK-109-production-readiness-roadmap.md) | Production Readiness Roadmap (Epic) | Not Started |
+| [TRACK-110](./tracks/TRACK-110-testcontainers-flyway-cutover.md) | Testcontainers Substrate + Flyway Cutover | Not Started |
+| [TRACK-111](./tracks/TRACK-111-dal-suite-ci-activation.md) | DAL Test Suite + CI Activation | Not Started |
+| [TRACK-112](./tracks/TRACK-112-money-path-scenarios.md) | Money-Path Service & API Scenarios | Not Started |
+| [TRACK-113](./tracks/TRACK-113-worker-e2e-tests.md) | Worker + E2E Layer (revives TRACK-035) | Not Started |
+| [TRACK-114](./tracks/TRACK-114-password-hashing.md) | Authentication Hardening — Password Hashing (N1) | Not Started |
+| [TRACK-115](./tracks/TRACK-115-repo-hygiene-secret-rotation.md) | Repository Hygiene & Secret Rotation (N8) | Not Started |
+| [TRACK-116](./tracks/TRACK-116-versioned-canon-spike.md) | Versioned Canon — Architecture Spike + ADR-014 (N5) | Not Started |
+| [TRACK-117](./tracks/TRACK-117-versioned-canon-implementation.md) | Versioned Canon — Implementation + Re-Import (N5) | Not Started |
+| [TRACK-118](./tracks/TRACK-118-frontend-component-tests.md) | Frontend Component Tests (Vitest) | Not Started |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)

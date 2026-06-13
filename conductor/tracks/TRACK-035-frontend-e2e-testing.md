@@ -1,6 +1,6 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Deferred |
+| **Status** | Not Started |
 | **Version** | 1.1.0 |
 | **Last Updated** | 2026-02-03 |
 | **Author** | Antigravity |

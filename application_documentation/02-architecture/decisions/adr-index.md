@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.2.0 |
-| **Last Updated** | 2026-03-10 |
+| **Version** | 1.4.0 |
+| **Last Updated** | 2026-06-12 |
 | **Author** | Sangeetha Grantha Team |
 
 ---
@@ -23,9 +23,11 @@
 | ADR-007 | Exposed ORM Selection (Kotlin DSL) | Accepted | 2026-01-27 | [ADR-007-exposed-orm-selection.md](./ADR-007-exposed-orm-selection.md) |
 | ADR-008 | Dependency Injection with Koin | Accepted | 2026-01-27 | [ADR-008-dependency-injection-koin.md](./ADR-008-dependency-injection-koin.md) |
 | ADR-009 | Bulk Import Orchestration Architecture | Accepted | 2026-01-27 | [ADR-009-bulk-import-orchestration.md](./ADR-009-bulk-import-orchestration.md) |
-| ADR-010 | Migration Tool Course Correction — Rust CLI to Python db-migrate + Makefile | Accepted | 2026-03-10 | [ADR-010-migration-tool-course-correction.md](./ADR-010-migration-tool-course-correction.md) |
+| ADR-010 | Migration Tool Course Correction — Rust CLI to Python db-migrate + Makefile | **Superseded** by ADR-013 | 2026-03-10 | [ADR-010-migration-tool-course-correction.md](./ADR-010-migration-tool-course-correction.md) |
 | ADR-011 | PostgreSQL 18 Upgrade with UUID v7 Adoption | Accepted | 2026-03-10 | [ADR-011-postgresql-18-uuid-v7.md](./ADR-011-postgresql-18-uuid-v7.md) |
 | ADR-012 | Unified Extraction Architecture — Python as Single Source of Truth | Accepted | 2026-03-10 | [ADR-012-unified-extraction-architecture.md](./ADR-012-unified-extraction-architecture.md) |
+| ADR-013 | Database Migrations with Flyway — Standardizing the Migration Engine | Accepted | 2026-06-12 | [ADR-013-db-migration-with-flyway.md](./ADR-013-db-migration-with-flyway.md) |
+| ADR-014 | Versioned Canon & Provenance Graph | Draft | 2026-06-13 | [ADR-014-versioned-canon.md](./ADR-014-versioned-canon.md) |
 
 ## How to Propose a New ADR
 

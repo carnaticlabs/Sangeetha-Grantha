@@ -1,6 +1,6 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | In Progress |
+| **Status** | Paused |
 | **Version** | 1.2.0 |
 | **Last Updated** | 2026-03-13 |
 | **Author** | Sangeetha Grantha Team |
