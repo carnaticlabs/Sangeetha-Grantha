@@ -25,12 +25,13 @@ See [Integration Tests Approach](../../application_documentation/07-quality/inte
 ## Implementation Plan
 
 ### Sub-part A — Flyway cutover (critical path, during the D2 freeze)
-- [ ] Scripted rename `NN__desc.sql` → `VNN__desc.sql` for all 43 files; strip `-- migrate:down` sections (single content-free commit).
-- [ ] Wire Flyway **Docker image** (`flyway/flyway`, version pinned in `compose.yaml` + `gradle/libs.versions.toml`) into `make migrate`, `make migrate-status`, `make db-reset` (D14).
-- [ ] Seed tiering (D15): carve admin user out of `01_reference_data.sql`; convert `01`(−admin)/`03`/`04`/`05` → `R__seed_*.sql` repeatable migrations (idempotent `ON CONFLICT`); `02_sample_data.sql` → `make seed-dev` only.
-- [ ] Admin-user bootstrap: env-driven first-run script producing an **argon2id** hash via the TRACK-114 helper.
-- [ ] Baseline existing dev DBs: `flyway baseline -baselineVersion=43`; rehearse on a Testcontainers instance restored from a dev dump first.
-- [ ] Drop legacy `schema_migrations` / `_sqlx_migrations` after **one verified `make db-reset`** cycle (D16).
+- [x] Scripted rename `NN__desc.sql` → `VNN__desc.sql` for all 43 files; strip `-- migrate:down` sections. **Split into two commits** (per review): a content-free rename + comment-only-down strip, then a behavioural fix removing *live* down-SQL from 5 files (V14/V15/V33/V36/V37) — these silently reverted their up-migrations under the old whole-file Python executor (most critically V37, which reset all `uuidv7()` defaults to `gen_random_uuid()`). Verified: post-reset id defaults are `uuidv7()`.
+- [x] Wire Flyway **Docker image** (`flyway/flyway:12.8.1-alpine`, pinned in `compose.yaml` + `gradle/libs.versions.toml`) into `make migrate`, `make migrate-status` (→ `flyway info`), `make db-reset` (D14).
+- [x] Seed tiering (D15): admin carved out of `R__seed_01_reference.sql`; `01`(−admin)/`03`/`04`/`05` → `R__seed_0N_*.sql` repeatables (alphabetical = FK order); `02_sample_data.sql` → `make seed-dev`. Verified: reference data populates via `flyway migrate` (ragas=972, aliases=5, …), `users=0` pre-bootstrap.
+- [x] Admin-user bootstrap: `tools/BootstrapAdmin.kt` + `bootstrapAdmin` Gradle task + `make bootstrap-admin` + `bootstrap` compose service; argon2id via `PasswordHasher` (TRACK-114). Verified: idempotent, hash is `$argon2id$…` (len 161), role bound, secret never logged.
+- [x] Baseline rehearsal: **no populated dev DB exists** (both local pgdata volumes held only an empty default cluster — audited), so there is nothing to baseline/reconcile locally; the from-scratch `flyway migrate` is the real path. Baseline procedure (`flyway baseline -baselineVersion=43`, rehearse on a dump-restored Testcontainers instance) documented in `04-database/migrations.md` §5 for any real long-lived DB.
+- [x] *(bridge)* `MigrationRunner` patched to tolerate `VNN__` / skip `R__` so the existing integration suite stays green during the A→B window (deleted outright in Sub-part B). Verified: `ImportRoutesTest` passes.
+- [ ] **GATED on your verified `make db-reset` sign-off (D16):** drop legacy `schema_migrations` / `_sqlx_migrations` (neither exists in a fresh DB; this covers any retained DB). First step of Sub-part B.
 
 ### Sub-part B — Testcontainers test substrate (not on import critical path)
 - [ ] Add Testcontainers BOM + `postgresql` + `junit-jupiter` to `libs.versions.toml`; wire into `dal` and `api` test classpaths.
