@@ -68,6 +68,7 @@
 |---------|---------|---------|
 | JWT (Auth0) | `4.5.0` | JWT token handling |
 | Google Auth | `1.41.0` | OAuth2 (future SSO) |
+| password4j | `1.8.2` | argon2id password hashing (TRACK-114) |
 
 ### Build & Packaging
 

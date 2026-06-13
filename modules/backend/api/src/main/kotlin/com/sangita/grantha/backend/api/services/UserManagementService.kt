@@ -2,6 +2,7 @@ package com.sangita.grantha.backend.api.services
 
 import com.sangita.grantha.backend.api.models.UserCreateRequest
 import com.sangita.grantha.backend.api.models.UserUpdateRequest
+import com.sangita.grantha.backend.api.support.PasswordHasher
 import com.sangita.grantha.backend.dal.SangitaDal
 import com.sangita.grantha.backend.dal.support.toKotlinUuid
 import com.sangita.grantha.shared.domain.model.UserDto
@@ -35,8 +36,7 @@ class UserManagementService(private val dal: SangitaDal) {
      * Create a user and assign initial roles.
      */
     suspend fun createUser(request: UserCreateRequest): UserDto {
-        // TODO: Implement password hashing (e.g., using bcrypt)
-        val passwordHash = request.password?.let { hashPassword(it) }
+        val passwordHash = request.password?.let { PasswordHasher.hash(it) }
         
         val created = dal.users.create(
             email = request.email,
@@ -66,8 +66,7 @@ class UserManagementService(private val dal: SangitaDal) {
      * Update an existing user.
      */
     suspend fun updateUser(id: Uuid, request: UserUpdateRequest): UserDto? {
-        // TODO: Implement password hashing (e.g., using bcrypt)
-        val passwordHash = request.password?.let { hashPassword(it) }
+        val passwordHash = request.password?.let { PasswordHasher.hash(it) }
         
         val updated = dal.users.update(
             id = id,
@@ -139,10 +138,4 @@ class UserManagementService(private val dal: SangitaDal) {
      * Fetch role assignments for a user.
      */
     suspend fun getUserRoles(userId: Uuid): List<RoleAssignmentDto> = dal.users.getUserRoles(userId)
-
-    private fun hashPassword(password: String): String {
-        // TODO: Implement proper password hashing (e.g., bcrypt)
-        // For now, return as-is (NOT SECURE - must be implemented before production)
-        return password
-    }
 }

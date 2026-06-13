@@ -1,7 +1,7 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Not Started |
-| **Version** | 1.0.0 |
+| **Status** | Completed |
+| **Version** | 2.0.0 |
 | **Last Updated** | 2026-06-13 |
 | **Author** | Sangeetha Grantha Team |
 | **Priority** | P0 — Blocker (north-star N1) |
@@ -9,41 +9,43 @@
 | **Decisions** | D3 ([decision log](../../application_documentation/north-star-production-readiness-decision.md)) |
 | **Depends on** | none |
 | **Blocks** | TRACK-110 (admin-user bootstrap hash) |
+| **Split out to** | [TRACK-119](./TRACK-119-oauth-otp-auth.md) (interactive login, rehash-on-login wiring, throttling, shared-token/roles fix) |
 
 # TRACK-114: Authentication Hardening — Password Hashing (N1)
 
 ## Goal
 
-Replace the plaintext `hashPassword()` (`UserManagementService.kt:143`, currently returns its input verbatim with a `// NOT SECURE` TODO) with **argon2id**, using **transparent rehash-on-next-login**. Closes the single most dangerous finding in the north-star evaluation. Estimated ~1 day; execute first.
+Replace the plaintext `hashPassword()` (`UserManagementService.kt:143`, returned its input verbatim with a `// NOT SECURE` TODO) with **argon2id**, so **no password is stored in plaintext at rest**, and expose a shared `PasswordHasher` helper that TRACK-110's admin bootstrap reuses. Estimated ~0.5 day; execute first.
+
+> **Re-scoped 2026-06-13.** Investigation found that login does **not** verify a password — `POST /v1/auth/token` ([AuthRoutes.kt](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/AuthRoutes.kt)) is gated by a shared `ADMIN_TOKEN` and issues a JWT with caller-supplied `roles`, checking no credential. The N1 framing ("JWT issuance sits on top of plaintext credentials") therefore does not match the code, and the real escalation risk is the shared-token + self-assigned-roles path. Given the chosen future direction is **passwordless (OAuth/OTP)**, a full password-login flow would be throwaway work. This track is scoped to *securing the hash at rest only*; **interactive login, rehash-on-login wiring, login throttling, and the shared-token / caller-roles fix are split out to [TRACK-119](./TRACK-119-oauth-otp-auth.md)**. See [[auth-future-direction]].
 
 ## Context
 
-North-star finding N1 (Blocker): JWT issuance and role claims sit on top of credentials stored in plaintext at rest. There is also no login throttling or lockout. For a single-curator dev system this has been survivable; it must be fixed before any non-localhost deployment. Decision D3 selected **argon2id + rehash-on-login** (low ceremony for a single curator).
+North-star finding N1 (Blocker): credentials stored in plaintext at rest. Decision D3 selected **argon2id**. The shared `PasswordHasher` also ships `verifyAllowingLegacy` (returns a `needsRehash` flag) so the future interactive login (TRACK-119) can do rehash-on-login without redesign — but nothing verifies passwords today, so that path is intentionally dormant.
 
 ## Implementation Plan
 
-### Phase 1 — Hashing
-- [ ] Add an argon2id-capable library to `gradle/libs.versions.toml` (Critical Rule #2 — no hardcoded versions). Evaluate `password4j` (argon2id + bcrypt, simple API) vs `de.mkammerer:argon2-jvm`.
-- [ ] Implement `hashPassword` / `verifyPassword` with argon2id; document chosen cost parameters (memory, iterations, parallelism).
-- [ ] Expose a small shared helper so the login path **and** the admin bootstrap (TRACK-110 / D15) produce identical hash format.
+### Phase 1 — Hashing (done)
+- [x] Added `password4j` 1.8.2 to `gradle/libs.versions.toml` (chosen over `de.mkammerer:argon2-jvm` for the cleaner API; Critical Rule #2).
+- [x] Implemented `PasswordHasher.hash` / `verify` with argon2id; cost params documented (m=19456 KiB, t=2, p=1, 32-byte hash — OWASP minimum) in `support/PasswordHasher.kt`.
+- [x] Helper is a shared `object` (not private) so login and the TRACK-110 admin bootstrap (D15) produce identical PHC-format hashes.
+- [x] Replaced the plaintext `hashPassword` in `UserManagementService.createUser` / `updateUser`.
 
-### Phase 2 — Transparent migration
-- [ ] Detect legacy (plaintext) credentials safely (format/marker check).
-- [ ] Rehash-on-login: on successful auth against a legacy record, transparently re-store as argon2id.
+### Phase 2 — Tests (done)
+- [x] Unit tests: hash ≠ plaintext; random-salt uniqueness; verify roundtrip; wrong-password rejection; legacy-plaintext detection; `verifyAllowingLegacy` rehash-flag paths.
 
-### Phase 3 — Abuse controls
-- [ ] Add login throttling / basic lockout (N1 also flags no login rate limiting).
-- [ ] AUDIT_LOG entry on password change / rehash (Critical Rule #3).
-
-### Phase 4 — Tests
-- [ ] Unit tests: hash ≠ plaintext; verify roundtrip; rehash path; wrong-password rejection; throttling trips.
+### Deferred to TRACK-119 (interactive auth)
+- [ ] Rehash-on-login wiring (helper ready via `verifyAllowingLegacy`; no login verifies a password yet).
+- [ ] Login throttling / lockout; AUDIT_LOG on auth events.
+- [ ] Stop honoring caller-supplied `roles`; retire the shared `ADMIN_TOKEN` login exchange.
 
 ## Acceptance Criteria
 
-- No plaintext password at rest.
-- Existing curator logs in without a manual reset (rehash-on-login works).
-- Login throttling demonstrable.
-- Tests green.
+- [x] No plaintext password at rest.
+- [x] Tests green.
+- [x] Shared hash helper available for the TRACK-110 admin bootstrap.
+- ~~Existing curator logs in without a manual reset (rehash-on-login)~~ → TRACK-119 (no password login exists today).
+- ~~Login throttling demonstrable~~ → TRACK-119.
 
 ## Docs to Update
 

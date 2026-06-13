@@ -117,11 +117,12 @@
 | [TRACK-111](./tracks/TRACK-111-dal-suite-ci-activation.md) | DAL Test Suite + CI Activation | Not Started |
 | [TRACK-112](./tracks/TRACK-112-money-path-scenarios.md) | Money-Path Service & API Scenarios | Not Started |
 | [TRACK-113](./tracks/TRACK-113-worker-e2e-tests.md) | Worker + E2E Layer (revives TRACK-035) | Not Started |
-| [TRACK-114](./tracks/TRACK-114-password-hashing.md) | Authentication Hardening — Password Hashing (N1) | Not Started |
+| [TRACK-114](./tracks/TRACK-114-password-hashing.md) | Authentication Hardening — Password Hashing (N1, re-scoped) | Completed |
 | [TRACK-115](./tracks/TRACK-115-repo-hygiene-secret-rotation.md) | Repository Hygiene & Secret Rotation (N8) | Not Started |
 | [TRACK-116](./tracks/TRACK-116-versioned-canon-spike.md) | Versioned Canon — Architecture Spike + ADR-014 (N5) | Not Started |
 | [TRACK-117](./tracks/TRACK-117-versioned-canon-implementation.md) | Versioned Canon — Implementation + Re-Import (N5) | Not Started |
 | [TRACK-118](./tracks/TRACK-118-frontend-component-tests.md) | Frontend Component Tests (Vitest) | Not Started |
+| [TRACK-119](./tracks/TRACK-119-oauth-otp-auth.md) | Interactive Auth — OAuth / OTP (deferred N1 items) | Not Started |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)

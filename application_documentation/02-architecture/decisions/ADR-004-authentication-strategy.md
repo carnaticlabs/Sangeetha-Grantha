@@ -1,13 +1,21 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-06-13 |
 | **Author** | Sangeetha Grantha Team |
 
 ---
 
 # ADR-004: Authentication Strategy - JWT with Role-Based Access Control
+
+> ## Addendum (v1.2, 2026-06-13) — Password hashing & future direction
+>
+> **Password hashing (TRACK-114):** Local credentials are now hashed with **argon2id** via `password4j` 1.8.2 (`api/.../support/PasswordHasher.kt`; cost params m=19456 KiB / t=2 / p=1 / 32-byte, OWASP minimum). The former plaintext `hashPassword()` is removed — **no password is stored in plaintext at rest**. Hashes are self-describing PHC strings, so the same helper serves the TRACK-110 admin bootstrap and any future credential path.
+>
+> **Known gap (deployment blocker):** `POST /v1/auth/token` is gated only by the shared `ADMIN_TOKEN` and issues a JWT with **caller-supplied `roles`** — it verifies no password and lets a token holder self-assign roles. This is the real N1 escalation risk. **The system must not be deployed beyond localhost until it is closed.**
+>
+> **Future direction:** Authentication will move to **OAuth (Google/Apple)** and/or **OTP (mobile/email)** — passwordless. Interactive login, rehash-on-login, login throttling, and removing caller-supplied roles are tracked in **[TRACK-119](../../../conductor/tracks/TRACK-119-oauth-otp-auth.md)**, which will extend or supersede this ADR.
 
 
 ## Context

@@ -58,6 +58,7 @@ dependencies {
     implementation(libs.commons.csv)
     implementation(libs.jsoup)
     implementation(libs.caffeine)
+    implementation(libs.password4j)
 
     testImplementation(kotlin("test"))
     testImplementation(libs.kotlinx.coroutines.test)
