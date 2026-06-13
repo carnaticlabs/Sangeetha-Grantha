@@ -98,7 +98,7 @@ Carnatic correctness (*lakshana*) — musical forms (KRITHI/VARNAM/SWARAJATHI se
 
 ## Specialist Subagents
 
-Project-specific expert subagents live in `.claude/agents/` and are delegated to on demand (not loaded every turn): `kotlin-backend-engineer`, `postgres-engineer`, `python-engineer`. They defer to this file and the domain model for shared rules and add domain engineering judgment on top.
+Project-specific expert subagents live in `.claude/agents/` and are delegated to on demand (not loaded every turn): `kotlin-backend-engineer`, `postgres-engineer`, `python-engineer`, and `carnatic-musicologist` (reviews krithi *data* for musicological correctness — useful for bulk-import batches). They defer to this file and the domain model for shared rules and add domain judgment on top.
 
 ## Conductor Workflow
 
