@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-06-13 |
 | **Author** | Sangeetha Grantha Team |
 
 # Sangita Grantha Domain Model Overview
@@ -194,7 +194,59 @@ Process:
 
 ---
 
-# 6. Open Questions
+# 6. Musicological Correctness Rules (Lakshana)
+
+These rules encode the musical-domain correctness (*lakshana*) that **all**
+surfaces — data entry, extraction/enrichment, validation, and generated
+SQL/seed data — must respect. They complement the structural model above:
+the schema defines what *can* be stored; these rules define what is
+*musically valid*. Prefer musicological accuracy over convenience — an
+incorrect raga scale or tala anga is a data-quality defect, not a cosmetic one.
+
+## 6.1 Musical Forms
+
+`musical_form_enum` distinguishes `KRITHI`, `VARNAM`, and `SWARAJATHI`; each
+has different structural requirements, so validation must not treat one
+form's sections as another's.
+
+- **Krithi**: Pallavi → Anupallavi (optional) → one or more Charanams. May
+  also carry Chittaswaram, Swara-sahitya, or Madhyamakala sahitya.
+- **Varnam**: requires Pallavi, Anupallavi, **Muktayi Swaram**, the
+  Charanam (pallavi-of-charanam) line, and a set of Chittaswarams (Ettugada
+  swaras). Swara and sahitya are positionally aligned — model the notation
+  via `KrithiNotationVariant` / `KrithiNotationRow`.
+- **Swarajathi**: Pallavi, Anupallavi (optional), and Charanams built on
+  swara passages.
+
+## 6.2 Ragamalika
+
+- A Ragamalika changes raga across sections. Represent the ordered raga
+  sequence via `KrithiRaga` rows (`orderIndex`, optional `section`) and set
+  `Krithi.isRagamalika = true`.
+- A single `primaryRagaId` is insufficient for a ragamalika — never collapse
+  a ragamalika down to one raga.
+
+## 6.3 Notation vs. Lyrics
+
+- Swara notation is modeled **independently** of lyrics
+  (`KrithiNotationVariant` / `KrithiNotationRow`) **except where explicitly
+  aligned** — as in Varnams, where swara and sahitya are positionally tied.
+- Keep `notationType` (SWARA/JATHI) and tala/kalai/eduppu metadata on the
+  notation variant; do not infer them from lyric text.
+
+## 6.4 Raga, Tala & Terminology
+
+- **Ragas**: respect melakarta/janya relationships (`melakartaNumber`,
+  `parentRagaId`, `arohanam`/`avarohanam`). Any generated scale must be valid
+  for the named raga.
+- **Talas**: respect anga structure and beat count (`angaStructure`,
+  `beatCount`); generated tala data must have correct angas.
+- **Terminology**: use correct Sanskrit/Tamil section terms — Pallavi,
+  Anupallavi, Charanam, Chittaswaram, Muktayi Swaram, Madhyamakala.
+
+---
+
+# 7. Open Questions
 
 - **Section Granularity**: Do we need line-level metadata (e.g. for
   mapping specific sahitya phrases to ragas in ragamalika), or are

@@ -92,6 +92,14 @@ modules/
    - `application_documentation/02-architecture/tech-stack.md`
    - `application_documentation/00-onboarding/getting-started.md`
 
+## Musicological Domain Rules
+
+Carnatic correctness (*lakshana*) — musical forms (KRITHI/VARNAM/SWARAJATHI section requirements), Ragamalika, notation-vs-lyrics, and raga/tala/terminology rules — is documented in [Domain Model §6](application_documentation/01-requirements/domain-model.md#6-musicological-correctness-rules-lakshana). Treat it as a correctness contract for data entry, extraction, validation, and any generated SQL/seed data.
+
+## Specialist Subagents
+
+Project-specific expert subagents live in `.claude/agents/` and are delegated to on demand (not loaded every turn): `kotlin-backend-engineer`, `postgres-engineer`, `python-engineer`. They defer to this file and the domain model for shared rules and add domain engineering judgment on top.
+
 ## Conductor Workflow
 
 Work is tracked in `conductor/tracks/TRACK-<ID>-<slug>.md` files. Check `conductor/tracks.md` for active tracks before starting work.
