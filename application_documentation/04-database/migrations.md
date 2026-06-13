@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-03-10 |
+| **Version** | 2.0.0 |
+| **Last Updated** | 2026-06-12 |
 | **Author** | Sangeetha Grantha Team |
 
 # Database Migrations (Sangita Grantha)
@@ -13,7 +13,9 @@
 
 # Database Migrations
 
-Sangita Grantha uses a **Python migration tool** (`tools/db-migrate`) to manage database schema changes, orchestrated via **Makefile** commands. **Flyway is NOT used** in this project.
+Sangita Grantha uses **Flyway Community Edition** as its single migration engine, orchestrated via **Makefile** commands (`make migrate` / `make db-reset`) — see [ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md) for the decision and rationale. Flyway replaces the Python `db-migrate` tool (ADR-010 era) and the Kotlin test-side `MigrationRunner`, which had diverged into two incompatible implementations; one engine now serves dev, prod, Kotlin Testcontainers suites, Python worker tests, and CI.
+
+> **Transition note:** sections below describing `NN__description.sql` naming, `-- migrate:up/down` markers, and `db-migrate` internals reflect the pre-Flyway scheme and will be rewritten as the cutover lands (file renames to `VNN__description.sql`, tracking in `flyway_schema_history`, reference seed data as `R__` repeatable migrations).
 
 ---
 
@@ -128,8 +130,8 @@ make db-reset
 - ✅ **Add indexes** in separate migration or same migration after table creation
 - ✅ **Test rollback** before deploying (uncomment down migration temporarily)
 - ✅ **Document breaking changes** in migration comments
-- ❌ **Never modify existing migrations** that have been applied to production
-- ❌ **Never use Flyway** - use `make migrate` / `make db-reset` only
+- ❌ **Never modify existing migrations** that have been applied to production (Flyway's checksum validation enforces this — [ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md))
+- ❌ **Never bypass the Makefile interface** - use `make migrate` / `make db-reset` only; the engine is Flyway per ADR-013, never invoked ad hoc
 
 ### Migration Ordering
 

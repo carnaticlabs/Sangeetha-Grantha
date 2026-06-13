@@ -92,7 +92,7 @@ application_documentation/
 - Document schema changes in migration files
 - Include ERDs for complex relationships
 - Document constraints, indexes, and triggers
-- Reference migration tool (Rust CLI, not Flyway)
+- Reference migration tool (Flyway — see [ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md))
 
 ### Architecture Documentation
 

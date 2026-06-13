@@ -151,13 +151,9 @@
 | Ruff | `0.15.0` | Linter & formatter |
 | mypy | `1.19.1` | Static type checker |
 
-### Migration Tool (`tools/db-migrate`)
+### Migration Tool
 
-*Source: `tools/db-migrate/pyproject.toml`*
-
-| Library | Version | Purpose |
-|---------|---------|---------|
-| psycopg | `>=3.1` | PostgreSQL driver |
+Migrations are standardized on **Flyway Community** ([ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)); record the adopted Flyway version here at cutover. The previous Python tool (`tools/db-migrate`, psycopg `>=3.1`) is superseded and pending archival.
 
 ---
 

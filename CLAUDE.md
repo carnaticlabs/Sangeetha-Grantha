@@ -8,7 +8,7 @@ Sangeetha Grantha is a digital compendium of Carnatic classical music compositio
 - **Mobile**: Kotlin Multiplatform (iOS & Android)
 - **Backend**: Kotlin + Ktor + Exposed ORM
 - **Admin Web**: React 19 + TypeScript + Vite + Tailwind CSS
-- **CLI Tooling**: Python `db-migrate` for migrations + Makefile for dev workflows
+- **CLI Tooling**: Flyway for migrations (ADR-013) + Makefile for dev workflows
 
 This is a Carnatic Music Krithi Analyser project using: Kotlin backend (Exposed ORM), React/TypeScript frontend, Python data pipeline scripts, PostgreSQL database. Always verify changes compile/build across all three layers before committing.
 
@@ -78,12 +78,12 @@ modules/
 
 **Database**
 - PostgreSQL 18+ (dev via Docker Compose)
-- Migrations via Python `db-migrate` (`make migrate` / `make db-reset`), NOT Flyway
-- Migration files in `database/migrations/`
+- Migrations via **Flyway Community** (`make migrate` / `make db-reset`) per ADR-013; the custom Python `db-migrate` and the test-side Kotlin `MigrationRunner` are retired
+- Migration files in `database/migrations/` (`VNN__description.sql`)
 
 ## Critical Rules
 
-1. **Never use Flyway or Liquibase** - always use `make migrate` or `make db-reset` for migrations
+1. **Flyway is the only migration engine** (ADR-013) - always go through `make migrate` or `make db-reset`; never Liquibase, never ad-hoc SQL executors, never custom migration runners. *Rationale for the 2026-06 switch: the previous custom tooling had forked into two diverging implementations (Python `db-migrate` for dev/prod, Kotlin `MigrationRunner` for tests) with incompatible tracking tables and no checksum validation on the test path; Flyway gives one standards-based engine for Kotlin (JVM API in Testcontainers), Python (CLI), Make, and CI, plus repeatable migrations for reference seed data. See `application_documentation/02-architecture/decisions/ADR-013-db-migration-with-flyway.md`.*
 2. **Dependency versions** - use `gradle/libs.versions.toml`, no hardcoded versions in build.gradle.kts
 3. **Audit logging** - all backend mutations must log to `AUDIT_LOG` table
 4. **Commit format** - every commit must include `Ref: application_documentation/...` line
@@ -112,8 +112,9 @@ For current toolchain and library versions, see [Current Versions](application_d
 - Architecture: `application_documentation/02-architecture/`
 - Database schema: `application_documentation/04-database/schema.md`
 - API spec: `openapi/sangita-grantha.openapi.yaml`
-- Migration tool: `tools/db-migrate/README.md`
-- Rust CLI (archived): `tools/sangita-cli-archived/`
+- Migration approach (Flyway): `application_documentation/02-architecture/decisions/ADR-013-db-migration-with-flyway.md`
+- Integration testing strategy: `application_documentation/07-quality/integration-tests-approach.md`
+- Previous migration tools (archived): `tools/db-migrate/` (Python, superseded by ADR-013), `tools/sangita-cli-archived/` (Rust)
 
 ## Debugging Guidelines 
 For CORS/auth issues, always check .env files and VITE_API_BASE_URL first, not TOML config files. Frontend proxy configuration is the most common root cause.

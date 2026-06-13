@@ -40,7 +40,7 @@ For current toolchain and library versions, see **[Current Versions](../00-meta/
 
 ### Tooling & Infrastructure
 - **Version Manager**: `mise` (Java, Bun)
-- **Migration Tool**: `db-migrate` (Python) for database migrations
+- **Migration Tool**: Flyway Community for database migrations ([ADR-013](./decisions/ADR-013-db-migration-with-flyway.md); replaces the Python `db-migrate` tool)
 - **Dev Orchestration**: Makefile + Docker Compose (DB, backend, frontend, extraction)
 - **Containerization**: Docker Compose for full dev stack
 - **Package Manager**: `bun` for frontend, `gradle` for backend/mobile
@@ -63,7 +63,7 @@ For current toolchain and library versions, see **[Current Versions](../00-meta/
 - Audit logging
 - Reference data services
 - Admin dashboard service
-- Python migration tool (`tools/db-migrate`)
+- Database migration tooling (Flyway per ADR-013; previously Python `tools/db-migrate`)
 - AI Transliteration Service (Gemini integration)
 - Web Scraping Infrastructure
 

@@ -1,7 +1,7 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Accepted |
-| **Version** | 1.0.0 |
+| **Status** | Superseded by [ADR-013](./ADR-013-db-migration-with-flyway.md) |
+| **Version** | 1.1.0 |
 | **Last Updated** | 2026-03-10 |
 | **Author** | Sangeetha Grantha Team |
 | **Supersedes** | [ADR-003](./ADR-003-database-migrations.md) |

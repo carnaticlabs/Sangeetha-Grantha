@@ -21,7 +21,7 @@ Ensure you have the following installed on your system:
 
 - **[mise](https://mise.jafp.info/)**: Our tool version manager (replaces `asdf`, `nvm`, etc.).
 - **Docker & Docker Compose**: For running the full dev stack (DB, backend, frontend, extraction).
-- **Python 3.11+**: For the `db-migrate` migration tool and extraction worker.
+- **Python 3.11+**: For the extraction worker.
 - **Bun**: For frontend package management and building.
 - **JDK 25 (Temurin)**: For Kotlin and Android development. (See [Current Versions](../00-meta/current-versions.md))
 - **Android Studio / Xcode**: For mobile development.
@@ -37,7 +37,7 @@ mise install
 ```
 
 ### 3.2 Database Setup
-We use Docker Compose to run PostgreSQL. Migrations are managed by the Python `db-migrate` tool:
+We use Docker Compose to run PostgreSQL. Migrations are managed by **Flyway** (see [ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)):
 ```bash
 # Full stack start (DB + Backend + Frontend + Extraction)
 make dev
@@ -87,11 +87,12 @@ All work MUST be tracked via the Conductor system located in the `conductor/` di
 3. Follow the implementation plan defined in your track.
 
 ### 4.3 Database Migrations
-**NEVER** use Flyway or standard SQL executors for schema changes.
-- All migrations live in `database/migrations/`.
+**Flyway is the only migration engine** ([ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)). Never use Liquibase, ad-hoc SQL executors, or custom migration runners.
+- All migrations live in `database/migrations/` (`VNN__description.sql`).
 - Run migrations via: `make migrate`
 - Reset the DB (Drop + Create + Migrate + Seed) via: `make db-reset`
-- Migration tool: Python `db-migrate` in `tools/db-migrate/`
+- Reference seed data ships as Flyway repeatable migrations (`R__seed_*.sql`); dev sample data via `make seed-dev`.
+- History: Rust CLI (ADR-003) → Python `db-migrate` (ADR-010) → Flyway (ADR-013) — the SQL files survived every transition.
 
 ## 5. Coding Standards & Mandates
 
@@ -120,7 +121,7 @@ Ref: application_documentation/01-requirements/features/bulk-import/01-strategy/
 - `modules/backend/`: Ktor API and services.
 - `modules/frontend/sangita-admin-web/`: React admin interface.
 - `modules/shared/domain/`: KMP module with shared DTOs and logic.
-- `tools/db-migrate/`: Python migration tool.
+- `tools/db-migrate/`: Python migration tool (superseded by Flyway — [ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)).
 - `tools/krithi-extract-enrich-worker/`: Python extraction & enrichment worker.
 
 ## 7. Useful Links
