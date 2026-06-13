@@ -3,6 +3,3 @@
 
 -- migrate:up
 ALTER TABLE imported_krithis ADD COLUMN IF NOT EXISTS import_batch_id UUID;
-
--- migrate:down
--- ALTER TABLE imported_krithis DROP COLUMN IF EXISTS import_batch_id;

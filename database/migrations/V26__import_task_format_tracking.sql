@@ -13,7 +13,3 @@ ALTER TABLE import_task_run
 
 COMMENT ON COLUMN import_task_run.source_format IS 'Document format of the source: HTML, PDF, DOCX, IMAGE, API, or MANUAL';
 COMMENT ON COLUMN import_task_run.page_range IS 'For PDF sources: page range extracted, e.g. 42-43';
-
--- migrate:down
--- ALTER TABLE import_task_run DROP COLUMN IF EXISTS page_range;
--- ALTER TABLE import_task_run DROP COLUMN IF EXISTS source_format;

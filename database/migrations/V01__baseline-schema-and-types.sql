@@ -80,6 +80,3 @@ CREATE TABLE IF NOT EXISTS audit_log (
   diff JSONB,
   metadata JSONB DEFAULT '{}'::jsonb
 );
-
--- migrate:down
--- Baseline objects are not dropped in down migration to avoid breaking dependencies.

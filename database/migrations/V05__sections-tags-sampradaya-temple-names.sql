@@ -132,22 +132,3 @@ CREATE TABLE IF NOT EXISTS temple_names (
 
 CREATE INDEX IF NOT EXISTS idx_temple_names_normalized
     ON temple_names (normalized_name);
-
--- migrate:down
--- NOTE: Carefully ordered to satisfy FKs.
-
--- DROP INDEX IF EXISTS idx_temple_names_normalized;
--- DROP TABLE IF EXISTS temple_names;
---
--- ALTER TABLE krithi_lyric_variants
---     DROP COLUMN IF EXISTS sampradaya_id,
---     DROP COLUMN IF EXISTS variant_label;
---
--- DROP TABLE IF EXISTS sampradayas;
---
--- DROP TABLE IF EXISTS krithi_tags;
--- DROP TABLE IF EXISTS tags;
---
--- DROP INDEX IF EXISTS idx_krithi_lyric_sections_norm_text;
--- DROP TABLE IF EXISTS krithi_lyric_sections;
--- DROP TABLE IF EXISTS krithi_sections;

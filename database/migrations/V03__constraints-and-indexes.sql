@@ -114,29 +114,3 @@ CREATE INDEX IF NOT EXISTS idx_users_email
 
 CREATE INDEX IF NOT EXISTS idx_role_assignments_user
   ON role_assignments (user_id);
-
--- migrate:down
--- DROP INDEX IF EXISTS idx_role_assignments_user;
--- DROP INDEX IF EXISTS idx_users_email;
--- DROP INDEX IF EXISTS idx_krithi_lyrics_lang_script;
--- DROP INDEX IF EXISTS idx_krithi_lyrics_trgm;
--- DROP INDEX IF EXISTS idx_krithi_notation_rows_swara_trgm;
--- DROP INDEX IF EXISTS idx_krithi_notation_rows_variant_section_order;
--- DROP INDEX IF EXISTS idx_krithi_notation_variants_krithi_type;
--- DROP INDEX IF EXISTS idx_krithi_ragas_raga;
--- DROP INDEX IF EXISTS idx_krithi_ragas_krithi;
--- DROP INDEX IF EXISTS idx_krithis_musical_form;
--- DROP INDEX IF EXISTS idx_krithis_temple;
--- DROP INDEX IF EXISTS idx_krithis_deity;
--- DROP INDEX IF EXISTS idx_krithis_tala;
--- DROP INDEX IF EXISTS idx_krithis_primary_raga;
--- DROP INDEX IF EXISTS idx_krithis_composer;
--- DROP INDEX IF EXISTS idx_krithis_incipit_norm;
--- DROP INDEX IF EXISTS idx_krithis_title_norm;
--- DROP INDEX IF EXISTS idx_temples_name_city;
--- DROP INDEX IF EXISTS idx_deities_name_normalized;
--- DROP INDEX IF EXISTS idx_talas_name_normalized;
--- DROP INDEX IF EXISTS idx_ragas_name_normalized;
--- DROP INDEX IF EXISTS idx_composers_name_normalized;
--- DROP INDEX IF EXISTS idx_audit_actor;
--- DROP INDEX IF EXISTS idx_audit_entity_time;

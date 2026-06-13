@@ -59,12 +59,3 @@ BEGIN
             ON krithi_notation_rows USING gin (swara_text gin_trgm_ops);
     END IF;
 END$$;
-
--- migrate:down
--- DROP INDEX IF EXISTS idx_krithi_notation_rows_swara_trgm;
--- DROP INDEX IF EXISTS idx_krithi_notation_rows_variant_section_order;
--- DROP INDEX IF EXISTS idx_krithi_notation_variants_krithi_type;
--- DROP TABLE IF EXISTS krithi_notation_rows;
--- DROP TABLE IF EXISTS krithi_notation_variants;
-
-

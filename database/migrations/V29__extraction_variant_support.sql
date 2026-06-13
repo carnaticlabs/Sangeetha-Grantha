@@ -92,13 +92,3 @@ COMMENT ON TABLE variant_match IS 'TRACK-056: Stores variant matching results be
 COMMENT ON COLUMN variant_match.match_signals IS 'JSON object with individual signal scores: titleMatch, ragaTalaMatch, pagePositionMatch, etc.';
 COMMENT ON COLUMN variant_match.is_anomaly IS 'TRUE when the matched Krithi was NOT in the related (primary) extraction scope.';
 COMMENT ON COLUMN variant_match.structure_mismatch IS 'TRUE when the variant has a different section structure than the primary.';
-
--- migrate:down
--- DROP INDEX IF EXISTS idx_vm_pending;
--- DROP INDEX IF EXISTS idx_vm_krithi;
--- DROP INDEX IF EXISTS idx_vm_extraction;
--- DROP TABLE IF EXISTS variant_match;
--- ALTER TABLE extraction_queue DROP COLUMN IF EXISTS related_extraction_id;
--- ALTER TABLE extraction_queue DROP COLUMN IF EXISTS extraction_intent;
--- ALTER TABLE extraction_queue DROP COLUMN IF EXISTS content_language;
--- DROP TYPE IF EXISTS extraction_intent;

@@ -33,11 +33,3 @@ CREATE INDEX IF NOT EXISTS idx_import_sources_tier
 COMMENT ON COLUMN import_sources.source_tier IS 'Authority hierarchy: 1=Scholarly/Published, 2=Institutional, 3=Practitioner-Curated, 4=Community DB, 5=Individual Blog';
 COMMENT ON COLUMN import_sources.supported_formats IS 'Array of supported document formats: HTML, PDF, DOCX, API, MANUAL';
 COMMENT ON COLUMN import_sources.composer_affinity IS 'JSON map of normalised composer name to authority weight (0.0-1.0) for this source';
-
--- migrate:down
--- ALTER TABLE import_sources DROP COLUMN IF EXISTS updated_at;
--- ALTER TABLE import_sources DROP COLUMN IF EXISTS last_harvested_at;
--- ALTER TABLE import_sources DROP COLUMN IF EXISTS composer_affinity;
--- ALTER TABLE import_sources DROP COLUMN IF EXISTS supported_formats;
--- ALTER TABLE import_sources DROP COLUMN IF EXISTS source_tier;
--- DROP INDEX IF EXISTS idx_import_sources_tier;

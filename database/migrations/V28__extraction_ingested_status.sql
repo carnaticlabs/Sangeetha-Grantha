@@ -8,6 +8,3 @@ SET search_path TO public;
 ALTER TYPE extraction_status ADD VALUE IF NOT EXISTS 'INGESTED' AFTER 'DONE';
 
 COMMENT ON TYPE extraction_status IS 'PENDING→PROCESSING→DONE→INGESTED (or FAILED/CANCELLED). INGESTED = Kotlin has processed the results.';
-
--- migrate:down
--- PostgreSQL does not support removing enum values; this is a one-way migration.

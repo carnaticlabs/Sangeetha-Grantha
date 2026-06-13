@@ -3,6 +3,3 @@
 
 -- migrate:up
 ALTER TABLE imported_krithis ADD COLUMN IF NOT EXISTS resolution_data JSONB;
-
--- migrate:down
--- ALTER TABLE imported_krithis DROP COLUMN IF EXISTS resolution_data;

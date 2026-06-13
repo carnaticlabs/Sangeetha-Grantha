@@ -14,6 +14,3 @@ WHERE id NOT IN (
 
 ALTER TABLE import_sources
     ADD CONSTRAINT ux_import_sources_name UNIQUE (name);
-
--- migrate:down
--- ALTER TABLE import_sources DROP CONSTRAINT IF EXISTS ux_import_sources_name;

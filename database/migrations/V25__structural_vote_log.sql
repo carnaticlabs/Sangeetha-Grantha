@@ -52,9 +52,3 @@ CREATE INDEX IF NOT EXISTS idx_svl_consensus_type
 
 COMMENT ON TABLE structural_vote_log IS 'Audit trail for cross-source structural voting decisions per Krithi';
 COMMENT ON COLUMN structural_vote_log.consensus_type IS 'How the canonical structure was determined: UNANIMOUS, MAJORITY, AUTHORITY_OVERRIDE, SINGLE_SOURCE, or MANUAL';
-
--- migrate:down
--- DROP INDEX IF EXISTS idx_svl_consensus_type;
--- DROP INDEX IF EXISTS idx_svl_voted_at;
--- DROP INDEX IF EXISTS idx_svl_krithi;
--- DROP TABLE IF EXISTS structural_vote_log;

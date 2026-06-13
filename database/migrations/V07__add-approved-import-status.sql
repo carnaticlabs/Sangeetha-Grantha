@@ -16,9 +16,3 @@ BEGIN
     ALTER TYPE import_status_enum ADD VALUE 'approved';
   END IF;
 END$$;
-
--- migrate:down
--- Note: PostgreSQL does not support removing enum values directly
--- This would require recreating the enum type, which is complex
--- For now, we'll leave the enum value in place
-

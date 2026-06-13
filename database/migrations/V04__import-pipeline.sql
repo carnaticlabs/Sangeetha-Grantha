@@ -42,9 +42,3 @@ CREATE INDEX IF NOT EXISTS idx_imported_krithis_source_status
 
 CREATE INDEX IF NOT EXISTS idx_imported_krithis_mapped_krithi
   ON imported_krithis (mapped_krithi_id);
-
--- migrate:down
--- DROP INDEX IF EXISTS idx_imported_krithis_mapped_krithi;
--- DROP INDEX IF EXISTS idx_imported_krithis_source_status;
--- DROP TABLE IF EXISTS imported_krithis;
--- DROP TABLE IF EXISTS import_sources;

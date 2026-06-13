@@ -137,24 +137,3 @@ CREATE TABLE IF NOT EXISTS import_event (
 
 CREATE INDEX IF NOT EXISTS idx_import_event_ref ON import_event (ref_type, ref_id);
 CREATE INDEX IF NOT EXISTS idx_import_event_created_at ON import_event (created_at DESC);
-
--- migrate:down
--- DROP INDEX IF EXISTS idx_import_event_created_at;
--- DROP INDEX IF EXISTS idx_import_event_ref;
--- DROP TABLE IF EXISTS import_event;
--- DROP INDEX IF EXISTS idx_import_task_run_pending;
--- DROP INDEX IF EXISTS idx_import_task_run_source_url;
--- DROP INDEX IF EXISTS idx_import_task_run_krithi_key;
--- DROP INDEX IF EXISTS idx_import_task_run_status;
--- DROP INDEX IF EXISTS idx_import_task_run_job_id;
--- DROP TABLE IF EXISTS import_task_run;
--- DROP INDEX IF EXISTS idx_import_job_type_status;
--- DROP INDEX IF EXISTS idx_import_job_status;
--- DROP INDEX IF EXISTS idx_import_job_batch_id;
--- DROP TABLE IF EXISTS import_job;
--- DROP INDEX IF EXISTS idx_import_batch_created_at;
--- DROP INDEX IF EXISTS idx_import_batch_status;
--- DROP TABLE IF EXISTS import_batch;
--- DROP TYPE IF EXISTS task_status_enum;
--- DROP TYPE IF EXISTS job_type_enum;
--- DROP TYPE IF EXISTS batch_status_enum;

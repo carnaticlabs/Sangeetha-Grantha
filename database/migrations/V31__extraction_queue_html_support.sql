@@ -12,9 +12,3 @@ ALTER TABLE extraction_queue
 
 COMMENT ON CONSTRAINT extraction_queue_source_format_check ON extraction_queue
     IS 'Allowed formats for Python extraction worker queue.';
-
--- migrate:down
--- ALTER TABLE extraction_queue DROP CONSTRAINT IF EXISTS extraction_queue_source_format_check;
--- ALTER TABLE extraction_queue
---     ADD CONSTRAINT extraction_queue_source_format_check
---     CHECK (source_format IN ('PDF', 'DOCX', 'IMAGE'));

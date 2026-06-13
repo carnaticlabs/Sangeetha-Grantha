@@ -27,6 +27,3 @@ CREATE TABLE IF NOT EXISTS entity_resolution_cache (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT timezone('UTC', now()),
     UNIQUE(entity_type, normalized_name)
 );
-
--- migrate:down
--- No-op as this is a fix-forward migration

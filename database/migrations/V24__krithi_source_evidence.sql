@@ -48,9 +48,3 @@ CREATE INDEX IF NOT EXISTS idx_kse_krithi_source
 
 COMMENT ON TABLE krithi_source_evidence IS 'Links each Krithi to all sources that contributed data, enabling multi-source validation and provenance tracking';
 COMMENT ON COLUMN krithi_source_evidence.contributed_fields IS 'Array of field names this source contributed: title, raga, tala, sections, lyrics_sa, lyrics_en, deity, temple, notation';
-
--- migrate:down
--- DROP INDEX IF EXISTS idx_kse_krithi_source;
--- DROP INDEX IF EXISTS idx_kse_source;
--- DROP INDEX IF EXISTS idx_kse_krithi;
--- DROP TABLE IF EXISTS krithi_source_evidence;

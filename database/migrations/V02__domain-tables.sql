@@ -160,16 +160,3 @@ CREATE TABLE IF NOT EXISTS krithi_lyric_variants (
   created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('UTC', now()),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT timezone('UTC', now())
 );
-
--- migrate:down
--- Drop in reverse dependency order
--- DROP TABLE IF EXISTS krithi_lyric_variants;
--- DROP TABLE IF EXISTS krithi_ragas;
--- DROP TABLE IF EXISTS krithis;
--- DROP TABLE IF EXISTS temples;
--- DROP TABLE IF EXISTS deities;
--- DROP TABLE IF EXISTS talas;
--- DROP TABLE IF EXISTS ragas;
--- DROP TABLE IF EXISTS composers;
--- DROP TABLE IF EXISTS role_assignments;
--- DROP TABLE IF EXISTS users;

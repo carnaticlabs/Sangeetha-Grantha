@@ -86,11 +86,3 @@ CREATE INDEX IF NOT EXISTS idx_eq_status_failed
 COMMENT ON TABLE extraction_queue IS 'Database-backed work queue: Kotlin writes PENDING tasks, Python claims and completes them. Uses FOR UPDATE SKIP LOCKED for concurrency.';
 COMMENT ON COLUMN extraction_queue.request_payload IS 'JSON extraction parameters: {composerHint, pageRange, expectedKrithiCount, options}';
 COMMENT ON COLUMN extraction_queue.result_payload IS 'JSON array of CanonicalExtractionDto objects, one per extracted Krithi';
-
--- migrate:down
--- DROP INDEX IF EXISTS idx_eq_status_failed;
--- DROP INDEX IF EXISTS idx_eq_batch;
--- DROP INDEX IF EXISTS idx_eq_status_done;
--- DROP INDEX IF EXISTS idx_eq_status_pending;
--- DROP TABLE IF EXISTS extraction_queue;
--- DROP TYPE IF EXISTS extraction_status;

@@ -31,9 +31,3 @@ CREATE INDEX IF NOT EXISTS idx_import_task_run_running_started_at
 -- Idempotency for imported krithis (source scoped)
 ALTER TABLE imported_krithis
     ADD CONSTRAINT ux_imported_krithis_source UNIQUE (import_source_id, source_key);
-
--- migrate:down
--- DROP INDEX IF EXISTS idx_import_task_run_running_started_at;
--- DROP INDEX IF EXISTS ux_import_task_run_idempotency_key;
--- ALTER TABLE import_task_run DROP COLUMN IF EXISTS idempotency_key;
--- ALTER TABLE imported_krithis DROP CONSTRAINT IF EXISTS ux_imported_krithis_source;
