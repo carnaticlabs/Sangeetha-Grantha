@@ -1,7 +1,7 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Not Started |
-| **Version** | 1.0.0 |
+| **Status** | Completed |
+| **Version** | 1.1.0 |
 | **Last Updated** | 2026-06-13 |
 | **Author** | Sangeetha Grantha Team |
 | **Priority** | P1 — design gate for TRACK-117 |
@@ -25,18 +25,18 @@ North-star finding N5: AUDIT_LOG records *that* a change happened, not a re-mate
 
 ## Implementation Plan
 
-- [ ] Use `engineering:architecture` / `engineering:system-design` skills to evaluate the revisioning pattern: append-only `krithi_revisions` + current-state projection/view vs alternatives (temporal tables, audit-derived reconstruction). Recommend one with trade-offs.
-- [ ] Design the provenance graph: `canonical_section.provenance → extraction_id → source_document_id → source_registry` as enforced FKs; define cardinality and null-handling.
-- [ ] Define the revision-write contract: what creates a revision (every accepted change), how the import path populates it from row one, how the projection serves "current".
-- [ ] Specify point-in-time read semantics and the one-query provenance answer.
-- [ ] Migration shape for TRACK-117 to author in Flyway: table DDL sketch, FK additions, projection view, backfill-not-needed rationale (re-import covers it).
-- [ ] Impact check: which routes/DTOs/repos change; whether the (deferred) public read surface is affected later.
-- [ ] **Write ADR-014** (status Accepted on completion); add to `adr-index.md` + decisions `README.md`; link from `integration-tests-approach.md` N5 references and TRACK-117.
+- [x] Evaluated three patterns (append-only `krithi_revisions` + projection view vs PostgreSQL temporal/system-versioned tables vs audit-derived reconstruction) with a trade-off table. **Chose Option A** — extension-free, per-section provenance co-located with content, native re-import population.
+- [x] Designed the provenance graph: introduces a `source_documents` node between `extraction_queue` and `import_sources` (the registry); attribution at the **section** grain via `krithi_section_revisions.{extraction_id, source_document_id}`. Cardinality + null-handling (manual vs import) specified, with a `CHECK` requiring every revision to carry an extraction **or** a user.
+- [x] Defined the revision-write contract: every *accepted* change writes one envelope + per-section rows + projection + AUDIT_LOG, atomically; import writes revision #1 with provenance from row one.
+- [x] Specified point-in-time semantics (transaction-time `valid_from`; valid-time left as a future extension) and the one-query N5 provenance answer (`krithi_sections_asof()` + 3 LEFT JOINs).
+- [x] Authored the `V44__versioned_canon.sql` migration **shape** (DDL sketch, FK additions, view + as-of function, indexes, no-backfill rationale) — **no SQL file written**, per the spike's design-only scope.
+- [x] Impact check: current read routes/DTOs unaffected (read the projection); history/provenance endpoints are additive; deferred public read surface gains a future lineage capability.
+- [x] **Wrote ADR-014** (status **Accepted**); added to `adr-index.md` + decisions `README.md`; linked from `integration-tests-approach.md` N5 reference and TRACK-117.
 
 ## Acceptance Criteria
 
-- ADR-014 merged with a chosen pattern, schema design, and migration shape.
-- TRACK-117 can be executed without further design decisions.
+- [x] ADR-014 merged with a chosen pattern, schema design, and migration shape.
+- [x] TRACK-117 can be executed without further design decisions (DDL sketch + write contract + action items are spelled out).
 
 ## Pre-req Coordination
 

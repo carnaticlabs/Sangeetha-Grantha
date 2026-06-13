@@ -27,7 +27,7 @@
 - [ADR-011-postgresql-18-uuid-v7.md](./ADR-011-postgresql-18-uuid-v7.md) - PostgreSQL 18 upgrade with UUID v7
 - [ADR-012-unified-extraction-architecture.md](./ADR-012-unified-extraction-architecture.md) - Unified extraction architecture (Python as single source of truth)
 - [ADR-013-db-migration-with-flyway.md](./ADR-013-db-migration-with-flyway.md) - Database migrations with Flyway (single standards-based engine for Kotlin, Python, Make, CI)
-- [ADR-014-versioned-canon.md](./ADR-014-versioned-canon.md) - Versioned canon & provenance graph (Draft — authored by TRACK-116)
+- [ADR-014-versioned-canon.md](./ADR-014-versioned-canon.md) - Versioned canon & provenance graph (Accepted — append-only revisions + projection; implemented by TRACK-117)
 - [datetime-standardization.md](./datetime-standardization.md) - Datetime standardization
 - [exposed-dao-vs-dsl-comparison.md](./exposed-dao-vs-dsl-comparison.md) - Exposed DAO vs DSL comparison
 - [exposed-dsl-optimization-implementation.md](./exposed-dsl-optimization-implementation.md) - DSL optimization implementation
