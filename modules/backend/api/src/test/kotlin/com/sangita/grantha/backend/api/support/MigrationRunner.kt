@@ -38,7 +38,12 @@ object MigrationRunner {
         }
 
         return Files.list(migrationsPath)
-            .filter { it.name.endsWith(".sql") }
+            // TEMPORARY BRIDGE (TRACK-110 Sub-part A): the migrations were renamed to the Flyway
+            // VNN__ scheme and reference data moved to R__ repeatables. This runner is deleted in
+            // Sub-part B (replaced by the Flyway JVM API). Until then, accept the V-prefix and skip
+            // R__ repeatables — which were never applied via this path (reference data lived in
+            // database/seed_data/, not database/migrations/), so test behaviour is unchanged.
+            .filter { it.name.endsWith(".sql") && !it.name.startsWith("R__") }
             .map { path ->
                 val filename = path.name
                 val version = extractVersionNumber(filename)
@@ -118,12 +123,13 @@ object MigrationRunner {
     }
 
     /**
-     * Extracts version number from filename like "01__baseline.sql" -> 1
+     * Extracts version number from filename like "V01__baseline.sql" -> 1.
+     * Tolerates the optional Flyway "V" prefix (TRACK-110 bridge; runner deleted in Sub-part B).
      */
     private fun extractVersionNumber(filename: String): Int {
-        val prefix = filename.substringBefore("__")
+        val prefix = filename.substringBefore("__").removePrefix("V").removePrefix("v")
         return prefix.toIntOrNull()
-            ?: throw IllegalArgumentException("Invalid migration filename: $filename (expected NN__description.sql)")
+            ?: throw IllegalArgumentException("Invalid migration filename: $filename (expected VNN__description.sql)")
     }
 
     /**
