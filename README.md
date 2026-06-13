@@ -3,8 +3,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.2.0 |
-| **Last Updated** | 2026-03-10 |
+| **Version** | 1.3.0 |
+| **Last Updated** | 2026-06-13 |
 | **Author** | Sangeetha Grantha Team |
 
 ---
@@ -54,7 +54,7 @@ It is designed to become the **system of record** for Carnatic Krithis — suppo
 
 - **API**: Kotlin + Ktor (REST)
 - **Database**: PostgreSQL 18+
-- **Migrations**: Python `db-migrate` tool (`tools/db-migrate`) — no Flyway
+- **Migrations**: **Flyway Community** (ADR-013), run via `make migrate` / `make db-reset`
 
 ### Infrastructure
 
@@ -114,7 +114,7 @@ For a complete and specific list of versions and dependencies, see **[Current Ve
 | **Mobile** | Kotlin Multiplatform (KMM) + Compose Multiplatform |
 | **Backend** | Kotlin + Ktor + Exposed |
 | **Database** | PostgreSQL 18+ |
-| **Migrations** | Python `db-migrate` (`tools/db-migrate`) |
+| **Migrations** | Flyway Community (ADR-013), via Makefile |
 | **Extraction** | Python worker (`tools/krithi-extract-enrich-worker`) |
 | **Admin Web** | React + TypeScript + Tailwind + Vite |
 | **Build** | Gradle (Backend/Mobile), Bun (Frontend) |
@@ -141,8 +141,8 @@ For a complete and specific list of versions and dependencies, see **[Current Ve
 │   ├── audits/                          # Data audit queries
 │   └── for_import/                      # Import data & scripts
 ├── tools/
-│   ├── db-migrate/                      # Python DB migration tool
 │   ├── krithi-extract-enrich-worker/    # Python extraction pipeline
+│   ├── db-migrate/                      # Python migration tool (superseded by Flyway, ADR-013)
 │   └── sangita-cli-archived/            # Archived Rust CLI (legacy)
 ├── openapi/                             # OpenAPI specifications
 ├── application_documentation/           # PRDs, ERDs, architecture docs
@@ -193,7 +193,7 @@ bun run dev          # Dev server on port 5001
 
 For detailed setup, usage guides, and troubleshooting, see:
 - **[Getting Started](./application_documentation/00-onboarding/getting-started.md)** — Complete setup guide
-- **[Migration Tool](./tools/db-migrate/README.md)** — Database migration commands
+- **[Migration Approach (ADR-013)](./application_documentation/02-architecture/decisions/ADR-013-db-migration-with-flyway.md)** — Flyway-based migrations
 
 ---
 
@@ -231,7 +231,7 @@ For comprehensive references and coding patterns, see: **[AI & Vibe Coding Refer
 - Done: Admin editorial workflow
 - Done: AI Transliteration & Web Scraping
 - Done: PostgreSQL 18 upgrade
-- Done: Python migration & extraction tooling
+- Done: Flyway migration adoption (ADR-013) & Python extraction tooling
 - In Progress: Mobile app development
 - In Progress: Advanced lyric search & ranking
 - Planned: Media management (audio/notation)
