@@ -5,58 +5,48 @@ import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Tag
 import org.slf4j.LoggerFactory
-import java.sql.DriverManager
-import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Base class for integration tests that need a real PostgreSQL database.
  *
- * The database is set up once per test suite using the actual SQL migrations
- * from `database/migrations/`, guaranteeing schema parity with production.
- * Between tests, all tables are truncated (fast) rather than dropped/recreated.
+ * The database is a self-provisioning Testcontainers Postgres ([TestDatabase] / [SangitaPostgres]),
+ * schema-migrated once per JVM via the Flyway JVM API — guaranteeing schema parity with production
+ * with no `localhost:5432` dependency. Between tests, all tables are truncated (fast) rather than
+ * dropped/recreated; `flyway_schema_history` is preserved.
+ *
+ * Tagged `integration`: run the whole suite with `make test` (or `./gradlew check`), or just the
+ * tagged set with `make test-integration` (`./gradlew :modules:backend:api:integrationTest`).
  *
  * Usage:
  * ```kotlin
  * class MyServiceTest : IntegrationTestBase() {
- *     private lateinit var dal: SangitaDal
- *
- *     @BeforeEach
- *     fun setup() {
- *         dal = SangitaDalImpl()
- *         // ... create services
- *     }
- *
- *     @Test
- *     fun `my test`() = runTest { ... }
+ *     @Test fun `my test`() = runTest { ... }
  * }
  * ```
  */
+@Tag("integration")
 abstract class IntegrationTestBase {
     companion object {
         private val logger = LoggerFactory.getLogger(IntegrationTestBase::class.java)
 
-        private const val TEST_DB_NAME = "sangita_grantha_test"
-        private const val ADMIN_URL = "jdbc:postgresql://localhost:5432/postgres"
-        private const val TEST_DB_URL = "jdbc:postgresql://localhost:5432/$TEST_DB_NAME"
-        private const val DB_USER = "postgres"
-        private const val DB_PASSWORD = "postgres"
-
-        private val initialized = AtomicBoolean(false)
-
         @JvmStatic
         @BeforeAll
         fun initializeDatabase() {
-            if (!initialized.compareAndSet(false, true)) {
-                // Already initialized by another test class in this JVM — just reconnect Exposed
-                connectExposed()
-                return
-            }
-
-            ensureTestDatabaseExists()
-            runMigrations()
-            connectExposed()
-            logger.info("Integration test database initialized")
+            // Lazily starts the container and migrates the schema once per JVM; cheap on reuse.
+            val conn = TestDatabase.connection
+            DatabaseFactory.connect(
+                DatabaseFactory.ConnectionConfig(
+                    databaseUrl = conn.jdbcUrl,
+                    username = conn.username,
+                    password = conn.password,
+                    driverClassName = "org.postgresql.Driver",
+                    enableQueryLogging = false,
+                    maxPoolSize = 5,
+                )
+            )
+            logger.info("Integration test database connected")
         }
 
         @JvmStatic
@@ -64,46 +54,11 @@ abstract class IntegrationTestBase {
         fun shutdownDatabase() {
             DatabaseFactory.close()
         }
-
-        private fun ensureTestDatabaseExists() {
-            DriverManager.getConnection(ADMIN_URL, DB_USER, DB_PASSWORD).use { conn ->
-                conn.autoCommit = true
-                val exists = conn.prepareStatement(
-                    "SELECT 1 FROM pg_database WHERE datname = ?"
-                ).use { stmt ->
-                    stmt.setString(1, TEST_DB_NAME)
-                    stmt.executeQuery().next()
-                }
-                if (!exists) {
-                    conn.createStatement().use { it.execute("CREATE DATABASE $TEST_DB_NAME") }
-                    logger.info("Created test database: $TEST_DB_NAME")
-                }
-            }
-        }
-
-        private fun runMigrations() {
-            DriverManager.getConnection(TEST_DB_URL, DB_USER, DB_PASSWORD).use { conn ->
-                val migrations = MigrationRunner.loadMigrations()
-                MigrationRunner.runMigrations(conn, migrations)
-            }
-        }
-
-        private fun connectExposed() {
-            DatabaseFactory.connect(
-                DatabaseFactory.ConnectionConfig(
-                    databaseUrl = TEST_DB_URL,
-                    username = DB_USER,
-                    password = DB_PASSWORD,
-                    driverClassName = "org.postgresql.Driver",
-                    enableQueryLogging = false,
-                    maxPoolSize = 5,
-                )
-            )
-        }
     }
 
     /**
      * Truncate all user tables between tests. Much faster than drop/recreate.
+     * Excludes `flyway_schema_history` so the migration record survives.
      */
     @AfterEach
     fun truncateAllTables() {
@@ -113,7 +68,7 @@ abstract class IntegrationTestBase {
                     """
                     SELECT tablename FROM pg_tables
                     WHERE schemaname = 'public'
-                      AND tablename NOT IN ('_sqlx_migrations')
+                      AND tablename NOT IN ('flyway_schema_history')
                     """.trimIndent()
                 ) { rs ->
                     buildList { while (rs.next()) add(rs.getString(1)) }

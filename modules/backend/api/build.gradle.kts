@@ -66,6 +66,11 @@ dependencies {
     testImplementation(libs.kotlinx.serialization.json)
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.mockk)
+
+    // Integration-test substrate (TRACK-110): Testcontainers Postgres + Flyway JVM API
+    testImplementation(libs.testcontainers.postgresql)
+    testImplementation(libs.flyway.core)
+    testRuntimeOnly(libs.flyway.database.postgresql)
 }
 
 // Simple dev run task (no frontend coupling yet)
@@ -116,14 +121,21 @@ tasks.test {
     workingDir = rootProject.projectDir
 }
 
-tasks.register<JavaExec>("seedDatabase") {
-    group = "application"
-    description = "Seed the database with initial reference data and sample content"
-    classpath = sourceSets.main.get().runtimeClasspath
-    mainClass.set("com.sangita.grantha.backend.api.tools.SeedDatabaseKt")
-    systemProperty("io.ktor.development", "true")
+// Run only @Tag("integration") tests (Testcontainers-backed). `make test` / check still run all.
+tasks.register<Test>("integrationTest") {
+    group = "verification"
+    description = "Runs only the @Tag(\"integration\") tests (self-provisioning Testcontainers DB)"
+    testClassesDirs = sourceSets.test.get().output.classesDirs
+    classpath = sourceSets.test.get().runtimeClasspath
+    useJUnitPlatform { includeTags("integration") }
     workingDir = rootProject.projectDir
+    shouldRunAfter(tasks.test)
 }
+
+// Reference data ships via Flyway R__ repeatable migrations (make migrate / make db-reset)
+// and dev sample data via `make seed-dev` per ADR-013, so a JVM seed entrypoint is redundant;
+// the former `seedDatabase` JavaExec task (mainClass tools.SeedDatabaseKt, which never existed)
+// was removed in TRACK-110.
 
 // First-run admin provisioning (TRACK-110). Reads ADMIN_EMAIL / ADMIN_PASSWORD from the
 // environment and upserts the admin user with an argon2id hash via PasswordHasher (TRACK-114).

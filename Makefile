@@ -1,4 +1,4 @@
-.PHONY: dev dev-down db db-reset seed seed-dev migrate migrate-status bootstrap-admin test test-frontend steel-thread clean
+.PHONY: dev dev-down db db-reset seed seed-dev migrate migrate-status bootstrap-admin test test-integration test-frontend steel-thread clean
 
 COMPOSE := docker compose
 # Flyway runs as the compose `migrate` service (flyway/flyway image) on the db network.
@@ -46,9 +46,13 @@ seed: seed-dev
 bootstrap-admin:
 	./gradlew :modules:backend:api:bootstrapAdmin
 
-# Run backend tests
+# Run backend tests (unit + integration; integration self-provisions Postgres via Testcontainers)
 test:
 	./gradlew :modules:backend:api:test
+
+# Run only the @Tag("integration") tests
+test-integration:
+	./gradlew :modules:backend:api:integrationTest
 
 # Run frontend tests
 test-frontend:

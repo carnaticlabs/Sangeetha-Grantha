@@ -30,8 +30,9 @@ jsoup = "1.22.1"
 caffeine = "3.2.3"
 password4j = "1.8.2"
 
-# Migrations (ADR-013 / TRACK-110). Testcontainers + JUnit added in Sub-part B.
+# Migrations + integration-test substrate (ADR-013 / TRACK-110). JUnit comes via kotlin-test-junit5.
 flyway = "12.8.1"
+testcontainers = "1.21.4"
 
 [plugins]
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose" }
@@ -108,6 +109,11 @@ micrometer-core = { module = "io.micrometer:micrometer-core", version.ref = "mic
 jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine" }
 password4j = { module = "com.password4j:password4j", version.ref = "password4j" }
+
+# Integration-test substrate (TRACK-110 Sub-part B): Testcontainers + Flyway JVM API
+testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
+flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
+flyway-database-postgresql = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
 
 
 [bundles]
