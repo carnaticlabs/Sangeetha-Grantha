@@ -292,11 +292,11 @@ Located in `database/seed_data/`:
 ### 7.3 Data Reset
 
 ```bash
-# Full reset (drop → create → migrate → seed)
-cargo run -- db reset
+# Full reset (drop → create → Flyway migrate, incl. R__ reference data)
+make db-reset
 
-# Seed only (preserves existing data)
-./gradlew :modules:backend:api:seedDatabase
+# Dev sample data only (preserves existing data)
+make seed-dev
 ```
 
 ### 7.4 Test Isolation

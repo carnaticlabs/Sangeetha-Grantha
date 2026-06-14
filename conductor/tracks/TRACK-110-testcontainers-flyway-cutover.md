@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Not Started |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-06-13 |
+| **Status** | Completed |
+| **Version** | 2.0.0 |
+| **Last Updated** | 2026-06-14 |
 | **Author** | Sangeetha Grantha Team |
 | **Priority** | P0 — foundation for the whole initiative |
 | **Epic** | [TRACK-109](./TRACK-109-production-readiness-roadmap.md) (W2 CI/CD) |
@@ -31,24 +31,25 @@ See [Integration Tests Approach](../../application_documentation/07-quality/inte
 - [x] Admin-user bootstrap: `tools/BootstrapAdmin.kt` + `bootstrapAdmin` Gradle task + `make bootstrap-admin` + `bootstrap` compose service; argon2id via `PasswordHasher` (TRACK-114). Verified: idempotent, hash is `$argon2id$…` (len 161), role bound, secret never logged.
 - [x] Baseline rehearsal: **no populated dev DB exists** (both local pgdata volumes held only an empty default cluster — audited), so there is nothing to baseline/reconcile locally; the from-scratch `flyway migrate` is the real path. Baseline procedure (`flyway baseline -baselineVersion=43`, rehearse on a dump-restored Testcontainers instance) documented in `04-database/migrations.md` §5 for any real long-lived DB.
 - [x] *(bridge)* `MigrationRunner` patched to tolerate `VNN__` / skip `R__` so the existing integration suite stays green during the A→B window (deleted outright in Sub-part B). Verified: `ImportRoutesTest` passes.
-- [ ] **GATED on your verified `make db-reset` sign-off (D16):** drop legacy `schema_migrations` / `_sqlx_migrations` (neither exists in a fresh DB; this covers any retained DB). First step of Sub-part B.
+- [x] **D16 (verified cycle signed off):** legacy `schema_migrations` / `_sqlx_migrations` confirmed absent from the verified Flyway DB — nothing to drop; creators removed (MigrationRunner deleted, db-migrate archived). Done in Sub-part B.
 
 ### Sub-part B — Testcontainers test substrate (not on import critical path)
-- [ ] Add Testcontainers BOM + `postgresql` + `junit-jupiter` to `libs.versions.toml`; wire into `dal` and `api` test classpaths.
-- [ ] `SangitaPostgres` singleton: `docker.io/library/postgres:18.3-alpine` (fully-qualified name for Podman-readiness, §3.5), migrate via **Flyway JVM API** (replaces the 157-line `MigrationRunner`).
-- [ ] `TestDatabase` with `TEST_DATABASE_URL` escape hatch (default Testcontainers; external URL when set).
-- [ ] Repoint `IntegrationTestBase` at the new substrate; keep truncate-after-each reset (extend exclusion to `flyway_schema_history` + reference tables).
-- [ ] `@Tag("integration")` (D10) + `integrationTest` Gradle task; `make test` runs all via `check`, `make test-integration` for the tagged set.
-- [ ] Test-support starts duplicated across api/dal (D11); extraction to `backend/test-support` deferred to TRACK-111.
-- [ ] Delete `MigrationRunner`; archive `tools/db-migrate` → `tools/db-migrate-archived/`.
-- [ ] Update `modules/backend/CLAUDE.md` (remove phantom `IntegrationTestEnv` conventions; document the real ones).
+- [x] Added `testcontainers` (1.21.4) to `libs.versions.toml` with `org.testcontainers:postgresql` + Flyway JVM API libs (`flyway-core`/`flyway-database-postgresql` 12.8.1); wired into `api` test classpath. (No BOM/`junit-jupiter` module needed — the singleton needs no annotations; JUnit 5 comes via kotlin-test-junit5. `dal` has no tests yet, so deps land there when it gains integration coverage — folds into TRACK-111.)
+- [x] `SangitaPostgres` singleton: `docker.io/library/postgres:18.3-alpine` (fully-qualified for Podman-readiness), migrated via **Flyway JVM API** (replaces the 156-line `MigrationRunner`).
+- [x] `TestDatabase` with `TEST_DATABASE_URL` escape hatch (default Testcontainers; external URL when set). **Schema-only** migrate — `R__` reference data skipped so it doesn't collide with `TestFixtures`.
+- [x] Repointed `IntegrationTestBase` at the new substrate; truncate-after-each retained, exclusion = **`flyway_schema_history` only** (reference tables are empty in schema-only tests, so no "+ reference tables" needed).
+- [x] `@Tag("integration")` (D10) + `integrationTest` Gradle task; `make test` / `./gradlew check` run all, `make test-integration` runs the tagged set.
+- [~] Test-support stays in `api` (D11); extraction to `backend/test-support` + `dal` integration coverage deferred to TRACK-111.
+- [x] Deleted `MigrationRunner` (+ dead `TestDatabaseFactory`); archived `tools/db-migrate` → `tools/db-migrate-archived/`.
+- [x] Updated `modules/backend/CLAUDE.md` (real Testcontainers/Flyway conventions; removed phantom `IntegrationTestEnv`).
+- [x] B1 (D16): legacy `schema_migrations` / `_sqlx_migrations` confirmed absent from the verified Flyway DB (nothing to drop); creators removed.
 
 ## Acceptance Criteria
 
-- `./gradlew check` green on a machine with **no** Postgres on 5432 and only Docker present.
-- `make db-reset` runs entirely through Flyway; reference data arrives via `R__` repeatables.
-- Legacy tracking tables dropped after one verified cycle.
-- Freeze lifted (Sub-part A complete).
+- [x] `./gradlew check` green on a machine with **no** Postgres on 5432 and only Docker present — integration tests self-provision via Testcontainers (random host port; the old `localhost:5432` dependency is gone).
+- [x] `make db-reset` runs entirely through Flyway; reference data arrives via `R__` repeatables.
+- [x] Legacy tracking tables confirmed absent after the verified cycle (none to drop).
+- [x] Freeze lifted (Sub-part A complete and signed off).
 
 ## Docs to Update
 

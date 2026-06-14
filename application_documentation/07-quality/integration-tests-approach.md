@@ -13,6 +13,11 @@
 
 **TL;DR — Recommendation:** adopt **Testcontainers for the JVM** with a singleton, migration-initialized `PostgreSQLContainer` as the backbone of backend and DAL integration tests; keep the truncate-between-tests machinery (it is good and transfers unchanged); add **testcontainers-python** for the extraction worker's DB-touching paths (Java and Python Testcontainers coexist freely — §5.6); and use **Playwright against the compose stack** for E2E. Reject H2/in-memory outright. Keep an env-var escape hatch so tests can still target an externally provided database (CI service containers, or a developer's already-running `make db`) when that is faster. **On migrations (§5):** consolidate the two custom, already-diverged migration runners onto **Flyway Community** — one standards-based engine driving Kotlin tests (JVM API), Make/dev (CLI/Docker), Python tests, and CI, with repeatable migrations taking over reference-data seeding; **ratified as [ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)** (2026-06-12), which amended project Critical Rule #1.
 
+> **Implemented — Steps 1–2 done ([TRACK-110](../../conductor/tracks/TRACK-110-testcontainers-flyway-cutover.md)).** The Flyway cutover (Sub-part A) and this Testcontainers substrate (Sub-part B) have landed. As-built notes that refine the proposal below:
+> - **Substrate**: `SangitaPostgres` (Testcontainers, `docker.io/library/postgres:18.3-alpine`) + `TestDatabase` migrate the container via the **Flyway JVM API** — the 156-line `MigrationRunner` is deleted. Dep: `org.testcontainers:postgresql` 1.21.4 (no BOM / `junit-jupiter` module needed; the singleton object needs no annotations). `TEST_DATABASE_URL` is the escape hatch (§3.2).
+> - **Schema-only in tests**: the test Flyway applies `V__` only and **skips `R__` reference data** (disabled repeatable prefix), because seeding ragas/composers would collide with `TestFixtures`. Consequently the truncate-reset exclusion list is **`flyway_schema_history` only** (not "+ reference tables" as speculated below) — reference tables are empty in tests, matching prior behaviour.
+> - **Tagging**: `@Tag("integration")` + a tag-filtered `integrationTest` Gradle task (`make test-integration`); `make test` / `./gradlew check` run everything.
+
 ---
 
 ## 1. Where We Are Today
@@ -394,7 +399,7 @@ The decisive extra: **repeatable migrations (`R__*.sql`)** — rerun automatical
 |:---|:---|:---|:---|
 | **Reference data** (part of the schema in spirit) | ragas, talas, languages, deities, composer aliases, import-source authority | Flyway **repeatable migrations** (`R__seed_ragas.sql`, …), idempotent `ON CONFLICT` upserts (already written that way) — re-applied automatically when the file changes, checksummed, identical in dev/test/CI/prod | ✅ |
 | **Environment data** | admin user + credentials | *Out* of migrations entirely (it is per-environment and security-sensitive — N1); provisioning script or first-run bootstrap | ❌ deliberately |
-| **Dev sample data** | `02_sample_data.sql`, demo krithis | `make seed-dev` / Gradle `seedDatabase` only; never in migrations, never in CI | ❌ |
+| **Dev sample data** | `02_sample_data.sql`, demo krithis | `make seed-dev` only; never in migrations, never in CI | ❌ |
 | **Test fixtures** | per-scenario entities | Kotlin builders (§3.4), never SQL dumps | n/a |
 
 This directly upgrades the test substrate: reference data arrives with the schema in every container (the §3.4 "seed once per JVM" step disappears), and the truncate-reset exclusion list becomes "Flyway's `flyway_schema_history` + reference tables".

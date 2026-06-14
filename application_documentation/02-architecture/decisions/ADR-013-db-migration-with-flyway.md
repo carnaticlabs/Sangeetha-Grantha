@@ -37,7 +37,7 @@ Adopt **Flyway Community Edition** as the **single migration engine** for all en
 - **Seed data** is restructured into explicit tiers:
   - *Reference data* (ragas, talas, languages, deities, composer aliases, import-source authority) → Flyway **repeatable migrations** (`R__seed_*.sql`), idempotent `ON CONFLICT` upserts, re-applied automatically when their checksum changes.
   - *Environment data* (admin user/credentials) → out of migrations entirely; provisioning bootstrap.
-  - *Dev sample data* → `make seed-dev` / Gradle `seedDatabase` only; never in migrations or CI.
+  - *Dev sample data* → `make seed-dev` only; never in migrations or CI.
   - *Test fixtures* → Kotlin builders in test code; never SQL dumps.
 - **Retired**: `tools/db-migrate` (archived to `tools/db-migrate-archived/`, alongside the Rust CLI) and the Kotlin test-side `MigrationRunner` (deleted).
 - **`CLAUDE.md` Critical Rule #1** is amended: the rule's *intent* (one disciplined path for schema changes, via `make` targets) survives; the prohibition on Flyway is replaced by Flyway-as-standard. Liquibase and ad-hoc SQL executors remain prohibited, as does any new custom migration runner.

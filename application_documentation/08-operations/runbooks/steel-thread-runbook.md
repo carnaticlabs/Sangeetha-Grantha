@@ -104,8 +104,9 @@ cargo run -- db migrate
 ### Seed Reference Data
 
 ```bash
-# Seed is included in db reset, or run manually:
-./gradlew :modules:backend:api:seedDatabase
+# Reference data ships via Flyway R__ repeatables (included in db reset / migrate).
+# Dev sample data, if needed:
+make seed-dev
 ```
 
 ### Full Database Reset

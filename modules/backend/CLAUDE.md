@@ -7,8 +7,11 @@ Kotlin + Ktor backend split into `api/` (HTTP routes) and `dal/` (data access).
 ./gradlew :modules:backend:api:build        # Build
 ./gradlew :modules:backend:api:test         # Run tests
 ./gradlew :modules:backend:api:runDev       # Run dev server (port 8080)
-./gradlew :modules:backend:api:seedDatabase # Seed DB
 ```
+
+Reference data ships via Flyway `R__` repeatable migrations (`make migrate` / `make db-reset`)
+and dev sample data via `make seed-dev` (ADR-013). There is no Gradle seed task. The admin user is
+provisioned out-of-band via `./gradlew :modules:backend:api:bootstrapAdmin` (`make bootstrap-admin`).
 
 ## Key Rules
 - All DB calls via `DatabaseFactory.dbQuery { }` — never raw connections
@@ -19,7 +22,13 @@ Kotlin + Ktor backend split into `api/` (HTTP routes) and `dal/` (data access).
 - Main class: `com.sangita.grantha.backend.api.AppKt`
 
 ## Test Conventions
-- Integration tests in `api/src/test/kotlin/.../integration/`
-- Use `testApplication` from Ktor Server Test Host
-- Seed via `IntegrationTestEnv` and `IntegrationSeedData`
-- Deterministic fixtures: fixed UUIDs, known timestamps
+- Integration tests extend `IntegrationTestBase` (`api/src/test/.../support/`). It self-provisions
+  a Postgres via **Testcontainers** (`SangitaPostgres`) and schema-migrates it with the **Flyway JVM
+  API** (`TestDatabase`, schema-only — `R__` reference data is skipped) — no `localhost:5432`.
+- Set `TEST_DATABASE_URL` to point the suite at an external Postgres (e.g. a CI service container)
+  instead of starting a container.
+- State resets by truncating all tables after each test (`flyway_schema_history` preserved).
+- Build your own data with `TestFixtures` (deterministic builders); HTTP via `testApplication`
+  (Ktor Server Test Host).
+- Tagged `@Tag("integration")`: `make test` / `./gradlew check` run everything; `make test-integration`
+  (`:integrationTest` task) runs only the tagged set. Requires Docker.

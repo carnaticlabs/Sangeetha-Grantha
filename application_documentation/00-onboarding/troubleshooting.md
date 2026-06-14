@@ -129,11 +129,11 @@ UNION ALL SELECT 'talas', COUNT(*) FROM talas
 UNION ALL SELECT 'users', COUNT(*) FROM users;
 EOF
 
-# Re-seed if data is missing
-./gradlew :modules:backend:api:seedDatabase
+# Re-seed reference data (Flyway R__ repeatables) + dev sample data
+make migrate && make seed-dev
 
-# Or full reset
-cargo run -- db reset
+# Or full reset (drop → create → Flyway migrate)
+make db-reset
 ```
 
 ---
@@ -222,7 +222,7 @@ psql $DATABASE_URL -c "SELECT 1"
 
 # Common issues:
 # 1. Database not connected - restart docker compose
-# 2. Missing seed data - run seedDatabase
+# 2. Missing seed data - run `make seed-dev` (reference data ships via Flyway R__)
 # 3. Null pointer - check for null handling in service layer
 ```
 
