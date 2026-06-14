@@ -113,8 +113,8 @@
 | [TRACK-107](./tracks/TRACK-107-ai-platform-lifecycle-uplift.md) | AI Platform Lifecycle Uplift (SDK + Model + Structured Output + Batch) | Completed |
 | [TRACK-108](./tracks/TRACK-108-semantic-search.md) | Semantic Search (Embeddings + pgvector) | Not Started |
 | [TRACK-109](./tracks/TRACK-109-production-readiness-roadmap.md) | Production Readiness Roadmap (Epic) | Not Started |
-| [TRACK-110](./tracks/TRACK-110-testcontainers-flyway-cutover.md) | Testcontainers Substrate + Flyway Cutover | Not Started |
-| [TRACK-111](./tracks/TRACK-111-dal-suite-ci-activation.md) | DAL Test Suite + CI Activation | Not Started |
+| [TRACK-110](./tracks/TRACK-110-testcontainers-flyway-cutover.md) | Testcontainers Substrate + Flyway Cutover | Completed |
+| [TRACK-111](./tracks/TRACK-111-dal-suite-ci-activation.md) | DAL Test Suite + CI Activation | Completed |
 | [TRACK-112](./tracks/TRACK-112-money-path-scenarios.md) | Money-Path Service & API Scenarios | Not Started |
 | [TRACK-113](./tracks/TRACK-113-worker-e2e-tests.md) | Worker + E2E Layer (revives TRACK-035) | Not Started |
 | [TRACK-114](./tracks/TRACK-114-password-hashing.md) | Authentication Hardening — Password Hashing (N1, re-scoped) | Completed |

@@ -67,10 +67,9 @@ dependencies {
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.mockk)
 
-    // Integration-test substrate (TRACK-110): Testcontainers Postgres + Flyway JVM API
-    testImplementation(libs.testcontainers.postgresql)
-    testImplementation(libs.flyway.core)
-    testRuntimeOnly(libs.flyway.database.postgresql)
+    // Shared integration-test substrate (TRACK-111, D11): IntegrationTestBase, SangitaPostgres,
+    // TestDatabase, TestFixtures — plus Testcontainers + Flyway transitively.
+    testImplementation(project(":modules:backend:test-support"))
 }
 
 // Simple dev run task (no frontend coupling yet)
@@ -130,6 +129,17 @@ tasks.register<Test>("integrationTest") {
     useJUnitPlatform { includeTags("integration") }
     workingDir = rootProject.projectDir
     shouldRunAfter(tasks.test)
+}
+
+// Fast, Docker-free unit slice (everything NOT @Tag("integration")) for the CI unit gate (D9: <30s).
+// The default `test` task still runs the full suite, so `make test` / `check` are unchanged.
+tasks.register<Test>("unitTest") {
+    group = "verification"
+    description = "Runs only the non-integration (unit) tests — no database required"
+    testClassesDirs = sourceSets.test.get().output.classesDirs
+    classpath = sourceSets.test.get().runtimeClasspath
+    useJUnitPlatform { excludeTags("integration") }
+    workingDir = rootProject.projectDir
 }
 
 // Reference data ships via Flyway R__ repeatable migrations (make migrate / make db-reset)

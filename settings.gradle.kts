@@ -22,6 +22,7 @@ include(
     ":modules:shared:domain",
     ":modules:shared:presentation",
     ":modules:backend:api",
-    ":modules:backend:dal"
+    ":modules:backend:dal",
+    ":modules:backend:test-support"
     // frontend admin web will be wired via bun/Vite, not Gradle
 )

@@ -1,10 +1,11 @@
-package com.sangita.grantha.backend.api.support
+package com.sangita.grantha.backend.testsupport
 
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.utility.DockerImageName
 
 /**
- * Lazily-started, JVM-lifetime PostgreSQL test container (TRACK-110 Sub-part B).
+ * Lazily-started, JVM-lifetime PostgreSQL test container (TRACK-110 Sub-part B; extracted into the
+ * shared test-support module in TRACK-111).
  *
  * Replaces the old hard-coded `localhost:5432` dependency: integration tests now self-provision
  * a throwaway, version-pinned Postgres via Testcontainers. The container starts once on first

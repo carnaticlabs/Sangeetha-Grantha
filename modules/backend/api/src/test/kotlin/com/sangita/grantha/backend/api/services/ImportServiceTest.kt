@@ -2,7 +2,7 @@ package com.sangita.grantha.backend.api.services
 
 import com.sangita.grantha.backend.api.models.ImportKrithiRequest
 import com.sangita.grantha.backend.api.models.ImportReviewRequest
-import com.sangita.grantha.backend.api.support.IntegrationTestBase
+import com.sangita.grantha.backend.testsupport.IntegrationTestBase
 import com.sangita.grantha.backend.dal.SangitaDal
 import com.sangita.grantha.backend.dal.SangitaDalImpl
 import com.sangita.grantha.backend.dal.enums.LanguageCode

@@ -39,7 +39,7 @@ See [Integration Tests Approach](../../application_documentation/07-quality/inte
 - [x] `TestDatabase` with `TEST_DATABASE_URL` escape hatch (default Testcontainers; external URL when set). **Schema-only** migrate — `R__` reference data skipped so it doesn't collide with `TestFixtures`.
 - [x] Repointed `IntegrationTestBase` at the new substrate; truncate-after-each retained, exclusion = **`flyway_schema_history` only** (reference tables are empty in schema-only tests, so no "+ reference tables" needed).
 - [x] `@Tag("integration")` (D10) + `integrationTest` Gradle task; `make test` / `./gradlew check` run all, `make test-integration` runs the tagged set.
-- [~] Test-support stays in `api` (D11); extraction to `backend/test-support` + `dal` integration coverage deferred to TRACK-111.
+- [x] Test-support stayed in `api` for TRACK-110 (D11); extraction to `:modules:backend:test-support` + `dal` integration coverage **delivered in [TRACK-111](./TRACK-111-dal-suite-ci-activation.md)**.
 - [x] Deleted `MigrationRunner` (+ dead `TestDatabaseFactory`); archived `tools/db-migrate` → `tools/db-migrate-archived/`.
 - [x] Updated `modules/backend/CLAUDE.md` (real Testcontainers/Flyway conventions; removed phantom `IntegrationTestEnv`).
 - [x] B1 (D16): legacy `schema_migrations` / `_sqlx_migrations` confirmed absent from the verified Flyway DB (nothing to drop); creators removed.

@@ -158,7 +158,16 @@
 |---------|---------|---------|
 | Flyway Community | `12.8.1` | Single migration engine ([ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)). Make/dev/CI via `flyway/flyway:12.8.1-alpine`; Kotlin Testcontainers via the Flyway JVM API. Pinned in `gradle/libs.versions.toml` (`flyway`) and `compose.yaml`. |
 
-Migrations are standardized on **Flyway Community** ([ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)). The previous Python tool (`tools/db-migrate`, psycopg `>=3.1`) is superseded and pending archival (TRACK-110 Sub-part B).
+Migrations are standardized on **Flyway Community** ([ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)). The previous Python tool (`tools/db-migrate`, psycopg `>=3.1`) is superseded and archived (`tools/db-migrate-archived/`, TRACK-110).
+
+### Test & CI Substrate
+
+| Component | Version | Notes |
+|---------|---------|---------|
+| Testcontainers | `1.21.4` | `org.testcontainers:postgresql`; integration tests self-provision `postgres:18.3-alpine`. Pinned in `gradle/libs.versions.toml` (`testcontainers`). |
+| GitHub Actions CI | — | `.github/workflows/ci.yml` (TRACK-111): backend unit/integration, Flyway migrate+validate, frontend typecheck+build, worker pytest. Blocking, PR-triggered (D7/D8). |
+
+Shared integration-test infrastructure (`IntegrationTestBase`, `SangitaPostgres`, `TestDatabase`, `TestFixtures`) lives in the **`:modules:backend:test-support`** module (TRACK-111, D11), consumed by both the `api` and `dal` test classpaths.
 
 ---
 

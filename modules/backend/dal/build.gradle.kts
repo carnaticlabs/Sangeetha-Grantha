@@ -25,8 +25,24 @@ dependencies {
 
     testImplementation(kotlin("test"))
     testImplementation(libs.kotlinx.coroutines.test)
+
+    // Shared integration-test substrate (TRACK-111, D11): IntegrationTestBase, SangitaPostgres,
+    // TestDatabase, TestFixtures — plus Testcontainers + Flyway transitively.
+    testImplementation(project(":modules:backend:test-support"))
 }
 
 tasks.test {
     useJUnitPlatform()
+    workingDir = rootProject.projectDir
+}
+
+// Run only @Tag("integration") tests (Testcontainers-backed). `make test` / check still run all.
+tasks.register<Test>("integrationTest") {
+    group = "verification"
+    description = "Runs only the @Tag(\"integration\") DAL tests (self-provisioning Testcontainers DB)"
+    testClassesDirs = sourceSets.test.get().output.classesDirs
+    classpath = sourceSets.test.get().runtimeClasspath
+    useJUnitPlatform { includeTags("integration") }
+    workingDir = rootProject.projectDir
+    shouldRunAfter(tasks.test)
 }

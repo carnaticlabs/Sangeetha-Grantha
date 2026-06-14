@@ -27,7 +27,7 @@ What's missing for production (the gaps this epic closes):
 | Workstream | Gap today | Production bar |
 |:---|:---|:---|
 | **W1 — Secrets management** | API keys / JWT secret / DB creds via plaintext `.env` (`SG_GEMINI_API_KEY` etc.) | Managed secrets (GCP Secret Manager / Vault); no secrets in repo or image; rotation policy |
-| **W2 — CI/CD** | Local Makefile + manual `./gradlew`/`bun`; no pipeline | CI builds all 3 layers, runs tests + migrations, scans deps; CD with promotion gates + rollback |
+| **W2 — CI/CD** | 🟡 *CI partially landed ([TRACK-111](./TRACK-111-dal-suite-ci-activation.md)): `.github/workflows/ci.yml` builds all 3 layers + runs tests + Flyway migrate/validate. Remaining: dependency scanning, branch-protection enforcement, and the CD half (promotion gates + rollback).* | CI builds all 3 layers, runs tests + migrations, scans deps; CD with promotion gates + rollback |
 | **W3 — Deployment & runtime** | Docker Compose (dev only) | Prod orchestration (Cloud Run / GKE per GCP affinity); health/readiness probes; horizontal scale for API + worker |
 | **W4 — Observability** | Micrometer wired but no backend; logs local | Prometheus + Grafana dashboards; alerting; distributed tracing; SLOs (latency, extraction success rate, queue depth) |
 | **W5 — Data durability & DR** | Local Postgres volume | Automated backups + PITR; tested restore; retention policy; RPO/RTO targets |

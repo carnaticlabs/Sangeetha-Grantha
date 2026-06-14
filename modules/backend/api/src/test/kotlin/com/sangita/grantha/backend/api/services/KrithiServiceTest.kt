@@ -1,8 +1,8 @@
 package com.sangita.grantha.backend.api.services
 
 import com.sangita.grantha.backend.api.models.KrithiCreateRequest
-import com.sangita.grantha.backend.api.support.IntegrationTestBase
-import com.sangita.grantha.backend.api.support.TestFixtures
+import com.sangita.grantha.backend.testsupport.IntegrationTestBase
+import com.sangita.grantha.backend.testsupport.TestFixtures
 import com.sangita.grantha.backend.dal.SangitaDal
 import com.sangita.grantha.shared.domain.model.KrithiSearchRequest
 import com.sangita.grantha.shared.domain.model.LanguageCodeDto

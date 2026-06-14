@@ -1,4 +1,4 @@
-package com.sangita.grantha.backend.api.support
+package com.sangita.grantha.backend.testsupport
 
 import java.nio.file.Paths
 import org.flywaydb.core.Flyway
@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory
 
 /**
  * Resolves the integration-test database connection and migrates its schema with Flyway
- * (TRACK-110 Sub-part B) — replacing the 156-line hand-rolled `MigrationRunner`.
+ * (TRACK-110 Sub-part B; shared in TRACK-111) — replacing the 156-line hand-rolled `MigrationRunner`.
  *
  * Default: a Testcontainers Postgres ([SangitaPostgres]).
  * Escape hatch: if `TEST_DATABASE_URL` is set, that external database is used instead (e.g. a CI

@@ -1,4 +1,4 @@
-package com.sangita.grantha.backend.api.support
+package com.sangita.grantha.backend.testsupport
 
 import com.sangita.grantha.backend.dal.DatabaseFactory
 import kotlinx.coroutines.runBlocking
@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory
  * dropped/recreated; `flyway_schema_history` is preserved.
  *
  * Tagged `integration`: run the whole suite with `make test` (or `./gradlew check`), or just the
- * tagged set with `make test-integration` (`./gradlew :modules:backend:api:integrationTest`).
+ * tagged set with `make test-integration` (`./gradlew :modules:backend:<module>:integrationTest`).
  *
  * Usage:
  * ```kotlin

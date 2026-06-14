@@ -1,5 +1,6 @@
 package com.sangita.grantha.backend.dal
 
+import com.sangita.grantha.backend.dal.errors.toDalExceptionOrNull
 import com.sangita.grantha.backend.dal.support.DatabaseConfig
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
@@ -9,6 +10,7 @@ import java.util.concurrent.atomic.AtomicReference
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.v1.core.Slf4jSqlDebugLogger
+import org.jetbrains.exposed.v1.exceptions.ExposedSQLException
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.JdbcTransaction
 import org.jetbrains.exposed.v1.jdbc.transactions.experimental.newSuspendedTransaction
@@ -93,15 +95,23 @@ object DatabaseFactory {
     // Until an equivalent becomes available for JDBC, keep using it and suppress the warning.
     @Suppress("DEPRECATION")
     suspend fun <T> dbQuery(block: suspend JdbcTransaction.() -> T): T =
-        newSuspendedTransaction(context = dispatcher) {
-            if (com.sangita.grantha.backend.dal.support.QueryCounter.isActive()) {
-                addLogger(com.sangita.grantha.backend.dal.support.QueryCounterLogger)
+        try {
+            newSuspendedTransaction(context = dispatcher) {
+                if (com.sangita.grantha.backend.dal.support.QueryCounter.isActive()) {
+                    addLogger(com.sangita.grantha.backend.dal.support.QueryCounterLogger)
+                }
+                if (queryLoggingEnabled) {
+                    org.jetbrains.exposed.v1.jdbc.transactions.TransactionManager.current().warnLongQueriesDuration = slowQueryThresholdMs
+                    addLogger(Slf4jSqlDebugLogger)
+                }
+                block()
             }
-            if (queryLoggingEnabled) {
-                org.jetbrains.exposed.v1.jdbc.transactions.TransactionManager.current().warnLongQueriesDuration = slowQueryThresholdMs
-                addLogger(Slf4jSqlDebugLogger)
-            }
-            block()
+        } catch (e: ExposedSQLException) {
+            // D5 (TRACK-111): surface well-known constraint violations as typed DalExceptions so
+            // callers branch on type rather than parsing a raw PSQLException. Repo-level catches
+            // sit inside `block` and fire first, so their behaviour is unaffected. Unmodelled
+            // SQLStates propagate unchanged.
+            throw e.toDalExceptionOrNull() ?: e
         }
 
     fun close() {

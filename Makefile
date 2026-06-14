@@ -48,11 +48,11 @@ bootstrap-admin:
 
 # Run backend tests (unit + integration; integration self-provisions Postgres via Testcontainers)
 test:
-	./gradlew :modules:backend:api:test
+	./gradlew :modules:backend:dal:test :modules:backend:api:test
 
-# Run only the @Tag("integration") tests
+# Run only the @Tag("integration") tests (DAL D1–D6 suite + api integration)
 test-integration:
-	./gradlew :modules:backend:api:integrationTest
+	./gradlew :modules:backend:dal:integrationTest :modules:backend:api:integrationTest
 
 # Run frontend tests
 test-frontend:

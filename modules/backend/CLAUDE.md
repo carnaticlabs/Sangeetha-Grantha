@@ -1,12 +1,15 @@
 # Backend Module
 
-Kotlin + Ktor backend split into `api/` (HTTP routes) and `dal/` (data access).
+Kotlin + Ktor backend split into `api/` (HTTP routes), `dal/` (data access), and `test-support/`
+(shared integration-test substrate, compiled as `src/main` so both test classpaths consume it).
 
 ## Quick Reference
 ```bash
-./gradlew :modules:backend:api:build        # Build
-./gradlew :modules:backend:api:test         # Run tests
-./gradlew :modules:backend:api:runDev       # Run dev server (port 8080)
+./gradlew :modules:backend:api:build         # Build
+./gradlew :modules:backend:api:test          # Run all api tests (unit + integration)
+./gradlew :modules:backend:api:unitTest      # Unit slice only (no Docker, <30s)
+./gradlew :modules:backend:dal:integrationTest  # DAL D1–D6 suite (Testcontainers)
+./gradlew :modules:backend:api:runDev        # Run dev server (port 8080)
 ```
 
 Reference data ships via Flyway `R__` repeatable migrations (`make migrate` / `make db-reset`)
@@ -22,13 +25,20 @@ provisioned out-of-band via `./gradlew :modules:backend:api:bootstrapAdmin` (`ma
 - Main class: `com.sangita.grantha.backend.api.AppKt`
 
 ## Test Conventions
-- Integration tests extend `IntegrationTestBase` (`api/src/test/.../support/`). It self-provisions
-  a Postgres via **Testcontainers** (`SangitaPostgres`) and schema-migrates it with the **Flyway JVM
-  API** (`TestDatabase`, schema-only — `R__` reference data is skipped) — no `localhost:5432`.
+- Integration tests extend `IntegrationTestBase` from **`:modules:backend:test-support`** (package
+  `com.sangita.grantha.backend.testsupport`; depend via `testImplementation(project(...))`). It
+  self-provisions a Postgres via **Testcontainers** (`SangitaPostgres`) and schema-migrates it with
+  the **Flyway JVM API** (`TestDatabase`, schema-only — `R__` reference data is skipped) — no
+  `localhost:5432`.
 - Set `TEST_DATABASE_URL` to point the suite at an external Postgres (e.g. a CI service container)
   instead of starting a container.
 - State resets by truncating all tables after each test (`flyway_schema_history` preserved).
 - Build your own data with `TestFixtures` (deterministic builders); HTTP via `testApplication`
   (Ktor Server Test Host).
 - Tagged `@Tag("integration")`: `make test` / `./gradlew check` run everything; `make test-integration`
-  (`:integrationTest` task) runs only the tagged set. Requires Docker.
+  (`:integrationTest` task) runs only the tagged set. Requires Docker. `unitTest` runs the non-tagged
+  slice with no Docker.
+- Constraint violations surface as typed `DalException`s (`DuplicateKeyException` / `ForeignKeyViolationException`,
+  `dal/errors/`) — mapped centrally in `DatabaseFactory.dbQuery`, so repos need no per-call handling.
+- DAL data-integrity scenarios (D1–D6: migrations-from-scratch, table round-trips, UUIDv7, junction
+  cascade, typed errors, audit log) live in `dal/src/test/.../integration/`.

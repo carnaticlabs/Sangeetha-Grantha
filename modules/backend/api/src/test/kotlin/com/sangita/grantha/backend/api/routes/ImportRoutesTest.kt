@@ -9,7 +9,7 @@ import com.sangita.grantha.backend.api.services.ImportReportGenerator
 import com.sangita.grantha.backend.api.services.ImportServiceImpl
 import com.sangita.grantha.backend.api.services.LyricVariantPersistenceService
 import com.sangita.grantha.backend.api.services.NameNormalizationService
-import com.sangita.grantha.backend.api.support.IntegrationTestBase
+import com.sangita.grantha.backend.testsupport.IntegrationTestBase
 import com.sangita.grantha.backend.dal.SangitaDal
 import com.sangita.grantha.backend.dal.SangitaDalImpl
 import io.ktor.client.request.post

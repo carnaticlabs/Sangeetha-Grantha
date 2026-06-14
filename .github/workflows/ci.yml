@@ -1,0 +1,109 @@
+name: CI
+
+# TRACK-111 (Steps 3–4): blocking, PR-triggered gate across all layers (D7/D8).
+# Testcontainers needs no special config on hosted runners — Docker is preinstalled on ubuntu-latest.
+# Required-status-check enforcement on `main` is a branch-protection SETTING (configure once in the
+# GitHub repo settings); this file defines the checks, it cannot mark them "required".
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  backend-unit:
+    name: Backend unit (<30s, D9)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Unit tests (no database)
+        run: ./gradlew :modules:backend:api:unitTest --console=plain
+
+  backend-integration:
+    name: Backend integration (<3min, D9)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Integration tests (Testcontainers + Flyway)
+        run: ./gradlew :modules:backend:dal:integrationTest :modules:backend:api:integrationTest --console=plain
+
+  migrations:
+    name: Flyway validate + migrate-from-scratch
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:18.3-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: sangita_grantha_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Migrate from scratch + validate (Flyway 12.8.1)
+        run: |
+          docker run --rm --network host \
+            -v "${{ github.workspace }}/database/migrations:/flyway/sql" \
+            flyway/flyway:12.8.1-alpine \
+            -url="jdbc:postgresql://localhost:5432/sangita_grantha_ci" \
+            -user=postgres -password=postgres -locations=filesystem:/flyway/sql \
+            -baselineOnMigrate=false migrate validate
+
+  frontend:
+    name: Frontend typecheck + build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: modules/frontend/sangita-admin-web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Install
+        run: bun install --frozen-lockfile
+      - name: Typecheck
+        run: bunx tsc -b
+      - name: Build
+        run: bun run build
+
+  worker:
+    name: Worker pytest
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: tools/krithi-extract-enrich-worker
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Sync deps
+        run: uv sync --frozen
+      - name: Pytest
+        run: uv run pytest
