@@ -30,7 +30,8 @@ provisioned out-of-band via `./gradlew :modules:backend:api:bootstrapAdmin` (`ma
   self-provisions a Postgres via **Testcontainers** (`SangitaPostgres`) and schema-migrates it with
   the **Flyway JVM API** (`TestDatabase` — full `V__`+`R__`, so tests run against the real reference
   seed) — no `localhost:5432`. Fixtures `findOrCreate` against the seed; reference tables are kept out
-  of the per-test truncate (`PRESERVED_TABLES`) so the seed stays stable.
+  reset to their seed snapshot after each test (test-created rows deleted, seeded rows untouched) —
+  so the seed is read-only and the suite is idempotent even against a persistent/external DB.
 - Set `TEST_DATABASE_URL` to point the suite at an external Postgres (e.g. a CI service container)
   instead of starting a container.
 - State resets by truncating all tables after each test (`flyway_schema_history` preserved).

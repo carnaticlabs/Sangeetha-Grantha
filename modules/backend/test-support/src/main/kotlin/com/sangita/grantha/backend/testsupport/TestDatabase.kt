@@ -1,6 +1,7 @@
 package com.sangita.grantha.backend.testsupport
 
 import java.nio.file.Paths
+import java.sql.DriverManager
 import org.flywaydb.core.Flyway
 import org.slf4j.LoggerFactory
 
@@ -21,9 +22,22 @@ import org.slf4j.LoggerFactory
 object TestDatabase {
     private val logger = LoggerFactory.getLogger(TestDatabase::class.java)
 
+    /**
+     * Reference tables seeded by the `R__` repeatables that tests may write to (entity creation,
+     * import-source registration). After each test, [IntegrationTestBase] deletes any rows NOT in
+     * the seed snapshot ([SEED_SNAPSHOT_TABLE]) so these tables always return to exactly the seed —
+     * the seed is read-only and the suite is idempotent even against a persistent/external database
+     * (the `TEST_DATABASE_URL` hatch). All are `UUIDTable` (PK `id`). roles/composer_aliases are
+     * never written by tests, so they are simply preserved (see `IntegrationTestBase.PRESERVED_TABLES`).
+     */
+    val RESET_TABLES: List<String> = listOf("composers", "ragas", "talas", "deities", "import_sources")
+
+    /** In-DB snapshot of the seed PKs (table, pk), captured once right after migration. */
+    const val SEED_SNAPSHOT_TABLE: String = "_seed_pk_snapshot"
+
     data class Connection(val jdbcUrl: String, val username: String, val password: String)
 
-    /** Connection to a schema-migrated test database. Container start + migration happen once. */
+    /** Connection to a schema-migrated, snapshot-captured test database. Happens once per JVM. */
     val connection: Connection by lazy {
         val external = System.getenv("TEST_DATABASE_URL")?.takeIf { it.isNotBlank() }
         val conn = if (external != null) {
@@ -38,6 +52,7 @@ object TestDatabase {
             Connection(jdbcUrl = c.jdbcUrl, username = c.username, password = c.password)
         }
         migrateSchema(conn)
+        captureSeedSnapshot(conn)
         conn
     }
 
@@ -48,5 +63,23 @@ object TestDatabase {
             .locations("filesystem:$migrationsDir")
             .load()
             .migrate()
+    }
+
+    /**
+     * Record the post-seed PK set of each [RESET_TABLES] table into [SEED_SNAPSHOT_TABLE]. Re-created
+     * each run (DROP IF EXISTS), so on a persistent/external DB it reflects that DB's reference state
+     * at suite start — the per-test reset then restores exactly that, leaving the DB unaltered.
+     */
+    private fun captureSeedSnapshot(conn: Connection) {
+        DriverManager.getConnection(conn.jdbcUrl, conn.username, conn.password).use { jdbc ->
+            jdbc.createStatement().use { st ->
+                st.execute("DROP TABLE IF EXISTS $SEED_SNAPSHOT_TABLE")
+                st.execute("CREATE TABLE $SEED_SNAPSHOT_TABLE (tbl text NOT NULL, pk text NOT NULL)")
+                for (t in RESET_TABLES) {
+                    // Table names are a fixed internal allow-list, not user input.
+                    st.execute("INSERT INTO $SEED_SNAPSHOT_TABLE (tbl, pk) SELECT '$t', id::text FROM $t")
+                }
+            }
+        }
     }
 }

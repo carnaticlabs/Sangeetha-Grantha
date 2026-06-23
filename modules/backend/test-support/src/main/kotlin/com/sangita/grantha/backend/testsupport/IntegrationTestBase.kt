@@ -12,9 +12,11 @@ import org.slf4j.LoggerFactory
  * Base class for integration tests that need a real PostgreSQL database.
  *
  * The database is a self-provisioning Testcontainers Postgres ([TestDatabase] / [SangitaPostgres]),
- * schema-migrated once per JVM via the Flyway JVM API — guaranteeing schema parity with production
- * with no `localhost:5432` dependency. Between tests, all tables are truncated (fast) rather than
- * dropped/recreated; `flyway_schema_history` is preserved.
+ * migrated once per JVM via the Flyway JVM API (full `V__`+`R__`, so the real reference seed is
+ * present) — schema parity with production, no `localhost:5432` dependency. Between tests,
+ * transactional tables are truncated and the reference tables are reset to their seed snapshot
+ * (test-created rows removed, seeded rows untouched) — so the seed is read-only and the suite is
+ * idempotent even against a persistent/external DB.
  *
  * Tagged `integration`: run the whole suite with `make test` (or `./gradlew check`), or just the
  * tagged set with `make test-integration` (`./gradlew :modules:backend:<module>:integrationTest`).
@@ -39,13 +41,10 @@ abstract class IntegrationTestBase {
          */
         private val PRESERVED_TABLES = listOf(
             "flyway_schema_history",
+            TestDatabase.SEED_SNAPSHOT_TABLE,
+            // Reference tables never written by tests — kept as-is.
             "roles",
-            "composers",
-            "ragas",
-            "talas",
-            "deities",
             "composer_aliases",
-            "import_sources",
         )
 
         @JvmStatic
@@ -74,30 +73,42 @@ abstract class IntegrationTestBase {
     }
 
     /**
-     * Truncate all user tables between tests. Much faster than drop/recreate.
-     * Preserves `flyway_schema_history` and the `R__`-seeded reference tables ([PRESERVED_TABLES])
-     * so the real reference seed stays available to every test (fixtures `findOrCreate` against it).
+     * Reset state between tests. Transactional tables are truncated; the reference tables are reset
+     * to their seed snapshot — any rows a test inserted are deleted, the seeded rows are left
+     * untouched. The seed therefore stays read-only and stable, and the suite is idempotent even
+     * against a persistent/external database (it never leaves reference rows behind). FK checks are
+     * disabled for the reset (`session_replication_role = replica`) so order is irrelevant.
      */
     @AfterEach
-    fun truncateAllTables() {
+    fun resetState() {
         runBlocking {
             DatabaseFactory.dbQuery {
-                val keep = PRESERVED_TABLES.joinToString(", ") { "'$it'" }
-                val tables = exec(
+                // Tables left entirely alone (Flyway bookkeeping, the seed snapshot, and the
+                // reference tables tests never write) + the reset tables (handled by delete below).
+                val untouched = (PRESERVED_TABLES + TestDatabase.RESET_TABLES)
+                    .joinToString(", ") { "'$it'" }
+                val transactional = exec(
                     """
                     SELECT tablename FROM pg_tables
                     WHERE schemaname = 'public'
-                      AND tablename NOT IN ($keep)
+                      AND tablename NOT IN ($untouched)
                     """.trimIndent()
                 ) { rs ->
                     buildList { while (rs.next()) add(rs.getString(1)) }
                 } ?: emptyList()
 
-                if (tables.isNotEmpty()) {
-                    exec("SET session_replication_role = replica")
-                    exec("TRUNCATE TABLE ${tables.joinToString(", ")} CASCADE")
-                    exec("SET session_replication_role = DEFAULT")
+                exec("SET session_replication_role = replica")
+                if (transactional.isNotEmpty()) {
+                    exec("TRUNCATE TABLE ${transactional.joinToString(", ")} CASCADE")
                 }
+                // Restore each reference table to exactly the seed: drop only test-created rows.
+                for (table in TestDatabase.RESET_TABLES) {
+                    exec(
+                        "DELETE FROM $table WHERE id::text NOT IN " +
+                            "(SELECT pk FROM ${TestDatabase.SEED_SNAPSHOT_TABLE} WHERE tbl = '$table')"
+                    )
+                }
+                exec("SET session_replication_role = DEFAULT")
             }
         }
     }
