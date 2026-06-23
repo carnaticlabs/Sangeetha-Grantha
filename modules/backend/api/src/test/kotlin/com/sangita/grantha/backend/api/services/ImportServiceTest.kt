@@ -78,9 +78,10 @@ class ImportServiceTest : IntegrationTestBase() {
 
     @Test
     fun `reviewImport deduplicates existing krithi`() = runTest {
-        // Setup: Create an existing Krithi
-        val composer = dal.composers.create(name = "Tyagaraja")
-        val raga = dal.ragas.create(name = "Kalyani")
+        // Setup: existing krithi referencing the seeded Tyagaraja / Kalyani (findOrCreate returns
+        // the R__-seeded rows), so the import below resolves to the same reference entities.
+        val composer = dal.composers.findOrCreate(name = "Tyagaraja")
+        val raga = dal.ragas.findOrCreate(name = "Kalyani")
         val existingKrithi = dal.krithis.create(
             KrithiCreateParams(
                 title = "Nidhi Chala Sukhama",

@@ -27,8 +27,9 @@ class KrithiRagasJunctionTest : IntegrationTestBase() {
 
     @Test
     fun `krithi with N ragas creates N junction rows and cascades on delete`() = runTest {
-        val composer = dal.composers.create(name = "Tyagaraja")
-        val ragaIds = listOf("Kalyani", "Todi", "Bhairavi")
+        // Probe entities use names absent from the R__ reference seed (preserved across tests).
+        val composer = dal.composers.create(name = "Junction-Probe Composer")
+        val ragaIds = listOf("Junction-Probe Raga A", "Junction-Probe Raga B", "Junction-Probe Raga C")
             .map { dal.ragas.create(name = it).id.toJavaUuid() }
 
         val krithi = dal.krithis.create(

@@ -28,8 +28,9 @@ provisioned out-of-band via `./gradlew :modules:backend:api:bootstrapAdmin` (`ma
 - Integration tests extend `IntegrationTestBase` from **`:modules:backend:test-support`** (package
   `com.sangita.grantha.backend.testsupport`; depend via `testImplementation(project(...))`). It
   self-provisions a Postgres via **Testcontainers** (`SangitaPostgres`) and schema-migrates it with
-  the **Flyway JVM API** (`TestDatabase`, schema-only — `R__` reference data is skipped) — no
-  `localhost:5432`.
+  the **Flyway JVM API** (`TestDatabase` — full `V__`+`R__`, so tests run against the real reference
+  seed) — no `localhost:5432`. Fixtures `findOrCreate` against the seed; reference tables are kept out
+  of the per-test truncate (`PRESERVED_TABLES`) so the seed stays stable.
 - Set `TEST_DATABASE_URL` to point the suite at an external Postgres (e.g. a CI service container)
   instead of starting a container.
 - State resets by truncating all tables after each test (`flyway_schema_history` preserved).

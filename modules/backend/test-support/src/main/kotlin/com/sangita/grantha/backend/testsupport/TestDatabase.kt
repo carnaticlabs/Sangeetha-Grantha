@@ -13,10 +13,10 @@ import org.slf4j.LoggerFactory
  * service container), with credentials from `TEST_DATABASE_USER` / `TEST_DATABASE_PASSWORD`
  * (default postgres/postgres). The container is then never started.
  *
- * Migration is **schema-only**: Flyway applies the `V__` versioned migrations but not the `R__`
- * repeatable reference data. Tests build their own fixtures ([TestFixtures]); seeding reference
- * data here would collide with those fixtures (e.g. composer "Tyagaraja"). Schema-only exactly
- * preserves the prior `MigrationRunner` behaviour.
+ * Migration is **full**: Flyway applies the `V__` versioned migrations *and* the `R__` repeatable
+ * reference data — identical to `make db-reset`, so tests exercise the real reference seed (prod
+ * parity). Fixtures ([TestFixtures]) consume that seed via `findOrCreate`; `IntegrationTestBase`
+ * keeps the reference tables out of its truncate-between-tests so the seed persists.
  */
 object TestDatabase {
     private val logger = LoggerFactory.getLogger(TestDatabase::class.java)
@@ -46,9 +46,6 @@ object TestDatabase {
         Flyway.configure()
             .dataSource(conn.jdbcUrl, conn.username, conn.password)
             .locations("filesystem:$migrationsDir")
-            // Schema-only: disable the repeatable prefix so the R__ reference-data files are not
-            // recognised as migrations and are skipped (tests seed their own reference data).
-            .repeatableSqlMigrationPrefix("RDISABLED")
             .load()
             .migrate()
     }

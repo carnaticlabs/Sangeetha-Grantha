@@ -23,9 +23,10 @@ class ConstraintViolationTest : IntegrationTestBase() {
 
     @Test
     fun `duplicate name_normalized surfaces DuplicateKeyException`() = runTest {
-        dal.composers.create(name = "Tyagaraja")
+        // Probe name absent from the R__ reference seed, so the first insert is the original.
+        dal.composers.create(name = "Dup-Probe Composer")
         assertFailsWith<DuplicateKeyException> {
-            dal.composers.create(name = "Tyagaraja")
+            dal.composers.create(name = "Dup-Probe Composer")
         }
     }
 

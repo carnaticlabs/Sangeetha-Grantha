@@ -13,10 +13,15 @@ object TestFixtures {
         val tala: TalaDto
     )
 
+    /**
+     * Resolve the canonical reference entities the suite builds krithis around. These are seeded by
+     * the `R__` repeatable migrations (Tyagaraja → R__seed_01; Kalyani → R__seed_04; Adi → R__seed_01),
+     * so we `findOrCreate` to return the *seeded* rows rather than inserting duplicates.
+     */
     suspend fun seedReferenceData(dal: SangitaDal): ReferenceDataSeed {
-        val composer = dal.composers.create(name = "Tyagaraja")
-        val raga = dal.ragas.create(name = "Kalyani")
-        val tala = dal.talas.create(name = "Adi")
+        val composer = dal.composers.findOrCreate(name = "Tyagaraja")
+        val raga = dal.ragas.findOrCreate(name = "Kalyani")
+        val tala = dal.talas.findOrCreate(name = "Adi")
         return ReferenceDataSeed(composer = composer, raga = raga, tala = tala)
     }
 

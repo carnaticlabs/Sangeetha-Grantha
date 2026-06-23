@@ -31,6 +31,23 @@ abstract class IntegrationTestBase {
     companion object {
         private val logger = LoggerFactory.getLogger(IntegrationTestBase::class.java)
 
+        /**
+         * Tables left untouched by the per-test truncate: Flyway's bookkeeping plus the reference
+         * data seeded by the `R__` repeatables (roles, composers, ragas, talas, deities, composer
+         * aliases, import sources). Tests read these via `findOrCreate` and must not mutate them,
+         * so they stay stable and identical for every test.
+         */
+        private val PRESERVED_TABLES = listOf(
+            "flyway_schema_history",
+            "roles",
+            "composers",
+            "ragas",
+            "talas",
+            "deities",
+            "composer_aliases",
+            "import_sources",
+        )
+
         @JvmStatic
         @BeforeAll
         fun initializeDatabase() {
@@ -58,17 +75,19 @@ abstract class IntegrationTestBase {
 
     /**
      * Truncate all user tables between tests. Much faster than drop/recreate.
-     * Excludes `flyway_schema_history` so the migration record survives.
+     * Preserves `flyway_schema_history` and the `R__`-seeded reference tables ([PRESERVED_TABLES])
+     * so the real reference seed stays available to every test (fixtures `findOrCreate` against it).
      */
     @AfterEach
     fun truncateAllTables() {
         runBlocking {
             DatabaseFactory.dbQuery {
+                val keep = PRESERVED_TABLES.joinToString(", ") { "'$it'" }
                 val tables = exec(
                     """
                     SELECT tablename FROM pg_tables
                     WHERE schemaname = 'public'
-                      AND tablename NOT IN ('flyway_schema_history')
+                      AND tablename NOT IN ($keep)
                     """.trimIndent()
                 ) { rs ->
                     buildList { while (rs.next()) add(rs.getString(1)) }

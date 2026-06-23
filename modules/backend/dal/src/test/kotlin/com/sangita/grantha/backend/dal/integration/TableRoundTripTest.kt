@@ -25,18 +25,19 @@ class TableRoundTripTest : IntegrationTestBase() {
 
     @Test
     fun `composer round-trips with nullable int columns`() = runTest {
-        val created = dal.composers.create(name = "Tyagaraja", birthYear = 1767, deathYear = 1847)
+        // Probe entities use names absent from the R__ reference seed (which is preserved across tests).
+        val created = dal.composers.create(name = "RoundTrip-Probe Composer", birthYear = 1767, deathYear = 1847)
         val fetched = dal.composers.findById(created.id)
         assertNotNull(fetched)
-        assertEquals("Tyagaraja", fetched.name)
+        assertEquals("RoundTrip-Probe Composer", fetched.name)
         assertEquals(1767, fetched.birthYear)
         assertEquals(1847, fetched.deathYear)
     }
 
     @Test
     fun `raga and tala round-trip`() = runTest {
-        val raga = dal.ragas.create(name = "Kalyani", arohanam = "S R2 G3 M2 P D2 N3 S")
-        val tala = dal.talas.create(name = "Adi", beatCount = 8, angaStructure = "I4 O O")
+        val raga = dal.ragas.create(name = "RoundTrip-Probe Raga", arohanam = "S R2 G3 M2 P D2 N3 S")
+        val tala = dal.talas.create(name = "RoundTrip-Probe Tala", beatCount = 8, angaStructure = "I4 O O")
         assertEquals("S R2 G3 M2 P D2 N3 S", dal.ragas.findById(raga.id)?.arohanam)
         val fetchedTala = dal.talas.findById(tala.id)
         assertNotNull(fetchedTala)
@@ -46,7 +47,7 @@ class TableRoundTripTest : IntegrationTestBase() {
 
     @Test
     fun `krithi round-trips with enum columns intact`() = runTest {
-        val composer = dal.composers.create(name = "Muthuswami Dikshitar")
+        val composer = dal.composers.create(name = "RoundTrip-Krithi Composer")
         val krithi = dal.krithis.create(
             KrithiCreateParams(
                 title = "Vatapi Ganapatim",
