@@ -18,6 +18,8 @@
 *.zip
 *.tar.gz
 *.rar
+# ...but the Gradle wrapper jar MUST be committed so `./gradlew` works on fresh checkouts / CI.
+!gradle/wrapper/gradle-wrapper.jar
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
@@ -35,7 +37,6 @@ replay_pid*
 *.iml
 .gradle/
 build/
-gradlew
 **/db-data/**
 **/node_modules/**
 **/dist/**
