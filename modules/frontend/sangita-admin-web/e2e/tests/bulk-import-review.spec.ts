@@ -76,7 +76,7 @@ test.describe('Import Review Workflow', () => {
     await reviewPage.rejectSelectedImport();
 
     // Verify rejection via database
-    const rejected = await db.getImportedKrithisByStatus(batchId, 'REJECTED');
+    const rejected = await db.getImportedKrithisByStatus(batchId, 'rejected');
     expect(rejected.length).toBeGreaterThan(0);
   });
 

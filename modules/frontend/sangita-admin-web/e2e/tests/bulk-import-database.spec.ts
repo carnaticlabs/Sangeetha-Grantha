@@ -112,7 +112,7 @@ test.describe('Database State Verification', () => {
 
     const importToApprove = pendingImports[0];
 
-    await apiClient.reviewImport(importToApprove.id, { status: 'approved' });
+    await apiClient.reviewImport(importToApprove.id, { status: 'APPROVED' });
 
     const updatedImport = await db.query('SELECT * FROM imported_krithis WHERE id = $1', [
       importToApprove.id,
@@ -124,7 +124,7 @@ test.describe('Database State Verification', () => {
     // First ensure we have some approved imports
     const pendingImports = await db.getImportedKrithisByStatus(batchId, 'pending');
     if (pendingImports.length > 0) {
-      await apiClient.reviewImport(pendingImports[0].id, { status: 'approved' });
+      await apiClient.reviewImport(pendingImports[0].id, { status: 'APPROVED' });
     }
 
     const approved = await db.query(
