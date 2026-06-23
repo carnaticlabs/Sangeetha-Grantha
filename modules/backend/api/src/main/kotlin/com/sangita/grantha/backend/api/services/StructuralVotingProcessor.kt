@@ -2,9 +2,10 @@ package com.sangita.grantha.backend.api.services
 
 import com.sangita.grantha.backend.api.services.scraping.StructuralVotingEngine
 import com.sangita.grantha.backend.dal.SangitaDal
+import com.sangita.grantha.shared.domain.model.KrithiEvidenceSourceDto
+import com.sangita.grantha.shared.domain.model.SectionSummaryDto
+import com.sangita.grantha.shared.domain.model.VotingParticipantDto
 import com.sangita.grantha.shared.domain.model.import.CanonicalExtractionDto
-import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -23,6 +24,12 @@ class StructuralVotingProcessor(
     private val logger = LoggerFactory.getLogger(javaClass)
     private val json = Json { ignoreUnknownKeys = true }
 
+    /** A source paired with its parsed proposed structure. */
+    private data class SourceProposal(
+        val source: KrithiEvidenceSourceDto,
+        val sections: List<ScrapedSectionDto>,
+    )
+
     /**
      * Run structural voting for a Krithi that has multiple source evidence records.
      */
@@ -30,84 +37,91 @@ class StructuralVotingProcessor(
         val evidence = dal.sourceEvidence.getKrithiEvidence(krithiId) ?: return false
         if (evidence.sources.size < 2) return false
 
-        // Build voting candidates from source evidence
-        val candidates = evidence.sources.mapNotNull { source ->
+        // Parse each source's proposed structure, keeping the source linkage so
+        // we can attribute agreement and emit rich VotingParticipant records.
+        val proposals = evidence.sources.mapNotNull { source ->
             val rawExtraction = source.rawExtraction ?: return@mapNotNull null
             try {
                 val extraction = json.decodeFromString<CanonicalExtractionDto>(rawExtraction)
-                StructuralVotingEngine.SectionCandidate(
-                    sections = extraction.sections.map { section ->
-                        ScrapedSectionDto(
-                            type = mapCanonicalSectionType(section.type),
-                            text = section.label ?: section.type.name,
-                            label = section.label,
-                        )
-                    },
-                    isAuthoritySource = source.sourceTier <= 2,
-                    label = source.sourceName,
-                )
+                val sections = extraction.sections.map { section ->
+                    ScrapedSectionDto(
+                        type = mapCanonicalSectionType(section.type),
+                        text = section.label ?: section.type.name,
+                        label = section.label,
+                    )
+                }
+                SourceProposal(source, sections)
             } catch (e: Exception) {
                 logger.warn("Failed to parse extraction for voting: ${e.message}")
                 null
             }
         }
 
-        if (candidates.size < 2) return false
+        if (proposals.size < 2) return false
+
+        val candidates = proposals.map { proposal ->
+            StructuralVotingEngine.SectionCandidate(
+                sections = proposal.sections,
+                isAuthoritySource = proposal.source.sourceTier <= 2,
+                label = proposal.source.sourceName,
+            )
+        }
 
         val bestStructure = votingEngine.pickBestStructure(candidates)
         if (bestStructure.isEmpty()) return false
 
-        // Determine consensus type
-        val allSame = candidates.all { candidate ->
-            candidate.sections.map { it.type } == bestStructure.map { it.type }
+        val bestTypes = bestStructure.map { it.type }
+
+        // Consensus structure as typed, ordered sections.
+        val consensusStructure = bestStructure.mapIndexed { idx, section ->
+            SectionSummaryDto(
+                sectionType = section.type.name,
+                orderIndex = idx,
+                label = section.label,
+            )
         }
+
+        // One participant per source, with agreement derived from whether its
+        // section-type sequence matches the chosen consensus.
+        val participants = proposals.map { proposal ->
+            VotingParticipantDto(
+                sourceId = proposal.source.importSourceId,
+                sourceName = proposal.source.sourceName,
+                sourceTier = proposal.source.sourceTier,
+                agrees = proposal.sections.map { it.type } == bestTypes,
+                proposedStructure = proposal.sections.mapIndexed { idx, section ->
+                    SectionSummaryDto(section.type.name, idx, section.label)
+                },
+                sourceUrl = proposal.source.sourceUrl,
+                extractionMethod = proposal.source.extractionMethod,
+            )
+        }
+
+        val agreeingCount = participants.count { it.agrees }
+        val allSame = agreeingCount == participants.size
         val consensusType = when {
             allSame -> "UNANIMOUS"
-            candidates.any { it.isAuthoritySource } -> "AUTHORITY_OVERRIDE"
+            proposals.any { it.source.sourceTier <= 2 } -> "AUTHORITY_OVERRIDE"
             else -> "MAJORITY"
         }
-
-        // Build participating sources JSON
-        val participatingJson = json.encodeToString(
-            ListSerializer(String.serializer()),
-            evidence.sources.map { it.sourceName },
-        )
-
-        // Build consensus structure JSON
-        val consensusJson = json.encodeToString(
-            ListSerializer(String.serializer()),
-            bestStructure.map { "${it.type.name}:${it.label ?: ""}" },
-        )
-
-        // Build dissenting sources
-        val dissentingSources = candidates.filter { candidate ->
-            candidate.sections.map { it.type } != bestStructure.map { it.type }
-        }
-        val dissentingJson = json.encodeToString(
-            ListSerializer(String.serializer()),
-            dissentingSources.mapNotNull { it.label },
-        )
-
-        // Determine confidence
         val confidence = when {
             allSame -> "HIGH"
-            candidates.count { c -> c.sections.map { it.type } == bestStructure.map { it.type } } > candidates.size / 2 -> "MEDIUM"
+            agreeingCount > participants.size / 2 -> "MEDIUM"
             else -> "LOW"
         }
 
         dal.structuralVoting.createVotingRecord(
             krithiId = krithiId,
-            participatingSources = participatingJson,
-            consensusStructure = consensusJson,
+            participants = participants,
+            consensusStructure = consensusStructure,
             consensusType = consensusType,
             confidence = confidence,
-            dissentingSources = dissentingJson,
         )
 
         val votingMetadata = buildJsonObject {
             put("consensusType", consensusType)
             put("confidence", confidence)
-            put("sourceCount", evidence.sources.size)
+            put("sourceCount", participants.size)
         }
         dal.auditLogs.append(
             action = "STRUCTURAL_VOTING_DECISION",

@@ -55,7 +55,7 @@ const ExtractionMonitorPage: React.FC = () => {
   };
 
   const handleProcessPending = async () => {
-    await processMutation.mutateAsync();
+    await processMutation.mutateAsync(undefined);
   };
 
   return (

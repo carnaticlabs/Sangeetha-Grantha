@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { TierBadge } from '../sourcing/shared';
+import type { SourceTier } from '../../types/sourcing';
 
 interface HigherTierConflict {
   sourceId: string;
   sourceName: string;
-  sourceTier: number;
+  sourceTier: SourceTier;
   field: string;
   conflictingValue: string;
 }
 
 interface AuthorityWarningProps {
   /** The tier of the source being reviewed */
-  currentTier?: number;
+  currentTier?: SourceTier;
   /** Higher-tier conflicts found for this Krithi */
   conflicts?: HigherTierConflict[];
   /** Callback when the user dismisses the warning with a reason */
@@ -39,7 +40,7 @@ export const AuthorityWarning: React.FC<AuthorityWarningProps> = ({
     return null;
   }
 
-  const highestConflictTier = Math.min(...conflicts.map(c => c.sourceTier));
+  const highestConflictTier = Math.min(...conflicts.map(c => c.sourceTier)) as SourceTier;
 
   const handleDismiss = () => {
     if (!dismissReason.trim()) return;

@@ -91,7 +91,7 @@ export const SourceEvidenceTab: React.FC<SourceEvidenceTabProps> = ({ krithiId, 
                 <TierBadge tier={source.sourceTier} />
                 <div>
                   <Link
-                    to={`/admin/sourcing/sources/${source.sourceId}`}
+                    to={`/admin/sourcing/sources/${source.importSourceId}`}
                     className="text-sm font-medium text-ink-800 hover:text-primary transition-colors"
                   >
                     {source.sourceName}
@@ -135,53 +135,10 @@ export const SourceEvidenceTab: React.FC<SourceEvidenceTabProps> = ({ krithiId, 
         </div>
       )}
 
-      {/* Structural Analysis */}
-      {sources.some(s => s.structure) && (
-        <div className="bg-white rounded-xl border border-border-light p-5">
-          <h3 className="text-sm font-bold text-ink-800 mb-4">Structural Analysis per Source</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {sources.filter(s => s.structure).map((source, idx) => (
-              <div key={idx} className="bg-slate-50 rounded-lg p-3">
-                <div className="flex items-center gap-2 mb-2">
-                  <TierBadge tier={source.sourceTier} />
-                  <span className="text-sm font-medium text-ink-700">{source.sourceName}</span>
-                </div>
-                <StructureVisualiser sections={source.structure!} mode="compact" />
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Voting Decisions */}
-      {evidence?.votingDecisions && evidence.votingDecisions.length > 0 && (
-        <div className="bg-white rounded-xl border border-border-light p-5">
-          <h3 className="text-sm font-bold text-ink-800 mb-4">Voting Decisions</h3>
-          <div className="divide-y divide-border-light">
-            {evidence.votingDecisions.map((vote, idx) => (
-              <div key={idx} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
-                <div>
-                  <span className="text-sm text-ink-700">{vote.field}</span>
-                  <span className={`ml-2 text-xs px-2 py-0.5 rounded-full font-medium ${
-                    vote.consensusType === 'UNANIMOUS' ? 'bg-emerald-50 text-emerald-700' :
-                    vote.consensusType === 'MAJORITY' ? 'bg-blue-50 text-blue-700' :
-                    vote.consensusType === 'MANUAL_OVERRIDE' ? 'bg-amber-50 text-amber-700' :
-                    'bg-slate-100 text-ink-600'
-                  }`}>
-                    {vote.consensusType}
-                  </span>
-                </div>
-                <Link
-                  to={`/admin/sourcing/voting/${vote.id}`}
-                  className="text-xs text-primary hover:underline font-medium"
-                >
-                  View Detail
-                </Link>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* NOTE: "Structural Analysis per Source" and "Voting Decisions" sections were removed —
+          they read fields the current evidence API no longer returns (KrithiEvidenceSource.structure,
+          KrithiEvidenceResponse.votingDecisions). Re-add against the live API shape if needed.
+          Tracked as PI-002 in application_documentation/pending_implementation.md. */}
     </div>
   );
 };

@@ -255,7 +255,6 @@ export interface VotingDetailResponse {
   confidence: ConfidenceLevel;
   consensusStructure: SectionSummary[];
   participants: VotingParticipant[];
-  dissentingSources: VotingParticipant[];
   notes?: string | null;
   reviewerId?: string | null;
   reviewerName?: string | null;

@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useVotingDetail, useSubmitOverride } from '../../hooks/useSourcingQueries';
-import { TierBadge, ConfidenceBar, StructureVisualiser, MetricCard, JsonViewer } from '../../components/sourcing/shared';
+import { TierBadge, ConfidenceBar, StructureVisualiser, MetricCard } from '../../components/sourcing/shared';
+import type { ConfidenceLevel } from '../../types/sourcing';
+
+// The API reports confidence as a level; map to a 0–1 value for the ConfidenceBar.
+const CONFIDENCE_VALUE: Record<ConfidenceLevel, number> = { HIGH: 0.95, MEDIUM: 0.65, LOW: 0.35 };
 
 const VotingDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -45,8 +49,10 @@ const VotingDetailPage: React.FC = () => {
 
   const consensusColor = detail.consensusType === 'UNANIMOUS' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
     detail.consensusType === 'MAJORITY' ? 'bg-blue-50 text-blue-700 border-blue-200' :
-    detail.consensusType === 'MANUAL_OVERRIDE' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+    detail.consensusType === 'MANUAL' ? 'bg-amber-50 text-amber-700 border-amber-200' :
     'bg-slate-100 text-ink-600 border-border-light';
+
+  const confidenceValue = CONFIDENCE_VALUE[detail.confidence] ?? 0;
 
   return (
     <div>
@@ -57,10 +63,7 @@ const VotingDetailPage: React.FC = () => {
           </Link>
           <div>
             <h1 className="text-2xl font-display font-bold text-ink-900">Voting Decision Detail</h1>
-            <p className="text-sm text-ink-500 mt-0.5">
-              {detail.krithiTitle ?? 'Unknown Krithi'}
-              {detail.field && <span className="text-ink-400"> &middot; {detail.field}</span>}
-            </p>
+            <p className="text-sm text-ink-500 mt-0.5">{detail.krithiTitle ?? 'Unknown Krithi'}</p>
           </div>
         </div>
         <span className={`px-3 py-1.5 rounded-full text-sm font-bold border ${consensusColor}`}>
@@ -71,110 +74,98 @@ const VotingDetailPage: React.FC = () => {
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <MetricCard label="Consensus Type" value={detail.consensusType} />
-        <MetricCard label="Sources" value={detail.sourceCount ?? (detail.votes?.length ?? 0)} />
-        <MetricCard label="Confidence" value={detail.confidence != null ? `${(detail.confidence * 100).toFixed(1)}%` : '—'} />
+        <MetricCard label="Sources" value={detail.participants?.length ?? 0} />
+        <MetricCard label="Confidence" value={detail.confidence} />
         <MetricCard
-          label="Decided At"
-          value={detail.decidedAt ? new Date(detail.decidedAt).toLocaleDateString() : '—'}
+          label="Voted At"
+          value={detail.votedAt ? new Date(detail.votedAt).toLocaleDateString() : '—'}
         />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Winning Structure / Value */}
+        {/* Consensus Structure */}
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-white rounded-xl border border-border-light p-5">
-            <h2 className="text-lg font-semibold text-ink-800 mb-4">Winning Structure</h2>
-            {detail.winningStructure ? (
-              <StructureVisualiser sections={detail.winningStructure} mode="full" />
-            ) : detail.chosenValue ? (
-              <div className="bg-slate-50 rounded-lg p-4">
-                <span className="text-sm text-ink-700 font-medium">{detail.chosenValue}</span>
-              </div>
+            <h2 className="text-lg font-semibold text-ink-800 mb-4">Consensus Structure</h2>
+            {detail.consensusStructure && detail.consensusStructure.length > 0 ? (
+              <StructureVisualiser sections={detail.consensusStructure} />
             ) : (
-              <p className="text-sm text-ink-400 italic">No winning structure recorded.</p>
+              <p className="text-sm text-ink-400 italic">No consensus structure recorded.</p>
             )}
-            {detail.confidence != null && (
-              <div className="mt-4">
-                <span className="text-xs font-semibold text-ink-500 mb-1 block">Consensus Confidence</span>
-                <div className="w-48">
-                  <ConfidenceBar value={detail.confidence} showLabel />
-                </div>
+            <div className="mt-4">
+              <span className="text-xs font-semibold text-ink-500 mb-1 block">Consensus Confidence</span>
+              <div className="w-48">
+                <ConfidenceBar value={confidenceValue} showLabel />
               </div>
-            )}
+            </div>
           </div>
 
-          {/* Participating Sources / Votes */}
+          {/* Participating Sources */}
           <div className="bg-white rounded-xl border border-border-light p-5">
             <h2 className="text-lg font-semibold text-ink-800 mb-4">Participating Sources</h2>
-            {detail.votes && detail.votes.length > 0 ? (
+            {detail.participants && detail.participants.length > 0 ? (
               <div className="divide-y divide-border-light">
-                {detail.votes.map((vote, idx) => (
-                  <div key={idx} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
+                {detail.participants.map((participant, idx) => (
+                  <div key={participant.sourceId ?? idx} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
                     <div className="flex items-center gap-3">
-                      {vote.sourceTier != null && <TierBadge tier={vote.sourceTier} />}
+                      {participant.sourceTier != null && <TierBadge tier={participant.sourceTier} />}
                       <div>
-                        <span className="text-sm font-medium text-ink-800">{vote.sourceName ?? `Source ${idx + 1}`}</span>
-                        {vote.proposedValue && (
-                          <p className="text-xs text-ink-500 mt-0.5 truncate max-w-md">{vote.proposedValue}</p>
+                        <span className="text-sm font-medium text-ink-800">{participant.sourceName ?? `Source ${idx + 1}`}</span>
+                        {participant.extractionMethod && (
+                          <p className="text-xs text-ink-500 mt-0.5">{participant.extractionMethod}</p>
                         )}
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      {vote.isWinner && (
-                        <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
-                          Winner
-                        </span>
-                      )}
-                      {vote.confidence != null && (
-                        <div className="w-20">
-                          <ConfidenceBar value={vote.confidence} showLabel />
-                        </div>
-                      )}
-                    </div>
+                    <span
+                      className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                        participant.agrees
+                          ? 'text-emerald-600 bg-emerald-50'
+                          : 'text-rose-600 bg-rose-50'
+                      }`}
+                    >
+                      {participant.agrees ? 'Agrees' : 'Dissents'}
+                    </span>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-ink-400 italic">No vote details available.</p>
+              <p className="text-sm text-ink-400 italic">No participating sources available.</p>
             )}
           </div>
-
-          {/* Raw Payload */}
-          {detail.rawPayload && (
-            <div className="bg-white rounded-xl border border-border-light p-5">
-              <h2 className="text-lg font-semibold text-ink-800 mb-4">Raw Decision Payload</h2>
-              <JsonViewer data={typeof detail.rawPayload === 'string' ? JSON.parse(detail.rawPayload) : detail.rawPayload} />
-            </div>
-          )}
         </div>
 
         {/* Sidebar */}
         <div className="space-y-6">
-          {/* Voting Rationale */}
+          {/* Reviewer Notes */}
           <div className="bg-white rounded-xl border border-border-light p-5">
-            <h2 className="text-sm font-semibold text-ink-800 mb-3">Voting Rationale</h2>
-            {detail.rationale ? (
-              <p className="text-sm text-ink-600">{detail.rationale}</p>
+            <h2 className="text-sm font-semibold text-ink-800 mb-3">Reviewer Notes</h2>
+            {detail.notes ? (
+              <p className="text-sm text-ink-600">{detail.notes}</p>
             ) : (
               <p className="text-sm text-ink-400 italic">
                 {detail.consensusType === 'UNANIMOUS'
                   ? 'All sources agree on this structure.'
                   : detail.consensusType === 'MAJORITY'
                   ? 'Majority of sources selected this structure.'
-                  : 'Manually overridden by an administrator.'}
+                  : detail.consensusType === 'MANUAL'
+                  ? 'Manually overridden by an administrator.'
+                  : 'No reviewer notes recorded.'}
               </p>
+            )}
+            {detail.reviewerName && (
+              <p className="text-[10px] text-ink-500 mt-2">Reviewer: {detail.reviewerName}</p>
             )}
           </div>
 
           {/* Manual Override */}
           <div className="bg-white rounded-xl border border-border-light p-5">
             <h2 className="text-sm font-semibold text-ink-800 mb-3">Manual Override</h2>
-            {detail.consensusType === 'MANUAL_OVERRIDE' && detail.overrideReason && (
+            {detail.consensusType === 'MANUAL' && detail.notes && (
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-3">
-                <span className="text-xs font-semibold text-amber-800">Override Reason:</span>
-                <p className="text-xs text-amber-700 mt-1">{detail.overrideReason}</p>
-                {detail.overrideBy && (
-                  <p className="text-[10px] text-amber-600 mt-1">By: {detail.overrideBy}</p>
+                <span className="text-xs font-semibold text-amber-800">Override Note:</span>
+                <p className="text-xs text-amber-700 mt-1">{detail.notes}</p>
+                {detail.reviewerName && (
+                  <p className="text-[10px] text-amber-600 mt-1">By: {detail.reviewerName}</p>
                 )}
               </div>
             )}

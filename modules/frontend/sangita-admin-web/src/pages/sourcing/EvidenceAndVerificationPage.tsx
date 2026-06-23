@@ -255,8 +255,7 @@ const EvidenceAndVerificationPage: React.FC = () => {
                   votingData?.items.map((decision) => {
                     const consensus = consensusBadge[decision.consensusType] || consensusBadge.SINGLE_SOURCE;
                     const conf = confidenceBadge[decision.confidence] || confidenceBadge.MEDIUM;
-                    let structure: { sectionType: string; orderIndex: number; label?: string | null }[] = [];
-                    try { structure = JSON.parse(decision.consensusStructure); } catch { /* ignore */ }
+                    const structure = decision.consensusStructure ?? [];
 
                     return (
                       <tr

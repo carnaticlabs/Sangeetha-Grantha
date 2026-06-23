@@ -231,7 +231,7 @@ class SourcingService(private val dal: SangitaDal) {
 
     suspend fun submitOverride(
         votingId: Uuid,
-        structure: String,
+        structure: List<SectionSummaryDto>,
         notes: String,
         reviewerId: Uuid,
     ): VotingDetailDto? {

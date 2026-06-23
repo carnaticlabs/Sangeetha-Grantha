@@ -5,38 +5,66 @@ import com.sangita.grantha.backend.dal.support.toJavaUuid
 import com.sangita.grantha.backend.dal.support.toKotlinUuid
 import com.sangita.grantha.backend.dal.tables.KrithisTable
 import com.sangita.grantha.backend.dal.tables.StructuralVoteLogTable
+import com.sangita.grantha.shared.domain.model.SectionSummaryDto
 import com.sangita.grantha.shared.domain.model.VotingDecisionDto
 import com.sangita.grantha.shared.domain.model.VotingDetailDto
+import com.sangita.grantha.shared.domain.model.VotingParticipantDto
 import com.sangita.grantha.shared.domain.model.VotingStatsDto
 import com.sangita.grantha.shared.domain.model.ConfidenceDistributionDto
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.UUID
 import kotlin.uuid.Uuid
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.v1.core.*
 import org.jetbrains.exposed.v1.jdbc.*
 
 /**
  * Repository for structural voting queries.
+ *
+ * The `consensus_structure` / `participating_sources` JSONB columns are
+ * (de)serialized here at the DB boundary so callers and DTOs deal in typed
+ * [SectionSummaryDto] / [VotingParticipantDto] values. Dissent is derived from
+ * participants (`!agrees`); the legacy `dissenting_sources` column is retained
+ * (NOT NULL) but no longer authoritative — written as `[]`.
  */
 class StructuralVotingRepository {
 
     private val V = StructuralVoteLogTable
     private val K = KrithisTable
 
+    private val json = Json { ignoreUnknownKeys = true }
+    private val sectionListSerializer = ListSerializer(SectionSummaryDto.serializer())
+    private val participantListSerializer = ListSerializer(VotingParticipantDto.serializer())
+
+    private fun decodeSections(raw: String?): List<SectionSummaryDto> =
+        if (raw.isNullOrBlank()) emptyList() else json.decodeFromString(sectionListSerializer, raw)
+
+    private fun decodeParticipants(raw: String?): List<VotingParticipantDto> =
+        if (raw.isNullOrBlank()) emptyList() else json.decodeFromString(participantListSerializer, raw)
+
+    private fun encodeSections(sections: List<SectionSummaryDto>): String =
+        json.encodeToString(sectionListSerializer, sections)
+
+    private fun encodeParticipants(participants: List<VotingParticipantDto>): String =
+        json.encodeToString(participantListSerializer, participants)
+
     private fun toInstant(odt: java.time.OffsetDateTime): kotlin.time.Instant =
         odt.toInstant().let { kotlin.time.Instant.fromEpochSeconds(it.epochSecond, it.nano) }
 
     private fun ResultRow.toDecisionDto(krithiTitle: String): VotingDecisionDto {
+        val participants = decodeParticipants(this[V.participatingSources])
         return VotingDecisionDto(
             id = this[V.id].value.toKotlinUuid(),
             krithiId = this[V.krithiId].toKotlinUuid(),
             krithiTitle = krithiTitle,
             votedAt = toInstant(this[V.votedAt]),
+            sourceCount = participants.size,
             consensusType = this[V.consensusType],
-            consensusStructure = this[V.consensusStructure],
+            consensusStructure = decodeSections(this[V.consensusStructure]),
             confidence = this[V.confidence],
-            dissentCount = 0, // Simplified
+            dissentCount = participants.count { !it.agrees },
             reviewerId = this[V.reviewerId]?.toKotlinUuid(),
             notes = this[V.notes],
         )
@@ -98,9 +126,8 @@ class StructuralVotingRepository {
             votedAt = toInstant(row[V.votedAt]),
             consensusType = row[V.consensusType],
             confidence = row[V.confidence],
-            consensusStructure = row[V.consensusStructure],
-            participatingSources = row[V.participatingSources],
-            dissentingSources = row[V.dissentingSources],
+            consensusStructure = decodeSections(row[V.consensusStructure]),
+            participants = decodeParticipants(row[V.participatingSources]),
             notes = row[V.notes],
             reviewerId = row[V.reviewerId]?.toKotlinUuid(),
         )
@@ -111,11 +138,10 @@ class StructuralVotingRepository {
      */
     suspend fun createVotingRecord(
         krithiId: Uuid,
-        participatingSources: String,
-        consensusStructure: String,
+        participants: List<VotingParticipantDto>,
+        consensusStructure: List<SectionSummaryDto>,
         consensusType: String,
         confidence: String,
-        dissentingSources: String = "[]",
         notes: String? = null,
     ): Unit = DatabaseFactory.dbQuery {
         val now = OffsetDateTime.now(ZoneOffset.UTC)
@@ -123,11 +149,11 @@ class StructuralVotingRepository {
             it[V.id] = UUID.randomUUID()
             it[V.krithiId] = krithiId.toJavaUuid()
             it[V.votedAt] = now
-            it[V.participatingSources] = participatingSources
-            it[V.consensusStructure] = consensusStructure
+            it[V.participatingSources] = encodeParticipants(participants)
+            it[V.consensusStructure] = encodeSections(consensusStructure)
             it[V.consensusType] = consensusType
             it[V.confidence] = confidence
-            it[V.dissentingSources] = dissentingSources
+            it[V.dissentingSources] = "[]" // deprecated; dissent derived from participants — drop via PI-001 (application_documentation/pending_implementation.md)
             it[V.notes] = notes
             it[V.createdAt] = now
         }
@@ -135,7 +161,7 @@ class StructuralVotingRepository {
 
     suspend fun createOverride(
         votingId: Uuid,
-        structure: String,
+        structure: List<SectionSummaryDto>,
         notes: String,
         reviewerId: Uuid,
     ): VotingDetailDto? = DatabaseFactory.dbQuery {
@@ -151,7 +177,7 @@ class StructuralVotingRepository {
             it[V.krithiId] = existing[V.krithiId]
             it[V.votedAt] = now
             it[V.participatingSources] = existing[V.participatingSources]
-            it[V.consensusStructure] = structure
+            it[V.consensusStructure] = encodeSections(structure)
             it[V.consensusType] = "MANUAL"
             it[V.confidence] = "HIGH"
             it[V.dissentingSources] = "[]"

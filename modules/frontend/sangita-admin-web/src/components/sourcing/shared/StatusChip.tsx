@@ -18,7 +18,7 @@ const statusConfig: Record<string, { colors: string; pulse?: boolean }> = {
   PAUSED: { colors: 'bg-amber-50 text-amber-700 border-amber-200' },
 };
 
-const defaultConfig = { colors: 'bg-slate-100 text-slate-600 border-slate-200' };
+const defaultConfig: { colors: string; pulse?: boolean } = { colors: 'bg-slate-100 text-slate-600 border-slate-200' };
 
 const sizeClasses: Record<string, string> = {
   sm: 'text-[10px] px-1.5 py-0.5',

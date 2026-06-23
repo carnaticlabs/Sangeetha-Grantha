@@ -98,6 +98,7 @@ Historical / inherited drafts from earlier projects, and any future archival doc
 - **Project Health** *(top-level analysis docs)*
   - [State of Nation (June 2026)](./sangeetha-grantha-state-of-nation-july-2026.md)
   - [Uplift Tasks](./sangeetha-grantha-uplift-tasks.md)
+  - [Pending Implementation Register](./pending_implementation.md)
 
 - **[Meta](./00-meta/README.md)** (`00-meta/`)
   - [Current Versions](./00-meta/current-versions.md)

@@ -57,6 +57,34 @@ data class KrithiEvidenceResponseDto(
 
 // --- Structural Voting ---
 
+/**
+ * A single section in a composition's structure. Mirrors the frontend
+ * `SectionSummary` type. `sectionType` is a [RagaSectionDto] name.
+ */
+@Serializable
+data class SectionSummaryDto(
+    val sectionType: String,
+    val orderIndex: Int,
+    val label: String? = null,
+)
+
+/**
+ * A source that participated in a structural vote. Mirrors the frontend
+ * `VotingParticipant` type. `agrees` indicates whether this source's proposed
+ * structure matched the chosen consensus; dissent is derived as `!agrees`.
+ */
+@Serializable
+data class VotingParticipantDto(
+    @Serializable(with = UuidSerializer::class)
+    val sourceId: Uuid,
+    val sourceName: String,
+    val sourceTier: Int,
+    val agrees: Boolean,
+    val proposedStructure: List<SectionSummaryDto> = emptyList(),
+    val sourceUrl: String,
+    val extractionMethod: String? = null,
+)
+
 @Serializable
 data class VotingDecisionDto(
     @Serializable(with = UuidSerializer::class)
@@ -67,7 +95,7 @@ data class VotingDecisionDto(
     val votedAt: Instant,
     val sourceCount: Int = 0,
     val consensusType: String,
-    val consensusStructure: String, // JSONB
+    val consensusStructure: List<SectionSummaryDto> = emptyList(),
     val confidence: String,
     val dissentCount: Int = 0,
     @Serializable(with = UuidSerializer::class)
@@ -86,9 +114,8 @@ data class VotingDetailDto(
     val votedAt: Instant,
     val consensusType: String,
     val confidence: String,
-    val consensusStructure: String,
-    val participatingSources: String, // JSONB
-    val dissentingSources: String, // JSONB
+    val consensusStructure: List<SectionSummaryDto> = emptyList(),
+    val participants: List<VotingParticipantDto> = emptyList(),
     val notes: String? = null,
     @Serializable(with = UuidSerializer::class)
     val reviewerId: Uuid? = null,
@@ -97,7 +124,7 @@ data class VotingDetailDto(
 
 @Serializable
 data class ManualOverrideRequestDto(
-    val structure: String, // JSON
+    val structure: List<SectionSummaryDto>,
     val notes: String,
 )
 

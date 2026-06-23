@@ -165,7 +165,7 @@ export const MetadataTab: React.FC<TabProps> = ({ krithi, onChange, referenceDat
                                     name="musicalForm"
                                     value={krithi.musicalForm || MusicalForm.KRITHI}
                                     options={musicalFormOptions}
-                                    onChange={(e) => onChange('musicalForm', e.target.value)}
+                                    onChange={(e) => onChange('musicalForm', e.target.value as MusicalForm)}
                                     disabled={readOnly}
                                 />
                                 {(krithi.musicalForm === MusicalForm.VARNAM || krithi.musicalForm === MusicalForm.SWARAJATHI) && (
@@ -222,7 +222,7 @@ export const MetadataTab: React.FC<TabProps> = ({ krithi, onChange, referenceDat
                             name="status"
                             value={krithi.status || 'DRAFT'}
                             options={statusOptions}
-                            onChange={(e) => onChange('status', e.target.value)}
+                            onChange={(e) => onChange('status', e.target.value as KrithiDetail['status'])}
                             disabled={readOnly}
                             className="mb-0"
                         />
