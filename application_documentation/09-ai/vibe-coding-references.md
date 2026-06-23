@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-03-10 |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-06-24 |
 | **Author** | Sangeetha Grantha Team |
 
 # 🤖 AI & Vibe Coding References
@@ -43,7 +43,7 @@ This document provides essential references for AI coding assistants (VS Code Co
 ## Database
 
 - [Schema Overview](../04-database/schema.md) - PostgreSQL schema documentation
-- [Migrations](../04-database/migrations.md) - Migration strategy (Python db-migrate, NOT Flyway)
+- [Migrations](../04-database/migrations.md) - Migration strategy (Flyway, the only engine — see [ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md))
 - [Audit Log](../04-database/audit-log.md) - Audit trail requirements
 
 ---
@@ -67,7 +67,7 @@ This document provides essential references for AI coding assistants (VS Code Co
 ### Database Operations
 - ✅ Use `DatabaseFactory.dbQuery { }` for all database operations
 - ✅ All mutations must write to `AUDIT_LOG` table
-- ❌ Never use Flyway - use `make migrate` / `make db-reset` (Python `db-migrate` in `tools/db-migrate`)
+- ✅ Flyway is the **only** migration engine (ADR-013) - run via `make migrate` / `make db-reset`; never Liquibase, ad-hoc SQL executors, or custom runners. The Python `db-migrate` tool and the Kotlin test-side `MigrationRunner` are retired.
 
 ### Dependency Management
 - ✅ Use `gradle/libs.versions.toml` for dependency management
@@ -133,7 +133,7 @@ make test-frontend  # Run frontend tests
 
 ## Important Constraints
 
-- ❌ **Never suggest Flyway** - use `make migrate` / `make db-reset`
+- ✅ **Flyway is the only migration engine** (ADR-013) - run via `make migrate` / `make db-reset`; never Liquibase or custom migration runners
 - ✅ **Always reference version catalog** in build files
 - ✅ **Keep changes minimal and surgical**
 - ✅ **Follow existing patterns in the codebase**

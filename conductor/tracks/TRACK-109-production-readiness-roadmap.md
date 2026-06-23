@@ -20,7 +20,7 @@ What already exists and is genuinely good (build on it, don't rebuild):
 - **Provenance** — source-evidence / extraction-tier tracking (TRACK-041/062) — a strong base for content licensing and reconciliation.
 - **AuthN/Z** — JWT with role-based claims; login implemented (TRACK-027).
 - **Connection pooling** — HikariCP; **metrics** — Micrometer; **structured logging** — Logback + Logstash encoder.
-- **Migrations** — Python `db-migrate` (deterministic, versioned).
+- **Migrations** — Flyway Community (deterministic, versioned; ADR-013).
 
 What's missing for production (the gaps this epic closes):
 

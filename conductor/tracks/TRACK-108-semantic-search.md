@@ -43,7 +43,7 @@ Design choices:
 ## Implementation Plan
 
 ### Phase 1 — Schema & infra
-- [ ] Add `pgvector` extension via a `db-migrate` migration (NOT Flyway/Liquibase — project rule).
+- [ ] Add `pgvector` extension via a Flyway migration (`database/migrations/VNN__*.sql`, ADR-013 — never Liquibase or custom runners).
 - [ ] Create `krithi_embedding` (`krithi_id` FK, `section_id` FK nullable, `vector vector(768)`, `model_version`, `dims`, `created_at`); HNSW index with cosine ops.
 - [ ] Update `04-database/schema.md`.
 
@@ -63,7 +63,7 @@ Design choices:
 - [ ] Decide 768 vs 1536 dims based on the eval, not by default.
 
 ## Acceptance Criteria
-- `pgvector` enabled via `db-migrate`; `krithi_embedding` populated for the full catalogue.
+- `pgvector` enabled via a Flyway migration; `krithi_embedding` populated for the full catalogue.
 - Semantic query returns musically sensible neighbours on a hand-checked sample; recall@k meets an agreed bar.
 - Latency acceptable at catalogue scale (HNSW); no separate datastore introduced.
 - Re-embed path works on lyric change; `model_version` recorded for every vector.
