@@ -10,7 +10,7 @@
 | **Branch** | `track-121-frontend-toolchain` (branched from `main` @ `e124b44`) |
 | **Scope dir** | `modules/frontend/sangita-admin-web` |
 | **Started** | 2026-07-08 |
-| **Last updated** | 2026-07-08 (Step 2 ESLint 10 done) |
+| **Last updated** | 2026-07-08 (Step 3 Vite 8 done) |
 
 ## Ground rules for this upgrade
 - Work **one library at a time**; verify (`tsc -b`, `bun run build`, `bunx vitest run`, `bun run lint`)
@@ -47,8 +47,14 @@
       `modules/frontend/sangita-admin-web/bunfig.toml` with `[run] bun = true` — `bun run` scripts now
       execute under Bun's runtime instead of the node shebang. Verified `bun run lint`/`build` + vitest
       all green under Bun. Direct calls: use `bunx --bun eslint .` / `bunx --bun vitest run`.
-- [ ] **Step 3 — Vite 8 + @vitejs/plugin-react 6 (+ Vitest 4.1.10)** — bump; `bun run build`
-      (Rolldown) produces a working prod bundle; dev server (5001) boots; `bunx vitest run` green.
+- [x] **Step 3 — Vite 8 + @vitejs/plugin-react 6 + Vitest 4.1.10** — `vite@8.1.3` (Rolldown),
+      `@vitejs/plugin-react@6.0.3`, `vitest@4.1.10`. Installed clean; no `vite.config.ts` changes needed.
+      Gates: `bunx tsc -b` ✓; `bun run build` (Rolldown) ✓ built in ~0.9s; `bun run lint` 0 errors ✓;
+      dev server `VITE v8.1.3 ready in 262ms`, HTTP 200 on :5001 ✓.
+      **Vitest under Vite 8 needs Bun:** `bunx vitest run` now fails with `styleText` (Vite 8/Vitest
+      4.1.10 import it from `node:util`, absent in EOL Node 21). Use **`bunx --bun vitest run`** (6
+      passed) or `bun run test` (bunfig → Bun). This is a local-box artifact of EOL Node 21; CI's
+      modern Node likely isn't affected, and `bunfig.toml` covers `bun run` either way.
 - [ ] **Step 4 — Docs sync + finalize** — `current-versions.md`, tech-stack, getting-started;
       flip TRACK-121 status; open PR / merge to `main`.
 
@@ -62,18 +68,24 @@ bun run lint          # must stay 0 errors
 ```
 
 ## Current state / where to resume
-TS 6 + ESLint 10 done + committed; `bunfig.toml` makes `bun run` use Bun's runtime.
-**Resume at Step 3 (Vite 8 + @vitejs/plugin-react 6 + Vitest 4.1.10).** This is the riskiest step —
-Vite 8 swaps in the Rolldown bundler. Bump `vite ^7.3.1→^8.x`, `@vitejs/plugin-react ^5.0.0→^6.x`,
-`vitest ^4.1.9→^4.1.10`; `bun install`; then verify **in this order**:
-`bunx tsc -b` → `bun run build` (Rolldown prod bundle must succeed) → `bunx vitest run` (jsdom;
-Vitest 4.1 uses the installed Vite 8) → `bun run lint`. Boot `bun run dev` (port 5001) to confirm the
-dev server + HMR. Watch for Rolldown plugin-compat and any `vite.config.ts` API changes.
-**CI note:** confirm `.github/workflows/ci.yml` frontend job still passes — it runs under setup-bun, so
-`bunfig.toml` applies; `bunx tsc -b` + `bun run build` should be unaffected.
+**All three major upgrades (TS 6, ESLint 10, Vite 8) done, green, and committed on the branch.**
+**Resume at Step 4 (docs sync + finalize):**
+1. Update `application_documentation/00-meta/current-versions.md` (Frontend + Dev/Testing tables):
+   Vite `7.3.1→8.1.3`, TypeScript `5.9→6.0`, ESLint `9.39.2→10.6.0`, Vitest `4.1.9→4.1.10`,
+   `@vitejs/plugin-react 6.0.3`, typescript-eslint `8.63.0` — plus a version-history row. (tech-stack.md
+   / getting-started.md reference it, no hardcoded versions — confirm with a grep.)
+2. Note the **Bun-runtime requirement** for lint/test somewhere durable (frontend `CLAUDE.md` and/or
+   `current-versions.md`): ESLint 10 + Vite 8/Vitest need `util.styleText`/ESM; `bunfig.toml` handles
+   `bun run`, direct calls need `bunx --bun`.
+3. Flip TRACK-121 status → Completed; update `conductor/tracks.md` registry row.
+4. **Verify CI**: confirm `.github/workflows/ci.yml` frontend job (setup-bun) still passes with Vite 8 —
+   `bunx tsc -b` + `bun run build`. Consider wiring `bunx --bun vitest run` (that's TRACK-118's CI item).
+5. Open a PR from `track-121-frontend-toolchain` → `main` (do NOT fast-merge a Rolldown swap without CI).
 
 ## Log
 - 2026-07-08: Branch created; Vitest 5 confirmed beta → deferred; plan + handover written (`1741ba5`).
 - 2026-07-08: Step 1 TypeScript 6.0.3 — 3 strict-null fixes; tsc/build/vitest/lint all green.
 - 2026-07-08: Step 2 ESLint 10.6.0 stack — 2 e2e rule fixes + `bunfig.toml` (Bun runtime for
   `bun run`, needed because ESLint 10 wants `util.styleText` absent in EOL Node 21). All green.
+- 2026-07-08: Step 3 Vite 8.1.3 (Rolldown) + plugin-react 6.0.3 + vitest 4.1.10 — no config changes;
+  build/tsc/lint/dev green; vitest green under `--bun`. Only Step 4 (docs + finalize) remains.
