@@ -1,0 +1,8 @@
+# This is a Bun project. Execute `bun run` scripts with Bun's own runtime
+# instead of following each tool's `#!/usr/bin/env node` shebang. Without this,
+# `bun run lint` shells out to the box's system Node — which is EOL 21.4.0 and
+# lacks APIs the modern toolchain needs (e.g. `util.styleText`, required by
+# ESLint 10). Running under Bun keeps the whole toolchain off the ancient Node.
+# See application_documentation/pending_implementation.md (PI-003 runtime note).
+[run]
+bun = true

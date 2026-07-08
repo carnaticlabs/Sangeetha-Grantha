@@ -40,7 +40,8 @@ async function globalSetup(config: FullConfig) {
       if (attempt === 5) {
         console.error('Backend health check failed:', error);
         throw new Error(
-          'Backend not running. Start with: mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- dev --start-db'
+          'Backend not running. Start with: mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- dev --start-db',
+          { cause: error }
         );
       }
       console.log(`Attempt ${attempt} failed, retrying...`);
@@ -61,7 +62,7 @@ async function globalSetup(config: FullConfig) {
   // 3. Check for existing shared batch FIRST (before cleanup!)
   console.log('Checking for existing shared batch...');
 
-  let existingBatch: BatchState | null = null;
+  let existingBatch: BatchState | null;
   try {
     if (fs.existsSync(BATCH_STATE_FILE)) {
       const content = fs.readFileSync(BATCH_STATE_FILE, 'utf-8');

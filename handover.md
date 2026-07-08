@@ -10,7 +10,7 @@
 | **Branch** | `track-121-frontend-toolchain` (branched from `main` @ `e124b44`) |
 | **Scope dir** | `modules/frontend/sangita-admin-web` |
 | **Started** | 2026-07-08 |
-| **Last updated** | 2026-07-08 (Step 1 TypeScript 6 done) |
+| **Last updated** | 2026-07-08 (Step 2 ESLint 10 done) |
 
 ## Ground rules for this upgrade
 - Work **one library at a time**; verify (`tsc -b`, `bun run build`, `bunx vitest run`, `bun run lint`)
@@ -38,8 +38,15 @@
       `state.krithi.musicalForm` to narrow the `MusicalForm | undefined`), `useSourcingQueries.ts`
       (`useVotingDetail` param → `string | undefined`, key `?? ''`, queryFn `id!` — hook already had
       `enabled: !!id`). Committed next.
-- [ ] **Step 2 — ESLint 10 + typescript-eslint 8.63** — bump `eslint`, `@eslint/js`,
-      `typescript-eslint`; migrate flat config if needed; `bun run lint` = 0 errors.
+- [x] **Step 2 — ESLint 10** — `eslint@10.6.0`, `@eslint/js@10.0.1` (note: @eslint/js lags the CLI —
+      10.0.1 is its latest), `typescript-eslint@8.63.0`, `eslint-plugin-react-refresh@0.5.3` (our
+      `^0.4.26` capped below the ESLint-10-compatible 0.5.x). Fixed 2 new ESLint-10 recommended-rule
+      errors in `e2e/global-setup.ts`: `preserve-caught-error` (added `{ cause: error }`),
+      `no-useless-assignment` (dropped dead `= null` initializer). `bun run lint` = 0 errors.
+      **Runtime:** ESLint 10 needs `util.styleText` (absent in the box's EOL Node 21.4.0), so added
+      `modules/frontend/sangita-admin-web/bunfig.toml` with `[run] bun = true` — `bun run` scripts now
+      execute under Bun's runtime instead of the node shebang. Verified `bun run lint`/`build` + vitest
+      all green under Bun. Direct calls: use `bunx --bun eslint .` / `bunx --bun vitest run`.
 - [ ] **Step 3 — Vite 8 + @vitejs/plugin-react 6 (+ Vitest 4.1.10)** — bump; `bun run build`
       (Rolldown) produces a working prod bundle; dev server (5001) boots; `bunx vitest run` green.
 - [ ] **Step 4 — Docs sync + finalize** — `current-versions.md`, tech-stack, getting-started;
@@ -55,11 +62,18 @@ bun run lint          # must stay 0 errors
 ```
 
 ## Current state / where to resume
-TS 6 done + committed. **Resume at Step 2 (ESLint 10 + typescript-eslint 8.63).**
-Bump `eslint ^9.39.2→^10.x`, `@eslint/js ^9.39.2→^10.x`, `typescript-eslint ^8.54→^8.63`; check
-`eslint-plugin-react-hooks ^7.0.1` / `eslint-plugin-react-refresh ^0.4.26` peer-compat with ESLint 10;
-`bun install`; `bun run lint` must stay **0 errors** (189 warnings is the tolerated baseline).
+TS 6 + ESLint 10 done + committed; `bunfig.toml` makes `bun run` use Bun's runtime.
+**Resume at Step 3 (Vite 8 + @vitejs/plugin-react 6 + Vitest 4.1.10).** This is the riskiest step —
+Vite 8 swaps in the Rolldown bundler. Bump `vite ^7.3.1→^8.x`, `@vitejs/plugin-react ^5.0.0→^6.x`,
+`vitest ^4.1.9→^4.1.10`; `bun install`; then verify **in this order**:
+`bunx tsc -b` → `bun run build` (Rolldown prod bundle must succeed) → `bunx vitest run` (jsdom;
+Vitest 4.1 uses the installed Vite 8) → `bun run lint`. Boot `bun run dev` (port 5001) to confirm the
+dev server + HMR. Watch for Rolldown plugin-compat and any `vite.config.ts` API changes.
+**CI note:** confirm `.github/workflows/ci.yml` frontend job still passes — it runs under setup-bun, so
+`bunfig.toml` applies; `bunx tsc -b` + `bun run build` should be unaffected.
 
 ## Log
 - 2026-07-08: Branch created; Vitest 5 confirmed beta → deferred; plan + handover written (`1741ba5`).
 - 2026-07-08: Step 1 TypeScript 6.0.3 — 3 strict-null fixes; tsc/build/vitest/lint all green.
+- 2026-07-08: Step 2 ESLint 10.6.0 stack — 2 e2e rule fixes + `bunfig.toml` (Bun runtime for
+  `bun run`, needed because ESLint 10 wants `util.styleText` absent in EOL Node 21). All green.
