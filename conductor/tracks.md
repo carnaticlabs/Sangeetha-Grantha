@@ -124,7 +124,7 @@
 | [TRACK-118](./tracks/TRACK-118-frontend-component-tests.md) | Frontend Component Tests (Vitest) | In Progress (baseline done) |
 | [TRACK-119](./tracks/TRACK-119-oauth-otp-auth.md) | Interactive Auth — OAuth / OTP (deferred N1 items) | Not Started |
 | [TRACK-120](./tracks/TRACK-120-dependency-upgrades-safe-jun-2026.md) | Dependency Upgrades Batch 1 — Security + Safe Drop-ins (Jun 2026) | In Progress (verified; commit pending) |
-| [TRACK-121](./tracks/TRACK-121-frontend-major-toolchain-upgrade.md) | Dependency Upgrades Batch 2 — Frontend Major Toolchain (Vite 8 / Vitest 5 / TS 6 / ESLint 10) | Blocked (needs TRACK-118) |
+| [TRACK-121](./tracks/TRACK-121-frontend-major-toolchain-upgrade.md) | Dependency Upgrades Batch 2 — Frontend Major Toolchain (Vite 8 / TS 6 / ESLint 10) | Completed |
 | [TRACK-122](./tracks/TRACK-122-kotlin-2.4-compose-upgrade.md) | Dependency Upgrades Batch 3a — Kotlin 2.4 + Compose Multiplatform | Not Started |
 | [TRACK-123](./tracks/TRACK-123-testcontainers-2.x-upgrade.md) | Dependency Upgrades Batch 3b — Testcontainers 2.x | Not Started |
 | [TRACK-124](./tracks/TRACK-124-google-genai-2.x-upgrade.md) | Dependency Upgrades Batch 3c — google-genai 2.x (Python Worker) | Not Started |

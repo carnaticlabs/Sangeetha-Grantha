@@ -10,7 +10,8 @@
 | **Branch** | `track-121-frontend-toolchain` (branched from `main` @ `e124b44`) |
 | **Scope dir** | `modules/frontend/sangita-admin-web` |
 | **Started** | 2026-07-08 |
-| **Last updated** | 2026-07-08 (Steps 1–3 done; docs synced; PR pending) |
+| **Status** | ✅ COMPLETE — merged to `main` via PR #5 (CI green). This handover is now historical. |
+| **Last updated** | 2026-07-08 (merged) |
 
 ## Ground rules for this upgrade
 - Work **one library at a time**; verify (`tsc -b`, `bun run build`, `bunx vitest run`, `bun run lint`)
@@ -55,11 +56,9 @@
       4.1.10 import it from `node:util`, absent in EOL Node 21). Use **`bunx --bun vitest run`** (6
       passed) or `bun run test` (bunfig → Bun). This is a local-box artifact of EOL Node 21; CI's
       modern Node likely isn't affected, and `bunfig.toml` covers `bun run` either way.
-- [~] **Step 4 — Docs sync + finalize** — DONE: `current-versions.md` updated (v1.3.0, frontend rows +
-      history row + Bun-runtime note); TRACK-121 status updated. `tech-stack.md`/`getting-started.md`
-      reference current-versions (no hardcoded frontend versions — confirmed earlier for TRACK-120).
-      **REMAINING (needs the user / an outward action):** (a) verify `.github/workflows/ci.yml` frontend
-      job passes on the branch, (b) open a PR `track-121-frontend-toolchain` → `main` and merge after CI.
+- [x] **Step 4 — Docs sync + finalize** — DONE: `current-versions.md` v1.3.0; TRACK-121 → Completed
+      (track file + registry). CI green on PR #5 (frontend typecheck+build, backend unit+integration,
+      Flyway, worker); rebase-merged to `main`; branch deleted.
 
 ## Verification commands (run from `modules/frontend/sangita-admin-web`)
 ```bash

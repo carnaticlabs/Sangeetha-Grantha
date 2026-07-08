@@ -1,8 +1,9 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | In Progress (upgrades done + green on branch; docs synced; PR/merge pending) |
-| **Version** | 1.3.0 |
+| **Status** | Completed |
+| **Version** | 1.4.0 |
 | **Last Updated** | 2026-07-08 |
+| **Merged** | PR #5 → `main` (CI green: frontend typecheck+build, backend, worker, Flyway) |
 | **Author** | Sangeetha Grantha Team |
 
 # Precondition (must land first)
