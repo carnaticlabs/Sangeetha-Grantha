@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Blocked (precondition) |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-06-24 |
+| **Status** | In Progress (precondition met; on branch) |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-07-08 |
 | **Author** | Sangeetha Grantha Team |
 
 # Precondition (must land first)
@@ -19,11 +19,15 @@ Do not begin this track until `bun run test` and `bun run lint` are clean on the
 Batch 2 — Frontend major toolchain wave (June 2026). Vite, Vitest, TypeScript and ESLint are interlocked and should move together in one isolated change scoped to `modules/frontend/sangita-admin-web`.
 
 # Scope (current → latest)
-- **Vite** `7.3.1` → `8.1.0` (major) — ships **Rolldown** (Rust bundler) as default; plugin-compatible but a real bundler swap.
-- **Vitest** `4.0.18` → `5.x` (major) — pairs with Vite 8; uses installed Vite instead of bundling its own.
-- **TypeScript** `~5.9` → `6.0` (stable) — transitional cleanup release with deprecations. **Do not target 7.0 yet** (Go rewrite, only RC/beta as of 2026-06).
-- **ESLint** `9.39.2` → `10.5.0` (major) — bump `typescript-eslint` + `eslint-plugin-react-hooks` / `react-refresh` in lockstep.
-- `@vitejs/plugin-react` `5.0.0` → verify Vite 8 compatibility.
+- **Vite** `7.3.1` → `8.x` (major) — ships **Rolldown** (Rust bundler) as default; plugin-compatible but a real bundler swap.
+- **TypeScript** `~5.9` → `6.0` (stable) — transitional cleanup release with deprecations. **Do not target 7.0 yet** (Go rewrite, only RC/beta as of 2026-07).
+- **ESLint** `9.39.2` → `10.x` (major) — bump `@eslint/js` + `typescript-eslint` (`^8.63`, supports ESLint 10 + TS 6) + `eslint-plugin-react-hooks` / `react-refresh` in lockstep.
+- **@vitejs/plugin-react** `5.0.0` → `6.x` — v6 is the Vite-8 release (Oxc refresh, Babel no longer a dep).
+- **Vitest** `4.1.9` → `4.1.10` (patch only). **Vitest 5 DEFERRED (2026-07-08):** still beta
+  (`5.0.0-beta.6`); stable is 4.1.x, which already supports Vite 8. Revisit when Vitest 5 goes stable.
+
+> **Execution:** in progress on branch `track-121-frontend-toolchain`; running state and resume
+> instructions live in `handover.md` at the repo root (updated after every sub-step).
 
 # Implementation Plan
 1. Upgrade Vite + `@vitejs/plugin-react`; verify dev server (port 5001) and `bun run build` (Rolldown) produce a working prod bundle.
