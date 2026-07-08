@@ -118,10 +118,10 @@ upgrades themselves):
    `modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/BulkImportRoutes.kt`
    (6 call sites, lines ~46–118). Ktor 3.5 deprecates `val dispose: () -> Unit` in favour of `release`.
    Compilation succeeds; this is warning-level only, but the project targets zero warnings (TRACK-099).
-2. **Pre-existing Vitest/lint issues tied to TRACK-118 not being started.** There are no Vitest unit
-   tests in `src/`, so `vitest run` defaults to collecting the Playwright `e2e/*.spec.ts` files and
-   fails; `bun run lint` reports pre-existing errors (e.g. the triple-slash reference in
-   `vitest.config.ts`). ESLint/TS were **not** upgraded in Batch 1, so this is unchanged baseline.
+2. ~~**Pre-existing Vitest/lint issues tied to TRACK-118 not being started.**~~ **RESOLVED 2026-06-24**
+   under the TRACK-118 baseline: `vitest run` now scopes to `src/` (excludes `e2e/`) with a first
+   passing test, and `bun run lint` is at 0 errors. jsdom pinned to `^26.1.0` to work under EOL Node 21.
+   See TRACK-118 "Baseline delivered". Only item (1) below remains open.
 
 **Why deferred.** TRACK-120 was scoped to safe version bumps only; touching source (Ktor API migration)
 or standing up the frontend test/lint baseline (TRACK-118) was intentionally left out to keep the

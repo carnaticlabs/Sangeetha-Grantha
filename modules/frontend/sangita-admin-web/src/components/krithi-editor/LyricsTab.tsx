@@ -56,7 +56,7 @@ export const LyricsTab: React.FC<TabProps> = ({ krithi, onChange, referenceData,
         const updatedVariants = (krithi.lyricVariants || []).map(v => {
             if (v.id === variantId) {
                 const existingSectionIndex = v.sections.findIndex(s => s.sectionId === sectionId);
-                let newSections = [...v.sections];
+                const newSections = [...v.sections];
 
                 if (existingSectionIndex >= 0) {
                     newSections[existingSectionIndex] = { ...newSections[existingSectionIndex], text };
@@ -94,8 +94,8 @@ export const LyricsTab: React.FC<TabProps> = ({ krithi, onChange, referenceData,
                             <button
                                 onClick={() => {
                                     // Pre-fill content logic
-                                    let initialData: Record<string, string> = {};
-                                    let sourceVariant = editingVariantId
+                                    const initialData: Record<string, string> = {};
+                                    const sourceVariant = editingVariantId
                                         ? krithi.lyricVariants?.find(v => v.id === editingVariantId)
                                         : (krithi.lyricVariants?.[0] || null);
 

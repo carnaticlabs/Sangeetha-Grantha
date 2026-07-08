@@ -1,4 +1,3 @@
-/// <reference types="vitest/config" />
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import path from 'path';
@@ -20,5 +19,9 @@ export default defineConfig({
         environment: 'jsdom',
         globals: true,
         setupFiles: [],
+        // Unit/component tests live under src/. The e2e/ directory is Playwright
+        // (its own runner + config) and must not be collected by Vitest.
+        include: ['src/**/*.{test,spec}.{ts,tsx}'],
+        exclude: ['node_modules', 'dist', 'e2e'],
     },
 });

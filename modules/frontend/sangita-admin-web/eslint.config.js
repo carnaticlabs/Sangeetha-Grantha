@@ -25,6 +25,19 @@ export default tseslint.config(
       ],
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      // Advisory performance rule (react-hooks v7). The existing sites are
+      // intentional prop→local-state sync on modal open / data load; treat as a
+      // visible warning rather than a blocker. Revisit under TRACK-118 coverage.
+      'react-hooks/set-state-in-effect': 'warn',
+    },
+  },
+  {
+    // Playwright fixtures require the empty destructure `async ({}, use) => {}`
+    // and empty `extend<{}, ...>` generics — idiomatic, not a smell here.
+    files: ['e2e/**/*.{ts,tsx}'],
+    rules: {
+      'no-empty-pattern': 'off',
+      '@typescript-eslint/no-empty-object-type': 'off',
     },
   },
 );

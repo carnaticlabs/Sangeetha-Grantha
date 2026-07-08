@@ -33,10 +33,11 @@ export const useBatchActions = (onRefresh?: () => void) => {
                     await cancelBulkImportBatch(batchId);
                     toast.success('Batch cancelled');
                     break;
-                case 'retry':
+                case 'retry': {
                     const result = await retryBulkImportBatch(batchId);
                     toast.success(`Retrying batch (${result.requeuedTasks} tasks requeued)`);
                     break;
+                }
                 case 'delete':
                     if (confirm('Are you sure you want to delete this batch history? This cannot be undone.')) {
                         await deleteBulkImportBatch(batchId);
@@ -66,7 +67,7 @@ export const useBatchActions = (onRefresh?: () => void) => {
                         return;
                     }
                     break;
-                case 'finalize':
+                case 'finalize': {
                     const finalizeRes = await finalizeBulkImportBatch(batchId);
                     if (finalizeRes.canFinalize) {
                         toast.success(finalizeRes.message || 'Batch finalized');
@@ -74,22 +75,20 @@ export const useBatchActions = (onRefresh?: () => void) => {
                         toast.error(finalizeRes.message || 'Cannot finalize batch yet');
                     }
                     break;
-                case 'export':
-                    try {
-                        const blob = await exportBulkImportReport(batchId, 'json');
-                        const url = window.URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = `qa-report-${batchId}.json`;
-                        document.body.appendChild(a);
-                        a.click();
-                        window.URL.revokeObjectURL(url);
-                        document.body.removeChild(a);
-                        toast.success('Report exported');
-                    } catch (e) {
-                        throw e;
-                    }
+                }
+                case 'export': {
+                    const blob = await exportBulkImportReport(batchId, 'json');
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `qa-report-${batchId}.json`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    toast.success('Report exported');
                     break;
+                }
             }
             if (onRefresh) onRefresh();
         } catch (e: any) {

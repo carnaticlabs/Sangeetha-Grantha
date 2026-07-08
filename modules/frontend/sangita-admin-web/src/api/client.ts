@@ -462,16 +462,16 @@ export const resumeBulkImportBatch = (id: string) =>
     request<ImportBatch>(`/admin/bulk-import/batches/${id}/resume`, { method: 'POST' });
 export const cancelBulkImportBatch = (id: string) =>
     request<ImportBatch>(`/admin/bulk-import/batches/${id}/cancel`, { method: 'POST' });
-export const retryBulkImportBatch = (id: String, includeFailed = true) =>
+export const retryBulkImportBatch = (id: string, includeFailed = true) =>
     request<{ requeuedTasks: number }>(`/admin/bulk-import/batches/${id}/retry`, {
         method: 'POST',
         body: JSON.stringify({ includeFailed }),
     });
-export const deleteBulkImportBatch = (id: String) =>
+export const deleteBulkImportBatch = (id: string) =>
     request<void>(`/admin/bulk-import/batches/${id}`, { method: 'DELETE' });
-export const approveAllInBulkImportBatch = (id: String) =>
+export const approveAllInBulkImportBatch = (id: string) =>
     request<void>(`/admin/bulk-import/batches/${id}/approve-all`, { method: 'POST' });
-export const rejectAllInBulkImportBatch = (id: String) =>
+export const rejectAllInBulkImportBatch = (id: string) =>
     request<void>(`/admin/bulk-import/batches/${id}/reject-all`, { method: 'POST' });
 
 // TRACK-004: Finalize batch
