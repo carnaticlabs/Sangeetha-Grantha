@@ -19,7 +19,7 @@ services:
   # Applies V__ versioned schema + R__ repeatable reference data from one location.
   migrate:
     profiles: [ "dev", "prod" ]
-    image: flyway/flyway:12.8.1-alpine
+    image: flyway/flyway:12.9.0-alpine
     command: migrate
     environment:
       FLYWAY_URL: jdbc:postgresql://db:5432/sangita_grantha

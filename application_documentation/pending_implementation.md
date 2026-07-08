@@ -100,3 +100,45 @@ reconciliation that surfaced it.
 - `modules/frontend/sangita-admin-web/src/components/krithi-editor/SourceEvidenceTab.tsx` (removal + comment)
 - `modules/shared/domain/.../model/EvidenceVotingDtos.kt` (`KrithiEvidenceSourceDto`, `KrithiEvidenceResponseDto`, `SectionSummaryDto`)
 - `modules/frontend/sangita-admin-web/src/types/sourcing.ts` (`KrithiEvidenceSource`, `KrithiEvidenceResponse`)
+
+---
+
+### PI-003 — Carried-forward cleanups from TRACK-120 (Batch 1 dependency upgrades)
+
+| Field | Value |
+|:---|:---|
+| **Area** | Backend (Ktor) + Frontend (test/lint config) |
+| **Introduced by** | TRACK-120 — Batch 1 safe dependency upgrades — 2026-06-24 |
+| **Blast radius** | Low — warnings + pre-existing test-config gaps, no runtime impact |
+
+**Current state.** Two non-blocking notes were carried forward from TRACK-120 (neither caused by the
+upgrades themselves):
+
+1. **Ktor 3.5 `dispose → release` deprecation warnings** in
+   `modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/BulkImportRoutes.kt`
+   (6 call sites, lines ~46–118). Ktor 3.5 deprecates `val dispose: () -> Unit` in favour of `release`.
+   Compilation succeeds; this is warning-level only, but the project targets zero warnings (TRACK-099).
+2. **Pre-existing Vitest/lint issues tied to TRACK-118 not being started.** There are no Vitest unit
+   tests in `src/`, so `vitest run` defaults to collecting the Playwright `e2e/*.spec.ts` files and
+   fails; `bun run lint` reports pre-existing errors (e.g. the triple-slash reference in
+   `vitest.config.ts`). ESLint/TS were **not** upgraded in Batch 1, so this is unchanged baseline.
+
+**Why deferred.** TRACK-120 was scoped to safe version bumps only; touching source (Ktor API migration)
+or standing up the frontend test/lint baseline (TRACK-118) was intentionally left out to keep the
+upgrade focused and independently revertable.
+
+**Proposed approach.**
+- Replace the 6 deprecated `dispose` usages with `release` in `BulkImportRoutes.kt`; rebuild to confirm
+  zero new warnings.
+- Address the Vitest/lint gaps under **TRACK-118** (Frontend Component Tests): add a `test.include` /
+  `exclude` to `vitest.config.ts` so it ignores `e2e/`, and clear the standing lint errors.
+
+**Acceptance criteria.**
+- `./gradlew :modules:backend:api:assemble` emits no `dispose`-related deprecation warnings.
+- `:modules:backend:api:test` stays green.
+- (Under TRACK-118) `vitest run` no longer collects Playwright specs; `bun run lint` is clean.
+
+**Key references.**
+- `modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/BulkImportRoutes.kt`
+- `modules/frontend/sangita-admin-web/vitest.config.ts`
+- `conductor/tracks/TRACK-120-dependency-upgrades-safe-jun-2026.md`, `conductor/tracks/TRACK-118-frontend-component-tests.md`

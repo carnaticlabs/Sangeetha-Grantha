@@ -2,7 +2,7 @@
 kotlin = "2.3.0"
 agp = "9.0.0"
 compose = "1.10.0"
-ktor = "3.4.0"
+ktor = "3.5.0"
 kotlinxCoroutinesCore = "1.10.2"
 kotlinxDatetime = "0.7.1"
 kotlinxSerializationJson = "1.10.0"
@@ -12,13 +12,13 @@ material = "1.12.0"
 
 # Backend stack
 exposed = "1.0.0"
-postgresql = "42.7.10"
+postgresql = "42.7.11"
 hikaricp = "7.0.2"
-logback = "1.5.32"
+logback = "1.5.34"
 logstashLogbackEncoder = "8.0"
 jwt = "4.5.0"
 commonsCsv = "1.14.1"
-koin = "4.1.1"
+koin = "4.2.1"
 micrometer = "1.15.2"
 shadow = "9.3.1"
 awsSdk = "2.41.22"
@@ -31,7 +31,7 @@ caffeine = "3.2.3"
 password4j = "1.8.2"
 
 # Migrations + integration-test substrate (ADR-013 / TRACK-110). JUnit comes via kotlin-test-junit5.
-flyway = "12.8.1"
+flyway = "12.9.0"
 testcontainers = "1.21.4"
 
 [plugins]

@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-06-06 |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-06-24 |
 | **Author** | Sangeetha Grantha Team |
 
 # Current Technology Versions
@@ -37,9 +37,9 @@
 | Library | Version | Purpose |
 |---------|---------|---------|
 | Kotlin | `2.3.0` | Language version |
-| Ktor | `3.4.0` | HTTP server & client framework |
+| Ktor | `3.5.0` | HTTP server & client framework |
 | Exposed | `1.0.0` | SQL ORM (DSL-based) |
-| Koin | `4.1.1` | Dependency injection |
+| Koin | `4.2.1` | Dependency injection |
 
 ### Kotlinx Libraries
 
@@ -53,9 +53,9 @@
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| PostgreSQL Driver | `42.7.10` | JDBC driver |
+| PostgreSQL Driver | `42.7.11` | JDBC driver (CVE-2026-42198 fix) |
 | HikariCP | `7.0.2` | Connection pooling |
-| Logback | `1.5.32` | Logging framework |
+| Logback | `1.5.34` | Logging framework |
 | Logstash Encoder | `8.0` | JSON log formatting |
 | Commons CSV | `1.14.1` | CSV parsing |
 | Jsoup | `1.22.1` | HTML parsing |
@@ -93,7 +93,7 @@
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| React | `19.2.4` | UI framework |
+| React | `19.2.7` | UI framework |
 | TypeScript | `5.9.x` | Type-safe JavaScript |
 | Vite | `7.3.1` | Build tool & dev server |
 
@@ -101,14 +101,14 @@
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| Tailwind CSS | `4.2.1` | Utility-first CSS |
+| Tailwind CSS | `4.3.1` | Utility-first CSS |
 
 ### Routing & State
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| React Router | `7.13.1` | Client-side routing |
-| TanStack Query | `5.90.21` | Data fetching & caching |
+| React Router | `7.18.0` | Client-side routing |
+| TanStack Query | `5.101.1` | Data fetching & caching |
 | Google GenAI | `1.34.0` | AI integration |
 
 ### Development & Testing
@@ -116,8 +116,8 @@
 | Library | Version | Purpose |
 |---------|---------|---------|
 | ESLint | `9.39.2` | Code linting |
-| Vitest | `4.0.18` | Unit testing |
-| Playwright | `1.40.0` | E2E testing |
+| Vitest | `4.1.9` | Unit testing |
+| Playwright | `1.61.1` | E2E testing |
 
 ---
 
@@ -131,12 +131,12 @@
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| PyMuPDF | `1.27.1` | Primary PDF text extraction |
+| PyMuPDF | `1.27.2.3` | Primary PDF text extraction |
 | pdfplumber | `0.11.9` | Tabular PDF extraction fallback |
 | pytesseract | `0.3.13` | Tesseract OCR wrapper |
 | indic-transliteration | `2.3.76` | Script conversion (Devanagari ↔ Tamil/Telugu/etc.) |
-| Pydantic | `2.12.5` | Schema validation |
-| psycopg | `3.3.2` | PostgreSQL driver (async-capable) |
+| Pydantic | `2.13.4` | Schema validation |
+| psycopg | `3.3.4` | PostgreSQL driver (async-capable) |
 | google-genai | `>=1.0.0` | Unified Gemini SDK (replaced deprecated google-generativeai) |
 | RapidFuzz | `3.14.3` | Fast fuzzy matching |
 | HTTPX | `0.28.1` | Async HTTP client |
@@ -156,7 +156,7 @@
 
 | Component | Version | Notes |
 |---------|---------|---------|
-| Flyway Community | `12.8.1` | Single migration engine ([ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)). Make/dev/CI via `flyway/flyway:12.8.1-alpine`; Kotlin Testcontainers via the Flyway JVM API. Pinned in `gradle/libs.versions.toml` (`flyway`) and `compose.yaml`. |
+| Flyway Community | `12.9.0` | Single migration engine ([ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)). Make/dev/CI via `flyway/flyway:12.9.0-alpine`; Kotlin Testcontainers via the Flyway JVM API. Pinned in `gradle/libs.versions.toml` (`flyway`) and `compose.yaml`. |
 
 Migrations are standardized on **Flyway Community** ([ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)). The previous Python tool (`tools/db-migrate`, psycopg `>=3.1`) is superseded and archived (`tools/db-migrate-archived/`, TRACK-110).
 
@@ -180,7 +180,7 @@ Shared integration-test infrastructure (`IntegrationTestBase`, `SangitaPostgres`
 | Kotlin | `2.3.0` | Shared with backend |
 | Compose Multiplatform | `1.10.0` | Cross-platform UI |
 | Android Gradle Plugin | `9.0.0` | Android build |
-| Ktor Client | `3.4.0` | HTTP client |
+| Ktor Client | `3.5.0` | HTTP client |
 
 ---
 
@@ -207,6 +207,7 @@ Shared integration-test infrastructure (`IntegrationTestBase`, `SangitaPostgres`
 
 | Date | Change |
 |------|--------|
+| 2026-06-24 | TRACK-120 (Batch 1 safe upgrades): PostgreSQL JDBC 42.7.10→42.7.11 (CVE-2026-42198), Ktor 3.4.0→3.5.0, Koin 4.1.1→4.2.1, Logback 1.5.32→1.5.34, Flyway 12.8.1→12.9.0, React 19.2.4→19.2.7, TanStack Query 5.90.21→5.101.1, Tailwind 4.2.1→4.3.1, React Router 7.13.1→7.18.0, Vitest 4.0.18→4.1.9, Playwright 1.40.0→1.61.1, pydantic 2.12.5→2.13.4, psycopg 3.3.2→3.3.4, PyMuPDF 1.27.1→1.27.2.3 |
 | 2026-06-06 | TRACK-106 re-sync: Bun 1.3.6→1.3.7, Python version pin corrected to 3.11+ (mise.toml), Last Updated synced |
 | 2026-03-10 | Added Python tools section (extraction worker + db-migrate) with resolved versions from uv.lock |
 | 2026-03-10 | Dependency updates: PostgreSQL 42.7.10, Logback 1.5.32, Jsoup 1.22.1, Caffeine 3.2.3, Tailwind 4.2.1, React Router 7.13.1, TanStack Query 5.90.21 |
