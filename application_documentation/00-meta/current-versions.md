@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.2.0 |
-| **Last Updated** | 2026-06-24 |
+| **Version** | 1.3.0 |
+| **Last Updated** | 2026-07-08 |
 | **Author** | Sangeetha Grantha Team |
 
 # Current Technology Versions
@@ -94,8 +94,8 @@
 | Library | Version | Purpose |
 |---------|---------|---------|
 | React | `19.2.7` | UI framework |
-| TypeScript | `5.9.x` | Type-safe JavaScript |
-| Vite | `7.3.1` | Build tool & dev server |
+| TypeScript | `6.0.x` | Type-safe JavaScript |
+| Vite | `8.1.3` | Build tool & dev server (Rolldown bundler) |
 
 ### Styling & UI
 
@@ -115,8 +115,8 @@
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| ESLint | `9.39.2` | Code linting |
-| Vitest | `4.1.9` | Unit testing |
+| ESLint | `10.6.0` | Code linting (via `bun run`; needs Bun runtime) |
+| Vitest | `4.1.10` | Unit testing (Vitest 5 deferred — still beta) |
 | Playwright | `1.61.1` | E2E testing |
 
 ---
@@ -207,6 +207,7 @@ Shared integration-test infrastructure (`IntegrationTestBase`, `SangitaPostgres`
 
 | Date | Change |
 |------|--------|
+| 2026-07-08 | TRACK-121 (frontend major toolchain): TypeScript 5.9→6.0, ESLint 9.39.2→10.6.0 (+ typescript-eslint 8.63.0, @eslint/js 10.0.1, eslint-plugin-react-refresh 0.5.3), Vite 7.3.1→8.1.3 (Rolldown), @vitejs/plugin-react 5→6.0.3, Vitest 4.1.9→4.1.10. Vitest 5 deferred (beta). Added `bunfig.toml` (`[run] bun = true`) — ESLint 10 / Vite 8 need `util.styleText`, absent in the box's EOL Node 21, so `bun run` scripts execute under Bun; direct calls use `bunx --bun`. |
 | 2026-06-24 | TRACK-120 (Batch 1 safe upgrades): PostgreSQL JDBC 42.7.10→42.7.11 (CVE-2026-42198), Ktor 3.4.0→3.5.0, Koin 4.1.1→4.2.1, Logback 1.5.32→1.5.34, Flyway 12.8.1→12.9.0, React 19.2.4→19.2.7, TanStack Query 5.90.21→5.101.1, Tailwind 4.2.1→4.3.1, React Router 7.13.1→7.18.0, Vitest 4.0.18→4.1.9, Playwright 1.40.0→1.61.1, pydantic 2.12.5→2.13.4, psycopg 3.3.2→3.3.4, PyMuPDF 1.27.1→1.27.2.3 |
 | 2026-06-06 | TRACK-106 re-sync: Bun 1.3.6→1.3.7, Python version pin corrected to 3.11+ (mise.toml), Last Updated synced |
 | 2026-03-10 | Added Python tools section (extraction worker + db-migrate) with resolved versions from uv.lock |

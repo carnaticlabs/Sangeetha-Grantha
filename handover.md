@@ -10,7 +10,7 @@
 | **Branch** | `track-121-frontend-toolchain` (branched from `main` @ `e124b44`) |
 | **Scope dir** | `modules/frontend/sangita-admin-web` |
 | **Started** | 2026-07-08 |
-| **Last updated** | 2026-07-08 (Step 3 Vite 8 done) |
+| **Last updated** | 2026-07-08 (Steps 1–3 done; docs synced; PR pending) |
 
 ## Ground rules for this upgrade
 - Work **one library at a time**; verify (`tsc -b`, `bun run build`, `bunx vitest run`, `bun run lint`)
@@ -55,8 +55,11 @@
       4.1.10 import it from `node:util`, absent in EOL Node 21). Use **`bunx --bun vitest run`** (6
       passed) or `bun run test` (bunfig → Bun). This is a local-box artifact of EOL Node 21; CI's
       modern Node likely isn't affected, and `bunfig.toml` covers `bun run` either way.
-- [ ] **Step 4 — Docs sync + finalize** — `current-versions.md`, tech-stack, getting-started;
-      flip TRACK-121 status; open PR / merge to `main`.
+- [~] **Step 4 — Docs sync + finalize** — DONE: `current-versions.md` updated (v1.3.0, frontend rows +
+      history row + Bun-runtime note); TRACK-121 status updated. `tech-stack.md`/`getting-started.md`
+      reference current-versions (no hardcoded frontend versions — confirmed earlier for TRACK-120).
+      **REMAINING (needs the user / an outward action):** (a) verify `.github/workflows/ci.yml` frontend
+      job passes on the branch, (b) open a PR `track-121-frontend-toolchain` → `main` and merge after CI.
 
 ## Verification commands (run from `modules/frontend/sangita-admin-web`)
 ```bash
@@ -68,19 +71,26 @@ bun run lint          # must stay 0 errors
 ```
 
 ## Current state / where to resume
-**All three major upgrades (TS 6, ESLint 10, Vite 8) done, green, and committed on the branch.**
-**Resume at Step 4 (docs sync + finalize):**
-1. Update `application_documentation/00-meta/current-versions.md` (Frontend + Dev/Testing tables):
-   Vite `7.3.1→8.1.3`, TypeScript `5.9→6.0`, ESLint `9.39.2→10.6.0`, Vitest `4.1.9→4.1.10`,
-   `@vitejs/plugin-react 6.0.3`, typescript-eslint `8.63.0` — plus a version-history row. (tech-stack.md
-   / getting-started.md reference it, no hardcoded versions — confirm with a grep.)
-2. Note the **Bun-runtime requirement** for lint/test somewhere durable (frontend `CLAUDE.md` and/or
-   `current-versions.md`): ESLint 10 + Vite 8/Vitest need `util.styleText`/ESM; `bunfig.toml` handles
-   `bun run`, direct calls need `bunx --bun`.
-3. Flip TRACK-121 status → Completed; update `conductor/tracks.md` registry row.
-4. **Verify CI**: confirm `.github/workflows/ci.yml` frontend job (setup-bun) still passes with Vite 8 —
-   `bunx tsc -b` + `bun run build`. Consider wiring `bunx --bun vitest run` (that's TRACK-118's CI item).
-5. Open a PR from `track-121-frontend-toolchain` → `main` (do NOT fast-merge a Rolldown swap without CI).
+**All three major upgrades (TS 6, ESLint 10, Vite 8) DONE, green, committed on branch; docs synced.**
+Only finalization remains (outward actions — left for the user):
+1. **Push the branch** and confirm `.github/workflows/ci.yml` frontend job (setup-bun) passes with
+   Vite 8 — `bunx tsc -b` + `bun run build`. NB: CI's own Node (modern) likely doesn't hit the
+   `styleText` issue; `bunfig.toml` covers `bun run` regardless.
+2. **Open a PR** `track-121-frontend-toolchain` → `main`; merge after CI green. Do NOT fast-merge a
+   Rolldown bundler swap without CI.
+3. On merge: flip TRACK-121 → Completed in `conductor/tracks.md` + the track file; update the registry
+   row (currently `Blocked (needs TRACK-118)` on `main`).
+4. Optional next: wire `bunx --bun vitest run` into CI (that's a TRACK-118 item), and revisit Vitest 5
+   once it ships stable.
+
+## Local verification snapshot (branch @ latest commit)
+| Gate | Command | Result |
+|:---|:---|:---|
+| Typecheck | `bunx tsc -b` | ✓ exit 0 |
+| Build (Rolldown) | `bun run build` | ✓ ~0.9s |
+| Unit tests | `bunx --bun vitest run` | ✓ 6 passed |
+| Lint | `bun run lint` | ✓ 0 errors / 189 warnings |
+| Dev server | `bun run dev` | ✓ VITE 8.1.3, HTTP 200 :5001 |
 
 ## Log
 - 2026-07-08: Branch created; Vitest 5 confirmed beta → deferred; plan + handover written (`1741ba5`).
