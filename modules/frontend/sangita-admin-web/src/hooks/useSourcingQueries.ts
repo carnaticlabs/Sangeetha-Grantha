@@ -219,10 +219,10 @@ export const useVotingList = (filters?: VotingFilterParams) =>
     queryFn: () => api.listVotingDecisions(filters),
   });
 
-export const useVotingDetail = (id: string) =>
+export const useVotingDetail = (id: string | undefined) =>
   useQuery({
-    queryKey: sourcingKeys.votingDetail(id),
-    queryFn: () => api.getVotingDetail(id),
+    queryKey: sourcingKeys.votingDetail(id ?? ''),
+    queryFn: () => api.getVotingDetail(id!),
     enabled: !!id,
   });
 

@@ -185,7 +185,7 @@ const AutoApproveQueue: React.FC = () => {
                             {item.qualityTier}
                           </span>
                         )}
-                        {item.qualityScore !== null && (
+                        {item.qualityScore != null && (
                           <span className="text-xs text-ink-500">Score: {(item.qualityScore * 100).toFixed(0)}%</span>
                         )}
                       </div>
