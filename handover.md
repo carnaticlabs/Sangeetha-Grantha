@@ -1,126 +1,57 @@
-# Session Handover — TRACK-106 & TRACK-107
+# Handover — TRACK-121 Frontend Major Toolchain Upgrade
 
-**Date:** 2026-06-06
-**Session scope:** Implement TRACK-106 (Conductor Registry & Documentation Re-Sync) and TRACK-107 (AI Platform Lifecycle Uplift)
+> **Living document.** Refreshed after every sub-step so it is always current. If work stops
+> (quota/context/broken step), this file alone is enough to resume cold.
+> (Supersedes the old TRACK-106/107 handover, whose work is committed and complete.)
 
----
-
-## Completed Work
-
-### TRACK-106: Conductor Registry & Documentation Re-Sync — COMPLETED
-
-All four phases delivered:
-
-**Phase 1 — Known conflict correction**
-- TRACK-099 status confirmed Completed everywhere (already fixed in prior commit 4e1e04d)
-
-**Phase 2 — Full registry/file/git audit**
-- **23 track files** had stale statuses corrected to match the authoritative registry
-  - Files still saying "Active"/"Proposed"/"In Progress" when registry said "Completed" or "Deferred"
-  - TRACK-008: normalized bold markers in status cell
-- **2 stub files created:** TRACK-042 (MCP Database Tooling Optimization — Deferred, had row but no file), TRACK-066 (Sarvam PDF Extraction — Completed/Deprecated, referenced but never had a file)
-- TRACK-093 and TRACK-096 confirmed genuinely "In Progress"
-- All 5 Deferred tracks (002, 014, 035, 042, 065) confirmed still deferred
-
-**Phase 3 — Documentation version sync**
-- `current-versions.md`: Bun 1.3.6→1.3.7, Python pin corrected to 3.11+, google-genai updated
-- Mirror docs (`tech-stack.md`, `getting-started.md`) already in sync — no changes needed
-- State-of-nation and uplift-tasks docs added to `application_documentation/README.md` under "Project Health" section
-
-**Phase 4 — Guardrail**
-- Created `conductor/check-registry-sync.py` — validates registry/file status alignment, detects orphans, exits 1 on drift
-- Documented sync rules in `conductor/workflow.md` — registry is authoritative, both update in same commit
-- Final check: 109 track files, 104 registry rows, zero mismatches
-
-### TRACK-107: AI Platform Lifecycle Uplift — COMPLETED
-
-All five phases delivered:
-
-**Phase 1 — SDK migration**
-- `pyproject.toml`: `google-generativeai>=0.8.0` → `google-genai>=1.0.0`
-- `gemini_enricher.py`: Rewrote from deprecated `genai.configure()` + `GenerativeModel()` to `genai.Client(api_key=...)` + `client.models.generate_content()` via `_GenaiClientWrapper`
-- Provider label renamed from `google-generativeai` to `google-genai` across all code and tests
-- `schema.py` provider description updated
-
-**Phase 2 — Model repoint**
-- `config.py`: Default `SG_GEMINI_MODEL` changed from `gemini-2.0-flash` (retired 1 June 2026) to `gemini-2.5-flash`
-- Old model strings in archive/retrospective docs intentionally left (historical record)
-- Active docs updated: `integration-summary.md`, `intelligent-content-ingestion.md`, `current-versions.md`, `implementation-checklist.md`
-
-**Phase 3 — Structured output hardening**
-- `_GeminiSuggestion` Pydantic model passed as `response_schema` via `GenerateContentConfig`
-- JSON schema enforced at generation time by the SDK
-- Markdown-stripping fallback retained in `_parse_response` as safety net
-
-**Phase 4 — Batch Mode**
-- New `enrich_batch()` method routes bulk/backfill enrichment through Batch API (~50% cost)
-- Interactive "Generate Variants" continues to use synchronous `enrich()` path
-- Graceful fallback: if Batch API unavailable, falls back to sequential sync
-- Refactored field-application logic into `_apply_suggestion()` (shared by sync and batch)
-
-**Phase 5 — Validation & documentation**
-- 126 tests pass (3 new: batch-disabled, batch-fallback-to-sync, provider-label)
-- Backend build: BUILD SUCCESSFUL
-- All docs synced
-
----
-
-## Test Results
-
-| Suite | Result |
+| | |
 |:---|:---|
-| Python extraction worker (126 tests) | All pass |
-| Backend Kotlin (Gradle) | BUILD SUCCESSFUL |
-| Frontend (Vite build) | BUILD SUCCESSFUL (183 modules) |
-| Registry sync check | 109 files, 104 rows, zero mismatches |
+| **Track** | [TRACK-121](conductor/tracks/TRACK-121-frontend-major-toolchain-upgrade.md) |
+| **Branch** | `track-121-frontend-toolchain` (branched from `main` @ `e124b44`) |
+| **Scope dir** | `modules/frontend/sangita-admin-web` |
+| **Started** | 2026-07-08 |
+| **Last updated** | 2026-07-08 (initial — plan only) |
 
----
+## Ground rules for this upgrade
+- Work **one library at a time**; verify (`tsc -b`, `bun run build`, `bunx vitest run`, `bun run lint`)
+  after each; commit each green step on the branch. Never leave `main` half-upgraded.
+- Runtime is **Bun**. Vitest's CLI shebang defaults to Node; run under Bun with `bunx --bun vitest run`
+  if the system Node (EOL 21) causes ESM issues. Do **not** pin Node. (See PI-003 runtime note.)
+- Baseline before this track (on `main` @ `e124b44`): lint 0 errors / 189 warnings, `vitest run`
+  6 passed (`src/utils/enums.test.ts`), `tsc -b` clean, `bun run build` clean.
 
-## Files Changed (41 modified, 3 new)
+## Revised scope (2026-07-08 — verified current versions)
+| Lib | From | To | Notes |
+|:---|:---|:---|:---|
+| TypeScript | `~5.9.0` | `~6.0.x` | Stable. TS 7 (Go rewrite) is only RC — **do not** take it. |
+| ESLint | `^9.39.2` | `^10.x` | `@eslint/js` bumps in lockstep. |
+| typescript-eslint | `^8.54.0` | `^8.63.0` | Supports ESLint `^10` and TS 6. |
+| Vite | `^7.3.1` | `^8.x` | **Rolldown** bundler swap — the biggest risk; exercise the prod build. |
+| @vitejs/plugin-react | `^5.0.0` | `^6.x` | v6 is the Vite-8 release (Oxc refresh, no Babel dep). |
+| Vitest | `^4.1.9` | `^4.1.10` | **Vitest 5 DEFERRED — still beta (5.0.0-beta.6).** 4.1.x already supports Vite 8. |
+| jsdom | `^26.1.0` | keep | Stays 26 (runtime-agnostic); revisit only if Node moves off EOL 21. |
 
-### New files
-- `conductor/check-registry-sync.py` — registry/file sync guardrail script
-- `conductor/tracks/TRACK-042-mcp-database-tooling-optimization.md` — stub for orphan registry row
-- `conductor/tracks/TRACK-066-sarvam-pdf-extraction.md` — stub for deprecated track
+## Step status
+- [ ] **Step 0 — Plan + handover committed** (this commit)
+- [ ] **Step 1 — TypeScript 6.0** — bump `typescript`; `tsc -b` green; fix new deprecations/strictness.
+- [ ] **Step 2 — ESLint 10 + typescript-eslint 8.63** — bump `eslint`, `@eslint/js`,
+      `typescript-eslint`; migrate flat config if needed; `bun run lint` = 0 errors.
+- [ ] **Step 3 — Vite 8 + @vitejs/plugin-react 6 (+ Vitest 4.1.10)** — bump; `bun run build`
+      (Rolldown) produces a working prod bundle; dev server (5001) boots; `bunx vitest run` green.
+- [ ] **Step 4 — Docs sync + finalize** — `current-versions.md`, tech-stack, getting-started;
+      flip TRACK-121 status; open PR / merge to `main`.
 
-### Key modified files
-- `tools/krithi-extract-enrich-worker/src/gemini_enricher.py` — SDK migration + batch mode
-- `tools/krithi-extract-enrich-worker/src/config.py` — model repoint
-- `tools/krithi-extract-enrich-worker/pyproject.toml` — dependency swap
-- `conductor/tracks.md` — registry status updates
-- `conductor/workflow.md` — sync rules documentation
-- `application_documentation/00-meta/current-versions.md` — version sync
-- 23 track files — status alignment corrections
-
----
-
-## Not Yet Done / Follow-up Items
-
-1. **Live smoke test with API key** — enrichment is gated off by default (`SG_ENABLE_GEMINI_ENRICHMENT=false`). When ready to resume TRACK-093 Trinity import, enable it and verify against a live Gemini endpoint with `gemini-2.5-flash`.
-
-2. **`uv.lock` refresh** — The `pyproject.toml` now depends on `google-genai>=1.0.0` but `uv.lock` hasn't been regenerated. Run `uv lock` in `tools/krithi-extract-enrich-worker/` to refresh.
-
-3. **Batch Mode measurement** — The `enrich_batch()` method is implemented and tested (fallback path), but hasn't been exercised against the real Batch API yet. First real use will be during TRACK-093 bulk import (1,245 krithis).
-
-4. **Commits not yet pushed** — All changes are staged locally. Need to commit and push.
-
----
-
-## How to Continue
-
+## Verification commands (run from `modules/frontend/sangita-admin-web`)
 ```bash
-# 1. Review the changes
-git diff --stat
-
-# 2. Run tests
-cd tools/krithi-extract-enrich-worker && .venv/bin/python -m pytest tests/ -v
-
-# 3. Verify registry sync
-python3 conductor/check-registry-sync.py
-
-# 4. Commit (use the commit skill)
-# Suggested message: "TRACK-106, TRACK-107: Registry re-sync + AI platform lifecycle uplift"
-
-# 5. Push
-git push origin main
+bun install
+bunx tsc -b            # typecheck (CI gate)
+bun run build         # prod build (Rolldown once on Vite 8)
+bunx vitest run       # unit tests (add --bun if Node-shebang ESM issues)
+bun run lint          # must stay 0 errors
 ```
+
+## Current state / where to resume
+Nothing upgraded yet. Start at **Step 1 (TypeScript 6)**.
+
+## Log
+- 2026-07-08: Branch created; Vitest 5 confirmed beta → deferred; plan + handover written.
