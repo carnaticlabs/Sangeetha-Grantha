@@ -1,7 +1,7 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | In Progress (precondition met; on branch) |
-| **Version** | 1.2.0 |
+| **Status** | In Progress (upgrades done + green on branch; docs synced; PR/merge pending) |
+| **Version** | 1.3.0 |
 | **Last Updated** | 2026-07-08 |
 | **Author** | Sangeetha Grantha Team |
 
