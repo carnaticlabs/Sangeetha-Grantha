@@ -271,7 +271,7 @@ const KrithiEditor: React.FC = () => {
                             referenceData={referenceData}
                         />
                     )}
-                    {state.activeTab === 'Notation' && state.krithi.id && (
+                    {state.activeTab === 'Notation' && state.krithi.id && state.krithi.musicalForm && (
                         <NotationTab
                             krithiId={state.krithi.id}
                             musicalForm={state.krithi.musicalForm}

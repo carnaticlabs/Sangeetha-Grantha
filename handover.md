@@ -10,7 +10,7 @@
 | **Branch** | `track-121-frontend-toolchain` (branched from `main` @ `e124b44`) |
 | **Scope dir** | `modules/frontend/sangita-admin-web` |
 | **Started** | 2026-07-08 |
-| **Last updated** | 2026-07-08 (initial — plan only) |
+| **Last updated** | 2026-07-08 (Step 1 TypeScript 6 done) |
 
 ## Ground rules for this upgrade
 - Work **one library at a time**; verify (`tsc -b`, `bun run build`, `bunx vitest run`, `bun run lint`)
@@ -32,8 +32,12 @@
 | jsdom | `^26.1.0` | keep | Stays 26 (runtime-agnostic); revisit only if Node moves off EOL 21. |
 
 ## Step status
-- [ ] **Step 0 — Plan + handover committed** (this commit)
-- [ ] **Step 1 — TypeScript 6.0** — bump `typescript`; `tsc -b` green; fix new deprecations/strictness.
+- [x] **Step 0 — Plan + handover committed** (`1741ba5`)
+- [x] **Step 1 — TypeScript 6.0** (`typescript@6.0.3`) — all 4 gates green. Fixed 3 new TS6 strict-null
+      errors: `AutoApproveQueue.tsx` (`!== null`→`!= null`), `KrithiEditor.tsx` (guard render on
+      `state.krithi.musicalForm` to narrow the `MusicalForm | undefined`), `useSourcingQueries.ts`
+      (`useVotingDetail` param → `string | undefined`, key `?? ''`, queryFn `id!` — hook already had
+      `enabled: !!id`). Committed next.
 - [ ] **Step 2 — ESLint 10 + typescript-eslint 8.63** — bump `eslint`, `@eslint/js`,
       `typescript-eslint`; migrate flat config if needed; `bun run lint` = 0 errors.
 - [ ] **Step 3 — Vite 8 + @vitejs/plugin-react 6 (+ Vitest 4.1.10)** — bump; `bun run build`
@@ -51,7 +55,11 @@ bun run lint          # must stay 0 errors
 ```
 
 ## Current state / where to resume
-Nothing upgraded yet. Start at **Step 1 (TypeScript 6)**.
+TS 6 done + committed. **Resume at Step 2 (ESLint 10 + typescript-eslint 8.63).**
+Bump `eslint ^9.39.2→^10.x`, `@eslint/js ^9.39.2→^10.x`, `typescript-eslint ^8.54→^8.63`; check
+`eslint-plugin-react-hooks ^7.0.1` / `eslint-plugin-react-refresh ^0.4.26` peer-compat with ESLint 10;
+`bun install`; `bun run lint` must stay **0 errors** (189 warnings is the tolerated baseline).
 
 ## Log
-- 2026-07-08: Branch created; Vitest 5 confirmed beta → deferred; plan + handover written.
+- 2026-07-08: Branch created; Vitest 5 confirmed beta → deferred; plan + handover written (`1741ba5`).
+- 2026-07-08: Step 1 TypeScript 6.0.3 — 3 strict-null fixes; tsc/build/vitest/lint all green.
