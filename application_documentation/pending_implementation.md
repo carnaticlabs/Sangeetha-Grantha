@@ -103,25 +103,34 @@ reconciliation that surfaced it.
 
 ---
 
-### PI-003 — Carried-forward cleanups from TRACK-120 (Batch 1 dependency upgrades)
+## Resolved
+
+### PI-003 — Carried-forward cleanups from TRACK-120 (Batch 1 dependency upgrades) — RESOLVED 2026-06-24
 
 | Field | Value |
 |:---|:---|
 | **Area** | Backend (Ktor) + Frontend (test/lint config) |
 | **Introduced by** | TRACK-120 — Batch 1 safe dependency upgrades — 2026-06-24 |
 | **Blast radius** | Low — warnings + pre-existing test-config gaps, no runtime impact |
+| **Resolved by** | `dispose→release` fix + TRACK-118 baseline — 2026-06-24 |
 
-**Current state.** Two non-blocking notes were carried forward from TRACK-120 (neither caused by the
-upgrades themselves):
+**Current state.** Both carried-forward notes are now resolved:
 
-1. **Ktor 3.5 `dispose → release` deprecation warnings** in
-   `modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/BulkImportRoutes.kt`
-   (6 call sites, lines ~46–118). Ktor 3.5 deprecates `val dispose: () -> Unit` in favour of `release`.
-   Compilation succeeds; this is warning-level only, but the project targets zero warnings (TRACK-099).
-2. ~~**Pre-existing Vitest/lint issues tied to TRACK-118 not being started.**~~ **RESOLVED 2026-06-24**
-   under the TRACK-118 baseline: `vitest run` now scopes to `src/` (excludes `e2e/`) with a first
-   passing test, and `bun run lint` is at 0 errors. jsdom pinned to `^26.1.0` to work under EOL Node 21.
-   See TRACK-118 "Baseline delivered". Only item (1) below remains open.
+1. ~~**Ktor 3.5 `dispose → release` deprecation warnings**~~ **RESOLVED** — the 6 `part.dispose()` sites
+   in `.../routes/BulkImportRoutes.kt` are now `part.release()` (Ktor 3.5 renamed the deprecated
+   `val dispose: () -> Unit`). `:modules:backend:api:compileKotlin` is clean of dispose/release
+   deprecation warnings; api unit slice green.
+2. ~~**Pre-existing Vitest/lint issues tied to TRACK-118 not being started.**~~ **RESOLVED** under the
+   TRACK-118 baseline: `vitest run` scopes to `src/` (excludes `e2e/`) with a first passing test, and
+   `bun run lint` is at 0 errors. jsdom pinned to `^26.1.0`. See TRACK-118 "Baseline delivered".
+
+   **Runtime note (Bun, not Node).** The project standardises on Bun; Node only entered the picture
+   because Vitest's CLI has a `#!/usr/bin/env node` shebang, so `bunx vitest` shells out to the system's
+   EOL Node 21 — which can't `require()` the ESM `@exodus/bytes` that jsdom 27 pulls via
+   `html-encoding-sniffer@6`. jsdom 26 uses the CJS `html-encoding-sniffer@4` and is runtime-agnostic —
+   verified green under **both** `bunx --bun vitest run` (Bun runtime) and the default Node path.
+   **No Node pin is needed or wanted.** If jsdom 27 is desired later, run Vitest under Bun's runtime
+   (`bunx --bun vitest run`, or `[run] bun = true` in `bunfig.toml`) rather than pinning Node.
 
 **Why deferred.** TRACK-120 was scoped to safe version bumps only; touching source (Ktor API migration)
 or standing up the frontend test/lint baseline (TRACK-118) was intentionally left out to keep the
@@ -133,10 +142,10 @@ upgrade focused and independently revertable.
 - Address the Vitest/lint gaps under **TRACK-118** (Frontend Component Tests): add a `test.include` /
   `exclude` to `vitest.config.ts` so it ignores `e2e/`, and clear the standing lint errors.
 
-**Acceptance criteria.**
-- `./gradlew :modules:backend:api:assemble` emits no `dispose`-related deprecation warnings.
-- `:modules:backend:api:test` stays green.
-- (Under TRACK-118) `vitest run` no longer collects Playwright specs; `bun run lint` is clean.
+**Acceptance criteria (met).**
+- [x] `:modules:backend:api:compileKotlin` emits no `dispose`-related deprecation warnings.
+- [x] `:modules:backend:api:unitTest` green.
+- [x] `vitest run` no longer collects Playwright specs; `bun run lint` is clean (0 errors).
 
 **Key references.**
 - `modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/BulkImportRoutes.kt`

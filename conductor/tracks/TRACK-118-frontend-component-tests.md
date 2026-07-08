@@ -42,10 +42,13 @@ Purpose: give TRACK-121 a green `vitest run` + `bun run lint` to upgrade against
   excludes `e2e/` (Playwright has its own runner). Added `src/utils/enums.test.ts` (6 tests) as the
   first real unit coverage.
 - **jsdom pinned `^27.4.0` → `^26.1.0`.** jsdom 27 pulls `html-encoding-sniffer@6 → @exodus/bytes`
-  (pure ESM), which the local **EOL Node 21** can't `require()` (`ERR_REQUIRE_ESM`). jsdom 26 uses the
-  CJS `html-encoding-sniffer@4` and works under Node 21, Node 22+, and Bun.
-  - **Follow-up (recommended):** pin Node in `.mise.toml` to a current LTS (≥ 22.12, which supports
-    `require(ESM)`); Node 21 is EOL and unmanaged by mise today. Doing so would allow jsdom 27 again.
+  (pure ESM). The project runs on **Bun**, but Vitest's CLI has a `#!/usr/bin/env node` shebang, so
+  `bunx vitest` shells out to the system's **EOL Node 21**, which can't `require()` that ESM dep
+  (`ERR_REQUIRE_ESM`). jsdom 26 uses the CJS `html-encoding-sniffer@4` and is runtime-agnostic —
+  verified green under **both** `bunx --bun vitest run` (Bun runtime) and the default Node path.
+  - **This is a Bun project — do _not_ pin Node.** jsdom 26 is current-enough and needs no runtime
+    pinning. If jsdom 27 is wanted later, run Vitest under Bun's runtime (`bunx --bun vitest run`, or
+    `[run] bun = true` in `bunfig.toml`) so Node is never involved — rather than pinning a Node LTS.
 
 ## Remaining (the substantive N3 work)
 Component coverage for `CuratorReviewPage.tsx` / `BulkImport.tsx` + decomposition, and CI wiring — the

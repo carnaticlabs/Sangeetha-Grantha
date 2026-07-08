@@ -43,7 +43,7 @@ fun Route.bulkImportRoutes(service: BulkImportOrchestrationService, importServic
                     if (part is PartData.FileItem) {
                         val originalFileName = part.originalFileName
                             ?: run {
-                                part.dispose()
+                                part.release()
                                 call.respondText(
                                     "File name is required",
                                     status = HttpStatusCode.BadRequest
@@ -56,7 +56,7 @@ fun Route.bulkImportRoutes(service: BulkImportOrchestrationService, importServic
                             .replace(Regex("[^a-zA-Z0-9._-]"), "_")
 
                         if (sanitizedFileName.isBlank()) {
-                            part.dispose()
+                            part.release()
                             call.respondText(
                                 "Invalid file name",
                                 status = HttpStatusCode.BadRequest
@@ -66,7 +66,7 @@ fun Route.bulkImportRoutes(service: BulkImportOrchestrationService, importServic
 
                         // Only allow CSV uploads for bulk import manifests
                         if (!sanitizedFileName.endsWith(".csv", ignoreCase = true)) {
-                            part.dispose()
+                            part.release()
                             call.respondText(
                                 "Only CSV files are allowed for bulk import",
                                 status = HttpStatusCode.BadRequest
@@ -78,7 +78,7 @@ fun Route.bulkImportRoutes(service: BulkImportOrchestrationService, importServic
 
                         // Enforce maximum file size to prevent OOM and abuse
                         if (fileBytes.size > MAX_MANIFEST_SIZE_BYTES) {
-                            part.dispose()
+                            part.release()
                             call.respondText(
                                 "File size exceeds maximum allowed size (10MB)",
                                 status = HttpStatusCode.BadRequest
@@ -102,7 +102,7 @@ fun Route.bulkImportRoutes(service: BulkImportOrchestrationService, importServic
                         val validationResult = validateCsvFile(file)
                         if (!validationResult.isValid) {
                             file.delete() // Clean up invalid file
-                            part.dispose()
+                            part.release()
                             call.respond(
                                 HttpStatusCode.BadRequest,
                                 mapOf(
@@ -115,7 +115,7 @@ fun Route.bulkImportRoutes(service: BulkImportOrchestrationService, importServic
                         
                         savedFilePath = file.absolutePath
                     }
-                    part.dispose()
+                    part.release()
                 }
 
                 if (savedFilePath != null) {
