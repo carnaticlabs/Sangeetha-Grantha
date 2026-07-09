@@ -1,7 +1,7 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.6.2 |
+| **Version** | 1.6.3 |
 | **Last Updated** | 2026-07-09 |
 | **Author** | Sangeetha Grantha Team |
 
@@ -43,7 +43,7 @@
 | [TRACK-032](./tracks/TRACK-032-multi-language-lyric-extraction-analysis.md) | Multi-Language Lyric Extraction from Web Sources | Completed |
 | [TRACK-033](./tracks/TRACK-033-cli-docs-command.md) | Sangita CLI – Docs Command | Completed |
 | [TRACK-034](./tracks/TRACK-034-fix-text-blocker-parsing.md) | Fix TextBlocker Section Parsing | Completed |
-| [TRACK-035](./tracks/TRACK-035-frontend-e2e-testing.md) | Frontend E2E Testing with Playwright | Not Started |
+| [TRACK-035](./tracks/TRACK-035-frontend-e2e-testing.md) | Frontend E2E Testing with Playwright | Folded into TRACK-113 |
 | [TRACK-036](./tracks/TRACK-036-enhanced-text-blocker-extraction.md) | Enhanced TextBlocker Extraction Strategy | Completed |
 | [TRACK-037](./tracks/TRACK-037-environment-variables.md) | Environment Variables & Config Standardisation | Completed |
 | [TRACK-038](./tracks/TRACK-038-dependency-updates-feb-2026.md) | Dependency Updates (Feb 2026) | Completed |
@@ -116,7 +116,7 @@
 | [TRACK-110](./tracks/TRACK-110-testcontainers-flyway-cutover.md) | Testcontainers Substrate + Flyway Cutover | Completed |
 | [TRACK-111](./tracks/TRACK-111-dal-suite-ci-activation.md) | DAL Test Suite + CI Activation | Completed |
 | [TRACK-112](./tracks/TRACK-112-money-path-scenarios.md) | Money-Path Service & API Scenarios | Not Started |
-| [TRACK-113](./tracks/TRACK-113-worker-e2e-tests.md) | Worker + E2E Layer (revives TRACK-035) | Not Started |
+| [TRACK-113](./tracks/TRACK-113-worker-e2e-tests.md) | Worker + E2E Layer (revives TRACK-035) | Completed |
 | [TRACK-114](./tracks/TRACK-114-password-hashing.md) | Authentication Hardening — Password Hashing (N1, re-scoped) | Completed |
 | [TRACK-115](./tracks/TRACK-115-repo-hygiene-secret-rotation.md) | Repository Hygiene & Secret Rotation (N8) | Completed |
 | [TRACK-116](./tracks/TRACK-116-versioned-canon-spike.md) | Versioned Canon — Architecture Spike + ADR-014 (N5) | Completed |

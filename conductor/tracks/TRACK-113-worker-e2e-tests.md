@@ -1,7 +1,7 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | In Progress (Phase 1 done) |
-| **Version** | 1.1.0 |
+| **Status** | Completed |
+| **Version** | 2.0.0 |
 | **Last Updated** | 2026-07-09 |
 | **Author** | Sangeetha Grantha Team |
 | **Priority** | P1 |
@@ -45,18 +45,38 @@ Cross-language worker DB tests + the three E2E money paths, reusing the existing
       Python Testcontainers coexistence confirmed (both suites green on the same host, §5.6).
       CI worker job timeout 10→15 min for cold-runner image pulls.
 
-### Phase 2 — E2E money paths (D12; nightly + pre-release)
-- [ ] Reactivate TRACK-035: status Deferred → active; **re-scope its config to the new substrate** (DB verification points at the Testcontainers/Flyway DB, not a hand-started one).
-- [ ] Path 1: login → review → approve.
-- [ ] Path 2: bulk import (happy path + one failure row).
-- [ ] Path 3: krithi edit with raga change reflected in the detail view.
-- [ ] Playwright `webServer` drives the compose stack (`make dev` / `start-sangita.sh`).
+### Phase 2 — E2E money paths (D12; nightly + pre-release) ✅ 2026-07-09
+- [x] TRACK-035 reactivated + re-scoped to the compose substrate: `webServer` drives `make dev`
+      (`reuseExistingServer` for a locally running stack); stale Rust-CLI error message and the
+      archived `bulk_import_test.csv` paths fixed in `global-setup.ts`/`test-data.ts`;
+      `E2E_SKIP_SHARED_BATCH` lets the money-path suite skip legacy shared-batch creation.
+- [x] Path 1 (login → review → approve): real UI login (adminToken+email), seeds an `in_review`
+      import, approves through the ConfirmationModal, verifies `import_status='approved'` +
+      `mapped_krithi_id` + created krithi row in the DB. Self-cleaning.
+- [x] Path 2 (bulk import happy + failure row): CSV made content-unique per run (checksum
+      idempotency from TRACK-062 rejects byte-identical re-uploads) with one real source URL and
+      one deterministic `.invalid`-TLD failure row; upload endpoint is rate-limited (429) so the
+      test retries with backoff; asserts terminal batch state, `failed_tasks ≥ 1`, the `.invalid`
+      task FAILED in `import_task_run`, and the failure surfaced in the batch-detail UI.
+- [x] Path 3 (krithi edit, raga change): creates a krithi via API, changes the raga through the
+      editor's selection modal, anchors save on the PUT round-trip, verifies the `krithi_ragas`
+      junction AND `krithis.primary_raga_id`, then reloads and asserts the detail header shows the
+      new raga (old one absent). **Found + fixed a real bug**: `KrithiService.updateKrithi` replaced
+      the raga junction but left `primary_raga_id` pointing at the removed raga (create derived it,
+      update didn't) — so the detail view kept showing the old raga after an edit. One-line fix
+      mirrors the create path; regression pinned in the spec's DB assertions.
+- [x] Nightly + pre-release: `.github/workflows/e2e-nightly.yml` (cron 21:30 UTC + manual
+      dispatch) — compose stack up, health-gated, `bootstrapAdmin`, Playwright chromium,
+      `bun run test:e2e:money`, report artifact + stack logs on failure.
+      Verified locally: two consecutive full green runs (incl. the rate-limit backoff path).
 
 ## Acceptance Criteria
 
-- Worker ↔ backend schema contract machine-verified.
-- Three E2E paths green nightly.
-- TRACK-035 folded in, not duplicated.
+- Worker ↔ backend schema contract machine-verified. ✅ golden fixture breaks either suite on drift.
+- Three E2E paths green nightly. ✅ suite green twice consecutively on the compose substrate;
+  nightly workflow in place (first scheduled run will confirm on CI).
+- TRACK-035 folded in, not duplicated. ✅ scaffolding reused (auth setup, DB verifier, config);
+  legacy specs retained and runnable via `test:e2e`; money paths are the nightly gate.
 
 ## References
 

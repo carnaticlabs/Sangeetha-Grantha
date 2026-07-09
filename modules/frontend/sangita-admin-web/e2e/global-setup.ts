@@ -40,7 +40,7 @@ async function globalSetup(config: FullConfig) {
       if (attempt === 5) {
         console.error('Backend health check failed:', error);
         throw new Error(
-          'Backend not running. Start with: mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- dev --start-db',
+          'Backend not running. Start the compose stack with `make dev` (or start-sangita.sh).',
           { cause: error }
         );
       }
@@ -57,6 +57,12 @@ async function globalSetup(config: FullConfig) {
   const authDir = path.join(__dirname, '.auth');
   if (!fs.existsSync(authDir)) {
     fs.mkdirSync(authDir, { recursive: true });
+  }
+
+  // TRACK-113: the money-path suite seeds its own data — skip the shared batch.
+  if (process.env.E2E_SKIP_SHARED_BATCH) {
+    console.log('E2E_SKIP_SHARED_BATCH set — skipping shared batch creation');
+    return;
   }
 
   // 3. Check for existing shared batch FIRST (before cleanup!)
@@ -184,7 +190,7 @@ async function globalSetup(config: FullConfig) {
 
   // 5. Create a new batch
   console.log('Creating shared batch for all E2E tests...');
-  const csvPath = path.resolve(__dirname, '../../../../database/for_import/bulk_import_test.csv');
+  const csvPath = path.resolve(__dirname, '../../../../database/for_import/archive/bulk_import_test.csv');
 
   try {
     const token = await getAuthToken(apiBaseUrl);

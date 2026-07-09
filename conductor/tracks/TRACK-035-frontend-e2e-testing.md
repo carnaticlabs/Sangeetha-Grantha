@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Not Started |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-03 |
+| **Status** | Folded into TRACK-113 (2026-07-09) |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-07-09 |
 | **Author** | Antigravity |
 
 # TRACK-035: Frontend E2E Testing with Playwright

@@ -7,6 +7,14 @@ const __dirname = path.dirname(__filename);
 
 export default defineConfig({
   testDir: './tests',
+  // TRACK-113: the E2E substrate is the compose stack (make dev / start-sangita.sh).
+  // Locally a running stack is reused; otherwise Playwright boots it via webServer.
+  webServer: {
+    command: 'make -C ../../../.. dev',
+    url: 'http://localhost:5001',
+    reuseExistingServer: true,
+    timeout: 600_000, // cold compose build
+  },
   timeout: 120000, // 2 minutes per test
   expect: {
     timeout: 15000,

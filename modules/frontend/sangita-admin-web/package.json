@@ -13,6 +13,7 @@
     "test": "vitest",
     "test:unit": "vitest run",
     "test:e2e": "playwright test --config=e2e/playwright.config.ts",
+    "test:e2e:money": "E2E_SKIP_SHARED_BATCH=1 playwright test --config=e2e/playwright.config.ts tests/money-paths.spec.ts",
     "test:e2e:headed": "playwright test --config=e2e/playwright.config.ts --headed",
     "test:e2e:debug": "playwright test --config=e2e/playwright.config.ts --debug",
     "test:e2e:report": "playwright show-report e2e/playwright-report"

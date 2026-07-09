@@ -1,0 +1,71 @@
+name: E2E Money Paths (nightly)
+
+# TRACK-113 Phase 2 (D12): the three E2E money paths run nightly and
+# pre-release — NOT per-commit. Substrate: the compose stack (make dev),
+# mirroring how the app actually runs.
+on:
+  schedule:
+    - cron: '30 21 * * *' # nightly, ~03:00 IST
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  money-paths:
+    name: Money paths vs compose stack
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Start compose stack (detached)
+        run: docker compose --profile dev up --build -d
+
+      - name: Wait for backend + frontend health
+        run: |
+          for i in $(seq 1 60); do
+            curl -fsS http://localhost:8080/health >/dev/null 2>&1 && \
+            curl -fsS http://localhost:5001 >/dev/null 2>&1 && exit 0
+            sleep 5
+          done
+          echo "stack did not become healthy" >&2
+          docker compose --profile dev logs --tail 100
+          exit 1
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v6
+
+      - name: Provision admin user (argon2id bootstrap)
+        env:
+          ADMIN_EMAIL: admin@sangitagrantha.org
+          ADMIN_PASSWORD: e2e-nightly-throwaway
+        run: ./gradlew :modules:backend:api:bootstrapAdmin --console=plain
+
+      - uses: oven-sh/setup-bun@v2
+      - name: Install frontend deps
+        working-directory: modules/frontend/sangita-admin-web
+        run: bun install --frozen-lockfile
+
+      - name: Install Playwright chromium
+        working-directory: modules/frontend/sangita-admin-web
+        run: bunx playwright install --with-deps chromium
+
+      - name: Run the three money paths
+        working-directory: modules/frontend/sangita-admin-web
+        run: bun run test:e2e:money
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: modules/frontend/sangita-admin-web/e2e/playwright-report
+          retention-days: 14
+
+      - name: Stack logs on failure
+        if: failure()
+        run: docker compose --profile dev logs --tail 200

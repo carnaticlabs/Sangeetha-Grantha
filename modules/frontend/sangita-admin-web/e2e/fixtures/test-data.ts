@@ -20,7 +20,8 @@ export const dbConfig = {
 
 export const testData = {
   // Path to the test CSV file (relative to project root)
-  csvPath: path.resolve(__dirname, '../../../../../database/for_import/bulk_import_test.csv'),
+  // (the legacy shared-batch manifest was archived with the TRACK-093 cleanup)
+  csvPath: path.resolve(__dirname, '../../../../../database/for_import/archive/bulk_import_test.csv'),
   // Expected number of krithis in the test CSV
   expectedKrithiCount: 8,
   // First krithi title in the test CSV
