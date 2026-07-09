@@ -178,7 +178,10 @@ class KrithiServiceImpl(private val dal: SangitaDal) : IKrithiService {
                 composerId = composerId,
                 musicalForm = request.musicalForm?.let { MusicalForm.valueOf(it.name) },
                 primaryLanguage = request.primaryLanguage?.let { LanguageCode.valueOf(it.name) },
-                primaryRagaId = primaryRagaId,
+                // Mirror create: replacing the raga list without an explicit
+                // primary must move primary_raga_id with it, or it points at a
+                // raga no longer on the krithi (TRACK-113 money-path finding).
+                primaryRagaId = primaryRagaId ?: ragaIds?.firstOrNull(),
                 talaId = talaId,
                 deityId = deityId,
                 templeId = templeId,
