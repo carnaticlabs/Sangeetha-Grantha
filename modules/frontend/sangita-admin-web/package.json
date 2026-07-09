@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "typecheck": "tsc -b",
     "test": "vitest",
     "test:unit": "vitest run",
     "test:e2e": "playwright test --config=e2e/playwright.config.ts",

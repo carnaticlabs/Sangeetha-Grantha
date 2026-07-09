@@ -23,7 +23,7 @@ North-star N3: zero frontend tests across 113 TS/TSX files, including the 688-li
 
 - [x] **Green Vitest + lint baseline** (2026-06-24) — precondition for [TRACK-121](./TRACK-121-frontend-major-toolchain-upgrade.md). See "Baseline delivered" below.
 - [x] Wire `vitest run` into CI (frontend job) — done 2026-07-09 (execution plan Step 1): `bun run test:unit` between Typecheck and Build.
-- [ ] Tests for `CuratorReviewPage.tsx` — the curation workflow.
+- [x] Tests for `CuratorReviewPage.tsx` — the curation workflow (2026-07-09, execution plan Step 3).
 - [ ] Tests for `BulkImport.tsx` — the highest-volume write path UI.
 - [ ] Decompose the 600–850-line page components into testable units as coverage is added.
 
@@ -102,11 +102,17 @@ Codebase facts that shape the work:
       across 4 files. Follow-up for Step 4: three more private `formatDuration` variants exist in
       `TimelineCard.tsx`, `ExtractionMonitorPage.tsx`, `SourcesAndProcessingPage.tsx` — consolidate
       during decomposition.
-- [ ] **Step 3 — CuratorReviewPage coverage**: queue render from `getImports`; status-filter →
-      page-0 refetch; select import → detail + override form population; approve/reject →
-      `reviewImport` payload + toast; bulk-selection set; Section Issues tab (`getCuratorSectionIssues`
-      + pagination); AuthorityWarning dismiss. Extract `StatCard`/`TabButton`/`FormField`/
-      `SectionIssuesTab` to `src/components/curator-review/` as tests land.
+- [x] **Step 3 — CuratorReviewPage coverage (2026-07-09)**: extracted `StatCard`/`TabButton`/
+      `FormField`/`SectionIssuesTab` to `src/components/curator-review/` (verbatim, barrel export;
+      page 688 → ~600 lines). `FormField` gained `useId`-based label association (a11y fix, also
+      makes fields queryable by label); same for the page's Lyrics Preview textarea. 5 unit tests
+      for `SectionIssuesTab` (empty state, rows, pagination boundaries). 10 page-level tests with
+      `vi.mock` of the client + `useSourcingQueries`: queue render + auto-select into form,
+      empty-queue state, status-filter page-0 refetch, approve modal → APPROVED payload with
+      overrides (incl. edited-field case), reject requires notes → REJECTED payload, approve
+      failure toast, keyboard shortcut `a`, bulk select-all → per-id reviewImport, Section Issues
+      tab lazy query + render. Also fixed the `useBatchActions` export test clicking a real anchor
+      (jsdom navigation warning) by spying on `HTMLAnchorElement.prototype.click`.
 - [ ] **Step 4 — BulkImport coverage**: batch list + empty state; batch selection → detail panels
       (jobs/tasks/events); upload flow (`uploadBulkImportFile` + list refresh); task status filter;
       delete-confirm modal gating; pause/resume/cancel via `triggerAction`. Extract `BatchList` /

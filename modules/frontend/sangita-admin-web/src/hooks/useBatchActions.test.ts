@@ -114,14 +114,19 @@ describe('useBatchActions', () => {
         const createObjectURL = vi.fn(() => 'blob:fake');
         const revokeObjectURL = vi.fn();
         vi.stubGlobal('URL', Object.assign(Object.create(URL), { createObjectURL, revokeObjectURL }));
+        // The hook clicks a synthetic <a download> — jsdom would treat the real
+        // click as navigation (unimplemented), so intercept it.
+        const anchorClick = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
         const { result } = renderHook(() => useBatchActions());
 
         await act(() => result.current.triggerAction('export', BATCH_ID));
 
         expect(exportBulkImportReport).toHaveBeenCalledWith(BATCH_ID, 'json');
         expect(createObjectURL).toHaveBeenCalledOnce();
+        expect(anchorClick).toHaveBeenCalledOnce();
         expect(revokeObjectURL).toHaveBeenCalledWith('blob:fake');
         expect(toast.success).toHaveBeenCalledWith('Report exported');
+        anchorClick.mockRestore();
     });
 
     it('failure: toasts the error message, skips refresh, and clears loading', async () => {
