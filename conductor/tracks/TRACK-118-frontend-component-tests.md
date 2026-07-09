@@ -22,7 +22,7 @@ North-star N3: zero frontend tests across 113 TS/TSX files, including the 688-li
 ## Implementation Plan
 
 - [x] **Green Vitest + lint baseline** (2026-06-24) — precondition for [TRACK-121](./TRACK-121-frontend-major-toolchain-upgrade.md). See "Baseline delivered" below.
-- [ ] Wire `vitest run` into CI (frontend job) — currently CI runs only typecheck + build under Bun (`oven-sh/setup-bun`).
+- [x] Wire `vitest run` into CI (frontend job) — done 2026-07-09 (execution plan Step 1): `bun run test:unit` between Typecheck and Build.
 - [ ] Tests for `CuratorReviewPage.tsx` — the curation workflow.
 - [ ] Tests for `BulkImport.tsx` — the highest-volume write path UI.
 - [ ] Decompose the 600–850-line page components into testable units as coverage is added.
@@ -88,10 +88,11 @@ Codebase facts that shape the work:
       proven by a harness smoke test (`test-utils.test.tsx`, 2 tests). ESLint override added for
       `src/test/**` + `*.test.*` (react-refresh rule N/A to non-hot-reloaded files). Gates: 8/8
       vitest, `tsc -b` clean, lint at the 189-warning baseline (zero added).
-- [ ] **Step 1 — CI wiring (small)**: add `"test:unit": "vitest run"` script; insert
+- [x] **Step 1 — CI wiring (2026-07-09)**: added `"test:unit": "vitest run"` script; inserted
       `bun run test:unit` between Typecheck and Build in the `frontend` job of
-      `.github/workflows/ci.yml`. (Runner Node is current LTS, so the jsdom-26/Node-21 local
-      constraint doesn't bite in CI; keep jsdom 26 pinned regardless.)
+      `.github/workflows/ci.yml` (job renamed "Frontend typecheck + unit tests + build"). (Runner
+      Node is current LTS, so the jsdom-26/Node-21 local constraint doesn't bite in CI; keep
+      jsdom 26 pinned regardless.) Also closes the TRACK-118 plan item "Wire `vitest run` into CI".
 - [ ] **Step 2 — pure-unit wins**: extract + test BulkImport formatters/label maps and
       `useBatchActions` (renderHook; assert client fn dispatch + toast per action, loading state).
 - [ ] **Step 3 — CuratorReviewPage coverage**: queue render from `getImports`; status-filter →

@@ -76,7 +76,7 @@ jobs:
             -baselineOnMigrate=false migrate validate
 
   frontend:
-    name: Frontend typecheck + build
+    name: Frontend typecheck + unit tests + build
     runs-on: ubuntu-latest
     timeout-minutes: 10
     defaults:
@@ -89,6 +89,8 @@ jobs:
         run: bun install --frozen-lockfile
       - name: Typecheck
         run: bunx tsc -b
+      - name: Unit tests (Vitest, TRACK-118)
+        run: bun run test:unit
       - name: Build
         run: bun run build
 
