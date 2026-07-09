@@ -37,14 +37,17 @@ jobs:
           docker compose --profile dev logs --tail 100
           exit 1
 
-      - name: Provision admin user (argon2id bootstrap)
-        # Uses the compose bootstrap profile (containerized Gradle) — the
-        # project's sanctioned provisioning path; no host JDK needed.
-        env:
-          ADMIN_EMAIL: admin@sangitagrantha.org
-          ADMIN_PASSWORD: e2e-nightly-throwaway
-        # dev profile included so the migrate dependency is defined
-        run: docker compose --profile dev --profile bootstrap run --rm bootstrap-admin
+      - name: Provision admin user
+        # The E2E flows authenticate via adminToken + email (/v1/auth/token),
+        # which only requires the user row to exist — password_hash is
+        # nullable and unused on this path. The gradle-based bootstrap-admin
+        # can't run here anyway: it contends on the gradle-cache volume lock
+        # held by the running backend container.
+        run: |
+          docker compose exec -T db psql -U postgres -d sangita_grantha -c \
+            "INSERT INTO users (email, full_name, display_name)
+             VALUES ('admin@sangitagrantha.org', 'E2E Nightly Admin', 'E2E Nightly Admin')
+             ON CONFLICT (email) DO NOTHING"
 
       - uses: oven-sh/setup-bun@v2
       - name: Install frontend deps
