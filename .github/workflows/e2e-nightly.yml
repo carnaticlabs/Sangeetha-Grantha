@@ -43,7 +43,8 @@ jobs:
         env:
           ADMIN_EMAIL: admin@sangitagrantha.org
           ADMIN_PASSWORD: e2e-nightly-throwaway
-        run: docker compose --profile bootstrap run --rm bootstrap-admin
+        # dev profile included so the migrate dependency is defined
+        run: docker compose --profile dev --profile bootstrap run --rm bootstrap-admin
 
       - uses: oven-sh/setup-bun@v2
       - name: Install frontend deps
