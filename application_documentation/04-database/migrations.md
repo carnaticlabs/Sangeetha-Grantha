@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 3.0.0 |
-| **Last Updated** | 2026-06-13 |
+| **Version** | 3.0.1 |
+| **Last Updated** | 2026-07-09 |
 | **Author** | Sangeetha Grantha Team |
 
 # Database Migrations (Sangita Grantha)
@@ -12,7 +12,7 @@
 
 # Database Migrations
 
-Sangita Grantha uses **Flyway Community Edition** (`12.8.1`) as its single migration engine, orchestrated via **Makefile** commands (`make migrate` / `make db-reset`) — see [ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md) for the decision and rationale. Flyway replaces the Python `db-migrate` tool (ADR-010 era) and the Kotlin test-side `MigrationRunner`, which had diverged into two incompatible implementations. One engine now serves dev, prod, Kotlin Testcontainers suites, Python worker tests, and CI, with a single `flyway_schema_history` tracking table.
+Sangita Grantha uses **Flyway Community Edition** (`12.9.0`) as its single migration engine, orchestrated via **Makefile** commands (`make migrate` / `make db-reset`) — see [ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md) for the decision and rationale. Flyway replaces the Python `db-migrate` tool (ADR-010 era) and the Kotlin test-side `MigrationRunner`, which had diverged into two incompatible implementations. One engine now serves dev, prod, Kotlin Testcontainers suites, Python worker tests, and CI, with a single `flyway_schema_history` tracking table.
 
 > The cutover (TRACK-110) renamed every `NN__description.sql` to `VNN__description.sql`, removed the unused `-- migrate:up/down` markers (Flyway runs the whole file; Community has no undo), and moved reference seed data into `R__` repeatable migrations.
 
@@ -80,7 +80,7 @@ Defined in `V01__baseline-schema-and-types.sql`:
 
 ### Makefile commands
 
-The Makefile drives the `flyway/flyway:12.8.1-alpine` image (the compose `migrate` service):
+The Makefile drives the `flyway/flyway:12.9.0-alpine` image (the compose `migrate` service):
 
 ```bash
 make migrate         # flyway migrate — applies pending V__ + re-applies changed R__
@@ -135,7 +135,7 @@ Versioned migrations apply in version order; repeatables apply afterwards in des
 
 ## 6. Engine details
 
-- Image: `flyway/flyway:12.8.1-alpine`; JVM API (`org.flywaydb:flyway-core` + `flyway-database-postgresql`) for the Kotlin Testcontainers suite (TRACK-110 Sub-part B).
+- Image: `flyway/flyway:12.9.0-alpine`; JVM API (`org.flywaydb:flyway-core` + `flyway-database-postgresql`) for the Kotlin Testcontainers suite (TRACK-110 Sub-part B).
 - Single `locations`: `filesystem:/flyway/sql` → `database/migrations/` (both `V__` and `R__`).
 - `validateMigrationNaming` on; `baselineOnMigrate` off.
 - Version pinned in `gradle/libs.versions.toml` (`flyway`), `compose.yaml`, and [current-versions.md](../00-meta/current-versions.md).

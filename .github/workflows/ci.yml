@@ -66,11 +66,11 @@ jobs:
           --health-retries 10
     steps:
       - uses: actions/checkout@v4
-      - name: Migrate from scratch + validate (Flyway 12.8.1)
+      - name: Migrate from scratch + validate (Flyway 12.9.0)
         run: |
           docker run --rm --network host \
             -v "${{ github.workspace }}/database/migrations:/flyway/sql" \
-            flyway/flyway:12.8.1-alpine \
+            flyway/flyway:12.9.0-alpine \
             -url="jdbc:postgresql://localhost:5432/sangita_grantha_ci" \
             -user=postgres -password=postgres -locations=filesystem:/flyway/sql \
             -baselineOnMigrate=false migrate validate
