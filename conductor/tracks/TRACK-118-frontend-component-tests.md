@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | In Progress (baseline done; coverage pending) |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-06-24 |
+| **Status** | In Progress (baseline done; coverage prep complete) |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-07-09 |
 | **Author** | Sangeetha Grantha Team |
 | **Priority** | P2 |
 | **Epic** | [TRACK-109](./TRACK-109-production-readiness-roadmap.md) (W2 Quality) |
@@ -53,6 +53,56 @@ Purpose: give TRACK-121 a green `vitest run` + `bun run lint` to upgrade against
 ## Remaining (the substantive N3 work)
 Component coverage for `CuratorReviewPage.tsx` / `BulkImport.tsx` + decomposition, and CI wiring — the
 ~1-week effort this track was originally scoped for — is still open.
+
+## Preparation survey (2026-07-09)
+
+Codebase facts that shape the work:
+
+- **Vitest baseline confirmed green**: `bunx vitest run` → 1 file / 6 tests in ~2s.
+- **Mocking strategy: `vi.mock('../api/client')`.** Both pages consume *named* functions from
+  `src/api/client.ts` (Curator: `getCuratorStats`, `getCuratorSectionIssues`, `getImports`,
+  `reviewImport`, `searchKrithis`; BulkImport: `listBulkImportBatches`, `getBulkImportBatch`,
+  `getBulkImportJobs/Tasks/Events`, `uploadBulkImportFile`; `useBatchActions` wraps 9 more batch
+  mutations). One `fetch` wrapper (`request<T>`) sits behind all of them — module-mocking the client
+  is sufficient; **no MSW dependency needed**.
+- **Test infra gaps**: `@testing-library/jest-dom` is installed but not wired (`setupFiles: []`);
+  `@testing-library/user-event` is missing; no shared render wrapper. Curator needs
+  `QueryClientProvider` (2 `useQuery` calls + `useSourcingQueries`); BulkImport needs `MemoryRouter`
+  (imports `Link`).
+- **Decomposition seams already visible**:
+  - `CuratorReviewPage.tsx` (688 lines): `StatCard`/`TabButton`/`FormField`/`SectionIssuesTab` are
+    already separate components at the bottom of the file (lines 604–687) — extraction is mechanical.
+    The 8 `overrideXxx` useState fields (lines 48–55) want a single reducer/object → `OverrideForm`.
+  - `BulkImport.tsx` (857 lines): lines 22–104 are pure presentational maps + formatters
+    (`statusChip`, `taskChip`, label maps, `formatDuration`, `formatDate`, `basename`, `parseError`)
+    — extractable and directly unit-testable with zero rendering.
+  - `useBatchActions` is a self-contained hook (switch over 9 client mutations + toasts) — good
+    first hook-level test target.
+
+### Execution plan
+
+- [ ] **Step 0 — infra (half-day)**: add `@testing-library/user-event`; create `src/test/setup.ts`
+      (`import '@testing-library/jest-dom/vitest'`) and wire into `vitest.config.ts` `setupFiles`;
+      create `src/test/test-utils.tsx` (custom `render` wrapping fresh `QueryClient` with
+      `retry: false` + `MemoryRouter`, re-exporting RTL).
+- [ ] **Step 1 — CI wiring (small)**: add `"test:unit": "vitest run"` script; insert
+      `bun run test:unit` between Typecheck and Build in the `frontend` job of
+      `.github/workflows/ci.yml`. (Runner Node is current LTS, so the jsdom-26/Node-21 local
+      constraint doesn't bite in CI; keep jsdom 26 pinned regardless.)
+- [ ] **Step 2 — pure-unit wins**: extract + test BulkImport formatters/label maps and
+      `useBatchActions` (renderHook; assert client fn dispatch + toast per action, loading state).
+- [ ] **Step 3 — CuratorReviewPage coverage**: queue render from `getImports`; status-filter →
+      page-0 refetch; select import → detail + override form population; approve/reject →
+      `reviewImport` payload + toast; bulk-selection set; Section Issues tab (`getCuratorSectionIssues`
+      + pagination); AuthorityWarning dismiss. Extract `StatCard`/`TabButton`/`FormField`/
+      `SectionIssuesTab` to `src/components/curator-review/` as tests land.
+- [ ] **Step 4 — BulkImport coverage**: batch list + empty state; batch selection → detail panels
+      (jobs/tasks/events); upload flow (`uploadBulkImportFile` + list refresh); task status filter;
+      delete-confirm modal gating; pause/resume/cancel via `triggerAction`. Extract `BatchList` /
+      `BatchDetail` / `UploadPanel` as tests land.
+
+Guardrails: extract-then-test each unit so page tests stay thin integration tests; new code adds
+zero lint warnings (189 tolerated pre-existing); keep Vitest collection scoped to `src/**`.
 
 ## Acceptance Criteria
 
