@@ -81,10 +81,13 @@ Codebase facts that shape the work:
 
 ### Execution plan
 
-- [ ] **Step 0 — infra (half-day)**: add `@testing-library/user-event`; create `src/test/setup.ts`
-      (`import '@testing-library/jest-dom/vitest'`) and wire into `vitest.config.ts` `setupFiles`;
-      create `src/test/test-utils.tsx` (custom `render` wrapping fresh `QueryClient` with
-      `retry: false` + `MemoryRouter`, re-exporting RTL).
+- [x] **Step 0 — infra (2026-07-09)**: added `@testing-library/user-event@14.6.1`; created
+      `src/test/setup.ts` (`import '@testing-library/jest-dom/vitest'`) wired into
+      `vitest.config.ts` `setupFiles`; created `src/test/test-utils.tsx` (custom `render` wrapping
+      fresh `QueryClient` with `retry: false` + `MemoryRouter`, re-exporting RTL + `userEvent`),
+      proven by a harness smoke test (`test-utils.test.tsx`, 2 tests). ESLint override added for
+      `src/test/**` + `*.test.*` (react-refresh rule N/A to non-hot-reloaded files). Gates: 8/8
+      vitest, `tsc -b` clean, lint at the 189-warning baseline (zero added).
 - [ ] **Step 1 — CI wiring (small)**: add `"test:unit": "vitest run"` script; insert
       `bun run test:unit` between Typecheck and Build in the `frontend` job of
       `.github/workflows/ci.yml`. (Runner Node is current LTS, so the jsdom-26/Node-21 local

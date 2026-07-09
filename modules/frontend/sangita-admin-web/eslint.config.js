@@ -40,4 +40,12 @@ export default tseslint.config(
       '@typescript-eslint/no-empty-object-type': 'off',
     },
   },
+  {
+    // Test harness + tests are never hot-reloaded; the react-refresh
+    // export-shape constraint does not apply (test-utils re-exports RTL).
+    files: ['src/test/**/*.{ts,tsx}', 'src/**/*.{test,spec}.{ts,tsx}'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
+    },
+  },
 );

@@ -18,7 +18,7 @@ export default defineConfig({
     test: {
         environment: 'jsdom',
         globals: true,
-        setupFiles: [],
+        setupFiles: ['src/test/setup.ts'],
         // Unit/component tests live under src/. The e2e/ directory is Playwright
         // (its own runner + config) and must not be collected by Vitest.
         include: ['src/**/*.{test,spec}.{ts,tsx}'],
