@@ -37,17 +37,13 @@ jobs:
           docker compose --profile dev logs --tail 100
           exit 1
 
-      - uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: '25'
-      - uses: gradle/actions/setup-gradle@v6
-
       - name: Provision admin user (argon2id bootstrap)
+        # Uses the compose bootstrap profile (containerized Gradle) — the
+        # project's sanctioned provisioning path; no host JDK needed.
         env:
           ADMIN_EMAIL: admin@sangitagrantha.org
           ADMIN_PASSWORD: e2e-nightly-throwaway
-        run: ./gradlew :modules:backend:api:bootstrapAdmin --console=plain
+        run: docker compose --profile bootstrap run --rm bootstrap-admin
 
       - uses: oven-sh/setup-bun@v2
       - name: Install frontend deps
