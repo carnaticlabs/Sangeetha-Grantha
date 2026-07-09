@@ -93,8 +93,15 @@ Codebase facts that shape the work:
       `.github/workflows/ci.yml` (job renamed "Frontend typecheck + unit tests + build"). (Runner
       Node is current LTS, so the jsdom-26/Node-21 local constraint doesn't bite in CI; keep
       jsdom 26 pinned regardless.) Also closes the TRACK-118 plan item "Wire `vitest run` into CI".
-- [ ] **Step 2 — pure-unit wins**: extract + test BulkImport formatters/label maps and
-      `useBatchActions` (renderHook; assert client fn dispatch + toast per action, loading state).
+- [x] **Step 2 — pure-unit wins (2026-07-09)**: extracted BulkImport's presentation maps +
+      formatters (verbatim move) to `src/utils/bulk-import-format.ts` with 13 tests
+      (`formatDuration`/`formatDate`/`basename`/`parseError` edge cases, status-map completeness);
+      `useBatchActions` covered by 8 renderHook tests via `vi.mock` of the API client + Toast
+      (per-action client dispatch + toast, in-flight `actionLoading`, confirm-declined no-op,
+      finalize error branch, export blob download, failure path skips refresh). Suite now 29 tests
+      across 4 files. Follow-up for Step 4: three more private `formatDuration` variants exist in
+      `TimelineCard.tsx`, `ExtractionMonitorPage.tsx`, `SourcesAndProcessingPage.tsx` — consolidate
+      during decomposition.
 - [ ] **Step 3 — CuratorReviewPage coverage**: queue render from `getImports`; status-filter →
       page-0 refetch; select import → detail + override form population; approve/reject →
       `reviewImport` payload + toast; bulk-selection set; Section Issues tab (`getCuratorSectionIssues`
