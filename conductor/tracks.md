@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.6.0 |
-| **Last Updated** | 2026-06-24 |
+| **Version** | 1.6.1 |
+| **Last Updated** | 2026-07-09 |
 | **Author** | Sangeetha Grantha Team |
 
 # Conductor Tracks Registry
@@ -108,7 +108,7 @@
 | [TRACK-102](./tracks/TRACK-102-compound-word-division-headers.md) | Handle "Script - Word Division" Compound Language Headers | Completed |
 | [TRACK-103](./tracks/TRACK-103-standalone-back-boilerplate-filter.md) | Filter Standalone "Back" Link Text as Boilerplate | Completed |
 | [TRACK-104](./tracks/TRACK-104-per-script-variations-handling.md) | Handle Per-Script "Variations" as Intra-Variant Metadata | Completed |
-| [TRACK-105](./tracks/TRACK-105-working-tree-reconciliation.md) | Working Tree Reconciliation & Safe Landing | In Progress |
+| [TRACK-105](./tracks/TRACK-105-working-tree-reconciliation.md) | Working Tree Reconciliation & Safe Landing | Completed |
 | [TRACK-106](./tracks/TRACK-106-registry-doc-resync.md) | Conductor Registry & Documentation Re-Sync | Completed |
 | [TRACK-107](./tracks/TRACK-107-ai-platform-lifecycle-uplift.md) | AI Platform Lifecycle Uplift (SDK + Model + Structured Output + Batch) | Completed |
 | [TRACK-108](./tracks/TRACK-108-semantic-search.md) | Semantic Search (Embeddings + pgvector) | Not Started |
@@ -123,7 +123,7 @@
 | [TRACK-117](./tracks/TRACK-117-versioned-canon-implementation.md) | Versioned Canon — Implementation + Re-Import (N5) | Not Started |
 | [TRACK-118](./tracks/TRACK-118-frontend-component-tests.md) | Frontend Component Tests (Vitest) | In Progress (baseline done) |
 | [TRACK-119](./tracks/TRACK-119-oauth-otp-auth.md) | Interactive Auth — OAuth / OTP (deferred N1 items) | Not Started |
-| [TRACK-120](./tracks/TRACK-120-dependency-upgrades-safe-jun-2026.md) | Dependency Upgrades Batch 1 — Security + Safe Drop-ins (Jun 2026) | In Progress (verified; commit pending) |
+| [TRACK-120](./tracks/TRACK-120-dependency-upgrades-safe-jun-2026.md) | Dependency Upgrades Batch 1 — Security + Safe Drop-ins (Jun 2026) | Completed |
 | [TRACK-121](./tracks/TRACK-121-frontend-major-toolchain-upgrade.md) | Dependency Upgrades Batch 2 — Frontend Major Toolchain (Vite 8 / TS 6 / ESLint 10) | Completed |
 | [TRACK-122](./tracks/TRACK-122-kotlin-2.4-compose-upgrade.md) | Dependency Upgrades Batch 3a — Kotlin 2.4 + Compose Multiplatform | Not Started |
 | [TRACK-123](./tracks/TRACK-123-testcontainers-2.x-upgrade.md) | Dependency Upgrades Batch 3b — Testcontainers 2.x | Not Started |

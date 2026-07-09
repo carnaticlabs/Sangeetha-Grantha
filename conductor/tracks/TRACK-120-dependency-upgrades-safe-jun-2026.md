@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | In Progress |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-06-24 |
+| **Status** | Completed |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-07-09 |
 | **Author** | Sangeetha Grantha Team |
 
 # Goal
@@ -42,3 +42,6 @@ Batch 1 — Security patch + low-risk drop-in dependency upgrades (June 2026). T
 # Notes
 - Exposed `1.0.0` and MockK `1.14.9` are already current — no action.
 - Lowest-risk batch; safe to complete in a single session.
+
+# Completion (2026-07-09 registry sync)
+All bumps landed as commit `7bf3443` (2026-06-24) and are on `origin/main`. Verified: `gradle/libs.versions.toml` shows Ktor 3.5.0 / Koin 4.2.1 / Flyway 12.9.0 / Logback 1.5.34 / PostgreSQL JDBC 42.7.11; `package.json` shows React 19.2.7 / TanStack Query 5.101.1 / Tailwind 4.3.1 / React Router 7.18.0 / Playwright 1.61.x. Version docs (`current-versions.md`) synced in the same change, including the Python worker bumps (pydantic 2.13.4, psycopg 3.3.4, PyMuPDF 1.27.2.3). Note: Vitest subsequently moved to 4.1.10 via TRACK-121.

@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | In Progress |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-06-06 |
+| **Status** | Completed |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-07-09 |
 | **Author** | Principal Data & AI Engineering review (for Seshadri) |
 | **Priority** | P0 — do before any new feature work |
 
@@ -30,19 +30,19 @@ Bring the repository's **dirty working tree to a clean, intentional state** — 
 ## Implementation Plan
 
 ### Phase 1 — Verify before touching (read-only)
-- [ ] `git stash list` / confirm nothing already stashed.
-- [ ] Run the extraction worker test suite to confirm Group A is green **before** committing: `cd tools/krithi-extract-enrich-worker && uv run pytest`.
-- [ ] Diff-review `structure_parser.py` and the new fixtures against the TRACK-100–104 descriptions to confirm code matches the documented intent.
-- [ ] Diff-review the CSVs (Group B) — spot-check that row deltas are the documented "Part 1-5"/header-artifact cleanups, not accidental data loss.
+- [x] `git stash list` / confirm nothing already stashed.
+- [x] Run the extraction worker test suite to confirm Group A is green **before** committing: `cd tools/krithi-extract-enrich-worker && uv run pytest`.
+- [x] Diff-review `structure_parser.py` and the new fixtures against the TRACK-100–104 descriptions to confirm code matches the documented intent.
+- [x] Diff-review the CSVs (Group B) — spot-check that row deltas are the documented "Part 1-5"/header-artifact cleanups, not accidental data loss.
 
 ### Phase 2 — Land Group A (the at-risk feature) as one commit
-- [ ] Stage: `structure_parser.py`, `test_structure_parser.py`, `tests/fixtures/structure_parser/*`, `src/browser_batch_extract.py`, `conductor/tracks/TRACK-100…104-*.md`, and the `conductor/tracks.md` rows for 100–104.
-- [ ] Commit with the project convention (`Ref: application_documentation/...`, TRACK reference, proper formatting per the commit-policy skill).
-- [ ] Confirm `git status` no longer lists these.
+- [x] Stage: `structure_parser.py`, `test_structure_parser.py`, `tests/fixtures/structure_parser/*`, `src/browser_batch_extract.py`, `conductor/tracks/TRACK-100…104-*.md`, and the `conductor/tracks.md` rows for 100–104.
+- [x] Commit with the project convention (`Ref: application_documentation/...`, TRACK reference, proper formatting per the commit-policy skill) — landed as `d7c6c8c`.
+- [x] Confirm `git status` no longer lists these.
 
 ### Phase 3 — Land Group B (import data) and Group C (docs)
-- [ ] Commit the `database/for_import/*.csv` cleanups, `Ref:` TRACK-093.
-- [ ] Commit the documentation + agent-tooling additions (Group C) in a separate doc commit.
+- [x] Commit the `database/for_import/*.csv` cleanups, `Ref:` TRACK-093 — landed as `fc400c7`.
+- [x] Commit the documentation + agent-tooling additions (Group C) in a separate doc commit — landed as `4e1e04d` / `7ee0601`.
 
 ### Phase 4 — Decide Group D ✅ DONE (2026-06-06)
 - [x] `engineering.plugin`: introspected (plugin bundle, not app code) → **discarded**; `*.plugin` added to `.gitignore`.
@@ -50,8 +50,8 @@ Bring the repository's **dirty working tree to a clean, intentional state** — 
 - [x] Both removed from disk; neither appears in `git status` any longer.
 
 ### Phase 5 — Push & confirm parity
-- [ ] Push to `origin/main` (or open PR per branch policy) so committed work is durable off the local machine.
-- [ ] Confirm `git status` clean and `origin/main` matches local.
+- [x] Push to `origin/main` (or open PR per branch policy) so committed work is durable off the local machine.
+- [x] Confirm `git status` clean and `origin/main` matches local.
 
 ## Acceptance Criteria
 - `git status` shows a clean working tree (or only deliberately-ignored files).
@@ -71,5 +71,6 @@ Bring the repository's **dirty working tree to a clean, intentional state** — 
 
 ## Progress Log
 - 2026-06-06: Track created. Working-tree snapshot captured and triaged into four groups (A: land TRACK-100–104 feature; B: land TRACK-093 data; C: land docs; D: review engineering.plugin / review HTML). TRACK-099 confirmed already committed.
+- 2026-07-09: Marked **Completed** (retroactive registry sync). All four groups verified landed in history — Group A `d7c6c8c` (TRACK-100–104), Group B `fc400c7` (TRACK-093 CSV cleanup), Group C `4e1e04d`/`7ee0601` (docs + agent tooling), Group D discarded 2026-06-06. `git status` clean; local `main` in parity with `origin/main`. All acceptance criteria met.
 
 Ref: application_documentation/sangeetha-grantha-uplift-tasks.md
