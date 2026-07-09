@@ -32,8 +32,11 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     useEffect(() => {
         if (isOpen) {
             setNotes('');
-            // Focus confirm button on open
-            setTimeout(() => confirmRef.current?.focus(), 100);
+            // Focus confirm synchronously on open. A delayed focus (the previous
+            // 100ms setTimeout) races the user: once typed notes enable the
+            // button, the late focus() steals focus mid-typing and keystrokes
+            // land on the button instead of the textarea.
+            confirmRef.current?.focus();
         }
     }, [isOpen]);
 
