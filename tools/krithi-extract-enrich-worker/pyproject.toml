@@ -45,6 +45,11 @@ dev = [
     "pytest-cov>=5.0.0",
     "ruff>=0.4.0",
     "mypy>=1.9.0",
+    # Integration tests (TRACK-113): real PostgreSQL via testcontainers,
+    # migrated by the same Flyway engine as dev/CI (ADR-013)
+    "testcontainers>=4.13.0",
+    "jsonschema>=4.21.0",       # canonical-extraction-schema.json contract checks
+    "respx>=0.22.0",            # HTTP-level stubbing of the Gemini API (httpx)
 ]
 
 [project.scripts]

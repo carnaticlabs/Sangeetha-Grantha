@@ -11,7 +11,7 @@ from __future__ import annotations
 import json
 import logging
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any
 from uuid import UUID
 
 import psycopg
@@ -29,12 +29,12 @@ class ExtractionTask:
     id: UUID
     source_url: str
     source_format: str
-    source_name: Optional[str]
-    source_tier: Optional[int]
+    source_name: str | None
+    source_tier: int | None
     request_payload: dict[str, Any]
-    page_range: Optional[str]
-    import_batch_id: Optional[UUID]
-    import_task_run_id: Optional[UUID]
+    page_range: str | None
+    import_batch_id: UUID | None
+    import_task_run_id: UUID | None
     attempts: int
 
 
@@ -54,7 +54,7 @@ class ExtractionQueueDB:
 
     def __init__(self, config: ExtractorConfig) -> None:
         self._config = config
-        self._conn: Optional[psycopg.Connection] = None
+        self._conn: psycopg.Connection | None = None
 
     def connect(self) -> None:
         """Establish database connection."""
@@ -83,7 +83,7 @@ class ExtractionQueueDB:
         """Whether the database connection is currently open."""
         return self._conn is not None and not self._conn.closed
 
-    def claim_pending_task(self) -> Optional[ExtractionTask]:
+    def claim_pending_task(self) -> ExtractionTask | None:
         """Claim one PENDING task using SELECT ... FOR UPDATE SKIP LOCKED.
 
         Returns the claimed task or None if the queue is empty.
@@ -138,7 +138,9 @@ class ExtractionQueueDB:
                 page_range=row["page_range"],
                 import_batch_id=row["import_batch_id"],
                 import_task_run_id=row["import_task_run_id"],
-                attempts=row["attempts"],
+                # The row was read before the claim UPDATE incremented it;
+                # the task object must carry the attempt now in progress.
+                attempts=row["attempts"] + 1,
             )
 
     def mark_done(
@@ -148,7 +150,7 @@ class ExtractionQueueDB:
         extraction_method: str,
         confidence: float,
         duration_ms: int,
-        source_checksum: Optional[str] = None,
+        source_checksum: str | None = None,
     ) -> None:
         """Mark a task as successfully completed with results."""
         with self.conn.cursor() as cur:

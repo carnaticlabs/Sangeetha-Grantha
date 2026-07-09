@@ -97,7 +97,8 @@ jobs:
   worker:
     name: Worker pytest
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # TRACK-113: integration tests pull postgres + flyway images on a cold runner
+    timeout-minutes: 15
     defaults:
       run:
         working-directory: tools/krithi-extract-enrich-worker

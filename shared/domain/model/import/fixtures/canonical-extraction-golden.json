@@ -1,0 +1,126 @@
+{
+  "title": "vAtApi gaNapatim bhajE",
+  "alternateTitle": "Vatapi Ganapatim Bhaje",
+  "composer": "muttusvAmi dIkSitar",
+  "musicalForm": "KRITHI",
+  "ragas": [
+    {
+      "name": "hamsadhvani",
+      "order": 1
+    }
+  ],
+  "tala": "Adi",
+  "sections": [
+    {
+      "type": "PALLAVI",
+      "order": 1
+    },
+    {
+      "type": "ANUPALLAVI",
+      "order": 2
+    },
+    {
+      "type": "MADHYAMA_KALA",
+      "order": 3,
+      "label": "madhyama kAla sAhityam"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 4
+    }
+  ],
+  "lyricVariants": [
+    {
+      "language": "sa",
+      "script": "devanagari",
+      "sections": [
+        {
+          "sectionOrder": 1,
+          "text": "वातापि गणपतिं भजेऽहं वारणास्यं वरप्रदं श्री"
+        },
+        {
+          "sectionOrder": 2,
+          "text": "भूतादि संसेवित चरणं भूत भौतिक प्रपञ्च भरणं"
+        },
+        {
+          "sectionOrder": 3,
+          "text": "वीतरागिणं विनत योगिनं विश्वकारणं विघ्नवारणं"
+        },
+        {
+          "sectionOrder": 4,
+          "text": "पुरा कुम्भ सम्भव मुनिवर प्रपूजितं त्रिकोण मध्यगतं"
+        }
+      ]
+    },
+    {
+      "language": "en",
+      "script": "latin",
+      "sections": [
+        {
+          "sectionOrder": 1,
+          "text": "vAtApi gaNapatiM bhajE'haM vAraNAsyaM varapradaM shrI"
+        },
+        {
+          "sectionOrder": 2,
+          "text": "bhUtAdi saMsEvita caraNaM bhUta bhautika prapanca bharaNaM"
+        },
+        {
+          "sectionOrder": 3,
+          "text": "vItarAgiNaM vinata yOginaM vishvakAraNaM vighnavAraNaM"
+        },
+        {
+          "sectionOrder": 4,
+          "text": "purA kumbha sambhava munivara prapUjitaM trikONa madhyagataM"
+        }
+      ]
+    }
+  ],
+  "metadataBoundaries": [
+    {
+      "label": "MEANING",
+      "startOffset": 512,
+      "endOffset": 519
+    }
+  ],
+  "identityCandidates": {
+    "composers": [
+      {
+        "entityId": "0197a1b2-0000-7000-8000-000000000001",
+        "name": "Muthuswami Dikshitar",
+        "score": 96,
+        "confidence": "HIGH",
+        "matchedOn": "alias"
+      }
+    ],
+    "ragas": [
+      {
+        "entityId": "0197a1b2-0000-7000-8000-000000000002",
+        "name": "Hamsadhwani",
+        "score": 98,
+        "confidence": "HIGH",
+        "matchedOn": "canonical"
+      }
+    ]
+  },
+  "metadataEnrichment": {
+    "provider": "google-genai",
+    "model": "gemini-2.5-flash",
+    "applied": true,
+    "confidence": 0.9,
+    "fieldsUpdated": ["deity", "temple"],
+    "warnings": []
+  },
+  "deity": "Ganesha",
+  "temple": "Vatapi (Badami)",
+  "templeLocation": "Badami, Karnataka",
+  "sourceUrl": "https://guruguha.org/krithi/vatapi-ganapatim",
+  "sourceName": "guruguha.org",
+  "sourceTier": 2,
+  "extractionMethod": "HTML_JSOUP",
+  "extractionTimestamp": "2026-07-09T00:00:00+00:00",
+  "checksum": "sha256:3b8f2f1de1f0a54c9f8f2e5a7c6b4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b7c",
+  "title_normalized": "vatapi ganapatim bhaje",
+  "composer_normalized": "muttusvami dikshitar",
+  "raga_normalized": "hamsadhvani",
+  "tala_normalized": "adi"
+}
