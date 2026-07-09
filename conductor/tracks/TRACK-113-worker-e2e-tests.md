@@ -73,8 +73,12 @@ Cross-language worker DB tests + the three E2E money paths, reusing the existing
 ## Acceptance Criteria
 
 - Worker ↔ backend schema contract machine-verified. ✅ golden fixture breaks either suite on drift.
-- Three E2E paths green nightly. ✅ suite green twice consecutively on the compose substrate;
-  nightly workflow in place (first scheduled run will confirm on CI).
+- Three E2E paths green nightly. ✅ suite green twice consecutively on the local compose substrate
+  AND on CI (workflow_dispatch run 29022715430, all steps green on a cold runner). Hardening en
+  route: CI compose overlay for the postgres:18 volume layout (fresh runners; base compose.yaml
+  fix + local volume migration flagged separately), and admin provisioning via idempotent SQL
+  (the gradle bootstrap-admin service contends on the gradle-cache lock held by the running
+  backend, and the token+email auth path only needs the user row).
 - TRACK-035 folded in, not duplicated. ✅ scaffolding reused (auth setup, DB verifier, config);
   legacy specs retained and runnable via `test:e2e`; money paths are the nightly gate.
 
