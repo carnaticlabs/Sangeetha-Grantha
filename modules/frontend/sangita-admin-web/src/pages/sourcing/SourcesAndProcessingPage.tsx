@@ -7,6 +7,7 @@ import SourceFilterBar from '../../components/sourcing/SourceFilterBar';
 import SourceFormModal from '../../components/sourcing/SourceFormModal';
 import StatusSummaryBar from '../../components/sourcing/StatusSummaryBar';
 import ExtractionRequestModal from '../../components/sourcing/ExtractionRequestModal';
+import { formatDuration } from '../../utils/bulk-import-format';
 
 function formatRelativeTime(iso: string | null | undefined): string {
   if (!iso) return '—';
@@ -21,11 +22,6 @@ function formatRelativeTime(iso: string | null | undefined): string {
   return `${Math.floor(diffDays / 365)} years ago`;
 }
 
-function formatDuration(ms: number | null | undefined): string {
-  if (ms == null) return '—';
-  if (ms < 1000) return `${ms}ms`;
-  return `${(ms / 1000).toFixed(1)}s`;
-}
 
 function formatRelativeTimeShort(iso: string): string {
   const date = new Date(iso);

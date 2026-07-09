@@ -1,7 +1,7 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | In Progress (baseline done; coverage prep complete) |
-| **Version** | 1.2.0 |
+| **Status** | Completed |
+| **Version** | 2.0.0 |
 | **Last Updated** | 2026-07-09 |
 | **Author** | Sangeetha Grantha Team |
 | **Priority** | P2 |
@@ -24,8 +24,12 @@ North-star N3: zero frontend tests across 113 TS/TSX files, including the 688-li
 - [x] **Green Vitest + lint baseline** (2026-06-24) — precondition for [TRACK-121](./TRACK-121-frontend-major-toolchain-upgrade.md). See "Baseline delivered" below.
 - [x] Wire `vitest run` into CI (frontend job) — done 2026-07-09 (execution plan Step 1): `bun run test:unit` between Typecheck and Build.
 - [x] Tests for `CuratorReviewPage.tsx` — the curation workflow (2026-07-09, execution plan Step 3).
-- [ ] Tests for `BulkImport.tsx` — the highest-volume write path UI.
-- [ ] Decompose the 600–850-line page components into testable units as coverage is added.
+- [x] Tests for `BulkImport.tsx` — the highest-volume write path UI (2026-07-09, execution plan Step 4).
+- [x] Decompose the 600–850-line page components into testable units as coverage is added
+      (2026-07-09): CuratorReviewPage → `components/curator-review/` (4 components);
+      BulkImport → `components/bulk-import/` (`BatchList`, `TaskLogDrawer`, `UploadPanel`) +
+      `utils/bulk-import-format.ts`. Remaining inline: BulkImport's detail panel (stepper/tasks/
+      events) — covered by page tests; extract further only if it grows.
 
 ## Baseline delivered (2026-06-24)
 
@@ -113,18 +117,34 @@ Codebase facts that shape the work:
       failure toast, keyboard shortcut `a`, bulk select-all → per-id reviewImport, Section Issues
       tab lazy query + render. Also fixed the `useBatchActions` export test clicking a real anchor
       (jsdom navigation warning) by spying on `HTMLAnchorElement.prototype.click`.
-- [ ] **Step 4 — BulkImport coverage**: batch list + empty state; batch selection → detail panels
-      (jobs/tasks/events); upload flow (`uploadBulkImportFile` + list refresh); task status filter;
-      delete-confirm modal gating; pause/resume/cancel via `triggerAction`. Extract `BatchList` /
-      `BatchDetail` / `UploadPanel` as tests land.
+- [x] **Step 4 — BulkImport coverage (2026-07-09)**: extracted `BatchList`/`TaskLogDrawer`/
+      `UploadPanel` to `src/components/bulk-import/` (page 785 → ~460 lines); `UploadPanel` gained
+      label/input association (a11y, mirrors the FormField fix). Removed dead code: `executeDelete`
+      + its stray design-notes comment blob, `deleteConfirmBatchId`, and the never-true
+      `loadingDetail` branches. Consolidated the two byte-identical private `formatDuration` copies
+      (`ExtractionMonitorPage`, `SourcesAndProcessingPage`) onto the shared util; `TimelineCard`'s
+      variant kept intentionally (richer m/h tiers). 4 `TaskLogDrawer` unit tests (overview,
+      error panel, clipboard copy, close) + 7 page tests (list render + auto-select + detail load,
+      empty state, task-status filter refetch, task drawer open with error detail, upload happy
+      path + created-batch selection, upload failure toast, Approve All dispatch + list refresh).
+      Suite: 55 tests / 8 files; lint 186 warnings (−2 from dead code).
 
 Guardrails: extract-then-test each unit so page tests stay thin integration tests; new code adds
 zero lint warnings (189 tolerated pre-existing); keep Vitest collection scoped to `src/**`.
 
 ## Acceptance Criteria
 
-- The two critical pages have meaningful component coverage.
-- Runs in CI within the frontend time budget.
+- The two critical pages have meaningful component coverage. ✅ 10 CuratorReviewPage + 7 BulkImport
+  page tests over the review/upload/action workflows, plus unit tests on their extracted pieces.
+- Runs in CI within the frontend time budget. ✅ `bun run test:unit` is a blocking step in the
+  frontend job; full suite (55 tests) runs in ~1.5s.
+
+## Close-out (2026-07-09)
+
+All four execution-plan steps delivered (infra, CI wiring, pure units, both pages + decomposition).
+Suite grew 0 → 55 tests / 8 files; `vitest run` gates every PR. Frontend lint went 189 → 186
+warnings via dead-code removal along the way. Follow-on candidates (out of scope, not blocking):
+component coverage for the remaining sourcing pages, and E2E revival under TRACK-113.
 
 ## References
 

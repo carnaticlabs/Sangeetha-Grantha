@@ -5,12 +5,7 @@ import { useExtractionList, useExtractionStats, useCreateExtraction, useRetryExt
 import { StatusChip, FormatPill, ConfidenceBar, TierBadge } from '../../components/sourcing/shared';
 import StatusSummaryBar from '../../components/sourcing/StatusSummaryBar';
 import ExtractionRequestModal from '../../components/sourcing/ExtractionRequestModal';
-
-function formatDuration(ms: number | null | undefined): string {
-  if (ms == null) return '—';
-  if (ms < 1000) return `${ms}ms`;
-  return `${(ms / 1000).toFixed(1)}s`;
-}
+import { formatDuration } from '../../utils/bulk-import-format';
 
 function formatRelativeTime(iso: string): string {
   const date = new Date(iso);

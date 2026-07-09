@@ -1,7 +1,7 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.6.1 |
+| **Version** | 1.6.2 |
 | **Last Updated** | 2026-07-09 |
 | **Author** | Sangeetha Grantha Team |
 
@@ -121,7 +121,7 @@
 | [TRACK-115](./tracks/TRACK-115-repo-hygiene-secret-rotation.md) | Repository Hygiene & Secret Rotation (N8) | Completed |
 | [TRACK-116](./tracks/TRACK-116-versioned-canon-spike.md) | Versioned Canon — Architecture Spike + ADR-014 (N5) | Completed |
 | [TRACK-117](./tracks/TRACK-117-versioned-canon-implementation.md) | Versioned Canon — Implementation + Re-Import (N5) | Not Started |
-| [TRACK-118](./tracks/TRACK-118-frontend-component-tests.md) | Frontend Component Tests (Vitest) | In Progress (baseline done) |
+| [TRACK-118](./tracks/TRACK-118-frontend-component-tests.md) | Frontend Component Tests (Vitest) | Completed |
 | [TRACK-119](./tracks/TRACK-119-oauth-otp-auth.md) | Interactive Auth — OAuth / OTP (deferred N1 items) | Not Started |
 | [TRACK-120](./tracks/TRACK-120-dependency-upgrades-safe-jun-2026.md) | Dependency Upgrades Batch 1 — Security + Safe Drop-ins (Jun 2026) | Completed |
 | [TRACK-121](./tracks/TRACK-121-frontend-major-toolchain-upgrade.md) | Dependency Upgrades Batch 2 — Frontend Major Toolchain (Vite 8 / TS 6 / ESLint 10) | Completed |
