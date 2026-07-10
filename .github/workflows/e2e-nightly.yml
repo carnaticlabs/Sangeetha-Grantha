@@ -16,10 +16,6 @@ jobs:
     name: Money paths vs compose stack
     runs-on: ubuntu-latest
     timeout-minutes: 45
-    env:
-      # Overlay fixes the postgres:18 volume-mount layout on fresh runners
-      # (see .github/compose.e2e-ci.yml); applies to every compose call below.
-      COMPOSE_FILE: compose.yaml:.github/compose.e2e-ci.yml
     steps:
       - uses: actions/checkout@v7
 

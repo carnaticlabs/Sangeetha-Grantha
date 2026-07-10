@@ -8,7 +8,13 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      # postgres:18+ layout: single mount at /var/lib/postgresql (data lives in
+      # a versioned subdirectory, enabling in-place pg_upgrade). Mounting the
+      # old .../data path makes fresh volumes fail to initialize.
+      # Migrating from the pre-18 `pgdata` volume: see
+      # application_documentation/00-onboarding/getting-started.md (pg_dump →
+      # new volume → pg_restore); the old volume is left intact for rollback.
+      - pgdata18:/var/lib/postgresql
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 5s
@@ -35,7 +41,8 @@ services:
       - ./database/migrations:/flyway/sql:ro
 
   # One-shot admin provisioning (argon2id). Not in the default dev stack: requires ADMIN_PASSWORD.
-  # Run via the `bootstrap` profile, e.g. `ADMIN_PASSWORD=... docker compose --profile bootstrap run --rm bootstrap-admin`.
+  # Run with BOTH profiles (depends_on migrate, which lives in dev/prod):
+  #   ADMIN_PASSWORD=... docker compose --profile dev --profile bootstrap run --rm bootstrap-admin
   bootstrap-admin:
     profiles: [ "bootstrap" ]
     image: eclipse-temurin:25-jdk
@@ -133,6 +140,9 @@ services:
       API_PROXY_TARGET: http://backend:8080
 
 volumes:
-  pgdata:
+  # pg18+ single-mount layout; the retired pre-18 `pgdata` volume is not
+  # referenced anymore — remove it manually once the migration is confirmed:
+  #   docker volume rm sangeetha-grantha_pgdata
+  pgdata18:
   gradle-cache:
   extraction-cache:

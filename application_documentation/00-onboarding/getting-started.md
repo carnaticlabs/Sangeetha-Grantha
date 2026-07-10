@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-03-10 |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-07-10 |
 | **Author** | Sangeetha Grantha Team |
 
 # Getting Started with Sangita Grantha
@@ -48,6 +48,22 @@ make db
 # Reset DB (drop → create → migrate → seed)
 make db-reset
 ```
+
+> **PostgreSQL 18 volume layout.** The `db` service mounts its volume at
+> `/var/lib/postgresql` (the `postgres:18+` image layout, volume `pgdata18`);
+> fresh checkouts need nothing special. If your machine still has the pre-18
+> `pgdata` volume (mounted at `.../data`, retired 2026-07-10), migrate once:
+>
+> ```bash
+> # 1. With the OLD compose.yaml still checked out, back up:
+> docker compose --profile dev up -d db
+> docker exec sangeetha-grantha-db-1 pg_dump -U postgres -Fc sangita_grantha > sangita.dump
+> # 2. Pull the new compose.yaml, then re-create the DB on the new volume:
+> docker compose --profile dev down && docker compose --profile dev up -d --wait db
+> docker exec -i sangeetha-grantha-db-1 pg_restore -U postgres -d sangita_grantha --no-owner < sangita.dump
+> # 3. Verify, then remove the retired volume:
+> docker volume rm sangeetha-grantha_pgdata
+> ```
 
 ### 3.3 Frontend Dependencies
 Install dependencies for the admin web module using `bun`:
