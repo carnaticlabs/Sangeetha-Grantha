@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Not Started |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-06-24 |
+| **Status** | Completed |
+| **Version** | 2.0.0 |
+| **Last Updated** | 2026-07-10 |
 | **Author** | Sangeetha Grantha Team |
 
 # Goal
@@ -26,3 +26,13 @@ Batch 3b — Upgrade Testcontainers `1.21.4` → `2.0.5` (major). Test-only blas
 # Risks
 - Major version — expect API surface changes; confined to test classpaths (no production runtime impact).
 - Verify Flyway JVM API (`flyway-core`) still integrates with the new Testcontainers lifecycle.
+
+# Completion (2026-07-10)
+Actual 2.x delta was small for this codebase:
+- Artifact renamed: `org.testcontainers:postgresql` → `org.testcontainers:testcontainers-postgresql`
+  (the old coordinate has no 2.x releases — Maven metadata still says latest 1.21.4).
+- `PostgreSQLContainer` moved to package `org.testcontainers.postgresql` and dropped the
+  `<SELF>` self-type generic (`PostgreSQLContainer<*>` → `PostgreSQLContainer`).
+- No other API changes hit `SangitaPostgres`/`TestDatabase`/`IntegrationTestBase`; Flyway JVM API
+  integration unchanged. Verified: `:dal:integrationTest`, `:api:integrationTest`, and the full
+  `:dal:test` + `:api:test` suites green on 2.0.5.

@@ -1,6 +1,6 @@
 package com.sangita.grantha.backend.testsupport
 
-import org.testcontainers.containers.PostgreSQLContainer
+import org.testcontainers.postgresql.PostgreSQLContainer
 import org.testcontainers.utility.DockerImageName
 
 /**
@@ -19,7 +19,7 @@ object SangitaPostgres {
         DockerImageName.parse("docker.io/library/postgres:18.3-alpine")
             .asCompatibleSubstituteFor("postgres")
 
-    val container: PostgreSQLContainer<*> by lazy {
+    val container: PostgreSQLContainer by lazy {
         PostgreSQLContainer(image)
             .withDatabaseName("sangita_grantha_test")
             .withUsername("postgres")

@@ -2,7 +2,7 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.3.0 |
-| **Last Updated** | 2026-07-08 |
+| **Last Updated** | 2026-07-10 |
 | **Author** | Sangeetha Grantha Team |
 
 # Current Technology Versions
@@ -164,7 +164,7 @@ Migrations are standardized on **Flyway Community** ([ADR-013](../02-architectur
 
 | Component | Version | Notes |
 |---------|---------|---------|
-| Testcontainers | `1.21.4` | `org.testcontainers:postgresql`; integration tests self-provision `postgres:18.3-alpine`. Pinned in `gradle/libs.versions.toml` (`testcontainers`). |
+| Testcontainers | `2.0.5` | `org.testcontainers:testcontainers-postgresql` (artifact renamed in 2.x; `PostgreSQLContainer` now in `org.testcontainers.postgresql`, no self-type generic). Integration tests self-provision `postgres:18.3-alpine`. Pinned in `gradle/libs.versions.toml` (`testcontainers`). TRACK-123. |
 | GitHub Actions CI | — | `.github/workflows/ci.yml` (TRACK-111): backend unit/integration, Flyway migrate+validate, frontend typecheck+build, worker pytest. Blocking, PR-triggered (D7/D8). |
 
 Shared integration-test infrastructure (`IntegrationTestBase`, `SangitaPostgres`, `TestDatabase`, `TestFixtures`) lives in the **`:modules:backend:test-support`** module (TRACK-111, D11), consumed by both the `api` and `dal` test classpaths.
@@ -207,6 +207,7 @@ Shared integration-test infrastructure (`IntegrationTestBase`, `SangitaPostgres`
 
 | Date | Change |
 |------|--------|
+| 2026-07-10 | TRACK-123 (Batch 3b): Testcontainers 1.21.4→2.0.5 — artifact renamed to `org.testcontainers:testcontainers-postgresql`, `PostgreSQLContainer` moved to `org.testcontainers.postgresql` and lost its self-type generic; full backend + DAL integration suites green. |
 | 2026-07-08 | TRACK-121 (frontend major toolchain): TypeScript 5.9→6.0, ESLint 9.39.2→10.6.0 (+ typescript-eslint 8.63.0, @eslint/js 10.0.1, eslint-plugin-react-refresh 0.5.3), Vite 7.3.1→8.1.3 (Rolldown), @vitejs/plugin-react 5→6.0.3, Vitest 4.1.9→4.1.10. Vitest 5 deferred (beta). Added `bunfig.toml` (`[run] bun = true`) — ESLint 10 / Vite 8 need `util.styleText`, absent in the box's EOL Node 21, so `bun run` scripts execute under Bun; direct calls use `bunx --bun`. |
 | 2026-06-24 | TRACK-120 (Batch 1 safe upgrades): PostgreSQL JDBC 42.7.10→42.7.11 (CVE-2026-42198), Ktor 3.4.0→3.5.0, Koin 4.1.1→4.2.1, Logback 1.5.32→1.5.34, Flyway 12.8.1→12.9.0, React 19.2.4→19.2.7, TanStack Query 5.90.21→5.101.1, Tailwind 4.2.1→4.3.1, React Router 7.13.1→7.18.0, Vitest 4.0.18→4.1.9, Playwright 1.40.0→1.61.1, pydantic 2.12.5→2.13.4, psycopg 3.3.2→3.3.4, PyMuPDF 1.27.1→1.27.2.3 |
 | 2026-06-06 | TRACK-106 re-sync: Bun 1.3.6→1.3.7, Python version pin corrected to 3.11+ (mise.toml), Last Updated synced |
