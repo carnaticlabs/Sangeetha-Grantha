@@ -1080,7 +1080,7 @@ dev = [
 requires-dist = [
     { name = "beautifulsoup4", specifier = ">=4.12.0" },
     { name = "click", specifier = ">=8.1.0" },
-    { name = "google-genai", specifier = ">=1.0.0" },
+    { name = "google-genai", specifier = ">=2.0.0" },
     { name = "httpx", specifier = ">=0.27.0" },
     { name = "indic-transliteration", specifier = ">=2.3.0" },
     { name = "jsonschema", marker = "extra == 'dev'", specifier = ">=4.21.0" },

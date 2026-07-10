@@ -127,7 +127,7 @@
 | [TRACK-121](./tracks/TRACK-121-frontend-major-toolchain-upgrade.md) | Dependency Upgrades Batch 2 — Frontend Major Toolchain (Vite 8 / TS 6 / ESLint 10) | Completed |
 | [TRACK-122](./tracks/TRACK-122-kotlin-2.4-compose-upgrade.md) | Dependency Upgrades Batch 3a — Kotlin 2.4 + Compose Multiplatform | Not Started |
 | [TRACK-123](./tracks/TRACK-123-testcontainers-2.x-upgrade.md) | Dependency Upgrades Batch 3b — Testcontainers 2.x | Completed |
-| [TRACK-124](./tracks/TRACK-124-google-genai-2.x-upgrade.md) | Dependency Upgrades Batch 3c — google-genai 2.x (Python Worker) | Not Started |
+| [TRACK-124](./tracks/TRACK-124-google-genai-2.x-upgrade.md) | Dependency Upgrades Batch 3c — google-genai 2.x (Python Worker) | Completed |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)

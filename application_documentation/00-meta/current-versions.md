@@ -137,7 +137,7 @@
 | indic-transliteration | `2.3.76` | Script conversion (Devanagari ↔ Tamil/Telugu/etc.) |
 | Pydantic | `2.13.4` | Schema validation |
 | psycopg | `3.3.4` | PostgreSQL driver (async-capable) |
-| google-genai | `>=1.0.0` | Unified Gemini SDK (replaced deprecated google-generativeai) |
+| google-genai | `>=2.0.0` (resolved `2.9.0`) | Unified Gemini SDK; 2.0 breaking changes are Interactions-API-only — the worker's generate_content/batches surface is unaffected (TRACK-124) |
 | RapidFuzz | `3.14.3` | Fast fuzzy matching |
 | HTTPX | `0.28.1` | Async HTTP client |
 | BeautifulSoup4 | `4.14.3` | HTML parsing |
@@ -207,6 +207,7 @@ Shared integration-test infrastructure (`IntegrationTestBase`, `SangitaPostgres`
 
 | Date | Change |
 |------|--------|
+| 2026-07-10 | TRACK-124 (Batch 3c): google-genai floor >=1.0.0→>=2.0.0 (resolved 1.34.0→2.9.0); 2.0 breaking changes confined to the Interactions API, worker call sites untouched; 144 worker tests green incl. HTTP-stubbed SDK round-trips. |
 | 2026-07-10 | TRACK-123 (Batch 3b): Testcontainers 1.21.4→2.0.5 — artifact renamed to `org.testcontainers:testcontainers-postgresql`, `PostgreSQLContainer` moved to `org.testcontainers.postgresql` and lost its self-type generic; full backend + DAL integration suites green. |
 | 2026-07-08 | TRACK-121 (frontend major toolchain): TypeScript 5.9→6.0, ESLint 9.39.2→10.6.0 (+ typescript-eslint 8.63.0, @eslint/js 10.0.1, eslint-plugin-react-refresh 0.5.3), Vite 7.3.1→8.1.3 (Rolldown), @vitejs/plugin-react 5→6.0.3, Vitest 4.1.9→4.1.10. Vitest 5 deferred (beta). Added `bunfig.toml` (`[run] bun = true`) — ESLint 10 / Vite 8 need `util.styleText`, absent in the box's EOL Node 21, so `bun run` scripts execute under Bun; direct calls use `bunx --bun`. |
 | 2026-06-24 | TRACK-120 (Batch 1 safe upgrades): PostgreSQL JDBC 42.7.10→42.7.11 (CVE-2026-42198), Ktor 3.4.0→3.5.0, Koin 4.1.1→4.2.1, Logback 1.5.32→1.5.34, Flyway 12.8.1→12.9.0, React 19.2.4→19.2.7, TanStack Query 5.90.21→5.101.1, Tailwind 4.2.1→4.3.1, React Router 7.13.1→7.18.0, Vitest 4.0.18→4.1.9, Playwright 1.40.0→1.61.1, pydantic 2.12.5→2.13.4, psycopg 3.3.2→3.3.4, PyMuPDF 1.27.1→1.27.2.3 |
