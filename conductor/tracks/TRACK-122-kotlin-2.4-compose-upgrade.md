@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Not Started |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-06-24 |
+| **Status** | Completed |
+| **Version** | 2.0.0 |
+| **Last Updated** | 2026-07-10 |
 | **Author** | Sangeetha Grantha Team |
 
 # Goal
@@ -25,3 +25,20 @@ Batch 3a — Upgrade Kotlin `2.3.0` → `2.4.0` (stable) across the backend, sha
 - Widest blast radius of all batches — backend + KMP + mobile + Compose compiler.
 - Compose compiler/CMP version must be confirmed against Kotlin 2.4 before bumping; mismatch breaks the build.
 - Best run as a dedicated session with full test cycles; not a quick drop-in.
+
+# Completion (2026-07-10)
+Kotlin `2.4.0` + Compose Multiplatform `1.11.1` (CMP 1.11 requires Kotlin ≥ 2.3; compose compiler
+ships with Kotlin, `composeCompiler` stays ref'd to `kotlin`). Fallout handled:
+- **iosX64 dropped from `:shared:presentation`** — CMP 1.11 no longer publishes x64 iOS artifacts
+  (resolution failure on `runtime`/`foundation`/`ui` for iosX64). The pure-Kotlin `:shared:domain`
+  still targets iosX64.
+- **`compose.*` plugin accessors deprecated** → explicit version-catalog deps. Component split
+  versions: runtime/foundation/ui ride the CMP version (`1.11.1`); **material3 is on its own train
+  (`1.9.0`)**; material-icons-extended is frozen upstream at `1.7.3` (future: Material Symbols).
+- **`-Xexplicit-backing-fields` removed** from both shared modules — in-language since Kotlin 2.4
+  (the flag became a redundancy warning; zero-warnings target, TRACK-099).
+- **Kotlin/Native `sourceInfoType=none` → `noop`** (value renamed in 2.4).
+- Coupled libs (coroutines 1.10.2, serialization 1.10.0, Koin 4.2.1, Ktor 3.5.0) unchanged — all
+  compatible.
+Verified: backend `:api:build` + full `dal`+`api` test suites (incl. Testcontainers integration on
+the new 2.0.5 substrate) and both KMP modules build warning-free. Version docs synced.

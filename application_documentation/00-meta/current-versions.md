@@ -36,7 +36,7 @@
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| Kotlin | `2.3.0` | Language version |
+| Kotlin | `2.4.0` | Language version |
 | Ktor | `3.5.0` | HTTP server & client framework |
 | Exposed | `1.0.0` | SQL ORM (DSL-based) |
 | Koin | `4.2.1` | Dependency injection |
@@ -177,8 +177,8 @@ Shared integration-test infrastructure (`IntegrationTestBase`, `SangitaPostgres`
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| Kotlin | `2.3.0` | Shared with backend |
-| Compose Multiplatform | `1.10.0` | Cross-platform UI |
+| Kotlin | `2.4.0` | Shared with backend |
+| Compose Multiplatform | `1.11.1` | Cross-platform UI (material3 `1.9.0` own train; icons-extended frozen `1.7.3`; iosX64 dropped by CMP 1.11) |
 | Android Gradle Plugin | `9.0.0` | Android build |
 | Ktor Client | `3.5.0` | HTTP client |
 
@@ -207,6 +207,7 @@ Shared integration-test infrastructure (`IntegrationTestBase`, `SangitaPostgres`
 
 | Date | Change |
 |------|--------|
+| 2026-07-10 | TRACK-122 (Batch 3a): Kotlin 2.3.0→2.4.0, Compose Multiplatform 1.10.0→1.11.1. CMP 1.11 fallout: `compose.*` plugin accessors deprecated → explicit catalog deps (material3 on its own `1.9.0` train, icons-extended frozen `1.7.3`); iosX64 no longer published by CMP → target dropped from `:shared:presentation`; `-Xexplicit-backing-fields` now in-language (flag removed); Kotlin/Native `sourceInfoType=none`→`noop`. Backend + KMP builds and full test suites green. |
 | 2026-07-10 | TRACK-124 (Batch 3c): google-genai floor >=1.0.0→>=2.0.0 (resolved 1.34.0→2.9.0); 2.0 breaking changes confined to the Interactions API, worker call sites untouched; 144 worker tests green incl. HTTP-stubbed SDK round-trips. |
 | 2026-07-10 | TRACK-123 (Batch 3b): Testcontainers 1.21.4→2.0.5 — artifact renamed to `org.testcontainers:testcontainers-postgresql`, `PostgreSQLContainer` moved to `org.testcontainers.postgresql` and lost its self-type generic; full backend + DAL integration suites green. |
 | 2026-07-08 | TRACK-121 (frontend major toolchain): TypeScript 5.9→6.0, ESLint 9.39.2→10.6.0 (+ typescript-eslint 8.63.0, @eslint/js 10.0.1, eslint-plugin-react-refresh 0.5.3), Vite 7.3.1→8.1.3 (Rolldown), @vitejs/plugin-react 5→6.0.3, Vitest 4.1.9→4.1.10. Vitest 5 deferred (beta). Added `bunfig.toml` (`[run] bun = true`) — ESLint 10 / Vite 8 need `util.styleText`, absent in the box's EOL Node 21, so `bun run` scripts execute under Bun; direct calls use `bunx --bun`. |

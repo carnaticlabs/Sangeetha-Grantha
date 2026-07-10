@@ -1,7 +1,12 @@
 [versions]
-kotlin = "2.3.0"
+kotlin = "2.4.0"
 agp = "9.0.0"
-compose = "1.10.0"
+# CMP 1.11.x requires Kotlin >= 2.3 (language level 2.2); paired with Kotlin 2.4.0 (TRACK-122)
+compose = "1.11.1"
+# material3 ships on its own release train since the CMP component split
+composeMaterial3 = "1.9.0"
+# material-icons-extended is frozen upstream at 1.7.3 (migrate to Material Symbols eventually)
+composeMaterialIcons = "1.7.3"
 ktor = "3.5.0"
 kotlinxCoroutinesCore = "1.10.2"
 kotlinxDatetime = "0.7.1"
@@ -53,6 +58,12 @@ androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx
 material = { module = "com.google.android.material:material", version.ref = "material" }
 
 # --- kotlinx ---
+# Compose Multiplatform components (CMP 1.11 deprecated the compose.* plugin accessors)
+compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose" }
+compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose" }
+compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose" }
+compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "composeMaterial3" }
+compose-material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "composeMaterialIcons" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesCore" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }

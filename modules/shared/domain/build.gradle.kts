@@ -18,9 +18,8 @@ kotlin {
 
     jvmToolchain(25)
 
-    compilerOptions {
-        freeCompilerArgs.add("-Xexplicit-backing-fields")
-    }
+    // -Xexplicit-backing-fields removed: part of the language since Kotlin 2.4
+    // (the flag now only emits a redundancy warning — zero-warnings target).
 
     sourceSets {
         val commonMain by getting {
@@ -83,7 +82,8 @@ kotlin {
             }
             binaries.all {
                 if (buildType.name.equals("DEBUG", ignoreCase = true)) {
-                    freeCompilerArgs += listOf("-Xbinary=sourceInfoType=none")
+                    // 'none' renamed to 'noop' in Kotlin/Native 2.4
+                    freeCompilerArgs += listOf("-Xbinary=sourceInfoType=noop")
                 }
             }
         }

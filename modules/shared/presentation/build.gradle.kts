@@ -13,26 +13,26 @@ kotlin {
         minSdk = 24
     }
 
-    iosX64()
+    // iosX64 (Intel simulator) dropped: Compose Multiplatform 1.11.x no longer
+    // publishes x64 iOS artifacts. The pure-Kotlin :domain module still targets it.
     iosArm64()
     iosSimulatorArm64()
 
     jvmToolchain(25)
 
-    compilerOptions {
-        freeCompilerArgs.add("-Xexplicit-backing-fields")
-    }
+    // -Xexplicit-backing-fields removed: part of the language since Kotlin 2.4
+    // (the flag now only emits a redundancy warning — zero-warnings target).
 
     sourceSets {
         val commonMain by getting {
             dependencies {
                 api(project(":modules:shared:domain"))
 
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(compose.material3)
-                implementation(compose.materialIconsExtended)
-                implementation(compose.ui)
+                implementation(libs.compose.runtime)
+                implementation(libs.compose.foundation)
+                implementation(libs.compose.material3)
+                implementation(libs.compose.material.icons.extended)
+                implementation(libs.compose.ui)
 
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.kotlinx.datetime)
@@ -54,11 +54,9 @@ kotlin {
             }
         }
 
-        val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
 
-        val iosX64Test by getting
         val iosArm64Test by getting
         val iosSimulatorArm64Test by getting
     }
@@ -71,7 +69,8 @@ kotlin {
             }
             binaries.all {
                 if (buildType.name.equals("DEBUG", ignoreCase = true)) {
-                    freeCompilerArgs += listOf("-Xbinary=sourceInfoType=none")
+                    // 'none' renamed to 'noop' in Kotlin/Native 2.4
+                    freeCompilerArgs += listOf("-Xbinary=sourceInfoType=noop")
                 }
             }
         }
