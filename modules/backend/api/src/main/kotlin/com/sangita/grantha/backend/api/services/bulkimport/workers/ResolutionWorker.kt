@@ -89,7 +89,7 @@ class ResolutionWorker(
                 dal.imports.updateQualityScores(
                     id = updatedImported.id,
                     qualityScore = qualityScore.overall,
-                    qualityTier = qualityScore.tier.name,
+                    qualityTier = qualityScore.tier.name.lowercase(),
                     completenessScore = qualityScore.completeness,
                     resolutionConfidence = qualityScore.resolutionConfidence,
                     sourceQuality = qualityScore.sourceQuality,
