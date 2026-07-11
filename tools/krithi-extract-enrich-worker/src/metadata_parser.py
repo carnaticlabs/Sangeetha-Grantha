@@ -110,6 +110,13 @@ class MetadataParser:
         re.IGNORECASE | re.MULTILINE,
     )
 
+    # Parenthesised tala: "rAga paraju (tALa cApu)"
+    RAGA_TALA_PAREN = re.compile(
+        _RAGA_LABEL + r"\s*(?:[:—–\-]\s*)?(.+?)"
+        r"\s*\(\s*" + _TALA_LABEL + r"\s*(?:[:—–\-]\s*)?(.+?)\s*\)",
+        re.IGNORECASE | re.MULTILINE,
+    )
+
     # Simple "Raga - Tala" format (no labels)
     RAGA_TALA_SIMPLE = re.compile(
         r"^([A-Z][a-zāīūṛṣṇḍṭḥ]+(?:\s[A-Z][a-zāīūṛṣṇḍṭḥ]+)*)\s*[—–\-]\s*"
@@ -209,6 +216,11 @@ class MetadataParser:
         if not raga and not tala:
             raga, tala = self._extract_raga_tala(metadata_text)
 
+        # Fallback: title_hint often carries raga/tala in blog pages
+        # e.g. "Syama Sastry Kriti - trilOka mAtA – rAga paraju (tALa cApu)"
+        if not raga and not tala and title_hint:
+            raga, tala = self._extract_raga_tala(title_hint)
+
         # Clean up extracted names
         if raga:
             raga = cleanup_raga_tala_name(raga)
@@ -255,6 +267,11 @@ class MetadataParser:
 
         # Try inline combined format (no explicit ':' after raga/tala labels)
         match = self.RAGA_TALA_INLINE.search(text)
+        if match:
+            return match.group(1).strip(), match.group(2).strip()
+
+        # Try parenthesised tala: "rAga paraju (tALa cApu)"
+        match = self.RAGA_TALA_PAREN.search(text)
         if match:
             return match.group(1).strip(), match.group(2).strip()
 

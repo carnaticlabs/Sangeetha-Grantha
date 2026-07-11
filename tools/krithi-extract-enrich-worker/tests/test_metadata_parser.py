@@ -45,6 +45,17 @@ def test_extracts_inline_raga_tala_from_blog_line_without_colon() -> None:
     assert metadata.tala == "Rupakam"
 
 
+def test_extracts_parenthesised_tala_from_title_hint() -> None:
+    parser = MetadataParser()
+    metadata = parser.parse(
+        header_text="trilOka mAtA\nAnupallavi\nvilOkimpumu sadaya",
+        title_hint="Shyama Krishna Vaibhavam: Syama Sastry Kriti - trilOka mAtA – rAga paraju (tALa cApu)",
+    )
+
+    assert metadata.raga == "Paraju"
+    assert metadata.tala == "Capu"
+
+
 def test_uses_first_line_metadata_when_title_hint_present() -> None:
     parser = MetadataParser()
     metadata = parser.parse(

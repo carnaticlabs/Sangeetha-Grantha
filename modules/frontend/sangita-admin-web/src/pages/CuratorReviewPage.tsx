@@ -25,6 +25,27 @@ type ModalState =
     | { type: 'bulkReject'; count: number }
     | { type: 'merge'; importId: string; importTitle: string; krithi: KrithiSummary };
 
+function extractLyricsFromPayload(item: ImportedKrithi): string {
+    if (item.rawLyrics) return item.rawLyrics;
+    if (!item.parsedPayload) return '';
+    try {
+        const payload = typeof item.parsedPayload === 'string'
+            ? JSON.parse(item.parsedPayload)
+            : item.parsedPayload;
+        const variants = payload?.lyricVariants;
+        if (!Array.isArray(variants) || variants.length === 0) return '';
+        const latin = variants.find((v: { script?: string }) => v.script === 'latin') || variants[0];
+        const sections = latin?.sections;
+        if (!Array.isArray(sections)) return '';
+        return sections
+            .sort((a: { sectionOrder: number }, b: { sectionOrder: number }) => a.sectionOrder - b.sectionOrder)
+            .map((s: { text: string }) => s.text)
+            .join('\n\n');
+    } catch {
+        return '';
+    }
+}
+
 const CuratorReviewPage: React.FC = () => {
     const { toasts, success, error: showError, removeToast } = useToast();
     const queryClient = useQueryClient();
@@ -112,7 +133,7 @@ const CuratorReviewPage: React.FC = () => {
         setOverrideLanguage(item.rawLanguage || '');
         setOverrideDeity(item.rawDeity || '');
         setOverrideTemple(item.rawTemple || '');
-        setOverrideLyrics(item.rawLyrics || '');
+        setOverrideLyrics(extractLyricsFromPayload(item));
         setSearchQuery('');
         setSearchResults([]);
     };

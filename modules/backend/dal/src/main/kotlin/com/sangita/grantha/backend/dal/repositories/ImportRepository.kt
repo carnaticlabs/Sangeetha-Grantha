@@ -11,7 +11,6 @@ import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.UUID
 import kotlin.uuid.Uuid
-import org.jetbrains.exposed.v1.exceptions.ExposedSQLException
 import org.jetbrains.exposed.v1.jdbc.*
 import org.jetbrains.exposed.v1.core.*
 
@@ -44,35 +43,21 @@ class ImportRepository {
 
     /**
      * Find or create an import source and return its ID.
-     * Uses INSERT ... ON CONFLICT to handle concurrent callers racing to create the same source.
+     * Uses INSERT ... ON CONFLICT DO NOTHING so a duplicate name never poisons
+     * the transaction, then SELECTs the (possibly pre-existing) row.
      */
     suspend fun findOrCreateSource(name: String): UUID = DatabaseFactory.dbQuery {
+        val now = OffsetDateTime.now(ZoneOffset.UTC)
+        ImportSourcesTable.insertIgnore {
+            it[ImportSourcesTable.name] = name
+            it[ImportSourcesTable.createdAt] = now
+        }
         ImportSourcesTable
             .selectAll()
             .andWhere { ImportSourcesTable.name eq name }
             .limit(1)
             .map { it[ImportSourcesTable.id].value }
-            .singleOrNull()
-            ?: run {
-                val now = OffsetDateTime.now(ZoneOffset.UTC)
-                val sourceId = UUID.randomUUID()
-                try {
-                    ImportSourcesTable.insert {
-                        it[id] = sourceId
-                        it[ImportSourcesTable.name] = name
-                        it[ImportSourcesTable.createdAt] = now
-                    }
-                    sourceId
-                } catch (_: ExposedSQLException) {
-                    // Unique constraint violation — another thread created it first, re-fetch
-                    ImportSourcesTable
-                        .selectAll()
-                        .andWhere { ImportSourcesTable.name eq name }
-                        .limit(1)
-                        .map { it[ImportSourcesTable.id].value }
-                        .single()
-                }
-            }
+            .single()
     }
 
     /**
@@ -95,19 +80,9 @@ class ImportRepository {
         val now = OffsetDateTime.now(ZoneOffset.UTC)
 
         if (!sourceKey.isNullOrBlank()) {
-            ImportedKrithisTable
-                .selectAll()
-                .andWhere { (ImportedKrithisTable.importSourceId eq sourceId) and (ImportedKrithisTable.sourceKey eq sourceKey) }
-                .singleOrNull()
-                ?.toImportedKrithiDto()
-                ?.let { return@dbQuery it }
-        }
-
-        val importId = UUID.randomUUID()
-
-        try {
-            ImportedKrithisTable.insert {
-                it[id] = importId
+            // Use upsert: ON CONFLICT (import_source_id, source_key) DO NOTHING.
+            // When the row already exists the upsert is a no-op, so we fetch separately.
+            ImportedKrithisTable.insertIgnore {
                 it[importSourceId] = sourceId
                 it[ImportedKrithisTable.importBatchId] = importBatchId
                 it[ImportedKrithisTable.sourceKey] = sourceKey
@@ -123,23 +98,35 @@ class ImportRepository {
                 it[ImportedKrithisTable.importStatus] = ImportStatus.PENDING
                 it[ImportedKrithisTable.createdAt] = now
             }
-                .resultedValues
-                ?.single()
-                ?.toImportedKrithiDto()
-                ?: error("Failed to insert imported krithi")
-        } catch (_: ExposedSQLException) {
-            // Unique constraint violation on (import_source_id, source_key) —
-            // another concurrent call already created this import, return it
-            if (!sourceKey.isNullOrBlank()) {
-                ImportedKrithisTable
-                    .selectAll()
-                    .andWhere { (ImportedKrithisTable.importSourceId eq sourceId) and (ImportedKrithisTable.sourceKey eq sourceKey) }
-                    .single()
-                    .toImportedKrithiDto()
-            } else {
-                throw IllegalStateException("Duplicate insert for import with null sourceKey")
-            }
+
+            return@dbQuery ImportedKrithisTable
+                .selectAll()
+                .andWhere { (ImportedKrithisTable.importSourceId eq sourceId) and (ImportedKrithisTable.sourceKey eq sourceKey) }
+                .single()
+                .toImportedKrithiDto()
         }
+
+        // No sourceKey — no unique constraint to conflict on, plain insert
+        ImportedKrithisTable.insert {
+            it[importSourceId] = sourceId
+            it[ImportedKrithisTable.importBatchId] = importBatchId
+            it[ImportedKrithisTable.sourceKey] = sourceKey
+            it[ImportedKrithisTable.rawTitle] = rawTitle
+            it[ImportedKrithisTable.rawLyrics] = rawLyrics
+            it[ImportedKrithisTable.rawComposer] = rawComposer
+            it[ImportedKrithisTable.rawRaga] = rawRaga
+            it[ImportedKrithisTable.rawTala] = rawTala
+            it[ImportedKrithisTable.rawDeity] = rawDeity
+            it[ImportedKrithisTable.rawTemple] = rawTemple
+            it[ImportedKrithisTable.rawLanguage] = rawLanguage
+            it[ImportedKrithisTable.parsedPayload] = parsedPayload
+            it[ImportedKrithisTable.importStatus] = ImportStatus.PENDING
+            it[ImportedKrithisTable.createdAt] = now
+        }
+            .resultedValues
+            ?.single()
+            ?.toImportedKrithiDto()
+            ?: error("Failed to insert imported krithi")
     }
 
     /**
