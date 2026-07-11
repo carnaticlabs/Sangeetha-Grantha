@@ -12,6 +12,8 @@ import com.sangita.grantha.backend.dal.enums.WorkflowState
 import com.sangita.grantha.backend.dal.support.toJavaUuid
 import com.sangita.grantha.backend.dal.support.toKotlinUuid
 import com.sangita.grantha.shared.domain.model.ImportedKrithiDto
+import com.sangita.grantha.shared.domain.model.import.CanonicalExtractionDto
+import com.sangita.grantha.shared.domain.model.import.CanonicalExtractionMethod
 import com.sangita.grantha.backend.dal.repositories.KrithiCreateParams
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -92,6 +94,15 @@ class ImportServiceImpl(
      */
     private fun normalize(value: String): String =
         normalizer.normalizeTitle(value) ?: value.trim().lowercase()
+
+    /** Canonical extraction method → source_documents.source_format (ADR-014). */
+    private fun canonicalMethodToFormat(method: CanonicalExtractionMethod): String = when (method) {
+        CanonicalExtractionMethod.PDF_PYMUPDF, CanonicalExtractionMethod.PDF_OCR -> "PDF"
+        CanonicalExtractionMethod.HTML_JSOUP, CanonicalExtractionMethod.HTML_JSOUP_GEMINI -> "HTML"
+        CanonicalExtractionMethod.DOCX_PYTHON -> "DOCX"
+        CanonicalExtractionMethod.MANUAL -> "MANUAL"
+        CanonicalExtractionMethod.TRANSLITERATION -> "HTML"
+    }
 
     private fun parseBatchIdOrNull(batchId: String?): UUID? =
         batchId?.let {
@@ -525,14 +536,35 @@ class ImportServiceImpl(
                     }
 
                 // TRACK-117 / ADR-014: record the accepted result as an
-                // append-only revision (curator-approved import).
-                if (reviewerUserId != null) {
+                // append-only revision with provenance. Attribute to the
+                // extraction that produced this URL (so SYSTEM auto-approvals —
+                // which carry no reviewer — still satisfy the attribution floor)
+                // and/or the curator. Skip only when neither is resolvable.
+                val extractionId = sourceKey?.let { dal.extractionQueue.findLatestCompletedIdBySourceUrl(it) }
+                    ?.toJavaUuid()
+                val sourceDocumentId = importData.parsedPayload
+                    ?.let { runCatching { Json.decodeFromString<CanonicalExtractionDto>(it) }.getOrNull() }
+                    ?.let { canonical ->
+                        dal.revisions.ensureSourceDocumentForSource(
+                            sourceName = canonical.sourceName,
+                            sourceUrl = canonical.sourceUrl,
+                            sourceTier = canonical.sourceTier,
+                            sourceFormat = canonicalMethodToFormat(canonical.extractionMethod),
+                            checksum = canonical.checksum,
+                            pageRange = canonical.pageRange,
+                        )
+                    }
+                if (extractionId != null || reviewerUserId != null) {
                     dal.revisions.snapshotCurrentState(
                         krithiId = createdKrithiId!!,
                         changeKind = "IMPORT",
-                        changeReason = "Curator-approved import $id",
-                        createdByUserId = reviewerUserId.toJavaUuid(),
+                        changeReason = "Approved import $id",
+                        extractionId = extractionId,
+                        createdByUserId = reviewerUserId?.toJavaUuid(),
+                        sourceDocumentId = sourceDocumentId,
                     )
+                } else {
+                    println("Approved import $id has no extraction or reviewer — revision skipped (unattributable)")
                 }
 
             } catch (e: Exception) {

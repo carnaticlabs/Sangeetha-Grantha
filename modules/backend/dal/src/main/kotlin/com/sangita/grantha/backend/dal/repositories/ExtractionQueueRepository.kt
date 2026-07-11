@@ -141,6 +141,21 @@ class ExtractionQueueRepository {
             .count() > 0
     }
 
+    /**
+     * The most recent DONE/INGESTED extraction run that produced this URL, if any.
+     * Used to attribute an approved import's revision to the extraction that made
+     * it (TRACK-117 / ADR-014) — the linkage that lets system auto-approvals
+     * satisfy the revision attribution floor without a curator user.
+     */
+    suspend fun findLatestCompletedIdBySourceUrl(sourceUrl: String): Uuid? = DatabaseFactory.dbQuery {
+        T.select(T.id)
+            .where { (T.sourceUrl eq sourceUrl) and (T.status inList listOf(ExtractionStatus.DONE, ExtractionStatus.INGESTED)) }
+            .orderBy(T.updatedAt to SortOrder.DESC)
+            .limit(1)
+            .firstOrNull()
+            ?.get(T.id)?.value?.toKotlinUuid()
+    }
+
     suspend fun create(
         sourceUrl: String,
         sourceFormat: String,

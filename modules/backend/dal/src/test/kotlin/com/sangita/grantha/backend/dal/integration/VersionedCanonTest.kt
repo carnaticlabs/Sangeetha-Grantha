@@ -168,6 +168,23 @@ class VersionedCanonTest : IntegrationTestBase() {
     }
 
     @Test
+    fun `latest completed extraction resolves by source url (approval attribution)`() = runTest {
+        val url = "https://guruguha.org/krithi/attr-${java.util.UUID.randomUUID()}"
+
+        // A PENDING task for the URL must not resolve — only completed runs attribute.
+        dal.extractionQueue.create(sourceUrl = url, sourceFormat = "HTML", sourceName = "guruguha.org")
+        assertNull(dal.extractionQueue.findLatestCompletedIdBySourceUrl(url))
+
+        // Once a run for the URL is DONE, it resolves — this is the linkage that
+        // lets system auto-approvals attribute a revision without a curator user.
+        val done = dal.extractionQueue.create(sourceUrl = url, sourceFormat = "HTML", sourceName = "guruguha.org")
+        dal.extractionQueue.markDone(done.id, "[]", 0, "HTML_JSOUP", "test:1.0")
+        assertEquals(done.id, dal.extractionQueue.findLatestCompletedIdBySourceUrl(url))
+
+        assertNull(dal.extractionQueue.findLatestCompletedIdBySourceUrl("https://nope.example.org/missing"))
+    }
+
+    @Test
     fun `as-of reads return the revision current at that time`() = runTest {
         val krithiId = createKrithi("As-Of Test")
         val user = dal.users.create(fullName = "Curator AsOf")

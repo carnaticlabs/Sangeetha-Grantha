@@ -30,9 +30,17 @@ Implement the [ADR-014](../../application_documentation/02-architecture/decision
       Revision-writers wired: `KrithiCreationFromExtractionService` (IMPORT rev #1 with per-section
       extraction + source-document attribution), `ImportService.reviewImport` curator approvals
       (IMPORT snapshot attributed to the JWT reviewer — `reviewerUserId` threaded from the routes),
-      `KrithiService.updateKrithi` (CURATOR_EDIT snapshot). **Known gap:** `AutoApprovalService`-driven
-      approvals pass no reviewer and the bulk path has no `extraction_queue` linkage, so system
-      auto-approvals skip revision writes until TRACK-096 converges the payload/extraction linkage.
+      `KrithiService.updateKrithi` (CURATOR_EDIT snapshot).
+- [x] **Auto-approval gap closed (2026-07-11).** `ImportService.reviewImport` now resolves the
+      producing extraction by source URL (`ExtractionQueueRepository.findLatestCompletedIdBySourceUrl`)
+      and the source-document node from the imported row's canonical `parsed_payload`, then writes the
+      revision attributed to `(extraction, source_document)` and/or the curator. Because the
+      extraction alone satisfies the ADR-014 attribution floor, **system auto-approvals**
+      (`AutoApprovalService`, no reviewer) now write revisions too — previously skipped. Only imports
+      with neither a resolvable extraction nor a reviewer are skipped (logged). No schema change was
+      needed — the linkage rides the existing `source_key` ↔ `extraction_queue.source_url` correlation
+      and the canonical payload already on the row. Verified: new DAL test for the lookup, full
+      backend suites green, E2E money paths green on the reworked approval path.
 - [ ] `make db-reset` → re-import Trinity krithis fresh; verify revision + provenance rows populate from
       the import path. **Deliberately left for a supervised run** — drops the dev DB and re-scrapes the
       corpus over the network (hours); resume together with TRACK-093.
