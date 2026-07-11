@@ -69,20 +69,23 @@ _CONSONANT_DOT_RULES: list[tuple[re.Pattern[str], str]] = [
     # prevent false positives on abbreviations like "Dr.", "Sr.", "Mr.".
     # Sanskrit/IAST text uses lowercase; abbreviations use Title/UPPER case.
     #
-    # s. + optional space  →  ṣ  (retroflex sibilant)
-    (re.compile(r"(?<![A-Z])s\.\s*"), "ṣ"),
-    # n. + optional space  →  ṇ  (retroflex nasal)
-    (re.compile(r"(?<![A-Z])n\.\s*"), "ṇ"),
-    # d. + optional space  →  ḍ  (retroflex stop)
-    (re.compile(r"(?<![A-Z])d\.\s*"), "ḍ"),
-    # t. + optional space  →  ṭ  (retroflex stop)
-    (re.compile(r"(?<![A-Z])t\.\s*"), "ṭ"),
-    # l. + optional space  →  ḷ  (retroflex lateral)
-    (re.compile(r"(?<![A-Z])l\.\s*"), "ḷ"),
-    # r. + optional space  →  ṛ  (vocalic r)
-    (re.compile(r"(?<![A-Z])r\.\s*"), "ṛ"),
-    # h. + optional space  →  ḥ  (visarga)
-    (re.compile(r"(?<![A-Z])h\.\s*"), "ḥ"),
+    # Horizontal whitespace only ([ \t]*) — never consume newlines, otherwise
+    # "Mother.\npallavi" collapses into "Motheṛpallavi" and destroys section headers.
+    #
+    # s. + optional horizontal space  →  ṣ  (retroflex sibilant)
+    (re.compile(r"(?<![A-Z])s\.[ \t]*"), "ṣ"),
+    # n. + optional horizontal space  →  ṇ  (retroflex nasal)
+    (re.compile(r"(?<![A-Z])n\.[ \t]*"), "ṇ"),
+    # d. + optional horizontal space  →  ḍ  (retroflex stop)
+    (re.compile(r"(?<![A-Z])d\.[ \t]*"), "ḍ"),
+    # t. + optional horizontal space  →  ṭ  (retroflex stop)
+    (re.compile(r"(?<![A-Z])t\.[ \t]*"), "ṭ"),
+    # l. + optional horizontal space  →  ḷ  (retroflex lateral)
+    (re.compile(r"(?<![A-Z])l\.[ \t]*"), "ḷ"),
+    # r. + optional horizontal space  →  ṛ  (vocalic r)
+    (re.compile(r"(?<![A-Z])r\.[ \t]*"), "ṛ"),
+    # h. + optional horizontal space  →  ḥ  (visarga)
+    (re.compile(r"(?<![A-Z])h\.[ \t]*"), "ḥ"),
 ]
 
 

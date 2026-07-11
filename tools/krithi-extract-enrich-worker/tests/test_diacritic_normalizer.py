@@ -166,3 +166,10 @@ class TestRule8ConsonantDot:
         garbled = "m\u00AFamava pat.t.\u00AFabhir\u00AFama"
         expected = "māmava paṭṭābhirāma"
         assert normalize_garbled_diacritics(garbled) == expected
+
+    def test_dot_before_newline_not_consumed(self) -> None:
+        """Period at end of sentence must not fuse with next line."""
+        text = "Mother.\npallavi"
+        result = normalize_garbled_diacritics(text)
+        assert "\npallavi" in result
+        assert "pallavi" in result.split("\n")[1]
