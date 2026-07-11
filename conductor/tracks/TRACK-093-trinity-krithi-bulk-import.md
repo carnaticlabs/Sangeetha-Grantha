@@ -1,9 +1,19 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Paused |
-| **Version** | 1.2.0 |
-| **Last Updated** | 2026-03-13 |
+| **Version** | 1.2.1 |
+| **Last Updated** | 2026-07-11 |
 | **Author** | Sangeetha Grantha Team |
+
+> **2026-07-11 — held by decision.** The prerequisites for a *clean* re-import are now in place:
+> the versioned-canon schema + write path (TRACK-117), the auto-approval revision attribution
+> (TRACK-117 — approvals now record provenance from the extraction), and the structural-voting
+> migration off the legacy scraper DTO (TRACK-096). The re-import itself (`make db-reset` → three
+> bulk-import batches, ~1,245 krithis re-scraped from guru-guha.blogspot.com over hours) was
+> **deliberately deferred** to a supervised session — it drops the dev DB and is a large
+> outward-facing scrape. When it runs, it will populate `krithi_revisions` + per-section provenance
+> from row one, and unblock TRACK-096's final cleanup (deleting `ScrapedKrithiMetadata` + the
+> dual-format fallback once no legacy payloads remain).
 
 # Goal
 
