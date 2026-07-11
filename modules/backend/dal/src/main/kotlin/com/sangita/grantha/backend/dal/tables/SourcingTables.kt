@@ -74,6 +74,9 @@ object ExtractionQueueTable : UUIDTable("extraction_queue") {
     val sourceChecksum = text("source_checksum").nullable()
     val cachedArtifactPath = text("cached_artifact_path").nullable()
 
+    // TRACK-117 / ADR-014: the physical artifact this run consumed
+    val sourceDocumentId = javaUUID("source_document_id").nullable()
+
     // TRACK-056: Variant support
     val contentLanguage = text("content_language").nullable()
     val extractionIntent = pgEnum<ExtractionIntent>("extraction_intent", ExtractionIntent.DB_TYPE)

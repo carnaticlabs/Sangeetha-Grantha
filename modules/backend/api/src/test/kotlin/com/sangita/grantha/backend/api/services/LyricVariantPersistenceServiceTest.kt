@@ -47,7 +47,8 @@ class LyricVariantPersistenceServiceTest : IntegrationTestBase() {
         val dummyReviewer = object : ImportReviewer {
             override suspend fun reviewImport(
                 id: kotlin.uuid.Uuid,
-                request: ImportReviewRequest
+                request: ImportReviewRequest,
+                reviewerUserId: kotlin.uuid.Uuid?
             ) = throw UnsupportedOperationException("Not used in tests")
         }
         val autoApproval = AutoApprovalService(dummyReviewer)
@@ -160,6 +161,7 @@ class LyricVariantPersistenceServiceTest : IntegrationTestBase() {
         importService.reviewImport(
             importId,
             ImportReviewRequest(status = ImportStatusDto.APPROVED, reviewerNotes = "Integration test approval")
+            , reviewerUserId = null
         )
 
         // 5. VERIFY: lyrics, sections, and lyric sections are persisted
@@ -241,6 +243,7 @@ class LyricVariantPersistenceServiceTest : IntegrationTestBase() {
         importService.reviewImport(
             importId,
             ImportReviewRequest(status = ImportStatusDto.APPROVED, reviewerNotes = "Legacy format test")
+            , reviewerUserId = null
         )
 
         val approved = dal.imports.findById(importId)
@@ -275,6 +278,7 @@ class LyricVariantPersistenceServiceTest : IntegrationTestBase() {
         importService.reviewImport(
             importId,
             ImportReviewRequest(status = ImportStatusDto.APPROVED, reviewerNotes = "Malformed payload test")
+            , reviewerUserId = null
         )
 
         val approved = dal.imports.findById(importId)

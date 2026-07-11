@@ -44,7 +44,8 @@ class ImportRoutesTest : IntegrationTestBase() {
         val dummyReviewer = object : ImportReviewer {
             override suspend fun reviewImport(
                 id: kotlin.uuid.Uuid,
-                request: com.sangita.grantha.backend.api.models.ImportReviewRequest
+                request: com.sangita.grantha.backend.api.models.ImportReviewRequest,
+                reviewerUserId: kotlin.uuid.Uuid?
             ) = throw UnsupportedOperationException("Not used in route tests")
         }
         val autoApproval = AutoApprovalService(dummyReviewer)

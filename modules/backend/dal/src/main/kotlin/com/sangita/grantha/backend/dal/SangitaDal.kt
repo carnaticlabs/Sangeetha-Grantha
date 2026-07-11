@@ -16,6 +16,7 @@ import com.sangita.grantha.backend.dal.repositories.KrithiRepository
 import com.sangita.grantha.backend.dal.repositories.KrithiSearchRepository
 //import com.sangita.grantha.backend.dal.repositories.NotationRepository
 import com.sangita.grantha.backend.dal.repositories.QualityDashboardRepository
+import com.sangita.grantha.backend.dal.repositories.RevisionRepository
 import com.sangita.grantha.backend.dal.repositories.RagaRepository
 //import com.sangita.grantha.backend.dal.repositories.RoleRepository
 import com.sangita.grantha.backend.dal.repositories.SampradayaRepository
@@ -62,6 +63,8 @@ interface SangitaDal {
     val qualityDashboard: QualityDashboardRepository
     // TRACK-056: Variant matching
     val variantMatch: VariantMatchRepository
+    // TRACK-117 / ADR-014: versioned canon + provenance
+    val revisions: RevisionRepository
 }
 
 class SangitaDalImpl : SangitaDal {
@@ -96,4 +99,6 @@ class SangitaDalImpl : SangitaDal {
     override val qualityDashboard = QualityDashboardRepository()
     // TRACK-056: Variant matching
     override val variantMatch = VariantMatchRepository()
+    // TRACK-117 / ADR-014: versioned canon + provenance
+    override val revisions = RevisionRepository(sourceEvidence)
 }

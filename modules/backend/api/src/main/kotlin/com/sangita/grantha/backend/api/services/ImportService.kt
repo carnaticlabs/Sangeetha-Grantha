@@ -62,7 +62,8 @@ interface IImportService {
     /**
      * Review an import and optionally create/map a krithi.
      */
-    suspend fun reviewImport(id: Uuid, request: ImportReviewRequest): ImportedKrithiDto
+    // Default lives on ImportReviewer (Kotlin forbids two overridden defaults)
+    suspend fun reviewImport(id: Uuid, request: ImportReviewRequest, reviewerUserId: Uuid?): ImportedKrithiDto
 
     /**
      * Calculate summary stats for a batch to decide if it can be finalized.
@@ -240,7 +241,7 @@ class ImportServiceImpl(
     }
 // ... [Retaining existing methods until reviewImport] ...
 
-    override suspend fun reviewImport(id: Uuid, request: ImportReviewRequest): ImportedKrithiDto {
+    override suspend fun reviewImport(id: Uuid, request: ImportReviewRequest, reviewerUserId: Uuid?): ImportedKrithiDto {
         val mappedId = request.mappedKrithiId?.toJavaUuidOrThrow("mappedKrithiId")
         val status = ImportStatus.valueOf(request.status.name)
         
@@ -522,6 +523,17 @@ class ImportServiceImpl(
                     } catch (e: Exception) {
                         println("Failed to create source evidence: ${e.message}")
                     }
+
+                // TRACK-117 / ADR-014: record the accepted result as an
+                // append-only revision (curator-approved import).
+                if (reviewerUserId != null) {
+                    dal.revisions.snapshotCurrentState(
+                        krithiId = createdKrithiId!!,
+                        changeKind = "IMPORT",
+                        changeReason = "Curator-approved import $id",
+                        createdByUserId = reviewerUserId.toJavaUuid(),
+                    )
+                }
 
             } catch (e: Exception) {
                 // If it's a known error, rethrow it so route can handle it (or wrap it)

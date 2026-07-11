@@ -37,7 +37,8 @@ class ExtractionResultProcessorTest : IntegrationTestBase() {
         val dummyReviewer = object : ImportReviewer {
             override suspend fun reviewImport(
                 id: kotlin.uuid.Uuid,
-                request: ImportReviewRequest
+                request: ImportReviewRequest,
+                reviewerUserId: kotlin.uuid.Uuid?
             ) = throw UnsupportedOperationException("Not used in tests")
         }
         val autoApproval = AutoApprovalService(dummyReviewer)

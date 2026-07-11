@@ -26,7 +26,7 @@ class ImportServiceTest : IntegrationTestBase() {
     fun setup() {
         dal = SangitaDalImpl()
         val dummyReviewer = object : ImportReviewer {
-            override suspend fun reviewImport(id: kotlin.uuid.Uuid, request: ImportReviewRequest) =
+            override suspend fun reviewImport(id: kotlin.uuid.Uuid, request: ImportReviewRequest, reviewerUserId: kotlin.uuid.Uuid?) =
                 throw UnsupportedOperationException("Not used in tests")
         }
         val autoApproval = AutoApprovalService(dummyReviewer)
@@ -71,7 +71,7 @@ class ImportServiceTest : IntegrationTestBase() {
         )
 
         val importId = created.first().id
-        val updated = service.reviewImport(importId, ImportReviewRequest(status = ImportStatusDto.REJECTED))
+        val updated = service.reviewImport(importId, ImportReviewRequest(status = ImportStatusDto.REJECTED), reviewerUserId = null)
 
         assertEquals(ImportStatusDto.REJECTED, updated.importStatus)
     }
@@ -113,7 +113,7 @@ class ImportServiceTest : IntegrationTestBase() {
         // Action: Approve import
         val reviewed = service.reviewImport(importId, ImportReviewRequest(
             status = ImportStatusDto.APPROVED
-        ))
+        ), reviewerUserId = null)
 
         // Assert: mappedKrithiId should be existingKrithi.id
         assertNotNull(reviewed.mappedKrithiId)
@@ -147,7 +147,7 @@ class ImportServiceTest : IntegrationTestBase() {
 
         val reviewed = service.reviewImport(importId, ImportReviewRequest(
             status = ImportStatusDto.APPROVED
-        ))
+        ), reviewerUserId = null)
 
         assertNotNull(reviewed.mappedKrithiId)
         val createdKrithiId = reviewed.mappedKrithiId!!
@@ -242,7 +242,7 @@ class ImportServiceTest : IntegrationTestBase() {
         val importId = imports.first().id
 
         // First approval: creates krithi
-        val firstReview = service.reviewImport(importId, ImportReviewRequest(status = ImportStatusDto.APPROVED))
+        val firstReview = service.reviewImport(importId, ImportReviewRequest(status = ImportStatusDto.APPROVED), reviewerUserId = null)
         assertNotNull(firstReview.mappedKrithiId)
         val krithiId = firstReview.mappedKrithiId!!
 
@@ -261,7 +261,7 @@ class ImportServiceTest : IntegrationTestBase() {
         val importId2 = imports2.first().id
 
         // Second approval: should match existing krithi, not create a new one
-        val secondReview = service.reviewImport(importId2, ImportReviewRequest(status = ImportStatusDto.APPROVED))
+        val secondReview = service.reviewImport(importId2, ImportReviewRequest(status = ImportStatusDto.APPROVED), reviewerUserId = null)
         assertNotNull(secondReview.mappedKrithiId)
         assertEquals(krithiId, secondReview.mappedKrithiId)
 
@@ -285,7 +285,7 @@ class ImportServiceTest : IntegrationTestBase() {
         )
         val importId = imports.first().id
 
-        val reviewed = service.reviewImport(importId, ImportReviewRequest(status = ImportStatusDto.APPROVED))
+        val reviewed = service.reviewImport(importId, ImportReviewRequest(status = ImportStatusDto.APPROVED), reviewerUserId = null)
         val krithiId = reviewed.mappedKrithiId!!
 
         val evidence1 = dal.sourceEvidence.getKrithiEvidence(krithiId)

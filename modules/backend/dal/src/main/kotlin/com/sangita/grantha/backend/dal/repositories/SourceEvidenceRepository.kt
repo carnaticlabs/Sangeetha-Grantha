@@ -254,7 +254,8 @@ class SourceEvidenceRepository {
      * Resolve the import_source_id for a source evidence record.
      * Falls back to creating a new import_sources record if no match is found.
      */
-    private fun resolveImportSourceId(
+    // internal: reused by RevisionRepository for source_documents (ADR-014)
+    internal fun resolveImportSourceId(
         sourceName: String,
         sourceUrl: String,
         sourceTier: Int,

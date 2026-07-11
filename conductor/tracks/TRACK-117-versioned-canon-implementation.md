@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Not Started |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-06-13 |
+| **Status** | In Progress (implementation complete; Trinity re-import pending) |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-07-10 |
 | **Author** | Sangeetha Grantha Team |
 | **Priority** | P1 — time-sensitive (gates TRACK-093/096 resume) |
 | **Epic** | [TRACK-109](./TRACK-109-production-readiness-roadmap.md) (N5 data model) |
@@ -20,12 +20,30 @@ Implement the [ADR-014](../../application_documentation/02-architecture/decision
 
 ## Implementation Plan
 
-- [ ] Author the schema as a **Flyway** migration (`V44__versioned_canon.sql` or per ADR-014): `krithi_revisions`, provenance FKs, current-state projection view. Depends on TRACK-110 so it is written in Flyway format from the start.
-- [ ] Wire the import/ingestion path to populate revision + provenance rows at creation (not backfilled).
-- [ ] `make db-reset` → re-import Trinity krithis fresh; verify revision + provenance rows populate from the import path.
-- [ ] Verify junction tables (`krithi_ragas`) and sections populate through the full stack (DB → API → UI) post-reimport.
-- [ ] Add integration coverage (reuses the TRACK-110 substrate): a krithi edit creates a revision; provenance lineage resolves in one query.
-- [ ] Resume / close TRACK-093 and TRACK-096 against the new schema.
+- [x] Author the schema as a **Flyway** migration — `V44__versioned_canon.sql` (2026-07-10): `source_documents`,
+      `krithi_revisions`, `krithi_section_revisions`, `extraction_queue.source_document_id`,
+      `v_krithi_current_revision` view, `krithi_sections_asof()` function, per the ADR-014 DDL sketch
+      (uuidv7 defaults, attribution + doc-requires-extraction CHECKs, pure DDL, no backfill).
+- [x] Wire the import/ingestion path (2026-07-10): DAL `RevisionRepository` (append-only `appendRevision`,
+      `ensureSourceDocument[ForSource]` with registry resolution shared with `krithi_source_evidence`,
+      `snapshotCurrentState`, `latestRevision`/`listRevisions`/`sectionProvenance`).
+      Revision-writers wired: `KrithiCreationFromExtractionService` (IMPORT rev #1 with per-section
+      extraction + source-document attribution), `ImportService.reviewImport` curator approvals
+      (IMPORT snapshot attributed to the JWT reviewer — `reviewerUserId` threaded from the routes),
+      `KrithiService.updateKrithi` (CURATOR_EDIT snapshot). **Known gap:** `AutoApprovalService`-driven
+      approvals pass no reviewer and the bulk path has no `extraction_queue` linkage, so system
+      auto-approvals skip revision writes until TRACK-096 converges the payload/extraction linkage.
+- [ ] `make db-reset` → re-import Trinity krithis fresh; verify revision + provenance rows populate from
+      the import path. **Deliberately left for a supervised run** — drops the dev DB and re-scrapes the
+      corpus over the network (hours); resume together with TRACK-093.
+- [x] Verify through the full stack (2026-07-10, sans re-import): live API probe — krithi edit via
+      PUT /admin/krithis writes an attributed CURATOR_EDIT revision; `krithi_sections_asof()` executes
+      against live data; all three E2E money paths green on the revision-writing backend.
+- [x] Integration coverage on the TRACK-110 substrate (2026-07-10): `VersionedCanonTest` (6 tests) —
+      monotonic revision numbers + latest-wins, attribution floor rejected, source-document dedup,
+      one-query provenance lineage (URL/checksum/registry), as-of point-in-time reads (v1 at t,
+      v2 now, empty before creation), `snapshotCurrentState` capturing serving-layer sections+lyrics.
+- [ ] Resume / close TRACK-093 and TRACK-096 against the new schema (after the supervised re-import).
 
 ## Acceptance Criteria
 

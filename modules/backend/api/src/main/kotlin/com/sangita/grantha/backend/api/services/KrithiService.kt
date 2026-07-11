@@ -207,6 +207,18 @@ class KrithiServiceImpl(private val dal: SangitaDal) : IKrithiService {
             actorUserId = userId
         )
 
+        // TRACK-117 / ADR-014: record the accepted edit as an append-only
+        // revision (snapshot of the resulting state). Requires attribution;
+        // admin routes always carry the JWT user.
+        userId?.let { editor ->
+            dal.revisions.snapshotCurrentState(
+                krithiId = id.toJavaUuid(),
+                changeKind = "CURATOR_EDIT",
+                changeReason = "Krithi metadata update",
+                createdByUserId = editor.toJavaUuid(),
+            )
+        }
+
         return updated
     }
 

@@ -120,7 +120,7 @@
 | [TRACK-114](./tracks/TRACK-114-password-hashing.md) | Authentication Hardening — Password Hashing (N1, re-scoped) | Completed |
 | [TRACK-115](./tracks/TRACK-115-repo-hygiene-secret-rotation.md) | Repository Hygiene & Secret Rotation (N8) | Completed |
 | [TRACK-116](./tracks/TRACK-116-versioned-canon-spike.md) | Versioned Canon — Architecture Spike + ADR-014 (N5) | Completed |
-| [TRACK-117](./tracks/TRACK-117-versioned-canon-implementation.md) | Versioned Canon — Implementation + Re-Import (N5) | Not Started |
+| [TRACK-117](./tracks/TRACK-117-versioned-canon-implementation.md) | Versioned Canon — Implementation + Re-Import (N5) | In Progress (implementation done; re-import pending) |
 | [TRACK-118](./tracks/TRACK-118-frontend-component-tests.md) | Frontend Component Tests (Vitest) | Completed |
 | [TRACK-119](./tracks/TRACK-119-oauth-otp-auth.md) | Interactive Auth — OAuth / OTP (deferred N1 items) | Not Started |
 | [TRACK-120](./tracks/TRACK-120-dependency-upgrades-safe-jun-2026.md) | Dependency Upgrades Batch 1 — Security + Safe Drop-ins (Jun 2026) | Completed |

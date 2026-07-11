@@ -14,10 +14,13 @@ import kotlin.uuid.Uuid
 interface ImportReviewer {
     /**
      * Review an import with the given request.
-     * 
+     *
      * @param id The ID of the import to review
      * @param request The review request containing status, notes, etc.
+     * @param reviewerUserId The curator performing the review (from JWT);
+     *        null for system-driven reviews (auto-approval). Used for
+     *        revision attribution (TRACK-117 / ADR-014).
      * @return The updated import DTO
      */
-    suspend fun reviewImport(id: Uuid, request: ImportReviewRequest): ImportedKrithiDto
+    suspend fun reviewImport(id: Uuid, request: ImportReviewRequest, reviewerUserId: Uuid? = null): ImportedKrithiDto
 }

@@ -4,6 +4,7 @@ import com.sangita.grantha.backend.api.models.ImportKrithiRequest
 import com.sangita.grantha.backend.api.models.ImportReviewRequest
 import com.sangita.grantha.backend.api.models.ImportOverridesDto
 import com.sangita.grantha.backend.api.services.IImportService
+import com.sangita.grantha.backend.api.support.currentUserId
 import com.sangita.grantha.backend.api.services.LyricVariantPersistenceService
 import com.sangita.grantha.backend.dal.SangitaDal
 import com.sangita.grantha.backend.dal.enums.ImportStatus
@@ -78,7 +79,7 @@ fun Route.importRoutes(
             val id = parseUuidParam(call.parameters["id"], "importId")
                 ?: return@post call.respondText("Missing import ID", status = HttpStatusCode.BadRequest)
             val request = call.receive<ImportReviewRequest>()
-            val updated = importService.reviewImport(id, request)
+            val updated = importService.reviewImport(id, request, call.currentUserId())
             call.respond(updated)
         }
 
@@ -122,7 +123,8 @@ fun Route.importRoutes(
                                             lyrics = it["lyrics"]
                                         )
                                     }
-                                )
+                                ),
+                                reviewerUserId = call.currentUserId(),
                             )
                             BulkReviewResult(importIdStr, "APPROVED", null)
                         }
@@ -132,7 +134,8 @@ fun Route.importRoutes(
                                 request = ImportReviewRequest(
                                     status = ImportStatusDto.REJECTED,
                                     reviewerNotes = request.reason
-                                )
+                                ),
+                                reviewerUserId = call.currentUserId(),
                             )
                             BulkReviewResult(importIdStr, "REJECTED", null)
                         }

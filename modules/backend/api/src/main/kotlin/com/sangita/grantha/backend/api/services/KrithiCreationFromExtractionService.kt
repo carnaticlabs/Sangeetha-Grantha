@@ -6,6 +6,8 @@ import com.sangita.grantha.backend.dal.enums.MusicalForm
 import com.sangita.grantha.backend.dal.enums.ScriptCode
 import com.sangita.grantha.backend.dal.enums.WorkflowState
 import com.sangita.grantha.backend.dal.repositories.KrithiCreateParams
+import com.sangita.grantha.backend.dal.repositories.RevisionWrite
+import com.sangita.grantha.backend.dal.repositories.SectionRevisionWrite
 import com.sangita.grantha.backend.dal.support.toJavaUuid
 import com.sangita.grantha.shared.domain.model.import.CanonicalExtractionDto
 import com.sangita.grantha.shared.domain.model.import.CanonicalExtractionMethod
@@ -174,6 +176,28 @@ class KrithiCreationFromExtractionService(
             rawExtraction = rawExtractionJson,
         )
 
+        // ── 10.5 Versioned canon: revision #1 + per-section provenance ─────
+        // (ADR-014 / TRACK-117 — captured at creation, never backfilled)
+        val sourceDocumentId = dal.revisions.ensureSourceDocumentForSource(
+            sourceName = extraction.sourceName,
+            sourceUrl = extraction.sourceUrl,
+            sourceTier = extraction.sourceTier,
+            sourceFormat = mapExtractionMethodToFormat(extraction.extractionMethod),
+            checksum = extraction.checksum,
+            pageRange = extraction.pageRange,
+        )
+        dal.revisions.appendRevision(
+            RevisionWrite(
+                krithiId = krithi.id.toJavaUuid(),
+                changeKind = "IMPORT",
+                changeReason = "Created from extraction [${extraction.sourceName}]",
+                extractionId = extractionTaskId.toJavaUuid(),
+                sections = buildSectionRevisionWrites(
+                    extraction, extractionTaskId.toJavaUuid(), sourceDocumentId,
+                ),
+            ),
+        )
+
         // ── 11. Audit log (use buildJsonObject for safe escaping) ──────────
         val auditMetadata = buildJsonObject {
             put("sourceUrl", extraction.sourceUrl)
@@ -241,6 +265,55 @@ class KrithiCreationFromExtractionService(
                 }
             }
         }
+    }
+
+    /**
+     * One revision-section row per (canonical section × lyric variant) — the
+     * re-materializable "what" of the krithi at revision time. Structural
+     * sections with no lyric text in any variant still get one skeleton row.
+     */
+    private fun buildSectionRevisionWrites(
+        extraction: CanonicalExtractionDto,
+        extractionId: UUID,
+        sourceDocumentId: UUID,
+    ): List<SectionRevisionWrite> {
+        val sectionsByOrder = extraction.sections.associateBy { it.order }
+        val writes = mutableListOf<SectionRevisionWrite>()
+
+        for (variant in extraction.lyricVariants) {
+            val language = runCatching { LanguageCode.valueOf(variant.language.uppercase()) }.getOrNull()
+            val script = runCatching { ScriptCode.valueOf(variant.script.uppercase()) }.getOrNull()
+            for (lyricSection in variant.sections) {
+                val skeleton = sectionsByOrder[lyricSection.sectionOrder]
+                writes += SectionRevisionWrite(
+                    sectionType = skeleton?.type?.name ?: "OTHER",
+                    orderIndex = lyricSection.sectionOrder - 1,
+                    label = skeleton?.label,
+                    language = language,
+                    script = script,
+                    text = lyricSection.text,
+                    extractionId = extractionId,
+                    sourceDocumentId = sourceDocumentId,
+                )
+            }
+        }
+
+        // Skeleton rows for sections no lyric variant covered
+        val coveredOrders = writes.map { it.orderIndex }.toSet()
+        for (section in extraction.sections) {
+            val orderIndex = section.order - 1
+            if (orderIndex !in coveredOrders) {
+                writes += SectionRevisionWrite(
+                    sectionType = section.type.name,
+                    orderIndex = orderIndex,
+                    label = section.label,
+                    text = "",
+                    extractionId = extractionId,
+                    sourceDocumentId = sourceDocumentId,
+                )
+            }
+        }
+        return writes.sortedBy { it.orderIndex }
     }
 
     private fun buildContributedFields(extraction: CanonicalExtractionDto): List<String> {
