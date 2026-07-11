@@ -1,16 +1,29 @@
 package com.sangita.grantha.backend.api.services.scraping
 
-import com.sangita.grantha.backend.api.services.ScrapedSectionDto
 import com.sangita.grantha.shared.domain.model.RagaSectionDto
 
+/**
+ * Picks the best structural skeleton among competing source proposals.
+ *
+ * TRACK-096: migrated off the legacy `ScrapedSectionDto` — voting is a purely
+ * structural decision, so it carries the domain section type ([RagaSectionDto])
+ * plus its optional label directly. No dependency on the deprecated scraper DTOs.
+ */
 class StructuralVotingEngine {
-    data class SectionCandidate(
-        val sections: List<ScrapedSectionDto>,
-        val isAuthoritySource: Boolean = false,
-        val label: String? = null
+
+    /** A single section in a proposed structure — type is what voting scores on. */
+    data class VotedSection(
+        val type: RagaSectionDto,
+        val label: String? = null,
     )
 
-    fun pickBestStructure(candidates: List<SectionCandidate>): List<ScrapedSectionDto> {
+    data class SectionCandidate(
+        val sections: List<VotedSection>,
+        val isAuthoritySource: Boolean = false,
+        val label: String? = null,
+    )
+
+    fun pickBestStructure(candidates: List<SectionCandidate>): List<VotedSection> {
         if (candidates.isEmpty()) return emptyList()
 
         return candidates

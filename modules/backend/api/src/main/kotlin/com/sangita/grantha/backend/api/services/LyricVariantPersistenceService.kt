@@ -91,11 +91,15 @@ class LyricVariantPersistenceService(
                         }
 
                         val authoritySource = isAuthoritySourceForComposer(sourceKey, importData.rawComposer)
+                        // Legacy ScrapedSectionDto → the voting engine's own VotedSection
+                        // (TRACK-096: voting no longer depends on the scraper DTOs).
+                        fun List<ScrapedSectionDto>.toVoted() =
+                            map { StructuralVotingEngine.VotedSection(it.type, it.label) }
                         val candidates = variants.mapNotNull { v ->
-                            v.sections?.let { StructuralVotingEngine.SectionCandidate(it, authoritySource, "variant:${v.language}") }
+                            v.sections?.let { StructuralVotingEngine.SectionCandidate(it.toVoted(), authoritySource, "variant:${v.language}") }
                         }.toMutableList()
                         if (deduplicated.isNotEmpty()) {
-                            candidates.add(StructuralVotingEngine.SectionCandidate(deduplicated, authoritySource, "metadata"))
+                            candidates.add(StructuralVotingEngine.SectionCandidate(deduplicated.toVoted(), authoritySource, "metadata"))
                         }
 
                         val sectionStructure = structuralVotingEngine.pickBestStructure(candidates)

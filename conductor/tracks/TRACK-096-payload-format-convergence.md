@@ -52,12 +52,22 @@ The import pipeline has two competing payload formats that evolved independently
 - [x] Updated `ImportRoutesTest` to remove mock `IWebScraper` usage
 - [x] All tests pass, deprecation warnings confirm annotations working
 
-## Phase 4: Cleanup (Future)
-- [ ] Remove `IWebScraper`, `WebScrapingServiceImpl`, `DeterministicWebScraper`, and DI binding
-- [ ] Migrate `StructuralVotingEngine` from `ScrapedSectionDto` to `CanonicalSectionDto`
-- [ ] Remove `ScrapedKrithiMetadata` fallback path from `LyricVariantPersistenceService` once no legacy payloads remain in DB
-- [ ] Remove `ScrapedKrithiMetadata` and related DTOs
-- [ ] Remove dual-format detection code
+## Phase 4: Cleanup
+- [x] Remove `IWebScraper`, `WebScrapingServiceImpl`, `DeterministicWebScraper`, and DI binding —
+      already absent from the codebase (Phase 3's removal went all the way; verified 2026-07-11).
+- [x] Migrate `StructuralVotingEngine` off `ScrapedSectionDto` (2026-07-11) — it now carries its own
+      `VotedSection(type: RagaSectionDto, label)`. Landed on the domain `RagaSectionDto` enum rather
+      than `CanonicalSectionType` deliberately: voting scores on the richer technical-section set
+      (MUKTAYI/ETTUGADA/VILOMA/…) that `CanonicalSectionType` collapses to `OTHER`.
+      `StructuralVotingProcessor` builds `VotedSection` straight from canonical extractions; the
+      legacy `LyricVariantPersistenceService` fallback maps its `ScrapedSectionDto` at the call site.
+      No active code path outside the deprecated fallback references the scraper section DTO now.
+- [ ] Remove `ScrapedKrithiMetadata` fallback path from `LyricVariantPersistenceService` once no
+      legacy payloads remain in DB — **blocked on the TRACK-093 re-import** (the cutover that leaves
+      only canonical payloads). Until then the fallback + `ImportService` deity/temple parsing of
+      legacy payloads must stay.
+- [ ] Remove `ScrapedKrithiMetadata` and related DTOs (after the re-import).
+- [ ] Remove dual-format detection code (after the re-import).
 
 # Decision Record
 

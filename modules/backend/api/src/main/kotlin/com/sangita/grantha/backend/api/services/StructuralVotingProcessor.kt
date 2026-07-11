@@ -27,7 +27,7 @@ class StructuralVotingProcessor(
     /** A source paired with its parsed proposed structure. */
     private data class SourceProposal(
         val source: KrithiEvidenceSourceDto,
-        val sections: List<ScrapedSectionDto>,
+        val sections: List<StructuralVotingEngine.VotedSection>,
     )
 
     /**
@@ -44,9 +44,8 @@ class StructuralVotingProcessor(
             try {
                 val extraction = json.decodeFromString<CanonicalExtractionDto>(rawExtraction)
                 val sections = extraction.sections.map { section ->
-                    ScrapedSectionDto(
+                    StructuralVotingEngine.VotedSection(
                         type = mapCanonicalSectionType(section.type),
-                        text = section.label ?: section.type.name,
                         label = section.label,
                     )
                 }
