@@ -479,5 +479,175 @@ def test_fixture_kotlin_parity_tamil_headers() -> None:
     ]
 
 
+def test_fixture_unlabeled_leading_section() -> None:
+    """Devanagari variant with Pallavi text directly after language header (no पल्लवि header).
 
+    Reproduces the amba nIlAyatAkshi issue: the parser produces an UNLABELED block
+    for the leading Pallavi text, which gets type OTHER and can't match canonical
+    PALLAVI. The fix assigns leading OTHER sections to the first unmatched canonical.
+    """
+    parser = StructureParser()
+    fixture_dir = Path(__file__).parent / "fixtures" / "structure_parser"
+    text = (fixture_dir / "unlabeled_leading_section.txt").read_text(encoding="utf-8")
+    expected = json.loads(
+        (fixture_dir / "unlabeled_leading_section.expected.json").read_text(
+            encoding="utf-8"
+        )
+    )
+
+    result = parser.parse(text)
+
+    assert [section.section_type.value for section in result.sections] == expected["sections"]
+    assert [variant.script for variant in result.lyric_variants] == expected["variantScripts"]
+    assert [variant.language for variant in result.lyric_variants] == expected["variantLanguages"]
+
+    deva_variant = [v for v in result.lyric_variants if v.script == "devanagari"][0]
+    assert len(deva_variant.sections) == 3, (
+        f"Devanagari variant must have 3 sections (P+A+C), got {len(deva_variant.sections)}. "
+        "Leading unlabeled block should map to first canonical section (Pallavi)."
+    )
+    assert deva_variant.sections[0].section_type == SectionType.PALLAVI
+    assert deva_variant.sections[1].section_type == SectionType.ANUPALLAVI
+    assert deva_variant.sections[2].section_type == SectionType.CHARANAM
+
+
+def test_ragamalika_produces_three_sections_not_split() -> None:
+    """Ragamalika raga subsections should NOT split into separate sections.
+
+    Each structural section (P/A/C) stays as one section with raga markers
+    in the text. The raga subsection metadata is captured separately.
+    """
+    parser = StructureParser()
+    text = """\
+Pallavi
+1. SrI rAgaM
+SrI viSva nAthaM bhajEhaM
+caturdaSa bhuvana rUpa rAga mAlikAbharaNa dharaNAntaHkaraNam
+2. Arabhi rAgaM
+Srita jana saMsAra bhItyApahaM
+AdhyAtmikAdi tApa traya manO-bhItyApaham
+
+Anupallavi
+3. gauri rAgaM
+SrI viSAlAkshI gaurISaM sakala nishkaLa rUpa
+4. nATa rAgaM
+citra viSva nATaka prakASaM
+5. gauLa rAgaM
+gOvindAdi vinuta gauLAngaM
+6. mOhana rAgaM
+guru guha sammOhana-kara lingaM
+vilOma - mOhana rAgaM
+virinci vishNu rudra mUrti-mayam
+vilOma - gauLa rAgaM
+vishaya pancaka rahitaM abhayam
+vilOma - nATa rAgaM
+niratiSaya sukhada nipuNa-taram
+vilOma - gauri rAgaM
+nigama sAraM ISvaraM amaram
+vilOma - Arabhi rAgaM
+smara haraM parama SivaM atulam
+vilOma - SrI rAgaM
+sarasa sadaya hRdaya nilayaM aniSam
+
+Charanam
+7. sAma rAgaM
+sadASivaM sAma gAna vinutaM
+8. lalita rAgaM
+sanmAtraM lalita hRdaya viditaM
+"""
+    result = parser.parse(text)
+
+    # Must produce exactly 3 structural sections
+    assert len(result.sections) == 3
+    assert result.sections[0].section_type == SectionType.PALLAVI
+    assert result.sections[0].label == "Pallavi"
+    assert result.sections[1].section_type == SectionType.ANUPALLAVI
+    assert result.sections[1].label == "Anupallavi"
+    assert result.sections[2].section_type == SectionType.CHARANAM
+    assert result.sections[2].label == "Charanam"
+
+    # Raga markers preserved in section text
+    assert "1. SrI rAgaM" in result.sections[0].text
+    assert "2. Arabhi rAgaM" in result.sections[0].text
+    assert "vilOma - mOhana rAgaM" in result.sections[1].text
+
+    # Ragamalika subsections detected as metadata
+    assert len(result.ragamalika_subsections) > 0
+    forward_subs = [s for s in result.ragamalika_subsections if not s.is_viloma]
+    viloma_subs = [s for s in result.ragamalika_subsections if s.is_viloma]
+    assert len(forward_subs) == 8  # ragas 1-8
+    assert len(viloma_subs) == 6  # viloma in anupallavi
+
+    # Forward ragas have correct parent section types
+    assert forward_subs[0].raga_name == "SrI"
+    assert forward_subs[0].parent_section_type == SectionType.PALLAVI
+    assert forward_subs[2].raga_name == "gauri"
+    assert forward_subs[2].parent_section_type == SectionType.ANUPALLAVI
+    assert forward_subs[6].raga_name == "sAma"
+    assert forward_subs[6].parent_section_type == SectionType.CHARANAM
+
+    # Viloma ragas have correct parent section type
+    assert viloma_subs[0].raga_name == "mOhana"
+    assert viloma_subs[0].parent_section_type == SectionType.ANUPALLAVI
+
+    # Orders are sequential across all subsections
+    assert result.ragamalika_subsections[0].order == 1
+    assert result.ragamalika_subsections[-1].order == len(result.ragamalika_subsections)
+
+
+def test_non_ragamalika_unchanged() -> None:
+    """Standard krithis without raga subsection markers still work."""
+    parser = StructureParser()
+    text = """\
+Pallavi
+Vatapi Ganapatim Bhaje aham
+
+Anupallavi
+bhoota adi samsevita
+
+Charanam
+hariharaa putram
+"""
+    result = parser.parse(text)
+    assert len(result.sections) == 3
+    assert result.ragamalika_subsections == []
+
+
+def test_ragamalika_multi_variant_pallavi_not_truncated() -> None:
+    """Indic variants with title line before explicit pallavi header must merge both.
+
+    Reproduces a bug where a language header (e.g. Devanagari) contained
+    an inline title line followed by an explicit pallavi block. The
+    leading-OTHER-promotion created two PALLAVI entries; the type-queue
+    matcher picked only the first (title-only), discarding the actual
+    raga subsection content for ragas 1-2.
+    """
+    parser = StructureParser()
+    fixture_dir = Path(__file__).parent / "fixtures" / "structure_parser"
+    text = (fixture_dir / "ragamalika_multi_variant.txt").read_text(encoding="utf-8")
+    expected = json.loads(
+        (fixture_dir / "ragamalika_multi_variant.expected.json").read_text(
+            encoding="utf-8"
+        )
+    )
+
+    result = parser.parse(text)
+
+    assert [s.section_type.value for s in result.sections] == expected["sections"]
+    assert [v.script for v in result.lyric_variants] == expected["variantScripts"]
+    assert [v.language for v in result.lyric_variants] == expected["variantLanguages"]
+
+    for variant in result.lyric_variants:
+        assert len(variant.sections) == 3, (
+            f"{variant.script} variant must have 3 sections, got {len(variant.sections)}"
+        )
+        pallavi = variant.sections[0]
+        assert pallavi.section_type == SectionType.PALLAVI
+
+        assert "1." in pallavi.text, (
+            f"{variant.script} Pallavi missing raga 1 content (got {len(pallavi.text)} chars)"
+        )
+        assert "2." in pallavi.text, (
+            f"{variant.script} Pallavi missing raga 2 content (got {len(pallavi.text)} chars)"
+        )
 

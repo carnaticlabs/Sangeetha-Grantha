@@ -56,12 +56,23 @@ class MetadataBoundary:
 
 
 @dataclass
+class RagamalikaSubsection:
+    """A detected raga subsection within a ragamalika composition."""
+
+    raga_name: str
+    parent_section_type: SectionType
+    is_viloma: bool
+    order: int
+
+
+@dataclass
 class StructureParseResult:
     """Frozen parser contract emitted by the extraction layer."""
 
     sections: list[DetectedSection] = field(default_factory=list)
     lyric_variants: list[DetectedLyricVariant] = field(default_factory=list)
     metadata_boundaries: list[MetadataBoundary] = field(default_factory=list)
+    ragamalika_subsections: list[RagamalikaSubsection] = field(default_factory=list)
 
 
 @dataclass
@@ -312,7 +323,7 @@ class StructureParser:
         lyric_text = source_text[:lyric_window_end]
 
         blocks = self._build_blocks(lyric_text)
-        sections = self._extract_sections(blocks, lyric_text)
+        sections, ragamalika_subsections = self._extract_sections(blocks, lyric_text)
         lyric_variants = self._extract_lyric_variants(blocks, lyric_text, sections)
 
         # TRACK-100: Extract Indic-script variants from post-boundary region.
@@ -328,10 +339,14 @@ class StructureParser:
             sections=sections,
             lyric_variants=lyric_variants,
             metadata_boundaries=metadata_boundaries,
+            ragamalika_subsections=ragamalika_subsections,
         )
 
     def parse_sections(self, text: str) -> list[DetectedSection]:
         return self.parse(text).sections
+
+    def parse_ragamalika_subsections(self, text: str) -> list[RagamalikaSubsection]:
+        return self.parse(text).ragamalika_subsections
 
     def _build_blocks(self, raw_text: str) -> list[_TextBlock]:
         if not raw_text.strip():
@@ -424,11 +439,15 @@ class StructureParser:
                 return _HeaderMatch(label=label, remainder=remainder)
         return None
 
-    def _extract_sections(self, blocks: list[_TextBlock], lyric_text: str) -> list[DetectedSection]:
+    def _extract_sections(
+        self, blocks: list[_TextBlock], lyric_text: str
+    ) -> tuple[list[DetectedSection], list[RagamalikaSubsection]]:
+        ragamalika_subsections: list[RagamalikaSubsection] = []
+
         if not blocks:
             trimmed = lyric_text.strip()
             if not trimmed:
-                return []
+                return [], []
             return [
                 DetectedSection(
                     section_type=SectionType.OTHER,
@@ -438,7 +457,7 @@ class StructureParser:
                     start_pos=0,
                     end_pos=len(lyric_text),
                 )
-            ]
+            ], []
 
         sections: list[DetectedSection] = []
         found_first_section = False
@@ -455,39 +474,47 @@ class StructureParser:
                 continue
 
             found_first_section = True
-            split_sections = self._split_ragamalika_subsections(section_type, block)
-            if not split_sections:
-                block_text = "\n".join(line.text for line in block.lines).strip()
-                if block_text:
-                    split_sections = [(None, block_text, block.start_pos, block.end_pos)]
 
-            for subsection_label, subsection_text, start_pos, end_pos in split_sections:
-                order = len(sections) + 1
-                if section_type == SectionType.CHARANAM:
-                    charanam_counter += 1
-                    canonical_label = "Charanam" if charanam_counter == 1 else f"Charanam {charanam_counter}"
-                else:
-                    canonical_label = section_type.value.replace("_", " ").title()
+            # Detect ragamalika subsections (metadata only, no splitting)
+            detected_subs = self._detect_ragamalika_subsections(section_type, block)
+            if detected_subs:
+                ragamalika_subsections.extend(detected_subs)
 
-                sections.append(
-                    DetectedSection(
-                        section_type=section_type,
-                        order=order,
-                        label=subsection_label or canonical_label,
-                        text=subsection_text,
-                        start_pos=start_pos,
-                        end_pos=end_pos,
-                    )
+            # Always create ONE section per structural block
+            block_text = "\n".join(line.text for line in block.lines).strip()
+            if not block_text:
+                continue
+
+            order = len(sections) + 1
+            if section_type == SectionType.CHARANAM:
+                charanam_counter += 1
+                canonical_label = "Charanam" if charanam_counter == 1 else f"Charanam {charanam_counter}"
+            else:
+                canonical_label = section_type.value.replace("_", " ").title()
+
+            sections.append(
+                DetectedSection(
+                    section_type=section_type,
+                    order=order,
+                    label=canonical_label,
+                    text=block_text,
+                    start_pos=block.start_pos,
+                    end_pos=block.end_pos,
                 )
+            )
+
+        # Assign sequential order to ragamalika subsections
+        for i, sub in enumerate(ragamalika_subsections):
+            sub.order = i + 1
 
         if sections:
             sections = self._demote_mks(sections)
             sections = self._merge_dual_format(sections)
-            return sections
+            return sections, ragamalika_subsections
 
         trimmed = lyric_text.strip()
         if not trimmed:
-            return []
+            return [], []
         return [
             DetectedSection(
                 section_type=SectionType.OTHER,
@@ -497,7 +524,7 @@ class StructureParser:
                 start_pos=0,
                 end_pos=len(lyric_text),
             )
-        ]
+        ], []
 
     def _demote_mks(self, sections: list[DetectedSection]) -> list[DetectedSection]:
         """Rule 1: MKS is never a top-level section — attach to preceding parent.
@@ -632,47 +659,34 @@ class StructureParser:
             ))
         return result
 
-    def _split_ragamalika_subsections(
+    def _detect_ragamalika_subsections(
         self,
         section_type: SectionType,
         block: _TextBlock,
-    ) -> list[tuple[Optional[str], str, int, int]]:
+    ) -> list[RagamalikaSubsection]:
+        """Scan block for ragamalika raga markers without splitting."""
         if not block.lines:
             return []
 
-        parts: list[tuple[Optional[str], str, int, int]] = []
-        current_label: Optional[str] = None
-        current_lines: list[_LineToken] = []
-        saw_subsection_marker = False
-
-        def flush() -> None:
-            nonlocal current_lines
-            if not current_lines:
-                return
-            text = "\n".join(line.text for line in current_lines).strip()
-            if text:
-                parts.append((current_label, text, current_lines[0].start_pos, current_lines[-1].end_pos))
-            current_lines = []
-
+        subsections: list[RagamalikaSubsection] = []
         for line in block.lines:
             viloma_match = VILOMA_SUBSECTION_PATTERN.search(line.text)
             raga_match = RAGA_SUBSECTION_PATTERN.search(line.text)
             if viloma_match is not None:
-                saw_subsection_marker = True
-                flush()
-                current_label = f"Viloma - {viloma_match.group(1).strip()}"
-                continue
-            if raga_match is not None:
-                saw_subsection_marker = True
-                flush()
-                current_label = raga_match.group(1).strip()
-                continue
-            current_lines.append(line)
-
-        flush()
-        if not saw_subsection_marker:
-            return []
-        return parts
+                subsections.append(RagamalikaSubsection(
+                    raga_name=viloma_match.group(1).strip(),
+                    parent_section_type=section_type,
+                    is_viloma=True,
+                    order=0,
+                ))
+            elif raga_match is not None:
+                subsections.append(RagamalikaSubsection(
+                    raga_name=raga_match.group(1).strip(),
+                    parent_section_type=section_type,
+                    is_viloma=False,
+                    order=0,
+                ))
+        return subsections
 
     def _extract_lyric_variants(
         self,
@@ -818,6 +832,41 @@ class StructureParser:
         # Map to canonical structure by matching type and sequential occurrence
         if not canonical_sections:
             return raw_sections
+
+        # Promote leading OTHER sections: when a variant starts with unlabeled
+        # text (no section header before the first typed section), assign each
+        # leading OTHER section the type of the next unmatched canonical section.
+        # This handles pages where e.g. Devanagari Pallavi text appears directly
+        # after the language header without a "पल्लवि" section header.
+        promoted_count = 0
+        canonical_iter = iter(canonical_sections)
+        for s in raw_sections:
+            if s.section_type != SectionType.OTHER:
+                break
+            canon = next(canonical_iter, None)
+            if canon is not None:
+                s.section_type = canon.section_type
+                promoted_count += 1
+
+        # Merge promoted sections into the following typed section when both
+        # share the same type (e.g. a title-only promoted PALLAVI followed by
+        # an explicit PALLAVI block with the actual content).
+        if promoted_count > 0:
+            merged: list[DetectedSection] = []
+            for s in raw_sections:
+                if merged and merged[-1].section_type == s.section_type and len(merged) <= promoted_count:
+                    prev = merged[-1]
+                    merged[-1] = DetectedSection(
+                        section_type=prev.section_type,
+                        order=prev.order,
+                        label=prev.label,
+                        text=prev.text + "\n" + s.text,
+                        start_pos=prev.start_pos,
+                        end_pos=s.end_pos,
+                    )
+                else:
+                    merged.append(s)
+            raw_sections = merged
 
         type_queues: dict[SectionType, list[DetectedSection]] = {}
         for s in raw_sections:

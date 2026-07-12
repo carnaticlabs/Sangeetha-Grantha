@@ -486,6 +486,22 @@ class ExtractionWorker:
             raga_name = cleanup_raga_tala_name(metadata.raga) if metadata.raga else "Unknown"
             tala_name = cleanup_raga_tala_name(metadata.tala) if metadata.tala else "Unknown"
 
+            # Build ragas list from ragamalika subsections if detected
+            if parse_result.ragamalika_subsections:
+                ragas = [
+                    CanonicalRaga(
+                        name=sub.raga_name,
+                        order=sub.order,
+                        section=sub.parent_section_type.value.lower(),
+                    )
+                    for sub in parse_result.ragamalika_subsections
+                    if not sub.is_viloma
+                ]
+                if not ragas:
+                    ragas = [CanonicalRaga(name=raga_name)]
+            else:
+                ragas = [CanonicalRaga(name=raga_name)]
+
             # For Devanagari titles, produce an IAST alternate title for matching
             alternate_title = metadata.alternate_title
             if primary_script == "devanagari" and not alternate_title:
@@ -501,7 +517,7 @@ class ExtractionWorker:
                 alternateTitle=alternate_title,
                 composer=metadata.composer or composer_hint or infer_composer_from_url(task.source_url) or "Unknown",
                 musicalForm=MusicalForm.KRITHI,
-                ragas=[CanonicalRaga(name=raga_name)],
+                ragas=ragas,
                 tala=tala_name,
                 sections=canonical_sections,
                 lyricVariants=lyric_variants,
@@ -758,12 +774,28 @@ class ExtractionWorker:
         )
         tala_name = cleanup_raga_tala_name(metadata.tala) if metadata.tala else "Unknown"
 
+        # Build ragas list from ragamalika subsections if detected
+        if parse_result.ragamalika_subsections:
+            ragas = [
+                CanonicalRaga(
+                    name=sub.raga_name,
+                    order=sub.order,
+                    section=sub.parent_section_type.value.lower(),
+                )
+                for sub in parse_result.ragamalika_subsections
+                if not sub.is_viloma
+            ]
+            if not ragas:
+                ragas = [CanonicalRaga(name=raga_name)]
+        else:
+            ragas = [CanonicalRaga(name=raga_name)]
+
         extraction = CanonicalExtraction(
             title=metadata.title,
             alternateTitle=metadata.alternate_title,
             composer=metadata.composer or task.request_payload.get("composerHint") or infer_composer_from_url(task.source_url) or "Unknown",
             musicalForm=MusicalForm.KRITHI,
-            ragas=[CanonicalRaga(name=raga_name)],
+            ragas=ragas,
             tala=tala_name,
             sections=canonical_sections,
             lyricVariants=lyric_variants,
