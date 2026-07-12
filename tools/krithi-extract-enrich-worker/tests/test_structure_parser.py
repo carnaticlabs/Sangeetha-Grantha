@@ -479,5 +479,34 @@ def test_fixture_kotlin_parity_tamil_headers() -> None:
     ]
 
 
+def test_fixture_unlabeled_leading_section() -> None:
+    """Devanagari variant with Pallavi text directly after language header (no पल्लवि header).
 
+    Reproduces the amba nIlAyatAkshi issue: the parser produces an UNLABELED block
+    for the leading Pallavi text, which gets type OTHER and can't match canonical
+    PALLAVI. The fix assigns leading OTHER sections to the first unmatched canonical.
+    """
+    parser = StructureParser()
+    fixture_dir = Path(__file__).parent / "fixtures" / "structure_parser"
+    text = (fixture_dir / "unlabeled_leading_section.txt").read_text(encoding="utf-8")
+    expected = json.loads(
+        (fixture_dir / "unlabeled_leading_section.expected.json").read_text(
+            encoding="utf-8"
+        )
+    )
+
+    result = parser.parse(text)
+
+    assert [section.section_type.value for section in result.sections] == expected["sections"]
+    assert [variant.script for variant in result.lyric_variants] == expected["variantScripts"]
+    assert [variant.language for variant in result.lyric_variants] == expected["variantLanguages"]
+
+    deva_variant = [v for v in result.lyric_variants if v.script == "devanagari"][0]
+    assert len(deva_variant.sections) == 3, (
+        f"Devanagari variant must have 3 sections (P+A+C), got {len(deva_variant.sections)}. "
+        "Leading unlabeled block should map to first canonical section (Pallavi)."
+    )
+    assert deva_variant.sections[0].section_type == SectionType.PALLAVI
+    assert deva_variant.sections[1].section_type == SectionType.ANUPALLAVI
+    assert deva_variant.sections[2].section_type == SectionType.CHARANAM
 

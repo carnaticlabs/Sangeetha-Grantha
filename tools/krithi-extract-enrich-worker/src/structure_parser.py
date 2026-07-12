@@ -819,6 +819,19 @@ class StructureParser:
         if not canonical_sections:
             return raw_sections
 
+        # Promote leading OTHER sections: when a variant starts with unlabeled
+        # text (no section header before the first typed section), assign each
+        # leading OTHER section the type of the next unmatched canonical section.
+        # This handles pages where e.g. Devanagari Pallavi text appears directly
+        # after the language header without a "पल्लवि" section header.
+        canonical_iter = iter(canonical_sections)
+        for s in raw_sections:
+            if s.section_type != SectionType.OTHER:
+                break
+            canon = next(canonical_iter, None)
+            if canon is not None:
+                s.section_type = canon.section_type
+
         type_queues: dict[SectionType, list[DetectedSection]] = {}
         for s in raw_sections:
             type_queues.setdefault(s.section_type, []).append(s)
