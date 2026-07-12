@@ -434,6 +434,31 @@ def test_per_script_variations_excluded_from_lyrics() -> None:
             )
 
 
+def test_indic_single_letter_not_false_positive() -> None:
+    """Lyric lines starting with Indic letters must not be misdetected as section headers.
+
+    Regression: 'ப 4 ரதாக் 3 ரஜ:' (Tamil Anupallavi text starting with ப)
+    was falsely matched by the single-letter 'ப' → PALLAVI abbreviation pattern,
+    causing 23 section issues across 16 krithis.
+    """
+    parser = StructureParser()
+    text = (
+        "pallavi\n"
+        "ஸ்ரீ ராம சந்த் 3 ரோ ரக்ஷது மாம்\n"
+        "ராக்ஷஸாதி 3 ஹரோ ரகு 4 வர:\n"
+        "அனுபல்லவி\n"
+        "ப 4 ரதாக் 3 ரஜ: கௌஸி 1 க யாக 3 ரக்ஷக: தாடகாந்தக:\n"
+        "சரணம்\n"
+        "மிதி 2 லா நக 3 ர ப்ரவேஸ 1\n"
+    )
+    result = parser.parse(text)
+    types = [s.section_type.value for s in result.sections]
+    assert types == ["PALLAVI", "ANUPALLAVI", "CHARANAM"], (
+        f"Expected 3 sections [P, A, C] but got {types} — "
+        "single-letter Indic abbreviation pattern likely matched lyric text"
+    )
+
+
 def test_fixture_kotlin_parity_tamil_headers() -> None:
     parser = StructureParser()
     fixture_dir = Path(__file__).parent / "fixtures" / "structure_parser"
