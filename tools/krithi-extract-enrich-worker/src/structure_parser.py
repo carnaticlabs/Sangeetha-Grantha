@@ -838,6 +838,7 @@ class StructureParser:
         # leading OTHER section the type of the next unmatched canonical section.
         # This handles pages where e.g. Devanagari Pallavi text appears directly
         # after the language header without a "पल्लवि" section header.
+        promoted_count = 0
         canonical_iter = iter(canonical_sections)
         for s in raw_sections:
             if s.section_type != SectionType.OTHER:
@@ -845,6 +846,27 @@ class StructureParser:
             canon = next(canonical_iter, None)
             if canon is not None:
                 s.section_type = canon.section_type
+                promoted_count += 1
+
+        # Merge promoted sections into the following typed section when both
+        # share the same type (e.g. a title-only promoted PALLAVI followed by
+        # an explicit PALLAVI block with the actual content).
+        if promoted_count > 0:
+            merged: list[DetectedSection] = []
+            for s in raw_sections:
+                if merged and merged[-1].section_type == s.section_type and len(merged) <= promoted_count:
+                    prev = merged[-1]
+                    merged[-1] = DetectedSection(
+                        section_type=prev.section_type,
+                        order=prev.order,
+                        label=prev.label,
+                        text=prev.text + "\n" + s.text,
+                        start_pos=prev.start_pos,
+                        end_pos=s.end_pos,
+                    )
+                else:
+                    merged.append(s)
+            raw_sections = merged
 
         type_queues: dict[SectionType, list[DetectedSection]] = {}
         for s in raw_sections:
