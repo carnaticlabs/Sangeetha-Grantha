@@ -273,7 +273,7 @@ class VariantMatchingService(
             if (savedSections.isNotEmpty() && variant.sections.isNotEmpty()) {
                 val sectionPairs = variant.sections.mapNotNull { lyricSection ->
                     val matchingSection = savedSections.find {
-                        it.orderIndex == lyricSection.sectionOrder - 1
+                        it.orderIndex == lyricSection.sectionOrder
                     }
                     matchingSection?.let { it.id.toJavaUuid() to lyricSection.text }
                 }
