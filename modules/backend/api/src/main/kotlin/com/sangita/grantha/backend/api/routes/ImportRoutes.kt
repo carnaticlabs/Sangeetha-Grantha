@@ -147,11 +147,11 @@ fun Route.importRoutes(
                 }
             }
 
-            call.respond(mapOf(
-                "total" to results.size,
-                "succeeded" to results.count { it.status != "ERROR" },
-                "failed" to results.count { it.status == "ERROR" },
-                "results" to results
+            call.respond(BulkReviewResponse(
+                total = results.size,
+                succeeded = results.count { it.status != "ERROR" },
+                failed = results.count { it.status == "ERROR" },
+                results = results
             ))
         }
 
@@ -353,4 +353,12 @@ data class BulkReviewResult(
     val importId: String,
     val status: String,
     val error: String?
+)
+
+@Serializable
+data class BulkReviewResponse(
+    val total: Int,
+    val succeeded: Int,
+    val failed: Int,
+    val results: List<BulkReviewResult>
 )

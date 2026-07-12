@@ -5,6 +5,7 @@ import {
     getCuratorSectionIssues,
     getImports,
     reviewImport,
+    bulkReviewImports,
     searchKrithis,
 } from '../api/client';
 import { ImportedKrithi, KrithiSummary, ResolutionResult } from '../types';
@@ -217,11 +218,24 @@ const CuratorReviewPage: React.FC = () => {
     const handleBulkAction = async (action: 'APPROVED' | 'REJECTED', notes?: string) => {
         setProcessing(true);
         try {
-            const promises = Array.from(selectedImportIds).map(id =>
-                reviewImport(id, { status: action, reviewerNotes: notes || null })
-            );
-            await Promise.all(promises);
-            success(`${selectedImportIds.size} imports ${action.toLowerCase()}`);
+            const bulkAction = action === 'APPROVED' ? 'APPROVE' : 'REJECT';
+            const allIds = Array.from(selectedImportIds);
+            const chunkSize = 10;
+            let totalSucceeded = 0;
+            let totalFailed = 0;
+
+            for (let i = 0; i < allIds.length; i += chunkSize) {
+                const chunk = allIds.slice(i, i + chunkSize);
+                const result = await bulkReviewImports(chunk, bulkAction, null, notes || null);
+                totalSucceeded += result.succeeded;
+                totalFailed += result.failed;
+            }
+
+            if (totalFailed > 0) {
+                showError(`${totalFailed} of ${allIds.length} imports failed to ${bulkAction.toLowerCase()}`);
+            } else {
+                success(`${totalSucceeded} imports ${action.toLowerCase()}`);
+            }
             setSelectedImportIds(new Set());
             setModal({ type: 'none' });
             await loadImports();
