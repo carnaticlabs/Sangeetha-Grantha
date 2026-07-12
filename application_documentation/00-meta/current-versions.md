@@ -158,7 +158,7 @@
 |---------|---------|---------|
 | Flyway Community | `12.9.0` | Single migration engine ([ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)). Make/dev/CI via `flyway/flyway:12.9.0-alpine`; Kotlin Testcontainers via the Flyway JVM API. Pinned in `gradle/libs.versions.toml` (`flyway`) and `compose.yaml`. |
 
-Migrations are standardized on **Flyway Community** ([ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)). The previous Python tool (`tools/db-migrate`, psycopg `>=3.1`) is superseded and archived (`tools/db-migrate-archived/`, TRACK-110).
+Migrations are standardized on **Flyway Community** ([ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)). The previous Python tool (`tools/db-migrate`, psycopg `>=3.1`) is superseded and archived (`archive/tools/db-migrate/`, TRACK-110).
 
 ### Test & CI Substrate
 

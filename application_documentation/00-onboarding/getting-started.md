@@ -137,7 +137,7 @@ Ref: application_documentation/01-requirements/features/bulk-import/01-strategy/
 - `modules/backend/`: Ktor API and services.
 - `modules/frontend/sangita-admin-web/`: React admin interface.
 - `modules/shared/domain/`: KMP module with shared DTOs and logic.
-- `tools/db-migrate-archived/`: Python migration tool (superseded by Flyway — [ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md), archived TRACK-110).
+- `archive/tools/db-migrate/`: Python migration tool (superseded by Flyway — [ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md), archived TRACK-110).
 - `tools/krithi-extract-enrich-worker/`: Python extraction & enrichment worker.
 
 ## 7. Useful Links

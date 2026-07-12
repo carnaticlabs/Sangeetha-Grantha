@@ -19,7 +19,7 @@ This repository uses a single source of truth for environment variables and secr
 
 ## Single Source of Truth
 
-**Externalizable env vars and a Postgres source are defined in repo-root [tools.yaml](../../tools.yaml)**.
+**Externalizable env vars and a Postgres source are defined in [tools.yaml](../../config/tools.yaml)**.
 
 Actual values (API keys, DB credentials, etc.) are set **outside the repo**:
 1. **System environment variables** (e.g., in Goose Extensions, IDE run config, or shell).

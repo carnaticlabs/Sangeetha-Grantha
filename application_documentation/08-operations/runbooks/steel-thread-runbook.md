@@ -53,7 +53,7 @@ See [Configuration Documentation](../config.md) for single-source env var detail
 
 ### Environment Setup
 
-1. Copy system-wide defaults from `tools/bootstrap-assets/env/development.env.example` to `config/development.env` (if not present).
+1. Copy system-wide defaults from `config/development.env` template to `config/local.env` (if not present). See `config/README.md` for details.
 2. Create `config/local.env` (gitignored) for local overrides (secrests, DB password).
 3. The backend and frontend will automatically load these files.
 

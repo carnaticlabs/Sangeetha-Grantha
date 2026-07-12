@@ -41,7 +41,7 @@ Tool-specific entrypoints that build on CLAUDE.md:
 See [`CLAUDE.md` → Essential Commands](CLAUDE.md#essential-commands). The full stack runs via
 the Makefile + Docker Compose (`make dev`, `make db-reset`, `make migrate`); database work goes
 through **Flyway** per ADR-013. The historical Rust CLI (`tools/sangita-cli`) is **archived** under
-`tools/sangita-cli-archived/` — do not invoke it.
+`archive/tools/sangita-cli/` — do not invoke it.
 
 ## Context Files
 - [`CLAUDE.md`](CLAUDE.md) — canonical project rules (all assistants).

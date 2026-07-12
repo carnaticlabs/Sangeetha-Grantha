@@ -123,7 +123,7 @@ For current toolchain and library versions, see [Current Versions](application_d
 - API spec: `openapi/sangita-grantha.openapi.yaml`
 - Migration approach (Flyway): `application_documentation/02-architecture/decisions/ADR-013-db-migration-with-flyway.md`
 - Integration testing strategy: `application_documentation/07-quality/integration-tests-approach.md`
-- Previous migration tools (archived): `tools/db-migrate/` (Python, superseded by ADR-013), `tools/sangita-cli-archived/` (Rust)
+- Previous migration tools (archived): `archive/tools/db-migrate/` (Python, superseded by ADR-013), `archive/tools/sangita-cli/` (Rust)
 
 ## Debugging Guidelines 
 For CORS/auth issues, always check .env files and VITE_API_BASE_URL first, not TOML config files. Frontend proxy configuration is the most common root cause.

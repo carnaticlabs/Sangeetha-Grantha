@@ -142,13 +142,13 @@ For a complete and specific list of versions and dependencies, see **[Current Ve
 │   ├── audits/                          # Data audit queries
 │   └── for_import/                      # Import data & scripts
 ├── tools/
-│   ├── krithi-extract-enrich-worker/    # Python extraction pipeline
-│   ├── db-migrate-archived/              # Python migration tool (superseded by Flyway, ADR-013)
-│   └── sangita-cli-archived/            # Archived Rust CLI (legacy)
+│   └── krithi-extract-enrich-worker/    # Python extraction pipeline
 ├── openapi/                             # OpenAPI specifications
 ├── application_documentation/           # PRDs, ERDs, architecture docs
 ├── conductor/                           # Project tracking (tracks & phases)
 ├── config/                              # Environment configuration
+├── archive/                             # Archived tools & historical docs
+│   └── tools/                           # db-migrate, sangita-cli, bootstrap, one-off scripts
 └── gradle/libs.versions.toml            # Centralized dependency management
 ```
 

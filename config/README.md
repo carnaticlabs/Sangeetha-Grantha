@@ -4,7 +4,7 @@ Local and environment-specific configuration for Sangeetha Grantha. **Do not com
 
 ## Single source for env values
 
-- **Externalizable env vars** and a **Postgres source** are defined in repo-root **[tools.yaml](../tools.yaml)**. Set actual values **outside the repo** (e.g. Goose/IDE env, or a gitignored file).
+- **Externalizable env vars** and a **Postgres source** are defined in repo-root **[tools.yaml](./tools.yaml)**. Set actual values **outside the repo** (e.g. Goose/IDE env, or a gitignored file).
 - Prefer **one** of:
   - **System environment variables** (e.g. from Goose Extensions, IDE run config, or shell).
   - **A single file** `config/local.env` (gitignored) with `KEY=value` lines. The backend loads it automatically after `config/development.env`; system env still overrides.
@@ -21,4 +21,4 @@ Local and environment-specific configuration for Sangeetha Grantha. **Do not com
 ## See also
 
 - [Configuration (operations)](../application_documentation/08-operations/config.md) – canonical config docs.
-- [tools.yaml](../tools.yaml) – variable list and Postgres source for MCP/Goose.
+- [tools.yaml](./tools.yaml) – variable list and Postgres source for MCP/Goose.

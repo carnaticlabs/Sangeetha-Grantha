@@ -14,7 +14,7 @@ Flyway and use the now-archived Rust CLI, the opposite of current policy). What 
 is only the Goose-specific delta: persona, the musicological domain rules, and response style.
 
 Quick reminders (authoritative text in [CLAUDE.md → Critical Rules](CLAUDE.md#critical-rules)):
-- **Migrations:** Flyway only, via `make migrate` / `make db-reset` (ADR-013). Do **not** suggest Liquibase or the archived Rust CLI (`tools/sangita-cli-archived/`).
+- **Migrations:** Flyway only, via `make migrate` / `make db-reset` (ADR-013). Do **not** suggest Liquibase or the archived Rust CLI (`archive/tools/sangita-cli/`).
 - **Audit:** every mutation writes to the `AUDIT_LOG` table.
 - **DB access:** always inside `DatabaseFactory.dbQuery { }`.
 - **Commits:** must include a `Ref: application_documentation/...` line.
