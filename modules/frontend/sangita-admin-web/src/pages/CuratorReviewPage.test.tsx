@@ -8,6 +8,7 @@ vi.mock('../api/client', () => ({
     getCuratorSectionIssues: vi.fn(),
     getImports: vi.fn(),
     reviewImport: vi.fn(),
+    bulkReviewImports: vi.fn(),
     searchKrithis: vi.fn(),
 }));
 
@@ -22,6 +23,7 @@ import {
     getCuratorSectionIssues,
     getImports,
     reviewImport,
+    bulkReviewImports,
 } from '../api/client';
 
 const importFixture = (over: Partial<ImportedKrithi> = {}): ImportedKrithi => ({
@@ -192,6 +194,7 @@ describe('CuratorReviewPage — review actions', () => {
 
 describe('CuratorReviewPage — bulk selection', () => {
     it('select-all surfaces the bulk bar and bulk approve reviews every selected import', async () => {
+        vi.mocked(bulkReviewImports).mockResolvedValue({ total: 2, succeeded: 2, failed: 0, results: [] });
         const { user } = render(<CuratorReviewPage />);
         await screen.findByText('Nagumomu');
 
@@ -203,9 +206,13 @@ describe('CuratorReviewPage — bulk selection', () => {
         expect(screen.getByText('Bulk Approve')).toBeInTheDocument();
         await user.click(screen.getByRole('button', { name: 'Approve All' }));
 
-        await waitFor(() => expect(reviewImport).toHaveBeenCalledTimes(2));
-        expect(reviewImport).toHaveBeenCalledWith('imp-1', { status: 'APPROVED', reviewerNotes: null });
-        expect(reviewImport).toHaveBeenCalledWith('imp-2', { status: 'APPROVED', reviewerNotes: null });
+        await waitFor(() => expect(bulkReviewImports).toHaveBeenCalledTimes(1));
+        expect(bulkReviewImports).toHaveBeenCalledWith(
+            expect.arrayContaining(['imp-1', 'imp-2']),
+            'APPROVE',
+            null,
+            null,
+        );
         expect(await screen.findByText('2 imports approved')).toBeInTheDocument();
     });
 });
