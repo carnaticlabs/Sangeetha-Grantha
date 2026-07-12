@@ -612,3 +612,42 @@ hariharaa putram
     assert len(result.sections) == 3
     assert result.ragamalika_subsections == []
 
+
+def test_ragamalika_multi_variant_pallavi_not_truncated() -> None:
+    """Indic variants with title line before explicit pallavi header must merge both.
+
+    Reproduces a bug where a language header (e.g. Devanagari) contained
+    an inline title line followed by an explicit pallavi block. The
+    leading-OTHER-promotion created two PALLAVI entries; the type-queue
+    matcher picked only the first (title-only), discarding the actual
+    raga subsection content for ragas 1-2.
+    """
+    parser = StructureParser()
+    fixture_dir = Path(__file__).parent / "fixtures" / "structure_parser"
+    text = (fixture_dir / "ragamalika_multi_variant.txt").read_text(encoding="utf-8")
+    expected = json.loads(
+        (fixture_dir / "ragamalika_multi_variant.expected.json").read_text(
+            encoding="utf-8"
+        )
+    )
+
+    result = parser.parse(text)
+
+    assert [s.section_type.value for s in result.sections] == expected["sections"]
+    assert [v.script for v in result.lyric_variants] == expected["variantScripts"]
+    assert [v.language for v in result.lyric_variants] == expected["variantLanguages"]
+
+    for variant in result.lyric_variants:
+        assert len(variant.sections) == 3, (
+            f"{variant.script} variant must have 3 sections, got {len(variant.sections)}"
+        )
+        pallavi = variant.sections[0]
+        assert pallavi.section_type == SectionType.PALLAVI
+
+        assert "1." in pallavi.text, (
+            f"{variant.script} Pallavi missing raga 1 content (got {len(pallavi.text)} chars)"
+        )
+        assert "2." in pallavi.text, (
+            f"{variant.script} Pallavi missing raga 2 content (got {len(pallavi.text)} chars)"
+        )
+
