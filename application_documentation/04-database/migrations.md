@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 3.0.1 |
-| **Last Updated** | 2026-07-09 |
+| **Version** | 3.1.0 |
+| **Last Updated** | 2026-07-12 |
 | **Author** | Sangeetha Grantha Team |
 
 # Database Migrations (Sangita Grantha)
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS new_table (...);
 
 ## 2. Migration files
 
-43 versioned migrations (`V01`–`V43`) plus 4 repeatable seed migrations. Foundational set:
+47 versioned migrations (`V01`–`V47`) plus 4 repeatable seed migrations. Foundational set:
 
 | File | Purpose | Key Entities |
 |------|---------|--------------|
@@ -53,6 +53,10 @@ CREATE TABLE IF NOT EXISTS new_table (...);
 | [`V05__sections-tags-sampradaya-temple-names.sql`](../../database/migrations/V05__sections-tags-sampradaya-temple-names.sql) | Sections, tags, sampradaya, temple names | `krithi_sections`, `krithi_lyric_sections`, `tags`, `krithi_tags`, `sampradayas`, `temple_names` |
 | [`V06__notation-tables.sql`](../../database/migrations/V06__notation-tables.sql) | Notation support for Varnams/Swarajathis | `krithi_notation_variants`, `krithi_notation_rows` |
 | `V37__pg18_uuidv7_defaults.sql` | Switch UUID PK defaults to `uuidv7()` (PG18, [ADR-011](../02-architecture/decisions/ADR-011-postgresql-18-uuid-v7.md)) | all UUID-keyed tables |
+| `V44__versioned_canon.sql` | Versioned canon tables ([ADR-014](../02-architecture/decisions/ADR-014-versioned-canon.md)) | `canon_revisions`, `canon_revision_sections`, provenance graph |
+| `V45__remove_stale_anupallavi_brhannayaki.sql` | Data cleanup — stale anupallavi section | |
+| `V46__delete_incomplete_devanagari_amba_nilayatakshi.sql` | Data cleanup — incomplete Devanagari import | |
+| `V47__demerge_ragamalika_visvanatham_from_natabharanam.sql` | Ragamalika demerge — separate ragamalika krithi from natabhranam raga | |
 
 ### Repeatable seed migrations (reference data)
 
@@ -94,7 +98,7 @@ make bootstrap-admin # provision/update the admin user (argon2id); needs ADMIN_E
 
 ### Creating a new migration
 
-1. Create `database/migrations/V<next>__description.sql` (next sequential version, e.g. `V44__...`).
+1. Create `database/migrations/V<next>__description.sql` (next sequential version, e.g. `V48__...`).
 2. Write idempotent SQL (`IF NOT EXISTS`, `ON CONFLICT`); no `-- migrate:down` section.
 3. Test: `make db-reset` (full from-scratch apply) and `make migrate` (incremental).
 4. Update this file and `domain-model.md` / schema docs if entities change.
@@ -129,7 +133,7 @@ Versioned migrations apply in version order; repeatables apply afterwards in des
 
 - Flyway records every applied migration in **`flyway_schema_history`** (version, description, checksum, success).
 - Flyway Community has **no `undo`**. The local rollback story is `make db-reset` (drop → create → re-apply). Data reversibility is the domain of versioned canon (north-star N5, [ADR-014](../02-architecture/decisions/ADR-014-versioned-canon.md)).
-- **Existing long-lived databases** (migrated by the retired tooling) are adopted with `flyway baseline -baselineVersion=43`, then migrated normally. Rehearse the baseline against a Testcontainers instance restored from a dump **before** touching any real database (ADR-013 Migration Plan §6).
+- **Existing long-lived databases** (migrated by the retired tooling) are adopted with `flyway baseline -baselineVersion=47`, then migrated normally. Rehearse the baseline against a Testcontainers instance restored from a dump **before** touching any real database (ADR-013 Migration Plan §6).
 
 ---
 

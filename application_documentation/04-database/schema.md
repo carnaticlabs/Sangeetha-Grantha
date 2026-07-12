@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.2.0 |
-| **Last Updated** | 2026-02-28 |
+| **Version** | 1.3.0 |
+| **Last Updated** | 2026-07-12 |
 | **Author** | Sangeetha Grantha Team |
 
 # Sangita Grantha – Schema Overview
@@ -498,7 +498,22 @@ See [Krithi Data Sourcing Quality Strategy](../01-requirements/krithi-data-sourc
 
 ---
 
-## 16. Future Extensions
+## 16. Versioned Canon & Provenance (V44, ADR-014)
+
+The versioned canon tables (TRACK-116/117, [ADR-014](../02-architecture/decisions/ADR-014-versioned-canon.md)) track revisions to canonical data with full provenance:
+
+| Table | Purpose |
+|:---|:---|
+| `canon_revisions` | Revision metadata — what changed, who approved, which extraction sourced it |
+| `canon_revision_sections` | Per-section snapshot within a revision |
+
+Extraction-attributed approvals link each canonical change back to the specific extraction that provided the data, enabling provenance tracing from source document through extraction to published canon.
+
+See [ADR-014](../02-architecture/decisions/ADR-014-versioned-canon.md) for the full architecture and `RevisionRepository` / `RevisionTables` for the implementation.
+
+---
+
+## 18. Future Extensions
 
 Planned but out of scope for v1:
 - Audio / notation synchronization
@@ -509,7 +524,7 @@ Planned but out of scope for v1:
 
 ---
 
-## 17. Guiding Principle
+## 19. Guiding Principle
 
 > Sangita Grantha stores Carnatic music **as it is taught, learned, and performed** — not merely as text.
 

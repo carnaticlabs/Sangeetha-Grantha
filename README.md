@@ -3,8 +3,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.3.0 |
-| **Last Updated** | 2026-06-13 |
+| **Version** | 1.4.0 |
+| **Last Updated** | 2026-07-12 |
 | **Author** | Sangeetha Grantha Team |
 
 ---
@@ -114,9 +114,9 @@ For a complete and specific list of versions and dependencies, see **[Current Ve
 | **Mobile** | Kotlin Multiplatform (KMM) + Compose Multiplatform |
 | **Backend** | Kotlin + Ktor + Exposed |
 | **Database** | PostgreSQL 18+ |
-| **Migrations** | Flyway Community (ADR-013), via Makefile |
+| **Migrations** | Flyway Community 12.9.0 (ADR-013), via Makefile |
 | **Extraction** | Python worker (`tools/krithi-extract-enrich-worker`) |
-| **Admin Web** | React + TypeScript + Tailwind + Vite |
+| **Admin Web** | React 19 + TypeScript 6.0 + Tailwind 4.3 + Vite 8.1 (Rolldown) |
 | **Build** | Gradle (Backend/Mobile), Bun (Frontend) |
 | **Orchestration** | Docker Compose (`compose.yaml`) |
 | **Toolchain** | Managed via [mise](https://mise.jdx.dev/) |
@@ -132,7 +132,8 @@ For a complete and specific list of versions and dependencies, see **[Current Ve
 │   │   └── presentation/               # Shared UI components
 │   ├── backend/
 │   │   ├── api/                         # Ktor REST APIs
-│   │   └── dal/                         # Data access layer (Exposed)
+│   │   ├── dal/                         # Data access layer (Exposed)
+│   │   └── test-support/                # Shared test infrastructure (Testcontainers)
 │   └── frontend/
 │       └── sangita-admin-web/           # Admin web (React + TS)
 ├── database/
@@ -142,7 +143,7 @@ For a complete and specific list of versions and dependencies, see **[Current Ve
 │   └── for_import/                      # Import data & scripts
 ├── tools/
 │   ├── krithi-extract-enrich-worker/    # Python extraction pipeline
-│   ├── db-migrate/                      # Python migration tool (superseded by Flyway, ADR-013)
+│   ├── db-migrate-archived/              # Python migration tool (superseded by Flyway, ADR-013)
 │   └── sangita-cli-archived/            # Archived Rust CLI (legacy)
 ├── openapi/                             # OpenAPI specifications
 ├── application_documentation/           # PRDs, ERDs, architecture docs
@@ -176,8 +177,8 @@ make seed            # Seed reference data
 make migrate         # Run pending migrations
 
 # Testing
-make test            # Backend tests
-make test-frontend   # Frontend tests
+make test            # Backend tests (unit + integration via Testcontainers)
+make test-frontend   # Frontend tests (55 Vitest component tests)
 make steel-thread    # E2E steel thread test
 
 # Cleanup
@@ -232,8 +233,15 @@ For comprehensive references and coding patterns, see: **[AI & Vibe Coding Refer
 - Done: AI Transliteration & Web Scraping
 - Done: PostgreSQL 18 upgrade
 - Done: Flyway migration adoption (ADR-013) & Python extraction tooling
+- Done: Testcontainers + CI activation (backend, DAL, worker, frontend)
+- Done: Playwright E2E nightly (3 money paths)
+- Done: Versioned canon & provenance graph (ADR-014)
+- Done: Frontend component tests (55 Vitest tests)
+- Done: Major dependency upgrades (Kotlin 2.4, TS 6, Vite 8, Testcontainers 2.x)
+- Done: argon2id password hashing & repo hygiene
 - In Progress: Mobile app development
 - In Progress: Advanced lyric search & ranking
+- Planned: Semantic search (pgvector + FTS)
 - Planned: Media management (audio/notation)
 - Planned: Public read-only web experience
 

@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Proposed |
-| **Version** | 1.3.0 — Flyway decision ratified as [ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md); 1.2.0 added migration & seed-data tooling re-evaluation (§5) and Java/Python Testcontainers coexistence (§5.6); 1.1.0 added container-runtime analysis (§3.5) |
-| **Last Updated** | 2026-06-12 |
+| **Status** | Implemented |
+| **Version** | 1.4.0 — All 6 steps implemented (TRACK-110, 111, 113, 118). Flyway ratified as [ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md). Testcontainers 2.0.5; 47 migrations. |
+| **Last Updated** | 2026-07-12 |
 | **Author** | Integration testing analysis (for Seshadri) |
 | **Companion docs** | `../north-star-evaluation.md` (N2/N3), `broken-tests-remediation.md`, `../02-architecture/backend-system-design.md` |
 | **Scope** | Detailed analysis of Testcontainers and equivalent options, plus a recommended integration-test architecture and scenario suite for the whole stack |
@@ -14,7 +14,7 @@
 **TL;DR — Recommendation:** adopt **Testcontainers for the JVM** with a singleton, migration-initialized `PostgreSQLContainer` as the backbone of backend and DAL integration tests; keep the truncate-between-tests machinery (it is good and transfers unchanged); add **testcontainers-python** for the extraction worker's DB-touching paths (Java and Python Testcontainers coexist freely — §5.6); and use **Playwright against the compose stack** for E2E. Reject H2/in-memory outright. Keep an env-var escape hatch so tests can still target an externally provided database (CI service containers, or a developer's already-running `make db`) when that is faster. **On migrations (§5):** consolidate the two custom, already-diverged migration runners onto **Flyway Community** — one standards-based engine driving Kotlin tests (JVM API), Make/dev (CLI/Docker), Python tests, and CI, with repeatable migrations taking over reference-data seeding; **ratified as [ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)** (2026-06-12), which amended project Critical Rule #1.
 
 > **Implemented — Steps 1–4 done ([TRACK-110](../../conductor/tracks/TRACK-110-testcontainers-flyway-cutover.md) + [TRACK-111](../../conductor/tracks/TRACK-111-dal-suite-ci-activation.md)).** Steps 1–2: the Flyway cutover (Sub-part A) and this Testcontainers substrate (Sub-part B). Steps 3–4 (TRACK-111): the DAL suite (D1–D6, 11 tests, in `modules/backend/dal/src/test`), the shared `:modules:backend:test-support` module (D11), the central D5 typed-error layer (`DalErrors` mapped in `DatabaseFactory.dbQuery`), and GitHub Actions CI (`.github/workflows/ci.yml`) gating all layers. As-built notes that refine the proposal below:
-> - **Substrate**: `SangitaPostgres` (Testcontainers, `docker.io/library/postgres:18.3-alpine`) + `TestDatabase` migrate the container via the **Flyway JVM API** — the 156-line `MigrationRunner` is deleted. Dep: `org.testcontainers:postgresql` 1.21.4 (no BOM / `junit-jupiter` module needed; the singleton object needs no annotations). `TEST_DATABASE_URL` is the escape hatch (§3.2).
+> - **Substrate**: `SangitaPostgres` (Testcontainers, `docker.io/library/postgres:18.3-alpine`) + `TestDatabase` migrate the container via the **Flyway JVM API** — the 156-line `MigrationRunner` is deleted. Dep: `org.testcontainers:testcontainers-postgresql` 2.0.5 (artifact renamed in 2.x; `PostgreSQLContainer` now in `org.testcontainers.postgresql`, no self-type generic; no BOM / `junit-jupiter` module needed; the singleton object needs no annotations). `TEST_DATABASE_URL` is the escape hatch (§3.2).
 > - **Real reference seed in tests**: the test Flyway applies the **full `V__`+`R__`** set (identical to `make db-reset`), so integration tests exercise the real reference data (entity resolution against the 972-raga seed, etc.). `TestFixtures` consume the seed via `findOrCreate` (returning the seeded Tyagaraja/Kalyani/Adi rather than inserting duplicates). Between tests, transactional tables are truncated and the reference tables (composers/ragas/talas/deities/import_sources) are **reset to a seed snapshot** captured right after migration — only test-created rows are deleted, the seeded rows are never touched. The seed is therefore read-only and the suite is **idempotent against a persistent/external DB** (verified by running it twice against the same Postgres via `TEST_DATABASE_URL` with reference counts unchanged). DAL mechanics tests that need throwaway entities use distinct non-seed probe names.
 > - **Tagging**: `@Tag("integration")` + a tag-filtered `integrationTest` Gradle task (`make test-integration`); `make test` / `./gradlew check` run everything.
 
@@ -29,7 +29,7 @@ The backend test suite has a real integration-test substrate, built in-house:
 | Asset | Location | What it does |
 |:---|:---|:---|
 | `IntegrationTestBase` | `modules/backend/api/src/test/.../support/IntegrationTestBase.kt` | JUnit 5 base class: creates `sangita_grantha_test` once per JVM, runs real migrations, connects Exposed, truncates all tables after each test |
-| `MigrationRunner` | `.../support/MigrationRunner.kt` | Parses and applies the real `database/migrations/*.sql` files (43 today), tracked in `_sqlx_migrations` — **schema parity with production is already guaranteed** |
+| `MigrationRunner` | `.../support/MigrationRunner.kt` | Parses and applies the real `database/migrations/*.sql` files (47 today), tracked in `_sqlx_migrations` — **schema parity with production is already guaranteed** |
 | `TestDatabaseFactory` | `.../support/TestDatabaseFactory.kt` | Legacy object-style equivalent, kept for older tests |
 | 9 DB-dependent test classes | `KrithiServiceTest`, `ImportServiceTest`, `EntityResolutionServiceTest`, `ExtractionResultProcessorTest`, `QualityScoringServiceTest`, `LyricVariantPersistenceServiceTest`, `AutoApprovalServiceTest`*, `ImportRoutesTest`, etc. | Service- and route-level tests that exercise real SQL |
 
@@ -41,7 +41,7 @@ This is genuinely the hard part done: migration-true schema setup and a fast tru
 2. **Unpinned database version.** Tests run against *whatever* is listening on 5432. Compose pins `postgres:18.3-alpine`; the test suite pins nothing. A developer with PG16 locally gets different behavior (UUID v7 functions, FTS details) than production.
 3. **Shared mutable state.** One fixed database name means: no parallel test execution, no two branches' test runs side by side, and a developer's dev database on the same instance is one typo away from being truncated.
 4. **No CI story.** "Start a DB first" is precisely the kind of implicit precondition that has kept CI from existing (north-star N2). The test infrastructure must be self-provisioning before CI is cheap to add.
-5. **The DAL module has zero tests** — `modules/backend/dal` has only `kotlin("test")` on its test classpath and no test sources. Exposed table definitions, repository queries, and all 43 migrations are validated only incidentally, via api-module tests that happen to touch them.
+5. **The DAL module has zero tests** — `modules/backend/dal` has only `kotlin("test")` on its test classpath and no test sources. Exposed table definitions, repository queries, and all 47 migrations are validated only incidentally, via api-module tests that happen to touch them.
 6. **Documentation drift.** `modules/backend/CLAUDE.md` describes test conventions (`IntegrationTestEnv`, `IntegrationSeedData`, an `integration/` package) that do not exist in the codebase. The conventions this document proposes should replace that section.
 
 ### 1.3 Constraints any solution must satisfy
@@ -95,25 +95,21 @@ object SangitaPostgres {
 
 **Costs and risks**
 - **Docker becomes a hard test-time dependency.** Already true for `make dev`; the dev machine runs Docker Desktop 29.x. Colima/Podman/Rancher Desktop also work (Testcontainers honors `DOCKER_HOST`). Mitigation for the rare Docker-less environment: the env-var escape hatch (§3.2).
-- **First-run startup cost**: image pull once, then ~2–5 s container start + ~2–4 s for 43 migrations per JVM. With the singleton + reuse pattern this is paid once per session, not per test. Current suite pays ~0 s but only because it externalizes the cost to a human running `make db`.
+- **First-run startup cost**: image pull once, then ~2–5 s container start + ~2–4 s for 47 migrations per JVM. With the singleton + reuse pattern this is paid once per session, not per test. Current suite pays ~0 s but only because it externalizes the cost to a human running `make db`.
 - **One more dependency family** in `libs.versions.toml` (BOM + two artifacts). Maintenance burden is low; the library is the de-facto JVM standard with releases tracking Docker API changes.
 
 **Gradle wiring** (versions in the catalog per Critical Rule #2):
 
 ```toml
 # gradle/libs.versions.toml
-testcontainers = "1.21.3"   # verify latest at adoption time
+testcontainers = "2.0.5"     # as-built; artifact renamed in 2.x
 
-testcontainers-bom = { module = "org.testcontainers:testcontainers-bom", version.ref = "testcontainers" }
-testcontainers-postgresql = { module = "org.testcontainers:postgresql" }
-testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter" }
+testcontainers-postgresql = { module = "org.testcontainers:testcontainers-postgresql", version.ref = "testcontainers" }
 ```
 
 ```kotlin
 // modules/backend/dal/build.gradle.kts and api/build.gradle.kts
-testImplementation(platform(libs.testcontainers.bom))
 testImplementation(libs.testcontainers.postgresql)
-testImplementation(libs.testcontainers.junit.jupiter)
 ```
 
 ### Option B — Zonky.io Embedded Postgres ⚠️ Viable fallback, not recommended
@@ -282,7 +278,7 @@ What "meaningful integration tests" concretely means here, ordered by business r
 
 | # | Scenario | What it proves |
 |:---|:---|:---|
-| D1 | Apply all 43 migrations to an empty container | Schema applies from scratch; any new migration that breaks ordering fails CI, not `make db-reset` |
+| D1 | Apply all 47 migrations to an empty container | Schema applies from scratch; any new migration that breaks ordering fails CI, not `make db-reset` |
 | D2 | Every Exposed `Table` object round-trips insert/select against the migrated schema | Table definitions match migrations (column types, nullability, enum mappings) — the drift class of bug |
 | D3 | UUID v7 generation + monotonic ordering on all 27 keyed tables | PG18 feature the whole keyspace depends on |
 | D4 | Junction-table integrity: krithi with N ragas → N `krithi_ragas` rows; delete krithi → junction cascade | The exact regression class called out in project memory |
@@ -419,17 +415,17 @@ The two libraries are independent clients of the same Docker (or Podman, §3.5) 
 
 Sequenced to interleave with north-star Phase 0/1; each step lands independently.
 
-**Step 1 — Substrate swap (1–2 days).** Add Testcontainers to the version catalog and both backend modules; introduce `TestDatabase`/`SangitaPostgres` with the `TEST_DATABASE_URL` escape hatch; point `IntegrationTestBase` at it; add the `integration` tag and `integrationTest` task; update Makefile and `modules/backend/CLAUDE.md` (removing the phantom `IntegrationTestEnv` conventions). **Exit criterion: `./gradlew check` is green on a machine with no Postgres on 5432.**
+**Step 1 — Substrate swap ✅ (TRACK-110).** Testcontainers added to the version catalog and both backend modules; `TestDatabase`/`SangitaPostgres` with the `TEST_DATABASE_URL` escape hatch; `IntegrationTestBase` pointed at it; `integration` tag and `integrationTest` task; Makefile and `modules/backend/CLAUDE.md` updated. `./gradlew check` green on a machine with no Postgres on 5432.
 
-**Step 2 — Migration-engine consolidation (~2 days; decision ratified as [ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)).** Execute §5.4: rename to Flyway convention, swap `MigrationRunner` for the Flyway API in the test substrate, convert Makefile targets, baseline existing databases, restructure seed data into the §5.5 tiers. Independent of Step 1 in content but cheapest done immediately after it, while the substrate is open.
+**Step 2 — Migration-engine consolidation ✅ (TRACK-110, ratified as [ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)).** Renamed to Flyway convention, swapped `MigrationRunner` for the Flyway API in the test substrate, converted Makefile targets, restructured seed data into the §5.5 tiers. `tools/db-migrate` archived to `tools/db-migrate-archived/`.
 
 **Step 3 — DAL suite ✅ (TRACK-111).** `dal/src/test` stood up with scenarios D1–D6 (11 tests). D1 (migrations-from-scratch) also satisfies north-star Phase 0 item 3's "apply all migrations to a scratch Postgres" CI check and verifies the Flyway cutover. Shared substrate extracted to `:modules:backend:test-support` (D11); D5 constraint violations surface as typed `DalException`s via a central mapper in `DatabaseFactory.dbQuery`.
 
-**Step 4 — CI activation ✅ (TRACK-111).** GitHub Actions (`.github/workflows/ci.yml`): `backend-unit → backend-integration → migrations → frontend typecheck+build → worker pytest`. Testcontainers needs zero special configuration on hosted runners. Every test written in Steps 1–3 is a gate. One manual step remains: mark the checks **required** in `main`'s branch protection (D8) — the workflow defines them but cannot self-require.
+**Step 4 — CI activation ✅ (TRACK-111).** GitHub Actions (`.github/workflows/ci.yml`): `backend-unit → backend-integration → migrations → frontend typecheck+build+test → worker pytest`. Testcontainers needs zero special configuration on hosted runners. Every test written in Steps 1–3 is a gate. Frontend Vitest tests added to the CI pipeline (TRACK-118).
 
-**Step 5 — Money-path service & API scenarios (1–2 weeks, incremental).** S1–S7, A1–A5, prioritized in that order. Build the fixture builders here.
+**Step 5 — Money-path service & API scenarios (TRACK-112, not started).** S1–S7, A1–A5, prioritized in that order.
 
-**Step 6 — Worker + E2E (1 week, after Step 4).** testcontainers-python for W1–W3 (applying migrations via the same Flyway engine — §5.6); Playwright for the three E2E paths, nightly schedule.
+**Step 6 — Worker + E2E ✅ (TRACK-113).** testcontainers-python for 18 worker integration tests; Playwright for the three E2E money paths (login→review→approve, bulk import, krithi edit), nightly schedule (`e2e-nightly.yml`). Admin provisioned via SQL in CI. Green nightly run confirmed.
 
 **Effort summary: ~4 weeks of part-time work, front-loaded so that the highest-leverage 20% (Steps 1–4) lands in roughly a week.**
 
@@ -454,9 +450,9 @@ Sequenced to interleave with north-star Phase 0/1; each step lands independently
 
 ## 8. Decision Record
 
-- **Adopt:** Testcontainers JVM (`postgresql`, `junit-jupiter`, BOM-managed) as the default database provider for all backend/DAL integration tests; `testcontainers-python` for worker DB tests (the two coexist freely — §5.6); Playwright + compose for E2E.
+- **Adopt (implemented):** Testcontainers JVM (`testcontainers-postgresql` 2.0.5) as the default database provider for all backend/DAL integration tests; `testcontainers-python` for worker DB tests (the two coexist freely — §5.6); Playwright + compose for E2E (nightly).
 - **Adopt (ratified by [ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md), 2026-06-12):** Flyway Community as the single migration engine for Kotlin, Python, Make, and CI — retiring both `MigrationRunner` and `tools/db-migrate`; reference data moves to repeatable migrations, per the §5.5 seed tiers. Critical Rule #1 amended accordingly.
 - **Retain:** truncate-based reset, deterministic-fixture convention, all existing test bodies, and `make db-reset` as the rollback story (no down-migrations — unused today, unneeded tomorrow).
 - **Reject:** H2/in-memory emulation (semantic wall), Zonky embedded (pgvector + binary lag), compose-plugin orchestration for the integration layer (isolation), status quo as strategy (keeps N2/N3 open), Alembic (wrong center of gravity), and the continued existence of two parallel migration implementations with divergent tracking tables (§5.1).
 - **Runtime stance:** Docker remains the default local runtime for this initiative; the suite is kept runtime-agnostic (fully qualified image names, `DOCKER_HOST` discovery, escape hatch) so Podman is a configuration change, not a redesign. Podman's production strengths (rootless, daemonless, systemd/Quadlet) make it the preferred candidate to evaluate in north-star Phase 3.
-- **Revisit when:** pgvector lands (image swap), CI matures (consider service-container mode for speed via the escape hatch), canonical revisioning (N5, [ADR-014](../02-architecture/decisions/ADR-014-versioned-canon.md) — implemented by [TRACK-117](../../conductor/tracks/TRACK-117-versioned-canon-implementation.md)) adds bitemporal scenarios to §4, or the Phase 3 deployment work makes the Podman spike (§3.5) worth running.
+- **Revisit when:** pgvector lands (image swap), CI matures (consider service-container mode for speed via the escape hatch), canonical revisioning (N5, [ADR-014](../02-architecture/decisions/ADR-014-versioned-canon.md) — implemented by [TRACK-117](../../conductor/tracks/TRACK-117-versioned-canon-implementation.md), `VersionedCanonTest` landed) adds further bitemporal scenarios to §4, or the Phase 3 deployment work makes the Podman spike (§3.5) worth running.

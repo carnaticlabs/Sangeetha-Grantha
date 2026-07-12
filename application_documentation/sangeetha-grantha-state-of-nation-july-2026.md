@@ -1,11 +1,12 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-06-06 |
+| **Status** | Actioned (see resolution notes) |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-07-12 |
 | **Author** | Principal Data & AI Engineering review (for Seshadri) |
 | **Baseline reviewed** | `current-versions.md` v1.1.0 (2026-03-10) |
 | **Review window** | 2026-03-10 → 2026-06-06 (~3 months) |
+| **Resolution** | F1–F3 addressed by TRACK-107 (AI platform lifecycle uplift) and TRACK-124 (google-genai 2.x migration). F7 addressed by TRACKs 120–124 (4 dependency upgrade batches). F4–F6 remain actionable opportunities. |
 
 # Sangeetha Grantha — State of the Nation, Mid-2026
 

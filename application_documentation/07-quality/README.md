@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-07-12 |
 | **Author** | Sangeetha Grantha Team |
 
 # 07 Quality
@@ -10,6 +10,9 @@
 ---
 
 ## Contents
+
+### Integration Testing Architecture
+- [integration-tests-approach.md](./integration-tests-approach.md) - Testcontainers + Flyway substrate, CI activation, test taxonomy (implemented)
 
 ### API Coverage
 - [API_Coverage_Report.md](./API_Coverage_Report.md)

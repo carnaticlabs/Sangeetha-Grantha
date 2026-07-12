@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-07-12 |
 | **Author** | Sangeetha Grantha Team |
 
 # IDE Setup Guide
@@ -18,14 +18,14 @@ The project uses multiple technologies requiring specific IDE configurations:
 | Backend | Kotlin + Ktor | IntelliJ IDEA |
 | Frontend | React + TypeScript | VS Code or WebStorm |
 | Mobile | Kotlin Multiplatform | Android Studio / Fleet |
-| CLI Tools | Rust | VS Code with rust-analyzer |
+| Extraction Worker | Python | VS Code or PyCharm |
 
 ## IntelliJ IDEA Setup (Backend & KMP)
 
 ### Installation
 
 1. **Download**: [IntelliJ IDEA](https://www.jetbrains.com/idea/download/) (Ultimate recommended, Community works)
-2. **Version**: 2024.3 or later (for Kotlin 2.3.0 support)
+2. **Version**: 2024.3 or later (for Kotlin 2.4.0 support)
 
 ### Required Plugins
 

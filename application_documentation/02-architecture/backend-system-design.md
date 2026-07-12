@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.1 |
-| **Last Updated** | 2026-02-19 |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-07-12 |
 | **Author** | Sangeetha Grantha Team |
 
 # Sangita Grantha Backend Architecture
@@ -12,10 +12,11 @@
 
 ## 1. Module Layout
 
-The backend is organized into two modules:
+The backend is organized into three modules:
 
 - **`modules/backend/api`**: Ktor HTTP server, routes, services, and request/response models
 - **`modules/backend/dal`**: Data access layer using Exposed ORM, repositories, and database tables
+- **`modules/backend/test-support`**: Shared integration-test infrastructure (Testcontainers, Flyway, fixtures)
 
 Shared domain models live in `modules/shared/domain` (Kotlin Multiplatform).
 
@@ -51,56 +52,67 @@ modules/backend/api/
 ├── App.kt                    # Entry point
 ├── config/                   # Environment configuration
 ├── models/                   # Request/response DTOs
-│   ├── KrithiRequests.kt
-│   ├── NotationRequests.kt
-│   └── ImportRequests.kt
-├── routes/                   # Ktor route handlers
+├── routes/                   # Ktor route handlers (16 files)
 │   ├── HealthRoutes.kt
 │   ├── PublicKrithiRoutes.kt
 │   ├── AdminKrithiRoutes.kt
 │   ├── AdminNotationRoutes.kt
 │   ├── ImportRoutes.kt
+│   ├── BulkImportRoutes.kt
+│   ├── CuratorRoutes.kt
+│   ├── SourcingRoutes.kt
+│   ├── RemediationRoutes.kt
 │   ├── ReferenceDataRoutes.kt
 │   ├── AuditRoutes.kt
-│   └── DashboardRoutes.kt
-├── services/                 # Business logic layer
+│   ├── AuthRoutes.kt
+│   ├── DashboardRoutes.kt
+│   ├── MetricsRoutes.kt
+│   └── UserManagementRoutes.kt
+├── services/                 # Business logic layer (30+ services)
 │   ├── KrithiService.kt
-│   ├── KrithiNotationService.kt
-│   ├── ReferenceDataService.kt
 │   ├── ImportService.kt
-│   ├── AuditLogService.kt
-│   └── AdminDashboardService.kt
+│   ├── CuratorService.kt
+│   ├── ExtractionResultProcessor.kt
+│   ├── LyricVariantPersistenceService.kt
+│   ├── StructuralVotingProcessor.kt
+│   ├── KrithiMatcherService.kt
+│   ├── QualityScoringService.kt
+│   ├── AutoApprovalService.kt
+│   ├── BulkImportOrchestrationService.kt
+│   ├── EntityResolutionService.kt
+│   ├── RemediationService.kt
+│   ├── scraping/             # Web scraping sub-package
+│   └── bulkimport/           # Bulk import sub-package
 ├── plugins/                  # Ktor plugin configuration
-│   ├── Routing.kt
-│   ├── Security.kt
-│   ├── Serialization.kt
-│   ├── StatusPages.kt
-│   ├── Cors.kt
-│   └── RequestLogging.kt
 └── security/                 # Auth utilities
 
 modules/backend/dal/
-├── DatabaseFactory.kt        # Connection management
+├── DatabaseFactory.kt        # Connection management + typed error mapping
 ├── SangitaDal.kt             # Main DAL interface
-├── repositories/             # Data access repositories
+├── repositories/             # Data access repositories (27 files)
 │   ├── KrithiRepository.kt
-│   ├── KrithiNotationRepository.kt
-│   ├── ComposerRepository.kt
-│   ├── RagaRepository.kt
-│   ├── TalaRepository.kt
-│   ├── DeityRepository.kt
-│   ├── TempleRepository.kt
-│   ├── TagRepository.kt
-│   ├── SampradayaRepository.kt
+│   ├── KrithiLyricRepository.kt
+│   ├── KrithiSearchRepository.kt
 │   ├── ImportRepository.kt
-│   ├── UserRepository.kt
-│   └── AuditLogRepository.kt
+│   ├── RevisionRepository.kt      # Versioned canon (ADR-014)
+│   ├── SourceEvidenceRepository.kt
+│   ├── ExtractionQueueRepository.kt
+│   ├── BulkImportEventRepository.kt
+│   ├── BulkImportTaskRepository.kt
+│   ├── StructuralVotingRepository.kt
+│   └── ... (composers, ragas, talas, deities, temples, etc.)
 ├── tables/                   # Exposed table definitions
-│   └── CoreTables.kt
+│   ├── CoreTables.kt
+│   ├── SourcingTables.kt
+│   └── RevisionTables.kt    # Versioned canon tables
 ├── models/                   # DTO mappers
-│   └── DtoMappers.kt
 └── enums/                    # Database enum mappings
-    └── DbEnums.kt
+
+modules/backend/test-support/
+├── SangitaPostgres.kt        # Testcontainers singleton (postgres:18.3-alpine)
+├── TestDatabase.kt           # Flyway-migrated test DB (TEST_DATABASE_URL escape hatch)
+├── IntegrationTestBase.kt    # JUnit 5 base class with truncate-reset
+└── TestFixtures.kt           # Deterministic fixture builders
 ```
 
 ---
@@ -304,10 +316,17 @@ All admin routes require JWT authentication with appropriate roles.
 
 ## 10. Testing
 
-- **Integration tests**: Use Ktor `testApplication` with test database
-- **Test data**: Deterministic fixtures with fixed UUIDs
-- **Service tests**: Mock repositories or use in-memory database
-- **Route tests**: Test full HTTP request/response cycle
+For detailed architecture and rationale, see [Integration Tests Approach](../07-quality/integration-tests-approach.md).
+
+- **Integration tests**: Testcontainers (`postgres:18.3-alpine`) + Flyway JVM API; self-provisioning — `./gradlew check` works on a fresh clone with only Docker present
+- **Test substrate**: `SangitaPostgres` singleton + `TestDatabase` with `TEST_DATABASE_URL` escape hatch; full `V__` + `R__` migration set applied per JVM; truncate-reset between tests
+- **DAL tests**: 11 tests in `modules/backend/dal/src/test` (D1–D6: migrations, round-trips, UUID v7, junction cascades, typed errors, audit invariants)
+- **Service tests**: 29 test files in `modules/backend/api/src/test` — service- and route-level tests exercising real SQL
+- **Frontend tests**: 55 Vitest component tests (TRACK-118), blocking in CI
+- **Worker tests**: 14 Python test files (unit + testcontainers-python integration)
+- **E2E**: Playwright against the compose stack — 3 money paths (login→review→approve, bulk import, krithi edit); nightly schedule (`e2e-nightly.yml`)
+- **CI**: GitHub Actions (`.github/workflows/ci.yml`): backend unit/integration → Flyway migrate+validate → frontend typecheck+build+test → worker pytest (TRACK-111)
+- **Test data**: Deterministic fixtures with fixed UUIDs via `TestFixtures.kt` builders
 
 ---
 

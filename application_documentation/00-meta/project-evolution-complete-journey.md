@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 3.0.0 |
-| **Last Updated** | 2026-03-10 |
+| **Version** | 4.0.0 |
+| **Last Updated** | 2026-07-12 |
 | **Author** | Sangeetha Grantha Team |
 
 # Sangeetha Grantha: Complete Engineering Evolution
@@ -11,7 +11,7 @@
 ## From Vision to Production-Ready Platform
 
 > **Audience**: Software Engineers & Technical Leaders
-> **Period**: Project Inception – March 2026
+> **Period**: Project Inception – July 2026
 
 ---
 
@@ -25,16 +25,22 @@ Sangeetha Grantha represents a systematic journey from concept to production-rea
 - **100% documentation coverage** with commit-level traceability
 - **Zero security incidents** from automated guardrails
 - **Production-ready** testing infrastructure with steel thread and E2E validation
-- **38 database migrations** evolving from baseline to comprehensive sourcing schema
-- **86 conductor tracks** tracking engineering progress (76 completed)
-- **120+ commits** shipped since mid-January 2026
+- **47 database migrations** evolving from baseline to versioned canon
+- **124 conductor tracks** tracking engineering progress (100+ completed)
+- **278 commits** shipped since mid-January 2026
 - **PDF extraction pipeline** decoding Velthuis Sanskrit fonts and garbled diacritics
 - **9-screen Sourcing & Quality UI** for provenance tracking and structural voting
 - **Unified extraction architecture**: Python as single source of truth for all composition parsing
 - **PostgreSQL 18 upgrade** with native UUID v7 support across 27 tables
-- **Rust CLI archived** — simplified to Python db-migrate + Makefile workflow
+- **Flyway migration engine** — standards-based, one engine for Kotlin/Python/Make/CI (ADR-013)
 - **Major backend refactoring** — 9,000+ lines reorganized into focused, testable modules
 - **92% section inconsistency** discovered and fully remediated across 473 krithis
+- **Full CI/CD pipeline** — GitHub Actions gating all layers (backend, DAL, frontend, worker)
+- **Testcontainers substrate** — self-provisioning integration tests, no hand-started Postgres
+- **55 frontend component tests** via Vitest, blocking in CI
+- **Playwright E2E nightly** — 3 money paths on the compose stack
+- **Versioned canon & provenance graph** (ADR-014) — revision tracking for all canonical data
+- **4 dependency upgrade batches** — Kotlin 2.4, TypeScript 6, Vite 8, Testcontainers 2.x, google-genai 2.x
 
 This is the story of building a system that respects both **musical tradition** and **engineering excellence**.
 
@@ -117,6 +123,25 @@ While the rest of this document is structured thematically, it is useful to anch
 - **UI Humanization (TRACK-084–086)**: Renamed engineering terminology to musicologist-friendly language ("Bulk Import" to "Add Compositions", "Sourcing & Quality" to "Collection Review"). Consolidated sourcing tab navigation. Polished collection review UX.
 - **Documentation Overhaul**: Comprehensive audit and sync of all documentation files. Updated 25+ files with correct versions, tool paths, and commands. Synced `current-versions.md` with actual source files.
 
+### Phase 8 – Production Readiness, Testing & Dependency Modernization (Jun – Jul 2026)
+
+- **Flyway Migration Cutover (TRACK-110, ADR-013)**: Consolidated two diverging custom migration runners (Python `db-migrate` + Kotlin `MigrationRunner`) onto Flyway Community. Renamed 43 migration files to `VNN__` convention, converted reference seed data to repeatable migrations (`R__seed_*.sql`), archived `tools/db-migrate`. One engine for Kotlin tests (JVM API), Make/dev (CLI/Docker), Python tests, and CI.
+- **Testcontainers Substrate (TRACK-110)**: `SangitaPostgres` singleton (`postgres:18.3-alpine`) + `TestDatabase` with Flyway JVM API migration. `TEST_DATABASE_URL` escape hatch for external databases. `IntegrationTestBase` with truncate-reset and real reference seed data.
+- **DAL Test Suite + CI Activation (TRACK-111)**: 11 DAL integration tests (D1–D6) in `modules/backend/dal/src/test`. Shared `:modules:backend:test-support` module. Typed `DalException` layer via `DatabaseFactory.dbQuery`. GitHub Actions CI (`.github/workflows/ci.yml`) gating all layers.
+- **Worker + E2E Tests (TRACK-113)**: testcontainers-python for 18 worker integration tests. Playwright E2E with 3 money paths (login→review→approve, bulk import, krithi edit) on the compose stack, nightly schedule (`e2e-nightly.yml`).
+- **Frontend Component Tests (TRACK-118)**: Vitest + Testing Library infrastructure. 55 component tests covering CuratorReviewPage, BulkImport, and extracted pure units. Blocking in CI.
+- **argon2id Password Hashing (TRACK-114)**: Migrated from plain-text to argon2id via password4j. `make bootstrap-admin` provisions the admin user.
+- **Repo Hygiene & Secret Rotation (TRACK-115)**: Agent instruction file consolidation onto `CLAUDE.md`. Secret scanning and `.gitignore` hardening.
+- **Versioned Canon & Provenance Graph (TRACK-116/117, ADR-014)**: Architecture spike, ADR accepted. Implementation: `RevisionRepository`, `RevisionTables`, `RevisionDtos` for revision tracking. Extraction-attributed approvals. Re-import pending.
+- **Dependency Upgrades (TRACK-120–124)**: Four batches covering the entire stack:
+  - Batch 1 (TRACK-120): Security + safe drop-ins — PostgreSQL JDBC 42.7.11 (CVE fix), Ktor 3.5.0, Koin 4.2.1, React 19.2.7, TanStack Query 5.101.1, Tailwind 4.3.1, Flyway 12.9.0
+  - Batch 2 (TRACK-121): Frontend major toolchain — TypeScript 6.0, ESLint 10, Vite 8.1.3 (Rolldown bundler), `bunfig.toml` for Bun runtime
+  - Batch 3a (TRACK-122): Kotlin 2.4.0 + Compose Multiplatform 1.11.1 (material3 own train, iosX64 dropped)
+  - Batch 3b (TRACK-123): Testcontainers 2.0.5 (artifact renamed, package moved)
+  - Batch 3c (TRACK-124): google-genai >=2.0.0 (resolved 2.9.0)
+- **Parser & Data Fixes**: Ragamalika raga subsection detection without splitting into separate sections. Unlabeled leading variant section promotion. Off-by-one lyric section matching fix. Single-letter Indic abbreviation false positive prevention. Diacritic normalizer newline preservation. Bulk approval serialization fix with request chunking. V47 ragamalika demerge migration.
+- **PostgreSQL 18 Volume Layout**: Migrated compose volume to `/var/lib/postgresql` (pg18 single-mount layout, volume `pgdata18`).
+
 The remaining sections of this document dive deeper into each of these themes, connecting them back to the underlying architecture, schema, and tooling decisions.
 
 ---
@@ -157,7 +182,7 @@ The foundational technology choices were made with clear rationale:
 | **Backend** | Kotlin + Ktor | Lightweight, async-first, excellent PostgreSQL support |
 | **Database** | PostgreSQL 18+ | Rich type system (enums, JSONB), full-text search, proven reliability |
 | **Admin Web** | React + TypeScript + Tailwind | Rapid development, large ecosystem, type safety |
-| **Migrations** | Python db-migrate (originally Rust CLI, archived Feb 2026) | Lightweight, no compilation step, shared Python runtime |
+| **Migrations** | Flyway Community (ADR-013; originally Rust CLI → Python db-migrate → Flyway, Jun 2026) | Standards-based, one engine for Kotlin/Python/Make/CI |
 | **Cloud** | AWS or GCP | Scalable, managed services, global distribution |
 
 **Key Principle:**
@@ -362,13 +387,14 @@ Chose **React 19 with TypeScript** for admin web console.
 4. **Hiring & Maintenance**: React skills widely available
 5. **Separation of Concerns**: Admin web distinct from mobile; shared UI code not primary requirement
 
-**Stack:**
-- React 19.2.4 (functional components, hooks)
-- TypeScript 5.9.x (strict type safety)
-- Vite 7.3.1 (modern build tool, fast HMR)
-- Tailwind CSS 4.1.18 (utility-first styling)
-- React Router 7.13.0 (client-side routing)
-- TanStack Query 5.90.20 (data fetching & caching)
+**Stack (current versions — see [current-versions.md](./current-versions.md)):**
+- React 19.2.7 (functional components, hooks)
+- TypeScript 6.0 (strict type safety)
+- Vite 8.1.3 (Rolldown bundler, fast HMR)
+- Tailwind CSS 4.3.1 (utility-first styling)
+- React Router 7.18.0 (client-side routing)
+- TanStack Query 5.101.1 (data fetching & caching)
+- Vitest 4.1.10 (55 component tests, blocking in CI)
 
 **Impact:**
 - ✅ Rapid development and iteration
