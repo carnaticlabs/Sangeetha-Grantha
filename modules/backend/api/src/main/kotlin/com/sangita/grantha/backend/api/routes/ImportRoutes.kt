@@ -184,7 +184,7 @@ fun Route.importRoutes(
             // Find extraction queue entries matching the pattern
             val (tasks, total) = dal.extractionQueue.list(
                 status = listOf("INGESTED", "DONE", "FAILED"),
-                limit = 200,
+                limit = 1000,
             )
             val matching = tasks.filter { it.sourceUrl.contains(sourcePattern, ignoreCase = true) }
 
