@@ -651,3 +651,155 @@ def test_ragamalika_multi_variant_pallavi_not_truncated() -> None:
             f"{variant.script} Pallavi missing raga 2 content (got {len(pallavi.text)} chars)"
         )
 
+
+# =========================================================================
+# Inline section label abbreviations (thyagaraja-vaibhavam blog format)
+# =========================================================================
+
+
+def test_inline_pac_labels_thyagaraja_format() -> None:
+    """Inline P/A/C1/C2/C3 labels from thyagaraja-vaibhavam blog produce correct sections."""
+    parser = StructureParser()
+    text = (
+        "P ataDE dhanyuDurA O manasA\n"
+        "A satata yAna suta dhRtamaina sItA\n"
+        "pati pAda yugamula satatamu smariyincu (ataDE)\n"
+        "C1 venuka tIka tana manasu ranjillaga\n"
+        "ghanamaina nAma kIrtana paruDain(a)TTi (ataDE)\n"
+        "C2 tumburu vale tana tambura paTTi\n"
+        "day(A)mbudhi sannidhAnambuna naTiyincu (ataDE)\n"
+        "C3 sAyaku sujanula bAyaka tAnu(n)-\n"
+        "upAyamunanu proddhu hAyiga gaDipina (ataDE)\n"
+    )
+    sections = parser.parse_sections(text)
+
+    assert len(sections) == 5
+    assert sections[0].section_type == SectionType.PALLAVI
+    assert sections[1].section_type == SectionType.ANUPALLAVI
+    assert sections[2].section_type == SectionType.CHARANAM
+    assert sections[3].section_type == SectionType.CHARANAM
+    assert sections[4].section_type == SectionType.CHARANAM
+
+    assert sections[0].text.startswith("ataDE dhanyuDurA")
+    assert sections[1].text.startswith("satata yAna suta")
+    assert "pati pAda yugamula" in sections[1].text
+    assert sections[2].text.startswith("venuka tIka")
+    assert "ghanamaina" in sections[2].text
+    assert sections[3].text.startswith("tumburu vale")
+    assert sections[4].text.startswith("sAyaku sujanula")
+
+
+def test_inline_c_numbered_up_to_c12() -> None:
+    """C1 through C12 inline labels are detected (Tyagaraja multi-charanam krithis)."""
+    parser = StructureParser()
+    text = (
+        "P endu kaugalinturA\n"
+        "A andamaina kunda radana\n"
+        "C1 first charanam text\n"
+        "C2 second charanam text\n"
+        "C10 tenth charanam text\n"
+        "C12 twelfth charanam text\n"
+    )
+    sections = parser.parse_sections(text)
+    charanams = [s for s in sections if s.section_type == SectionType.CHARANAM]
+    assert len(charanams) == 4
+    assert charanams[0].text == "first charanam text"
+    assert charanams[3].text == "twelfth charanam text"
+
+
+def test_inline_a_with_footnote_digit() -> None:
+    """'A 1 satyamaina...' — digit after A is a footnote marker, not part of the label."""
+    parser = StructureParser()
+    text = (
+        "P nitya rUpa evari pANDityam(E)mi naDucurA\n"
+        "A 1 satyamaina(y)Ajna mIra sAmarthyamu kalavADu\n"
+        "C1 kOri kOri paluku tIrulanu jUci\n"
+    )
+    sections = parser.parse_sections(text)
+    assert len(sections) == 3
+    assert sections[0].section_type == SectionType.PALLAVI
+    assert sections[1].section_type == SectionType.ANUPALLAVI
+    # The footnote digit should be stripped (TRACK-101 residual number strip)
+    assert sections[1].text.startswith("satyamaina")
+    assert sections[2].section_type == SectionType.CHARANAM
+
+
+def test_inline_labels_no_false_positive_lowercase() -> None:
+    """Lowercase 'p' and 'a' at line start must NOT trigger inline P/A patterns.
+
+    Even in a document with C1/C2/... labels, lowercase initial letters are lyric text.
+    """
+    parser = StructureParser()
+    text = (
+        "P ataDE dhanyuDurA O manasA\n"
+        "A satata yAna suta dhRtamaina sItA\n"
+        "pati pAda yugamula satatamu smariyincu\n"
+        "akhila lOka nAyaka\n"
+        "C1 venuka tIka tana manasu ranjillaga\n"
+    )
+    sections = parser.parse_sections(text)
+
+    assert sections[0].section_type == SectionType.PALLAVI
+    assert sections[1].section_type == SectionType.ANUPALLAVI
+    # "pati pAda..." and "akhila..." are continuations of A, not new sections
+    assert "pati pAda" in sections[1].text
+    assert "akhila" in sections[1].text
+    assert sections[2].section_type == SectionType.CHARANAM
+
+
+def test_inline_labels_no_false_positive_indic_script() -> None:
+    """Indic lyric lines must not trigger inline P/A/C patterns.
+
+    Regression guard: Tamil 'ப 4 ரதாக்...' starts with ப (pa) which must not
+    match the inline P pattern, and 'அ' must not match inline A.
+    """
+    parser = StructureParser()
+    text = (
+        "pallavi\n"
+        "ஸ்ரீ ராம சந்த் 3 ரோ ரக்ஷது மாம்\n"
+        "அனுபல்லவி\n"
+        "ப 4 ரதாக் 3 ரஜ: கௌஸி 1 க யாக 3 ரக்ஷக:\n"
+        "சரணம்\n"
+        "மிதி 2 லா நக 3 ர ப்ரவேஸ 1\n"
+    )
+    result = parser.parse(text)
+    types = [s.section_type.value for s in result.sections]
+    assert types == ["PALLAVI", "ANUPALLAVI", "CHARANAM"], (
+        f"Expected 3 sections [P, A, C] but got {types} — "
+        "Indic text falsely matched inline label pattern"
+    )
+
+
+def test_inline_labels_no_false_positive_continuation_line() -> None:
+    """A lyric continuation line starting with HK long-vowel 'A' must not
+    become a new section when full-word headers are already in use.
+
+    'A' in HK = long vowel ā. Lines like 'A jagadamba' are lyric text,
+    not section labels, when full-word headers (Pallavi/Charanam) are present.
+    """
+    parser = StructureParser()
+    text = (
+        "Pallavi\n"
+        "O jagadamba nanu brova\n"
+        "A jagadamba sadA brova rAvu\n"
+        "Charanam\n"
+        "sAra sAra guNa vilAsini\n"
+    )
+    sections = parser.parse_sections(text)
+    # Both lyric lines belong to Pallavi (A is a continuation, not a label)
+    assert len(sections) == 2, (
+        f"Expected 2 sections but got {len(sections)} — "
+        "'A jagadamba' was falsely split into a separate section"
+    )
+    assert sections[0].section_type == SectionType.PALLAVI
+    assert "jagadamba" in sections[0].text
+
+
+def test_inline_c_standalone_without_digit_unchanged() -> None:
+    """Standalone 'C' without a digit still requires end-of-line (existing behavior)."""
+    parser = StructureParser()
+    text = "P\nsome pallavi text\nC\nsome charanam text\n"
+    sections = parser.parse_sections(text)
+    assert any(s.section_type == SectionType.PALLAVI for s in sections)
+    assert any(s.section_type == SectionType.CHARANAM for s in sections)
+

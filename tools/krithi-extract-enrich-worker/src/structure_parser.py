@@ -177,6 +177,10 @@ SECTION_HEADER_PATTERNS: list[tuple[re.Pattern[str], str]] = [
     (re.compile(r"^\s*[\-–—•*()=\[\]]*\s*m\.\s*k(?:\s+sahityam)?(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE), "MADHYAMAKALA"),
     (re.compile(r"^\s*[\-–—•*()=\[\]]*\s*svara\s+sahitya(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE), "SWARA_SAHITYA"),
     (re.compile(r"^\s*[\-–—•*()=\[\]]*\s*swarasahitya(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE), "SWARA_SAHITYA"),
+    # Inline C + digit(s) (thyagaraja-vaibhavam blog format): "C1 venuka tIka",
+    # "C12 rAjillu SrI tyAgarAja". Uppercase only, unambiguous — no lyric line
+    # starts with "C" + digit + space.
+    (re.compile(r"^\s*C\d{1,2}\s+(?=\S)"), "CHARANAM"),
     # Latin single-letter abbreviations.
     # Must be the ONLY content on the line to avoid false positives on lyric text.
     (re.compile(r"^\s*P[\.:\-\s]*$", re.IGNORECASE), "PALLAVI"),
@@ -270,6 +274,17 @@ METADATA_BOUNDARY_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
     ("VARIATIONS", re.compile(r"^\s*(?:variations?|alternate\s*reading)\b", re.IGNORECASE | re.MULTILINE)),
 ]
 
+# Inline P/A patterns are context-dependent: only activated when the document
+# also contains C\d+ inline labels (thyagaraja-vaibhavam blog format).
+# Without this guard, "A jagadamba" in a document using full-word headers
+# would be falsely split into a new ANUPALLAVI section.
+INLINE_PA_PATTERNS: list[tuple[re.Pattern[str], str]] = [
+    (re.compile(r"^\s*P (?=[a-z])"), "PALLAVI"),
+    (re.compile(r"^\s*A (?=[a-z\d])"), "ANUPALLAVI"),
+]
+
+_INLINE_CHARANAM_PROBE = re.compile(r"(?m)^\s*C\d{1,2}\s+\S")
+
 METADATA_KEYWORDS = (
     "title",
     "raga",
@@ -351,6 +366,8 @@ class StructureParser:
     def _build_blocks(self, raw_text: str) -> list[_TextBlock]:
         if not raw_text.strip():
             return []
+
+        self._inline_pa_enabled = bool(_INLINE_CHARANAM_PROBE.search(raw_text))
 
         tokens: list[_LineToken] = []
         offset = 0
@@ -437,6 +454,12 @@ class StructureParser:
                 # TRACK-101: Strip residual numbers from "caraNam 1" / "svara sAhitya 2" headers
                 remainder = re.sub(r"^\d+\s*", "", remainder).strip()
                 return _HeaderMatch(label=label, remainder=remainder)
+        if getattr(self, "_inline_pa_enabled", False):
+            for pattern, label in INLINE_PA_PATTERNS:
+                if pattern.search(line):
+                    remainder = pattern.sub("", line, count=1).strip()
+                    remainder = re.sub(r"^\d+\s*", "", remainder).strip()
+                    return _HeaderMatch(label=label, remainder=remainder)
         return None
 
     def _extract_sections(
