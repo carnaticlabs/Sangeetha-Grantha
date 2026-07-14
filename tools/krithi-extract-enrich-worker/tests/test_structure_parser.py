@@ -803,3 +803,23 @@ def test_inline_c_standalone_without_digit_unchanged() -> None:
     assert any(s.section_type == SectionType.PALLAVI for s in sections)
     assert any(s.section_type == SectionType.CHARANAM for s in sections)
 
+
+def test_inline_pac_single_charanam() -> None:
+    """Inline P/A/C (no digit) for krithis with only one charanam."""
+    parser = StructureParser()
+    text = (
+        "P ADa mODi galadE rAmayya mATal\n"
+        "A tODu nIDa nIvEyanucunu bhakti\n"
+        "kUDina pAdamu paTTina nAtO mATal\n"
+        "C caduvulanni telisi SankarAmSuDai\n"
+        "sadayuDAShuga sambhavuDu mrokka\n"
+    )
+    sections = parser.parse_sections(text)
+    assert len(sections) == 3
+    assert sections[0].section_type == SectionType.PALLAVI
+    assert sections[0].text.startswith("ADa mODi")
+    assert sections[1].section_type == SectionType.ANUPALLAVI
+    assert "kUDina pAdamu" in sections[1].text
+    assert sections[2].section_type == SectionType.CHARANAM
+    assert sections[2].text.startswith("caduvulanni")
+

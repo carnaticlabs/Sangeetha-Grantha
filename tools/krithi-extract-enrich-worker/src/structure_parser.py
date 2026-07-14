@@ -275,15 +275,16 @@ METADATA_BOUNDARY_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
 ]
 
 # Inline P/A patterns are context-dependent: only activated when the document
-# also contains C\d+ inline labels (thyagaraja-vaibhavam blog format).
+# also contains inline C/C\d+ labels (thyagaraja-vaibhavam blog format).
 # Without this guard, "A jagadamba" in a document using full-word headers
 # would be falsely split into a new ANUPALLAVI section.
-INLINE_PA_PATTERNS: list[tuple[re.Pattern[str], str]] = [
-    (re.compile(r"^\s*P (?=[a-z])"), "PALLAVI"),
-    (re.compile(r"^\s*A (?=[a-z\d])"), "ANUPALLAVI"),
+INLINE_PAC_PATTERNS: list[tuple[re.Pattern[str], str]] = [
+    (re.compile(r"^\s*P (?=[a-zA-Z])"), "PALLAVI"),
+    (re.compile(r"^\s*A (?=[a-zA-Z\d])"), "ANUPALLAVI"),
+    (re.compile(r"^\s*C (?=[a-z])"), "CHARANAM"),
 ]
 
-_INLINE_CHARANAM_PROBE = re.compile(r"(?m)^\s*C\d{1,2}\s+\S")
+_INLINE_CHARANAM_PROBE = re.compile(r"(?m)^\s*C(?:\d{1,2})? (?=[a-z])")
 
 METADATA_KEYWORDS = (
     "title",
@@ -455,7 +456,7 @@ class StructureParser:
                 remainder = re.sub(r"^\d+\s*", "", remainder).strip()
                 return _HeaderMatch(label=label, remainder=remainder)
         if getattr(self, "_inline_pa_enabled", False):
-            for pattern, label in INLINE_PA_PATTERNS:
+            for pattern, label in INLINE_PAC_PATTERNS:
                 if pattern.search(line):
                     remainder = pattern.sub("", line, count=1).strip()
                     remainder = re.sub(r"^\d+\s*", "", remainder).strip()
