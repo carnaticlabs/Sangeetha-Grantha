@@ -9,6 +9,10 @@ import com.sangita.grantha.backend.api.services.bulkimport.TaskErrorBuilder
 import com.sangita.grantha.backend.dal.SangitaDal
 import com.sangita.grantha.backend.dal.enums.TaskStatus
 import com.sangita.grantha.shared.domain.model.ImportTaskRunDto
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.request.head
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import kotlinx.coroutines.channels.Channel
@@ -79,11 +83,10 @@ class ScrapeWorker(
         }
 
         try {
-            // Parse CSV-provided metadata from krithiKey ("krithi|raga").
-            // The ScrapeWorker no longer performs Kotlin-side HTML scraping.
-            // Instead, it creates the import record with CSV metadata only,
-            // which triggers the Python extraction worker (via extraction_queue)
-            // to handle HTML scraping, section parsing, and Word Division filtering.
+            // Probe URL reachability before enqueuing — fail fast on
+            // unresolvable hosts so the batch reflects the failure.
+            probeUrl(url)
+
             val csvKrithi: String?
             val csvRaga: String?
             val key = task.krithiKey
@@ -123,14 +126,18 @@ class ScrapeWorker(
             dal.bulkImport.incrementBatchCounters(id = batchId, processedDelta = 1, succeededDelta = 1)
             completionHandler.checkAndTriggerNextStage(job.id)
         } catch (e: Exception) {
+            val unrecoverable = e is java.net.UnknownHostException ||
+                e.cause is java.net.UnknownHostException ||
+                e is java.net.ConnectException ||
+                e.cause is java.net.ConnectException
             val errorJson = errorBuilder.build(
-                code = "scrape_failed",
-                message = "Scrape/import failed",
+                code = if (unrecoverable) "unreachable_url" else "scrape_failed",
+                message = if (unrecoverable) "URL host is unreachable" else "Scrape/import failed",
                 url = url,
                 attempt = attempt,
                 cause = e.message
             )
-            val finalAttempt = attempt >= config.maxAttempts
+            val finalAttempt = unrecoverable || attempt >= config.maxAttempts
             dal.bulkImportTasks.updateTaskStatus(
                 id = task.id,
                 status = if (finalAttempt) TaskStatus.FAILED else TaskStatus.RETRYABLE,
@@ -153,6 +160,10 @@ class ScrapeWorker(
         }
     }
 
+    private suspend fun probeUrl(url: String) {
+        probeClient.head(url)
+    }
+
     private fun elapsedMsSince(startedAt: OffsetDateTime): Int {
         val now = OffsetDateTime.now(ZoneOffset.UTC)
         val ms = java.time.Duration.between(startedAt, now).toMillis()
@@ -160,6 +171,15 @@ class ScrapeWorker(
     }
 
     companion object {
+        private val probeClient = HttpClient(CIO) {
+            install(HttpTimeout) {
+                connectTimeoutMillis = 10_000
+                requestTimeoutMillis = 15_000
+            }
+            followRedirects = true
+            expectSuccess = false
+        }
+
         /**
          * Infer composer name from well-known Carnatic music blog URL patterns.
          *
