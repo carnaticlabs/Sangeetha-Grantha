@@ -281,10 +281,10 @@ METADATA_BOUNDARY_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
 INLINE_PAC_PATTERNS: list[tuple[re.Pattern[str], str]] = [
     (re.compile(r"^\s*P (?=[a-zA-Z])"), "PALLAVI"),
     (re.compile(r"^\s*A (?=[a-zA-Z\d])"), "ANUPALLAVI"),
-    (re.compile(r"^\s*C (?=[a-z\d])"), "CHARANAM"),
+    (re.compile(r"^\s*C (?=[a-zA-Z\d])"), "CHARANAM"),
 ]
 
-_INLINE_CHARANAM_PROBE = re.compile(r"(?m)^\s*C(?:\d{1,2})? (?=[a-z\d])")
+_INLINE_CHARANAM_PROBE = re.compile(r"(?m)^\s*C(?:\d{1,2})? (?=[a-zA-Z\d])")
 
 METADATA_KEYWORDS = (
     "title",
