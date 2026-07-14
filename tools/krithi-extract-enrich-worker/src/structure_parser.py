@@ -180,7 +180,7 @@ SECTION_HEADER_PATTERNS: list[tuple[re.Pattern[str], str]] = [
     # Inline C + digit(s) (thyagaraja-vaibhavam blog format): "C1 venuka tIka",
     # "C12 rAjillu SrI tyAgarAja". Uppercase only, unambiguous — no lyric line
     # starts with "C" + digit + space.
-    (re.compile(r"^\s*C\d{1,2}\s+(?=\S)"), "CHARANAM"),
+    (re.compile(r"^\s*C\s?\d{1,2}\s+(?=\S)"), "CHARANAM"),
     # Latin single-letter abbreviations.
     # Must be the ONLY content on the line to avoid false positives on lyric text.
     (re.compile(r"^\s*P[\.:\-\s]*$", re.IGNORECASE), "PALLAVI"),
@@ -281,10 +281,10 @@ METADATA_BOUNDARY_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
 INLINE_PAC_PATTERNS: list[tuple[re.Pattern[str], str]] = [
     (re.compile(r"^\s*P (?=[a-zA-Z])"), "PALLAVI"),
     (re.compile(r"^\s*A (?=[a-zA-Z\d])"), "ANUPALLAVI"),
-    (re.compile(r"^\s*C (?=[a-z])"), "CHARANAM"),
+    (re.compile(r"^\s*C (?=[a-z\d])"), "CHARANAM"),
 ]
 
-_INLINE_CHARANAM_PROBE = re.compile(r"(?m)^\s*C(?:\d{1,2})? (?=[a-z])")
+_INLINE_CHARANAM_PROBE = re.compile(r"(?m)^\s*C(?:\d{1,2})? (?=[a-z\d])")
 
 METADATA_KEYWORDS = (
     "title",

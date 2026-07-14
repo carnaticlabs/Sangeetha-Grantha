@@ -823,3 +823,19 @@ def test_inline_pac_single_charanam() -> None:
     assert sections[2].section_type == SectionType.CHARANAM
     assert sections[2].text.startswith("caduvulanni")
 
+
+def test_inline_c_space_digit_format() -> None:
+    """'C 1 vara giri...' — space between C and digit is tolerated."""
+    parser = StructureParser()
+    text = (
+        "P varada rAja ninu kOri\n"
+        "A surulu munulu bhU-surulu\n"
+        "C 1 vara giri vaikuNThamaTa\n"
+    )
+    sections = parser.parse_sections(text)
+    assert len(sections) == 3
+    assert sections[0].section_type == SectionType.PALLAVI
+    assert sections[1].section_type == SectionType.ANUPALLAVI
+    assert sections[2].section_type == SectionType.CHARANAM
+    assert sections[2].text.startswith("vara giri")
+
