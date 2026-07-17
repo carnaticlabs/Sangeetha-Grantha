@@ -103,6 +103,9 @@ def main() -> int:
     ap.add_argument("--krithi", action="append", default=[])
     ap.add_argument("--from-report")
     ap.add_argument("--lang", default="ta", help="variant language to repair (default: ta)")
+    ap.add_argument("--reclean", action="store_true",
+                    help="re-write even when the section count already matches the template "
+                         "(e.g. to apply a later parser fix such as the preamble strip)")
     ap.add_argument("--apply", action="store_true")
     args = ap.parse_args()
 
@@ -124,8 +127,8 @@ def main() -> int:
             if res.stored_counts.get(args.lang) == 0:
                 continue
             template = _template_sections(conn, kid)
-            if res.stored_counts.get(args.lang) == len(template):
-                continue  # already matches — nothing to do
+            if res.stored_counts.get(args.lang) == len(template) and not args.reclean:
+                continue  # already matches — nothing to do (unless re-cleaning)
             vid = _variant_ids(conn, kid).get(args.lang)
             if not vid:
                 continue
