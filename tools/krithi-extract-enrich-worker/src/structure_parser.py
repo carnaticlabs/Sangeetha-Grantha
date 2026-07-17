@@ -1154,8 +1154,19 @@ class StructureParser:
             r"[\u0900-\u097F].*-\s*[a-zA-Z]", line
         ):
             return True
-        # Lines starting with Devanagari comma-separated character charts
-        if re.match(r"^[\u0900-\u097F],[\u0900-\u097F]", line):
+        # Transliteration-key preamble lines (Modified HK chart at the top of each
+        # script block on Govindan blogs \u2014 ADR-015 head-capture fix). Three forms,
+        # all impossible in single-script lyric:
+        #   1. a comma-separated Indic consonant chart ("\u0B95,\u0B9A,\u0B9F,\u0BA4,\u0BAA - 2-\u0916 \u2026")
+        if re.match(r"^[\u0900-\u0D7F]\s*,\s*[\u0900-\u0D7F]", line):
+            return True
+        #   2. a cross-script mapping row \u2014 Devanagari mixed with another Indic
+        #      script ("\u0BB81 \u0936 - \u0936\u093F\u0935 - \u0B9A\u0BBF\u0BB5\u0BA9\u0BCD"); lyric is always one script per line.
+        if re.search(r"[\u0900-\u097F]", line) and re.search(r"[\u0B00-\u0D7F]", line):
+            return True
+        #   3. a parenthesised sandhi mapping, whole line ("(\u0B9A3 - \u0B9C)"); lyric
+        #      refrains like "(\u0BB5\u0BC7\u0B99\u0BCD\u0B95)" carry no ' - ' mapping arrow.
+        if re.match(r"^\s*\([^)]*\s-\s[^)]*\)\s*$", line):
             return True
         # Filter nOTTu-svara header — it's metadata not lyric content
         if re.match(r"^\s*\(?n[oō]t+u[\s-]*svara\s+s[aā]hityam?\)?\.?\s*$", lowered):
