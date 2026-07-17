@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import logging
 import re
+from collections import Counter
 from dataclasses import dataclass, field
 from typing import Optional
 
@@ -177,6 +178,15 @@ SECTION_HEADER_PATTERNS: list[tuple[re.Pattern[str], str]] = [
     (re.compile(r"^\s*[\-–—•*()=\[\]]*\s*m\.\s*k(?:\s+sahityam)?(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE), "MADHYAMAKALA"),
     (re.compile(r"^\s*[\-–—•*()=\[\]]*\s*svara\s+sahitya(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE), "SWARA_SAHITYA"),
     (re.compile(r"^\s*[\-–—•*()=\[\]]*\s*swarasahitya(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE), "SWARA_SAHITYA"),
+    # Indic-script "svara sAhitya N" headers (CAT-B: Syama Sastri kritis whose
+    # swara-sahitya sections are labelled inline in each variant's own script).
+    # Without these, the whole Indic variant collapses into one PALLAVI blob and
+    # never matches the multi-section template.
+    (re.compile(r"^\s*स्वर\s+साहित्य(?:\s|:|\-|\.|\)|]|\d|$)"), "SWARA_SAHITYA"),      # Devanagari
+    (re.compile(r"^\s*ஸ்வர\s+ஸாஹித்ய(?:\s|:|\-|\.|\)|]|\d|$)"), "SWARA_SAHITYA"),      # Tamil
+    (re.compile(r"^\s*స్వర\s+సాహిత్య(?:\s|:|\-|\.|\)|]|\d|$)"), "SWARA_SAHITYA"),      # Telugu
+    (re.compile(r"^\s*ಸ್ವರ\s+ಸಾಹಿತ್ಯ(?:\s|:|\-|\.|\)|]|\d|$)"), "SWARA_SAHITYA"),      # Kannada
+    (re.compile(r"^\s*സ്വര\s+സാഹിത്യ(?:\s|:|\-|\.|\)|]|\d|$)"), "SWARA_SAHITYA"),      # Malayalam
     # Inline C + digit(s) (thyagaraja-vaibhavam blog format): "C1 venuka tIka",
     # "C12 rAjillu SrI tyAgarAja". Uppercase only, unambiguous — no lyric line
     # starts with "C" + digit + space.
@@ -278,13 +288,46 @@ METADATA_BOUNDARY_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
 # also contains inline C/C\d+ labels (thyagaraja-vaibhavam blog format).
 # Without this guard, "A jagadamba" in a document using full-word headers
 # would be falsely split into a new ANUPALLAVI section.
+# The lookahead allows a digit so a leading footnote reference is tolerated:
+# "P 1giripai" (rendered from <span>P</span><sup>1</sup>giripai) must still be
+# detected as the pallavi marker. The footnote digit is then stripped from the
+# remainder. Without this, the Latin pallavi is head-captured and the whole
+# template under-counts (see giripai nelakonna).
 INLINE_PAC_PATTERNS: list[tuple[re.Pattern[str], str]] = [
-    (re.compile(r"^\s*P (?=[a-zA-Z])"), "PALLAVI"),
+    (re.compile(r"^\s*P (?=[a-zA-Z\d])"), "PALLAVI"),
     (re.compile(r"^\s*A (?=[a-zA-Z\d])"), "ANUPALLAVI"),
     (re.compile(r"^\s*C (?=[a-zA-Z\d])"), "CHARANAM"),
 ]
 
 _INLINE_CHARANAM_PROBE = re.compile(r"(?m)^\s*C(?:\d{1,2})? (?=[a-zA-Z\d])")
+
+# Indic-script inline abbreviations "प." / "अ." / "च1." (thyagaraja-vaibhavam blog
+# format, Indic variants). Like INLINE_PAC_PATTERNS these are context-dependent:
+# only activated when the document actually contains such abbreviation markers
+# (a line starting with a P/A/C letter + optional digit + period), so documents
+# that use full-word Indic headers are unaffected. The trailing period is the
+# disambiguator — natural lyric lines do not begin "<consonant>.".
+INLINE_INDIC_PAC_PATTERNS: list[tuple[re.Pattern[str], str]] = [
+    (re.compile(r"^\s*प\d*\s*\.\s*(?=\S)"), "PALLAVI"),      # Devanagari
+    (re.compile(r"^\s*अ\d*\s*\.\s*(?=\S)"), "ANUPALLAVI"),
+    (re.compile(r"^\s*च\d*\s*\.\s*(?=\S)"), "CHARANAM"),
+    (re.compile(r"^\s*ప\d*\s*\.\s*(?=\S)"), "PALLAVI"),      # Telugu
+    (re.compile(r"^\s*అ\d*\s*\.\s*(?=\S)"), "ANUPALLAVI"),
+    (re.compile(r"^\s*చ\d*\s*\.\s*(?=\S)"), "CHARANAM"),
+    (re.compile(r"^\s*ಪ\d*\s*\.\s*(?=\S)"), "PALLAVI"),      # Kannada
+    (re.compile(r"^\s*ಅ\d*\s*\.\s*(?=\S)"), "ANUPALLAVI"),
+    (re.compile(r"^\s*ಚ\d*\s*\.\s*(?=\S)"), "CHARANAM"),
+    (re.compile(r"^\s*പ\d*\s*\.\s*(?=\S)"), "PALLAVI"),      # Malayalam
+    (re.compile(r"^\s*അ\d*\s*\.\s*(?=\S)"), "ANUPALLAVI"),
+    (re.compile(r"^\s*ച\d*\s*\.\s*(?=\S)"), "CHARANAM"),
+    (re.compile(r"^\s*ப\d*\s*\.\s*(?=\S)"), "PALLAVI"),      # Tamil
+    (re.compile(r"^\s*அ\d*\s*\.\s*(?=\S)"), "ANUPALLAVI"),
+    (re.compile(r"^\s*ச\d*\s*\.\s*(?=\S)"), "CHARANAM"),
+]
+
+_INLINE_INDIC_PAC_PROBE = re.compile(
+    r"(?m)^\s*(?:प|अ|च|ప|అ|చ|ಪ|ಅ|ಚ|പ|അ|ച|ப|அ|ச)\d*\s*\.\s*(?=\S)"
+)
 
 METADATA_KEYWORDS = (
     "title",
@@ -307,8 +350,67 @@ METADATA_KEYWORDS = (
 )
 
 
+# Inline pronunciation-disambiguation digit (Modified HK): a digit glued to an Indic
+# consonant, e.g. "க3" (ga), "பா4" (bha), "விது4லு". Transliterated Carnatic lyric is
+# dense with these; a natural-language (Tamil) translation trailer has none. That
+# contrast is what locates the lyric→trailer boundary.
+_PRONUNCIATION_DIGIT = re.compile(r"[ऀ-෿]\d")
+
+_MIN_TRAILER_CHARS = 40
+_MIN_TRAILER_LINES = 2
+
+
+def strip_refrain_trailer(sections: list["DetectedSection"]) -> list["DetectedSection"]:
+    """Trim an inline translation trailer from a variant's last section.
+
+    Govindan-blog Tamil variants append a word-by-word Tamil *meaning* after the
+    lyric; marker splitting leaves it glued to the final charanam, blowing that
+    section up to many times its siblings. The lyric is transliterated (every line
+    carries HK pronunciation digits); the appended meaning is natural Tamil prose
+    with none. We cut everything after the **last line that still carries a
+    pronunciation digit**, provided what follows is a multi-line prose block.
+
+    Conservative by construction — the strip fires only when:
+      * the last section has ≥1 transliterated (digit-bearing) line, AND
+      * ≥2 trailing lines with no pronunciation digit follow it, totalling ≥40 chars.
+    Otherwise the section is returned unchanged (deferred, never guessed). This never
+    touches Latin variants (no Indic digits) and leaves clean lyric — whose lines all
+    carry digits — untouched.
+    """
+    if len(sections) < 2:
+        return sections
+    last = sections[-1]
+    lines = last.text.split("\n")
+    last_lyric = -1
+    for i, line in enumerate(lines):
+        if _PRONUNCIATION_DIGIT.search(line):
+            last_lyric = i
+    if last_lyric == -1:
+        return sections  # no transliteration markers — cannot locate a boundary
+    trailer_lines = lines[last_lyric + 1:]
+    if len(trailer_lines) < _MIN_TRAILER_LINES:
+        return sections  # not a multi-line prose block — leave as lyric
+    trailer = "\n".join(trailer_lines).strip()
+    if len(trailer) < _MIN_TRAILER_CHARS or _PRONUNCIATION_DIGIT.search(trailer):
+        return sections
+    trimmed = "\n".join(lines[: last_lyric + 1]).rstrip()
+    if not trimmed:
+        return sections
+    return sections[:-1] + [
+        DetectedSection(
+            section_type=last.section_type, order=last.order, label=last.label,
+            text=trimmed, start_pos=last.start_pos, end_pos=last.end_pos,
+        )
+    ]
+
+
 class StructureParser:
     """Deterministic structure parser with Kotlin-parity heuristics."""
+
+    # When False, the translation-trailer strip is skipped. The repair tooling
+    # parses twice (with and without) to isolate exactly what the strip removed and
+    # confirm it is prose, never lyric. Production parsing leaves this True.
+    _trailer_strip_enabled = True
 
     def parse(self, text: str) -> StructureParseResult:
         if not text.strip():
@@ -369,6 +471,7 @@ class StructureParser:
             return []
 
         self._inline_pa_enabled = bool(_INLINE_CHARANAM_PROBE.search(raw_text))
+        self._inline_indic_pac_enabled = bool(_INLINE_INDIC_PAC_PROBE.search(raw_text))
 
         tokens: list[_LineToken] = []
         offset = 0
@@ -457,6 +560,12 @@ class StructureParser:
                 return _HeaderMatch(label=label, remainder=remainder)
         if getattr(self, "_inline_pa_enabled", False):
             for pattern, label in INLINE_PAC_PATTERNS:
+                if pattern.search(line):
+                    remainder = pattern.sub("", line, count=1).strip()
+                    remainder = re.sub(r"^\d+\s*", "", remainder).strip()
+                    return _HeaderMatch(label=label, remainder=remainder)
+        if getattr(self, "_inline_indic_pac_enabled", False):
+            for pattern, label in INLINE_INDIC_PAC_PATTERNS:
                 if pattern.search(line):
                     remainder = pattern.sub("", line, count=1).strip()
                     remainder = re.sub(r"^\d+\s*", "", remainder).strip()
@@ -912,7 +1021,7 @@ class StructureParser:
                     )
                 )
 
-        return sections
+        return strip_refrain_trailer(sections) if self._trailer_strip_enabled else sections
 
     def _reparse_lines_for_sections(
         self,

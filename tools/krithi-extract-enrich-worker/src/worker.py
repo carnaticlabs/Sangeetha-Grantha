@@ -240,37 +240,38 @@ class ExtractionWorker:
             return ".img"
         return ".bin"
 
-    def _truncate_utf8(self, value: str, max_bytes: int = 1800) -> str:
-        """Trim text to a safe UTF-8 byte size for indexed DB columns."""
-        encoded = value.encode("utf-8")
-        if len(encoded) <= max_bytes:
-            return value
-        return encoded[:max_bytes].decode("utf-8", errors="ignore").rstrip()
-
-    def _truncate_lyric_variants(
+    def _filter_empty_lyric_sections(
         self,
         variants: list[CanonicalLyricVariant],
     ) -> list[CanonicalLyricVariant]:
-        trimmed: list[CanonicalLyricVariant] = []
+        """Drop sections with no text (and variants left empty).
+
+        The full lyric text is preserved verbatim. The stored ``text`` column is
+        not indexed (the indexed ``normalized_text`` column is populated
+        separately), so there is no byte-size ceiling to defend against here.
+        Byte-truncating the lyric silently cut multi-section blobs mid-composition
+        for Indic scripts (~3 bytes/char) — see CAT-B regression fixtures.
+        """
+        filtered: list[CanonicalLyricVariant] = []
         for variant in variants:
             sections = [
                 CanonicalLyricSection(
                     sectionOrder=section.section_order,
-                    text=self._truncate_utf8(section.text),
+                    text=section.text,
                 )
                 for section in variant.sections
                 if section.text.strip()
             ]
             if not sections:
                 continue
-            trimmed.append(
+            filtered.append(
                 CanonicalLyricVariant(
                     language=variant.language,
                     script=variant.script,
                     sections=sections,
                 )
             )
-        return trimmed
+        return filtered
 
     def _download_source(self, url: str, source_format: str = "PDF") -> Path:
         """Download a source document to the cache directory, or resolve a local file path."""
@@ -473,7 +474,7 @@ class ExtractionWorker:
                         ),
                     )
                 ]
-            lyric_variants = self._truncate_lyric_variants(lyric_variants)
+            lyric_variants = self._filter_empty_lyric_sections(lyric_variants)
             primary_script = (
                 lyric_variants[0].script
                 if lyric_variants
@@ -685,7 +686,7 @@ class ExtractionWorker:
                         ),
                     )
                 ]
-            lyric_variants = self._truncate_lyric_variants(lyric_variants)
+            lyric_variants = self._filter_empty_lyric_sections(lyric_variants)
             primary_script = (
                 lyric_variants[0].script
                 if lyric_variants
@@ -766,7 +767,7 @@ class ExtractionWorker:
                     ),
                 )
             ]
-        lyric_variants = self._truncate_lyric_variants(lyric_variants)
+        lyric_variants = self._filter_empty_lyric_sections(lyric_variants)
 
         raga_hint = task.request_payload.get("ragaHint")
         raga_name = cleanup_raga_tala_name(metadata.raga) if metadata.raga else (
