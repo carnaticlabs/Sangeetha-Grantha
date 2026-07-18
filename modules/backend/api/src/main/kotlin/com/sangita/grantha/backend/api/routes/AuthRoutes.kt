@@ -33,22 +33,31 @@ fun Route.authRoutes(env: ApiEnvironment, jwtConfig: JwtConfig, userManagementSe
                 else -> userManagementService.getUser(request.userId!!.toKotlinUuidOrThrow("userId"))
             } ?: return@post call.respondText("User not found", status = HttpStatusCode.NotFound)
 
-            val token = jwtConfig.generateToken(user.id, request.roles)
+            // TRACK-112 (F3): roles come from the user's stored assignments, never from the
+            // request. Previously the caller's `roles` list was copied verbatim into the JWT, so
+            // the shared ADMIN_TOKEN was enough to mint an admin token for any user.
+            val roles = userManagementService.getUserRoles(user.id).map { it.roleCode }
+            val token = jwtConfig.generateToken(user.id, roles)
             call.respond(AuthTokenResponse(token = token, expiresInSeconds = jwtConfig.tokenTtlSeconds))
         }
     }
 }
 
-fun Route.authRefreshRoutes(jwtConfig: JwtConfig) {
+fun Route.authRefreshRoutes(jwtConfig: JwtConfig, userManagementService: UserManagementService) {
     route("/v1/auth") {
         post("/refresh") {
             val principal = call.principal<JWTPrincipal>()
                 ?: return@post call.respondText("Missing JWT", status = HttpStatusCode.Unauthorized)
             val userId = principal.payload.getClaim("userId")?.asString()
                 ?: return@post call.respondText("Missing userId", status = HttpStatusCode.BadRequest)
-            val roles = principal.payload.getClaim("roles")?.asList(String::class.java) ?: emptyList()
 
-            val token = jwtConfig.generateToken(userId.toKotlinUuidOrThrow("userId"), roles)
+            // TRACK-112 (F3): re-read roles from storage rather than carrying the old token's
+            // claim forward. Refreshing must not let a revoked role survive indefinitely by
+            // repeatedly minting a new token from the previous one.
+            val resolvedUserId = userId.toKotlinUuidOrThrow("userId")
+            val roles = userManagementService.getUserRoles(resolvedUserId).map { it.roleCode }
+
+            val token = jwtConfig.generateToken(resolvedUserId, roles)
             call.respond(AuthTokenResponse(token = token, expiresInSeconds = jwtConfig.tokenTtlSeconds))
         }
     }

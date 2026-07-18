@@ -12,6 +12,7 @@ import com.sangita.grantha.backend.api.routes.healthRoutes
 import com.sangita.grantha.backend.api.routes.importRoutes
 import com.sangita.grantha.backend.api.routes.metricsRoutes
 import com.sangita.grantha.backend.api.routes.publicKrithiRoutes
+import com.sangita.grantha.backend.api.routes.requireRole
 import com.sangita.grantha.backend.api.routes.referenceDataRoutes
 import com.sangita.grantha.backend.api.routes.remediationRoutes
 import com.sangita.grantha.backend.api.routes.sourcingRoutes
@@ -40,6 +41,7 @@ import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.authenticate
 import io.ktor.server.routing.routing
+import com.sangita.grantha.backend.api.support.Roles
 import org.koin.ktor.ext.inject
 
 fun Application.configureRouting() {
@@ -71,18 +73,27 @@ fun Application.configureRouting() {
         publicKrithiRoutes(krithiService, referenceDataService, notationService)
 
         authenticate("admin-auth") {
-            authRefreshRoutes(jwtConfig)
-            adminKrithiRoutes(krithiService, transliterationService)
-            adminNotationRoutes(notationService)
-            importRoutes(importService, lyricPersistence, dal)
-            bulkImportRoutes(bulkImportService, importService)
-            auditRoutes(auditLogService)
-            referenceDataRoutes(referenceDataService)
-            userManagementRoutes(userManagementService)
-            sourcingRoutes(sourcingService, variantMatchingService)
-            remediationRoutes(auditRunnerService, remediationService, extractionProcessor)
-            curatorRoutes(curatorService)
-            metricsRoutes(metricsRegistry)
+            // Refresh only needs a valid identity — it re-reads roles from storage and reissues,
+            // so it must stay reachable by a caller whose roles have since been revoked.
+            authRefreshRoutes(jwtConfig, userManagementService)
+
+            // TRACK-112 (F3): authentication proves who; this proves what they may do. Until this
+            // existed, any validly-signed token reached every route below. `grp_sangita_admin` is
+            // the only role the reference seed defines (R__seed_01) and the one `bootstrap-admin`
+            // assigns; finer tiers (viewer/curator) need a role taxonomy decision — TRACK-119.
+            requireRole(Roles.ADMIN) {
+                adminKrithiRoutes(krithiService, transliterationService)
+                adminNotationRoutes(notationService)
+                importRoutes(importService, lyricPersistence, dal)
+                bulkImportRoutes(bulkImportService, importService)
+                auditRoutes(auditLogService)
+                referenceDataRoutes(referenceDataService)
+                userManagementRoutes(userManagementService)
+                sourcingRoutes(sourcingService, variantMatchingService)
+                remediationRoutes(auditRunnerService, remediationService, extractionProcessor)
+                curatorRoutes(curatorService)
+                metricsRoutes(metricsRegistry)
+            }
         }
         
         // Dashboard stats accessible with optional auth (for admin console)

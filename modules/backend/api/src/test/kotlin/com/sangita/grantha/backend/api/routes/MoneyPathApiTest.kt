@@ -6,6 +6,7 @@ import com.sangita.grantha.backend.api.models.ImportKrithiRequest
 import com.sangita.grantha.backend.api.models.ImportReviewRequest
 import com.sangita.grantha.backend.api.plugins.configureCaching
 import com.sangita.grantha.backend.api.plugins.configureSecurity
+import com.sangita.grantha.backend.api.plugins.configureSerialization
 import com.sangita.grantha.backend.api.plugins.configureStatusPages
 import com.sangita.grantha.backend.api.services.AuditLogService
 import com.sangita.grantha.backend.api.services.AutoApprovalService
@@ -21,6 +22,7 @@ import com.sangita.grantha.backend.api.services.LyricVariantPersistenceService
 import com.sangita.grantha.backend.api.services.NameNormalizationService
 import com.sangita.grantha.backend.api.services.ReferenceDataServiceImpl
 import com.sangita.grantha.backend.api.services.UserManagementService
+import com.sangita.grantha.backend.api.support.Roles
 import com.sangita.grantha.backend.dal.SangitaDal
 import com.sangita.grantha.backend.dal.SangitaDalImpl
 import com.sangita.grantha.backend.testsupport.IntegrationTestBase
@@ -111,8 +113,19 @@ class MoneyPathApiTest : IntegrationTestBase() {
     private suspend fun aUser(name: String = "API Test User"): Uuid =
         dal.users.create(email = "api-${Uuid.random()}@example.test", fullName = name).id
 
+    /** A user actually granted the admin role, as `bootstrap-admin` provisions it. */
+    private suspend fun anAdminUser(name: String = "API Test Admin"): Uuid {
+        val id = aUser(name)
+        dal.users.assignRole(id, Roles.ADMIN)
+        return id
+    }
+
     private fun tokenFor(userId: Uuid, roles: List<String>): String =
         jwtConfig.generateToken(userId, roles)
+
+    /** A token carrying the admin role — what a real login now mints for an admin user. */
+    private fun adminToken(userId: Uuid = Uuid.random()): String =
+        jwtConfig.generateToken(userId, listOf(Roles.ADMIN))
 
     /**
      * Wire the slice of the real application under test: the same security, status-pages,
@@ -124,14 +137,18 @@ class MoneyPathApiTest : IntegrationTestBase() {
             configureSecurity(env)
             configureStatusPages()
             configureCaching()
-            install(ContentNegotiation) { json() }
+            configureSerialization()
             routing {
                 authRoutes(env, jwtConfig, userManagementService)
                 publicKrithiRoutes(krithiService, referenceDataService, notationService)
                 authenticate("admin-auth") {
-                    importRoutes(importService)
-                    auditRoutes(auditLogService)
-                    curatorRoutes(curatorService)
+                    authRefreshRoutes(jwtConfig, userManagementService)
+                    // Mirrors Routing.kt: authentication proves identity, requireRole proves rights.
+                    requireRole(Roles.ADMIN) {
+                        importRoutes(importService)
+                        auditRoutes(auditLogService)
+                        curatorRoutes(curatorService)
+                    }
                 }
             }
         }
@@ -167,7 +184,7 @@ class MoneyPathApiTest : IntegrationTestBase() {
                 audience = env.jwtAudience,
                 realm = env.jwtRealm,
                 tokenTtlSeconds = 3600,
-            ).generateToken(Uuid.random(), listOf("ADMIN"))
+            ).generateToken(Uuid.random(), listOf(Roles.ADMIN))
 
             listOf("not-a-jwt", foreign).forEach { bad ->
                 assertEquals(
@@ -181,7 +198,7 @@ class MoneyPathApiTest : IntegrationTestBase() {
         @Test
         fun `a validly-signed token is accepted`() = testApplication {
             sangitaApp()
-            val token = tokenFor(Uuid.random(), listOf("ADMIN"))
+            val token = adminToken()
             assertEquals(
                 HttpStatusCode.OK,
                 client.get("/v1/admin/imports") { header(HttpHeaders.Authorization, "Bearer $token") }.status
@@ -189,53 +206,116 @@ class MoneyPathApiTest : IntegrationTestBase() {
         }
 
         /**
-         * OPEN SECURITY GAP — owned by TRACK-119, pinned here so it cannot regress silently.
+         * F3 (fixed) — the 403 tier.
          *
-         * `authenticate("admin-auth")` validates only the signature, audience and presence of a
-         * `userId` claim ([configureSecurity]). No route checks the `roles` claim, so the
-         * anonymous/viewer/curator/admin matrix TRACK-112 A1 asks for does not exist: there is no
-         * 403 tier. Any validly-signed token — including one with no roles at all, or roles the
-         * user was never granted — has full admin access.
-         *
-         * Compounding it, `POST /v1/auth/token` mints a token with **caller-supplied** roles behind
-         * the shared `ADMIN_TOKEN`, so anyone holding that shared secret can self-issue an admin
-         * token for any user. That pair is the privilege-escalation hole TRACK-119 calls the
-         * deployment blocker.
-         *
-         * When role enforcement lands, this test should fail — replace it with the real matrix.
+         * `authenticate("admin-auth")` proves only *who* the caller is: signature, audience and a
+         * `userId` claim. No route checked the `roles` claim, so any validly-signed token —
+         * including one with no roles at all — reached every admin route. `requireRole` now gates
+         * them, so authentication and authorisation are separate answers.
          */
         @Test
-        fun `GAP - a token with no roles still has full admin access`() = testApplication {
+        fun `a token with no admin role is refused with 403`() = testApplication {
             sangitaApp()
-            val noRoles = tokenFor(Uuid.random(), emptyList())
-            val viewerOnly = tokenFor(Uuid.random(), listOf("VIEWER"))
-
-            listOf("no roles" to noRoles, "VIEWER only" to viewerOnly).forEach { (label, token) ->
+            val cases = mapOf(
+                "no roles at all" to tokenFor(Uuid.random(), emptyList()),
+                "an unrelated role" to tokenFor(Uuid.random(), listOf("VIEWER")),
+            )
+            cases.forEach { (label, token) ->
                 assertEquals(
-                    HttpStatusCode.OK,
+                    HttpStatusCode.Forbidden,
                     client.get("/v1/admin/imports") { header(HttpHeaders.Authorization, "Bearer $token") }.status,
-                    "current behaviour: a '$label' token reaches an admin route (no role enforcement)"
+                    "a token with $label must be authenticated but not authorised"
                 )
             }
         }
 
         @Test
-        fun `GAP - auth token endpoint honours caller-supplied roles behind the shared admin token`() =
+        fun `401 and 403 are distinguished — unauthenticated is not the same as unauthorised`() =
             testApplication {
                 sangitaApp()
-                val userId = aUser("Escalation Probe")
+                assertEquals(
+                    HttpStatusCode.Unauthorized,
+                    client.get("/v1/admin/imports").status,
+                    "no credentials at all is a 401"
+                )
+                assertEquals(
+                    HttpStatusCode.Forbidden,
+                    client.get("/v1/admin/imports") {
+                        header(HttpHeaders.Authorization, "Bearer ${tokenFor(Uuid.random(), emptyList())}")
+                    }.status,
+                    "valid credentials without the role is a 403"
+                )
+            }
+
+        /**
+         * F3 (fixed) — the escalation hole.
+         *
+         * `/v1/auth/token` used to copy the caller's `roles` list straight into the JWT, so anyone
+         * holding the shared ADMIN_TOKEN could mint an admin token for any user. Roles now come
+         * from the user's stored `role_assignments`; the request field is gone.
+         */
+        @Test
+        fun `the token endpoint ignores caller-supplied roles and reads them from storage`() =
+            testApplication {
+                sangitaApp()
+                val plainUser = aUser("No Roles Granted")
 
                 val response = client.post("/v1/auth/token") {
                     contentType(ContentType.Application.Json)
-                    setBody("""{"adminToken":"${env.adminToken}","userId":"$userId","roles":["ADMIN"]}""")
+                    setBody("""{"adminToken":"${env.adminToken}","userId":"$plainUser","roles":["${Roles.ADMIN}"]}""")
                 }
+                assertEquals(HttpStatusCode.OK, response.status)
+                val minted = assertNotNull(response.json()["token"]?.jsonPrimitive?.content)
 
+                // The token was issued, but asking for a role does not grant it.
                 assertEquals(
-                    HttpStatusCode.OK, response.status,
-                    "current behaviour: the shared admin token alone mints a JWT with the roles the caller asked for"
+                    HttpStatusCode.Forbidden,
+                    client.get("/v1/admin/imports") { header(HttpHeaders.Authorization, "Bearer $minted") }.status,
+                    "a self-declared role in the request body must not become a real one"
                 )
-                assertNotNull(response.json()["token"]?.jsonPrimitive?.content)
             }
+
+        @Test
+        fun `a user actually granted the admin role receives a working token`() = testApplication {
+            sangitaApp()
+            val admin = anAdminUser()
+
+            val response = client.post("/v1/auth/token") {
+                contentType(ContentType.Application.Json)
+                setBody("""{"adminToken":"${env.adminToken}","userId":"$admin"}""")
+            }
+            assertEquals(HttpStatusCode.OK, response.status)
+            val token = assertNotNull(response.json()["token"]?.jsonPrimitive?.content)
+
+            assertEquals(
+                HttpStatusCode.OK,
+                client.get("/v1/admin/imports") { header(HttpHeaders.Authorization, "Bearer $token") }.status,
+                "a stored role assignment must produce a token that works"
+            )
+        }
+
+        /** Refresh must re-read roles, not carry the old claim forward — else revocation never lands. */
+        @Test
+        fun `refresh re-reads roles from storage so a revoked role stops working`() = testApplication {
+            sangitaApp()
+            val admin = anAdminUser("Soon To Be Revoked")
+            val token = adminToken(admin)
+
+            // Role revoked after the token was issued.
+            dal.users.removeRole(admin, Roles.ADMIN)
+
+            val refreshed = client.post("/v1/auth/refresh") {
+                header(HttpHeaders.Authorization, "Bearer $token")
+            }
+            assertEquals(HttpStatusCode.OK, refreshed.status, "refresh itself stays reachable")
+            val newToken = assertNotNull(refreshed.json()["token"]?.jsonPrimitive?.content)
+
+            assertEquals(
+                HttpStatusCode.Forbidden,
+                client.get("/v1/admin/imports") { header(HttpHeaders.Authorization, "Bearer $newToken") }.status,
+                "the refreshed token must not carry the revoked role forward"
+            )
+        }
 
         @Test
         fun `a wrong shared admin token is rejected`() = testApplication {
@@ -315,7 +395,7 @@ class MoneyPathApiTest : IntegrationTestBase() {
         @Test
         fun `malformed JSON on an admin route yields a 4xx with a message envelope`() = testApplication {
             sangitaApp()
-            val token = tokenFor(Uuid.random(), listOf("ADMIN"))
+            val token = adminToken()
             val response = client.post("/v1/admin/imports") {
                 header(HttpHeaders.Authorization, "Bearer $token")
                 contentType(ContentType.Application.Json)
@@ -333,7 +413,7 @@ class MoneyPathApiTest : IntegrationTestBase() {
         @Test
         fun `error bodies never contain a stack trace`() = testApplication {
             sangitaApp()
-            val token = tokenFor(Uuid.random(), listOf("ADMIN"))
+            val token = adminToken()
             val bodies = listOf(
                 client.get("/v1/krithis/${Uuid.random()}").bodyAsText(),
                 client.get("/v1/krithis/not-a-uuid").bodyAsText(),
@@ -363,7 +443,7 @@ class MoneyPathApiTest : IntegrationTestBase() {
             testApplication {
                 sangitaApp()
                 val curatorId = aUser("HTTP Curator")
-                val token = tokenFor(curatorId, listOf("CURATOR"))
+                val token = adminToken(curatorId)
                 val auth: io.ktor.client.request.HttpRequestBuilder.() -> Unit = {
                     header(HttpHeaders.Authorization, "Bearer $token")
                 }
@@ -435,7 +515,7 @@ class MoneyPathApiTest : IntegrationTestBase() {
         @Test
         fun `approving a non-existent import returns 404, not 500`() = testApplication {
             sangitaApp()
-            val token = tokenFor(aUser(), listOf("CURATOR"))
+            val token = adminToken(aUser())
             val response = client.post("/v1/admin/imports/${Uuid.random()}/review") {
                 header(HttpHeaders.Authorization, "Bearer $token")
                 contentType(ContentType.Application.Json)
@@ -455,7 +535,7 @@ class MoneyPathApiTest : IntegrationTestBase() {
         @Test
         fun `approving an import with no composer returns 400, not 500`() = testApplication {
             sangitaApp()
-            val token = tokenFor(aUser(), listOf("CURATOR"))
+            val token = adminToken(aUser())
             val importId = importService.submitImports(
                 listOf(
                     ImportKrithiRequest(
@@ -482,7 +562,7 @@ class MoneyPathApiTest : IntegrationTestBase() {
         @Test
         fun `a rejected import exposes no krithi on the public surface`() = testApplication {
             sangitaApp()
-            val token = tokenFor(aUser(), listOf("CURATOR"))
+            val token = adminToken(aUser())
             val importId = importService.submitImports(
                 listOf(
                     ImportKrithiRequest(

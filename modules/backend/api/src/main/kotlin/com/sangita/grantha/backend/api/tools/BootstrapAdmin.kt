@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory
 object BootstrapAdmin {
     private val logger = LoggerFactory.getLogger("BootstrapAdmin")
 
-    private const val ADMIN_ROLE = "grp_sangita_admin"
+    private val ADMIN_ROLE = com.sangita.grantha.backend.api.support.Roles.ADMIN
     private const val DEFAULT_FULL_NAME = "System Admin"
 
     fun run(env: Map<String, String> = System.getenv()) {

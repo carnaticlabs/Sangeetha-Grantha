@@ -118,7 +118,7 @@ fun Route.adminKrithiRoutes(
             val id = parseUuidParam(call.parameters["id"], "krithiId")
                 ?: return@post call.respondText("Missing krithi ID", status = HttpStatusCode.BadRequest)
             val request = call.receive<SaveKrithiSectionsRequest>()
-            krithiService.saveKrithiSections(id, request.sections)
+            krithiService.saveKrithiSections(id, request.sections, call.currentUserId())
             call.respond(HttpStatusCode.NoContent)
         }
     }
@@ -136,7 +136,7 @@ fun Route.adminKrithiRoutes(
             val id = parseUuidParam(call.parameters["id"], "variantId")
                 ?: return@post call.respondText("Missing variant ID", status = HttpStatusCode.BadRequest)
             val request = call.receive<SaveLyricVariantSectionsRequest>()
-            krithiService.saveLyricVariantSections(id, request.sections)
+            krithiService.saveLyricVariantSections(id, request.sections, call.currentUserId())
             call.respond(HttpStatusCode.NoContent)
         }
     }

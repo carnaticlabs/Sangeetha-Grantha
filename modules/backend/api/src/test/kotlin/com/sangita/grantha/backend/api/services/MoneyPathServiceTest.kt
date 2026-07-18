@@ -5,6 +5,7 @@ import com.sangita.grantha.backend.api.models.ImportOverridesDto
 import com.sangita.grantha.backend.api.models.ImportReviewRequest
 import com.sangita.grantha.backend.api.models.KrithiSectionRequest
 import com.sangita.grantha.backend.api.models.KrithiUpdateRequest
+import com.sangita.grantha.backend.api.models.LyricVariantSectionRequest
 import com.sangita.grantha.backend.testsupport.IntegrationTestBase
 import com.sangita.grantha.backend.api.testsupport.MoneyPathFixtures
 import com.sangita.grantha.backend.testsupport.TestFixtures
@@ -677,32 +678,104 @@ class MoneyPathServiceTest : IntegrationTestBase() {
             )
         }
 
+        /**
+         * F2 (fixed) — ADR-014 now covers the section-edit path.
+         *
+         * `saveKrithiSections` mutates exactly the state revisions capture, but used to write no
+         * revision: only `updateKrithi` (metadata) snapshotted, and `KrithiRevisionDto` carries no
+         * metadata anyway. A destructive section edit therefore left no recovery point, and
+         * "what did this krithi say on date X" was answerable only for import-time changes.
+         */
         @Test
-        fun `GAP - editing sections directly writes no revision, so the change is not revertible`() = runTest {
+        fun `editing sections appends a revision that preserves the pre-edit section state`() = runTest {
             val krithiService = KrithiServiceImpl(dal)
-            val krithiId = importKrithiWithSections("http://example.com/revert-2", "Original charanam")
+            val krithiId = importKrithiWithSections("http://example.com/section-edit", "Original charanam")
 
             val before = dal.revisions.listRevisions(krithiId.toJavaUuid())
+            val sectionsBefore = dal.krithis.getSections(krithiId).map { it.sectionType }
+            assertTrue("CHARANAM" in sectionsBefore, "precondition: the krithi has a charanam")
 
-            // Drop a section via the curator section-edit path.
+            // Destructive edit — drop the charanam.
             krithiService.saveKrithiSections(
                 krithiId,
                 listOf(
                     KrithiSectionRequest(sectionType = "PALLAVI", orderIndex = 1),
                     KrithiSectionRequest(sectionType = "ANUPALLAVI", orderIndex = 2),
-                )
+                ),
+                userId = aCurator("Section Editor"),
+            )
+
+            assertFalse(
+                "CHARANAM" in dal.krithis.getSections(krithiId).map { it.sectionType },
+                "the edit must be live in the serving layer"
             )
 
             val after = dal.revisions.listRevisions(krithiId.toJavaUuid())
+            assertTrue(
+                after.size > before.size,
+                "the section edit must append a revision (was ${before.size}, now ${after.size})"
+            )
+            assertTrue(
+                after.any { it.changeKind == "CURATOR_EDIT" },
+                "recorded as CURATOR_EDIT, got: ${after.map { it.changeKind }}"
+            )
 
-            // Documents a real gap, not desired behaviour: `saveKrithiSections` mutates exactly the
-            // state that revisions capture, but writes no revision — so a destructive section edit
-            // leaves no recovery point. `updateKrithi` (metadata) snapshots; this path does not.
-            // See TRACK-112 findings. When ADR-014 coverage is extended to this path, this test
-            // should be inverted to assert a revision WAS appended.
+            // The recovery point: the dropped charanam is still readable from history.
+            assertTrue(
+                before.any { rev -> rev.sections.any { it.sectionType == "CHARANAM" } },
+                "the pre-edit revision must still carry the charanam that was removed"
+            )
+        }
+
+        @Test
+        fun `editing lyric variant text appends a revision against the owning krithi`() = runTest {
+            val krithiService = KrithiServiceImpl(dal)
+            val krithiId = importKrithiWithSections("http://example.com/lyric-edit", "Original charanam")
+
+            val variantWithSections = dal.krithiLyrics.getLyricVariants(krithiId).firstOrNull()
+                ?: error("precondition: the imported krithi has a lyric variant")
+            val before = dal.revisions.listRevisions(krithiId.toJavaUuid())
+
+            val targetSection = variantWithSections.sections.first()
+            krithiService.saveLyricVariantSections(
+                variantWithSections.variant.id,
+                listOf(
+                    LyricVariantSectionRequest(
+                        sectionId = targetSection.sectionId.toString(),
+                        text = "Rewritten pallavi text",
+                    )
+                ),
+                userId = aCurator("Lyric Editor"),
+            )
+
+            val after = dal.revisions.listRevisions(krithiId.toJavaUuid())
+            assertTrue(
+                after.size > before.size,
+                "a lyric text edit must append a revision (was ${before.size}, now ${after.size})"
+            )
+        }
+
+        @Test
+        fun `an unattributed section edit still saves but records no revision`() = runTest {
+            // ADR-014 requires attribution, so a call with no user cannot write a revision. It must
+            // degrade — save the edit, skip the revision — rather than fail the curator's edit.
+            val krithiService = KrithiServiceImpl(dal)
+            val krithiId = importKrithiWithSections("http://example.com/section-edit-anon", "Original charanam")
+            val before = dal.revisions.listRevisions(krithiId.toJavaUuid())
+
+            krithiService.saveKrithiSections(
+                krithiId,
+                listOf(KrithiSectionRequest(sectionType = "PALLAVI", orderIndex = 1)),
+                userId = null,
+            )
+
             assertEquals(
-                before.size, after.size,
-                "current behaviour: the section-edit path writes no revision (ADR-014 coverage gap)"
+                1, dal.krithis.getSections(krithiId).size,
+                "the edit must still be applied"
+            )
+            assertEquals(
+                before.size, dal.revisions.listRevisions(krithiId.toJavaUuid()).size,
+                "no attribution means no revision — the edit is not rejected for it"
             )
         }
     }

@@ -1,7 +1,7 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Completed (with findings — see §Findings) |
-| **Version** | 2.1.0 |
+| **Version** | 2.2.0 |
 | **Last Updated** | 2026-07-18 |
 | **Author** | Sangeetha Grantha Team |
 | **Priority** | P1 |
@@ -28,7 +28,7 @@ Cover the business-critical flows with real-DB integration tests, prioritized by
 - [x] S7: concurrency — two simultaneous approvals of one import yield exactly one canonical krithi and one agreed mapping. S7b covers submission idempotency.
 
 ### Phase 2 — API scenarios (A1–A5) ✅ `MoneyPathApiTest` (18 tests)
-- [x] A1: auth boundary — anonymous → 401, unsigned/foreign-secret token → 401, valid token → 200. **The 401/403/200 matrix could not be written as specified: there is no 403 tier.** See F3.
+- [x] A1: auth boundary — anonymous → 401, unsigned/foreign-secret token → 401, authenticated without the role → 403, admin → 200; plus caller-supplied roles ignored, and revocation landing on refresh. The 403 tier was built as part of F3; it did not exist when this scenario was first written.
 - [x] A2: public read surface — anonymous search returns the paged envelope; ETag round-trip on `/v1/ragas` → 304 with an empty body; unknown id → 404; malformed id → 4xx.
 - [x] A3: error envelopes — malformed JSON is a client error; no stack frames or exception class names in any error body.
 - [x] A4: curator workflow over HTTP — queue → approve → publicly readable → audit row; rejected imports surface nothing publicly.
@@ -47,11 +47,41 @@ tests whose comments state the condition that should invert them, so a fix surfa
 | # | Finding | Status |
 |:---|:---|:---|
 | F1 | Approving an import whose payload has no COMPLETED extraction derived a source document with no extraction run, violating `ksr_doc_requires_extraction_ck` (V44) and aborting the approval **after** the krithi was committed — orphaned krithi, import left PENDING, retry could duplicate it. | **Fixed** — the document node is only derived when an extraction is resolvable; otherwise the revision is still written, curator-attributed. Guarded by S6c. |
-| F2 | `saveKrithiSections` mutates exactly the state revisions capture but writes no revision, so section edits leave no recovery point. `KrithiRevisionDto` also carries no krithi-level metadata, so `updateKrithi` snapshots cannot restore a title. ADR-014 coverage gap. | Open — pinned by S6 `GAP` test. Belongs to TRACK-117. |
-| F3 | No route checks the `roles` claim; `authenticate("admin-auth")` validates only signature, audience and a `userId` claim. Any validly-signed token — including one with no roles — has full admin access. Compounded by `POST /v1/auth/token` minting caller-supplied roles behind the shared `ADMIN_TOKEN`. | Open — pinned by two A1 `GAP` tests. This is the TRACK-119 deployment blocker. |
+| F2 | `saveKrithiSections` mutates exactly the state revisions capture but wrote no revision, so section edits left no recovery point. | **Fixed** — both curator section-edit paths (`saveKrithiSections`, `saveLyricVariantSections`) now snapshot the resulting state as a `CURATOR_EDIT` revision attributed to the JWT user, inside one transaction with the save and the audit row. An unattributed call still saves but records no revision (ADR-014 requires attribution) rather than failing the edit. Guarded by three S6 tests. **Still open:** `KrithiRevisionDto` carries no krithi-level metadata, so a title/raga change is not recoverable from history — revisions are section-scoped by design (ADR-014). Extending them to metadata is a TRACK-117 decision. |
+| F3 | No route checks the `roles` claim; `authenticate("admin-auth")` validates only signature, audience and a `userId` claim. Any validly-signed token — including one with no roles — had full admin access. Compounded by `POST /v1/auth/token` minting caller-supplied roles behind the shared `ADMIN_TOKEN`. | **Fixed** — see below. Guarded by five A1 tests. |
 | F4 | `reviewImport`'s broad `catch (e: Exception)` re-wraps `NoSuchElementException` as `RuntimeException("Failed to create krithi: …")`, so a missing import returns **500** instead of 404 and leaks internal phrasing to the caller. | **Fixed** — the catch now lets `NoSuchElementException` (404) and `IllegalArgumentException` (400) propagate with their own identity; only genuinely unexpected failures are wrapped. Guarded by two A4 tests. |
 | F6 | `DatabaseFactory.dbQuery` did not join an enclosing transaction — every nested call opened its own and committed independently. A service could not make a multi-repo operation atomic by wrapping it: the wrap compiled, read as a transaction boundary, and did nothing. `reviewImport` relied on exactly that and could leave a committed krithi behind when a later step failed. | **Fixed** — see below. Guarded by `DbQueryNestingTest` (4 tests) and S6d. |
 | F5 | `AutoApprovalService` treats an unparseable `duplicateCandidates` payload as "no duplicates" and auto-approves — fail-open on a deduplication guard. | Open — pinned by S2 `GAP` test. |
+
+### The authorisation fix (F3) — what changed
+
+Three parts, all in this track's scope; the shared-`ADMIN_TOKEN` login itself remains TRACK-119's
+to retire, since replacing it needs OAuth/OTP.
+
+1. **Roles come from storage.** `POST /v1/auth/token` reads the user's `role_assignments` instead of
+   copying the request's `roles` list into the JWT. The `roles` field is removed from
+   `AuthTokenRequest`; `ignoreUnknownKeys` is on, so a client still sending it is ignored rather
+   than rejected. This closes the escalation: the shared token no longer mints arbitrary roles.
+2. **A 403 tier exists.** `Route.requireRole` (a route-scoped plugin on Ktor's `AuthenticationChecked`
+   hook) gates every admin route on `grp_sangita_admin`. It deliberately does nothing when there is
+   no principal — otherwise an anonymous request would get 403 instead of the auth plugin's 401,
+   which both pre-empts the challenge and misreports the problem. 401 and 403 are now distinct and
+   tested as such.
+3. **Refresh re-reads roles.** `/v1/auth/refresh` no longer carries the old token's claim forward,
+   so a revoked role cannot be renewed indefinitely. Refresh stays outside `requireRole` so a
+   caller whose role was revoked can still reach it.
+
+**Role taxonomy is unchanged and remains a TRACK-119 decision.** `R__seed_01_reference.sql` defines
+exactly one role, so authorisation is a single admin tier — the viewer/curator/admin matrix A1
+originally imagined still has nothing to bind to. The role code now lives in one place
+(`support/Roles.kt`), previously duplicated in `BootstrapAdmin`.
+
+**Operational note.** Any user without `grp_sangita_admin` now gets 403 on admin routes where they
+previously had full access. `bootstrap-admin` assigns the role and no users are seeded, so a
+correctly bootstrapped environment is unaffected; users created through the user-management API need
+an explicit role assignment. Because enforcement reads the token claim, a role revoked mid-session
+stays effective until the token expires (24h default) unless the client refreshes — closing that
+window means a per-request storage check or a shorter TTL, which is a TRACK-119 call.
 
 ### The transaction fix (F6) — what it took
 
@@ -82,7 +112,7 @@ written. Both S6d and `DbQueryNestingTest` were verified to fail with the fix re
 ## Acceptance Criteria
 
 - [x] The three-zone flow is machine-verified (S1, A4).
-- [~] The RBAC boundary is machine-verified **as it exists** — authentication is covered; authorisation is not enforced anywhere, and that fact is now pinned rather than assumed (F3).
+- [x] The RBAC boundary is machine-verified — authentication (401), authorisation (403) and the escalation path are all covered, and roles are derived from storage rather than the request (F3).
 - [x] Per-PR integration time within budget — the 40 money-path tests add ~10s to `:api:integrationTest`; no scenario needed deferring to nightly.
 
 ## References

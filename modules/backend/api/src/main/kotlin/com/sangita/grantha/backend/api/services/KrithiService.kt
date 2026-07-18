@@ -7,6 +7,7 @@ import com.sangita.grantha.backend.api.models.LyricVariantUpdateRequest
 import com.sangita.grantha.backend.api.models.LyricVariantSectionRequest
 import com.sangita.grantha.backend.api.support.toJavaUuidOrNull
 import com.sangita.grantha.backend.api.support.toJavaUuidOrThrow
+import com.sangita.grantha.backend.dal.DatabaseFactory
 import com.sangita.grantha.backend.dal.SangitaDal
 import com.sangita.grantha.backend.dal.enums.LanguageCode
 import com.sangita.grantha.backend.dal.enums.MusicalForm
@@ -68,7 +69,11 @@ interface IKrithiService {
     /**
      * Replace/update the krithi section list.
      */
-    suspend fun saveKrithiSections(id: Uuid, sections: List<com.sangita.grantha.backend.api.models.KrithiSectionRequest>)
+    suspend fun saveKrithiSections(
+        id: Uuid,
+        sections: List<com.sangita.grantha.backend.api.models.KrithiSectionRequest>,
+        userId: Uuid? = null,
+    )
 
     /**
      * Create a lyric variant for a krithi with optional user attribution.
@@ -93,7 +98,8 @@ interface IKrithiService {
      */
     suspend fun saveLyricVariantSections(
         variantId: Uuid,
-        sections: List<LyricVariantSectionRequest>
+        sections: List<LyricVariantSectionRequest>,
+        userId: Uuid? = null,
     )
 }
 
@@ -228,7 +234,11 @@ class KrithiServiceImpl(private val dal: SangitaDal) : IKrithiService {
 
     override suspend fun getKrithiTags(id: Uuid): List<TagDto> = dal.krithis.getTags(id)
 
-    override suspend fun saveKrithiSections(id: Uuid, sections: List<com.sangita.grantha.backend.api.models.KrithiSectionRequest>) {
+    override suspend fun saveKrithiSections(
+        id: Uuid,
+        sections: List<com.sangita.grantha.backend.api.models.KrithiSectionRequest>,
+        userId: Uuid?,
+    ): Unit = DatabaseFactory.dbQuery {
         // Pass full section data including label for efficient updates
         val sectionsData = sections.map { 
             Triple(it.sectionType, it.orderIndex, it.label) 
@@ -240,6 +250,20 @@ class KrithiServiceImpl(private val dal: SangitaDal) : IKrithiService {
             entityTable = "krithi_sections",
             entityId = id
         )
+
+        // TRACK-112 (F2) / ADR-014: this path mutates exactly the state revisions capture, but
+        // wrote none — so a destructive section edit (dropping a charanam, reordering) left no
+        // recovery point and no answer to "what did this krithi say on date X". Snapshot the
+        // resulting state, as `updateKrithi` already does. Attribution is mandatory (ADR-014), so
+        // an unattributed call still saves but records no revision rather than failing the edit.
+        userId?.let { editor ->
+            dal.revisions.snapshotCurrentState(
+                krithiId = id.toJavaUuid(),
+                changeKind = "CURATOR_EDIT",
+                changeReason = "Krithi section structure update",
+                createdByUserId = editor.toJavaUuid(),
+            )
+        }
     }
 
     override suspend fun createLyricVariant(
@@ -309,8 +333,9 @@ class KrithiServiceImpl(private val dal: SangitaDal) : IKrithiService {
 
     override suspend fun saveLyricVariantSections(
         variantId: Uuid,
-        sections: List<LyricVariantSectionRequest>
-    ) {
+        sections: List<LyricVariantSectionRequest>,
+        userId: Uuid?,
+    ): Unit = DatabaseFactory.dbQuery {
         // Verify variant exists
         val variant = dal.krithiLyrics.findLyricVariantById(variantId)
             ?: throw NoSuchElementException("Lyric variant not found")
@@ -326,6 +351,18 @@ class KrithiServiceImpl(private val dal: SangitaDal) : IKrithiService {
             entityTable = "krithi_lyric_sections",
             entityId = variantId
         )
+
+        // TRACK-112 (F2) / ADR-014: same gap as the structural path — editing lyric text is
+        // precisely what revisions exist to make recoverable. The snapshot is taken against the
+        // owning krithi, since revisions are krithi-scoped.
+        userId?.let { editor ->
+            dal.revisions.snapshotCurrentState(
+                krithiId = variant.krithiId.toJavaUuid(),
+                changeKind = "CURATOR_EDIT",
+                changeReason = "Lyric variant section text update",
+                createdByUserId = editor.toJavaUuid(),
+            )
+        }
     }
 
     private fun normalize(value: String): String =
