@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Implemented |
-| **Version** | 1.4.0 — All 6 steps implemented (TRACK-110, 111, 113, 118). Flyway ratified as [ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md). Testcontainers 2.0.5; 47 migrations. |
-| **Last Updated** | 2026-07-12 |
+| **Version** | 1.5.0 — All 6 steps implemented (TRACK-110, 111, 112, 113, 118). Flyway ratified as [ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md). Testcontainers 2.0.5; 47 migrations. |
+| **Last Updated** | 2026-07-18 |
 | **Author** | Integration testing analysis (for Seshadri) |
 | **Companion docs** | `../north-star-evaluation.md` (N2/N3), `broken-tests-remediation.md`, `../02-architecture/backend-system-design.md` |
 | **Scope** | Detailed analysis of Testcontainers and equivalent options, plus a recommended integration-test architecture and scenario suite for the whole stack |
@@ -423,7 +423,14 @@ Sequenced to interleave with north-star Phase 0/1; each step lands independently
 
 **Step 4 — CI activation ✅ (TRACK-111).** GitHub Actions (`.github/workflows/ci.yml`): `backend-unit → backend-integration → migrations → frontend typecheck+build+test → worker pytest`. Testcontainers needs zero special configuration on hosted runners. Every test written in Steps 1–3 is a gate. Frontend Vitest tests added to the CI pipeline (TRACK-118).
 
-**Step 5 — Money-path service & API scenarios (TRACK-112, not started).** S1–S7, A1–A5, prioritized in that order.
+**Step 5 — Money-path service & API scenarios ✅ (TRACK-112).** S1–S7 in `MoneyPathServiceTest`
+(22 tests) and A1–A5 in `MoneyPathApiTest` (18 tests), plus `MoneyPathFixtures` builders. Two
+scenarios were re-scoped against the code as it actually is: S6's "bulk-operation rollback" became
+recoverable-from-revision-history (no rollback feature exists; versioned canon does), and A1's
+401/403/200 matrix could only be written for 401/200 because no route enforces the `roles` claim.
+The suite surfaced five defects — one fixed (approval aborting on a payload with no completed
+extraction, leaving an orphaned krithi), four pinned as characterisation tests. See the
+[TRACK-112 findings table](../../conductor/tracks/TRACK-112-money-path-scenarios.md#findings).
 
 **Step 6 — Worker + E2E ✅ (TRACK-113).** testcontainers-python for 18 worker integration tests; Playwright for the three E2E money paths (login→review→approve, bulk import, krithi edit), nightly schedule (`e2e-nightly.yml`). Admin provisioned via SQL in CI. Green nightly run confirmed.
 

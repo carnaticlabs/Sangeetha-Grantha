@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.6.3 |
-| **Last Updated** | 2026-07-09 |
+| **Version** | 1.6.4 |
+| **Last Updated** | 2026-07-18 |
 | **Author** | Sangeetha Grantha Team |
 
 # Conductor Tracks Registry
@@ -22,7 +22,7 @@
 | [TRACK-011](./tracks/TRACK-011-bulk-import-quality-scoring-system.md) | Bulk Import Quality Scoring System | Completed |
 | [TRACK-012](./tracks/TRACK-012-bulk-import-review-workflow-completion.md) | Bulk Import Review Workflow Completion | Completed |
 | [TRACK-013](./tracks/TRACK-013-bulk-import-performance-scalability.md) | Bulk Import Performance & Scalability Improvements | Completed |
-| [TRACK-014](./tracks/TRACK-014-bulk-import-testing-quality-assurance.md) | Bulk Import Testing & Quality Assurance | Superseded |
+| [TRACK-014](./tracks/TRACK-014-bulk-import-testing-quality-assurance.md) | Bulk Import Testing & Quality Assurance | Superseded by TRACK-112 |
 | [TRACK-015](./tracks/TRACK-015-ktor-upgrade-3.4.0.md) | Ktor Upgrade to 3.4.0 | Completed |
 | [TRACK-016](./tracks/TRACK-016-exposed-upgrade-1.0.0.md) | Exposed Upgrade to 1.0.0 | Completed |
 | [TRACK-017](./tracks/TRACK-017-doc-dependency-update.md) | Documentation Dependency Updates | Completed |
@@ -115,7 +115,7 @@
 | [TRACK-109](./tracks/TRACK-109-production-readiness-roadmap.md) | Production Readiness Roadmap (Epic) | Not Started |
 | [TRACK-110](./tracks/TRACK-110-testcontainers-flyway-cutover.md) | Testcontainers Substrate + Flyway Cutover | Completed |
 | [TRACK-111](./tracks/TRACK-111-dal-suite-ci-activation.md) | DAL Test Suite + CI Activation | Completed |
-| [TRACK-112](./tracks/TRACK-112-money-path-scenarios.md) | Money-Path Service & API Scenarios | Not Started |
+| [TRACK-112](./tracks/TRACK-112-money-path-scenarios.md) | Money-Path Service & API Scenarios | Completed |
 | [TRACK-113](./tracks/TRACK-113-worker-e2e-tests.md) | Worker + E2E Layer (revives TRACK-035) | Completed |
 | [TRACK-114](./tracks/TRACK-114-password-hashing.md) | Authentication Hardening — Password Hashing (N1, re-scoped) | Completed |
 | [TRACK-115](./tracks/TRACK-115-repo-hygiene-secret-rotation.md) | Repository Hygiene & Secret Rotation (N8) | Completed |

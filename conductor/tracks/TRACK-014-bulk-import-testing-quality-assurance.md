@@ -2,12 +2,20 @@
 
 | Metadata | Value |
 |:---|:---|
-| **Status** | Superseded |
+| **Status** | Superseded by [TRACK-112](./TRACK-112-money-path-scenarios.md) |
 | **Owner** | Backend Team |
 | **Priority** | MEDIUM |
 | **Created** | 2026-01-23 |
 | **Related Tracks** | TRACK-010, TRACK-011, TRACK-012, TRACK-013 |
 | **Implementation Plan** | [bulk-import-fixes-implementation-plan.md](../../application_documentation/07-quality/bulk-import-fixes-implementation-plan.md) |
+
+> **Superseded (2026-07-18) by [TRACK-112](./TRACK-112-money-path-scenarios.md).** The coverage this
+> track called for now exists on the Testcontainers + Flyway substrate that did not exist when it was
+> written (TRACK-110/111): entity resolution, normalization, the ingestion → review → canon flow,
+> partial-failure batches and the RBAC boundary are covered by `MoneyPathServiceTest` (S1–S7) and
+> `MoneyPathApiTest` (A1–A5). TRACK-112 supersedes rather than continues this track because it
+> prioritises by business risk instead of by component, and asserts against a real database rather
+> than the mock-heavy approach proposed here.
 
 ## 1. Goal
 

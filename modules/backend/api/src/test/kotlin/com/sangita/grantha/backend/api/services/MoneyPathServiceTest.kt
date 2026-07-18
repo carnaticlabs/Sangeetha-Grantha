@@ -6,6 +6,7 @@ import com.sangita.grantha.backend.api.models.ImportReviewRequest
 import com.sangita.grantha.backend.api.models.KrithiSectionRequest
 import com.sangita.grantha.backend.api.models.KrithiUpdateRequest
 import com.sangita.grantha.backend.testsupport.IntegrationTestBase
+import com.sangita.grantha.backend.api.testsupport.MoneyPathFixtures
 import com.sangita.grantha.backend.testsupport.TestFixtures
 import com.sangita.grantha.backend.dal.SangitaDal
 import com.sangita.grantha.backend.dal.SangitaDalImpl
@@ -502,52 +503,62 @@ class MoneyPathServiceTest : IntegrationTestBase() {
     inner class BulkPartialFailure {
 
         @Test
-        fun `valid imports succeed while missing-composer imports are rejected`() = runTest {
-            val requests = listOf(
-                ImportKrithiRequest(
-                    source = "bulk-test",
-                    sourceKey = "http://example.com/bulk-good-1",
-                    rawTitle = "Good Krithi One",
-                    rawComposer = "Tyagaraja",
-                    rawRaga = "Todi",
-                ),
-                ImportKrithiRequest(
-                    source = "bulk-test",
-                    sourceKey = "http://example.com/bulk-good-2",
-                    rawTitle = "Good Krithi Two",
-                    rawComposer = "Tyagaraja",
-                    rawRaga = "Kambhoji",
-                ),
-                ImportKrithiRequest(
-                    source = "bulk-test",
-                    sourceKey = "http://example.com/bulk-no-composer",
-                    rawTitle = "No Composer Krithi",
-                    // rawComposer intentionally null
-                    rawRaga = "Shankarabharanam",
-                ),
-            )
+        fun `a 50-row batch with 5 malformed rows approves 45 and reports 5 row-level errors`() = runTest {
+            val batch = MoneyPathFixtures.anImportBatch(count = 50, malformed = 5, keyPrefix = "s5")
 
-            val imports = importService.submitImports(requests)
-            assertEquals(3, imports.size, "all rows should be accepted for submission")
+            val imports = importService.submitImports(batch)
+            assertEquals(50, imports.size, "every row is accepted for staging; validation happens at review")
 
-            // Approve the good ones
-            var approvedCount = 0
-            var failedCount = 0
+            val reviewer = MoneyPathFixtures.aCurator(dal, "Batch Reviewer")
+            var approved = 0
+            val errors = mutableListOf<String>()
             for (imp in imports) {
-                try {
-                    val result = importService.reviewImport(
+                runCatching {
+                    importService.reviewImport(
                         imp.id,
                         ImportReviewRequest(status = ImportStatusDto.APPROVED),
-                        reviewerUserId = null
+                        reviewerUserId = reviewer,
                     )
-                    if (result.mappedKrithiId != null) approvedCount++
-                } catch (_: Exception) {
-                    failedCount++
+                }.onSuccess { if (it.mappedKrithiId != null) approved++ }
+                    .onFailure { errors += it.message.orEmpty() }
+            }
+
+            assertEquals(45, approved, "the 45 well-formed rows must all reach canon")
+            assertEquals(5, errors.size, "the 5 composer-less rows must fail individually, got: $errors")
+            assertTrue(
+                errors.all { it.contains("Composer is required") },
+                "each failure must name its cause rather than a generic error: $errors"
+            )
+
+            // Row-level isolation: a bad row must not roll back or block its neighbours.
+            assertEquals(
+                45L, dal.krithiSearch.countAll(),
+                "exactly the good rows are persisted — nothing partially written for the bad ones"
+            )
+        }
+
+        @Test
+        fun `a malformed row leaves its own import un-approved rather than silently passing`() = runTest {
+            val batch = MoneyPathFixtures.anImportBatch(count = 2, malformed = 1, keyPrefix = "s5-small")
+            val imports = importService.submitImports(batch)
+            val reviewer = MoneyPathFixtures.aCurator(dal)
+
+            val results = imports.map { imp ->
+                imp.id to runCatching {
+                    importService.reviewImport(
+                        imp.id,
+                        ImportReviewRequest(status = ImportStatusDto.APPROVED),
+                        reviewerUserId = reviewer,
+                    )
                 }
             }
 
-            // At least the two with composers should succeed
-            assertTrue(approvedCount >= 2, "valid imports must succeed (got $approvedCount)")
+            val failed = results.single { it.second.isFailure }.first
+            assertEquals(
+                ImportStatusDto.PENDING,
+                dal.imports.findById(failed)!!.importStatus,
+                "a row that could not be promoted must stay PENDING for a curator to fix"
+            )
         }
     }
 
