@@ -163,7 +163,7 @@ Spin the existing `compose.yaml` `db` service up/down around the `test` task.
 
 ### 3.1 Test taxonomy — where integration tests sit
 
-```
+```text
             ┌──────────── E2E (Playwright vs compose stack) ───────────┐   few, slow
             │  login → review → approve   bulk import   krithi edit    │
             ├──────────── API integration (Ktor testApplication ──────┤
@@ -421,7 +421,7 @@ Sequenced to interleave with north-star Phase 0/1; each step lands independently
 
 **Step 3 — DAL suite ✅ (TRACK-111).** `dal/src/test` stood up with scenarios D1–D6 (11 tests). D1 (migrations-from-scratch) also satisfies north-star Phase 0 item 3's "apply all migrations to a scratch Postgres" CI check and verifies the Flyway cutover. Shared substrate extracted to `:modules:backend:test-support` (D11); D5 constraint violations surface as typed `DalException`s via a central mapper in `DatabaseFactory.dbQuery`.
 
-**Step 4 — CI activation ✅ (TRACK-111).** GitHub Actions (`.github/workflows/ci.yml`): `backend-unit → backend-integration → migrations → frontend typecheck+build+test → worker pytest`. Testcontainers needs zero special configuration on hosted runners. Every test written in Steps 1–3 is a gate. Frontend Vitest tests added to the CI pipeline (TRACK-118).
+**Step 4 — CI activation ✅ (TRACK-111).** GitHub Actions (`.github/workflows/ci.yml`), six parallel jobs: `docs · backend-unit · backend-integration · migrations · frontend typecheck+build+test · worker pytest`. Testcontainers needs zero special configuration on hosted runners. Every test written in Steps 1–3 is a gate. Frontend Vitest tests added to the CI pipeline (TRACK-118). The `docs` job runs `tools/check-doc-links.py` (also `make check-docs`), which fails the build on a relative Markdown link whose target does not exist — the failure mode that let 131 links rot silently, since a broken relative link still renders and only 404s on click. It skips fenced blocks and inline code spans, so documented templates and prose about link syntax are not treated as references.
 
 **Step 5 — Money-path service & API scenarios ✅ (TRACK-112).** S1–S7 in `MoneyPathServiceTest`
 (22 tests) and A1–A5 in `MoneyPathApiTest` (18 tests), plus `MoneyPathFixtures` builders. Two

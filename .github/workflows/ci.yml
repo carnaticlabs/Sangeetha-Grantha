@@ -18,6 +18,18 @@ permissions:
   contents: read
 
 jobs:
+  docs:
+    name: Doc links resolve
+    runs-on: ubuntu-latest
+    # Cheapest job in the matrix: no toolchain, no services — just a filesystem walk.
+    # Runs alongside the others, so a broken link never delays real test feedback.
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      # ubuntu-latest ships Python 3.12; the script needs no third-party packages.
+      - name: Check relative Markdown links
+        run: python3 tools/check-doc-links.py
+
   backend-unit:
     name: Backend unit (<30s, D9)
     runs-on: ubuntu-latest
