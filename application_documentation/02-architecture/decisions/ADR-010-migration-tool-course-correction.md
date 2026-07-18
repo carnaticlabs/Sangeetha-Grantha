@@ -112,7 +112,7 @@ The migration count grew from 7 (at ADR-003 time) to 38, covering:
 ## References
 
 - [Database Migrations Documentation](../../04-database/migrations.md)
-- [db-migrate Tool README](../../../tools/db-migrate/README.md)
+- [db-migrate Tool README](../../../archive/tools/db-migrate/README.md)
 - [Tech Stack](../tech-stack.md)
 - [ADR-003 (Superseded)](./ADR-003-database-migrations.md)
 - TRACK-078: Archive Rust CLI

@@ -852,7 +852,7 @@ After running bootstrap, verify:
 ## 10. Related Documentation
 
 - **[Project README](../../../README.md)**: Getting started guide and project overview
-- **[Sangita CLI README](../../../tools/sangita-cli/README.md)**: Database management and development workflow
+- **[Sangita CLI README](../../../archive/tools/sangita-cli/README.md)**: Database management and development workflow
 - **[Architecture Documentation](../../02-architecture/)**: System architecture and design decisions
 - **mise Documentation**: https://mise.jdx.dev/
 - **Docker Compose**: https://docs.docker.com/compose/

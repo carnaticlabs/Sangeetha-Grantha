@@ -46,7 +46,7 @@ Avoid creating duplicate composer records when the same person is referred to by
 
 ## 5. References
 - [TRACK-008](./TRACK-008-entity-resolution-hardening.md) – Entity Resolution Hardening (composer/raga/tala normalization).
-- [Bulk Import Strategy](../application_documentation/01-requirements/features/bulk-import/01-strategy/master-analysis.md) – Lyric structure and entity mapping.
+- [Bulk Import Strategy](../../application_documentation/01-requirements/features/bulk-import/01-strategy/master-analysis.md) – Lyric structure and entity mapping.
 - Source example: [Guru Guha – Bala Kuchambike](http://guru-guha.blogspot.com/2008/02/dikshitar-kriti-bala-kuchambike-raga.html) (composer cited as "Dikshitar" in context of Muthuswami Dikshitar).
 
 ## 6. Progress Log

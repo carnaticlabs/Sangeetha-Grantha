@@ -41,6 +41,6 @@ When implementing new pipeline features, follow the **Vertical Slice** pattern:
 
 ## References
 
-- [Remediation Implementation Plan](../../application_documentation/07-quality/remediation-implementation-plan-2026-02.md)
-- [Multi-Source Import Retrospective](../../application_documentation/11-retrospective/multi-source-import-retrospective-2026-02.md)
-- [Technical Retrospective (Remediation)](../../application_documentation/11-retrospective/remediation-technical-retrospective-2026-02-12.md)
+- [Remediation Implementation Plan](../../../application_documentation/07-quality/remediation-implementation-plan-2026-02.md)
+- [Multi-Source Import Retrospective](../../../application_documentation/11-retrospective/multi-source-import-retrospective-2026-02.md)
+- [Technical Retrospective (Remediation)](../../../application_documentation/11-retrospective/remediation-technical-retrospective-2026-02-12.md)

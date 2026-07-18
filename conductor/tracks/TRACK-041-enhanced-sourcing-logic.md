@@ -12,8 +12,8 @@ Harden the Krithi import pipeline by implementing multi-source structural voting
 
 ## 2. Context
 - **Goal**: Ensure the "System of Record" always uses the most musicologically accurate structure.
-- **Reference**: [Proposed Sourcing Hierarchy](../application_documentation/07-quality/results/krithi-structural-audit-2026-02.md#5-proposed-sourcing-hierarchy--logic)
-- **Strategy**: [Krithi Data Sourcing & Quality Strategy](../application_documentation/01-requirements/krithi-data-sourcing/quality-strategy.md) — Sections 3, 5.3, 8
+- **Reference**: [Proposed Sourcing Hierarchy](../../application_documentation/07-quality/results/krithi-structural-audit-2026-02.md#5-proposed-sourcing-hierarchy--logic)
+- **Strategy**: [Krithi Data Sourcing & Quality Strategy](../../application_documentation/01-requirements/krithi-data-sourcing/quality-strategy.md) — Sections 3, 5.3, 8
 
 ## 3. Implementation Plan
 - [x] Define source authority hierarchy (Tier 1–5) with field-level authority model.

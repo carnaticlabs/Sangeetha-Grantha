@@ -36,7 +36,7 @@ Standardize environment variable handling across the monorepo using a single sou
 
 | Component | File | Change |
 |:---|:---|:---|
-| Config | [tools.yaml](../../../tools.yaml) | Define externalizable variables |
+| Config | [tools.yaml](../../../config/tools.yaml) | Define externalizable variables |
 | Config | [config/README.md](../../../config/README.md) | Document structure |
 | DAL | [build.gradle.kts](../../../modules/backend/dal/build.gradle.kts) | Add dotenv dependency |
 | DAL | [DatabaseConfigLoader.kt](../../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/support/DatabaseConfigLoader.kt) | Refactor loading logic |

@@ -335,9 +335,9 @@ The implementation correctly follows most clarified requirements:
 
 - [CSV Import Strategy](../01-requirements/features/bulk-import/01-strategy/csv-import-strategy.md)
 - [Technical Implementation Guide](../01-requirements/features/bulk-import/02-implementation/technical-implementation-guide.md)
-- [Claude Review](./bulk-import-implementation-review-claude.md)
-- [Goose Review](./csv-import-strategy-implementation-review-goose.md)
-- [Codex Review](./csv-import-strategy-review-codex.md)
+- [Claude Review](../archive/quality-reports/bulk-import-implementation-review-claude.md)
+- [Goose Review](../archive/quality-reports/csv-import-strategy-implementation-review-goose.md)
+- [Codex Review](../archive/quality-reports/csv-import-strategy-review-codex.md)
 - [Conductor Tracks](../../conductor/tracks.md)
 
 ---

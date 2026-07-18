@@ -84,4 +84,4 @@ Definitive actionable checklist derived from:
 - [Documentation Audit Report](./documentation-audit-report-2026-01-30.md)
 - [Current Versions (Auto-Generated)](./current-versions.md)
 - [Documentation Standards](./standards.md)
-- [sangita-cli README](../../tools/sangita-cli/README.md)
+- [sangita-cli README](../../archive/tools/sangita-cli/README.md)

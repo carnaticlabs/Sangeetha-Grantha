@@ -123,7 +123,7 @@ bun run test:e2e:report    # View HTML report
 - `modules/frontend/sangita-admin-web/.gitignore` - Exclude test artifacts
 
 ## 8. Related Documentation
-- **Conductor Track**: [TRACK-035](../../../conductor/tracks/TRACK-035-frontend-e2e-testing.md)
+- **Conductor Track**: [TRACK-035](../../conductor/tracks/TRACK-035-frontend-e2e-testing.md)
 - **Test CSV**: `database/for_import/bulk_import_test.csv`
 
 ## 9. Future Improvements

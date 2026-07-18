@@ -174,7 +174,7 @@ This directory contains comprehensive analysis, strategy, and implementation gui
 
 - [Conductor Track](../../../../conductor/tracks/TRACK-001-bulk-import-krithis.md)
 - [Database Schema](../../../04-database/schema.md)
-- [Import Pipeline Migration](../../../../database/migrations/04__import-pipeline.sql)
+- [Import Pipeline Migration](../../../../database/migrations/V04__import-pipeline.sql)
 - [API Contract](../../../03-api/api-contract.md)
 
 ---

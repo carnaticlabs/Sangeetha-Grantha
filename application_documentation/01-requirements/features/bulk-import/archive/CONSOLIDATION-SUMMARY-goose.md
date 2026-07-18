@@ -367,7 +367,7 @@ If Python was already partially implemented, migration to Rust is straightforwar
 
 ## References
 
-- [CSV Import Strategy](./01-strategy/csv-import-strategy.md)
-- [Rust CLI Tool](../../../../tools/sangita-cli/)
-- [Database Seeding Workflow](../../../../tools/sangita-cli/src/commands/db.rs)
-- [Project Architecture Rules](../../../../.cursorrules)
+- [CSV Import Strategy](../01-strategy/csv-import-strategy.md)
+- [Rust CLI Tool](../../../../../archive/tools/sangita-cli)
+- [Database Seeding Workflow](../../../../../archive/tools/sangita-cli/src/commands/db.rs)
+- [Project Architecture Rules](../../../../../.cursorrules)

@@ -1244,6 +1244,6 @@ The following original findings are **still accurate and important**:
 **Reviewer:** Claude Sonnet 4.5
 **Next Review:** After Phase 4 completion (review workflow APIs)
 **Reference Documents:**
-- [csv-import-strategy.md](../01-requirements/features/bulk-import/01-strategy/csv-import-strategy.md) - Original strategy
-- [technical-implementation-guide.md](../01-requirements/features/bulk-import/02-implementation/technical-implementation-guide.md) - Clarified requirements (Section 1.1)
-- [TRACK-001](../../conductor/tracks/TRACK-001-bulk-import-krithis.md) - Implementation tracking
+- [csv-import-strategy.md](../../01-requirements/features/bulk-import/01-strategy/csv-import-strategy.md) - Original strategy
+- [technical-implementation-guide.md](../../01-requirements/features/bulk-import/02-implementation/technical-implementation-guide.md) - Clarified requirements (Section 1.1)
+- [TRACK-001](../../../conductor/tracks/TRACK-001-bulk-import-krithis.md) - Implementation tracking

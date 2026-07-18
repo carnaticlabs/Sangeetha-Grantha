@@ -1057,4 +1057,4 @@ The import pipeline will be a significant engineering effort but is essential fo
 - [Generic Scraping](../../generic-scraping.md)
 - [Domain Model](../../../domain-model.md)
 - [Database Schema](../../../../04-database/schema.md)
-- [Import Pipeline Migration](../../../../../database/migrations/04__import-pipeline.sql)
+- [Import Pipeline Migration](../../../../../database/migrations/V04__import-pipeline.sql)

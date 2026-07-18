@@ -1,5 +1,5 @@
 > **⚠️ SUPERSEDED (2026-06-12):** Database migrations are standardized on **Flyway Community** per
-> [ADR-013](../../application_documentation/02-architecture/decisions/ADR-013-db-migration-with-flyway.md).
+> [ADR-013](../../../application_documentation/02-architecture/decisions/ADR-013-db-migration-with-flyway.md).
 > This tool is retained only until the cutover completes, after which it will be archived to
 > `tools/db-migrate-archived/`. Use `make migrate` / `make db-reset` as before — the Makefile is the stable interface.
 

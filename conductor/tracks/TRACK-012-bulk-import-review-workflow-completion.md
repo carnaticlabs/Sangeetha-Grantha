@@ -428,5 +428,5 @@ export const AutoApproveQueue: React.FC = () => {
 
 - [CSV Import Strategy](../../application_documentation/01-requirements/features/bulk-import/01-strategy/csv-import-strategy.md) (Section 4.4, 7.2)
 - [Implementation Plan](../../application_documentation/07-quality/bulk-import-fixes-implementation-plan.md)
-- [Claude Review](../../application_documentation/07-quality/bulk-import-implementation-review-claude.md)
-- [Goose Review](../../application_documentation/07-quality/csv-import-strategy-implementation-review-goose.md)
+- [Claude Review](../../application_documentation/archive/quality-reports/bulk-import-implementation-review-claude.md)
+- [Goose Review](../../application_documentation/archive/quality-reports/csv-import-strategy-implementation-review-goose.md)

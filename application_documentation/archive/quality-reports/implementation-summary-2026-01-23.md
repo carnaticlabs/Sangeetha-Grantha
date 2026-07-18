@@ -27,7 +27,7 @@ Completed implementation of bulk import system features across four major tracks
    - Color-coded status indicators (active/completed/failed)
    - Animation for running jobs
    - Stage-specific labels and status chips
-   - **File:** [BulkImport.tsx](../../modules/frontend/sangita-admin-web/src/pages/BulkImport.tsx:477-519)
+   - **File:** [BulkImport.tsx](../../../modules/frontend/sangita-admin-web/src/pages/BulkImport.tsx:477-519)
 
 2. **LogViewer Drawer**
    - Slide-in drawer for inspecting task details
@@ -35,7 +35,7 @@ Completed implementation of bulk import system features across four major tracks
    - Full error stack traces with formatted display
    - Copy-to-clipboard functionality for task JSON
    - Source URL linking with external navigation
-   - **File:** [BulkImport.tsx](../../modules/frontend/sangita-admin-web/src/pages/BulkImport.tsx:231-312)
+   - **File:** [BulkImport.tsx](../../../modules/frontend/sangita-admin-web/src/pages/BulkImport.tsx:231-312)
 
 **Status:** All three phases complete (Foundation, Monitoring, Operational Controls)
 
@@ -52,7 +52,7 @@ Completed implementation of bulk import system features across four major tracks
    - "Select All" checkbox in sidebar header
    - Visual feedback for selected items
    - Selection count display in header
-   - **File:** [ImportReview.tsx](../../modules/frontend/sangita-admin-web/src/pages/ImportReview.tsx:173-196)
+   - **File:** [ImportReview.tsx](../../../modules/frontend/sangita-admin-web/src/pages/ImportReview.tsx:173-196)
 
 2. **Bulk Actions**
    - Bulk Approve button (processes all selected)
@@ -60,7 +60,7 @@ Completed implementation of bulk import system features across four major tracks
    - Confirmation dialogs with counts
    - Progress indicators during processing
    - Success/error toasts with results
-   - **File:** [ImportReview.tsx](../../modules/frontend/sangita-admin-web/src/pages/ImportReview.tsx:108-152)
+   - **File:** [ImportReview.tsx](../../../modules/frontend/sangita-admin-web/src/pages/ImportReview.tsx:108-152)
 
 **Status:** Phase 1 & 2 complete. Phase 3 partial (bulk actions done, finalize batch and export pending)
 
@@ -82,7 +82,7 @@ Completed implementation of bulk import system features across four major tracks
 **Goal:** Implement quality scoring for review prioritization
 
 **Status:** Fully implemented and integrated. Verified:
-- Database migration [16__add_quality_scoring.sql](../../database/migrations/16__add_quality_scoring.sql) exists
+- Database migration [16__add_quality_scoring.sql](../../../database/migrations/V16__add_quality_scoring.sql) exists
 - QualityScoringService with 4-factor scoring (completeness 40%, resolution 30%, source 20%, validation 10%)
 - Quality tiers: EXCELLENT (≥0.90), GOOD (≥0.75), FAIR (≥0.60), POOR (<0.60)
 - Integration with BulkImportWorkerService during entity resolution
@@ -103,27 +103,27 @@ Completed implementation of bulk import system features across four major tracks
    - Supports batch approve/reject operations
    - Per-import error handling with detailed results
    - Returns success/failure counts
-   - **File:** [ImportRoutes.kt](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/ImportRoutes.kt:84-121)
+   - **File:** [ImportRoutes.kt](../../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/ImportRoutes.kt:84-121)
 
 2. **Auto-Approve Queue Endpoint**
    - Endpoint: `GET /v1/admin/imports/auto-approve-queue`
    - Filters by: batchId, qualityTier, confidenceMin
    - Pagination support (limit/offset)
    - Uses AutoApprovalService eligibility rules
-   - **File:** [ImportRoutes.kt](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/ImportRoutes.kt:123-139)
+   - **File:** [ImportRoutes.kt](../../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/ImportRoutes.kt:123-139)
 
 3. **Enhanced AutoApprovalService**
    - Refactored to expose `shouldAutoApprove()` method
    - Supports filtering by quality tiers
    - Confidence-based eligibility checks
    - Duplicate conflict detection
-   - **File:** [AutoApprovalService.kt](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/AutoApprovalService.kt:17-34)
+   - **File:** [AutoApprovalService.kt](../../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/AutoApprovalService.kt:17-34)
 
 4. **ImportService Enhancement**
    - Added `getAutoApproveQueue()` method
    - Multi-filter support (batch, quality tier, confidence)
    - Integration with AutoApprovalService
-   - **File:** [ImportService.kt](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/ImportService.kt:50-85)
+   - **File:** [ImportService.kt](../../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/ImportService.kt:50-85)
 
 #### Frontend Enhancements
 
@@ -135,7 +135,7 @@ Completed implementation of bulk import system features across four major tracks
    - **(Requires additional work to fully integrate with getImports API)**
 
 2. **Auto-Approve Queue Page**
-   - New page: [AutoApproveQueue.tsx](../../modules/frontend/sangita-admin-web/src/pages/AutoApproveQueue.tsx)
+   - New page: [AutoApproveQueue.tsx](../../../modules/frontend/sangita-admin-web/src/pages/AutoApproveQueue.tsx)
    - Comprehensive filtering (batch, quality tier, confidence threshold)
    - Queue listing with quality indicators
    - Bulk approve all functionality
@@ -146,7 +146,7 @@ Completed implementation of bulk import system features across four major tracks
    - Added `bulkReviewImports()` function
    - Added `getAutoApproveQueue()` function
    - Type-safe parameter handling
-   - **File:** [client.ts](../../modules/frontend/sangita-admin-web/src/api/client.ts:509-543)
+   - **File:** [client.ts](../../../modules/frontend/sangita-admin-web/src/api/client.ts:509-543)
 
 ---
 
@@ -270,10 +270,10 @@ None required for current implementation.
 
 ### Updated Files
 
-1. [TRACK-003-bulk-import-dashboard.md](../../conductor/tracks/TRACK-003-bulk-import-dashboard.md) - Marked as Completed
-2. [TRACK-004-bulk-import-review-ui.md](../../conductor/tracks/TRACK-004-bulk-import-review-ui.md) - Updated to Phase 3 Partial
-3. [TRACK-012-bulk-import-review-workflow-completion.md](../../conductor/tracks/TRACK-012-bulk-import-review-workflow-completion.md) - Marked as Completed
-4. [tracks.md](../../conductor/tracks.md) - Updated status for all tracks
+1. [TRACK-003-bulk-import-dashboard.md](../../../conductor/tracks/TRACK-003-bulk-import-dashboard.md) - Marked as Completed
+2. [TRACK-004-bulk-import-review-ui.md](../../../conductor/tracks/TRACK-004-bulk-import-review-ui.md) - Updated to Phase 3 Partial
+3. [TRACK-012-bulk-import-review-workflow-completion.md](../../../conductor/tracks/TRACK-012-bulk-import-review-workflow-completion.md) - Marked as Completed
+4. [tracks.md](../../../conductor/tracks.md) - Updated status for all tracks
 
 ---
 

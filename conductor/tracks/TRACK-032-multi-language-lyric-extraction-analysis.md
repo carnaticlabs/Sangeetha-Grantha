@@ -45,7 +45,7 @@ Extract all language/script variants of lyrics in a single scrape from pages tha
 
 ## 5. References
 - [Guru Guha – Bala Kuchambike (Raga Surati)](http://guru-guha.blogspot.com/2008/02/dikshitar-kriti-bala-kuchambike-raga.html) – Example page with English, Devanagari, Tamil, Telugu, Kannada, Malayalam lyrics and section labels (pallavi, samashTi caraNam).
-- [Lyric structure in bulk import](../application_documentation/01-requirements/features/bulk-import/01-strategy/master-analysis.md) – Sections and lyric variants.
+- [Lyric structure in bulk import](../../application_documentation/01-requirements/features/bulk-import/01-strategy/master-analysis.md) – Sections and lyric variants.
 - Domain: `krithi_lyric_variants`, `krithi_lyric_sections`, `krithi_sections` (existing).
 
 ## 6. Progress Log

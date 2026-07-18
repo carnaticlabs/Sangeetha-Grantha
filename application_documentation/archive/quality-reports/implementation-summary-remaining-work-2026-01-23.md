@@ -56,7 +56,7 @@ POST /v1/admin/bulk-import/batches/{id}/finalize
 - Returns clear status message
 
 **Implementation Location:**
-[ImportService.kt:finalizeBatch](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/ImportService.kt#L317-L339)
+[ImportService.kt:finalizeBatch](../../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/ImportService.kt)
 
 #### Frontend Implementation
 
@@ -67,7 +67,7 @@ POST /v1/admin/bulk-import/batches/{id}/finalize
 - Visual styling: Purple theme for finalize action
 
 **Implementation Location:**
-[BulkImport.tsx](../../modules/frontend/sangita-admin-web/src/pages/BulkImport.tsx)
+[BulkImport.tsx](../../../modules/frontend/sangita-admin-web/src/pages/BulkImport.tsx)
 
 ---
 
@@ -128,7 +128,7 @@ GET /v1/admin/bulk-import/batches/{id}/export?format=json|csv
 - Quality metrics included
 
 **Implementation Location:**
-[ImportService.kt:generateQAReport](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/ImportService.kt#L341-L395)
+[ImportService.kt:generateQAReport](../../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/ImportService.kt)
 
 #### Frontend Implementation
 
@@ -139,7 +139,7 @@ GET /v1/admin/bulk-import/batches/{id}/export?format=json|csv
 - Success toast confirmation
 
 **Implementation Location:**
-[BulkImport.tsx](../../modules/frontend/sangita-admin-web/src/pages/BulkImport.tsx)
+[BulkImport.tsx](../../../modules/frontend/sangita-admin-web/src/pages/BulkImport.tsx)
 
 ---
 
@@ -150,7 +150,7 @@ GET /v1/admin/bulk-import/batches/{id}/export?format=json|csv
 #### Configuration System
 
 **New Config Class:**
-[AutoApprovalConfig.kt](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/config/AutoApprovalConfig.kt)
+[AutoApprovalConfig.kt](../../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/config/AutoApprovalConfig.kt)
 
 **Configuration Parameters:**
 
@@ -200,12 +200,12 @@ AutoApprovalConfig.fromEnvironment()
 - `getConfig()` method to inspect current rules
 
 **Implementation Location:**
-[AutoApprovalService.kt](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/AutoApprovalService.kt)
+[AutoApprovalService.kt](../../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/AutoApprovalService.kt)
 
 #### Environment Configuration
 
 **Example .env file created:**
-[config/.env.auto-approval.example](../../config/.env.auto-approval.example)
+[config/.env.auto-approval.example](../../../config/.env.auto-approval.example)
 
 **Usage:**
 # Copy example file
@@ -231,7 +231,7 @@ docker-compose --env-file config/.env.auto-approval up
 #### Test Coverage
 
 **Test File:**
-[AutoApprovalServiceTest.kt](../../modules/backend/api/src/test/kotlin/com/sangita/grantha/backend/api/services/AutoApprovalServiceTest.kt)
+[AutoApprovalServiceTest.kt](../../../modules/backend/api/src/test/kotlin/com/sangita/grantha/backend/api/services/AutoApprovalServiceTest.kt)
 
 **Test Cases:**
 

@@ -172,6 +172,6 @@ cargo run -- db stop
 ## References
 
 - [Database Migrations Documentation](../../04-database/migrations.md)
-- [Sangita CLI README](../../../tools/sangita-cli/README.md)
+- [Sangita CLI README](../../../archive/tools/sangita-cli/README.md)
 - [Tech Stack](../tech-stack.md)
 - [Database Schema](../../04-database/schema.md)

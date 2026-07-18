@@ -165,7 +165,7 @@ cargo run -- test upload --base-url http://localhost:8080
 
 ## References
 
-- [Sangita CLI README](../../tools/sangita-cli/README.md)
+- [Sangita CLI README](../../archive/tools/sangita-cli/README.md)
 - [Steel Thread Runbook](../08-operations/runbooks/steel-thread-runbook.md)
 - [Backend Architecture](../02-architecture/backend-system-design.md)
 - [API Contract](../03-api/api-contract.md)

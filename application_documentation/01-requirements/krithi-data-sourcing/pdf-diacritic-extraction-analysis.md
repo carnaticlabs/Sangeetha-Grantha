@@ -1577,11 +1577,11 @@ This section provides a detailed, track-ready breakdown for registering and exec
 Copy the following table rows into the Conductor Tracks Registry table in [conductor/tracks.md](../../../conductor/tracks.md) when creating the track files:
 
 ```markdown
-| [TRACK-054](./tracks/TRACK-054-pdf-english-diacritic-normalisation.md) | PDF Extraction — English Diacritic Normalisation | Proposed |
-| [TRACK-055](./tracks/TRACK-055-pdf-sanskrit-velthuis-decoder.md) | PDF Extraction — Sanskrit Velthuis Font Decoder | Proposed |
-| [TRACK-056](./tracks/TRACK-056-language-variant-backend.md) | Language Variant Backend — Matching & Enrichment API | Proposed |
-| [TRACK-057](./tracks/TRACK-057-language-variant-ui.md) | Language Variant UI — Extraction Request & Match Review | Proposed |
-| [TRACK-058](./tracks/TRACK-058-pdf-variant-pipeline-e2e.md) | PDF Extraction & Variant Pipeline — E2E QA | Proposed |
+| [TRACK-054](../../../conductor/tracks/TRACK-054-pdf-english-diacritic-normalisation.md) | PDF Extraction — English Diacritic Normalisation | Proposed |
+| [TRACK-055](../../../conductor/tracks/TRACK-055-pdf-sanskrit-velthuis-decoder.md) | PDF Extraction — Sanskrit Velthuis Font Decoder | Proposed |
+| [TRACK-056](../../../conductor/tracks/TRACK-056-language-variant-backend.md) | Language Variant Backend — Matching & Enrichment API | Proposed |
+| [TRACK-057](../../../conductor/tracks/TRACK-057-language-variant-ui.md) | Language Variant UI — Extraction Request & Match Review | Proposed |
+| [TRACK-058](../../../conductor/tracks/TRACK-058-pdf-variant-pipeline-e2e.md) | PDF Extraction & Variant Pipeline — E2E QA | Proposed |
 ```
 
 ---

@@ -1,4 +1,4 @@
-.PHONY: dev dev-down db db-reset seed seed-dev migrate migrate-status bootstrap-admin test test-integration test-frontend steel-thread clean
+.PHONY: dev dev-down db db-reset seed seed-dev migrate migrate-status bootstrap-admin test test-integration test-frontend check-docs steel-thread clean
 
 COMPOSE := docker compose
 # Flyway runs as the compose `migrate` service (flyway/flyway image) on the db network.
@@ -57,6 +57,10 @@ test-integration:
 # Run frontend tests
 test-frontend:
 	cd modules/frontend/sangita-admin-web && bun test
+
+# Verify every relative Markdown link resolves (docs rot silently when files move)
+check-docs:
+	python3 tools/check-doc-links.py
 
 # Run steel thread E2E test
 steel-thread:

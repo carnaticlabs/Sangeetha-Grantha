@@ -15,7 +15,7 @@ A unified command-line tool for the Sangita Grantha project.
 
 **Recommended**: Use [mise](https://mise.jdx.dev/) for toolchain management (see `.mise.toml` in project root).
 
-Tools managed by mise (see [current versions](../../application_documentation/00-meta/current-versions.md)):
+Tools managed by mise (see [current versions](../../../application_documentation/00-meta/current-versions.md)):
 - Rust (see `.mise.toml`)
 - Java (Temurin, see `.mise.toml`)
 - Bun (see `.mise.toml`)

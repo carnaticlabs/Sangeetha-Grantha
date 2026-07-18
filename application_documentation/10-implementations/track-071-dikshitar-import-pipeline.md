@@ -15,7 +15,7 @@ A standalone pipeline for extracting and importing 484 Muthuswami Dikshitar krit
 
 This pipeline replaces the earlier Sarvam API-based extraction (TRACK-066/067) and broken PyMuPDF markdown extraction (TRACK-068/069) with a TOC-based page-range approach.
 
-**Tracks:** TRACK-066 (deprecated), TRACK-067 (deprecated), TRACK-068 (deprecated), TRACK-069 (deprecated), [TRACK-070](../../../conductor/tracks/TRACK-070-import-pipeline-fix-checklist.md) (superseded), [TRACK-071](../../../conductor/tracks/TRACK-071-toc-based-krithi-import.md) (primary)
+**Tracks:** TRACK-066 (deprecated), TRACK-067 (deprecated), TRACK-068 (deprecated), TRACK-069 (deprecated), [TRACK-070](../../conductor/tracks/TRACK-070-import-pipeline-fix-checklist.md) (superseded), [TRACK-071](../../conductor/tracks/TRACK-071-toc-based-krithi-import.md) (primary)
 
 ---
 
@@ -160,7 +160,7 @@ See [Frontend UI Specs — KrithiList](../05-frontend/admin-web/ui-specs.md#81-k
 
 ## 9. Related Documentation
 
-- [TRACK-071 Conductor Track](../../../conductor/tracks/TRACK-071-toc-based-krithi-import.md)
+- [TRACK-071 Conductor Track](../../conductor/tracks/TRACK-071-toc-based-krithi-import.md)
 - [Database Schema Overview](../04-database/schema.md)
 - [Frontend UI Specs](../05-frontend/admin-web/ui-specs.md)
 - [Krithi Data Sourcing Quality Strategy](../01-requirements/krithi-data-sourcing/quality-strategy.md)

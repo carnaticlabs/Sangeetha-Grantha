@@ -507,4 +507,4 @@ bun install
 - [Database Migrations](../../04-database/migrations.md)
 - [API Contract](../../03-api/api-contract.md)
 - [Getting Started](../../00-onboarding/getting-started.md)
-- [Sangita CLI README](../../../tools/sangita-cli/README.md)
+- [Sangita CLI README](../../../archive/tools/sangita-cli/README.md)

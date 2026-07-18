@@ -218,10 +218,10 @@ private fun parseCsvManifest(path: Path): List<CsvRow> {
 - ✅ Analyzed code reviews (Claude, Goose, Codex)
 - ✅ Identified critical issues
 - ✅ Created implementation plan
-- ✅ Fix manifest ingest failure handling - [BulkImportWorkerService.kt:394-396](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/BulkImportWorkerService.kt#L394-L396)
+- ✅ Fix manifest ingest failure handling - [BulkImportWorkerService.kt:394-396](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/bulkimport/BulkImportWorkerServiceImpl.kt#L394-L396)
 - ✅ Fix task stuck detection race condition - [BulkImportRepository.kt:361-364](../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/repositories/BulkImportRepository.kt#L361-L364) + [markTaskStarted:379-393](../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/repositories/BulkImportRepository.kt#L379-L393)
 - ✅ Fix file upload security vulnerabilities - [BulkImportRoutes.kt:39-94](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/BulkImportRoutes.kt#L39-L94)
-- ✅ Fix CSV parsing issues - [BulkImportWorkerService.kt:792](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/BulkImportWorkerService.kt#L792)
+- ✅ Fix CSV parsing issues - [BulkImportWorkerService.kt:792](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/bulkimport/BulkImportWorkerServiceImpl.kt#L792)
 
 ---
 
@@ -239,8 +239,8 @@ private fun parseCsvManifest(path: Path): List<CsvRow> {
 
 ## 6. References
 
-- [Claude Review](../../application_documentation/07-quality/bulk-import-implementation-review-claude.md)
-- [Goose Review](../../application_documentation/07-quality/csv-import-strategy-implementation-review-goose.md)
-- [Codex Review](../../application_documentation/07-quality/csv-import-strategy-review-codex.md)
+- [Claude Review](../../application_documentation/archive/quality-reports/bulk-import-implementation-review-claude.md)
+- [Goose Review](../../application_documentation/archive/quality-reports/csv-import-strategy-implementation-review-goose.md)
+- [Codex Review](../../application_documentation/archive/quality-reports/csv-import-strategy-review-codex.md)
 - [Implementation Plan](../../application_documentation/07-quality/bulk-import-fixes-implementation-plan.md)
 - [Technical Implementation Guide](../../application_documentation/01-requirements/features/bulk-import/02-implementation/technical-implementation-guide.md) (Clarified Requirements 2026-01)

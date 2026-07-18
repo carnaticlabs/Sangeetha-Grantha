@@ -518,6 +518,6 @@ private val perDomainWindows = Collections.synchronizedMap(
 ## 6. References
 
 - [Implementation Plan](../../application_documentation/07-quality/bulk-import-fixes-implementation-plan.md)
-- [Claude Review](../../application_documentation/07-quality/bulk-import-implementation-review-claude.md)
-- [Goose Review](../../application_documentation/07-quality/csv-import-strategy-implementation-review-goose.md)
-- [Codex Review](../../application_documentation/07-quality/csv-import-strategy-review-codex.md)
+- [Claude Review](../../application_documentation/archive/quality-reports/bulk-import-implementation-review-claude.md)
+- [Goose Review](../../application_documentation/archive/quality-reports/csv-import-strategy-implementation-review-goose.md)
+- [Codex Review](../../application_documentation/archive/quality-reports/csv-import-strategy-review-codex.md)

@@ -38,19 +38,19 @@ This document summarizes the implementation of TRACK-008 (Entity Resolution Hard
 ### Completed Features
 
 1. ✅ **NameNormalizationService** with domain-specific rules
-   - [NameNormalizationService.kt](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/NameNormalizationService.kt)
+   - [NameNormalizationService.kt](../../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/NameNormalizationService.kt)
    - Composer alias handling (Thyagaraja, Dikshitar, etc.)
    - Raga vowel reduction and space removal
    - Tala suffix normalization
 
 2. ✅ **EntityResolutionService** with caching and pre-fetching
-   - [EntityResolutionService.kt](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/EntityResolutionService.kt)
+   - [EntityResolutionService.kt](../../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/EntityResolutionService.kt)
    - In-memory caching with 15-minute TTL
    - Normalized lookup maps for O(1) exact matching
    - Fuzzy matching fallback with confidence scoring
 
 3. ✅ **DeduplicationService** for duplicate detection
-   - [DeduplicationService.kt](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/DeduplicationService.kt)
+   - [DeduplicationService.kt](../../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/DeduplicationService.kt)
    - Checks against canonical krithis
    - Checks against staging imports
    - Batch context support
@@ -82,7 +82,7 @@ Implemented 7 performance optimizations to address bottlenecks identified in cod
 **Solution:** Use batch counters instead of loading all tasks.
 
 **Implementation:**
-- **File:** [BulkImportWorkerService.kt:620-624](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/BulkImportWorkerService.kt#L620-L624)
+- **File:** [BulkImportWorkerService.kt:620-624](../../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/bulkimport/BulkImportWorkerServiceImpl.kt)
 - **Changes:**
   - Early return if `batch.processedTasks < batch.totalTasks` (O(1) check)
   - Only load tasks when counters indicate possible completion
@@ -112,7 +112,7 @@ if (batch.processedTasks < batch.totalTasks) {
 **Implementation:**
 
 #### Database Migration
-- **File:** [17__entity_resolution_cache.sql](../../database/migrations/17__entity_resolution_cache.sql)
+- **File:** [17__entity_resolution_cache.sql](../../../database/migrations/V17__entity_resolution_cache.sql)
 - **Created:** New migration
 - **Schema:**
   ```sql
@@ -132,17 +132,17 @@ if (batch.processedTasks < batch.totalTasks) {
   ```
 
 #### Table Definition
-- **File:** [CoreTables.kt](../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/tables/CoreTables.kt)
+- **File:** [CoreTables.kt](../../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/tables/CoreTables.kt)
 - **Added:** `EntityResolutionCacheTable` object
 
 #### DTO and Mapper
-- **File:** [ImportDtos.kt](../../modules/shared/domain/src/commonMain/kotlin/com/sangita/grantha/shared/domain/model/ImportDtos.kt)
+- **File:** [ImportDtos.kt](../../../modules/shared/domain/src/commonMain/kotlin/com/sangita/grantha/shared/domain/model/import/ImportDto.kt)
 - **Added:** `EntityResolutionCacheDto` data class
-- **File:** [DtoMappers.kt](../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/models/DtoMappers.kt)
+- **File:** [DtoMappers.kt](../../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/models/ImportDtoMappers.kt)
 - **Added:** `toEntityResolutionCacheDto()` mapper
 
 #### Repository
-- **File:** [EntityResolutionCacheRepository.kt](../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/repositories/EntityResolutionCacheRepository.kt)
+- **File:** [EntityResolutionCacheRepository.kt](../../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/repositories/EntityResolutionCacheRepository.kt)
 - **Created:** New repository
 - **Methods:**
   - `findByNormalizedName()` - Lookup cached resolution
@@ -152,7 +152,7 @@ if (batch.processedTasks < batch.totalTasks) {
   - `clearAll()` - Clear all cache entries
 
 #### Service Integration
-- **File:** [EntityResolutionService.kt](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/EntityResolutionService.kt)
+- **File:** [EntityResolutionService.kt](../../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/EntityResolutionService.kt)
 - **Added:**
   - `resolveWithCache()` method for two-tier caching
   - Database cache check before fuzzy matching
@@ -161,7 +161,7 @@ if (batch.processedTasks < batch.totalTasks) {
   - Helper methods `getEntityId()` and `getEntityName()`
 
 #### DAL Integration
-- **File:** [SangitaDal.kt](../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/SangitaDal.kt)
+- **File:** [SangitaDal.kt](../../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/SangitaDal.kt)
 - **Added:** `entityResolutionCache` repository property
 
 **Caching Strategy:**
@@ -187,7 +187,7 @@ if (batch.processedTasks < batch.totalTasks) {
 **Solution:** Use DB queries with LIKE filtering instead of loading all imports.
 
 **Implementation:**
-- **File:** [ImportRepository.kt:108-126](../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/repositories/ImportRepository.kt#L108-L126)
+- **File:** [ImportRepository.kt:108-126](../../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/repositories/ImportRepository.kt)
 - **Method:** `findSimilarPendingImports()`
 - **Changes:**
   - Added DB-level ILIKE filtering using `lowerCase() like "%...%"`
@@ -222,7 +222,7 @@ if (normalizedTitle.isNotBlank()) {
 **Solution:** Increase rate limits to 60/min per domain and 120/min global.
 
 **Implementation:**
-- **File:** [BulkImportWorkerService.kt:63-65](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/BulkImportWorkerService.kt#L63-L65)
+- **File:** [BulkImportWorkerService.kt:63-65](../../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/bulkimport/BulkImportWorkerServiceImpl.kt)
 - **Changes:**
   ```kotlin
   // TRACK-013: Tuned rate limits (was 12/50, now 60/120 for better throughput)
@@ -246,7 +246,7 @@ if (normalizedTitle.isNotBlank()) {
 **Solution:** Fast-fail validation at upload with immediate feedback.
 
 **Implementation:**
-- **File:** [BulkImportRoutes.kt:253-301](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/BulkImportRoutes.kt#L253-L301)
+- **File:** [BulkImportRoutes.kt:253-301](../../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/BulkImportRoutes.kt)
 - **Function:** `validateCsvFile()`
 - **Validations:**
   1. CSV has header row
@@ -287,7 +287,7 @@ if (!validationResult.isValid) {
 **Solution:** Fixed regex to use proper word boundary.
 
 **Implementation:**
-- **File:** [NameNormalizationService.kt:98](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/NameNormalizationService.kt#L98)
+- **File:** [NameNormalizationService.kt:98](../../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/NameNormalizationService.kt)
 - **Fix:**
   ```kotlin
   // Fix: Use proper word boundary regex (\\b not \b which is backspace)
@@ -301,7 +301,7 @@ if (!validationResult.isValid) {
 **Solution:** Use `groupBy()` to detect and handle collisions.
 
 **Implementation:**
-- **File:** [EntityResolutionService.kt:59-79](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/EntityResolutionService.kt#L59-L79)
+- **File:** [EntityResolutionService.kt:59-79](../../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/EntityResolutionService.kt)
 - **Fix:**
   ```kotlin
   // Fix: Use groupBy to handle collisions (multiple entities may normalize to same key)
@@ -330,7 +330,7 @@ if (!validationResult.isValid) {
 **Solution:** Use LRU cache with bounded size and TTL.
 
 **Implementation:**
-- **File:** [BulkImportWorkerService.kt:84-90](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/BulkImportWorkerService.kt#L84-L90)
+- **File:** [BulkImportWorkerService.kt:84-90](../../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/bulkimport/BulkImportWorkerServiceImpl.kt)
 - **Fix:**
   ```kotlin
   // Fix: Use LRU cache with bounded size and TTL to prevent memory leak
@@ -355,49 +355,49 @@ if (!validationResult.isValid) {
 
 ### New Files Created
 
-1. **[database/migrations/17__entity_resolution_cache.sql](../../database/migrations/17__entity_resolution_cache.sql)**
+1. **[database/migrations/17__entity_resolution_cache.sql](../../../database/migrations/V17__entity_resolution_cache.sql)**
    - Database schema for entity resolution cache
    - Indexes for fast lookup and invalidation
 
-2. **[modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/repositories/EntityResolutionCacheRepository.kt](../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/repositories/EntityResolutionCacheRepository.kt)**
+2. **[modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/repositories/EntityResolutionCacheRepository.kt](../../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/repositories/EntityResolutionCacheRepository.kt)**
    - Repository for cache CRUD operations
    - Upsert logic with conflict handling
    - Cache invalidation methods
 
-3. **[application_documentation/07-quality/track-008-013-implementation-summary-2026-01-23.md](../../application_documentation/07-quality/track-008-013-implementation-summary-2026-01-23.md)**
+3. **[application_documentation/07-quality/track-008-013-implementation-summary-2026-01-23.md](track-008-013-implementation-summary-2026-01-23.md)**
    - This document
 
 ### Files Modified
 
-1. **[conductor/tracks/TRACK-008-entity-resolution-hardening.md](../../conductor/tracks/TRACK-008-entity-resolution-hardening.md)**
+1. **[conductor/tracks/TRACK-008-entity-resolution-hardening.md](../../../conductor/tracks/TRACK-008-entity-resolution-hardening.md)**
    - Updated status: Proposed → Completed
 
-2. **[conductor/tracks/TRACK-013-bulk-import-performance-scalability.md](../../conductor/tracks/TRACK-013-bulk-import-performance-scalability.md)**
+2. **[conductor/tracks/TRACK-013-bulk-import-performance-scalability.md](../../../conductor/tracks/TRACK-013-bulk-import-performance-scalability.md)**
    - Updated status: Proposed → Completed
    - Updated progress log with implementation details
 
-3. **[conductor/tracks.md](../../conductor/tracks.md)**
+3. **[conductor/tracks.md](../../../conductor/tracks.md)**
    - Updated TRACK-008 status to Completed
    - Updated TRACK-013 status to Completed
 
-4. **[modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/tables/CoreTables.kt](../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/tables/CoreTables.kt)**
+4. **[modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/tables/CoreTables.kt](../../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/tables/CoreTables.kt)**
    - Added `EntityResolutionCacheTable` definition
 
-5. **[modules/shared/domain/src/commonMain/kotlin/com/sangita/grantha/shared/domain/model/ImportDtos.kt](../../modules/shared/domain/src/commonMain/kotlin/com/sangita/grantha/shared/domain/model/ImportDtos.kt)**
+5. **[modules/shared/domain/src/commonMain/kotlin/com/sangita/grantha/shared/domain/model/ImportDtos.kt](../../../modules/shared/domain/src/commonMain/kotlin/com/sangita/grantha/shared/domain/model/import/ImportDto.kt)**
    - Added `EntityResolutionCacheDto` data class
 
-6. **[modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/models/DtoMappers.kt](../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/models/DtoMappers.kt)**
+6. **[modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/models/DtoMappers.kt](../../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/models/ImportDtoMappers.kt)**
    - Added `toEntityResolutionCacheDto()` mapper
 
-7. **[modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/SangitaDal.kt](../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/SangitaDal.kt)**
+7. **[modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/SangitaDal.kt](../../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/SangitaDal.kt)**
    - Added `entityResolutionCache` repository
 
-8. **[modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/EntityResolutionService.kt](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/EntityResolutionService.kt)**
+8. **[modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/EntityResolutionService.kt](../../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/EntityResolutionService.kt)**
    - Implemented two-tier caching with database persistence
    - Added `resolveWithCache()` method
    - Added cache invalidation support
 
-9. **[modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/repositories/ImportRepository.kt](../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/repositories/ImportRepository.kt)**
+9. **[modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/repositories/ImportRepository.kt](../../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/repositories/ImportRepository.kt)**
    - Optimized `findSimilarPendingImports()` with DB-level LIKE filtering
 
 ---
@@ -483,7 +483,7 @@ All success criteria from TRACK-013 have been met:
 
 ## References
 
-- [TRACK-008: Entity Resolution Hardening & Deduplication](../../conductor/tracks/TRACK-008-entity-resolution-hardening.md)
-- [TRACK-013: Bulk Import Performance & Scalability Improvements](../../conductor/tracks/TRACK-013-bulk-import-performance-scalability.md)
-- [Bulk Import Fixes Implementation Plan](../../application_documentation/07-quality/bulk-import-fixes-implementation-plan.md)
-- [Bulk Import Implementation Review (Claude)](../../application_documentation/07-quality/bulk-import-implementation-review-claude.md)
+- [TRACK-008: Entity Resolution Hardening & Deduplication](../../../conductor/tracks/TRACK-008-entity-resolution-hardening.md)
+- [TRACK-013: Bulk Import Performance & Scalability Improvements](../../../conductor/tracks/TRACK-013-bulk-import-performance-scalability.md)
+- [Bulk Import Fixes Implementation Plan](../../07-quality/bulk-import-fixes-implementation-plan.md)
+- [Bulk Import Implementation Review (Claude)](bulk-import-implementation-review-claude.md)

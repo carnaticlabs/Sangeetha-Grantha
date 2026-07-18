@@ -11,9 +11,9 @@
 Systematically clean up the `krithis` database by merging redundant lyric variants and normalizing inconsistent section structures identified in the Feb 2026 audit.
 
 ## 2. Context
-- **Source**: [Data Quality Audit Report](../application_documentation/07-quality/results/krithi-structural-audit-2026-02.md)
+- **Source**: [Data Quality Audit Report](../../application_documentation/07-quality/results/krithi-structural-audit-2026-02.md)
 - **Key Problem**: "Section Count Drift" across language variants and metadata pollution in lyric text.
-- **Strategy**: [Krithi Data Sourcing & Quality Strategy](../application_documentation/01-requirements/krithi-data-sourcing/quality-strategy.md) — Section 6.4
+- **Strategy**: [Krithi Data Sourcing & Quality Strategy](../../application_documentation/01-requirements/krithi-data-sourcing/quality-strategy.md) — Section 6.4
 
 ## 3. Implementation Plan
 - [x] Develop `RemediationService` orchestrator with variant-level deduplication (Levenshtein >90% similarity).

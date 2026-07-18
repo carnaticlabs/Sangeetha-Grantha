@@ -46,7 +46,7 @@ Do not use YAML frontmatter. Use a standard Markdown table or list at the very t
 Broken links are forbidden. 
 
 - **Relative Links**: Always use relative links for internal documentation. 
-  - *Correct*: `[Architecture](../02-architecture/README.md)`
+  - *Correct*: `[Architecture](../../../application_documentation/02-architecture/README.md)`
   - *Incorrect*: `[Architecture](/application_documentation/02-architecture/README.md)`
 - **Source Code Links**: When linking to source files (e.g., in `modules/`), ensure the path is correct relative to the doc's location.
 - **Validation**: When moving files or creating new ones, double-check that all links pointing TO and FROM the file are valid.

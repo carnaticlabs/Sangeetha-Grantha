@@ -32,7 +32,7 @@ This document summarizes the verification of TRACK-010 (Bulk Import Critical Fix
 
 **Implementation Status:** ✅ **ALREADY FIXED**
 
-**Location:** [BulkImportWorkerService.kt:383-397](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/BulkImportWorkerService.kt#L383-L397)
+**Location:** [BulkImportWorkerService.kt:383-397](../../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/bulkimport/BulkImportWorkerServiceImpl.kt)
 
 **Verified Code:**
 ```kotlin
@@ -68,7 +68,7 @@ private suspend fun failManifestTask(task: ImportTaskRunDto, job: ImportJobDto, 
 **Solution Used:** Option B - Only set `startedAt` when worker begins execution (not at claim time)
 
 #### Repository Layer
-**Location:** [BulkImportRepository.kt:340-364](../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/repositories/BulkImportRepository.kt#L340-L364)
+**Location:** [BulkImportRepository.kt:340-364](../../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/repositories/BulkImportRepository.kt)
 
 **Verified Code:**
 ```kotlin
@@ -92,7 +92,7 @@ suspend fun claimNextPendingTasks(
 **Key Fix:** `claimNextPendingTasks()` only sets status to RUNNING, **NOT** `startedAt`.
 
 #### Separate Method for Setting Start Time
-**Location:** [BulkImportRepository.kt:379-393](../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/repositories/BulkImportRepository.kt#L379-L393)
+**Location:** [BulkImportRepository.kt:379-393](../../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/repositories/BulkImportRepository.kt)
 
 **Verified Code:**
 ```kotlin
@@ -117,9 +117,9 @@ suspend fun markTaskStarted(
 
 #### Worker Service Integration
 **Locations:**
-- [BulkImportWorkerService.kt:254-256](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/BulkImportWorkerService.kt#L254-L256) (Manifest)
-- [BulkImportWorkerService.kt:406-408](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/BulkImportWorkerService.kt#L406-L408) (Scrape)
-- [BulkImportWorkerService.kt:521-523](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/BulkImportWorkerService.kt#L521-L523) (Entity Resolution)
+- [BulkImportWorkerService.kt:254-256](../../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/bulkimport/BulkImportWorkerServiceImpl.kt) (Manifest)
+- [BulkImportWorkerService.kt:406-408](../../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/bulkimport/BulkImportWorkerServiceImpl.kt) (Scrape)
+- [BulkImportWorkerService.kt:521-523](../../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/bulkimport/BulkImportWorkerServiceImpl.kt) (Entity Resolution)
 
 **Verified Code Pattern:**
 ```kotlin
@@ -146,7 +146,7 @@ private suspend fun processManifestTask(task: ImportTaskRunDto, config: WorkerCo
 
 **Implementation Status:** ✅ **ALL FIXED**
 
-**Location:** [BulkImportRoutes.kt:36-94](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/BulkImportRoutes.kt#L36-L94)
+**Location:** [BulkImportRoutes.kt:36-94](../../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/BulkImportRoutes.kt)
 
 **Verified Code:**
 
@@ -230,7 +230,7 @@ val file = File(storageDir.toFile(), uniqueName)
 
 **Implementation Status:** ✅ **ALL FIXED**
 
-**Location:** [BulkImportWorkerService.kt:790-835](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/BulkImportWorkerService.kt#L790-L835)
+**Location:** [BulkImportWorkerService.kt:790-835](../../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/bulkimport/BulkImportWorkerServiceImpl.kt)
 
 **Verified Code:**
 ```kotlin
@@ -267,16 +267,16 @@ private fun parseCsvManifest(path: Path): List<CsvRow> {
 ## Files Verified
 
 ### Security Fixes
-1. **[BulkImportRoutes.kt](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/BulkImportRoutes.kt)**
+1. **[BulkImportRoutes.kt](../../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/BulkImportRoutes.kt)**
    - Lines 36-94: File upload security (path traversal, size limits, null handling)
 
 ### Correctness Fixes
-2. **[BulkImportWorkerService.kt](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/BulkImportWorkerService.kt)**
+2. **[BulkImportWorkerService.kt](../../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/bulkimport/BulkImportWorkerServiceImpl.kt)**
    - Lines 383-397: `failManifestTask()` marks batch as FAILED
    - Lines 254-256, 406-408, 521-523: Workers call `markTaskStarted()` when execution begins
    - Lines 790-835: CSV parsing with UTF-8 and `.use` block
 
-3. **[BulkImportRepository.kt](../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/repositories/BulkImportRepository.kt)**
+3. **[BulkImportRepository.kt](../../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/repositories/BulkImportRepository.kt)**
    - Lines 340-364: `claimNextPendingTasks()` does NOT set `startedAt`
    - Lines 379-393: `markTaskStarted()` method for setting start time
 
@@ -423,8 +423,8 @@ No additional implementation work is required. The track is **COMPLETED**.
 
 ## References
 
-- [TRACK-010: Bulk Import Critical Fixes & Security Hardening](../../conductor/tracks/TRACK-010-bulk-import-critical-fixes-security.md)
-- [Bulk Import Fixes Implementation Plan](../../application_documentation/07-quality/bulk-import-fixes-implementation-plan.md)
-- [Claude Review](../../application_documentation/07-quality/bulk-import-implementation-review-claude.md)
-- [Goose Review](../../application_documentation/07-quality/csv-import-strategy-implementation-review-goose.md)
-- [Codex Review](../../application_documentation/07-quality/csv-import-strategy-review-codex.md)
+- [TRACK-010: Bulk Import Critical Fixes & Security Hardening](../../../conductor/tracks/TRACK-010-bulk-import-critical-fixes-security.md)
+- [Bulk Import Fixes Implementation Plan](../../07-quality/bulk-import-fixes-implementation-plan.md)
+- [Claude Review](bulk-import-implementation-review-claude.md)
+- [Goose Review](csv-import-strategy-implementation-review-goose.md)
+- [Codex Review](csv-import-strategy-review-codex.md)

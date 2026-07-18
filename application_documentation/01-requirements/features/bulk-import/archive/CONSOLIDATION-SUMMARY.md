@@ -117,6 +117,6 @@ bulk-import/
 
 ## Document References
 
-- [Master Index](./README.md)
-- [Consolidation Plan](../bulk-import-consolidation-plan.md) (in parent features folder)
+- [Master Index](../README.md)
+- [Consolidation Plan](../../bulk-import-consolidation-plan.md) (in parent features folder)
 - [Technical Analysis: Python vs Existing Capabilities](./CONSOLIDATION-SUMMARY-goose.md) - **See this for technology choice rationale**
