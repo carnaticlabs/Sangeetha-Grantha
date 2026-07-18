@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Batch-triage every krithi listed in flagged-krithis-for-review.md.
+"""Batch-triage every krithi listed in application_documentation/07-quality/results/section-issues-cleanup/flagged-krithis-for-review.md.
 
 Parses the flagged-review markdown, deduplicates krithi IDs (recording the FIRST
 category each appears under), runs section_triage.triage() on each, and prints a
@@ -7,7 +7,7 @@ classification summary — overall and per source category. Writes a JSON report
 --out for downstream repair tooling.
 
 Usage:
-    python scripts/section_triage_batch.py --flagged flagged-krithis-for-review.md \
+    python scripts/section_triage_batch.py --flagged application_documentation/07-quality/results/section-issues-cleanup/flagged-krithis-for-review.md \
         --out .triage-cache/triage_report.json
 """
 from __future__ import annotations

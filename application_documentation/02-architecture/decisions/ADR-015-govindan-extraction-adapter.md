@@ -6,14 +6,14 @@
 | **Author** | Sangeetha Grantha Team |
 | **Deciders** | Sangeetha Grantha Team (Seshadri) |
 | **Relates to** | [ADR-012 Unified Extraction Architecture](./ADR-012-unified-extraction-architecture.md) |
-| **Evidence** | `section-issues-cleanup-findings.md`, `.triage-cache/triage_report3.json` |
+| **Evidence** | [section-issues-cleanup-findings.md](../../07-quality/results/section-issues-cleanup/section-issues-cleanup-findings.md), `.triage-cache/triage_report3.json` |
 
 # ADR-015: Structure-Aware Extraction Adapter for the Govindan Blog Family
 
 ## Context
 
 The Curator **Section Issues** queue — variants whose section structure does not match their
-English/Latin template — stood at **484**. A cleanup pass (see `section-issues-cleanup-findings.md`)
+English/Latin template — stood at **484**. A cleanup pass (see [section-issues-cleanup-findings.md](../../07-quality/results/section-issues-cleanup/section-issues-cleanup-findings.md))
 brought it to **339** by fixing the CAT-B truncation bug, adding per-script inline section-label
 recognition, and re-splitting through the audit-logged variant-sections API under strict safety gates.
 
@@ -137,13 +137,13 @@ follow-up template repair safe.
 
 1. ~~**Template-repair tool**~~ **DONE (2026-07-17)** — `scripts/template_repair.py` built with the
    clean-prepend + cross-validation gates; 28 krithis reviewed by `carnatic-musicologist` (28/28 APPROVE)
-   and applied (queue 339 → 231). See `section-issues-cleanup-findings.md` (Pass 2).
+   and applied (queue 339 → 231). See [section-issues-cleanup-findings.md](../../07-quality/results/section-issues-cleanup/section-issues-cleanup-findings.md) (Pass 2).
 2. ~~**Translation-trailer strip**~~ **DONE (2026-07-17)** — the marker/`<sup>` layering (Part A) is not
    needed for this: `strip_refrain_trailer` in `structure_parser.py` locates the lyric→trailer boundary from
    the **pronunciation-digit** signal (lyric lines carry HK digits; the appended Tamil prose does not),
    which is more robust than the `Gist`/`Word-by-word` structural bound this ADR first proposed and needs no
    domain gate. `scripts/tamil_trailer_repair.py` verified the removed tail was prose (parse-twice diff) and
-   re-split 119 Tamil variants (queue 231 → 112). See `section-issues-cleanup-findings.md` (Pass 3).
+   re-split 119 Tamil variants (queue 231 → 112). See [section-issues-cleanup-findings.md](../../07-quality/results/section-issues-cleanup/section-issues-cleanup-findings.md) (Pass 3).
 3. **Still open — head-capture preamble stripper.** The Modified-HK transliteration-key chart is captured
    into the Tamil pallavi (section 1). It doesn't affect section counts, so it's not a queue item, but it is
    the remaining cleanup the Govindan adapter (Part B) should own, alongside script-aware `<sup>` footnote

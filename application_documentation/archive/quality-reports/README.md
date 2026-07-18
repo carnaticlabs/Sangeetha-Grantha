@@ -1,13 +1,18 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Archived |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-02-08 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-07-18 |
 | **Author** | Sangeetha Grantha Team |
 
 # Archived Quality Reports
 
 Historical quality reports, implementation reviews, and track summaries from previous development phases.
+
+- `fixed-krithis-for-review.md` — record of the 2026-07-16 automated section-split pass (509 krithis,
+  2462 lyric variants repaired, queue 2945 → 484). Archived because it documents work already applied
+  and nothing references it; the *open* remainder of that effort lives in
+  [07-quality/results/section-issues-cleanup/](../../07-quality/results/section-issues-cleanup/).
 
 ---
 

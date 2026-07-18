@@ -1,13 +1,20 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-02-08 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-07-18 |
 | **Author** | Sangeetha Grantha Team |
 
 # Quality Audit Results
 
 This directory contains the results of automated and manual quality audits run against the Sangita Grantha database.
+
+## Contents
+
+| Path | What it is | Status |
+|:---|:---|:---|
+| [krithi-structural-audit-2026-02.md](./krithi-structural-audit-2026-02.md) | Structural consistency audit of the krithi corpus | Complete |
+| [section-issues-cleanup/](./section-issues-cleanup/) | Curator "Section Issues" queue remediation — findings log, the open work list, and its machine-readable companion | **Open** — ~112 variants remain; see [ADR-015](../../02-architecture/decisions/ADR-015-govindan-extraction-adapter.md) Part B |
 
 ---
 

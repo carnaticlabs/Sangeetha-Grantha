@@ -1,6 +1,6 @@
 # Section-Issues Cleanup — Findings & Remediation Log
 
-_Autonomous pass, 2026-07-16; template-repair pass, 2026-07-17. Companion to `flagged-krithis-for-review.md`._
+_Autonomous pass, 2026-07-16; template-repair pass, 2026-07-17. Companion to [flagged-krithis-for-review.md](./flagged-krithis-for-review.md) (open queue) and [flagged_for_review.json](./flagged_for_review.json) (same data, machine-readable). The record of what the automated pass already fixed is archived at [archive/quality-reports/fixed-krithis-for-review.md](../../../archive/quality-reports/fixed-krithis-for-review.md)._
 
 This log records the category-by-category triage of the Curator **Section Issues**
 queue, the fixes applied, and the reasoning for what was deliberately deferred. The
@@ -13,7 +13,7 @@ krithi was left flagged with a recommendation rather than guessed at.
 
 | Checkpoint | Section-issue count |
 |---|---|
-| Start (per `flagged-krithis-for-review.md`) | **484** |
+| Start (per [flagged-krithis-for-review.md](./flagged-krithis-for-review.md)) | **484** |
 | After CAT-B truncation fix (15 variants / 3 krithis) | 469 |
 | After CAT-C re-split (51 variants / 11 krithis) | 418 |
 | After gated resplit sweep (79 variants) | **339** |

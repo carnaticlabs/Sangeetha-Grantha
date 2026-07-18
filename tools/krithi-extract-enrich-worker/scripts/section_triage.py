@@ -2,7 +2,7 @@
 """Diagnose krithi section-structure issues by re-extracting from source.
 
 Reusable triage tool for the "Section Issues" queue (see
-flagged-krithis-for-review.md). For each krithi it:
+application_documentation/07-quality/results/section-issues-cleanup/flagged-krithis-for-review.md). For each krithi it:
 
   1. reads the canonical template + stored lyric variants from the DB (read-only),
   2. re-fetches the source page (cached on disk),
