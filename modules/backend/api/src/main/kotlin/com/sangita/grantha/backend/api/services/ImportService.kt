@@ -542,18 +542,36 @@ class ImportServiceImpl(
                 // and/or the curator. Skip only when neither is resolvable.
                 val extractionId = sourceKey?.let { dal.extractionQueue.findLatestCompletedIdBySourceUrl(it) }
                     ?.toJavaUuid()
-                val sourceDocumentId = importData.parsedPayload
-                    ?.let { runCatching { Json.decodeFromString<CanonicalExtractionDto>(it) }.getOrNull() }
-                    ?.let { canonical ->
-                        dal.revisions.ensureSourceDocumentForSource(
-                            sourceName = canonical.sourceName,
-                            sourceUrl = canonical.sourceUrl,
-                            sourceTier = canonical.sourceTier,
-                            sourceFormat = canonicalMethodToFormat(canonical.extractionMethod),
-                            checksum = canonical.checksum,
-                            pageRange = canonical.pageRange,
+                // TRACK-112: a source document is only recordable alongside the extraction run that
+                // produced it — `ksr_doc_requires_extraction_ck` (V44) rejects a document with no
+                // extraction. An import can legitimately carry a canonical payload while its
+                // extraction row is missing, not yet COMPLETED, or filed under a different URL
+                // (queue purge, re-scrape). Deriving the document unconditionally made that case
+                // abort the whole approval *after* the krithi had been committed, leaving an
+                // orphaned krithi and a still-PENDING import. Degrade instead: keep the revision,
+                // drop the unattributable document node.
+                val sourceDocumentId = if (extractionId == null) {
+                    if (importData.parsedPayload != null) {
+                        println(
+                            "Import $id has a canonical payload but no completed extraction for $sourceKey — " +
+                                "recording the revision without source-document provenance"
                         )
                     }
+                    null
+                } else {
+                    importData.parsedPayload
+                        ?.let { runCatching { Json.decodeFromString<CanonicalExtractionDto>(it) }.getOrNull() }
+                        ?.let { canonical ->
+                            dal.revisions.ensureSourceDocumentForSource(
+                                sourceName = canonical.sourceName,
+                                sourceUrl = canonical.sourceUrl,
+                                sourceTier = canonical.sourceTier,
+                                sourceFormat = canonicalMethodToFormat(canonical.extractionMethod),
+                                checksum = canonical.checksum,
+                                pageRange = canonical.pageRange,
+                            )
+                        }
+                }
                 if (extractionId != null || reviewerUserId != null) {
                     dal.revisions.snapshotCurrentState(
                         krithiId = createdKrithiId!!,
