@@ -23,7 +23,7 @@ This repository uses a single source of truth for environment variables and secr
 
 Actual values (API keys, DB credentials, etc.) are set **outside the repo**:
 1. **System environment variables** (e.g., in Goose Extensions, IDE run config, or shell).
-2. **A single gitignored file** [config/local.env](../../config/local.env).
+2. **A single gitignored file**, `config/local.env` — created per developer, so it is deliberately absent from the repo (see `config/README.md` for the template).
 
 The backend (API and DAL) loads configuration in this order (last one wins):
 1. `config/development.env` (default values)

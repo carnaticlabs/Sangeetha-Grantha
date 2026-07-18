@@ -18,6 +18,11 @@ What is deliberately NOT checked:
     text, so they are examples, not references. TRACK-002 documents a header format
     containing a link placeholder; writing about link syntax must stay possible.
 
+Targets are resolved against **git-tracked** files, not the working tree — a link to
+a gitignored or unadded file resolves on the author's machine and nowhere else, which
+is precisely the bug this catches. Outside a git checkout it falls back to the
+filesystem.
+
 Line suffixes (`file.kt:120-140`) and anchors (`doc.md#section`) are stripped
 before resolving; the file must exist, the line range and anchor are not verified.
 """
@@ -25,6 +30,7 @@ from __future__ import annotations
 
 import os
 import re
+import subprocess
 import sys
 
 SKIP_DIRS = {
@@ -51,8 +57,47 @@ def literal_spans(text: str) -> list[tuple[int, int]]:
     ]
 
 
+def tracked_paths() -> set[str] | None:
+    """Every git-tracked file, plus every directory containing one.
+
+    Resolving against the working tree is the obvious implementation and the wrong
+    one: files that are gitignored or simply not added still exist on the author's
+    disk, so their links pass locally and fail for everyone else — including CI,
+    which only ever sees what is committed. `config/local.env` is the canonical
+    example: a doc linked to it while describing it as gitignored, which cannot
+    resolve for any other reader.
+
+    Returns None outside a git checkout, in which case the caller falls back to the
+    filesystem.
+    """
+    try:
+        out = subprocess.run(
+            ["git", "ls-files", "-z"], capture_output=True, check=True
+        ).stdout.decode("utf-8", "replace")
+    except (OSError, subprocess.CalledProcessError):
+        return None
+
+    paths: set[str] = set()
+    for f in filter(None, out.split("\0")):
+        f = os.path.normpath(f)
+        paths.add(f)
+        parent = os.path.dirname(f)  # directory links must resolve too
+        while parent:
+            paths.add(parent)
+            parent = os.path.dirname(parent)
+    return paths
+
+
 def broken_links(root_dir: str = ".") -> list[tuple[str, str]]:
+    tracked = tracked_paths()
     broken: list[tuple[str, str]] = []
+
+    def resolves(path: str) -> bool:
+        norm = os.path.normpath(path)
+        if tracked is not None:
+            return norm in tracked
+        return os.path.exists(norm)
+
     for root, dirs, files in os.walk(root_dir):
         dirs[:] = [d for d in dirs if d not in SKIP_DIRS]
         for name in files:
@@ -69,7 +114,7 @@ def broken_links(root_dir: str = ".") -> list[tuple[str, str]]:
                     continue  # inside code — an example or template, not a reference
                 link = m.group(1)
                 target = SUFFIX_RE.sub("", link.split("#")[0]).replace("%20", " ")
-                if not os.path.exists(os.path.normpath(os.path.join(root, target))):
+                if not resolves(os.path.join(root, target)):
                     broken.append((path, link))
     return broken
 
