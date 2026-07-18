@@ -138,7 +138,7 @@ serves TRACK-014 · **~2 days**
 
 ## 4. Dependency graph
 
-```
+```text
 U1 (SDK migration) ──┬──> U2 (model repoint) ──┐
                      ├──> U3 (structured out) ──┼──> U4 (resume Trinity import) ──> U5 (batch backfill)
                      ├──> U5 (Batch Mode)        │

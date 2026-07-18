@@ -93,12 +93,12 @@ The Kotlin version has **far more patterns** (Indic script abbreviations, 5 Indi
 ### 3.2 Metadata Parsing — Two Implementations
 
 **Kotlin** (`KrithiStructureParser.extractMetadataHints()`) — Parses blogspot-style meta lines:
-```
+```text
 abhayAmbA jagadambA - rAgaM kalyANi - tALaM Adi
 ```
 
 **Python** (`MetadataParser.parse()`) — Parses guruguha.org PDF-style headers:
-```
+```text
 Rāga: Kalyāṇi — Tāla: Ādi
 ```
 Also handles garbled Utopia font patterns.
@@ -115,7 +115,7 @@ When the Kotlin `MADHYAMAKALA` regex was fixed to handle `(madhyama kAla sAhitya
 
 ### 4.1 High-Level Design
 
-```
+```text
                          ┌─────────────────────────┐
                          │   Kotlin Backend (Ktor)  │
                          │                          │

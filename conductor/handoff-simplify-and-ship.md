@@ -1,4 +1,13 @@
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 1.0.0 |
+| **Last Updated** | 2026-07-18 |
+| **Author** | Sangeetha Grantha Team |
+
 # Handoff: Simplify and Ship — March 21 Deadline
+
+---
 
 | Metadata | Value |
 |:---|:---|
@@ -88,7 +97,7 @@ Codex works independently on Python code. No Kotlin, no frontend. All work in `t
 **Phase 1 tasks — Consolidate normalizer:**
 
 **Task 1.1: Create `src/normalizer.py`** (standalone, verifiable)
-```
+```text
 Input: Create tools/krithi-extract-enrich-worker/src/normalizer.py
 
 Requirements:
@@ -113,7 +122,7 @@ Reference files:
 ```
 
 **Task 1.2: Create `tests/test_normalizer.py`** (standalone, verifiable)
-```
+```text
 Input: Create tools/krithi-extract-enrich-worker/tests/test_normalizer.py
 
 Requirements:
@@ -129,7 +138,7 @@ Fixtures can be derived from: database/analysis/missed_sanskrit_variants.csv
 ```
 
 **Task 1.3: Update `worker.py` to use consolidated normalizer** (depends on 1.1)
-```
+```text
 Input: Modify tools/krithi-extract-enrich-worker/src/worker.py
 
 Requirements:
@@ -150,7 +159,7 @@ Antigravity works independently on infrastructure. No application logic.
 **Phase 2 tasks — Replace Rust CLI:**
 
 **Task 2.1: Create Python migration runner** (standalone, verifiable)
-```
+```text
 Input: Create tools/db-migrate/ Python package
 
 Requirements:
@@ -174,7 +183,7 @@ Test: Apply all 37 migrations to a fresh PostgreSQL 18 database
 ```
 
 **Task 2.2: Rewrite `compose.yaml`** (standalone, verifiable)
-```
+```text
 Input: Rewrite compose.yaml with profiles
 
 Requirements:
@@ -197,7 +206,7 @@ Test: docker compose --profile dev up starts all services, frontend accessible o
 ```
 
 **Task 2.3: Create Makefile** (standalone, verifiable)
-```
+```text
 Input: Create Makefile at project root
 
 Targets:
@@ -224,7 +233,7 @@ Cross-platform: use portable shell commands
 
 ## Orchestration Flow
 
-```
+```text
 Week 1 (Mar 8-12):
 ┌─────────────────────────────────────────────────┐
 │ Claude: Phase 0 (close tracks)                  │ Day 1

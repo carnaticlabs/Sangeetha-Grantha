@@ -56,7 +56,7 @@ Adopt **Option A — append-only revision tables with a current-state projection
 2. **Provenance graph (normalised, per-section).** Introduce a `source_documents` node (the physical artifact) between the
    existing `extraction_queue` and `import_sources`, and attribute provenance **at the section grain**:
 
-   ```
+   ```text
    krithi_section_revisions.source_document_id ─┐
    krithi_section_revisions.extraction_id ──────┤
                                                  ▼

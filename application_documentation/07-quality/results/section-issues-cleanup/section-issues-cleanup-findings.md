@@ -1,4 +1,13 @@
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 1.0.0 |
+| **Last Updated** | 2026-07-18 |
+| **Author** | Sangeetha Grantha Team |
+
 # Section-Issues Cleanup — Findings & Remediation Log
+
+---
 
 _Autonomous pass, 2026-07-16; template-repair pass, 2026-07-17. Companion to [flagged-krithis-for-review.md](./flagged-krithis-for-review.md) (open queue) and [flagged_for_review.json](./flagged_for_review.json) (same data, machine-readable). The record of what the automated pass already fixed is archived at [archive/quality-reports/fixed-krithis-for-review.md](../../../archive/quality-reports/fixed-krithis-for-review.md)._
 
@@ -155,7 +164,7 @@ structure fix.
 > + 429-retry to both repair scripts; a fresh triage (`triage_report4.json`) drove the completion
 > run (`section_repair` finished `Oka Maata`; `template_repair` did the remaining 11). Final
 > reconciliation: 28 `UPDATE_KRITHI_SECTIONS` + 141 `UPDATE_LYRIC_VARIANT_SECTIONS`, matching the
-> dry-run plan exactly. See [ADR-015](application_documentation/02-architecture/decisions/ADR-015-govindan-extraction-adapter.md).
+> dry-run plan exactly. See [ADR-015](../../../02-architecture/decisions/ADR-015-govindan-extraction-adapter.md).
 
 ### Tamil — no detectable refrain cue / translation trailer · **LARGELY FIXED (pass 3)** (119 variants)
 Root cause confirmed (`kanna talli`, `Venkatesa`): the thyagaraja-vaibhavam Tamil variants

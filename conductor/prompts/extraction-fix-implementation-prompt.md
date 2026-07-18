@@ -1,4 +1,13 @@
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 1.0.0 |
+| **Last Updated** | 2026-07-18 |
+| **Author** | Sangeetha Grantha Team |
+
 # Prompt: Implement Multi-Pass Indic Script Extraction (TRACK-100 through TRACK-104)
+
+---
 
 > **Purpose**: Feed this prompt to Claude Opus to implement the critical multi-pass parsing fix and all dependent secondary fixes in `StructureParser`. This is a single coherent implementation session — the fixes are interdependent and should be landed together.
 > **Output**: Working code changes to `structure_parser.py`, new test fixtures, and comprehensive test coverage. All existing tests must continue to pass.
@@ -27,7 +36,7 @@ These tracks form a dependency tree. Implement them in order — TRACK-100 first
 
 Read every file listed below before writing any code. Understand the full code path from `parse()` → `_build_blocks()` → `_extract_sections()` → `_extract_lyric_variants()`. Understand how language headers, section headers, metadata boundaries, and boilerplate filtering interact.
 
-```
+```text
 # THE BUG — investigation report with root cause and test evidence
 database/for_import/EXTRACTION-INVESTIGATION-REPORT.md
 
@@ -139,7 +148,7 @@ After TRACK-100 is implemented, verify this works automatically. The existing `_
 Create realistic test fixtures in `tests/fixtures/structure_parser/` that simulate actual blog content:
 
 1. **`dikshitar_multi_variant.txt`** — Simulates guru-guha blog structure:
-   ```
+   ```text
    English/IAST Pallavi/Anupallavi/Charanam
    variations (metadata boundary)
    Meaning section
@@ -154,7 +163,7 @@ Create realistic test fixtures in `tests/fixtures/structure_parser/` that simula
    ```
 
 2. **`tyagaraja_multi_variant.txt`** — Simulates thyagaraja blog with P/A/C abbreviations:
-   ```
+   ```text
    P (Pallavi text)
    A (Anupallavi text)
    C (Charanam text)
@@ -168,7 +177,7 @@ Create realistic test fixtures in `tests/fixtures/structure_parser/` that simula
    ```
 
 3. **`syama_sastri_numbered.txt`** — Simulates syamakrishna blog with numbered charanams:
-   ```
+   ```text
    pallavi (text)
    anupallavi (text)
    caraNam 1 (text — verify no leading "1" in body)
@@ -288,7 +297,7 @@ Before declaring done:
 ## Commit Convention
 
 When complete, commit with:
-```
+```text
 TRACK-100: Multi-pass Indic script extraction + secondary parser fixes (TRACK-101–104)
 
 Ref: application_documentation/04-database/schema.md

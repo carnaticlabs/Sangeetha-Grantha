@@ -1019,7 +1019,7 @@ The original architecture delegated different extraction formats to different ru
 
 ### 14.3 Architecture After Consolidation
 
-```
+```text
 Submission (HTML/PDF/OCR)
     → extraction_queue (PostgreSQL)
         → Python Worker (krithi-extract-enrich-worker)

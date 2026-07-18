@@ -43,7 +43,7 @@
 
 **Track number ≠ execution order** (conductor numbers by creation). Execute in this order; dependencies in parentheses.
 
-```
+```text
 WEEK 1  ── stop the bleeding, open the freeze ──────────────────────────────
   1. TRACK-114  Password hashing (argon2id)          ✅ Completed
   2. TRACK-115  Repo hygiene + token rotation         ✅ Completed
@@ -63,7 +63,7 @@ LATER / PARALLEL ─────────────────────
 **Critical-path note (D1↔D2):** the import stays paused only until **TRACK-110's Flyway cutover** and **TRACK-117's versioned-canon migration** land — *not* the whole testing initiative. The **TRACK-116 spike is design-only and runs during the freeze** (it produces ADR-014, authors no migration), so it adds no critical-path time. The Testcontainers test-wiring, DAL suite, CI, and scenarios (111–113) run *after* the import resumes and never block it.
 
 **Dependency graph:**
-```
+```text
               116 (spike/ADR-014) ─┐
 114 ─┬─▶ 110 ─┼────────────────────┴▶ 117 ─▶ (re-import, resume 093/096)
 115 ─┘        ├─▶ 111 ─┬─▶ 112

@@ -43,6 +43,6 @@ Promotes the Python extraction worker from a legacy `tools/pdf-extractor/` path 
 
 ## Commit Reference
 
-```
+```text
 Ref: application_documentation/10-implementations/track-065-python-module-promotion-implementation.md
 ```

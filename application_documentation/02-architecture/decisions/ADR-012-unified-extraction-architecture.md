@@ -45,7 +45,7 @@ The Python extraction worker is promoted from a "tool" to a first-class architec
 
 ### Architecture Flow
 
-```
+```text
 Source (Web/PDF/OCR)
     ↓
 Python Extraction Worker

@@ -129,6 +129,6 @@ Covers Phase 0 (E2E Harness), Phase 1 (HTML Vertical Slice), and Phase 2 (Heuris
 
 ## Commit Reference
 
-```
+```text
 Ref: application_documentation/10-implementations/track-064-unified-extraction-engine-implementation.md
 ```

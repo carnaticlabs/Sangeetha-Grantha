@@ -1,4 +1,13 @@
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 1.0.0 |
+| **Last Updated** | 2026-07-18 |
+| **Author** | Sangeetha Grantha Team |
+
 # Prompt: Create TRACK Entries from Extraction Investigation Report
+
+---
 
 > **Purpose**: Feed this prompt to Gemini 3.1 Pro or Claude Opus to generate detailed TRACK files for fixing the issues identified in the extraction investigation report.
 > **Output**: Markdown TRACK files ready to be saved into `conductor/tracks/`
@@ -130,7 +139,7 @@ For each TRACK, you must:
 
 These are the key files you should examine before writing the TRACKs:
 
-```
+```text
 # Primary — the parser under investigation
 tools/krithi-extract-enrich-worker/src/structure_parser.py
 

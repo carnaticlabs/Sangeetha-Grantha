@@ -1,4 +1,13 @@
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 1.0.0 |
+| **Last Updated** | 2026-07-18 |
+| **Author** | Sangeetha Grantha Team |
+
 # Multi-Source Import Retrospective
+
+---
 
 | Metadata | Value |
 |:---|:---|
@@ -85,7 +94,7 @@ This is the classic "integration hell" pattern. Every layer was built in isolati
 - Composer name mappings were incomplete
 
 **What should have been done**: Build ONE vertical slice through the entire stack:
-```
+```text
 mdeng.pdf page 17 -> Python extract -> queue -> Kotlin process -> 1 Krithi in DB
 ```
 Get that working. Then expand to all pages. Then add the second source. Each step validates the contract between layers.
@@ -113,7 +122,7 @@ From the analysis report:
 ### 4.5 Normalisation Was an Iceberg
 
 The analysis report documents a devastating cascade:
-```
+```text
 PDF diacritics garbled
   -> titles stored wrong
     -> normalisation produces different keys
@@ -156,7 +165,7 @@ The remediation phase (Feb 11) finally created `IntegrationTestBase.kt` and `Mig
 When you give an LLM a 5-phase strategy document and say "implement this", it will try to implement ALL of it. The LLM doesn't naturally say "let's do phase 1 first and validate". It's a completion engine — bigger input, bigger output.
 
 **Better approach**:
-```
+```text
 "Implement ONLY the minimum path: Python extracts one PDF page ->
 result goes to extraction_queue -> Kotlin reads it and creates one
 Krithi. No UI. No voting. No evidence tracking yet. Show me the
@@ -170,7 +179,7 @@ The prompts appear to have been service-oriented ("build ExtractionResultProcess
 Service-oriented prompts produce code that compiles. Outcome-oriented prompts produce code that works with real data.
 
 **Better approach**:
-```
+```text
 "Here is the raw text that PyMuPDF extracts from page 17 of mdeng.pdf:
 [paste actual text]. The expected Krithi title is 'Akhilandesvari'.
 Write the normalisation that transforms the raw text into the expected
@@ -182,7 +191,7 @@ title."
 The Feb 9 session appears to have been one long generation session that produced TRACK-044 through TRACK-053 — 10 tracks, ~40 new files, 15 components, 6 repositories — without a human checkpoint in between.
 
 **Better approach**: After every meaningful code generation, run the actual system:
-```
+```text
 1. Generate -> Compile -> Run -> Check output -> Adjust -> Next piece
    NOT
 2. Generate everything -> Compile -> Run -> Everything is broken

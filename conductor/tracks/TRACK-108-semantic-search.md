@@ -23,7 +23,7 @@ This is a *new feature*, not maintenance — it gets its own track and its own r
 
 ## Architecture / Approach
 
-```
+```text
 krithi sections / lyrics ──(offline backfill, batchable)──> gemini-embedding-001 (768-dim)
                                                                    │
                                                    krithi_embedding table (pgvector)

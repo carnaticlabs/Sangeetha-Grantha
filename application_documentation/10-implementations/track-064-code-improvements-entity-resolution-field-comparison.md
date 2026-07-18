@@ -24,6 +24,6 @@ Two targeted improvements to the unified extraction engine (TRACK-064):
 
 ## Commit Reference
 
-```
+```text
 Ref: application_documentation/10-implementations/track-064-code-improvements-entity-resolution-field-comparison.md
 ```

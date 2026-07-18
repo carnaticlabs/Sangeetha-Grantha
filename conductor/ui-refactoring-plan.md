@@ -1,4 +1,13 @@
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 1.0.0 |
+| **Last Updated** | 2026-07-18 |
+| **Author** | Sangeetha Grantha Team |
+
 # Frontend Pages Refactoring Plan
+
+---
 
 **Track:** TRACK-021-frontend-pages-refactoring
 **Status:** Planned
@@ -129,6 +138,6 @@ Refactor 9 React pages (~5,200 lines) to address 59+ identified issues including
 Create `conductor/tracks/TRACK-021-frontend-pages-refactoring.md` with phases above.
 
 Update `conductor/tracks.md` to add:
-```
+```text
 | [TRACK-021](./tracks/TRACK-021-frontend-pages-refactoring.md) | Frontend Pages Refactoring | In Progress |
 ```

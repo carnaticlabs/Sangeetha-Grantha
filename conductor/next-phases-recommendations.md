@@ -1,4 +1,13 @@
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 1.0.0 |
+| **Last Updated** | 2026-07-18 |
+| **Author** | Sangeetha Grantha Team |
+
 # Prioritized Recommendations for Next Phases
+
+---
 
 | Metadata | Value |
 |:---|:---|
@@ -73,7 +82,7 @@ mdskt.pdf never submitted — blocked by HTTP file serving requirement.
 
 **Copy-paste into a new Claude Code session:**
 
-```
+```text
 Read conductor/next-phases-recommendations.md and conductor/status-phase3-completion.md for context.
 
 This is Phase 4A — fixing the critical lyric section inconsistency that affects 92% of krithis.
@@ -103,7 +112,7 @@ JOIN krithi_sections ks ON ks.krithi_id = k.id
 LEFT JOIN krithi_lyric_sections kls ON kls.lyric_variant_id = klv.id AND kls.section_id = ks.id
 WHERE k.title ILIKE '%abhayamba%'
 ORDER BY klv.language, ks.order_index;
-```
+```text
 
 Use the Sangeetha-Krithi-Analyser skill rules to determine:
 - What the CORRECT section structure should be
@@ -153,7 +162,7 @@ HAVING COUNT(kls.id) != (
     SELECT COUNT(ks.id) FROM krithi_sections ks WHERE ks.krithi_id = k.id
 )
 ORDER BY k.title, klv.language;
-```
+```text
 
 ```sql
 -- After fix: should return zero rows
@@ -163,7 +172,7 @@ JOIN krithi_lyric_variants klv ON klv.krithi_id = k.id
 LEFT JOIN krithi_lyric_sections kls ON kls.lyric_variant_id = klv.id
 WHERE kls.id IS NULL
 ORDER BY k.title;
-```
+```text
 
 Run backend tests: ./gradlew :modules:backend:api:test — zero failures.
 
@@ -185,7 +194,7 @@ Ref: conductor/next-phases-recommendations.md"
 
 **Copy-paste into a new Claude Code session:**
 
-```
+```text
 Read conductor/status-phase3-completion.md Issue #2 for context.
 
 ### Problem
@@ -222,7 +231,7 @@ Ref: application_documentation/04-database/schema.md"
 
 **Copy-paste into a new Claude Code session:**
 
-```
+```text
 Read conductor/next-phases-recommendations.md and conductor/session-prompts.md (Phase 4 section) for full context.
 
 Phase 4A (lyric section fix) and 4B (idempotency fix) are complete. Now build the curator review UI.
@@ -310,7 +319,7 @@ Ref: conductor/next-phases-recommendations.md"
 
 **Copy-paste into a new Claude Code session:**
 
-```
+```text
 Read conductor/next-phases-recommendations.md for context. Phase 4 is complete — curator review UI is functional.
 
 ### Goal
@@ -340,7 +349,7 @@ WHERE NOT EXISTS (
     SELECT 1 FROM krithi_sections ks
     WHERE ks.krithi_id = k.id AND ks.section_type = 'PALLAVI'
 );
-```
+```text
 
 ### Step 3: Bulk approve high-confidence matches
 
@@ -353,7 +362,7 @@ WHERE status = 'PENDING'
   AND import_source = 'PDF Extraction (Unmatched)'
   AND (metadata->>'confidence')::float >= 0.7
 ORDER BY (metadata->>'confidence')::float DESC;
-```
+```text
 
 ### Step 4: Checkpoint
 
@@ -366,7 +375,7 @@ WHERE EXISTS (
     SELECT 1 FROM source_evidence se WHERE se.krithi_id = k.id
 );
 -- Target: >= 500 with evidence
-```
+```text
 
 ### Step 5: Data quality report
 
@@ -387,7 +396,7 @@ CROSS JOIN LATERAL (
         GROUP BY klv.language
     ) sub
 ) consistency_check;
-```
+```text
 
 ### Commit
 
@@ -406,7 +415,7 @@ Ref: conductor/next-phases-recommendations.md"
 
 **Copy-paste into a new Claude Code session:**
 
-```
+```text
 Read conductor/status-phase3-completion.md Issue #3 and conductor/next-phases-recommendations.md.
 
 ### Problem
@@ -441,7 +450,7 @@ Add the volume mount to the extraction service.
 ```bash
 mkdir -p data/pdfs
 cp /path/to/mdskt.pdf data/pdfs/
-```
+```text
 
 Submit extraction via SQL or API with source path `/app/pdfs/mdskt.pdf`.
 
@@ -456,7 +465,7 @@ After extraction, use the skill to validate Sanskrit section structure:
 ```sql
 SELECT count(*) FROM extraction_queue WHERE status = 'COMPLETED' AND source_name = 'mdskt.pdf';
 SELECT count(*) FROM source_evidence; -- should increase
-```
+```text
 
 ### Commit
 
@@ -476,7 +485,7 @@ Ref: conductor/next-phases-recommendations.md"
 
 **Copy-paste into a new Claude Code session:**
 
-```
+```text
 Read conductor/next-phases-recommendations.md for context. All prior phases are complete.
 
 ### Step 1: Update documentation
@@ -502,13 +511,13 @@ WHERE EXISTS (SELECT 1 FROM source_evidence se WHERE se.krithi_id = k.id);
 SELECT count(*) as total_sections FROM krithi_sections;
 SELECT count(*) as total_lyric_sections FROM krithi_lyric_sections;
 SELECT count(*) as pending_imports FROM imported_krithis WHERE status = 'PENDING';
-```
+```text
 
 ### Step 4: Clean git status
 
 ```bash
 git status
-```
+```text
 
 All files should be tracked and committed. No uncommitted changes.
 
@@ -528,7 +537,7 @@ Ref: conductor/next-phases-recommendations.md"
 
 ## Summary Timeline
 
-```
+```text
 Mar 8-9:   Phase 4A — Fix lyric sections (use /Sangeetha-Krithi-Analyser)
 Mar 9:     Phase 4B — Fix idempotency key (0.5 day)
 Mar 10-11: Phase 4C — Curator Review UI (with section issue tab)

@@ -1,4 +1,13 @@
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 1.0.0 |
+| **Last Updated** | 2026-07-18 |
+| **Author** | Sangeetha Grantha Team |
+
 # Flagged Krithis — Section Issues NOT auto-fixed (for review)
+
+---
 
 Generated 2026-07-16. These are the remaining Curator "Section Issues" that the automated Latin-as-template split intentionally SKIPPED (per the safety rule: never guess when the split would not match the template exactly, to avoid corrupting lyric data).
 

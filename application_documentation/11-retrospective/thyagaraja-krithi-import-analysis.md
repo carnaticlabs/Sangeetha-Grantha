@@ -1,4 +1,13 @@
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 1.0.0 |
+| **Last Updated** | 2026-07-18 |
+| **Author** | Sangeetha Grantha Team |
+
 # Thyagaraja Krithi Import — Post-Mortem Analysis
+
+---
 
 **Date:** 2026-07-14
 **Scope:** Bulk import of 687 Tyagaraja krithis from thyagaraja-vaibhavam.blogspot.com
@@ -43,7 +52,7 @@ The thyagaraja-vaibhavam blog uses Harvard-Kyoto (HK) transliteration with inlin
 labels that differ from the full-word headers (`Pallavi`, `Anupallavi`, `Charanam`) used
 by most sources:
 
-```
+```text
 P ataDE dhanyuDurA O manasA
 A satata yAna suta dhRtamaina sItA
 C1 venuka tIka tana manasu ranjillaga
@@ -92,7 +101,7 @@ the idempotency match so the pipeline treats them as new imports.
 
 The extraction lifecycle has a non-obvious status flow:
 
-```
+```text
 CSV Upload → Scrape → extraction_queue (PENDING)
                            ↓
                     Python worker processes
@@ -121,7 +130,7 @@ row that triggered the extraction. When the old rows are deleted and new ones cr
 the queue entries still reference the deleted UUIDs.
 
 The Kotlin `ExtractionResultProcessor` logs:
-```
+```text
 WARN Import be9b66d9-... from request_payload not found, skipping enrichment
 ```
 

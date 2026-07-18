@@ -128,6 +128,7 @@
 | [TRACK-122](./tracks/TRACK-122-kotlin-2.4-compose-upgrade.md) | Dependency Upgrades Batch 3a — Kotlin 2.4 + Compose Multiplatform | Completed |
 | [TRACK-123](./tracks/TRACK-123-testcontainers-2.x-upgrade.md) | Dependency Upgrades Batch 3b — Testcontainers 2.x | Completed |
 | [TRACK-124](./tracks/TRACK-124-google-genai-2.x-upgrade.md) | Dependency Upgrades Batch 3c — google-genai 2.x (Python Worker) | Completed |
+| [TRACK-125](./tracks/TRACK-125-documentation-validation-and-repair.md) | Documentation Validation & Repair | Completed |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)

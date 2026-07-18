@@ -1,4 +1,13 @@
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 1.0.0 |
+| **Last Updated** | 2026-07-18 |
+| **Author** | Sangeetha Grantha Team |
+
 # Extraction & Variant Pipeline Failure Analysis
+
+---
 
 **Date**: 2026-02-10
 **Analyst**: Claude (requested by Seshadri)
@@ -206,7 +215,7 @@ Actually, looking at timestamps: mdeng.pdf krithis were created at ~06:49 UTC an
 
 ## Summary: Root Cause Chain
 
-```
+```text
 1. PDF Diacritic Problem (TRACK-054 gap)
    ├─ diacritic_normalizer.py is never called on title text
    ├─ Even if called, Rule 8 (consonant+dot) was deliberately skipped

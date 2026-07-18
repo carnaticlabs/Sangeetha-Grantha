@@ -51,6 +51,6 @@ Workflows can be invoked by:
 
 ## Related Documentation
 
-- [Commit Policy](.agent/skills/commit-policy/SKILL.md)
-- [Change Mapper](.agent/skills/change-mapper/SKILL.md)
+- [Commit Policy](../../.agent/skills/commit-policy/SKILL.md)
+- [Change Mapper](../../.agent/skills/change-mapper/SKILL.md)
 - [CLI Reference](./cli-docs-command.md)

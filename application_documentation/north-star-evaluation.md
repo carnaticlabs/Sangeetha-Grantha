@@ -98,7 +98,7 @@ The application class: **a provenance-first scholarly corpus platform** — AI-a
 
 ### 3.2 The target architecture
 
-```
+```text
                        ┌─────────────────────────────────────────────┐
                        │                 PUBLIC SURFACE              │
                        │  Read-only API (cached, rate-limited)       │

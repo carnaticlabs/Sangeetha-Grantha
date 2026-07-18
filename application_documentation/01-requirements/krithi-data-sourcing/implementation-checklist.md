@@ -101,7 +101,7 @@ This checklist provides a detailed, actionable breakdown of every task required 
 ### 1.1 Python PDF Extraction Service — Setup
 
 - [x] Initialise Python project structure:
-  ```
+  ```text
   tools/krithi-extract-enrich-worker/
     pyproject.toml
     src/

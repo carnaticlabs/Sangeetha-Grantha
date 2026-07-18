@@ -1,4 +1,13 @@
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 1.0.0 |
+| **Last Updated** | 2026-07-18 |
+| **Author** | Sangeetha Grantha Team |
+
 # Phase 3 Status Report — E2E Pipeline Validation
+
+---
 
 | Metadata | Value |
 |:---|:---|

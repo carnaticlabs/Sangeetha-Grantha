@@ -40,7 +40,7 @@ The good news is that the same churn that created these breaks also opened three
 
 The model lineup moved a full generation in three months. Here is the lineage relevant to you:
 
-```
+```text
 Gemini 1.5 Pro      → deprecated (your validation model)
 Gemini 2.0 Flash    → RETIRED 1 Jun 2026 (your primary model)
         ↓ replaced by
