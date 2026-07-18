@@ -70,7 +70,8 @@ modules/
 - Use `DatabaseFactory.dbQuery { }` for all database operations
 - Return explicit DTOs, not Exposed entity objects
 - All mutations must write to `AUDIT_LOG` table
-- JWT auth with role-based claims
+- JWT auth with role-based claims; admin routes are gated by `requireRole` (ADR-004 v1.3) — roles are
+  derived from stored `role_assignments`, never from the request
 
 **Frontend (React + TypeScript)**
 - Function components with explicit TypeScript types

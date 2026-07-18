@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.2.0 |
-| **Last Updated** | 2026-06-13 |
+| **Version** | 1.3.0 |
+| **Last Updated** | 2026-07-18 |
 | **Author** | Sangeetha Grantha Team |
 
 ---
@@ -13,9 +13,52 @@
 >
 > **Password hashing (TRACK-114):** Local credentials are now hashed with **argon2id** via `password4j` 1.8.2 (`api/.../support/PasswordHasher.kt`; cost params m=19456 KiB / t=2 / p=1 / 32-byte, OWASP minimum). The former plaintext `hashPassword()` is removed — **no password is stored in plaintext at rest**. Hashes are self-describing PHC strings, so the same helper serves the TRACK-110 admin bootstrap and any future credential path.
 >
-> **Known gap (deployment blocker):** `POST /v1/auth/token` is gated only by the shared `ADMIN_TOKEN` and issues a JWT with **caller-supplied `roles`** — it verifies no password and lets a token holder self-assign roles. This is the real N1 escalation risk. **The system must not be deployed beyond localhost until it is closed.**
+> **Known gap (deployment blocker):** `POST /v1/auth/token` is gated only by the shared `ADMIN_TOKEN` and issues a JWT with **caller-supplied `roles`** — it verifies no password and lets a token holder self-assign roles. This is the real N1 escalation risk. **The system must not be deployed beyond localhost until it is closed.** *(Partly closed in v1.3 below — the caller-supplied-roles half is fixed; the shared token remains.)*
 >
 > **Future direction:** Authentication will move to **OAuth (Google/Apple)** and/or **OTP (mobile/email)** — passwordless. Interactive login, rehash-on-login, login throttling, and removing caller-supplied roles are tracked in **[TRACK-119](../../../conductor/tracks/TRACK-119-oauth-otp-auth.md)**, which will extend or supersede this ADR.
+
+> ## Addendum (v1.3, 2026-07-18) — Authorisation is now enforced (TRACK-112, F3)
+>
+> The "Role-Based Access Control" in this ADR's title was, until now, aspirational: roles were carried
+> in the JWT but **no route ever checked them**. `authenticate("admin-auth")` validates only the
+> signature, audience and presence of a `userId` claim, so any validly-signed token — including one
+> with an empty `roles` list — reached every admin route. There was no 403 tier at all. Three changes
+> close that:
+>
+> 1. **Roles are derived from storage.** `POST /v1/auth/token` reads the user's `role_assignments`
+>    instead of copying the request's `roles` list into the JWT. The `roles` field is removed from
+>    `AuthTokenRequest`; because `ignoreUnknownKeys` is enabled, a client still sending it is ignored
+>    rather than rejected. **The self-assign escalation is closed** — holding the shared `ADMIN_TOKEN`
+>    no longer lets a caller mint arbitrary roles.
+> 2. **Admin routes require a role.** `Route.requireRole` (a route-scoped plugin on Ktor's
+>    `AuthenticationChecked` hook, in `routes/RouteHelpers.kt`) gates every admin route on
+>    `grp_sangita_admin`. It intentionally does nothing when there is no principal, so an anonymous
+>    caller still receives the auth plugin's **401** rather than a misleading 403. **401 (who are you)
+>    and 403 (you may not) are now distinct.**
+> 3. **Refresh re-reads roles.** `/v1/auth/refresh` no longer carries the previous token's claim
+>    forward, so a revoked role cannot be renewed indefinitely. It sits outside `requireRole` so a
+>    caller whose role was revoked can still reach it.
+>
+> **Role taxonomy is unchanged.** `R__seed_01_reference.sql` defines exactly one role
+> (`grp_sangita_admin`), so authorisation today is a single admin tier — the viewer/curator/admin
+> matrix this ADR describes still has nothing to bind to. Defining that taxonomy is TRACK-119 work and
+> needs a seed migration plus a route mapping, not just new constants. The role code now lives in one
+> place, `api/.../support/Roles.kt`.
+>
+> **Remaining deployment blockers (still TRACK-119):**
+> - The **shared `ADMIN_TOKEN`** login exchange still exists and still verifies no password. Replacing
+>   it needs the OAuth/OTP work; until then, treat `ADMIN_TOKEN` as a production-grade secret.
+> - **Revocation window:** enforcement reads the token's `roles` claim, so a role revoked mid-session
+>   stays effective until the token expires (`tokenTtlSeconds`, 24h default) unless the client
+>   refreshes. Closing it means a per-request storage check or a shorter TTL.
+>
+> **Operational note:** users without `grp_sangita_admin` now receive 403 where they previously had
+> full access. `bootstrap-admin` assigns the role and no users are seeded, so a correctly bootstrapped
+> environment is unaffected; users created via the user-management API need an explicit assignment.
+>
+> Verified end to end against the dev stack (login → JWT roles from storage → admin route 200;
+> role-less user → 403; anonymous → 401; escalation attempt ignored) and covered by five
+> `MoneyPathApiTest` A1 scenarios.
 
 
 ## Context

@@ -27,7 +27,11 @@ provisioned out-of-band via `./gradlew :modules:backend:api:bootstrapAdmin` (`ma
   connection for its whole duration. Contract is pinned by `DbQueryNestingTest`.
 - Return DTOs from repositories, never Exposed entity objects
 - Every create/update/delete must write to `AUDIT_LOG` table
-- JWT auth with role-based claims at route level
+- JWT auth at route level: `authenticate("admin-auth")` establishes *identity*, `requireRole(...)`
+  enforces *authorisation*. Both are needed — authentication alone lets any validly-signed token
+  through. Admin routes sit inside `requireRole(Roles.ADMIN)` in `plugins/Routing.kt`. Roles come
+  from the user's stored `role_assignments` at token issue; never trust a role from a request body
+  (ADR-004 v1.3)
 - Dependencies must reference `gradle/libs.versions.toml` via `alias(libs.xyz)`
 - Main class: `com.sangita.grantha.backend.api.AppKt`
 

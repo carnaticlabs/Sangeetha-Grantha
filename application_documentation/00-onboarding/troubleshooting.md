@@ -235,28 +235,38 @@ psql $DATABASE_URL -c "SELECT 1"
 ### 2.4 Authentication Failures
 
 **Symptoms:**
-- `401 Unauthorized` on admin endpoints
-- JWT validation errors
-- Token expired errors
+- `401 Unauthorized` on admin endpoints — no token, or a token this server did not sign
+- `403 Forbidden` with `{"message":"Requires one of: grp_sangita_admin"}` — authenticated, but the
+  user has no admin role assignment (see ADR-004 v1.3; roles come from the database, never from the
+  login request)
+- JWT validation errors, token expired errors
 
 **Solutions:**
 
 ```bash
-# Verify admin user exists
-psql -h localhost -U sangita -d sangita_grantha -c \
-  "SELECT id, email FROM users WHERE email = 'admin@sangitagrantha.org'"
+# 1. Does the admin user exist, and does it have the role?
+#    A user with '(none)' here will authenticate but get 403 on every admin route.
+docker exec sangeetha-grantha-db-1 psql -U postgres -d sangita_grantha -c \
+  "SELECT u.email, COALESCE(string_agg(ra.role_code, ','), '(none)') AS roles
+     FROM users u LEFT JOIN role_assignments ra ON ra.user_id = u.id
+    GROUP BY u.email;"
 
-# Verify admin token in config
-grep -i admin_token config/application.local.toml
+# 2. No admin user, or no role? Provision one (idempotent; assigns grp_sangita_admin).
+ADMIN_EMAIL=admin@sangitagrantha.org ADMIN_PASSWORD=<choose> make bootstrap-admin
 
-# Get fresh token
-ADMIN_USER_ID=$(psql -h localhost -U sangita -d sangita_grantha -t -c \
-  "SELECT id FROM users WHERE email = 'admin@sangitagrantha.org'" | tr -d ' ')
-
-curl -X POST http://localhost:8080/auth/token \
+# 3. Get a fresh token (email is preferred; userId also works).
+curl -s -X POST http://localhost:8080/v1/auth/token \
   -H "Content-Type: application/json" \
-  -d "{\"adminToken\": \"dev-admin-token\", \"userId\": \"$ADMIN_USER_ID\"}"
+  -d '{"adminToken": "dev-admin-token", "email": "admin@sangitagrantha.org"}'
+
+# 4. Inspect the roles the server actually granted — asking for roles in the
+#    request body has no effect, so this is the authoritative answer.
+TOKEN=<paste>
+echo "$TOKEN" | cut -d. -f2 | base64 -d 2>/dev/null | python3 -m json.tool
 ```
+
+> **Note:** `adminToken` must match the server's `ADMIN_TOKEN` (default `dev-admin-token` in dev) — a
+> mismatch is a 401 from `/v1/auth/token` itself, before any user lookup happens.
 
 ---
 
