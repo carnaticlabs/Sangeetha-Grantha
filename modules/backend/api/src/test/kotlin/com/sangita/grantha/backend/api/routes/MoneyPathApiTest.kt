@@ -424,23 +424,16 @@ class MoneyPathApiTest : IntegrationTestBase() {
             }
 
         /**
-         * DEFECT found by TRACK-112 (A3).
+         * Regression test for F4 (fixed).
          *
-         * Approving an import that does not exist is a client error, but it surfaces as **500**.
-         * `ImportService.reviewImport` raises `NoSuchElementException("Import not found")` and then
-         * its own broad `catch (e: Exception)` re-wraps it as
-         * `RuntimeException("Failed to create krithi: ...")`. StatusPages maps
-         * `NoSuchElementException` to 404, but the wrapper hides it, so the generic `Throwable`
-         * handler returns 500 — and the body leaks the internal phrasing to the caller.
-         *
-         * Same root cause as the non-transactional approval path: that `catch` is too broad. The
-         * fix is to let `NoSuchElementException`/`IllegalArgumentException` propagate unwrapped
-         * (or map them explicitly) so genuine client errors keep their status.
-         *
-         * Pinned as current behaviour — invert when the wrapper is narrowed.
+         * `reviewImport` used to catch every exception and re-wrap it as
+         * `RuntimeException("Failed to create krithi: …")`, which hid the
+         * `NoSuchElementException` that StatusPages maps to 404. A missing import therefore
+         * returned **500** and leaked the internal phrasing to the caller. The catch is now
+         * narrowed so client-error types propagate with their own identity.
          */
         @Test
-        fun `GAP - approving a non-existent import returns 500 instead of 404`() = testApplication {
+        fun `approving a non-existent import returns 404, not 500`() = testApplication {
             sangitaApp()
             val token = tokenFor(aUser(), listOf("CURATOR"))
             val response = client.post("/v1/admin/imports/${Uuid.random()}/review") {
@@ -449,12 +442,40 @@ class MoneyPathApiTest : IntegrationTestBase() {
                 setBody("""{"status":"APPROVED"}""")
             }
             assertEquals(
-                HttpStatusCode.InternalServerError, response.status,
-                "current behaviour: the broad catch in reviewImport masks NoSuchElementException"
+                HttpStatusCode.NotFound, response.status,
+                "a missing import is a client error; body was: ${response.bodyAsText()}"
             )
-            assertTrue(
-                response.bodyAsText().contains("Import not found"),
-                "the 500 body leaks internal phrasing: ${response.bodyAsText()}"
+            assertFalse(
+                response.bodyAsText().contains("Failed to create krithi"),
+                "the 404 must not leak the internal wrapper phrasing: ${response.bodyAsText()}"
+            )
+        }
+
+        /** A composer-less import is a 400, not a 500 — same narrowed-catch fix. */
+        @Test
+        fun `approving an import with no composer returns 400, not 500`() = testApplication {
+            sangitaApp()
+            val token = tokenFor(aUser(), listOf("CURATOR"))
+            val importId = importService.submitImports(
+                listOf(
+                    ImportKrithiRequest(
+                        source = "api-money-path",
+                        sourceKey = "http://example.com/a4-no-composer",
+                        rawTitle = "No Composer Over Http",
+                        rawComposer = null,
+                        rawRaga = "Kalyani",
+                    )
+                )
+            ).first().id
+
+            val response = client.post("/v1/admin/imports/$importId/review") {
+                header(HttpHeaders.Authorization, "Bearer $token")
+                contentType(ContentType.Application.Json)
+                setBody("""{"status":"APPROVED"}""")
+            }
+            assertEquals(
+                HttpStatusCode.BadRequest, response.status,
+                "a missing required field is a client error; body was: ${response.bodyAsText()}"
             )
         }
 

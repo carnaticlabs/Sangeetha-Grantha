@@ -3,6 +3,7 @@ package com.sangita.grantha.backend.api.services
 import com.sangita.grantha.backend.api.models.ImportKrithiRequest
 import com.sangita.grantha.backend.api.models.ImportReviewRequest
 import com.sangita.grantha.backend.api.support.toJavaUuidOrThrow
+import com.sangita.grantha.backend.dal.DatabaseFactory
 import com.sangita.grantha.backend.dal.SangitaDal
 import com.sangita.grantha.backend.dal.enums.ImportStatus
 import com.sangita.grantha.backend.api.config.ApiEnvironment
@@ -11,6 +12,7 @@ import com.sangita.grantha.backend.dal.enums.MusicalForm
 import com.sangita.grantha.backend.dal.enums.WorkflowState
 import com.sangita.grantha.backend.dal.support.toJavaUuid
 import com.sangita.grantha.backend.dal.support.toKotlinUuid
+import com.sangita.grantha.shared.domain.model.ImportStatusDto
 import com.sangita.grantha.shared.domain.model.ImportedKrithiDto
 import com.sangita.grantha.shared.domain.model.import.CanonicalExtractionDto
 import com.sangita.grantha.shared.domain.model.import.CanonicalExtractionMethod
@@ -260,8 +262,28 @@ class ImportServiceImpl(
         var createdKrithiId: UUID? = null
         if (status == ImportStatus.APPROVED && mappedId == null) {
             try {
-                // Get the import to extract data
-                val importData = dal.imports.findById(id) ?: throw NoSuchElementException("Import not found")
+                // TRACK-112: one transaction for the whole promotion. Every dal.* call below nests
+                // into this one (see DatabaseFactory.dbQuery), so a failure at any step — entity
+                // resolution, section persistence, source evidence, the ADR-014 revision write —
+                // rolls the entire krithi back instead of leaving a committed orphan behind with
+                // the import still PENDING. Guarded by DbQueryNestingTest + the S6c/atomicity tests.
+                DatabaseFactory.dbQuery {
+                // Lock the import row for the rest of this transaction. Promotion is a
+                // read-then-write (look for an existing krithi, else create one), so two curators
+                // approving the same import concurrently would otherwise both pass the check and
+                // each create a krithi. The second transaction blocks here until the first
+                // commits, then takes the already-promoted branch below.
+                val importData = dal.imports.findByIdForUpdate(id)
+                    ?: throw NoSuchElementException("Import not found")
+
+                // Re-check under the lock: if another curator already promoted this import, adopt
+                // their krithi rather than creating a rival one.
+                val alreadyPromoted = importData.mappedKrithiId
+                if (importData.importStatus == ImportStatusDto.APPROVED && alreadyPromoted != null) {
+                    createdKrithiId = alreadyPromoted.toJavaUuid()
+                    return@dbQuery
+                }
+
                 val overrides = request.overrides
                 
                 // Extract values, prioritizing overrides, then raw data, then scraped payload
@@ -574,7 +596,7 @@ class ImportServiceImpl(
                 }
                 if (extractionId != null || reviewerUserId != null) {
                     dal.revisions.snapshotCurrentState(
-                        krithiId = createdKrithiId!!,
+                        krithiId = createdKrithiId,
                         changeKind = "IMPORT",
                         changeReason = "Approved import $id",
                         extractionId = extractionId,
@@ -584,10 +606,19 @@ class ImportServiceImpl(
                 } else {
                     println("Approved import $id has no extraction or reviewer — revision skipped (unattributable)")
                 }
+                }
 
+            } catch (e: NoSuchElementException) {
+                // TRACK-112 (F4): client errors keep their own type so StatusPages maps them to the
+                // right status. Wrapping these in RuntimeException turned a missing import into a
+                // 500 (and leaked the internal "Failed to create krithi: ..." phrasing to callers)
+                // when it is plainly a 404.
+                throw e
+            } catch (e: IllegalArgumentException) {
+                // Likewise a 400 — e.g. "Composer is required to create krithi from import".
+                throw e
             } catch (e: Exception) {
-                // If it's a known error, rethrow it so route can handle it (or wrap it)
-                // If it's unknown, wrap it in a custom exception that route can map to meaningful message
+                // Genuinely unexpected: wrap so the route reports something actionable.
                 throw RuntimeException("Failed to create krithi: ${e.message}", e)
             }
         }

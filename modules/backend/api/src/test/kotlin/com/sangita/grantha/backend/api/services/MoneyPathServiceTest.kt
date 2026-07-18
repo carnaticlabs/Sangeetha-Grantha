@@ -822,6 +822,97 @@ class MoneyPathServiceTest : IntegrationTestBase() {
     }
 
     // =========================================================================
+    // S6d: Atomicity — a failed promotion leaves nothing behind
+    // =========================================================================
+
+    @Nested
+    @DisplayName("S6d: Approval is atomic — a mid-flight failure commits nothing")
+    inner class ApprovalAtomicity {
+
+        /**
+         * TRACK-112: `reviewImport` promotes an import inside one transaction, so a failure at any
+         * step rolls the whole krithi back. Before this, each `dal.*` call committed independently
+         * and a late failure left an orphaned krithi with the import still PENDING — the curator saw
+         * an error while the krithi silently existed, and a retry could create a second one.
+         *
+         * The trigger used here is a composer-less import, which throws partway through promotion
+         * (after the import row is read, before the krithi is complete).
+         */
+        @Test
+        fun `a promotion that fails after the krithi is written rolls the krithi back`() = runTest {
+            val importId = MoneyPathFixtures.aPendingImport(
+                importService,
+                MoneyPathFixtures.anImportRequest(
+                    sourceKey = "http://example.com/atomicity",
+                    rawTitle = "Doomed Promotion",
+                )
+            )
+
+            // Trigger: a reviewer id with no `users` row. Promotion gets all the way through krithi
+            // creation, sections, junction rows and source evidence, then the ADR-014 revision write
+            // fails on `krithi_revisions_created_by_user_id_fkey` — a genuinely LATE failure. A
+            // trigger that throws early (e.g. a missing composer) would not exercise rollback at all,
+            // because nothing has been written yet.
+            val outcome = runCatching {
+                importService.reviewImport(
+                    importId,
+                    ImportReviewRequest(status = ImportStatusDto.APPROVED),
+                    reviewerUserId = Uuid.random(),
+                )
+            }
+
+            assertTrue(outcome.isFailure, "an unresolvable reviewer must fail the promotion")
+            assertEquals(
+                0L, dal.krithiSearch.countAll(),
+                "the krithi written before the failure must roll back — if this is 1, the promotion " +
+                    "is no longer atomic and DatabaseFactory.dbQuery has stopped joining nested calls"
+            )
+            assertEquals(
+                ImportStatusDto.PENDING,
+                dal.imports.findById(importId)!!.importStatus,
+                "the import must stay PENDING so a curator can retry it"
+            )
+        }
+
+        @Test
+        fun `retrying a failed promotion after the cause is fixed produces exactly one krithi`() = runTest {
+            val request = MoneyPathFixtures.anImportRequest(
+                sourceKey = "http://example.com/atomicity-retry",
+                rawTitle = "Retried Promotion",
+                rawComposer = null,
+            )
+            val importId = MoneyPathFixtures.aPendingImport(importService, request)
+            val curator = MoneyPathFixtures.aCurator(dal)
+
+            // First attempt fails — nothing persisted.
+            runCatching {
+                importService.reviewImport(
+                    importId,
+                    ImportReviewRequest(status = ImportStatusDto.APPROVED),
+                    reviewerUserId = curator,
+                )
+            }
+            assertEquals(0L, dal.krithiSearch.countAll(), "the failed attempt persisted nothing")
+
+            // Curator supplies the missing composer and retries.
+            val retried = importService.reviewImport(
+                importId,
+                ImportReviewRequest(
+                    status = ImportStatusDto.APPROVED,
+                    overrides = ImportOverridesDto(composer = "Tyagaraja"),
+                ),
+                reviewerUserId = curator,
+            )
+
+            assertNotNull(retried.mappedKrithiId, "the retry must succeed")
+            assertEquals(
+                1L, dal.krithiSearch.countAll(),
+                "the retry must produce exactly one krithi — no duplicate from the failed attempt"
+            )
+        }
+    }
+
+    // =========================================================================
     // S7: Concurrency — two curators approve the same import simultaneously
     // =========================================================================
 

@@ -93,18 +93,39 @@ object DatabaseFactory {
 
     // Exposed currently deprecates this helper in favour of the R2DBC-only suspendTransaction API.
     // Until an equivalent becomes available for JDBC, keep using it and suppress the warning.
+    /**
+     * Run [block] against the database.
+     *
+     * **Nesting (TRACK-112):** if the caller is already inside a `dbQuery`, this joins that
+     * transaction instead of opening a new one, so the whole nest commits or rolls back together.
+     * Previously every nested call opened its own transaction and committed independently, which
+     * meant a service could not make a multi-repo operation atomic by wrapping it — the wrap
+     * compiled, read as a transaction boundary, and silently did nothing. `ImportService`'s
+     * approval path depended on exactly that and could leave a committed krithi behind when a
+     * later step failed.
+     *
+     * Joining is the semantics callers already assume, and it is a no-op for non-nesting code:
+     * with no ambient transaction the original `newSuspendedTransaction` path runs unchanged.
+     * Verified by `DbQueryNestingTest`.
+     */
     @Suppress("DEPRECATION")
     suspend fun <T> dbQuery(block: suspend JdbcTransaction.() -> T): T =
         try {
-            newSuspendedTransaction(context = dispatcher) {
-                if (com.sangita.grantha.backend.dal.support.QueryCounter.isActive()) {
-                    addLogger(com.sangita.grantha.backend.dal.support.QueryCounterLogger)
+            // Checked before any dispatcher hop, while the ambient transaction is still bound.
+            val ambient = org.jetbrains.exposed.v1.jdbc.transactions.TransactionManager.currentOrNull()
+            if (ambient != null) {
+                ambient.block()
+            } else {
+                newSuspendedTransaction(context = dispatcher) {
+                    if (com.sangita.grantha.backend.dal.support.QueryCounter.isActive()) {
+                        addLogger(com.sangita.grantha.backend.dal.support.QueryCounterLogger)
+                    }
+                    if (queryLoggingEnabled) {
+                        org.jetbrains.exposed.v1.jdbc.transactions.TransactionManager.current().warnLongQueriesDuration = slowQueryThresholdMs
+                        addLogger(Slf4jSqlDebugLogger)
+                    }
+                    block()
                 }
-                if (queryLoggingEnabled) {
-                    org.jetbrains.exposed.v1.jdbc.transactions.TransactionManager.current().warnLongQueriesDuration = slowQueryThresholdMs
-                    addLogger(Slf4jSqlDebugLogger)
-                }
-                block()
             }
         } catch (e: ExposedSQLException) {
             // D5 (TRACK-111): surface well-known constraint violations as typed DalExceptions so

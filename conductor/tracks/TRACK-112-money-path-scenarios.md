@@ -1,7 +1,7 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Completed (with findings — see §Findings) |
-| **Version** | 2.0.0 |
+| **Version** | 2.1.0 |
 | **Last Updated** | 2026-07-18 |
 | **Author** | Sangeetha Grantha Team |
 | **Priority** | P1 |
@@ -49,14 +49,35 @@ tests whose comments state the condition that should invert them, so a fix surfa
 | F1 | Approving an import whose payload has no COMPLETED extraction derived a source document with no extraction run, violating `ksr_doc_requires_extraction_ck` (V44) and aborting the approval **after** the krithi was committed — orphaned krithi, import left PENDING, retry could duplicate it. | **Fixed** — the document node is only derived when an extraction is resolvable; otherwise the revision is still written, curator-attributed. Guarded by S6c. |
 | F2 | `saveKrithiSections` mutates exactly the state revisions capture but writes no revision, so section edits leave no recovery point. `KrithiRevisionDto` also carries no krithi-level metadata, so `updateKrithi` snapshots cannot restore a title. ADR-014 coverage gap. | Open — pinned by S6 `GAP` test. Belongs to TRACK-117. |
 | F3 | No route checks the `roles` claim; `authenticate("admin-auth")` validates only signature, audience and a `userId` claim. Any validly-signed token — including one with no roles — has full admin access. Compounded by `POST /v1/auth/token` minting caller-supplied roles behind the shared `ADMIN_TOKEN`. | Open — pinned by two A1 `GAP` tests. This is the TRACK-119 deployment blocker. |
-| F4 | `reviewImport`'s broad `catch (e: Exception)` re-wraps `NoSuchElementException` as `RuntimeException("Failed to create krithi: …")`, so a missing import returns **500** instead of 404 and leaks internal phrasing to the caller. | Open — pinned by A4 `GAP` test. Same root cause as the non-transactional block below. |
+| F4 | `reviewImport`'s broad `catch (e: Exception)` re-wraps `NoSuchElementException` as `RuntimeException("Failed to create krithi: …")`, so a missing import returns **500** instead of 404 and leaks internal phrasing to the caller. | **Fixed** — the catch now lets `NoSuchElementException` (404) and `IllegalArgumentException` (400) propagate with their own identity; only genuinely unexpected failures are wrapped. Guarded by two A4 tests. |
+| F6 | `DatabaseFactory.dbQuery` did not join an enclosing transaction — every nested call opened its own and committed independently. A service could not make a multi-repo operation atomic by wrapping it: the wrap compiled, read as a transaction boundary, and did nothing. `reviewImport` relied on exactly that and could leave a committed krithi behind when a later step failed. | **Fixed** — see below. Guarded by `DbQueryNestingTest` (4 tests) and S6d. |
 | F5 | `AutoApprovalService` treats an unparseable `duplicateCandidates` payload as "no duplicates" and auto-approves — fail-open on a deduplication guard. | Open — pinned by S2 `GAP` test. |
 
-**Not addressed:** `reviewImport`'s krithi-creation block is ~300 lines of individually-transacted
-`dal` calls inside one `try`, so any failure partway still leaves a committed krithi with a PENDING
-import. F1 removed the trigger found here, not the underlying property. Wrapping it correctly depends
-on Exposed's `newSuspendedTransaction` nesting semantics and needs its own verification — a
-deliberate follow-up, not a change to tack onto this track.
+### The transaction fix (F6) — what it took
+
+Wrapping `reviewImport` in `dbQuery` was **not** sufficient, and would have been a silent no-op. An
+empirical probe against Exposed 1.0 established that a nested `newSuspendedTransaction` opens its own
+transaction and commits independently, while the ambient transaction *is* visible to nested suspend
+calls. So the fix had to go in `DatabaseFactory.dbQuery` itself: if `TransactionManager.currentOrNull()`
+returns a transaction, join it instead of opening a new one.
+
+Blast radius was checked before changing shared infrastructure: no `dbQuery` block anywhere in the
+api module currently nests a `dal.*` repo call, so joining is a **no-op for all existing code** and
+only affects code that deliberately nests.
+
+**Making the promotion atomic then exposed a second problem.** With one transaction per approval,
+two concurrent approvals of the same import no longer see each other's uncommitted krithi under READ
+COMMITTED, so both created one — S7 started failing with 2 krithis. The old code had only avoided
+this by accident: incremental commits narrowed the window, they did not close it. The fix is a proper
+one — `ImportRepository.findByIdForUpdate` takes a row lock on the import for the duration of the
+promotion, so the second approval blocks, then observes the import already APPROVED and adopts the
+krithi the first one produced.
+
+**Test-quality note.** The first atomicity test written for this was vacuous: it used a composer-less
+import as the failure trigger, which throws *before* anything is written, so it passed with the fix
+disabled. It was replaced with a trigger that fails late — an unresolvable reviewer id, which fails
+the ADR-014 revision write after the krithi, sections, junction rows and source evidence are all
+written. Both S6d and `DbQueryNestingTest` were verified to fail with the fix reverted.
 
 ## Acceptance Criteria
 

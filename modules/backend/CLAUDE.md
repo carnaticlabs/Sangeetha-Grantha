@@ -18,6 +18,13 @@ provisioned out-of-band via `./gradlew :modules:backend:api:bootstrapAdmin` (`ma
 
 ## Key Rules
 - All DB calls via `DatabaseFactory.dbQuery { }` — never raw connections
+- **`dbQuery` nests**: a `dbQuery` inside another one joins the enclosing transaction rather than
+  opening its own, so wrapping a multi-repo operation in `dbQuery` makes it atomic — all of it
+  commits or none of it does. Use this for any read-then-write that must not half-apply (see
+  `ImportService.reviewImport`). Two consequences worth knowing: a wrapped operation no longer sees
+  other transactions' uncommitted rows, so read-then-write races need an explicit row lock
+  (`forUpdate()`) rather than relying on incremental commits; and a long wrap holds a pooled
+  connection for its whole duration. Contract is pinned by `DbQueryNestingTest`.
 - Return DTOs from repositories, never Exposed entity objects
 - Every create/update/delete must write to `AUDIT_LOG` table
 - JWT auth with role-based claims at route level

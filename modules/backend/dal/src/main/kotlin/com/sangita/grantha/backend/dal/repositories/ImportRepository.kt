@@ -42,6 +42,27 @@ class ImportRepository {
     }
 
     /**
+     * Read an import while holding a row lock for the rest of the enclosing transaction.
+     *
+     * TRACK-112: promoting an import to canon is a read-then-write — it checks for an existing
+     * krithi, then creates one. Two curators approving the *same* import concurrently would both
+     * pass that check and each create a krithi. Locking the import row serialises them: the second
+     * transaction blocks here until the first commits, then observes the import already APPROVED
+     * and links to the krithi it produced instead of making a second one.
+     *
+     * Must be called inside a `dbQuery` — `FOR UPDATE` holds only until the transaction ends, so
+     * calling it standalone acquires and immediately releases the lock, which protects nothing.
+     */
+    suspend fun findByIdForUpdate(id: Uuid): ImportedKrithiDto? = DatabaseFactory.dbQuery {
+        ImportedKrithisTable
+            .selectAll()
+            .andWhere { ImportedKrithisTable.id eq id.toJavaUuid() }
+            .forUpdate()
+            .map { it.toImportedKrithiDto() }
+            .singleOrNull()
+    }
+
+    /**
      * Find or create an import source and return its ID.
      * Uses INSERT ... ON CONFLICT DO NOTHING so a duplicate name never poisons
      * the transaction, then SELECTs the (possibly pre-existing) row.
