@@ -17,6 +17,6 @@ This document summarizes administrative documentation updates to agent workflows
 
 | File | Change |
 |:---|:---|
-| `AGENTS.md` | Added links and descriptions to various `.agent/workflows/` files |
+| `AGENTS.md` | Added links and descriptions to various `.agents/workflows/` files |
 
 Ref: application_documentation/00-meta/documentation-and-diagram-updates-2026-02.md

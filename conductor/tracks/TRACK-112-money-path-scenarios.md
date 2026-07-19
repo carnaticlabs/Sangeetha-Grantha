@@ -1,6 +1,6 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Completed (with findings — see §Findings) |
+| **Status** | Completed |
 | **Version** | 2.2.0 |
 | **Last Updated** | 2026-07-18 |
 | **Author** | Sangeetha Grantha Team |
@@ -14,7 +14,7 @@
 
 ## Goal
 
-Cover the business-critical flows with real-DB integration tests, prioritized by risk. Estimated 1–2 weeks, incremental. Supersedes the deferred TRACK-014.
+Cover the business-critical flows with real-DB integration tests, prioritized by risk. Estimated 1–2 weeks, incremental. Supersedes the deferred TRACK-014. Completed with findings — see [§Findings](#findings).
 
 ## Implementation Plan
 

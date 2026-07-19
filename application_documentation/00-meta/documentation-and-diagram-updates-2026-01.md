@@ -24,7 +24,7 @@ Retrospective summary of documentation and diagram changes: onboarding, architec
 | **03-api** | README; new api-examples.md, openapi-sync.md |
 | **07-quality** | qa/README, test-plan, e2e-testing, performance-testing; reports/README, steel-thread |
 | **08-operations** | README; deployment, monitoring; runbooks (steel-thread-runbook, database-runbook, incident-response) |
-| **Agent** | .agent/workflows/verify-db-status.md (if included) |
+| **Agent** | .agents/workflows/verify-db-status.md (if included) |
 
 ## 3. File List (Retrospective)
 
@@ -64,7 +64,7 @@ Retrospective summary of documentation and diagram changes: onboarding, architec
 | `application_documentation/08-operations/monitoring.md` | Monitoring guide. |
 | `application_documentation/08-operations/runbooks/database-runbook.md` | Database runbook. |
 | `application_documentation/08-operations/runbooks/incident-response.md` | Incident response runbook. |
-| `.agent/workflows/verify-db-status.md` | Agent workflow for DB status. |
+| `.agents/workflows/verify-db-status.md` | Agent workflow for DB status. |
 
 ### 3.3 Conductor (Documentation Tracks)
 

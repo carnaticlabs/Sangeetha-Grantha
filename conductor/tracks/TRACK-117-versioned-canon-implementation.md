@@ -1,6 +1,6 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | In Progress (implementation complete; Trinity re-import pending) |
+| **Status** | In Progress (implementation done; re-import pending) |
 | **Version** | 1.1.0 |
 | **Last Updated** | 2026-07-10 |
 | **Author** | Sangeetha Grantha Team |

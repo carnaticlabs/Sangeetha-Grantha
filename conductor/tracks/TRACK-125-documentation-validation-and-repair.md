@@ -10,14 +10,14 @@
 ## Goal
 
 Systematically validate all markdown documentation files in the repository against the
-[Documentation Guardian](../../.agent/skills/documentation-guardian/SKILL.md) rules (headers, code
+[Documentation Guardian](../../.agents/skills/documentation-guardian/SKILL.md) rules (headers, code
 block fences, relative links) and perform automatic repairs to bring the repository into full
 compliance.
 
 ## Implementation Plan
 
 - [x] **Relative links — done.** Repaired 131 broken relative links across 35 files (104 in
-      `application_documentation`, 27 more in `conductor/tracks`, `.agent/skills` and
+      `application_documentation`, 27 more in `conductor/tracks`, `.agents/skills` and
       `archive/tools`). Causes: wrong relative depth in archived docs, files moved under TRACK-078 /
       ADR-013, and files renamed or split by the TRACK-073–076 refactors. Link *text* was left
       untouched so history stays legible; only hrefs moved.
@@ -35,5 +35,5 @@ All document checks now run cleanly, and the repository conforms to the spec-dri
 
 ## References
 
-- [Documentation Guardian skill](../../.agent/skills/documentation-guardian/SKILL.md)
+- [Documentation Guardian skill](../../.agents/skills/documentation-guardian/SKILL.md)
 - `tools/check-doc-links.py` · `make check-docs` · `.github/workflows/ci.yml` (`docs` job)

@@ -72,7 +72,7 @@ Perform a structured documentation cleanup to eliminate version drift, fix broke
   - **Fixed:** 2 files missing metadata headers (frontend-pages-code-review.md, frontend-pages-refactor-checklist.md)
   - **Verified:** Many flagged files were false positives - 04-database/, 06-backend/ docs are compliant
   - **Outstanding:** 6 large review documents have complex nested code block issues requiring manual restructuring
-  - **Added:** 3 new workflows to `.agent/workflows/` (e2e-test-runner.md, pre-commit-validation.md, bulk-import-testing.md)
+  - **Added:** 3 new workflows to `.agents/workflows/` (e2e-test-runner.md, pre-commit-validation.md, bulk-import-testing.md)
 - 2026-02-03: Final cleanup and verification
   - Centralized version management implemented via `current-versions.md`.
   - Updated all core docs and agent config files to reference `current-versions.md`.

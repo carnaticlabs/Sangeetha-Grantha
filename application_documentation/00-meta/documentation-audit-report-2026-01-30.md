@@ -307,7 +307,7 @@ The main `application_documentation/README.md` is missing links to documents cre
 project/
 ├── CLAUDE.md                    # Primary agent instructions (canonical)
 ├── .agent-versions.md           # Auto-generated version summary (referenced by all)
-└── .agent/
+└── .agents/
     ├── rules/                   # Shared rules
     ├── skills/                  # Agent skills
     └── workflows/               # Workflows

@@ -4,7 +4,7 @@
 Utility script for TRACK-002 (Documentation Header Standardization).
 
 Features:
-- Scans `application_documentation/` and `.agent/skills/` for `.md` files.
+- Scans `application_documentation/` and `.agents/skills/` for `.md` files.
 - Detects files missing the standard Metadata table header.
 - --write mode: Replaces/Inserts standard header.
 - Preserves existing YAML frontmatter fields or determines defaults.
@@ -19,7 +19,7 @@ from typing import List, Optional, Tuple, Dict
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[1]
 SEARCH_PATHS = [
     REPO_ROOT / "application_documentation",
-    REPO_ROOT / ".agent/skills",
+    REPO_ROOT / ".agents/skills",
 ]
 
 HEADER_FIRST_LINE = "| Metadata | Value |"

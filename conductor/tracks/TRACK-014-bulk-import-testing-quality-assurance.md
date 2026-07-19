@@ -2,7 +2,7 @@
 
 | Metadata | Value |
 |:---|:---|
-| **Status** | Superseded by [TRACK-112](./TRACK-112-money-path-scenarios.md) |
+| **Status** | Superseded by TRACK-112 |
 | **Owner** | Backend Team |
 | **Priority** | MEDIUM |
 | **Created** | 2026-01-23 |

@@ -1,6 +1,6 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Folded into TRACK-113 (2026-07-09) |
+| **Status** | Folded into TRACK-113 |
 | **Version** | 1.2.0 |
 | **Last Updated** | 2026-07-09 |
 | **Author** | Antigravity |
