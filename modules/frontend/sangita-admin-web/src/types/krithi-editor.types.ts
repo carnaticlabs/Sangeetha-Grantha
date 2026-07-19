@@ -10,11 +10,21 @@ import {
     MusicalForm
 } from '../types';
 
+/** Editor tabs, in render order. Also the accepted values of the `?tab=` deep link. */
+export const EDITOR_TABS = [
+    'Metadata', 'Structure', 'Lyrics', 'Notation', 'Tags', 'Audit', 'Source Evidence', 'Lyric Variants',
+] as const;
+
+export type EditorTab = typeof EDITOR_TABS[number];
+
+export const isEditorTab = (value: string | null): value is EditorTab =>
+    value !== null && (EDITOR_TABS as readonly string[]).includes(value);
+
 export interface KrithiEditorState {
     krithi: Partial<KrithiDetail>;
     isLoading: boolean;
     isSaving: boolean;
-    activeTab: 'Metadata' | 'Structure' | 'Lyrics' | 'Notation' | 'Tags' | 'Audit' | 'Source Evidence' | 'Lyric Variants';
+    activeTab: EditorTab;
     sectionsLoaded: boolean;
     lyricVariantsLoaded: boolean;
 }

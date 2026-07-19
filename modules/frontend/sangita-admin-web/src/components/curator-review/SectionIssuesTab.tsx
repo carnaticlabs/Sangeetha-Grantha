@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { type SectionIssuesPage } from '../../api/client';
 
 export const SectionIssuesTab: React.FC<{
@@ -29,7 +30,12 @@ export const SectionIssuesTab: React.FC<{
                     <tbody>
                         {data.items.map((issue, idx) => (
                             <tr key={`${issue.krithiId}-${issue.language}-${idx}`} className="border-b border-border-light hover:bg-slate-50">
-                                <td className="px-4 py-3 font-medium text-ink-900">{issue.title}</td>
+                                <td className="px-4 py-3 font-medium">
+                                    <Link
+                                        to={`/krithis/${issue.krithiId}?tab=Lyrics`}
+                                        className="text-primary hover:underline"
+                                    >{issue.title}</Link>
+                                </td>
                                 <td className="px-4 py-3 text-ink-600">{issue.language}</td>
                                 <td className="px-4 py-3 text-center font-mono">{issue.expectedSections}</td>
                                 <td className={`px-4 py-3 text-center font-mono ${issue.actualSections === 0 ? 'text-red-600 font-bold' : 'text-yellow-600'}`}>{issue.actualSections}</td>

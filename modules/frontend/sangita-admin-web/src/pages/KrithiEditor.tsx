@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useKrithiData } from '../hooks/useKrithiData';
 import { useReferenceData } from '../hooks/useReferenceData';
 import { useKrithiEditorReducer } from '../hooks/useKrithiEditorReducer';
@@ -16,6 +16,7 @@ import NotationTab from '../components/notation/NotationTab'; // Existing compon
 import LyricVariantTabs from '../components/krithi-editor/LyricVariantTabs';
 import { formatLanguageCode, getWorkflowStateColor, formatWorkflowState } from '../utils/enums';
 import { MusicalForm, KrithiDetail } from '../types';
+import { EDITOR_TABS, isEditorTab } from '../types/krithi-editor.types';
 
 const KrithiEditor: React.FC = () => {
     const { id: paramKrithiId } = useParams();
@@ -23,6 +24,7 @@ const KrithiEditor: React.FC = () => {
     const krithiId = isNew ? undefined : paramKrithiId;
 
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const toast = useToast();
 
     // 1. Reference Data State
@@ -102,6 +104,21 @@ const KrithiEditor: React.FC = () => {
             dispatch({ type: 'UPDATE_FIELD', field: 'tags', value: tags ?? [] });
         }
     };
+
+    // Deep link: `?tab=Lyrics` opens straight into that tab (e.g. from the curator
+    // section-issues list). Runs once the krithi has loaded — the query is gated on
+    // reference data being ready, which the Lyrics/Tags lazy loads depend on. Routed
+    // through handleTabChange so the tab's lazy load fires exactly as it does on click.
+    const deepLinkApplied = useRef(false);
+    useEffect(() => {
+        if (deepLinkApplied.current || isNew || !serverKrithi) return;
+        const requested = searchParams.get('tab');
+        if (!isEditorTab(requested) || requested === 'Metadata') return;
+        deepLinkApplied.current = true;
+        void handleTabChange(requested);
+        // handleTabChange is re-created each render; the ref guard keeps this to one run.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [serverKrithi, isNew, searchParams]);
 
     const handleFieldChange = <K extends keyof KrithiDetail>(field: K, value: KrithiDetail[K]) => {
         dispatch({ type: 'UPDATE_FIELD', field, value });
@@ -205,7 +222,7 @@ const KrithiEditor: React.FC = () => {
                 {/* Tabs */}
                 <div className="border-b border-border-light mb-8">
                     <nav className="flex gap-8 overflow-x-auto">
-                        {(['Metadata', 'Structure', 'Lyrics', 'Notation', 'Tags', 'Audit', 'Source Evidence', 'Lyric Variants'] as const).map((tab) => {
+                        {EDITOR_TABS.map((tab) => {
                             // Hide Notation for unsupported types
                             if (tab === 'Notation' &&
                                 state.krithi.musicalForm !== MusicalForm.VARNAM &&

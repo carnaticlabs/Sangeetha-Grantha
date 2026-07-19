@@ -36,6 +36,17 @@ describe('SectionIssuesTab', () => {
         expect(screen.getByText('missing sections')).toBeInTheDocument();
     });
 
+    it('links each title to the Lyrics tab of the krithi editor for that krithi', () => {
+        render(
+            <SectionIssuesTab
+                data={pageOf([issue(), issue({ krithiId: 'k-2', title: 'Nagumomu' })])}
+                loading={false} page={0} onPageChange={() => {}} pageSize={50}
+            />,
+        );
+        expect(screen.getByRole('link', { name: 'Vatapi Ganapatim' })).toHaveAttribute('href', '/krithis/k-1?tab=Lyrics');
+        expect(screen.getByRole('link', { name: 'Nagumomu' })).toHaveAttribute('href', '/krithis/k-2?tab=Lyrics');
+    });
+
     it('hides pagination when everything fits on one page', () => {
         render(<SectionIssuesTab data={pageOf([issue()])} loading={false} page={0} onPageChange={() => {}} pageSize={50} />);
         expect(screen.queryByRole('button', { name: 'Next' })).not.toBeInTheDocument();
