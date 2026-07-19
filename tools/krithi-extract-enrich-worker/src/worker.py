@@ -139,8 +139,14 @@ class ExtractionWorker:
                     pass
                 time.sleep(self.config.poll_interval_s)
 
-        self.db.close()
+        self.close()
         logger.info("Worker stopped")
+
+    def close(self) -> None:
+        """Release worker-owned resources: strategy HTTP pools, then the DB."""
+        for strategy in self.strategies.values():
+            strategy.close()
+        self.db.close()
 
     def _signal_handler(self, signum: int, frame: FrameType | None) -> None:
         """Handle SIGTERM/SIGINT for graceful shutdown."""

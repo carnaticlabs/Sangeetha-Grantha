@@ -30,10 +30,13 @@ from .schema import (
     ExtractionMethod,
 )
 
+genai_errors: Any | None
 try:  # pragma: no cover - exercised via the real SDK in tests
-    from google.genai import errors as genai_errors
+    from google.genai import errors as _genai_errors
+
+    genai_errors = _genai_errors
 except ImportError:  # pragma: no cover - SDK absent; enrichment is optional
-    genai_errors = None  # type: ignore[assignment]
+    genai_errors = None
 
 logger = logging.getLogger(__name__)
 

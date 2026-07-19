@@ -70,8 +70,16 @@ Verified locally, all four gates from a clean `.mypy_cache`:
 | `pytest` (unit) | 210 passed | **210 passed** |
 | `pytest tests/integration` | 18 passed | **18 passed** |
 
-`src/` is clean under **full** strict mypy — no relaxations and no `type: ignore`
-anywhere in the tree. How the two big error classes cleared:
+`src/` is clean under **full** strict mypy with no relaxations.
+
+> **Correction (2026-07-19, during TRACK-129):** this section originally claimed
+> there was no `type: ignore` anywhere in the tree. That was wrong.
+> `src/page_segmenter.py:138` carries a pre-existing
+> `# type: ignore[arg-type]` that predates this track and survived it. The
+> accurate claim is that TRACK-126 *added* none. (A second one, introduced by
+> TRACK-128 in `gemini_enricher.py`, was removed once spotted.)
+
+How the two big error classes cleared:
 
 * **Pydantic aliases (64 `call-arg`)** — the models already set
   `populate_by_name`, but as a bare dict, which the plugin does not read. Switching

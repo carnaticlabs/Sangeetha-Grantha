@@ -60,6 +60,24 @@ class ExtractionStrategy(ABC):
     def __init__(self, config: ExtractorConfig, finalize: FinalizeExtraction) -> None:
         self.config = config
         self._finalize = finalize
+        self._http_client: httpx.Client | None = None
+
+    @property
+    def http_client(self) -> httpx.Client:
+        """Long-lived client so connections pool across downloads (TRACK-129).
+
+        Created lazily and rebuilt if it was closed, so a strategy stays usable
+        after `close()`. Timeout/redirect semantics are unchanged.
+        """
+        if self._http_client is None or self._http_client.is_closed:
+            self._http_client = httpx.Client(timeout=120.0, follow_redirects=True)
+        return self._http_client
+
+    def close(self) -> None:
+        """Release the pooled HTTP connections. Tied to worker shutdown."""
+        if self._http_client is not None and not self._http_client.is_closed:
+            self._http_client.close()
+        self._http_client = None
 
     @abstractmethod
     def extract(self, task: ExtractionTask) -> list[CanonicalExtraction]:
@@ -88,10 +106,9 @@ class ExtractionStrategy(ABC):
             return cached_path
 
         logger.info(f"Downloading source: {url}")
-        with httpx.Client(timeout=120.0, follow_redirects=True) as client:
-            response = client.get(url)
-            response.raise_for_status()
-            cached_path.write_bytes(response.content)
+        response = self.http_client.get(url)
+        response.raise_for_status()
+        cached_path.write_bytes(response.content)
 
         return cached_path
 

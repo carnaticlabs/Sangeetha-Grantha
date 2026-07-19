@@ -1,7 +1,7 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Not Started |
-| **Version** | 1.0.0 |
+| **Status** | Completed |
+| **Version** | 1.1.0 |
 | **Last Updated** | 2026-07-19 |
 | **Author** | Sangeetha Grantha Team |
 
@@ -49,3 +49,82 @@
 * `uv run pytest` fully green, including CAT-B regression fixtures unchanged.
 * `uv run ruff check` / `uv run mypy` clean on touched files.
 * W3 integration tests (respx-intercepted downloads) still pass — proves the shared client still routes through httpx transports respx can stub.
+
+## Outcome (2026-07-19)
+
+### Byte-identical output (the track's hard constraint)
+
+Output was pinned **before** any change: a SHA-256 manifest over 6 HTML fixtures
+through `HtmlTextExtractor` + `StructureParser`, plus a synthetic PDF through
+`extract_document` (full and page-ranged), `is_text_extractable`, and
+`is_garbled`. After all three source files changed, the manifest is **identical**.
+
+One caveat worth recording: the first pin run reported a diff on the PDF entry.
+That was a defect in the *harness*, not the code — the script regenerated the PDF
+each run and PyMuPDF embeds a creation timestamp, so the file bytes (and the
+checksum in the payload) changed every run. Confirmed by running the pin twice
+against untouched code and seeing the same diff. The harness now generates the
+PDF once and reuses it, and is verified deterministic across runs before being
+trusted.
+
+### Leak and single-open regressions
+
+`tests/test_resource_management.py` (4 tests). Both new guarantees were proved
+genuinely regressive by reverting `src/` to HEAD and re-running:
+
+| Test | vs. HEAD | vs. this track |
+|:---|:---|:---|
+| handle closed when a page raises mid-extraction | **fail** | pass |
+| OCR opens the document once for a 3-page range | **fail** | pass |
+| `is_text_extractable` closes its handle | pass | pass |
+| missing OCR stack still yields one entry per page | pass | pass |
+
+The single-open test needed a working fake `pytesseract`/`PIL` to discriminate:
+with the OCR stack absent, both old and new code return early and the open count
+is 1 either way. The first version of that test passed against HEAD and was
+therefore worthless; it was rewritten before being trusted.
+
+### Timing
+
+`extract_document_text` over 20 pages at 300 DPI, Tesseract stubbed to a constant
+so the measurement isolates the document-open + render cost this track changed:
+
+| | median of 5 |
+|:---|:---|
+| Before (reopen per page) | 48 ms |
+| After (single open) | 23 ms |
+
+~52% off the non-OCR overhead, i.e. ~1.25 ms/page of redundant opening removed.
+Real Tesseract still dominates end-to-end; parallel OCR stays out of scope as the
+track directs.
+
+### `is_text_extractable` — decision: two passes stay, measured
+
+Measured on a 50-page text PDF: the check costs **10.3 ms** against **28.6 ms**
+for `extract_document` (~26% of combined). It was *not* folded, because the two
+passes are not equivalent: the check scans **every** page with plain `get_text()`
+to decide whether the document needs OCR, while `extract_document` scans only
+`page_range` in `"dict"` mode. Folding would silently narrow the OCR routing
+decision to the requested page range — a behaviour change the DoD forbids. The
+reasoning and the numbers are recorded inline in the method docstring.
+
+### Shared HTTP client
+
+One lazily-created `httpx.Client` per strategy (`timeout=120.0`,
+`follow_redirects=True` unchanged), released by `ExtractionWorker.close()`, which
+`run()` now calls on shutdown. The W3 integration tests pass unmodified, which is
+the evidence that respx still intercepts a long-lived client — the main risk of
+this change.
+
+### Verification
+
+`ruff check` 0, `ruff format --check` clean (52 files), `mypy` 0,
+`pytest` 220 unit + 18 integration passing.
+
+### Follow-up (deliberately not done here)
+
+`src/velthuis_decoder.py:277` opens a document and closes it only on the success
+path, so it leaks the handle when `xref_stream_raw`/`zlib.decompress` raises. It
+is a real instance of this track's bug class, but this DoD names only
+`extractor.py` and `ocr_fallback.py`, so it was left alone rather than widening
+scope. One-line fix when someone wants it.
