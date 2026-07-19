@@ -6,7 +6,7 @@ description: Categorize all uncommitted changes, create track files and implemen
 
 This workflow automates: **(1)** scanning and categorizing changes, **(2)** creating or updating track files and implementation summary docs in `application_documentation/`, **(3)** committing in atomic changesets with one Ref per commit, **(4)** excluding secrets and local config, **(5)** pushing to the remote.
 
-**Prerequisites:** Follow [.agent/skills/change-mapper/SKILL.md](../skills/change-mapper/SKILL.md) and [.agent/skills/commit-policy/SKILL.md](../skills/commit-policy/SKILL.md). Never use `git add .` or `git commit -a` unless every changed file belongs to the same feature and same Ref.
+**Prerequisites:** Follow [.agents/skills/change-mapper/SKILL.md](../skills/change-mapper/SKILL.md) and [.agents/skills/commit-policy/SKILL.md](../skills/commit-policy/SKILL.md). Never use `git add .` or `git commit -a` unless every changed file belongs to the same feature and same Ref.
 
 ---
 
@@ -33,7 +33,7 @@ Group files into **Changesets** by feature or track. Use these heuristics:
 | `modules/backend/api/.../routes/`, `services/`, `AppModule.kt`, `Routing.kt` | **Backend API** | `application_documentation/10-implementations/track-NNN-*.md` |
 | `modules/frontend/sangita-admin-web/src/pages/`, `components/`, `api/client.ts` | **Frontend UI** | `application_documentation/01-requirements/admin-web/prd.md` or implementation doc |
 | `tools/krithi-extract-enrich-worker/src/` | **Extraction Pipeline** | `application_documentation/10-implementations/track-NNN-*.md` |
-| `compose.yaml`, `Makefile`, `.claude/`, `.agent/` | **Infrastructure/Tooling** | `application_documentation/02-architecture/tech-stack.md` or implementation doc |
+| `compose.yaml`, `Makefile`, `.claude/`, `.agents/` | **Infrastructure/Tooling** | `application_documentation/02-architecture/tech-stack.md` or implementation doc |
 | `application_documentation/**`, `conductor/tracks/*` | **Documentation** | The documentation file itself |
 
 - **Unmatched files:** Either assign to an existing track/Ref or create a new implementation summary under `application_documentation/10-implementations/` and (if needed) a new `conductor/tracks/TRACK-XXX-*.md`.

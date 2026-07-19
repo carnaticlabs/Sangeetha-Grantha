@@ -9,7 +9,7 @@
 
 ## Purpose
 
-Modernize all `.agent/` workflows and skills to reflect the current Makefile + Docker Compose + Python toolchain. Add protective hooks, create diagnostic skills, and clean up redundant files.
+Modernize all `.agents/` workflows and skills to reflect the current Makefile + Docker Compose + Python toolchain. Add protective hooks, create diagnostic skills, and clean up redundant files.
 
 ## Implementation Details
 

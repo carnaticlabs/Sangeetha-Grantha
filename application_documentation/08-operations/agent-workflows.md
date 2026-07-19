@@ -7,7 +7,7 @@
 
 # Agent Workflows
 
-This document describes the automated workflows available in `.agent/workflows/` for use with Claude Code and other AI assistants.
+This document describes the automated workflows available in `.agents/workflows/` for use with Claude Code and other AI assistants.
 
 ## Overview
 
@@ -46,11 +46,11 @@ Instructions and commands...
 
 Workflows can be invoked by:
 1. Referencing the workflow file path in conversation
-2. Asking the AI assistant to "follow the workflow in `.agent/workflows/<name>.md`"
+2. Asking the AI assistant to "follow the workflow in `.agents/workflows/<name>.md`"
 3. Using trigger phrases defined in the workflow's description
 
 ## Related Documentation
 
-- [Commit Policy](../../.agent/skills/commit-policy/SKILL.md)
-- [Change Mapper](../../.agent/skills/change-mapper/SKILL.md)
+- [Commit Policy](../../.agents/skills/commit-policy/SKILL.md)
+- [Change Mapper](../../.agents/skills/change-mapper/SKILL.md)
 - [CLI Reference](./cli-docs-command.md)

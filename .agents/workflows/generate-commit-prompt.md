@@ -14,7 +14,7 @@ When the user asks you to run `/generate-prompt` (or similar requests specifying
 Determine the **Target Workflow** (e.g., `/retrospective-commit-and-push`) and the **Target Tracks** (e.g., `TRACK-093`, `TRACK-097`) from the user's request.
 
 ### 2. Read the Target Workflow (If Necessary)
-If you do not already know the exact steps of the requested workflow, use `view_file` to read its definition in `.agent/workflows/`. This ensures the `Execution Requirements` you generate will accurately reflect the workflow's actual rules.
+If you do not already know the exact steps of the requested workflow, use `view_file` to read its definition in `.agents/workflows/`. This ensures the `Execution Requirements` you generate will accurately reflect the workflow's actual rules.
 
 ### 3. Generate the Prompt
 Output a structured prompt inside a markdown code block so the user can easily copy it. Use the template below.

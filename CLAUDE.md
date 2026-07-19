@@ -22,9 +22,13 @@ make db             # Start database only
 make db-reset       # Drop → create → Flyway migrate (schema V__ + reference data R__)
 make seed-dev       # Dev-only sample content (reference data now ships via R__ repeatables)
 make migrate        # Run pending migrations (Flyway)
+make migrate-status # Show Flyway migration status
 make bootstrap-admin # Provision the admin user (argon2id); needs ADMIN_EMAIL / ADMIN_PASSWORD
-make test           # Backend tests
+make test           # Backend unit tests
+make test-integration # Backend integration tests (Testcontainers)
 make test-frontend  # Frontend tests
+make steel-thread   # End-to-end steel thread test
+make check-docs     # Validate documentation links
 make clean          # Remove all containers and volumes
 ```
 
@@ -98,9 +102,33 @@ modules/
 
 Carnatic correctness (*lakshana*) — musical forms (KRITHI/VARNAM/SWARAJATHI section requirements), Ragamalika, notation-vs-lyrics, and raga/tala/terminology rules — is documented in [Domain Model §6](application_documentation/01-requirements/domain-model.md#6-musicological-correctness-rules-lakshana). Treat it as a correctness contract for data entry, extraction, validation, and any generated SQL/seed data.
 
-## Specialist Subagents
+## Claude Code Assets
 
-Project-specific expert subagents live in `.claude/agents/` and are delegated to on demand (not loaded every turn): `kotlin-backend-engineer`, `postgres-engineer`, `python-engineer`, and `carnatic-musicologist` (reviews krithi *data* for musicological correctness — useful for bulk-import batches). They defer to this file and the domain model for shared rules and add domain judgment on top.
+This file stays canonical for cross-cutting rules; layer-specific conventions live in project skills so they load only when relevant. Don't duplicate content between the two — link.
+
+### Layer Skills (`.claude/skills/`)
+
+Load the matching skill before working in a layer instead of re-deriving its conventions:
+
+- `kmp-compose-mobile` — `modules/shared/` (KMP targets, expect/actual, Compose rules)
+- `ktor-exposed-backend` — `modules/backend/` (layering, dbQuery, DTO, audit, auth non-negotiables)
+- `postgres-flyway-db` — `database/migrations/` (V__/R__ naming, PG18 conventions, seeding checks)
+- `react-vite-frontend` — `modules/frontend/sangita-admin-web/` (Bun-only tooling, strict TS, test commands)
+- `python-extraction-worker` — `tools/krithi-extract-enrich-worker/` (Pydantic paradigm, module map, uv)
+- `monorepo-orchestration` — mise/Makefile/Compose workflows and layer ownership
+- `verify-import` — post-import data verification checklist
+
+### Slash Commands (`.claude/commands/`)
+
+`/dev-start`, `/db-reset`, `/test-all`, `/steel-thread`, `/new-migration`, `/commit` (follows this repo's commit conventions), `/Sangeetha-Krithi-Analyser` (krithi section analysis).
+
+### Specialist Subagents (`.claude/agents/`)
+
+Delegated to on demand (not loaded every turn): `kotlin-backend-engineer`, `postgres-engineer`, `python-engineer`, and `carnatic-musicologist` (reviews krithi *data* for musicological correctness — useful for bulk-import batches). They defer to this file and the domain model for shared rules and add domain judgment on top.
+
+### Dev Servers & Preview (`.claude/launch.json`)
+
+Named launch configs exist for `frontend` (port 5001), `backend` (8080), and `full-stack` (`make dev`). Start dev servers through the browser-preview tooling with these names — never as raw background Bash — then verify changes in the preview (console/network/page checks) rather than asking the user to check manually.
 
 ## Conductor Workflow
 

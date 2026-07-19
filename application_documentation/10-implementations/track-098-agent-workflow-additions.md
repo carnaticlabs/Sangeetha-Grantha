@@ -11,7 +11,7 @@
 Introduce a new Agent workflow for generating commit prompts, and clean up miscellaneous tooling configurations (e.g. Claude settings, Docker Compose, bun.lock).
 
 ## Changes
-- `.agent/workflows/generate-commit-prompt.md`: Workflow to guide agents on retrospective commits.
+- `.agents/workflows/generate-commit-prompt.md`: Workflow to guide agents on retrospective commits.
 - `CLAUDE.md`: Updated AI guidelines.
 - `compose.yaml`: Minor updates to infrastructure orchestration.
 - `conductor/tracks.md`: Registry update.

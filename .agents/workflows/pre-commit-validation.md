@@ -144,7 +144,7 @@ git commit -m "Second change..."
 ## 6. Integration with Skills
 
 This workflow enforces rules from:
-- `.agent/skills/commit-policy/SKILL.md` - Ref requirement, security
-- `.agent/skills/change-mapper/SKILL.md` - Atomic commits, no lazy `git add .`
+- `.agents/skills/commit-policy/SKILL.md` - Ref requirement, security
+- `.agents/skills/change-mapper/SKILL.md` - Atomic commits, no lazy `git add .`
 
 When I help you commit, I automatically run these validations.

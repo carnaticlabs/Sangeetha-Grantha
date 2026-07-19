@@ -11,7 +11,7 @@
 
 ## Objective
 
-Update all `.agent/` workflows and skills to reflect the current Makefile + Docker Compose + Python toolchain, add protective hooks, create new diagnostic skills, and clean up redundant files.
+Update all `.agents/` workflows and skills to reflect the current Makefile + Docker Compose + Python toolchain, add protective hooks, create new diagnostic skills, and clean up redundant files.
 
 ## Scope
 

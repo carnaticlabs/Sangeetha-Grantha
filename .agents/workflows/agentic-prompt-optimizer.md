@@ -8,7 +8,7 @@ description: Rewrites an informal user request into a structured, tool-friendly 
 
 **Canonical instructions:** `.cursor/skills/agentic-prompt-optimizer/SKILL.md` — editor-local and
 gitignored (`.gitignore:36`), so it is not in the repository and cannot be linked. If these
-instructions should be shared, move the skill under `.agent/skills/` where the other agent
+instructions should be shared, move the skill under `.agents/skills/` where the other agent
 skills are tracked.
 
 ## Quick trigger phrases
