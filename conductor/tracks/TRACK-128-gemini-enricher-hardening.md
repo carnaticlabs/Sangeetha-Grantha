@@ -1,7 +1,7 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Not Started |
-| **Version** | 1.0.0 |
+| **Status** | Completed |
+| **Version** | 1.1.0 |
 | **Last Updated** | 2026-07-19 |
 | **Author** | Sangeetha Grantha Team |
 
@@ -51,3 +51,52 @@
 
 * `uv run pytest tests/test_gemini_enricher.py tests/integration/test_w3_gemini_arms_length.py` green.
 * Full `uv run pytest` green; `ruff` / `mypy` clean on the touched files.
+
+## Outcome (2026-07-19)
+
+Characterisation tests were written and run **before** any source change, per the
+track's step 1. Three pinned current behaviour and passed unchanged afterwards —
+that is the evidence the typed-error swap is behaviour-preserving:
+
+| Pinned behaviour | Before | After |
+|:---|:---|:---|
+| 429 → 5 backoff sleeps → `gemini_error:max_retries_exceeded` | pass | pass (unchanged) |
+| 500 → `gemini_error:ServerError`, **no** retry | pass | pass (unchanged) |
+| Malformed JSON → `gemini_error:*`, metadata untouched | pass | pass (unchanged) |
+| Batch count mismatch → 1:1 results | **fail (red)** | pass |
+
+The mismatch test was deliberately red first: 3 inputs returned 2 results, because
+`zip(..., strict=False)` truncated silently.
+
+DoD, each verified against the source after the change:
+
+* **Typed errors** — `_is_rate_limit()` matches `genai_errors.APIError` and checks
+  `.code == HTTP_TOO_MANY_REQUESTS`. `grep` confirms no `"429" in str(exc)` remains.
+  Backoff parameters were left exactly as they were.
+* **SDK-native parsing** — `_parse_response` returns `response.parsed` when the SDK
+  has already validated it into `_GeminiSuggestion`; the fence-stripping path
+  survives only behind a WARNING log. Confirmed by running the valid-response test
+  with `--log-cli-level=WARNING`: no fallback warning is emitted, so the parsed
+  path is genuinely the one taken.
+* **Dead parameter** — `generation_config` is gone from the Protocol, the wrapper,
+  and the call site. `grep` confirms zero occurrences. The test double needed the
+  matching mechanical update (it had asserted the ignored argument was non-`None`).
+* **Batch alignment** — results are paired with `zip(..., strict=True)` over
+  equal-length slices, the shortfall is logged at ERROR with exact counts, and every
+  unmatched input still yields a `batch_count_mismatch` warning result. Output length
+  now always equals input length.
+* **Quota guard** — all three sync-fallback paths route through `_sync_fallback()`,
+  which logs at WARNING with the item count and the reason. The quota implication is
+  documented in the module docstring.
+* **`applied` semantics** — now `bool(fields_updated)`, so a model answer that
+  changes nothing is no longer reported as applied. `0.8` became `DEFAULT_CONFIDENCE`.
+* **Arm's length preserved** — `tests/integration/test_w3_gemini_arms_length.py` is
+  **unmodified** (`git diff` clean) and passes. The typed-error path did not change
+  any observable warning string, so no mechanical update was needed there.
+
+Verification run: `ruff check` 0, `ruff format --check` clean (51 files), `mypy` 0,
+`pytest` 216 unit + 18 integration passing.
+
+Note: `_sync_fallback` is a small extraction of a block that was already duplicated
+three times verbatim; it exists to carry the required loud log in one place, not as
+new abstraction.

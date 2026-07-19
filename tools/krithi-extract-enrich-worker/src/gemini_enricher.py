@@ -3,6 +3,12 @@
 Supports two modes:
 - **Synchronous** (interactive): `enrich()` — one request per call.
 - **Batch** (backfill/import): `enrich_batch()` — submits to the Batch API at ~50% cost.
+
+**Quota note (TRACK-128):** when the Batch API is unavailable or a batch job does
+not succeed, `enrich_batch` falls back to N sequential *sync* calls. That is a
+deliberate availability-over-cost trade, but it spends full sync quota for the
+whole batch — potentially twice if the batch job was already partially billed.
+Every such fallback logs at WARNING with the item count so the spend is visible.
 """
 
 from __future__ import annotations
@@ -24,6 +30,11 @@ from .schema import (
     ExtractionMethod,
 )
 
+try:  # pragma: no cover - exercised via the real SDK in tests
+    from google.genai import errors as genai_errors
+except ImportError:  # pragma: no cover - SDK absent; enrichment is optional
+    genai_errors = None  # type: ignore[assignment]
+
 logger = logging.getLogger(__name__)
 
 PROVIDER_LABEL = "google-genai"
@@ -31,9 +42,13 @@ PROVIDER_LABEL = "google-genai"
 BATCH_POLL_INTERVAL_S = 30
 BATCH_MAX_POLL_ATTEMPTS = 2880  # 24h / 30s
 
+HTTP_TOO_MANY_REQUESTS = 429
+# Applied when the model returns no confidence of its own.
+DEFAULT_CONFIDENCE = 0.8
+
 
 class GeminiModelClient(Protocol):
-    def generate_content(self, prompt: str, generation_config: dict[str, Any] | None = None) -> Any:
+    def generate_content(self, prompt: str) -> Any:
         """Generate model content for the given prompt."""
 
 
@@ -65,7 +80,7 @@ class _GenaiClientWrapper:
         self._model = model
         self._response_schema = response_schema
 
-    def generate_content(self, prompt: str, generation_config: dict[str, Any] | None = None) -> Any:
+    def generate_content(self, prompt: str) -> Any:
         from google.genai.types import GenerateContentConfig
 
         config = GenerateContentConfig(
@@ -122,20 +137,11 @@ class GeminiMetadataEnricher:
         max_retries = 5
         for attempt in range(max_retries + 1):
             try:
-                response = self._client.generate_content(
-                    prompt,
-                    generation_config={
-                        "response_mime_type": "application/json",
-                        "response_schema": _GeminiSuggestion,
-                    },
-                )
+                response = self._client.generate_content(prompt)
                 suggestion = self._parse_response(response)
                 break
             except Exception as exc:
-                error_msg = str(exc)
-                is_rate_limit = "429" in error_msg or "ResourceExhausted" in error_msg
-
-                if is_rate_limit:
+                if self._is_rate_limit(exc):
                     if attempt < max_retries:
                         delay = 2 * (2**attempt) + random.uniform(0, 1)
                         logger.warning(
@@ -180,10 +186,18 @@ class GeminiMetadataEnricher:
         return CanonicalMetadataEnrichment(
             provider=PROVIDER_LABEL,
             model=self._config.model,
-            applied=True,
-            confidence=suggestion.confidence or 0.8,
+            # "applied" means the extraction actually changed, not merely that
+            # the model answered (TRACK-128).
+            applied=bool(fields_updated),
+            confidence=suggestion.confidence or DEFAULT_CONFIDENCE,
             fields_updated=fields_updated,
         )
+
+    def _is_rate_limit(self, exc: Exception) -> bool:
+        """True only for a typed SDK rate-limit error — never a substring sniff."""
+        if genai_errors is not None and isinstance(exc, genai_errors.APIError):
+            return bool(exc.code == HTTP_TOO_MANY_REQUESTS)
+        return False
 
     def _is_missing(self, value: str | None) -> bool:
         if value is None:
@@ -192,6 +206,16 @@ class GeminiMetadataEnricher:
         return normalized in {"", "unknown", "na", "n/a", "none", "null"}
 
     def _parse_response(self, response: Any) -> _GeminiSuggestion | None:
+        # The request sets response_schema, so the SDK has already validated the
+        # payload into _GeminiSuggestion. Prefer that over re-parsing the text.
+        parsed = getattr(response, "parsed", None)
+        if isinstance(parsed, _GeminiSuggestion):
+            return parsed
+
+        logger.warning(
+            "Gemini response had no SDK-parsed payload (parsed=%r); falling back to text parsing",
+            type(parsed).__name__ if parsed is not None else None,
+        )
         text = response.text
         cleaned = text.strip()
         if cleaned.startswith("```json"):
@@ -237,14 +261,31 @@ class GeminiMetadataEnricher:
             return [None] * len(items)
 
         if self._raw_client is None:
-            logger.warning("Batch enrichment unavailable: no raw client")
-            return [self.enrich(ext, text, source_format=fmt) for ext, text, fmt in items]
+            return self._sync_fallback(items, reason="no raw client")
 
         try:
             return self._run_batch(items)
         except Exception as exc:
-            logger.warning("Batch API failed, falling back to sync: %s", exc)
-            return [self.enrich(ext, text, source_format=fmt) for ext, text, fmt in items]
+            return self._sync_fallback(items, reason=f"batch API failed: {exc}")
+
+    def _sync_fallback(
+        self,
+        items: list[tuple[CanonicalExtraction, str, str]],
+        *,
+        reason: str,
+    ) -> list[CanonicalMetadataEnrichment | None]:
+        """Run the batch sequentially through the sync API.
+
+        This spends full (non-discounted) sync quota for every item, so it is
+        logged loudly with the count rather than degrading quietly.
+        """
+        logger.warning(
+            "Batch enrichment falling back to %d sequential SYNC calls (%s) — "
+            "this spends full sync quota for the whole batch",
+            len(items),
+            reason,
+        )
+        return [self.enrich(ext, text, source_format=fmt) for ext, text, fmt in items]
 
     def _run_batch(
         self,
@@ -277,12 +318,25 @@ class GeminiMetadataEnricher:
 
         if batch_job.state != "SUCCEEDED":
             logger.error("Batch job %s ended with state: %s", batch_job.name, batch_job.state)
-            return [self.enrich(ext, text, source_format=fmt) for ext, text, fmt in items]
+            return self._sync_fallback(items, reason=f"batch job state {batch_job.state}")
 
         results: list[CanonicalMetadataEnrichment | None] = []
-        responses = self._raw_client.batches.list_results(name=batch_job.name)
+        responses = list(self._raw_client.batches.list_results(name=batch_job.name))
 
-        for i, (response, (extraction, _, source_format)) in enumerate(zip(responses, items, strict=False)):
+        # A short result set must never silently drop inputs: pair off what we
+        # got, then account for the shortfall explicitly (TRACK-128).
+        aligned = min(len(responses), len(items))
+        if len(responses) != len(items):
+            logger.error(
+                "Batch job %s returned %d results for %d requests — %d input(s) unaccounted for",
+                batch_job.name,
+                len(responses),
+                len(items),
+                len(items) - aligned,
+            )
+
+        paired = zip(responses[:aligned], items[:aligned], strict=True)
+        for i, (response, (extraction, _, source_format)) in enumerate(paired):
             try:
                 suggestion = self._parse_response(response)
                 if suggestion is None:
@@ -301,8 +355,8 @@ class GeminiMetadataEnricher:
                     CanonicalMetadataEnrichment(
                         provider=PROVIDER_LABEL,
                         model=self._config.model,
-                        applied=True,
-                        confidence=suggestion.confidence or 0.8,
+                        applied=bool(fields_updated),
+                        confidence=suggestion.confidence or DEFAULT_CONFIDENCE,
                         fields_updated=fields_updated,
                     )
                 )
@@ -316,6 +370,16 @@ class GeminiMetadataEnricher:
                         warnings=[f"batch_error:{type(exc).__name__}"],
                     )
                 )
+
+        for _ in range(len(items) - aligned):
+            results.append(
+                CanonicalMetadataEnrichment(
+                    provider=PROVIDER_LABEL,
+                    model=self._config.model,
+                    applied=False,
+                    warnings=["batch_count_mismatch"],
+                )
+            )
 
         return results
 
