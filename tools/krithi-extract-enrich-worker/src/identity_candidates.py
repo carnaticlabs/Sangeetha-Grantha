@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from difflib import SequenceMatcher
 from typing import Any
 
+from .heuristics.transliteration_collapse import IDENTITY_COLLAPSE_RULES, apply_collapse
 from .schema import CanonicalIdentityCandidate, CanonicalIdentityCandidates
 
 fuzz: Any | None
@@ -45,25 +46,9 @@ def normalize_identity_text(value: str) -> str:
     cleaned = re.sub(r"[^a-z0-9\s]", " ", cleaned)
     cleaned = re.sub(r"\s+", " ", cleaned).strip()
 
-    # Transliteration-aware collapses (mirrors Kotlin normalization intent).
-    replacements = (
-        ("ksh", "ks"),
-        ("sh", "s"),
-        ("th", "t"),
-        ("dh", "d"),
-        ("bh", "b"),
-        ("gh", "g"),
-        ("ph", "p"),
-        ("kh", "k"),
-        ("jh", "j"),
-        ("ch", "c"),
-        ("aa", "a"),
-        ("ee", "i"),
-        ("oo", "o"),
-        ("uu", "u"),
-    )
-    for src, dst in replacements:
-        cleaned = cleaned.replace(src, dst)
+    # Transliteration-aware collapses — see heuristics.transliteration_collapse
+    # for why identity adds the long-vowel rules that matching keys omit.
+    cleaned = apply_collapse(cleaned, IDENTITY_COLLAPSE_RULES)
     return re.sub(r"\s+", " ", cleaned).strip()
 
 

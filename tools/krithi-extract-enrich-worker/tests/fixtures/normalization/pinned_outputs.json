@@ -1,0 +1,615 @@
+{
+  "_names": 61,
+  "pins": {
+    "Adi": {
+      "identity": "adi",
+      "identity_raga": "adi",
+      "matching_composer": "adi",
+      "matching_deity": "adi",
+      "matching_raga": "adi",
+      "matching_tala": "adi",
+      "matching_temple": "adi",
+      "matching_title": "adi"
+    },
+    "Akhilaandeshwari": {
+      "identity": "akilandeswari",
+      "identity_raga": "akilandeswari",
+      "matching_composer": "akilaandeswari",
+      "matching_deity": "akilaandeswari",
+      "matching_raga": "akilandeswari",
+      "matching_tala": "akilaandeswari",
+      "matching_temple": "akilaandeswari",
+      "matching_title": "aklaandswari"
+    },
+    "Akhilandeshwari": {
+      "identity": "akilandeswari",
+      "identity_raga": "akilandeswari",
+      "matching_composer": "akilandeswari",
+      "matching_deity": "akilandeswari",
+      "matching_raga": "akilandeswari",
+      "matching_tala": "akilandeswari",
+      "matching_temple": "akilandeswari",
+      "matching_title": "aklndswari"
+    },
+    "Akhilandesvari": {
+      "identity": "akilandesvari",
+      "identity_raga": "akilandesvari",
+      "matching_composer": "akilandesvari",
+      "matching_deity": "akilandesvari",
+      "matching_raga": "akilandesvari",
+      "matching_tala": "akilandesvari",
+      "matching_temple": "akilandesvari",
+      "matching_title": "aklndsvri"
+    },
+    "Annamacharya": {
+      "identity": "annamacarya",
+      "identity_raga": "annamacarya",
+      "matching_composer": "annamacarya",
+      "matching_deity": "annamacarya",
+      "matching_raga": "annamacarya",
+      "matching_tala": "annamacarya",
+      "matching_temple": "annamacarya",
+      "matching_title": "anmcrya"
+    },
+    "Arulmigu Kapaleeswarar Temple": {
+      "identity": "arulmigu kapaliswarar temple",
+      "identity_raga": "arulmigukapaliswarartemple",
+      "matching_composer": "arulmigu kapaleeswarar temple",
+      "matching_deity": "kapaleeswarar temple",
+      "matching_raga": "arulmigukapaliswarartemple",
+      "matching_tala": "arulmigu kapaleeswarar temple",
+      "matching_temple": "kapaleeswarar temple",
+      "matching_title": "arulmgu kpleeswar tmple"
+    },
+    "Bhadrachala Ramadasu": {
+      "identity": "badracala ramadasu",
+      "identity_raga": "badracalaramadasu",
+      "matching_composer": "badracala ramadasu",
+      "matching_deity": "badracala ramadasu",
+      "matching_raga": "badracalaramadasu",
+      "matching_tala": "badracala ramadasu",
+      "matching_temple": "badracala ramadasu",
+      "matching_title": "bdrcla rmdsu"
+    },
+    "Bhairavi": {
+      "identity": "bairavi",
+      "identity_raga": "bairavi",
+      "matching_composer": "bairavi",
+      "matching_deity": "bairavi",
+      "matching_raga": "bairavi",
+      "matching_tala": "bairavi",
+      "matching_temple": "bairavi",
+      "matching_title": "bairvi"
+    },
+    "Bhairavī": {
+      "identity": "bairavi",
+      "identity_raga": "bairavi",
+      "matching_composer": "bairavi",
+      "matching_deity": "bairavi",
+      "matching_raga": "bairavi",
+      "matching_tala": "bairavi",
+      "matching_temple": "bairavi",
+      "matching_title": "bairvi"
+    },
+    "Chintaya Ma Kanda": {
+      "identity": "cintaya ma kanda",
+      "identity_raga": "cintayamakanda",
+      "matching_composer": "cintaya ma kanda",
+      "matching_deity": "cintaya ma kanda",
+      "matching_raga": "cintayamakanda",
+      "matching_tala": "cintaya ma kanda",
+      "matching_temple": "cintaya ma kanda",
+      "matching_title": "cntaya ma knda"
+    },
+    "Cintaya Ma Kanda": {
+      "identity": "cintaya ma kanda",
+      "identity_raga": "cintayamakanda",
+      "matching_composer": "cintaya ma kanda",
+      "matching_deity": "cintaya ma kanda",
+      "matching_raga": "cintayamakanda",
+      "matching_tala": "cintaya ma kanda",
+      "matching_temple": "cintaya ma kanda",
+      "matching_title": "cntaya ma knda"
+    },
+    "Desadi": {
+      "identity": "desadi",
+      "identity_raga": "desadi",
+      "matching_composer": "desadi",
+      "matching_deity": "desadi",
+      "matching_raga": "desadi",
+      "matching_tala": "adi",
+      "matching_temple": "desadi",
+      "matching_title": "dsdi"
+    },
+    "Dvijavanti": {
+      "identity": "dvijavanti",
+      "identity_raga": "dvijavanti",
+      "matching_composer": "dvijavanti",
+      "matching_deity": "dvijavanti",
+      "matching_raga": "dvijavanti",
+      "matching_tala": "dvijavanti",
+      "matching_temple": "dvijavanti",
+      "matching_title": "dvjvnti"
+    },
+    "Dwijavanti": {
+      "identity": "dwijavanti",
+      "identity_raga": "dwijavanti",
+      "matching_composer": "dwijavanti",
+      "matching_deity": "dwijavanti",
+      "matching_raga": "dwijavanti",
+      "matching_tala": "dwijavanti",
+      "matching_temple": "dwijavanti",
+      "matching_title": "dwijvnti"
+    },
+    "Endaro Mahanubhavulu": {
+      "identity": "endaro mahanubavulu",
+      "identity_raga": "endaromahanubavulu",
+      "matching_composer": "endaro mahanubavulu",
+      "matching_deity": "endaro mahanubavulu",
+      "matching_raga": "endaromahanubavulu",
+      "matching_tala": "endaro mahanubavulu",
+      "matching_temple": "endaro mahanubavulu",
+      "matching_title": "endro mahanubvulu"
+    },
+    "Goddess Meenakshi": {
+      "identity": "goddess minaksi",
+      "identity_raga": "goddessminaksi",
+      "matching_composer": "goddess meenaksi",
+      "matching_deity": "meenaksi",
+      "matching_raga": "goddessminaksi",
+      "matching_tala": "goddess meenaksi",
+      "matching_temple": "goddess meenaksi",
+      "matching_title": "gods meenksi"
+    },
+    "Gopalakrishna Bharathi": {
+      "identity": "gopalakrisna barati",
+      "identity_raga": "gopalakrisnabarati",
+      "matching_composer": "gopalakrisna barati",
+      "matching_deity": "gopalakrisna barati",
+      "matching_raga": "gopalakrisnabarati",
+      "matching_tala": "gopalakrisna barati",
+      "matching_temple": "gopalakrisna barati",
+      "matching_title": "goplkrsna brti"
+    },
+    "Hamsadhvani": {
+      "identity": "hamsadvani",
+      "identity_raga": "hamsadvani",
+      "matching_composer": "hamsadvani",
+      "matching_deity": "hamsadvani",
+      "matching_raga": "hamsadvani",
+      "matching_tala": "hamsadvani",
+      "matching_temple": "hamsadvani",
+      "matching_title": "hamsdvni"
+    },
+    "Hamsadhwani": {
+      "identity": "hamsadwani",
+      "identity_raga": "hamsadwani",
+      "matching_composer": "hamsadwani",
+      "matching_deity": "hamsadwani",
+      "matching_raga": "hamsadwani",
+      "matching_tala": "hamsadwani",
+      "matching_temple": "hamsadwani",
+      "matching_title": "hamsdwani"
+    },
+    "Jujavanti": {
+      "identity": "jujavanti",
+      "identity_raga": "jujavanti",
+      "matching_composer": "jujavanti",
+      "matching_deity": "jujavanti",
+      "matching_raga": "jujavanti",
+      "matching_tala": "jujavanti",
+      "matching_temple": "jujavanti",
+      "matching_title": "jujvnti"
+    },
+    "Kalyani": {
+      "identity": "kalyani",
+      "identity_raga": "kalyani",
+      "matching_composer": "kalyani",
+      "matching_deity": "kalyani",
+      "matching_raga": "kalyani",
+      "matching_tala": "kalyani",
+      "matching_temple": "kalyani",
+      "matching_title": "klyani"
+    },
+    "Kalyāṇi": {
+      "identity": "kalyani",
+      "identity_raga": "kalyani",
+      "matching_composer": "kalyani",
+      "matching_deity": "kalyani",
+      "matching_raga": "kalyani",
+      "matching_tala": "kalyani",
+      "matching_temple": "kalyani",
+      "matching_title": "klyani"
+    },
+    "Kambhoji": {
+      "identity": "kamboji",
+      "identity_raga": "kamboji",
+      "matching_composer": "kamboji",
+      "matching_deity": "kamboji",
+      "matching_raga": "kamboji",
+      "matching_tala": "kamboji",
+      "matching_temple": "kamboji",
+      "matching_title": "kmboji"
+    },
+    "Khamas": {
+      "identity": "kamas",
+      "identity_raga": "kamas",
+      "matching_composer": "kamas",
+      "matching_deity": "kamas",
+      "matching_raga": "kamas",
+      "matching_tala": "kamas",
+      "matching_temple": "kamas",
+      "matching_title": "kms"
+    },
+    "Khanda Chapu": {
+      "identity": "kanda capu",
+      "identity_raga": "kandacapu",
+      "matching_composer": "kanda capu",
+      "matching_deity": "kanda capu",
+      "matching_raga": "kandacapu",
+      "matching_tala": "kanda capu",
+      "matching_temple": "kanda capu",
+      "matching_title": "knda cpu"
+    },
+    "Kharaharapriya": {
+      "identity": "karaharapriya",
+      "identity_raga": "karaharapriya",
+      "matching_composer": "karaharapriya",
+      "matching_deity": "karaharapriya",
+      "matching_raga": "karaharapriya",
+      "matching_tala": "karaharapriya",
+      "matching_temple": "karaharapriya",
+      "matching_title": "kraharpriya"
+    },
+    "Lord Ganesha": {
+      "identity": "lord ganesa",
+      "identity_raga": "lordganesa",
+      "matching_composer": "lord ganesa",
+      "matching_deity": "ganesa",
+      "matching_raga": "lordganesa",
+      "matching_tala": "lord ganesa",
+      "matching_temple": "lord ganesa",
+      "matching_title": "lord gnsa"
+    },
+    "Marivere Gati": {
+      "identity": "marivere gati",
+      "identity_raga": "mariveregati",
+      "matching_composer": "marivere gati",
+      "matching_deity": "marivere gati",
+      "matching_raga": "mariveregati",
+      "matching_tala": "marivere gati",
+      "matching_temple": "marivere gati",
+      "matching_title": "mrvre gti"
+    },
+    "Misra Chapu": {
+      "identity": "misra capu",
+      "identity_raga": "misracapu",
+      "matching_composer": "misra capu",
+      "matching_deity": "misra capu",
+      "matching_raga": "misracapu",
+      "matching_tala": "misra capu",
+      "matching_temple": "misra capu",
+      "matching_title": "msra cpu"
+    },
+    "Mohanam": {
+      "identity": "mohanam",
+      "identity_raga": "mohanam",
+      "matching_composer": "mohanam",
+      "matching_deity": "mohanam",
+      "matching_raga": "mohanam",
+      "matching_tala": "mohana",
+      "matching_temple": "mohanam",
+      "matching_title": "mohana"
+    },
+    "Muthuswami Dikshitar": {
+      "identity": "mutuswami diksitar",
+      "identity_raga": "mutuswamidiksitar",
+      "matching_composer": "muttusvami diksitar",
+      "matching_deity": "mutuswami diksitar",
+      "matching_raga": "mutuswamidiksitar",
+      "matching_tala": "mutuswami diksitar",
+      "matching_temple": "mutuswami diksitar",
+      "matching_title": "mutuswami dkstr"
+    },
+    "Muttusvāmi Dīkṣitar": {
+      "identity": "muttusvami diksitar",
+      "identity_raga": "muttusvamidiksitar",
+      "matching_composer": "muttusvami diksitar",
+      "matching_deity": "muttusvami diksitar",
+      "matching_raga": "muttusvamidiksitar",
+      "matching_tala": "muttusvami diksitar",
+      "matching_temple": "muttusvami diksitar",
+      "matching_title": "mutusvmi dkstr"
+    },
+    "Nagumomu Ganaleni": {
+      "identity": "nagumomu ganaleni",
+      "identity_raga": "nagumomuganaleni",
+      "matching_composer": "nagumomu ganaleni",
+      "matching_deity": "nagumomu ganaleni",
+      "matching_raga": "nagumomuganaleni",
+      "matching_tala": "nagumomu ganaleni",
+      "matching_temple": "nagumomu ganaleni",
+      "matching_title": "ngumomu gnlni"
+    },
+    "Natabhairavi": {
+      "identity": "natabairavi",
+      "identity_raga": "natabairavi",
+      "matching_composer": "natabairavi",
+      "matching_deity": "natabairavi",
+      "matching_raga": "natabairavi",
+      "matching_tala": "natabairavi",
+      "matching_temple": "natabairavi",
+      "matching_title": "ntbairvi"
+    },
+    "Papanasam Sivan": {
+      "identity": "papanasam sivan",
+      "identity_raga": "papanasamsivan",
+      "matching_composer": "papanasam sivan",
+      "matching_deity": "papanasam sivan",
+      "matching_raga": "papanasamsivan",
+      "matching_tala": "papanasam sivan",
+      "matching_temple": "papanasam sivan",
+      "matching_title": "pnsa svn"
+    },
+    "Poorvikalyani": {
+      "identity": "porvikalyani",
+      "identity_raga": "porvikalyani",
+      "matching_composer": "poorvikalyani",
+      "matching_deity": "poorvikalyani",
+      "matching_raga": "porvikalyani",
+      "matching_tala": "poorvikalyani",
+      "matching_temple": "poorvikalyani",
+      "matching_title": "poorvklyani"
+    },
+    "Purandara Dasa": {
+      "identity": "purandara dasa",
+      "identity_raga": "purandaradasa",
+      "matching_composer": "purandara dasa",
+      "matching_deity": "purandara dasa",
+      "matching_raga": "purandaradasa",
+      "matching_tala": "purandara dasa",
+      "matching_temple": "purandara dasa",
+      "matching_title": "purndra dsa"
+    },
+    "Purvikalyani": {
+      "identity": "purvikalyani",
+      "identity_raga": "purvikalyani",
+      "matching_composer": "purvikalyani",
+      "matching_deity": "purvikalyani",
+      "matching_raga": "purvikalyani",
+      "matching_tala": "purvikalyani",
+      "matching_temple": "purvikalyani",
+      "matching_title": "purvklyani"
+    },
+    "Rupakam": {
+      "identity": "rupakam",
+      "identity_raga": "rupakam",
+      "matching_composer": "rupakam",
+      "matching_deity": "rupakam",
+      "matching_raga": "rupakam",
+      "matching_tala": "rupaka",
+      "matching_temple": "rupakam",
+      "matching_title": "rupka"
+    },
+    "Saint Thyagaraja": {
+      "identity": "saint tyagaraja",
+      "identity_raga": "sainttyagaraja",
+      "matching_composer": "tyagaraja",
+      "matching_deity": "tyagaraja",
+      "matching_raga": "tyagaraja",
+      "matching_tala": "tyagaraja",
+      "matching_temple": "tyagaraja",
+      "matching_title": "tyagrja"
+    },
+    "Sankarabharanam": {
+      "identity": "sankarabaranam",
+      "identity_raga": "sankarabaranam",
+      "matching_composer": "sankarabaranam",
+      "matching_deity": "sankarabaranam",
+      "matching_raga": "sankarabaranam",
+      "matching_tala": "sankarabarana",
+      "matching_temple": "sankarabaranam",
+      "matching_title": "snkrbrna"
+    },
+    "Saveri": {
+      "identity": "saveri",
+      "identity_raga": "saveri",
+      "matching_composer": "saveri",
+      "matching_deity": "saveri",
+      "matching_raga": "saveri",
+      "matching_tala": "saveri",
+      "matching_temple": "saveri",
+      "matching_title": "svri"
+    },
+    "Shankarabharanam": {
+      "identity": "sankarabaranam",
+      "identity_raga": "sankarabaranam",
+      "matching_composer": "sankarabaranam",
+      "matching_deity": "sankarabaranam",
+      "matching_raga": "sankarabaranam",
+      "matching_tala": "sankarabarana",
+      "matching_temple": "sankarabaranam",
+      "matching_title": "snkrbrna"
+    },
+    "Shyama Shastri": {
+      "identity": "syama sastri",
+      "identity_raga": "syamasastri",
+      "matching_composer": "syama sastri",
+      "matching_deity": "syama sastri",
+      "matching_raga": "syamasastri",
+      "matching_tala": "syama sastri",
+      "matching_temple": "syama sastri",
+      "matching_title": "syama stri"
+    },
+    "Sri Muthuswamy Dikshithar": {
+      "identity": "sri mutuswamy diksitar",
+      "identity_raga": "srimutuswamydiksitar",
+      "matching_composer": "muttusvami diksitar",
+      "matching_deity": "mutuswamy diksitar",
+      "matching_raga": "mutuswamydiksitar",
+      "matching_tala": "mutuswamy diksitar",
+      "matching_temple": "mutuswamy diksitar",
+      "matching_title": "mutuswamy dkstr"
+    },
+    "Sri Subrahmanyaya Namaste": {
+      "identity": "sri subrahmanyaya namaste",
+      "identity_raga": "srisubrahmanyayanamaste",
+      "matching_composer": "subrahmanyaya namaste",
+      "matching_deity": "subrahmanyaya namaste",
+      "matching_raga": "subrahmanyayanamaste",
+      "matching_tala": "subrahmanyaya namaste",
+      "matching_temple": "subrahmanyaya namaste",
+      "matching_title": "subrahmnyaya nmste"
+    },
+    "Sri Venkateswara": {
+      "identity": "sri venkateswara",
+      "identity_raga": "srivenkateswara",
+      "matching_composer": "venkateswara",
+      "matching_deity": "venkateswara",
+      "matching_raga": "venkateswara",
+      "matching_tala": "venkateswara",
+      "matching_temple": "venkateswara",
+      "matching_title": "vnktswara"
+    },
+    "Swathi Thirunal": {
+      "identity": "swati tirunal",
+      "identity_raga": "swatitirunal",
+      "matching_composer": "swati tirunal",
+      "matching_deity": "swati tirunal",
+      "matching_raga": "swatitirunal",
+      "matching_tala": "swati tirunal",
+      "matching_temple": "swati tirunal",
+      "matching_title": "swati trunl"
+    },
+    "Syama Sastri": {
+      "identity": "syama sastri",
+      "identity_raga": "syamasastri",
+      "matching_composer": "syama sastri",
+      "matching_deity": "syama sastri",
+      "matching_raga": "syamasastri",
+      "matching_tala": "syama sastri",
+      "matching_temple": "syama sastri",
+      "matching_title": "syama stri"
+    },
+    "Syama Sastry": {
+      "identity": "syama sastry",
+      "identity_raga": "syamasastry",
+      "matching_composer": "syama sastri",
+      "matching_deity": "syama sastry",
+      "matching_raga": "syamasastry",
+      "matching_tala": "syama sastry",
+      "matching_temple": "syama sastry",
+      "matching_title": "syama stry"
+    },
+    "Thodi": {
+      "identity": "todi",
+      "identity_raga": "todi",
+      "matching_composer": "todi",
+      "matching_deity": "todi",
+      "matching_raga": "todi",
+      "matching_tala": "todi",
+      "matching_temple": "todi",
+      "matching_title": "todi"
+    },
+    "Tiru Vanaikaval": {
+      "identity": "tiru vanaikaval",
+      "identity_raga": "tiruvanaikaval",
+      "matching_composer": "tiru vanaikaval",
+      "matching_deity": "tiru vanaikaval",
+      "matching_raga": "tiruvanaikaval",
+      "matching_tala": "tiru vanaikaval",
+      "matching_temple": "vanaikaval",
+      "matching_title": "tru vnaikvl"
+    },
+    "Todi": {
+      "identity": "todi",
+      "identity_raga": "todi",
+      "matching_composer": "todi",
+      "matching_deity": "todi",
+      "matching_raga": "todi",
+      "matching_tala": "todi",
+      "matching_temple": "todi",
+      "matching_title": "todi"
+    },
+    "Tyagaraja": {
+      "identity": "tyagaraja",
+      "identity_raga": "tyagaraja",
+      "matching_composer": "tyagaraja",
+      "matching_deity": "tyagaraja",
+      "matching_raga": "tyagaraja",
+      "matching_tala": "tyagaraja",
+      "matching_temple": "tyagaraja",
+      "matching_title": "tyagrja"
+    },
+    "Tyagarajar": {
+      "identity": "tyagarajar",
+      "identity_raga": "tyagarajar",
+      "matching_composer": "tyagaraja",
+      "matching_deity": "tyagarajar",
+      "matching_raga": "tyagarajar",
+      "matching_tala": "tyagarajar",
+      "matching_temple": "tyagarajar",
+      "matching_title": "tyagrjr"
+    },
+    "Tyāgarāja": {
+      "identity": "tyagaraja",
+      "identity_raga": "tyagaraja",
+      "matching_composer": "tyagaraja",
+      "matching_deity": "tyagaraja",
+      "matching_raga": "tyagaraja",
+      "matching_tala": "tyagaraja",
+      "matching_temple": "tyagaraja",
+      "matching_title": "tyagrja"
+    },
+    "Vatapi Ganapathim": {
+      "identity": "vatapi ganapatim",
+      "identity_raga": "vatapiganapatim",
+      "matching_composer": "vatapi ganapatim",
+      "matching_deity": "vatapi ganapatim",
+      "matching_raga": "vatapiganapatim",
+      "matching_tala": "vatapi ganapatim",
+      "matching_temple": "vatapi ganapatim",
+      "matching_title": "vtpi gnpti"
+    },
+    "Vatapi Ganapatim": {
+      "identity": "vatapi ganapatim",
+      "identity_raga": "vatapiganapatim",
+      "matching_composer": "vatapi ganapatim",
+      "matching_deity": "vatapi ganapatim",
+      "matching_raga": "vatapiganapatim",
+      "matching_tala": "vatapi ganapatim",
+      "matching_temple": "vatapi ganapatim",
+      "matching_title": "vtpi gnpti"
+    },
+    "Vātāpi Gaṇapatiṃ": {
+      "identity": "vatapi ganapatim",
+      "identity_raga": "vatapiganapatim",
+      "matching_composer": "vatapi ganapatim",
+      "matching_deity": "vatapi ganapatim",
+      "matching_raga": "vatapiganapatim",
+      "matching_tala": "vatapi ganapatim",
+      "matching_temple": "vatapi ganapatim",
+      "matching_title": "vtpi gnpti"
+    },
+    "Śaṅkarābharaṇam": {
+      "identity": "sankarabaranam",
+      "identity_raga": "sankarabaranam",
+      "matching_composer": "sankarabaranam",
+      "matching_deity": "sankarabaranam",
+      "matching_raga": "sankarabaranam",
+      "matching_tala": "sankarabarana",
+      "matching_temple": "sankarabaranam",
+      "matching_title": "snkrbrna"
+    },
+    "Śyāmā Śāstri": {
+      "identity": "syama sastri",
+      "identity_raga": "syamasastri",
+      "matching_composer": "syama sastri",
+      "matching_deity": "syama sastri",
+      "matching_raga": "syamasastri",
+      "matching_tala": "syama sastri",
+      "matching_temple": "syama sastri",
+      "matching_title": "syama stri"
+    }
+  }
+}

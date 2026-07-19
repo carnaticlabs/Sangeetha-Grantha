@@ -12,22 +12,20 @@ from __future__ import annotations
 import json
 import logging
 import sys
-from datetime import UTC, datetime
+import uuid
 from pathlib import Path
 from typing import Any
 
 import click
 
+from .config import ExtractorConfig
+from .db import ExtractionTask
+from .extraction_strategies import PdfExtractionStrategy
 from .extractor import PdfExtractor
 from .metadata_parser import MetadataParser
+from .ocr_fallback import OcrFallback
 from .page_segmenter import PageSegmenter
-from .schema import (
-    CanonicalExtraction,
-    CanonicalLyricVariant,
-    CanonicalRaga,
-    ExtractionMethod,
-    MusicalForm,
-)
+from .schema import CanonicalExtraction
 from .structure_parser import StructureParser
 from .transliterator import Transliterator
 
@@ -61,82 +59,66 @@ def extract(
     source_name: str,
     source_tier: int,
 ) -> None:
-    """Extract Krithis from a PDF file into canonical JSON format."""
-    pdf_extractor = PdfExtractor()
-    segmenter = PageSegmenter()
-    structure_parser = StructureParser()
-    metadata_parser = MetadataParser()
-    transliterator = Transliterator()
+    """Extract Krithis from a PDF file into canonical JSON format.
 
-    # Parse page range
-    parsed_range = None
-    if page_range:
-        parts = page_range.split("-")
-        if len(parts) == 2:
-            parsed_range = (int(parts[0]) - 1, int(parts[1]) - 1)
-        elif len(parts) == 1:
-            page_num = int(parts[0]) - 1
-            parsed_range = (page_num, page_num)
+    TRACK-130: this delegates to `PdfExtractionStrategy` — the same pipeline the
+    worker runs — instead of re-implementing segmentation and parsing. The CLI
+    had already drifted from it (no ragamalika handling, no diacritic
+    normalisation of raga/tala names).
+    """
+    # The strategy resolves bare/absolute paths and file:// URIs locally, but a
+    # relative path would be mistaken for a URL, so anchor it first.
+    source_ref = input_path
+    if "://" not in input_path:
+        source_ref = str(Path(input_path).resolve())
+
+    config = ExtractorConfig()
+
+    def finalize(extraction: CanonicalExtraction, _source_text: str, _source_format: str) -> CanonicalExtraction:
+        # No enrichment in the CLI; just report the path the user actually gave.
+        extraction.source_url = input_path
+        extraction.source_name = source_name
+        extraction.source_tier = source_tier
+        return extraction
+
+    strategy = PdfExtractionStrategy(
+        config,
+        finalize,
+        pdf_extractor=PdfExtractor(),
+        page_segmenter=PageSegmenter(),
+        ocr_fallback=OcrFallback(),
+        structure_parser=StructureParser(),
+        metadata_parser=MetadataParser(),
+        transliterator=Transliterator(),
+    )
+
+    task = ExtractionTask(
+        id=uuid.uuid4(),
+        source_url=source_ref,
+        source_format="PDF",
+        source_name=source_name,
+        source_tier=source_tier,
+        request_payload={"composerHint": composer} if composer else {},
+        page_range=page_range,
+        import_batch_id=None,
+        import_task_run_id=None,
+        attempts=0,
+    )
 
     click.echo(f"Extracting from: {input_path}")
+    try:
+        extractions = strategy.extract(task)
+    finally:
+        strategy.close()
 
-    # Extract
-    document = pdf_extractor.extract_document(input_path, parsed_range)
-    click.echo(f"Extracted {len(document.pages)} pages (checksum: {document.checksum[:12]}...)")
-
-    # Segment
-    segments = segmenter.segment(document)
-    click.echo(f"Detected {len(segments)} Krithi segments")
-
-    # Process each segment
     results: list[dict[str, Any]] = []
-    for i, segment in enumerate(segments):
-        metadata = metadata_parser.parse(
-            segment.body_text[:500],
-            title_hint=segment.title_text,
-        )
-        parse_result = structure_parser.parse(segment.body_text)
-        canonical_sections = structure_parser.to_canonical_sections(parse_result.sections)
-        lyric_variants = structure_parser.to_canonical_lyric_variants(parse_result.lyric_variants)
-        metadata_boundaries = structure_parser.to_canonical_metadata_boundaries(parse_result.metadata_boundaries)
-        if not lyric_variants and parse_result.sections:
-            fallback_script = transliterator.detect_script(segment.body_text) or "devanagari"
-            fallback_language = "sa" if fallback_script == "devanagari" else "en"
-            lyric_variants = [
-                CanonicalLyricVariant(
-                    language=fallback_language,
-                    script=fallback_script,
-                    sections=structure_parser.to_canonical_lyric_sections(parse_result.sections),
-                )
-            ]
-
-        extraction = CanonicalExtraction(
-            title=metadata.title,
-            alternate_title=metadata.alternate_title,
-            composer=metadata.composer or composer or "Unknown",
-            musical_form=MusicalForm.KRITHI,
-            ragas=[CanonicalRaga(name=metadata.raga or "Unknown")],
-            tala=metadata.tala or "Unknown",
-            sections=canonical_sections,
-            lyric_variants=lyric_variants,
-            metadata_boundaries=metadata_boundaries,
-            deity=metadata.deity,
-            temple=metadata.temple,
-            temple_location=metadata.temple_location,
-            source_url=input_path,
-            source_name=source_name,
-            source_tier=source_tier,
-            extraction_method=ExtractionMethod.PDF_PYMUPDF,
-            extraction_timestamp=datetime.now(UTC).isoformat(),
-            page_range=segment.page_range_str,
-            checksum=document.checksum,
-        )
-
+    for i, extraction in enumerate(extractions):
         results.append(extraction.to_json_dict())
         click.echo(
-            f"  [{i + 1}/{len(segments)}] {metadata.title} "
-            f"(Raga: {metadata.raga or '?'}, Tala: {metadata.tala or '?'}, "
-            f"Sections: {len(canonical_sections)}, Pages: {segment.page_range_str})"
+            f"  [{i + 1}/{len(extractions)}] {extraction.title} "
+            f"(Raga: {extraction.ragas[0].name if extraction.ragas else '?'}, "
+            f"Tala: {extraction.tala}, Sections: {len(extraction.sections)}, "
+            f"Pages: {extraction.page_range})"
         )
 
     # Write output

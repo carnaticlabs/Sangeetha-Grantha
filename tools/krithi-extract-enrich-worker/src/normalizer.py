@@ -6,19 +6,7 @@ import re
 import unicodedata
 
 from .diacritic_normalizer import normalize_garbled_diacritics as _legacy_normalize_garbled_diacritics
-
-_TRANSLITERATION_COLLAPSE_RULES: tuple[tuple[str, str], ...] = (
-    ("ksh", "ks"),
-    ("chh", "c"),
-    ("sh", "s"),
-    ("th", "t"),
-    ("dh", "d"),
-    ("bh", "b"),
-    ("ph", "p"),
-    ("gh", "g"),
-    ("jh", "j"),
-    ("ch", "c"),
-)
+from .heuristics.transliteration_collapse import MATCHING_COLLAPSE_RULES, apply_collapse
 
 _HONORIFIC_RE = re.compile(r"\b(?:saint|sri|swami|sir|dr|prof|smt)\b", re.IGNORECASE)
 _NON_ALNUM_SPACE_RE = re.compile(r"[^a-z0-9\s]")
@@ -37,13 +25,6 @@ def _strip_diacritics(text: str) -> str:
     return "".join(char for char in unicodedata.normalize("NFD", text) if unicodedata.category(char) != "Mn")
 
 
-def _collapse_transliteration(value: str) -> str:
-    result = value
-    for source, target in _TRANSLITERATION_COLLAPSE_RULES:
-        result = result.replace(source, target)
-    return result
-
-
 def normalize_for_matching(text: str, entity_type: str = "title") -> str:
     """Produce a canonical matching key for deduplication and variant matching."""
     if not text:
@@ -57,11 +38,9 @@ def normalize_for_matching(text: str, entity_type: str = "title") -> str:
     result = _HONORIFIC_RE.sub(" ", result)
     # 4. Remove special characters (alphanumeric + space only)
     result = _NON_ALNUM_SPACE_RE.sub(" ", result)
-    # 5. Transliteration collapse (Kotlin order; longest match first)
-    result = _collapse_transliteration(result)
-
-    # Additional aspirate smoothing used by existing matching data.
-    result = result.replace("kh", "k")
+    # 5. Transliteration collapse (longest match first; includes the `kh`
+    #    aspirate smoothing the existing matching data depends on).
+    result = apply_collapse(result, MATCHING_COLLAPSE_RULES)
 
     # 6. Devanagari-aware rules + robustness for Sanskrit title matching.
     if entity_type == "title":

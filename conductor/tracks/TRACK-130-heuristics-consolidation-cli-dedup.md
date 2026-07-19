@@ -1,7 +1,7 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Not Started |
-| **Version** | 1.0.0 |
+| **Status** | Completed |
+| **Version** | 1.1.0 |
 | **Last Updated** | 2026-07-19 |
 | **Author** | Sangeetha Grantha Team |
 
@@ -54,3 +54,81 @@
 * `uv run pytest` fully green — especially `test_normalizer.py`, `test_identity_candidates.py`, CAT-B fixtures.
 * CLI smoke: `uv run python -m src.cli extract -i <fixture.pdf> -o /tmp/out.json` produces output including ragamalika/diacritic handling (diff against pre-refactor output; differences must be exactly the known CLI-drift fixes).
 * `ruff` / `mypy` clean on touched files.
+
+## Outcome (2026-07-19)
+
+### Pinned first, then consolidated
+
+`tests/fixtures/normalization/pinned_outputs.json` was generated from the
+**pre-consolidation** code: 61 real composer/raga/title/tala/deity/temple names
+× 8 normalization paths = 488 pinned outputs, enforced by
+`tests/test_normalization_pins.py`. Every pin stayed green through the
+consolidation, so no matching key moved.
+
+### What the two copies actually differed by
+
+| | `normalizer.py` | `identity_candidates.py` |
+|:---|:---|:---|
+| `chh` → `c` | yes (before `sh`/`ch`) | **no** |
+| `kh` → `k` | after the loop | mid-sequence |
+| `gh`/`ph` order | `ph`, `gh` | `gh`, `ph` |
+| long vowels (`aa`/`ee`/`oo`/`uu`) | raga branch only | always |
+
+Consequence of the `chh` gap: `"chh"` normalised to `"c"` for matching keys but
+to `"ch"` for identity keys — the two answered differently for the same input.
+That divergence is now explicit rather than accidental, and each consumer keeps
+its existing sequence exactly.
+
+The `gh`/`ph` swap and the `kh` position are *provably* immaterial — the patterns
+share no characters, so neither can create or destroy the other. Verified beyond
+the pins by brute-forcing 400,000 random strings per variant through the old and
+new orderings: **0 mismatches**.
+
+### Kotlin counterpart — finding
+
+There is no live Kotlin collapse table to mirror. `NameNormalizationService`
+delegated consonant collapse to Python in its Phase 3 "Simplify and Ship" pass
+("transliteration collapse is now handled by Python normalizer"). Kotlin retains
+only the long-vowel collapses for ragas, which is the counterpart of
+`LONG_VOWEL_COLLAPSE_RULES`. The module docstring records this, so the next
+reader does not go hunting for a mirror that no longer exists. **Python is
+authoritative for the consonant table.**
+
+### CLI de-duplication — the drift, measured
+
+`cli.py extract` now builds an `ExtractionTask` and delegates to
+`PdfExtractionStrategy` with a no-op finalize. Diffed against pre-refactor output
+on the real `ragamalika_multi_variant` fixture rendered to PDF:
+
+| | ragas emitted |
+|:---|:---|
+| Before | `[{"name": "Ragamalika  Talam: Adi", "order": 1}]` |
+| After | `SrI`/`Arabhi` (pallavi), `gauri`/`nATa` (anupallavi), `gauLa` (charanam) |
+
+That is the drift the track predicted: the CLI had no ragamalika sub-raga
+detection and no `cleanup_raga_tala_name`, so an unparsed metadata blob was being
+stored as the raga name. On two simpler synthetic fixtures the before/after
+output is byte-identical apart from `extractionTimestamp` — i.e. delegation
+changes nothing except where the CLI was actually broken.
+
+Page-range parsing (`"3-7"` → `(2, 6)`) now exists once as
+`extraction_strategies.parse_page_range`, used by both callers and covered by a
+parametrised test.
+
+### `detect_script` — documented, not changed
+
+The first-character bias is real and easy to trigger in this corpus, because
+section headers are romanised:
+
+    detect_script("pallavi श्री विश्व नाथं भजेहम्")  # -> "latin"
+
+Documented in the module and method docstrings. The counting-based fix was **not**
+implemented: it would change the `script` label on emitted lyric variants and so
+change extraction output, which conflicts with this track's pinned-output remit.
+The docstring records what a future fix must re-pin first.
+
+### Verification
+
+`ruff check` 0, `ruff format --check` clean (55 files), `mypy` 0,
+`pytest` 292 unit + 18 integration passing (up from 220 unit — 65 normalization
+pin/consistency tests and 7 CLI delegation tests added).

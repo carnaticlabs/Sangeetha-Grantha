@@ -50,6 +50,23 @@ logger = logging.getLogger(__name__)
 FinalizeExtraction = Callable[[CanonicalExtraction, str, str], CanonicalExtraction]
 
 
+def parse_page_range(value: str | None) -> tuple[int, int] | None:
+    """Parse a 1-based page range like "3-7" or "5" into a 0-based inclusive tuple.
+
+    TRACK-130: this lived twice, here and in `cli.py`. Single definition now.
+    Returns None for empty or unparseable input, matching prior behaviour.
+    """
+    if not value:
+        return None
+    parts = value.split("-")
+    if len(parts) == 2:
+        return (int(parts[0]) - 1, int(parts[1]) - 1)
+    if len(parts) == 1:
+        page_num = int(parts[0]) - 1
+        return (page_num, page_num)
+    return None
+
+
 class ExtractionStrategy(ABC):
     """Base class for format-specific extraction pipelines."""
 
@@ -261,14 +278,7 @@ class PdfExtractionStrategy(_TextPipelineStrategy):
         pdf_path = self._download_source(task.source_url)
 
         # Parse page range from task
-        page_range = None
-        if task.page_range:
-            parts = task.page_range.split("-")
-            if len(parts) == 2:
-                page_range = (int(parts[0]) - 1, int(parts[1]) - 1)  # Convert to 0-based
-            elif len(parts) == 1:
-                page_num = int(parts[0]) - 1
-                page_range = (page_num, page_num)
+        page_range = parse_page_range(task.page_range)
 
         # Check if text is extractable (vs. scanned)
         use_ocr = not self.pdf_extractor.is_text_extractable(str(pdf_path))

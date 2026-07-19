@@ -2,6 +2,19 @@
 
 Provides automated conversion between scripts (Devanagari, Tamil, Telugu,
 Kannada, Malayalam, Latin/IAST) using the indic-transliteration library.
+
+**Known limitation (TRACK-130): `detect_script` is first-character biased.**
+It returns as soon as it sees one character in a recognised Unicode block, so
+the *first* Indic-or-Latin character decides the answer for the whole string —
+it is not a majority vote. This matters in this corpus because section headers
+are frequently romanised, e.g.::
+
+    detect_script("pallavi श्री विश्व नाथं भजेहम्")  # -> "latin", not "devanagari"
+
+A counting-based majority detection would be more accurate, but it would change
+the `script` label on emitted lyric variants and therefore extraction output, so
+it was deliberately left alone by TRACK-130 (whose remit was consolidation with
+pinned outputs). Any fix needs the structure-parser fixtures re-pinned first.
 """
 
 from __future__ import annotations
@@ -91,6 +104,9 @@ class Transliterator:
         """Attempt to detect the script of the given text.
 
         Returns the script name (devanagari, tamil, etc.) or None.
+
+        Note: this is first-character biased, not a majority vote — see the
+        module docstring for why that is, and what changing it would cost.
         """
         if not text.strip():
             return None
