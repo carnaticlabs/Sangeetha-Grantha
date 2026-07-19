@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import Optional
 
 import fitz  # PyMuPDF — for rendering pages to images
 
@@ -17,13 +16,13 @@ logger = logging.getLogger(__name__)
 
 # Language codes for Tesseract Indic packs
 TESSERACT_LANG_MAP = {
-    "sa": "san",   # Sanskrit
-    "ta": "tam",   # Tamil
-    "te": "tel",   # Telugu
-    "kn": "kan",   # Kannada
-    "ml": "mal",   # Malayalam
-    "hi": "hin",   # Hindi
-    "en": "eng",   # English
+    "sa": "san",  # Sanskrit
+    "ta": "tam",  # Tamil
+    "te": "tel",  # Telugu
+    "kn": "kan",  # Kannada
+    "ml": "mal",  # Malayalam
+    "hi": "hin",  # Hindi
+    "en": "eng",  # English
 }
 
 
@@ -73,7 +72,7 @@ class OcrFallback:
         img = Image.frombytes("RGB", (pix.width, pix.height), pix.samples)
 
         # Run OCR
-        text = pytesseract.image_to_string(
+        text: str = pytesseract.image_to_string(
             img,
             lang=self.tesseract_lang_str,
             config="--psm 6",  # Assume uniform block of text
@@ -94,7 +93,7 @@ class OcrFallback:
     def extract_document_text(
         self,
         pdf_path: str | Path,
-        page_range: Optional[tuple[int, int]] = None,
+        page_range: tuple[int, int] | None = None,
     ) -> dict[int, str]:
         """Extract text from multiple pages using OCR.
 

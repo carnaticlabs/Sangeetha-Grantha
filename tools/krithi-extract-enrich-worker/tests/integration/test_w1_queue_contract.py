@@ -119,7 +119,9 @@ def test_skip_locked_two_workers_never_claim_the_same_task(
                 LIMIT 1
                 """
             )
-            locked_id = cur.fetchone()["id"]
+            locked_row = cur.fetchone()
+            assert locked_row is not None
+            locked_id = locked_row["id"]
 
             # While that lock is held, the second worker's full claim cycle
             # must skip the locked row and take the other task.

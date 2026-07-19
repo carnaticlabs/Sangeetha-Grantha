@@ -19,6 +19,7 @@ Usage:
     python scripts/section_repair.py --from-report .triage-cache/triage_report.json  # all resplit candidates
     python scripts/section_repair.py ... --apply
 """
+
 from __future__ import annotations
 
 import argparse
@@ -28,6 +29,7 @@ import re
 import sys
 import time
 from pathlib import Path
+from typing import Any
 
 import httpx
 import psycopg
@@ -56,11 +58,13 @@ def _request(method: str, url: str, **kwargs) -> httpx.Response:
     resp.raise_for_status()
     return resp
 
+
 _WORKER_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(_WORKER_ROOT))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from section_triage import DB_URL, triage  # noqa: E402
+
 from src.html_extractor import HtmlTextExtractor  # noqa: E402
 from src.structure_parser import StructureParser  # noqa: E402
 
@@ -98,7 +102,7 @@ def _stored_blob(conn, variant_id: str) -> str:
             (variant_id,),
         )
         row = cur.fetchone()
-        return (row["blob"] if row and row["blob"] else "")
+        return row["blob"] if row and row["blob"] else ""
 
 
 # Marker tokens the parser strips into headers (never lyric): P/A/C abbreviations
@@ -118,7 +122,10 @@ def _content_preserved(old_blob: str, new_text: str, threshold: float = 0.97) ->
     type has no slot in an (undercounting) template — e.g. a pallavi that the
     template omits. Markers are stripped from both sides first.
     """
-    strip = lambda s: re.sub(r"\s+", "", _MARKER_RE.sub("", s))
+
+    def strip(s: str) -> str:
+        return re.sub(r"\s+", "", _MARKER_RE.sub("", s))
+
     old = strip(old_blob)
     new = strip(new_text)
     if not old:
@@ -128,9 +135,15 @@ def _content_preserved(old_blob: str, new_text: str, threshold: float = 0.97) ->
 
 
 def _token() -> str:
-    r = _request("POST", f"{API}/v1/auth/token", json={
-        "adminToken": ADMIN_TOKEN, "email": ADMIN_EMAIL, "roles": ["ADMIN", "CURATOR"],
-    })
+    r = _request(
+        "POST",
+        f"{API}/v1/auth/token",
+        json={
+            "adminToken": ADMIN_TOKEN,
+            "email": ADMIN_EMAIL,
+            "roles": ["ADMIN", "CURATOR"],
+        },
+    )
     return r.json()["token"]
 
 
@@ -202,7 +215,10 @@ def main() -> int:
                 if res.stored_counts.get(lang) == 1:
                     blob_n = len(StructureParser().parse(stored_blob).sections)
                     if blob_n > len(template):
-                        print(f"  {lang}: SKIP (blob has {blob_n} markers > template {len(template)} — would drop a section)")
+                        print(
+                            f"  {lang}: SKIP (blob has {blob_n} markers > "
+                            f"template {len(template)} — would drop a section)"
+                        )
                         skipped += 1
                         continue
                 # Trailer guard: a last section far larger than the en baseline is
@@ -219,14 +235,15 @@ def main() -> int:
                     print(f"  {lang}: SKIP (content loss — re-split keeps {ratio:.0%} of stored blob)")
                     skipped += 1
                     continue
-                payload = {"sections": [
-                    {"sectionId": sid_by_order[i + 1], "text": s.text}
-                    for i, s in enumerate(sections)
-                ]}
+                payload = {
+                    "sections": [{"sectionId": sid_by_order[i + 1], "text": s.text} for i, s in enumerate(sections)]
+                }
                 if args.apply:
                     resp = _request(
-                        "POST", f"{API}/v1/admin/variants/{vid}/sections",
-                        headers={"Authorization": f"Bearer {token}"}, json=payload,
+                        "POST",
+                        f"{API}/v1/admin/variants/{vid}/sections",
+                        headers={"Authorization": f"Bearer {token}"},
+                        json=payload,
                     )
                     print(f"  {lang}: {len(sections)} sections -> HTTP {resp.status_code}")
                 else:
@@ -239,14 +256,16 @@ def main() -> int:
 
 # triage() already parsed the source; re-run the parser once more to hand back the
 # variant objects (with section text) rather than only the summary in TriageResult.
-_CACHE: dict[str, object] = {}
+_CACHE: dict[Any, Any] = {}
 
 
 def _reparse(res, lang):
     from section_triage import _fetch  # noqa: E402
+
     key = res.source_url
     if key not in _CACHE:
         from src.diacritic_normalizer import normalize_garbled_diacritics
+
         html = _fetch(res.source_url)
         parsed = StructureParser().parse(
             normalize_garbled_diacritics(HtmlTextExtractor().extract(html, base_url=res.source_url).text)

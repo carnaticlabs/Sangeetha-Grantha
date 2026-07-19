@@ -12,7 +12,8 @@ import re
 from dataclasses import dataclass
 from urllib.parse import urljoin
 
-from bs4 import BeautifulSoup, NavigableString, Tag
+from bs4 import BeautifulSoup
+from bs4.element import NavigableString, Tag
 
 
 @dataclass
@@ -124,7 +125,8 @@ class HtmlTextExtractor:
                 if link_text and self._is_navigation_link(link_text):
                     pass  # silently drop
                 elif link_text:
-                    href = (node.get("href") or "").strip()
+                    href_attr = node.get("href")
+                    href = (href_attr if isinstance(href_attr, str) else "").strip()
                     # TRACK-097: For inline links within lyrics (e.g. variation
                     # references like <a href="#V1">mAyUra nAtha</a>), output
                     # only the link text — the URL is noise in lyric content.
@@ -141,7 +143,8 @@ class HtmlTextExtractor:
                             append_text(link_text)
             else:
                 for child in node.children:
-                    walk(child)
+                    if isinstance(child, Tag | NavigableString):
+                        walk(child)
 
             if is_block:
                 append_newline()
@@ -162,8 +165,15 @@ class HtmlTextExtractor:
     )
 
     _LANGUAGE_NAV_LABELS = {
-        "english", "devanagari", "tamil", "telugu", "kannada", "malayalam",
-        "sanskrit", "hindi", "word division",
+        "english",
+        "devanagari",
+        "tamil",
+        "telugu",
+        "kannada",
+        "malayalam",
+        "sanskrit",
+        "hindi",
+        "word division",
     }
 
     def _strip_navigation_tables(self, soup: BeautifulSoup) -> None:
@@ -179,7 +189,8 @@ class HtmlTextExtractor:
         """
         for table in soup.find_all("table"):
             # Fast path: table id matches a language label (guru-guha pattern)
-            table_id = (table.get("id") or "").strip().lower()
+            table_id_attr = table.get("id")
+            table_id = (table_id_attr if isinstance(table_id_attr, str) else "").strip().lower()
             if table_id in self._LANGUAGE_NAV_LABELS:
                 table.decompose()
                 continue
@@ -188,10 +199,7 @@ class HtmlTextExtractor:
             cells = table.find_all("td")
             if not cells:
                 continue
-            nav_count = sum(
-                1 for cell in cells
-                if cell.get_text(strip=True).lower() in self._LANGUAGE_NAV_LABELS
-            )
+            nav_count = sum(1 for cell in cells if cell.get_text(strip=True).lower() in self._LANGUAGE_NAV_LABELS)
             if len(cells) > 0 and nav_count / len(cells) >= 0.5:
                 table.decompose()
 
@@ -200,7 +208,4 @@ class HtmlTextExtractor:
         return bool(self._NAV_LINK_PATTERN.match(link_text.strip()))
 
     def _normalize_text(self, raw: str) -> str:
-        return (
-            re.sub(r"\n\s*\n+", "\n\n", re.sub(r" +", " ", re.sub(r"[\t\u000B\u000C\r]+", " ", raw)))
-            .strip()
-        )
+        return re.sub(r"\n\s*\n+", "\n\n", re.sub(r" +", " ", re.sub(r"[\t\u000B\u000C\r]+", " ", raw))).strip()

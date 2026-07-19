@@ -7,7 +7,6 @@ Kannada, Malayalam, Latin/IAST) using the indic-transliteration library.
 from __future__ import annotations
 
 import logging
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +50,7 @@ class Transliterator:
         text: str,
         from_script: str,
         to_script: str,
-    ) -> Optional[str]:
+    ) -> str | None:
         """Convert text from one script to another.
 
         Args:
@@ -79,7 +78,7 @@ class Transliterator:
         try:
             from_const = getattr(self._sanscript, from_key)
             to_const = getattr(self._sanscript, to_key)
-            result = self._transliterate(text, from_const, to_const)
+            result: str = self._transliterate(text, from_const, to_const)
             return result
         except Exception:
             logger.exception(
@@ -88,7 +87,7 @@ class Transliterator:
             )
             return None
 
-    def detect_script(self, text: str) -> Optional[str]:
+    def detect_script(self, text: str) -> str | None:
         """Attempt to detect the script of the given text.
 
         Returns the script name (devanagari, tamil, etc.) or None.

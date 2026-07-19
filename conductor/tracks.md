@@ -1,7 +1,7 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.7.0 |
+| **Version** | 1.8.0 |
 | **Last Updated** | 2026-07-19 |
 | **Author** | Sangeetha Grantha Team |
 
@@ -129,7 +129,7 @@
 | [TRACK-123](./tracks/TRACK-123-testcontainers-2.x-upgrade.md) | Dependency Upgrades Batch 3b — Testcontainers 2.x | Completed |
 | [TRACK-124](./tracks/TRACK-124-google-genai-2.x-upgrade.md) | Dependency Upgrades Batch 3c — google-genai 2.x (Python Worker) | Completed |
 | [TRACK-125](./tracks/TRACK-125-documentation-validation-and-repair.md) | Documentation Validation & Repair | Completed |
-| [TRACK-126](./tracks/TRACK-126-python-worker-quality-gates.md) | Python Worker Quality Gates — Zero ruff/mypy + CI Enforcement | Not Started |
+| [TRACK-126](./tracks/TRACK-126-python-worker-quality-gates.md) | Python Worker Quality Gates — Zero ruff/mypy + CI Enforcement | Completed |
 | [TRACK-127](./tracks/TRACK-127-worker-script-relocation.md) | Relocate One-Off Operational Scripts Out of the Worker Package | Not Started |
 | [TRACK-128](./tracks/TRACK-128-gemini-enricher-hardening.md) | Gemini Enricher Hardening — Typed Errors, SDK-Native Parsing, Batch Safety | Not Started |
 | [TRACK-129](./tracks/TRACK-129-worker-resource-management.md) | Worker Resource Management — fitz Context Managers, Single-Open OCR, Shared HTTP Client | Not Started |

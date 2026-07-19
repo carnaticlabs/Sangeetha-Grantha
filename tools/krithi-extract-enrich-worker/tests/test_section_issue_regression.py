@@ -19,7 +19,7 @@ import pytest
 
 from src.diacritic_normalizer import normalize_garbled_diacritics
 from src.html_extractor import HtmlTextExtractor
-from src.structure_parser import StructureParser, SectionType
+from src.structure_parser import StructureParser
 
 FIXTURE_DIR = Path(__file__).parent / "fixtures" / "html"
 
@@ -33,10 +33,7 @@ class _ParsedFixture:
         parser = StructureParser()
         result = parser.parse(normalized)
         self.sections = [s.section_type.value for s in result.sections]
-        self.variants = {
-            v.language: [s.section_type.value for s in v.sections]
-            for v in result.lyric_variants
-        }
+        self.variants = {v.language: [s.section_type.value for s in v.sections] for v in result.lyric_variants}
 
 
 def _extract_and_parse(html_path: Path) -> dict[str, list[str]]:
@@ -72,9 +69,7 @@ class TestIndicSingleLetterFalsePositive:
         """Every language variant in the fixture must have exactly 3 sections."""
         variants = _extract_and_parse(FIXTURE_DIR / "indic_single_letter_false_positive.html")
         for lang, sections in variants.items():
-            assert len(sections) == 3, (
-                f"{lang} has {len(sections)} sections {sections}, expected 3"
-            )
+            assert len(sections) == 3, f"{lang} has {len(sections)} sections {sections}, expected 3"
 
 
 class TestIndicCharanamFalsePositive:
@@ -93,60 +88,70 @@ class TestIndicCharanamFalsePositive:
         """Every language variant in the fixture must have exactly 3 sections."""
         variants = _extract_and_parse(FIXTURE_DIR / "indic_charanam_false_positive.html")
         for lang, sections in variants.items():
-            assert len(sections) == 3, (
-                f"{lang} has {len(sections)} sections {sections}, expected 3"
-            )
+            assert len(sections) == 3, f"{lang} has {len(sections)} sections {sections}, expected 3"
 
 
 class TestSingleLetterAbbreviationsStillWork:
     """Legitimate single-letter abbreviation headers must still be detected."""
 
-    @pytest.mark.parametrize("header,expected", [
-        ("P", "PALLAVI"),
-        ("A", "ANUPALLAVI"),
-        ("C", "CHARANAM"),
-        ("P.", "PALLAVI"),
-        ("A:", "ANUPALLAVI"),
-        ("C -", "CHARANAM"),
-    ])
+    @pytest.mark.parametrize(
+        "header,expected",
+        [
+            ("P", "PALLAVI"),
+            ("A", "ANUPALLAVI"),
+            ("C", "CHARANAM"),
+            ("P.", "PALLAVI"),
+            ("A:", "ANUPALLAVI"),
+            ("C -", "CHARANAM"),
+        ],
+    )
     def test_latin_abbreviations(self, header: str, expected: str) -> None:
         parser = StructureParser()
         match = parser._detect_section_header(header)
         assert match is not None, f"'{header}' should be detected as {expected}"
         assert match.label == expected
 
-    @pytest.mark.parametrize("header,expected", [
-        ("ப", "PALLAVI"),
-        ("அ", "ANUPALLAVI"),
-        ("ச", "CHARANAM"),
-        ("ப.", "PALLAVI"),
-        ("அ:", "ANUPALLAVI"),
-    ])
+    @pytest.mark.parametrize(
+        "header,expected",
+        [
+            ("ப", "PALLAVI"),
+            ("அ", "ANUPALLAVI"),
+            ("ச", "CHARANAM"),
+            ("ப.", "PALLAVI"),
+            ("அ:", "ANUPALLAVI"),
+        ],
+    )
     def test_tamil_abbreviations(self, header: str, expected: str) -> None:
         parser = StructureParser()
         match = parser._detect_section_header(header)
         assert match is not None, f"'{header}' should be detected as {expected}"
         assert match.label == expected
 
-    @pytest.mark.parametrize("header,expected", [
-        ("ప", "PALLAVI"),
-        ("అ", "ANUPALLAVI"),
-        ("చ", "CHARANAM"),
-    ])
+    @pytest.mark.parametrize(
+        "header,expected",
+        [
+            ("ప", "PALLAVI"),
+            ("అ", "ANUPALLAVI"),
+            ("చ", "CHARANAM"),
+        ],
+    )
     def test_telugu_abbreviations(self, header: str, expected: str) -> None:
         parser = StructureParser()
         match = parser._detect_section_header(header)
         assert match is not None, f"'{header}' should be detected as {expected}"
         assert match.label == expected
 
-    @pytest.mark.parametrize("lyric_line", [
-        "ப 4 ரதாக் 3 ரஜ: கௌஸி 1 க யாக 3 ரக்ஷக:",
-        "அப 4 யாம்பா 3 ஜக 3 த 3 ம்பா 3 ரக்ஷது",
-        "ப 4 க்த நாக 3 லிங்க 3 பரிபாலினீ",
-        "భరతాగ్రజః కౌశిక యాగ రక్షకః",
-        "P followed by actual content should not match",
-        "A long line starting with A letter",
-    ])
+    @pytest.mark.parametrize(
+        "lyric_line",
+        [
+            "ப 4 ரதாக் 3 ரஜ: கௌஸி 1 க யாக 3 ரக்ஷக:",
+            "அப 4 யாம்பா 3 ஜக 3 த 3 ம்பா 3 ரக்ஷது",
+            "ப 4 க்த நாக 3 லிங்க 3 பரிபாலினீ",
+            "భరతాగ్రజః కౌశిక యాగ రక్షకః",
+            "P followed by actual content should not match",
+            "A long line starting with A letter",
+        ],
+    )
     def test_lyric_lines_not_detected_as_headers(self, lyric_line: str) -> None:
         """Lines with content after the initial letter must NOT match."""
         parser = StructureParser()

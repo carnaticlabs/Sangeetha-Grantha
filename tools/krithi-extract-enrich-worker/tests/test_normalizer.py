@@ -2,7 +2,6 @@
 
 from src.normalizer import normalize_for_matching, normalize_garbled_diacritics
 
-
 TITLE_PAIRS = [
     # Required examples from request.
     ("akhilandasvari raksa mam", "akhilandesvari raksa mam", True),
@@ -85,5 +84,4 @@ def test_transliteration_collapse_order_longest_match_first() -> None:
 
 
 def test_garbled_diacritic_cleanup_is_available() -> None:
-    assert normalize_garbled_diacritics("r\u00AFaga \u02D9m") == "rāgaṁ"
-
+    assert normalize_garbled_diacritics("r\u00afaga \u02d9m") == "rāgaṁ"

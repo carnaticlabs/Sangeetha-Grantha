@@ -9,14 +9,17 @@ Usage:
     DATABASE_URL="postgresql://postgres:postgres@localhost:5432/sangita_grantha" \
     PYTHONPATH=. mise exec -- python -m src.repair_comprehensive
 """
+
 from __future__ import annotations
 
 import logging
 import os
+from typing import Any
 
 import psycopg
 
-from .structure_parser import StructureParser, SectionType
+from .schema import SectionType
+from .structure_parser import StructureParser
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
@@ -54,18 +57,21 @@ def main() -> None:
 
         for krithi_id, title in zero_section_krithis:
             # Get all lyric variants
-            cur.execute("""
+            cur.execute(
+                """
                 SELECT id, language, script, lyrics
                 FROM krithi_lyric_variants
                 WHERE krithi_id = %s
                 ORDER BY language
-            """, (krithi_id,))
+            """,
+                (krithi_id,),
+            )
             variants = cur.fetchall()
 
             # Try English variant first for canonical structure (Rule 2)
             canonical_sections = None
             en_lyrics = None
-            for vid, lang, script, lyrics in variants:
+            for _vid, lang, _script, lyrics in variants:
                 if lang == "en" and lyrics and lyrics.strip():
                     en_lyrics = lyrics
                     result = parser.parse(lyrics)
@@ -75,7 +81,7 @@ def main() -> None:
 
             # If English failed, try any variant
             if not canonical_sections:
-                for vid, lang, script, lyrics in variants:
+                for _vid, _lang, _script, lyrics in variants:
                     if lyrics and lyrics.strip():
                         result = parser.parse(lyrics)
                         if result.sections and result.sections[0].section_type != SectionType.OTHER:
@@ -88,17 +94,15 @@ def main() -> None:
             if not canonical_sections:
                 best_lyrics = en_lyrics
                 if not best_lyrics:
-                    for vid, lang, script, lyrics in variants:
+                    for _vid, _lang, _script, lyrics in variants:
                         if lyrics and lyrics.strip():
                             best_lyrics = lyrics
                             break
 
                 if best_lyrics:
-                    canonical_sections = [
-                        parser.parse("").__class__  # dummy — just construct manually
-                    ]
                     # Create a single PALLAVI section
                     from .structure_parser import DetectedSection
+
                     canonical_sections = [
                         DetectedSection(
                             section_type=SectionType.PALLAVI,
@@ -115,10 +119,7 @@ def main() -> None:
                 continue
 
             # Filter out MKS from canonical (Rule 1)
-            canonical_sections = [
-                s for s in canonical_sections
-                if s.section_type != SectionType.MADHYAMA_KALA
-            ]
+            canonical_sections = [s for s in canonical_sections if s.section_type != SectionType.MADHYAMA_KALA]
 
             if not canonical_sections:
                 logger.warning("  [%s] Only MKS sections found — skipping", title)
@@ -127,17 +128,22 @@ def main() -> None:
             # Create krithi_sections
             section_id_map = {}  # order -> section_id
             for section in canonical_sections:
-                cur.execute("""
+                cur.execute(
+                    """
                     INSERT INTO krithi_sections (krithi_id, section_type, order_index, label)
                     VALUES (%s, %s, %s, %s)
                     RETURNING id
-                """, (krithi_id, section.section_type.name, section.order, section.label))
-                section_id = cur.fetchone()[0]
+                """,
+                    (krithi_id, section.section_type.name, section.order, section.label),
+                )
+                section_row = cur.fetchone()
+                assert section_row is not None
+                section_id = section_row[0]
                 section_id_map[section.order] = (section_id, section.section_type.name)
                 sections_created += 1
 
             # Create krithi_lyric_sections for each variant
-            for variant_id, language, script, lyrics in variants:
+            for variant_id, _language, _script, lyrics in variants:
                 if not lyrics or not lyrics.strip():
                     continue
 
@@ -149,7 +155,7 @@ def main() -> None:
                         if s.section_type != SectionType.MADHYAMA_KALA:
                             type_texts.setdefault(s.section_type.name, []).append(s.text)
 
-                for order, (section_id, section_type) in section_id_map.items():
+                for _order, (section_id, section_type) in section_id_map.items():
                     texts = type_texts.get(section_type, [])
                     if texts:
                         text = texts.pop(0)
@@ -163,9 +169,20 @@ def main() -> None:
                         past_metadata = False
                         for line in lines:
                             stripped = line.strip()
-                            if not past_metadata and stripped and (
-                                " - " in stripped and ("rāg" in stripped.lower() or "raga" in stripped.lower() or "tāḷ" in stripped.lower() or "tala" in stripped.lower())
-                                or stripped.startswith("(") and stripped.endswith(")")
+                            if (
+                                not past_metadata
+                                and stripped
+                                and (
+                                    " - " in stripped
+                                    and (
+                                        "rāg" in stripped.lower()
+                                        or "raga" in stripped.lower()
+                                        or "tāḷ" in stripped.lower()
+                                        or "tala" in stripped.lower()
+                                    )
+                                    or stripped.startswith("(")
+                                    and stripped.endswith(")")
+                                )
                             ):
                                 continue
                             if stripped:
@@ -176,17 +193,19 @@ def main() -> None:
                         continue
 
                     if text.strip():
-                        cur.execute("""
+                        cur.execute(
+                            """
                             INSERT INTO krithi_lyric_sections
                                 (lyric_variant_id, section_id, text, normalized_text)
                             VALUES (%s, %s, %s, %s)
-                        """, (variant_id, section_id, text, text.lower()))
+                        """,
+                            (variant_id, section_id, text, text.lower()),
+                        )
                         lyric_sections_created += 1
 
             logger.info("  [%s] Created %d sections", title, len(canonical_sections))
 
-        logger.info("Phase 1 done: %d sections, %d lyric_sections created",
-                     sections_created, lyric_sections_created)
+        logger.info("Phase 1 done: %d sections, %d lyric_sections created", sections_created, lyric_sections_created)
 
         # =====================================================
         # PHASE 2: Fix 3 inconsistent krithis
@@ -202,13 +221,16 @@ def main() -> None:
             ORDER BY ks.order_index
         """)
         brhannayaki_sections = cur.fetchall()
-        for section_id, section_type, order_index in brhannayaki_sections:
+        for section_id, section_type, _order_index in brhannayaki_sections:
             if section_type == "ANUPALLAVI":
-                cur.execute("""
+                cur.execute(
+                    """
                     UPDATE krithi_sections
                     SET section_type = 'SAMASHTI_CHARANAM', label = 'Samashti Charanam'
                     WHERE id = %s
-                """, (section_id,))
+                """,
+                    (section_id,),
+                )
                 logger.info("  [bRhannAyaki] Fixed canonical: ANUPALLAVI -> SAMASHTI_CHARANAM")
 
         # Now re-parse and fill lyric_sections for bRhannAyaki
@@ -284,13 +306,15 @@ def main() -> None:
                 SELECT 1 FROM krithi_sections ks WHERE ks.krithi_id = k.id
             )
         """)
-        zero = cur.fetchone()[0]
+        zero_row = cur.fetchone()
+        zero = zero_row[0] if zero_row else 0
         logger.info("Verification: %d krithis with zero sections remaining", zero)
 
         cur.execute("""
             SELECT COUNT(*) FROM krithi_sections WHERE section_type = 'MADHYAMA_KALA'
         """)
-        mks = cur.fetchone()[0]
+        mks_row = cur.fetchone()
+        mks = mks_row[0] if mks_row else 0
         logger.info("Verification: %d MKS top-level sections remaining", mks)
 
     except Exception:
@@ -300,27 +324,33 @@ def main() -> None:
         conn.close()
 
 
-def _reparse_and_fill(cur, parser: StructureParser, krithi_id, title: str) -> bool:
+def _reparse_and_fill(cur: psycopg.Cursor[Any], parser: StructureParser, krithi_id: str, title: str) -> bool:
     """Re-parse lyrics for a krithi and update/insert lyric_sections."""
-    cur.execute("""
+    cur.execute(
+        """
         SELECT id, section_type, order_index
         FROM krithi_sections
         WHERE krithi_id = %s
         ORDER BY order_index
-    """, (krithi_id,))
+    """,
+        (krithi_id,),
+    )
     canonical_sections = cur.fetchall()
     if not canonical_sections:
         return False
 
-    cur.execute("""
+    cur.execute(
+        """
         SELECT id, language, script, lyrics
         FROM krithi_lyric_variants
         WHERE krithi_id = %s
-    """, (krithi_id,))
+    """,
+        (krithi_id,),
+    )
     variants = cur.fetchall()
 
     changed = False
-    for variant_id, language, script, lyrics in variants:
+    for variant_id, _language, _script, lyrics in variants:
         if not lyrics or not lyrics.strip():
             continue
 
@@ -334,31 +364,40 @@ def _reparse_and_fill(cur, parser: StructureParser, krithi_id, title: str) -> bo
             if section.section_type != SectionType.MADHYAMA_KALA:
                 type_texts.setdefault(section.section_type.name, []).append(section.text)
 
-        for section_id, section_type, order_index in canonical_sections:
+        for section_id, section_type, _order_index in canonical_sections:
             texts = type_texts.get(section_type, [])
             if not texts:
                 continue
 
             new_text = texts.pop(0)
 
-            cur.execute("""
+            cur.execute(
+                """
                 SELECT id, text FROM krithi_lyric_sections
                 WHERE lyric_variant_id = %s AND section_id = %s
-            """, (variant_id, section_id))
+            """,
+                (variant_id, section_id),
+            )
             row = cur.fetchone()
             if not row:
-                cur.execute("""
+                cur.execute(
+                    """
                     INSERT INTO krithi_lyric_sections
                         (lyric_variant_id, section_id, text, normalized_text)
                     VALUES (%s, %s, %s, %s)
-                """, (variant_id, section_id, new_text, new_text.lower()))
+                """,
+                    (variant_id, section_id, new_text, new_text.lower()),
+                )
                 changed = True
             elif row[1] != new_text:
-                cur.execute("""
+                cur.execute(
+                    """
                     UPDATE krithi_lyric_sections
                     SET text = %s, normalized_text = %s
                     WHERE id = %s
-                """, (new_text, new_text.lower(), row[0]))
+                """,
+                    (new_text, new_text.lower(), row[0]),
+                )
                 changed = True
 
     return changed

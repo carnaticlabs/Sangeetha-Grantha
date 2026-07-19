@@ -21,7 +21,6 @@ import logging
 import os
 import re
 import sys
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -55,6 +54,7 @@ SOURCE_BLOG_MAP = {
 
 # ─── Output JSON schema (matches user's requested format) ───────────────────
 
+
 def build_output_entry(
     krithi_name: str,
     raga: str,
@@ -67,7 +67,7 @@ def build_output_entry(
     """Parse a single saved HTML file and produce the output JSON entry."""
 
     try:
-        with open(html_path, "r", encoding="utf-8") as f:
+        with open(html_path, encoding="utf-8") as f:
             html_content = f.read()
     except Exception as e:
         return _failure_entry(krithi_name, raga, composer, source_url, f"Failed to read HTML: {e}")
@@ -129,17 +129,21 @@ def build_output_entry(
             # Strip MKS marker from main text for clean output
             if "[Madhyama Kala Sahitya]" in section_text:
                 section_text = section_text.split("[Madhyama Kala Sahitya]")[0].strip()
-            variant_sections.append({
-                "section_type": vs.section_type.value,
-                "order_index": vs.order,
-                "text": section_text,
-            })
+            variant_sections.append(
+                {
+                    "section_type": vs.section_type.value,
+                    "order_index": vs.order,
+                    "text": section_text,
+                }
+            )
         if variant_sections:
-            lyric_variants_out.append({
-                "language": variant.language,
-                "script": script_display_names.get(variant.script, variant.script),
-                "sections": variant_sections,
-            })
+            lyric_variants_out.append(
+                {
+                    "language": variant.language,
+                    "script": script_display_names.get(variant.script, variant.script),
+                    "sections": variant_sections,
+                }
+            )
 
     # Determine extraction status
     has_pallavi = any(s["section_type"] == "PALLAVI" for s in sections_out)
@@ -169,9 +173,7 @@ def build_output_entry(
     }
 
 
-def _failure_entry(
-    krithi_name: str, raga: str, composer: str, source_url: str, reason: str
-) -> dict[str, Any]:
+def _failure_entry(krithi_name: str, raga: str, composer: str, source_url: str, reason: str) -> dict[str, Any]:
     return {
         "krithi_name": krithi_name,
         "raga": raga,
@@ -188,7 +190,7 @@ def safe_filename(url: str) -> str:
     """Convert a URL to a filesystem-safe filename."""
     # Take the path portion and clean it
     path = url.split("blogspot.com/")[-1] if "blogspot.com/" in url else url
-    safe = re.sub(r'[^\w\-.]', '_', path)
+    safe = re.sub(r"[^\w\-.]", "_", path)
     return safe[:200] + ".html"
 
 
@@ -204,7 +206,7 @@ def run_batch(
     structure_parser = StructureParser()
 
     # Read CSV
-    with open(csv_path, "r", encoding="utf-8") as f:
+    with open(csv_path, encoding="utf-8") as f:
         reader = csv.DictReader(f)
         rows = list(reader)
 
@@ -249,11 +251,13 @@ def run_batch(
             partial_count += 1
         else:
             fail_count += 1
-            failures.append({
-                "krithi_name": krithi_name,
-                "url": url,
-                "reason": entry.get("extraction_notes", "unknown"),
-            })
+            failures.append(
+                {
+                    "krithi_name": krithi_name,
+                    "url": url,
+                    "reason": entry.get("extraction_notes", "unknown"),
+                }
+            )
 
         logger.info(
             "[%s] %s — %s",
@@ -285,7 +289,7 @@ def run_batch(
     return summary
 
 
-def main():
+def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
     parser = argparse.ArgumentParser(description="Browser-assisted batch extraction")

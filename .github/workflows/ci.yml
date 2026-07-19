@@ -107,7 +107,7 @@ jobs:
         run: bun run build
 
   worker:
-    name: Worker pytest
+    name: Worker lint + typecheck + pytest
     runs-on: ubuntu-latest
     # TRACK-113: integration tests pull postgres + flyway images on a cold runner
     timeout-minutes: 15
@@ -121,5 +121,13 @@ jobs:
         uses: astral-sh/setup-uv@v8.3.2
       - name: Sync deps (incl. dev extra for pytest)
         run: uv sync --frozen --extra dev
+      # TRACK-126: the worker is at zero ruff/mypy errors. These three steps
+      # keep it there — any regression fails the build.
+      - name: Ruff lint
+        run: uv run ruff check .
+      - name: Ruff format
+        run: uv run ruff format --check .
+      - name: Mypy (strict)
+        run: uv run mypy .
       - name: Pytest
         run: uv run pytest

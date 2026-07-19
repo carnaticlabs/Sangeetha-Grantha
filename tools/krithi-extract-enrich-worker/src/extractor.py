@@ -11,7 +11,6 @@ import hashlib
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
 
 import fitz  # PyMuPDF
 
@@ -73,7 +72,7 @@ class PdfExtractor:
     def extract_document(
         self,
         pdf_path: str | Path,
-        page_range: Optional[tuple[int, int]] = None,
+        page_range: tuple[int, int] | None = None,
     ) -> DocumentContent:
         """Extract text from a PDF document.
 
@@ -206,7 +205,7 @@ class PdfExtractor:
             text = page.get_text().strip()
             if len(text) > 50:
                 # Count replacement characters - sign of broken encoding
-                garbage_count = text.count("\uFFFD")
+                garbage_count = text.count("\ufffd")
                 if garbage_count < len(text) * 0.1:  # Threshold: 10% garbage
                     text_pages += 1
 

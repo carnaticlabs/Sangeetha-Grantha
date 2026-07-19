@@ -50,6 +50,7 @@ dev = [
     "testcontainers>=4.13.0",
     "jsonschema>=4.21.0",       # canonical-extraction-schema.json contract checks
     "respx>=0.22.0",            # HTTP-level stubbing of the Gemini API (httpx)
+    "types-jsonschema>=4.26.0.20260518",
 ]
 
 [project.scripts]
@@ -77,3 +78,46 @@ asyncio_mode = "auto"
 [tool.mypy]
 python_version = "3.14"
 strict = true
+plugins = ["pydantic.mypy"]
+# scripts/ and tests/ carry no __init__.py, so without these mypy names their
+# modules bare (`section_repair`) and the overrides below never match.
+mypy_path = "."
+explicit_package_bases = true
+namespace_packages = true
+
+# Third-party packages that ship no stubs and no py.typed marker.
+[[tool.mypy.overrides]]
+module = [
+    "fitz",
+    "fitz.*",
+    "pytesseract",
+    "pytesseract.*",
+    "indic_transliteration",
+    "indic_transliteration.*",
+    "testcontainers",
+    "testcontainers.*",
+]
+ignore_missing_imports = true
+
+# The one-off scripts import each other as siblings via runtime sys.path
+# insertion, which mypy cannot follow. Relocating them is TRACK-127; until
+# then these bare module names are unresolvable by design.
+[[tool.mypy.overrides]]
+module = [
+    "section_triage",
+    "section_repair",
+]
+ignore_missing_imports = true
+
+# src/ stays fully strict. tests/ and scripts/ relax only what those layers
+# genuinely need: test/CLI functions are self-documenting and annotating every
+# fixture and argparse helper buys nothing (TRACK-126).
+[[tool.mypy.overrides]]
+module = ["tests.*", "scripts.*"]
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+disallow_untyped_decorators = false
+# Follows from the above: untyped local helpers stay callable.
+disallow_untyped_calls = false
+# These layers read psycopg rows and JSON, which are Any by construction.
+warn_return_any = false

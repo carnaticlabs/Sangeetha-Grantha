@@ -163,13 +163,9 @@ More text
 
 
 def test_madhyama_kala_detection() -> None:
-
-
     """Detect Madhyama Kala sections in various formats."""
 
-
     parser = StructureParser()
-
 
     text = """Pallavi
 
@@ -194,12 +190,7 @@ Speedy lyrics here
 
 """
 
-
     sections = parser.parse_sections(text)
-
-
-
-
 
     # MKS is demoted into the preceding Charanam (Rule 1: MKS is never top-level)
     assert len(sections) == 2
@@ -256,20 +247,14 @@ def test_fixture_kotlin_parity_multiscript() -> None:
     parser = StructureParser()
     fixture_dir = Path(__file__).parent / "fixtures" / "structure_parser"
     text = (fixture_dir / "kotlin_parity_multiscript.txt").read_text(encoding="utf-8")
-    expected = json.loads(
-        (fixture_dir / "kotlin_parity_multiscript.expected.json").read_text(
-            encoding="utf-8"
-        )
-    )
+    expected = json.loads((fixture_dir / "kotlin_parity_multiscript.expected.json").read_text(encoding="utf-8"))
 
     result = parser.parse(text)
 
     assert [section.section_type.value for section in result.sections] == expected["sections"]
     assert [variant.script for variant in result.lyric_variants] == expected["variantScripts"]
     assert [variant.language for variant in result.lyric_variants] == expected["variantLanguages"]
-    assert [boundary.label for boundary in result.metadata_boundaries] == expected[
-        "metadataBoundaryLabels"
-    ]
+    assert [boundary.label for boundary in result.metadata_boundaries] == expected["metadataBoundaryLabels"]
     assert all(
         "explanatory prose" not in section.text.lower()
         for variant in result.lyric_variants
@@ -282,9 +267,7 @@ def test_fixture_dikshitar_multi_variant() -> None:
     parser = StructureParser()
     fixture_dir = Path(__file__).parent / "fixtures" / "structure_parser"
     text = (fixture_dir / "dikshitar_multi_variant.txt").read_text(encoding="utf-8")
-    expected = json.loads(
-        (fixture_dir / "dikshitar_multi_variant.expected.json").read_text(encoding="utf-8")
-    )
+    expected = json.loads((fixture_dir / "dikshitar_multi_variant.expected.json").read_text(encoding="utf-8"))
 
     result = parser.parse(text)
 
@@ -294,9 +277,7 @@ def test_fixture_dikshitar_multi_variant() -> None:
     assert [b.label for b in result.metadata_boundaries] == expected["metadataBoundaryLabels"]
     # No "Back" navigation text in any variant
     assert all(
-        "back" != section.text.strip().lower()
-        for variant in result.lyric_variants
-        for section in variant.sections
+        "back" != section.text.strip().lower() for variant in result.lyric_variants for section in variant.sections
     )
     # No Word Division blocks creating duplicate variants
     word_div_variants = [v for v in result.lyric_variants if v.script == "word_division"]
@@ -308,9 +289,7 @@ def test_fixture_tyagaraja_multi_variant() -> None:
     parser = StructureParser()
     fixture_dir = Path(__file__).parent / "fixtures" / "structure_parser"
     text = (fixture_dir / "tyagaraja_multi_variant.txt").read_text(encoding="utf-8")
-    expected = json.loads(
-        (fixture_dir / "tyagaraja_multi_variant.expected.json").read_text(encoding="utf-8")
-    )
+    expected = json.loads((fixture_dir / "tyagaraja_multi_variant.expected.json").read_text(encoding="utf-8"))
 
     result = parser.parse(text)
 
@@ -325,9 +304,7 @@ def test_fixture_syama_sastri_numbered() -> None:
     parser = StructureParser()
     fixture_dir = Path(__file__).parent / "fixtures" / "structure_parser"
     text = (fixture_dir / "syama_sastri_numbered.txt").read_text(encoding="utf-8")
-    expected = json.loads(
-        (fixture_dir / "syama_sastri_numbered.expected.json").read_text(encoding="utf-8")
-    )
+    expected = json.loads((fixture_dir / "syama_sastri_numbered.expected.json").read_text(encoding="utf-8"))
 
     result = parser.parse(text)
 
@@ -463,20 +440,14 @@ def test_fixture_kotlin_parity_tamil_headers() -> None:
     parser = StructureParser()
     fixture_dir = Path(__file__).parent / "fixtures" / "structure_parser"
     text = (fixture_dir / "kotlin_parity_tamil_headers.txt").read_text(encoding="utf-8")
-    expected = json.loads(
-        (fixture_dir / "kotlin_parity_tamil_headers.expected.json").read_text(
-            encoding="utf-8"
-        )
-    )
+    expected = json.loads((fixture_dir / "kotlin_parity_tamil_headers.expected.json").read_text(encoding="utf-8"))
 
     result = parser.parse(text)
 
     assert [section.section_type.value for section in result.sections] == expected["sections"]
     assert [variant.script for variant in result.lyric_variants] == expected["variantScripts"]
     assert [variant.language for variant in result.lyric_variants] == expected["variantLanguages"]
-    assert [boundary.label for boundary in result.metadata_boundaries] == expected[
-        "metadataBoundaryLabels"
-    ]
+    assert [boundary.label for boundary in result.metadata_boundaries] == expected["metadataBoundaryLabels"]
 
 
 def test_fixture_unlabeled_leading_section() -> None:
@@ -489,11 +460,7 @@ def test_fixture_unlabeled_leading_section() -> None:
     parser = StructureParser()
     fixture_dir = Path(__file__).parent / "fixtures" / "structure_parser"
     text = (fixture_dir / "unlabeled_leading_section.txt").read_text(encoding="utf-8")
-    expected = json.loads(
-        (fixture_dir / "unlabeled_leading_section.expected.json").read_text(
-            encoding="utf-8"
-        )
-    )
+    expected = json.loads((fixture_dir / "unlabeled_leading_section.expected.json").read_text(encoding="utf-8"))
 
     result = parser.parse(text)
 
@@ -625,11 +592,7 @@ def test_ragamalika_multi_variant_pallavi_not_truncated() -> None:
     parser = StructureParser()
     fixture_dir = Path(__file__).parent / "fixtures" / "structure_parser"
     text = (fixture_dir / "ragamalika_multi_variant.txt").read_text(encoding="utf-8")
-    expected = json.loads(
-        (fixture_dir / "ragamalika_multi_variant.expected.json").read_text(
-            encoding="utf-8"
-        )
-    )
+    expected = json.loads((fixture_dir / "ragamalika_multi_variant.expected.json").read_text(encoding="utf-8"))
 
     result = parser.parse(text)
 
@@ -638,18 +601,12 @@ def test_ragamalika_multi_variant_pallavi_not_truncated() -> None:
     assert [v.language for v in result.lyric_variants] == expected["variantLanguages"]
 
     for variant in result.lyric_variants:
-        assert len(variant.sections) == 3, (
-            f"{variant.script} variant must have 3 sections, got {len(variant.sections)}"
-        )
+        assert len(variant.sections) == 3, f"{variant.script} variant must have 3 sections, got {len(variant.sections)}"
         pallavi = variant.sections[0]
         assert pallavi.section_type == SectionType.PALLAVI
 
-        assert "1." in pallavi.text, (
-            f"{variant.script} Pallavi missing raga 1 content (got {len(pallavi.text)} chars)"
-        )
-        assert "2." in pallavi.text, (
-            f"{variant.script} Pallavi missing raga 2 content (got {len(pallavi.text)} chars)"
-        )
+        assert "1." in pallavi.text, f"{variant.script} Pallavi missing raga 1 content (got {len(pallavi.text)} chars)"
+        assert "2." in pallavi.text, f"{variant.script} Pallavi missing raga 2 content (got {len(pallavi.text)} chars)"
 
 
 # =========================================================================
@@ -755,18 +712,12 @@ def test_inline_labels_no_false_positive_indic_script() -> None:
     """
     parser = StructureParser()
     text = (
-        "pallavi\n"
-        "ஸ்ரீ ராம சந்த் 3 ரோ ரக்ஷது மாம்\n"
-        "அனுபல்லவி\n"
-        "ப 4 ரதாக் 3 ரஜ: கௌஸி 1 க யாக 3 ரக்ஷக:\n"
-        "சரணம்\n"
-        "மிதி 2 லா நக 3 ர ப்ரவேஸ 1\n"
+        "pallavi\nஸ்ரீ ராம சந்த் 3 ரோ ரக்ஷது மாம்\nஅனுபல்லவி\nப 4 ரதாக் 3 ரஜ: கௌஸி 1 க யாக 3 ரக்ஷக:\nசரணம்\nமிதி 2 லா நக 3 ர ப்ரவேஸ 1\n"
     )
     result = parser.parse(text)
     types = [s.section_type.value for s in result.sections]
     assert types == ["PALLAVI", "ANUPALLAVI", "CHARANAM"], (
-        f"Expected 3 sections [P, A, C] but got {types} — "
-        "Indic text falsely matched inline label pattern"
+        f"Expected 3 sections [P, A, C] but got {types} — Indic text falsely matched inline label pattern"
     )
 
 
@@ -778,18 +729,11 @@ def test_inline_labels_no_false_positive_continuation_line() -> None:
     not section labels, when full-word headers (Pallavi/Charanam) are present.
     """
     parser = StructureParser()
-    text = (
-        "Pallavi\n"
-        "O jagadamba nanu brova\n"
-        "A jagadamba sadA brova rAvu\n"
-        "Charanam\n"
-        "sAra sAra guNa vilAsini\n"
-    )
+    text = "Pallavi\nO jagadamba nanu brova\nA jagadamba sadA brova rAvu\nCharanam\nsAra sAra guNa vilAsini\n"
     sections = parser.parse_sections(text)
     # Both lyric lines belong to Pallavi (A is a continuation, not a label)
     assert len(sections) == 2, (
-        f"Expected 2 sections but got {len(sections)} — "
-        "'A jagadamba' was falsely split into a separate section"
+        f"Expected 2 sections but got {len(sections)} — 'A jagadamba' was falsely split into a separate section"
     )
     assert sections[0].section_type == SectionType.PALLAVI
     assert "jagadamba" in sections[0].text
@@ -827,15 +771,10 @@ def test_inline_pac_single_charanam() -> None:
 def test_inline_c_space_digit_format() -> None:
     """'C 1 vara giri...' — space between C and digit is tolerated."""
     parser = StructureParser()
-    text = (
-        "P varada rAja ninu kOri\n"
-        "A surulu munulu bhU-surulu\n"
-        "C 1 vara giri vaikuNThamaTa\n"
-    )
+    text = "P varada rAja ninu kOri\nA surulu munulu bhU-surulu\nC 1 vara giri vaikuNThamaTa\n"
     sections = parser.parse_sections(text)
     assert len(sections) == 3
     assert sections[0].section_type == SectionType.PALLAVI
     assert sections[1].section_type == SectionType.ANUPALLAVI
     assert sections[2].section_type == SectionType.CHARANAM
     assert sections[2].text.startswith("vara giri")
-

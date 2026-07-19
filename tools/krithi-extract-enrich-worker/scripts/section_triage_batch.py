@@ -1,5 +1,8 @@
 #!/usr/bin/env python
-"""Batch-triage every krithi listed in application_documentation/07-quality/results/section-issues-cleanup/flagged-krithis-for-review.md.
+"""Batch-triage every krithi listed in the flagged-review report.
+
+Report: application_documentation/07-quality/results/section-issues-cleanup/
+flagged-krithis-for-review.md
 
 Parses the flagged-review markdown, deduplicates krithi IDs (recording the FIRST
 category each appears under), runs section_triage.triage() on each, and prints a
@@ -7,9 +10,11 @@ classification summary — overall and per source category. Writes a JSON report
 --out for downstream repair tooling.
 
 Usage:
-    python scripts/section_triage_batch.py --flagged application_documentation/07-quality/results/section-issues-cleanup/flagged-krithis-for-review.md \
+    python scripts/section_triage_batch.py \
+        --flagged <path-to>/flagged-krithis-for-review.md \
         --out .triage-cache/triage_report.json
 """
+
 from __future__ import annotations
 
 import argparse
@@ -26,6 +31,7 @@ sys.path.insert(0, str(_WORKER_ROOT))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from section_triage import DB_URL, triage  # noqa: E402
+
 from src.html_extractor import HtmlTextExtractor  # noqa: E402
 from src.structure_parser import StructureParser  # noqa: E402
 
@@ -72,24 +78,28 @@ def main() -> int:
                 cls = "error"
                 res = None
                 print(f"  [{i}/{len(ids)}] {kid} ERROR {exc}", file=sys.stderr)
-            report.append({
-                "krithi_id": kid,
-                "category": cats[kid],
-                "title": res.title if res else "?",
-                "classification": cls,
-                "template_n": res.template_n if res else None,
-                "template_types": res.template_types if res else None,
-                "stored_counts": res.stored_counts if res else None,
-                "parsed": {l: {"n": p.n_sections, "types": p.types} for l, p in res.parsed.items()} if res else None,
-                "source_url": res.source_url if res else None,
-                "note": res.note if res else "",
-            })
+            report.append(
+                {
+                    "krithi_id": kid,
+                    "category": cats[kid],
+                    "title": res.title if res else "?",
+                    "classification": cls,
+                    "template_n": res.template_n if res else None,
+                    "template_types": res.template_types if res else None,
+                    "stored_counts": res.stored_counts if res else None,
+                    "parsed": {lang: {"n": p.n_sections, "types": p.types} for lang, p in res.parsed.items()}
+                    if res
+                    else None,
+                    "source_url": res.source_url if res else None,
+                    "note": res.note if res else "",
+                }
+            )
             if i % 10 == 0:
                 print(f"  …{i}/{len(ids)}", file=sys.stderr)
 
     # Summary
     overall = Counter(r["classification"] for r in report)
-    by_cat: dict[str, Counter] = defaultdict(Counter)
+    by_cat: dict[str, Counter[str]] = defaultdict(Counter)
     for r in report:
         by_cat[r["category"]][r["classification"]] += 1
 

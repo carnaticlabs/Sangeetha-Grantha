@@ -7,42 +7,42 @@ class TestNormalizeGarbledDiacritics:
     """Tests for normalize_garbled_diacritics()."""
 
     def test_raga_label(self) -> None:
-        assert normalize_garbled_diacritics("r\u00AFaga \u02D9m") == "rāgaṁ"
+        assert normalize_garbled_diacritics("r\u00afaga \u02d9m") == "rāgaṁ"
 
     def test_tala_label(self) -> None:
         # The dot in t¯al.a is consonant-dot (rule 8), now resolved to ḷ
-        assert normalize_garbled_diacritics("t\u00AFal.a \u02D9m") == "tāḷaṁ"
+        assert normalize_garbled_diacritics("t\u00afal.a \u02d9m") == "tāḷaṁ"
 
     def test_jujavanti(self) -> None:
-        assert normalize_garbled_diacritics("juj\u00AFavanti") == "jujāvanti"
+        assert normalize_garbled_diacritics("juj\u00afavanti") == "jujāvanti"
 
     def test_adi(self) -> None:
-        assert normalize_garbled_diacritics("\u00AFadi") == "ādi"
+        assert normalize_garbled_diacritics("\u00afadi") == "ādi"
 
     def test_misra_capu(self) -> None:
-        assert normalize_garbled_diacritics("mi\u00B4sra c\u00AFapu") == "miśra cāpu"
+        assert normalize_garbled_diacritics("mi\u00b4sra c\u00afapu") == "miśra cāpu"
 
     def test_nilambari(self) -> None:
-        assert normalize_garbled_diacritics("n\u00AFıl\u00AFambari") == "nīlāmbari"
+        assert normalize_garbled_diacritics("n\u00afıl\u00afambari") == "nīlāmbari"
 
     def test_rupakam(self) -> None:
-        assert normalize_garbled_diacritics("r\u00AFupakam") == "rūpakam"
+        assert normalize_garbled_diacritics("r\u00afupakam") == "rūpakam"
 
     def test_suddhasaveri(self) -> None:
-        assert normalize_garbled_diacritics("\u00B4suddhas\u00AFaveri") == "śuddhasāveri"
+        assert normalize_garbled_diacritics("\u00b4suddhas\u00afaveri") == "śuddhasāveri"
 
     def test_camaram(self) -> None:
-        assert normalize_garbled_diacritics("c\u00AFamaram") == "cāmaram"
+        assert normalize_garbled_diacritics("c\u00afamaram") == "cāmaram"
 
     def test_dot_above_n(self) -> None:
-        assert normalize_garbled_diacritics("sa\u02D9n") == "saṅ"
+        assert normalize_garbled_diacritics("sa\u02d9n") == "saṅ"
 
     def test_tilde_n(self) -> None:
-        assert normalize_garbled_diacritics("j\u02DCn\u00AFana") == "jñāna"
+        assert normalize_garbled_diacritics("j\u02dcn\u00afana") == "jñāna"
 
     def test_macron_with_space(self) -> None:
         """Macron separated from base char by whitespace."""
-        assert normalize_garbled_diacritics("r\u00AF aga") == "rāga"
+        assert normalize_garbled_diacritics("r\u00af aga") == "rāga"
 
     def test_no_garbled_chars(self) -> None:
         """Plain text passes through unchanged."""
@@ -57,10 +57,10 @@ class TestNormalizeGarbledDiacritics:
 
     def test_dotless_i_macron(self) -> None:
         """Dotless i (ı, U+0131) after macron → ī."""
-        assert normalize_garbled_diacritics("n\u00AFıla") == "nīla"
+        assert normalize_garbled_diacritics("n\u00afıla") == "nīla"
 
     def test_arabhi(self) -> None:
-        assert normalize_garbled_diacritics("\u00AFarabhi") == "ārabhi"
+        assert normalize_garbled_diacritics("\u00afarabhi") == "ārabhi"
 
     def test_gurjjari(self) -> None:
         """No garbled chars — passes through unchanged."""
@@ -71,31 +71,31 @@ class TestCleanupRagaTalaName:
     """Tests for cleanup_raga_tala_name()."""
 
     def test_jujavanti_with_mela(self) -> None:
-        assert cleanup_raga_tala_name("juj\u00AFavanti (28)") == "Jujāvanti"
+        assert cleanup_raga_tala_name("juj\u00afavanti (28)") == "Jujāvanti"
 
     def test_adi(self) -> None:
-        assert cleanup_raga_tala_name("\u00AFadi") == "Ādi"
+        assert cleanup_raga_tala_name("\u00afadi") == "Ādi"
 
     def test_arabhi_with_mela(self) -> None:
-        assert cleanup_raga_tala_name("\u00AFarabhi (29)") == "Ārabhi"
+        assert cleanup_raga_tala_name("\u00afarabhi (29)") == "Ārabhi"
 
     def test_suddhasaveri_with_mela(self) -> None:
-        assert cleanup_raga_tala_name("\u00B4suddhas\u00AFaveri (1)") == "Śuddhasāveri"
+        assert cleanup_raga_tala_name("\u00b4suddhas\u00afaveri (1)") == "Śuddhasāveri"
 
     def test_lalita_with_mela(self) -> None:
         assert cleanup_raga_tala_name("lalita (15)") == "Lalita"
 
     def test_misra_capu(self) -> None:
-        assert cleanup_raga_tala_name("mi\u00B4sra c\u00AFapu") == "Miśra Cāpu"
+        assert cleanup_raga_tala_name("mi\u00b4sra c\u00afapu") == "Miśra Cāpu"
 
     def test_nilambari_with_mela(self) -> None:
-        assert cleanup_raga_tala_name("n\u00AFıl\u00AFambari (29)") == "Nīlāmbari"
+        assert cleanup_raga_tala_name("n\u00afıl\u00afambari (29)") == "Nīlāmbari"
 
     def test_camaram_with_mela(self) -> None:
-        assert cleanup_raga_tala_name("c\u00AFamaram (56)") == "Cāmaram"
+        assert cleanup_raga_tala_name("c\u00afamaram (56)") == "Cāmaram"
 
     def test_rupakam(self) -> None:
-        assert cleanup_raga_tala_name("r\u00AFupakam") == "Rūpakam"
+        assert cleanup_raga_tala_name("r\u00afupakam") == "Rūpakam"
 
     def test_gurjjari_with_mela(self) -> None:
         assert cleanup_raga_tala_name("gurjjari (15)") == "Gurjjari"
@@ -139,13 +139,13 @@ class TestRule8ConsonantDot:
 
     def test_akhilandesvari_title(self) -> None:
         """Full garbled title → clean IAST (the critical sample)."""
-        garbled = "akhil\u00AFan. d. e\u00B4svari raks.a m\u00AFam"
+        garbled = "akhil\u00afan. d. e\u00b4svari raks.a m\u00afam"
         expected = "akhilāṇḍeśvari rakṣa mām"
         assert normalize_garbled_diacritics(garbled) == expected
 
     def test_annapurne_visalaksi(self) -> None:
         """Another garbled title with multiple consonant-dots."""
-        garbled = "annap\u00AFurn. e vi\u00B4s\u00AFal\u00AFaks.i"
+        garbled = "annap\u00afurn. e vi\u00b4s\u00afal\u00afaks.i"
         expected = "annapūrṇe viśālākṣi"
         assert normalize_garbled_diacritics(garbled) == expected
 
@@ -159,11 +159,11 @@ class TestRule8ConsonantDot:
 
     def test_combined_macron_and_consonant_dot(self) -> None:
         """Macron + consonant-dot together in one word: t¯al.a → tāḷa."""
-        assert normalize_garbled_diacritics("t\u00AFal.a") == "tāḷa"
+        assert normalize_garbled_diacritics("t\u00afal.a") == "tāḷa"
 
     def test_mamava_pattabhirama(self) -> None:
         """Title with double retroflex t: pat.t.¯abhir¯ama → paṭṭābhirāma."""
-        garbled = "m\u00AFamava pat.t.\u00AFabhir\u00AFama"
+        garbled = "m\u00afamava pat.t.\u00afabhir\u00afama"
         expected = "māmava paṭṭābhirāma"
         assert normalize_garbled_diacritics(garbled) == expected
 

@@ -101,7 +101,7 @@ class TestWorkerDoesNotTruncateLyricSections:
             CanonicalLyricVariant(
                 language="sa",
                 script="devanagari",
-                sections=[CanonicalLyricSection(sectionOrder=1, text=long_text)],
+                sections=[CanonicalLyricSection(section_order=1, text=long_text)],
             )
         ]
         out = worker.pdf_strategy._filter_empty_lyric_sections(variants)
@@ -114,8 +114,8 @@ class TestWorkerDoesNotTruncateLyricSections:
                 language="en",
                 script="latin",
                 sections=[
-                    CanonicalLyricSection(sectionOrder=1, text="pallavi text"),
-                    CanonicalLyricSection(sectionOrder=2, text="   "),
+                    CanonicalLyricSection(section_order=1, text="pallavi text"),
+                    CanonicalLyricSection(section_order=2, text="   "),
                 ],
             )
         ]

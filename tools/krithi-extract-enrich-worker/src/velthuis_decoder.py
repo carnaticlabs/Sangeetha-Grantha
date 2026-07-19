@@ -17,7 +17,6 @@ from __future__ import annotations
 import logging
 import re
 import zlib
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -29,129 +28,130 @@ logger = logging.getLogger(__name__)
 
 _GLYPH_MAP: dict[int, str] = {
     # ── Vowels (independent) ──
-    97:  "\u0905",  # a  → अ
+    97: "\u0905",  # a  → अ
     105: "\u0907",  # i  → इ
     117: "\u0909",  # u  → उ
-    101: "\u090F",  # e  → ए
-
+    101: "\u090f",  # e  → ए
     # ── Mātrās (dependent vowel signs) ──
-    65:  "\u093E",  # A  → ा (ā-mātrā)
-    69:  "\u093F",  # E  → ि (i-mātrā) — left-side, needs reordering
-    70:  "\u0940",  # F  → ी (ī-mātrā)
-    0:   "\u0941",  # \x00 → ु (u-mātrā)
-    1:   "\u0942",  # \x01 → ू (ū-mātrā)
-    3:   "\u0947",  # \x03 → े (e-mātrā)
-    111: "\u094B",  # o  → ो (o-mātrā)
+    65: "\u093e",  # A  → ा (ā-mātrā)
+    69: "\u093f",  # E  → ि (i-mātrā) — left-side, needs reordering
+    70: "\u0940",  # F  → ी (ī-mātrā)
+    0: "\u0941",  # \x00 → ु (u-mātrā)
+    1: "\u0942",  # \x01 → ू (ū-mātrā)
+    3: "\u0947",  # \x03 → े (e-mātrā)
+    111: "\u094b",  # o  → ो (o-mātrā)
     123: "\u0948",  # {  → ै (ai-mātrā)
-    79:  "\u094C",  # O  → ौ (au-mātrā)
-    2:   "\u0943",  # \x02 → ृ (ṛ-mātrā)
-
+    79: "\u094c",  # O  → ौ (au-mātrā)
+    2: "\u0943",  # \x02 → ृ (ṛ-mātrā)
     # ── Consonants ──
     107: "\u0915",  # k → क
-    75:  "\u0916",  # K → ख
+    75: "\u0916",  # K → ख
     103: "\u0917",  # g → ग
-    71:  "\u0918",  # G → घ
-    99:  "\u091A",  # c → च
-    67:  "\u091B",  # C → छ
-    106: "\u091C",  # j → ज
-    74:  "\u091D",  # J → झ
-    86:  "\u091F",  # V → ट
-    87:  "\u0920",  # W → ठ
-    88:  "\u0921",  # X → ड
-    89:  "\u0922",  # Y → ढ
-    90:  "\u0923",  # Z → ण
+    71: "\u0918",  # G → घ
+    99: "\u091a",  # c → च
+    67: "\u091b",  # C → छ
+    106: "\u091c",  # j → ज
+    74: "\u091d",  # J → झ
+    86: "\u091f",  # V → ट
+    87: "\u0920",  # W → ठ
+    88: "\u0921",  # X → ड
+    89: "\u0922",  # Y → ढ
+    90: "\u0923",  # Z → ण
     116: "\u0924",  # t → त
-    84:  "\u0925",  # T → थ
+    84: "\u0925",  # T → थ
     100: "\u0926",  # d → द
-    68:  "\u0927",  # D → ध
+    68: "\u0927",  # D → ध
     110: "\u0928",  # n → न
-    112: "\u092A",  # p → प
-    80:  "\u092B",  # P → फ
-    98:  "\u092C",  # b → ब
-    66:  "\u092D",  # B → भ
-    109: "\u092E",  # m → म
-    121: "\u092F",  # y → य
+    112: "\u092a",  # p → प
+    80: "\u092b",  # P → फ
+    98: "\u092c",  # b → ब
+    66: "\u092d",  # B → भ
+    109: "\u092e",  # m → म
+    121: "\u092f",  # y → य
     114: "\u0930",  # r → र
     108: "\u0932",  # l → ल
-    15:  "\u0933",  # \x0f → ळ (retroflex ḷa, DEVANAGARI LETTER LLA)
+    15: "\u0933",  # \x0f → ळ (retroflex ḷa, DEVANAGARI LETTER LLA)
     118: "\u0935",  # v → व
     102: "\u0936",  # f → श (śa)
     113: "\u0937",  # q → ष (ṣa)
     115: "\u0938",  # s → स
     104: "\u0939",  # h → ह
-
     # ── Half forms (consonant + virāma) ──
-    6:   "\u0928\u094D",  # halfna  → न्
-    23:  "\u0923\u094D",  # halfnna → ण्
-    91:  "\u0936\u094D",  # halfsha → श्
-    77:  "\u092E\u094D",  # halfma  → म्
-    5:   "\u092F\u094D",  # halfya  → य्
-    4:   "\u0930\u094D",  # halfra  → र्
-    7:   "\u0932\u094D",  # halfla  → ल्
-    8:   "\u0924\u094D",  # halfta  → त्
-    9:   "\u0926\u094D",  # halfda  → द्
-    10:  "\u0915\u094D",  # halfka  → क्
-    11:  "\u0917\u094D",  # halfga  → ग्
-    12:  "\u092A\u094D",  # halfpa  → प्
-    14:  "\u092C\u094D",  # halfba  → ब्
-    16:  "\u0935\u094D",  # halfva  → व्
-    17:  "\u091A\u094D",  # halfca  → च्
-    18:  "\u091C\u094D",  # halfja  → ज्
-    19:  "\u0938\u094D",  # halfsa  → स्
-    20:  "\u0939\u094D",  # halfha  → ह्
-    21:  "\u0937\u094D",  # halfssa → ष्
-    22:  "\u0928\u094D",  # halfna2 → न् (alternate)
-
+    6: "\u0928\u094d",  # halfna  → न्
+    23: "\u0923\u094d",  # halfnna → ण्
+    91: "\u0936\u094d",  # halfsha → श्
+    77: "\u092e\u094d",  # halfma  → म्
+    5: "\u092f\u094d",  # halfya  → य्
+    4: "\u0930\u094d",  # halfra  → र्
+    7: "\u0932\u094d",  # halfla  → ल्
+    8: "\u0924\u094d",  # halfta  → त्
+    9: "\u0926\u094d",  # halfda  → द्
+    10: "\u0915\u094d",  # halfka  → क्
+    11: "\u0917\u094d",  # halfga  → ग्
+    12: "\u092a\u094d",  # halfpa  → प्
+    14: "\u092c\u094d",  # halfba  → ब्
+    16: "\u0935\u094d",  # halfva  → व्
+    17: "\u091a\u094d",  # halfca  → च्
+    18: "\u091c\u094d",  # halfja  → ज्
+    19: "\u0938\u094d",  # halfsa  → स्
+    20: "\u0939\u094d",  # halfha  → ह्
+    21: "\u0937\u094d",  # halfssa → ष्
+    22: "\u0928\u094d",  # halfna2 → न् (alternate)
     # ── Conjunct ligatures ──
-    34:  "\u0915\u094D\u0937",  # ksa   → क्ष
-    152: "\u0936\u094D\u0935",  # sh_v  → श्व
-    153: "\u0936\u094D\u0930",  # sh_r  → श्र
-    165: "\u0932\u094D\u0932",  # l_l   → ल्ल
-    163: "\u0937\u094D\u091F",  # ss_tt → ष्ट
-    226: "\u091C\u094D\u091E",  # j_ny  → ज्ञ
-    129: "\u0924\u094D\u0924",  # t_t   → त्त
-    130: "\u0926\u094D\u0926",  # d_d   → द्द
-    131: "\u0926\u094D\u0927",  # d_dh  → द्ध
-    132: "\u0926\u094D\u0935",  # d_v   → द्व
-    133: "\u0926\u094D\u092F",  # d_y   → द्य
-    134: "\u0939\u094D\u0928",  # h_n   → ह्न
-    135: "\u0939\u094D\u092E",  # h_m   → ह्म
-    136: "\u0939\u094D\u092F",  # h_y   → ह्य
-    137: "\u0939\u094D\u0930",  # h_r   → ह्र
-    138: "\u0939\u094D\u0932",  # h_l   → ह्ल
-    139: "\u0939\u094D\u0935",  # h_v   → ह्व
-    164: "\u0924\u094D\u0930",  # t_r   → त्र
-    166: "\u0928\u094D\u0928",  # n_n   → न्न
-    167: "\u0928\u094D\u0926",  # n_d   → न्द
-    168: "\u0928\u094D\u0927",  # n_dh  → न्ध
-
+    34: "\u0915\u094d\u0937",  # ksa   → क्ष
+    152: "\u0936\u094d\u0935",  # sh_v  → श्व
+    153: "\u0936\u094d\u0930",  # sh_r  → श्र
+    165: "\u0932\u094d\u0932",  # l_l   → ल्ल
+    163: "\u0937\u094d\u091f",  # ss_tt → ष्ट
+    226: "\u091c\u094d\u091e",  # j_ny  → ज्ञ
+    129: "\u0924\u094d\u0924",  # t_t   → त्त
+    130: "\u0926\u094d\u0926",  # d_d   → द्द
+    131: "\u0926\u094d\u0927",  # d_dh  → द्ध
+    132: "\u0926\u094d\u0935",  # d_v   → द्व
+    133: "\u0926\u094d\u092f",  # d_y   → द्य
+    134: "\u0939\u094d\u0928",  # h_n   → ह्न
+    135: "\u0939\u094d\u092e",  # h_m   → ह्म
+    136: "\u0939\u094d\u092f",  # h_y   → ह्य
+    137: "\u0939\u094d\u0930",  # h_r   → ह्र
+    138: "\u0939\u094d\u0932",  # h_l   → ह्ल
+    139: "\u0939\u094d\u0935",  # h_v   → ह्व
+    164: "\u0924\u094d\u0930",  # t_r   → त्र
+    166: "\u0928\u094d\u0928",  # n_n   → न्न
+    167: "\u0928\u094d\u0926",  # n_d   → न्द
+    168: "\u0928\u094d\u0927",  # n_dh  → न्ध
     # ── Special markers ──
-    92:  "\u0902",  # \  → ं (anusvāra)
-    94:  "\u094D",  # ^  → ् (virāma / halant)
-    44:  "\u0903",  # ,  → ः (visarga)
-    13:  "\u0930\u094D",  # \r → र् (repha — superscript r)
-
+    92: "\u0902",  # \  → ं (anusvāra)
+    94: "\u094d",  # ^  → ् (virāma / halant)
+    44: "\u0903",  # ,  → ः (visarga)
+    13: "\u0930\u094d",  # \r → र् (repha — superscript r)
     # ── Numerals ──
     # Devanagari digits are usually rendered in Utopia (Latin digits), not
     # Velthuis, but include mappings for completeness
-    48:  "0",  49:  "1",  50:  "2",  51:  "3",  52:  "4",
-    53:  "5",  54:  "6",  55:  "7",  56:  "8",  57:  "9",
-
+    48: "0",
+    49: "1",
+    50: "2",
+    51: "3",
+    52: "4",
+    53: "5",
+    54: "6",
+    55: "7",
+    56: "8",
+    57: "9",
     # ── Punctuation (usually from CMR17 font, not Velthuis) ──
-    32:  " ",   # space
-    40:  "(",   # open paren
-    41:  ")",   # close paren
-    58:  ":",   # colon
-    46:  ".",   # period / danda placeholder
+    32: " ",  # space
+    40: "(",  # open paren
+    41: ")",  # close paren
+    58: ":",  # colon
+    46: ".",  # period / danda placeholder
 }
 
 # Characters that are left-side mātrās in Devanagari (drawn before
 # consonant visually, but encoded after consonant in Unicode)
-_LEFT_MATRAS = {"\u093F"}  # ि (i-mātrā)
+_LEFT_MATRAS = {"\u093f"}  # ि (i-mātrā)
 
 # Devanagari consonant range (U+0915–U+0939) and virāma
 _CONSONANT_RANGE = range(0x0915, 0x093A)
-_VIRAMA = "\u094D"
+_VIRAMA = "\u094d"
 
 
 def _is_consonant(ch: str) -> bool:
@@ -245,11 +245,11 @@ class VelthuisDecoder:
         produces अा instead of आ.
         """
         # अ + ा → आ
-        text = text.replace("\u0905\u093E", "\u0906")
+        text = text.replace("\u0905\u093e", "\u0906")
         # इ + ी → ई  (less common but possible)
         text = text.replace("\u0907\u0940", "\u0908")
         # उ + ू → ऊ
-        text = text.replace("\u0909\u0942", "\u090A")
+        text = text.replace("\u0909\u0942", "\u090a")
         return text
 
     @staticmethod
@@ -273,6 +273,7 @@ class VelthuisDecoder:
         """
         try:
             import fitz
+
             doc = fitz.open(pdf_path)
             stream = doc.xref_stream_raw(xref)
             decompressed = zlib.decompress(stream)

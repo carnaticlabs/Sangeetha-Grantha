@@ -20,13 +20,7 @@ import csv
 import json
 import logging
 import re
-import sys
 import uuid
-from datetime import datetime, timezone
-from typing import Any
-
-import psycopg
-from psycopg.rows import dict_row
 
 from .config import ExtractorConfig
 from .db import ExtractionQueueDB
@@ -70,7 +64,7 @@ def _section_type(raw_key: str) -> str:
     return _SECTION_TYPE_MAP.get(norm, _SECTION_TYPE_MAP.get(raw_key.lower(), "OTHER"))
 
 
-def ordered_sections(sections: dict) -> list[tuple[str, str]]:
+def ordered_sections(sections: dict[str, str]) -> list[tuple[str, str]]:
     """Return (raw_key, text) pairs in canonical musical order.
 
     Unknown keys are appended after the canonical set.
@@ -94,7 +88,8 @@ def ordered_sections(sections: dict) -> list[tuple[str, str]]:
 # Sanskrit section fuzzy matching  (3.4)
 # ---------------------------------------------------------------------------
 
-def find_sa_section(sa_sections: dict, canonical_key: str) -> str:
+
+def find_sa_section(sa_sections: dict[str, str], canonical_key: str) -> str:
     """Return Sanskrit text for canonical_key using normalised lookup."""
     # Direct match first
     if canonical_key in sa_sections:
@@ -110,18 +105,18 @@ def find_sa_section(sa_sections: dict, canonical_key: str) -> str:
 # Text cleaning  (3.5)
 # ---------------------------------------------------------------------------
 
-_RE_IMAGE = re.compile(r'!\[.*?\]\(data:[^)]+\)', re.DOTALL)
-_RE_DEVANAGARI_LEADING = re.compile(r'^[०-९]+\s+', re.MULTILINE)
-_RE_ARABIC_LINE = re.compile(r'^\s*\d{1,3}\s*$', re.MULTILINE)
-_RE_MULTI_BLANK = re.compile(r'\n{3,}')
+_RE_IMAGE = re.compile(r"!\[.*?\]\(data:[^)]+\)", re.DOTALL)
+_RE_DEVANAGARI_LEADING = re.compile(r"^[०-९]+\s+", re.MULTILINE)
+_RE_ARABIC_LINE = re.compile(r"^\s*\d{1,3}\s*$", re.MULTILINE)
+_RE_MULTI_BLANK = re.compile(r"\n{3,}")
 
 
 def clean_lyric_text(text: str) -> str:
     """Remove extraction artefacts from lyric text before DB insert."""
-    text = _RE_IMAGE.sub('', text)
-    text = _RE_DEVANAGARI_LEADING.sub('', text)
-    text = _RE_ARABIC_LINE.sub('', text)
-    text = _RE_MULTI_BLANK.sub('\n\n', text)
+    text = _RE_IMAGE.sub("", text)
+    text = _RE_DEVANAGARI_LEADING.sub("", text)
+    text = _RE_ARABIC_LINE.sub("", text)
+    text = _RE_MULTI_BLANK.sub("\n\n", text)
     return text.strip()
 
 
@@ -129,21 +124,21 @@ def clean_lyric_text(text: str) -> str:
 # Name normalisation helpers  (3.7, 3.8)
 # ---------------------------------------------------------------------------
 
-_RE_MELAKARTA_SUFFIX = re.compile(r'\s*\([^)]+\)\s*$')
+_RE_MELAKARTA_SUFFIX = re.compile(r"\s*\([^)]+\)\s*$")
 # Catches "āarabhi" → "ārabhi": macron-a followed by plain a at word start
-_RE_MACRON_PLAIN_A = re.compile(r'^(ā)a', re.IGNORECASE)
+_RE_MACRON_PLAIN_A = re.compile(r"^(ā)a", re.IGNORECASE)
 
 
 def normalise_raga_name(name: str) -> str:
     """Strip melakarta numbers, double-vowel OCR artefacts, and whitespace."""
     name = name.strip()
     # Strip trailing parenthetical e.g. "jujāvanti (28)" → "jujāvanti"
-    name = _RE_MELAKARTA_SUFFIX.sub('', name).strip()
+    name = _RE_MELAKARTA_SUFFIX.sub("", name).strip()
     # Strip Devanagari suffix parenthetical e.g. "जुजावन्ति (२८)"
-    name = re.sub(r'\s*（[^）]*）\s*$', '', name).strip()
-    name = re.sub(r'\s*\([^)]*\)\s*$', '', name).strip()
+    name = re.sub(r"\s*（[^）]*）\s*$", "", name).strip()
+    name = re.sub(r"\s*\([^)]*\)\s*$", "", name).strip()
     # Fix "āa..." OCR artefact (macron-a followed by redundant plain a)  (3.7)
-    name = _RE_MACRON_PLAIN_A.sub(r'\1', name)
+    name = _RE_MACRON_PLAIN_A.sub(r"\1", name)
     return name
 
 
@@ -176,6 +171,7 @@ def detect_primary_language(composer_name: str) -> str:
 # Main import
 # ---------------------------------------------------------------------------
 
+
 def main() -> None:
     logging.basicConfig(level=logging.INFO)
 
@@ -186,15 +182,15 @@ def main() -> None:
     db.connect()
 
     try:
-        with open(csv_path, "r", encoding="utf-8") as f:
+        with open(csv_path, encoding="utf-8") as f:
             reader = csv.DictReader(f)
             rows = list(reader)
 
-        with open("../../database/for_import/eng_krithis.json", "r", encoding="utf-8") as f:
+        with open("../../database/for_import/eng_krithis.json", encoding="utf-8") as f:
             eng_data = json.load(f)
             eng_dict = {k["title"].strip(): k.get("sections", {}) for k in eng_data}
 
-        with open("../../database/for_import/skt_krithis.json", "r", encoding="utf-8") as f:
+        with open("../../database/for_import/skt_krithis.json", encoding="utf-8") as f:
             skt_data = json.load(f)
             skt_dict = {k["title"].strip(): k.get("sections", {}) for k in skt_data}
 
@@ -218,8 +214,8 @@ def main() -> None:
                 raga_en_raw = row.get("Raga-EN", "").strip()
                 tala_en_raw = row.get("Tala-EN", "").strip()
 
-                raga_en = normalise_raga_name(raga_en_raw)   # 3.7
-                tala_en = normalise_tala_name(tala_en_raw)   # 3.8
+                raga_en = normalise_raga_name(raga_en_raw)  # 3.7
+                tala_en = normalise_tala_name(tala_en_raw)  # 3.8
 
                 sections_en_raw = eng_dict.get(title_en, {})
                 sections_sa_raw = skt_dict.get(title_sa, {})
@@ -256,10 +252,6 @@ def main() -> None:
                 else:
                     tala_id = None
 
-                # Auto-populate incipit from first line of pallavi (6.3)
-                pallavi_text = sections_en_raw.get("pallavi", "")
-                incipit = pallavi_text.split("\n")[0].strip()[:120] if pallavi_text else ""
-
                 # 1. Create the Krithi record
                 krithi_id = str(uuid.uuid4())
                 title_normalized = title_en.lower()
@@ -277,8 +269,12 @@ def main() -> None:
                     )
                     """,
                     (
-                        krithi_id, title_en, title_normalized,
-                        composer_id, raga_id, tala_id,
+                        krithi_id,
+                        title_en,
+                        title_normalized,
+                        composer_id,
+                        raga_id,
+                        tala_id,
                         primary_language,  # 3.1 — no longer hardcoded
                     ),
                 )
@@ -314,10 +310,8 @@ def main() -> None:
 
                 # 3. Create English Lyric Variant
                 var_en_id = str(uuid.uuid4())
-                en_lyrics_full = "\n\n".join(          # 3.6 — canonical order
-                    clean_lyric_text(text)
-                    for _, text in sections_ordered
-                    if text.strip()
+                en_lyrics_full = "\n\n".join(  # 3.6 — canonical order
+                    clean_lyric_text(text) for _, text in sections_ordered if text.strip()
                 )
                 cur.execute(
                     """
@@ -384,13 +378,15 @@ def main() -> None:
                     """,
                     (
                         krithi_id,
-                        json.dumps({
-                            "title": title_en,
-                            "composer": composer_name,
-                            "raga": raga_en,
-                            "tala": tala_en,
-                            "source": "import_matched_csv",
-                        }),
+                        json.dumps(
+                            {
+                                "title": title_en,
+                                "composer": composer_name,
+                                "raga": raga_en,
+                                "tala": tala_en,
+                                "source": "import_matched_csv",
+                            }
+                        ),
                     ),
                 )
 

@@ -120,7 +120,7 @@ class ExtractionStrategy(ABC):
         for variant in variants:
             sections = [
                 CanonicalLyricSection(
-                    sectionOrder=section.section_order,
+                    section_order=section.section_order,
                     text=section.text,
                 )
                 for section in variant.sections
@@ -311,23 +311,23 @@ class PdfExtractionStrategy(_TextPipelineStrategy):
             # Build canonical extraction
             extraction = CanonicalExtraction(
                 title=metadata.title,
-                alternateTitle=alternate_title,
+                alternate_title=alternate_title,
                 composer=metadata.composer or composer_hint or infer_composer_from_url(task.source_url) or "Unknown",
-                musicalForm=MusicalForm.KRITHI,
+                musical_form=MusicalForm.KRITHI,
                 ragas=ragas,
                 tala=tala_name,
                 sections=canonical_sections,
-                lyricVariants=lyric_variants,
-                metadataBoundaries=metadata_boundaries,
+                lyric_variants=lyric_variants,
+                metadata_boundaries=metadata_boundaries,
                 deity=metadata.deity,
                 temple=metadata.temple,
-                templeLocation=metadata.temple_location,
-                sourceUrl=task.source_url,
-                sourceName=task.source_name or "unknown",
-                sourceTier=task.source_tier or 5,
-                extractionMethod=ExtractionMethod.PDF_PYMUPDF,
-                extractionTimestamp=datetime.now(UTC).isoformat(),
-                pageRange=segment.page_range_str,
+                temple_location=metadata.temple_location,
+                source_url=task.source_url,
+                source_name=task.source_name or "unknown",
+                source_tier=task.source_tier or 5,
+                extraction_method=ExtractionMethod.PDF_PYMUPDF,
+                extraction_timestamp=datetime.now(UTC).isoformat(),
+                page_range=segment.page_range_str,
                 checksum=document.checksum,
             )
 
@@ -404,25 +404,25 @@ class PdfExtractionStrategy(_TextPipelineStrategy):
 
             extraction = CanonicalExtraction(
                 title=metadata.title,
-                alternateTitle=alternate_title,
+                alternate_title=alternate_title,
                 composer=metadata.composer
                 or task.request_payload.get("composerHint")
                 or infer_composer_from_url(task.source_url)
                 or "Unknown",
-                musicalForm=MusicalForm.KRITHI,
+                musical_form=MusicalForm.KRITHI,
                 ragas=[CanonicalRaga(name=metadata.raga or "Unknown")],
                 tala=metadata.tala or "Unknown",
                 sections=canonical_sections,
-                lyricVariants=lyric_variants,
-                metadataBoundaries=metadata_boundaries,
+                lyric_variants=lyric_variants,
+                metadata_boundaries=metadata_boundaries,
                 deity=metadata.deity,
                 temple=metadata.temple,
-                sourceUrl=task.source_url,
-                sourceName=task.source_name or "unknown",
-                sourceTier=task.source_tier or 5,
-                extractionMethod=ExtractionMethod.PDF_OCR,
-                extractionTimestamp=datetime.now(UTC).isoformat(),
-                pageRange=str(page_num + 1),
+                source_url=task.source_url,
+                source_name=task.source_name or "unknown",
+                source_tier=task.source_tier or 5,
+                extraction_method=ExtractionMethod.PDF_OCR,
+                extraction_timestamp=datetime.now(UTC).isoformat(),
+                page_range=str(page_num + 1),
                 checksum=checksum,
             )
             results.append(self._finalize(extraction, page_text, "PDF"))
@@ -490,25 +490,25 @@ class HtmlExtractionStrategy(_TextPipelineStrategy):
 
         extraction = CanonicalExtraction(
             title=metadata.title,
-            alternateTitle=metadata.alternate_title,
+            alternate_title=metadata.alternate_title,
             composer=metadata.composer
             or task.request_payload.get("composerHint")
             or infer_composer_from_url(task.source_url)
             or "Unknown",
-            musicalForm=MusicalForm.KRITHI,
+            musical_form=MusicalForm.KRITHI,
             ragas=ragas,
             tala=tala_name,
             sections=canonical_sections,
-            lyricVariants=lyric_variants,
-            metadataBoundaries=metadata_boundaries,
+            lyric_variants=lyric_variants,
+            metadata_boundaries=metadata_boundaries,
             deity=metadata.deity,
             temple=metadata.temple,
-            templeLocation=metadata.temple_location,
-            sourceUrl=task.source_url,
-            sourceName=task.source_name or "unknown",
-            sourceTier=task.source_tier or 5,
-            extractionMethod=ExtractionMethod.HTML_JSOUP,
-            extractionTimestamp=datetime.now(UTC).isoformat(),
+            temple_location=metadata.temple_location,
+            source_url=task.source_url,
+            source_name=task.source_name or "unknown",
+            source_tier=task.source_tier or 5,
+            extraction_method=ExtractionMethod.HTML_JSOUP,
+            extraction_timestamp=datetime.now(UTC).isoformat(),
             checksum=sha256(html_bytes).hexdigest(),
         )
         return [self._finalize(extraction, normalized_body, "HTML")]

@@ -11,7 +11,6 @@ from __future__ import annotations
 import logging
 import re
 from dataclasses import dataclass
-from typing import Optional
 
 from .diacritic_normalizer import cleanup_raga_tala_name, normalize_garbled_diacritics
 
@@ -23,13 +22,13 @@ class KrithiMetadata:
     """Metadata extracted from a Krithi's header block."""
 
     title: str
-    alternate_title: Optional[str] = None
-    raga: Optional[str] = None
-    tala: Optional[str] = None
-    composer: Optional[str] = None
-    deity: Optional[str] = None
-    temple: Optional[str] = None
-    temple_location: Optional[str] = None
+    alternate_title: str | None = None
+    raga: str | None = None
+    tala: str | None = None
+    composer: str | None = None
+    deity: str | None = None
+    temple: str | None = None
+    temple_location: str | None = None
 
 
 # ─── Label patterns that handle all four encoding categories ─────────────
@@ -42,16 +41,16 @@ class KrithiMetadata:
 _RAGA_LABEL = (
     r"(?:"
     r"r[\u00AF\u0101]?a+ga\s*[\u02D9.]?\s*[\u1E41m]?"  # ASCII/IAST/garbled
-    r"|r\u0101ga[\u1E41m]?"                              # Precomposed IAST
-    r"|राग"                                               # Devanagari
+    r"|r\u0101ga[\u1E41m]?"  # Precomposed IAST
+    r"|राग"  # Devanagari
     r")"
 )
 
 _TALA_LABEL = (
     r"(?:"
     r"t[\u00AF\u0101]?a+l[.\u1E37]?\s*a\s*[\u02D9.]?\s*[\u1E41m]?"  # ASCII/IAST/garbled
-    r"|t\u0101l[\u1E37]?a[\u1E41m]?"                                  # Precomposed IAST
-    r"|ताल"                                                            # Devanagari
+    r"|t\u0101l[\u1E37]?a[\u1E41m]?"  # Precomposed IAST
+    r"|ताल"  # Devanagari
     r")"
 )
 
@@ -69,30 +68,27 @@ class MetadataParser:
     # ─── Regex patterns for field extraction ─────────────────────────────
 
     RAGA_PATTERN = re.compile(
-        _RAGA_LABEL + r"\s*[:—–\-]\s*" +
-        r"(.+?)"
-        r"(?:\s*\(\d+\)\s*)?"           # Optional mēḷa number: (28)
+        _RAGA_LABEL + r"\s*[:—–\-]\s*" + r"(.+?)"
+        r"(?:\s*\(\d+\)\s*)?"  # Optional mēḷa number: (28)
         r"(?:"
-        r"\s*[—–\-|]\s*" + _TALA_LABEL +  # Followed by tala label
-        r"|$"                             # Or end of line
+        r"\s*[—–\-|]\s*"
+        + _TALA_LABEL  # Followed by tala label
+        + r"|$"  # Or end of line
         r")",
         re.IGNORECASE | re.MULTILINE,
     )
 
     TALA_PATTERN = re.compile(
-        _TALA_LABEL + r"\s*[:—–\-]\s*" +
-        r"(.+?)"
-        r"(?:\s*\(\d+\))?"              # Optional number
-        r"(?:\s*$|\s*[—–\-|])",          # End of line or separator
+        _TALA_LABEL + r"\s*[:—–\-]\s*" + r"(.+?)"
+        r"(?:\s*\(\d+\))?"  # Optional number
+        r"(?:\s*$|\s*[—–\-|])",  # End of line or separator
         re.IGNORECASE | re.MULTILINE,
     )
 
     # Combined raga-tala on a single line
     RAGA_TALA_COMBINED = re.compile(
-        _RAGA_LABEL + r"\s*[:—–\-]\s*(.+?)" +
-        r"(?:\s*\(\d+\)\s*)?"
-        r"\s*[—–\-|]\s*"
-        + _TALA_LABEL + r"\s*[:—–\-]\s*(.+?)"
+        _RAGA_LABEL + r"\s*[:—–\-]\s*(.+?)" + r"(?:\s*\(\d+\)\s*)?"
+        r"\s*[—–\-|]\s*" + _TALA_LABEL + r"\s*[:—–\-]\s*(.+?)"
         r"(?:\s*\(\d+\))?"
         r"$",
         re.IGNORECASE | re.MULTILINE,
@@ -101,10 +97,8 @@ class MetadataParser:
     # Inline variant commonly seen in blog text:
     # "rAgaM kumudakriyA - tALaM - rUpakaM"
     RAGA_TALA_INLINE = re.compile(
-        _RAGA_LABEL + r"\s*(?:[:—–\-]\s*)?(.+?)" +
-        r"(?:\s*\(\d+\)\s*)?"
-        r"\s*[—–\-|]\s*"
-        + _TALA_LABEL + r"\s*(?:[:—–\-]\s*)?(.+?)"
+        _RAGA_LABEL + r"\s*(?:[:—–\-]\s*)?(.+?)" + r"(?:\s*\(\d+\)\s*)?"
+        r"\s*[—–\-|]\s*" + _TALA_LABEL + r"\s*(?:[:—–\-]\s*)?(.+?)"
         r"(?:\s*\(\d+\))?"
         r"(?:\s*$|\s*[—–\-|])",
         re.IGNORECASE | re.MULTILINE,
@@ -164,14 +158,16 @@ class MetadataParser:
     ]
     _TITLE_SUFFIX_PATTERNS = [
         re.compile(r"\s*-\s*raga\s+[^|]+$", re.IGNORECASE),
-        re.compile(r"\s*-\s*\w+(?:\s+\w+)?\s+raga(?:\s*-\s*.*)?$", re.IGNORECASE),  # "- Saveri Raga" / "- Begada Raga - Varnam"
+        re.compile(
+            r"\s*-\s*\w+(?:\s+\w+)?\s+raga(?:\s*-\s*.*)?$", re.IGNORECASE
+        ),  # "- Saveri Raga" / "- Begada Raga - Varnam"
         re.compile(r"\s*-\s*(?:Tamil|Telugu|Sanskrit|Kannada|Malayalam)\s+Kriti\s*$", re.IGNORECASE),
         re.compile(r"\s*-\s*Varnam\s*$", re.IGNORECASE),
         re.compile(r"\s*\|\s*[^|]+$", re.IGNORECASE),
     ]
     _TITLE_LEADING_INDEX = re.compile(r"^\s*[0-9०-९]+\s*[-:.)]?\s*")
 
-    def parse(self, header_text: str, title_hint: Optional[str] = None) -> KrithiMetadata:
+    def parse(self, header_text: str, title_hint: str | None = None) -> KrithiMetadata:
         """Parse a Krithi header block to extract metadata.
 
         Args:
@@ -251,14 +247,14 @@ class MetadataParser:
         cleaned = re.sub(r"\s+", " ", cleaned).strip(" -:\t")
         return cleaned or title.strip()
 
-    def _extract_inline_title(self, first_line: str) -> Optional[str]:
+    def _extract_inline_title(self, first_line: str) -> str | None:
         match = self.INLINE_TITLE_WITH_RAGA_PATTERN.search(first_line)
         if not match:
             return None
         value = match.group(1).strip(" -:\t")
         return value or None
 
-    def _extract_raga_tala(self, text: str) -> tuple[Optional[str], Optional[str]]:
+    def _extract_raga_tala(self, text: str) -> tuple[str | None, str | None]:
         """Extract raga and tala from metadata text."""
         # Try combined format first
         match = self.RAGA_TALA_COMBINED.search(text)
@@ -287,9 +283,7 @@ class MetadataParser:
 
         return raga, tala
 
-    def _extract_field(
-        self, pattern: re.Pattern[str], text: str
-    ) -> Optional[str]:
+    def _extract_field(self, pattern: re.Pattern[str], text: str) -> str | None:
         """Extract a single field using a regex pattern."""
         match = pattern.search(text)
         if match:

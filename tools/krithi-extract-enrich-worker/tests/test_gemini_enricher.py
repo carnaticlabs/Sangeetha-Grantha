@@ -24,10 +24,10 @@ def _build_extraction() -> CanonicalExtraction:
         composer="Unknown",
         ragas=[CanonicalRaga(name="Unknown")],
         tala="Unknown",
-        sourceUrl="https://example.com",
-        sourceName="fixture",
-        sourceTier=5,
-        extractionMethod=ExtractionMethod.HTML_JSOUP,
+        source_url="https://example.com",
+        source_name="fixture",
+        source_tier=5,
+        extraction_method=ExtractionMethod.HTML_JSOUP,
     )
 
 
@@ -78,9 +78,7 @@ def test_batch_returns_none_list_when_disabled() -> None:
 
 
 def test_batch_falls_back_to_sync_without_raw_client() -> None:
-    client = _FakeClient(
-        '{"composer":"Dikshitar","raga":"Shankarabharanam","tala":"Adi","confidence":0.9}'
-    )
+    client = _FakeClient('{"composer":"Dikshitar","raga":"Shankarabharanam","tala":"Adi","confidence":0.9}')
     enricher = GeminiMetadataEnricher(
         GeminiEnricherConfig(enabled=True, api_key="test-key", model="gemini-2.5-flash"),
         client=client,

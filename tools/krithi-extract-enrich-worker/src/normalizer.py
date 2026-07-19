@@ -34,11 +34,7 @@ _TEMPLE_PREFIX_RE = re.compile(r"^(?:(?:sri|arulmigu|tiru)\s+)+")
 
 
 def _strip_diacritics(text: str) -> str:
-    return "".join(
-        char
-        for char in unicodedata.normalize("NFD", text)
-        if unicodedata.category(char) != "Mn"
-    )
+    return "".join(char for char in unicodedata.normalize("NFD", text) if unicodedata.category(char) != "Mn")
 
 
 def _collapse_transliteration(value: str) -> str:
@@ -85,13 +81,7 @@ def normalize_for_matching(text: str, entity_type: str = "title") -> str:
         elif result in {"syama sastri", "syama sastry"}:
             result = "syama sastri"
     elif entity_type == "raga":
-        result = (
-            result.replace("aa", "a")
-            .replace("ee", "i")
-            .replace("oo", "o")
-            .replace("uu", "u")
-            .replace(" ", "")
-        )
+        result = result.replace("aa", "a").replace("ee", "i").replace("oo", "o").replace("uu", "u").replace(" ", "")
     elif entity_type == "tala":
         if result.endswith("am") and len(result) > 4:
             result = f"{result[:-2]}a"

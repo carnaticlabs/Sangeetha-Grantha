@@ -51,7 +51,7 @@ def test_force_ocr_for_globally_garbled_text_even_without_devanagari_signal() ->
     assert worker.pdf_strategy._should_force_ocr_for_garbled_devanagari(document) is True
 
 
-def test_extract_pdf_ocr_emits_per_page_results(tmp_path) -> None:
+def test_extract_pdf_ocr_emits_per_page_results(tmp_path, monkeypatch) -> None:
     worker = _build_worker()
     task = type("Task", (), {})()
     task.source_url = "https://example.com/mdskt-A-series.pdf"
@@ -67,8 +67,16 @@ def test_extract_pdf_ocr_emits_per_page_results(tmp_path) -> None:
         1: "अखिलान्डेश्वरो रक्षतु\nराग : कर्नाटक शुद्धसावेरी\nताल : रूपक",
     }
 
-    worker.pdf_strategy.ocr_fallback.extract_document_text = lambda *_args, **_kwargs: page_texts
-    worker.pdf_strategy.transliterator.transliterate = lambda text, _from, _to: f"{text}-iast"
+    monkeypatch.setattr(
+        worker.pdf_strategy.ocr_fallback,
+        "extract_document_text",
+        lambda *_args, **_kwargs: page_texts,
+    )
+    monkeypatch.setattr(
+        worker.pdf_strategy.transliterator,
+        "transliterate",
+        lambda text, _from, _to: f"{text}-iast",
+    )
 
     results = worker.pdf_strategy._extract_ocr(task, pdf_path, page_range=None)
 
@@ -77,7 +85,7 @@ def test_extract_pdf_ocr_emits_per_page_results(tmp_path) -> None:
     assert all(r.extraction_method == ExtractionMethod.PDF_OCR for r in results)
 
 
-def test_extract_html_includes_metadata_boundaries(tmp_path) -> None:
+def test_extract_html_includes_metadata_boundaries(tmp_path, monkeypatch) -> None:
     worker = _build_worker()
     task = type("Task", (), {})()
     task.source_url = "https://example.com/akhilandesvari"
@@ -87,7 +95,11 @@ def test_extract_html_includes_metadata_boundaries(tmp_path) -> None:
 
     html_path = tmp_path / "fixture.html"
     html_path.write_text("<html><body>fixture</body></html>", encoding="utf-8")
-    worker.html_strategy._download_source = lambda *_args, **_kwargs: html_path
+    monkeypatch.setattr(
+        worker.html_strategy,
+        "_download_source",
+        lambda *_args, **_kwargs: html_path,
+    )
 
     extracted_text = """
 Pallavi
@@ -99,15 +111,23 @@ siva sankari jagadambike
 Meaning
 This prose block should not be inside lyric sections.
 """
-    worker.html_strategy.html_extractor.extract = lambda *_args, **_kwargs: ExtractedHtmlContent(
-        text=extracted_text,
-        title="akhilandesvari raksha mam",
+    monkeypatch.setattr(
+        worker.html_strategy.html_extractor,
+        "extract",
+        lambda *_args, **_kwargs: ExtractedHtmlContent(
+            text=extracted_text,
+            title="akhilandesvari raksha mam",
+        ),
     )
-    worker.html_strategy.metadata_parser.parse = lambda *_args, **_kwargs: KrithiMetadata(
-        title="akhilandesvari raksha mam",
-        raga="Dwijavanti",
-        tala="Adi",
-        composer="Muttuswami Dikshitar",
+    monkeypatch.setattr(
+        worker.html_strategy.metadata_parser,
+        "parse",
+        lambda *_args, **_kwargs: KrithiMetadata(
+            title="akhilandesvari raksha mam",
+            raga="Dwijavanti",
+            tala="Adi",
+            composer="Muttuswami Dikshitar",
+        ),
     )
 
     results = worker.html_strategy.extract(task)
@@ -120,7 +140,7 @@ This prose block should not be inside lyric sections.
     assert all("prose block" not in section.text.lower() for section in extraction.lyric_variants[0].sections)
 
 
-def test_extract_html_splits_multiscript_variants(tmp_path) -> None:
+def test_extract_html_splits_multiscript_variants(tmp_path, monkeypatch) -> None:
     worker = _build_worker()
     task = type("Task", (), {})()
     task.source_url = "https://example.com/multiscript"
@@ -130,7 +150,11 @@ def test_extract_html_splits_multiscript_variants(tmp_path) -> None:
 
     html_path = tmp_path / "fixture.html"
     html_path.write_text("<html><body>fixture</body></html>", encoding="utf-8")
-    worker.html_strategy._download_source = lambda *_args, **_kwargs: html_path
+    monkeypatch.setattr(
+        worker.html_strategy,
+        "_download_source",
+        lambda *_args, **_kwargs: html_path,
+    )
 
     extracted_text = """
 English
@@ -144,15 +168,23 @@ Devanagari
 Notes
 metadata block should not be lyrics
 """
-    worker.html_strategy.html_extractor.extract = lambda *_args, **_kwargs: ExtractedHtmlContent(
-        text=extracted_text,
-        title="akhilandesvari",
+    monkeypatch.setattr(
+        worker.html_strategy.html_extractor,
+        "extract",
+        lambda *_args, **_kwargs: ExtractedHtmlContent(
+            text=extracted_text,
+            title="akhilandesvari",
+        ),
     )
-    worker.html_strategy.metadata_parser.parse = lambda *_args, **_kwargs: KrithiMetadata(
-        title="akhilandesvari",
-        raga="Dwijavanti",
-        tala="Adi",
-        composer="Muttuswami Dikshitar",
+    monkeypatch.setattr(
+        worker.html_strategy.metadata_parser,
+        "parse",
+        lambda *_args, **_kwargs: KrithiMetadata(
+            title="akhilandesvari",
+            raga="Dwijavanti",
+            tala="Adi",
+            composer="Muttuswami Dikshitar",
+        ),
     )
 
     results = worker.html_strategy.extract(task)
@@ -170,7 +202,7 @@ metadata block should not be lyrics
     )
 
 
-def test_extract_html_attaches_phase3_signals(tmp_path) -> None:
+def test_extract_html_attaches_phase3_signals(tmp_path, monkeypatch) -> None:
     worker = _build_worker()
     task = type("Task", (), {})()
     task.source_url = "https://example.com/phase3"
@@ -180,34 +212,54 @@ def test_extract_html_attaches_phase3_signals(tmp_path) -> None:
 
     html_path = tmp_path / "fixture.html"
     html_path.write_text("<html><body>fixture</body></html>", encoding="utf-8")
-    worker.html_strategy._download_source = lambda *_args, **_kwargs: html_path
-    worker.html_strategy.html_extractor.extract = lambda *_args, **_kwargs: ExtractedHtmlContent(
-        text="Pallavi\nakhilandesvari raksha mam\nCharanam\nsiva sankari",
-        title="akhilandesvari",
+    monkeypatch.setattr(
+        worker.html_strategy,
+        "_download_source",
+        lambda *_args, **_kwargs: html_path,
     )
-    worker.html_strategy.metadata_parser.parse = lambda *_args, **_kwargs: KrithiMetadata(
-        title="akhilandesvari",
-        raga="Unknown",
-        tala="Unknown",
-        composer="Unknown",
+    monkeypatch.setattr(
+        worker.html_strategy.html_extractor,
+        "extract",
+        lambda *_args, **_kwargs: ExtractedHtmlContent(
+            text="Pallavi\nakhilandesvari raksha mam\nCharanam\nsiva sankari",
+            title="akhilandesvari",
+        ),
     )
-    worker._discover_identity_candidates = lambda *_args, **_kwargs: CanonicalIdentityCandidates(
-        composers=[
-            CanonicalIdentityCandidate(
-                entityId="composer-1",
-                name="Muttuswami Dikshitar",
-                score=96,
-                confidence="HIGH",
-                matchedOn="alias",
-            )
-        ],
-        ragas=[],
+    monkeypatch.setattr(
+        worker.html_strategy.metadata_parser,
+        "parse",
+        lambda *_args, **_kwargs: KrithiMetadata(
+            title="akhilandesvari",
+            raga="Unknown",
+            tala="Unknown",
+            composer="Unknown",
+        ),
     )
-    worker.gemini_enricher.enrich = lambda *_args, **_kwargs: CanonicalMetadataEnrichment(
-        provider="google-genai",
-        model="gemini-2.5-flash",
-        applied=True,
-        fieldsUpdated=["composer"],
+    monkeypatch.setattr(
+        worker,
+        "_discover_identity_candidates",
+        lambda *_args, **_kwargs: CanonicalIdentityCandidates(
+            composers=[
+                CanonicalIdentityCandidate(
+                    entity_id="composer-1",
+                    name="Muttuswami Dikshitar",
+                    score=96,
+                    confidence="HIGH",
+                    matched_on="alias",
+                )
+            ],
+            ragas=[],
+        ),
+    )
+    monkeypatch.setattr(
+        worker.gemini_enricher,
+        "enrich",
+        lambda *_args, **_kwargs: CanonicalMetadataEnrichment(
+            provider="google-genai",
+            model="gemini-2.5-flash",
+            applied=True,
+            fields_updated=["composer"],
+        ),
     )
 
     results = worker.html_strategy.extract(task)

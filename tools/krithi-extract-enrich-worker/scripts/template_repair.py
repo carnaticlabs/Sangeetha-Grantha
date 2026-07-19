@@ -30,6 +30,7 @@ Usage:
     python scripts/template_repair.py --from-report .triage-cache/triage_report3.json
     python scripts/template_repair.py --krithi <uuid> --apply
 """
+
 from __future__ import annotations
 
 import argparse
@@ -47,7 +48,7 @@ from psycopg.rows import dict_row
 # host). A full apply is ~170 requests, so we throttle below the limit and retry on
 # 429 — critically, so a template change is always followed by its variant re-splits
 # in the same run and no krithi is left relabeled-but-unsplit.
-_THROTTLE_S = 1.05          # ~57 req/min, leaving headroom for the frontend/other clients
+_THROTTLE_S = 1.05  # ~57 req/min, leaving headroom for the frontend/other clients
 _last_request_at = 0.0
 
 
@@ -68,12 +69,14 @@ def _request(method: str, url: str, **kwargs) -> httpx.Response:
     resp.raise_for_status()
     return resp
 
+
 _WORKER_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(_WORKER_ROOT))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from section_triage import DB_URL, _fetch, triage  # noqa: E402
 from section_repair import _content_preserved, _stored_blob  # noqa: E402
+from section_triage import DB_URL, _fetch, triage  # noqa: E402
+
 from src.diacritic_normalizer import normalize_garbled_diacritics  # noqa: E402
 from src.html_extractor import HtmlTextExtractor  # noqa: E402
 from src.structure_parser import StructureParser  # noqa: E402
@@ -92,9 +95,15 @@ def _label_for(section_type: str, charanam_idx: int) -> str:
 
 
 def _token() -> str:
-    r = _request("POST", f"{API}/v1/auth/token", json={
-        "adminToken": ADMIN_TOKEN, "email": ADMIN_EMAIL, "roles": ["ADMIN", "CURATOR"],
-    })
+    r = _request(
+        "POST",
+        f"{API}/v1/auth/token",
+        json={
+            "adminToken": ADMIN_TOKEN,
+            "email": ADMIN_EMAIL,
+            "roles": ["ADMIN", "CURATOR"],
+        },
+    )
     return r.json()["token"]
 
 
@@ -115,7 +124,10 @@ def _variant_ids(conn, krithi_id: str) -> dict[str, str]:
 
 def _section_ids_by_order(conn, krithi_id: str) -> dict[int, str]:
     with conn.cursor(row_factory=dict_row) as cur:
-        cur.execute("SELECT order_index, id::text AS sid FROM krithi_sections WHERE krithi_id=%s ORDER BY order_index", (krithi_id,))
+        cur.execute(
+            "SELECT order_index, id::text AS sid FROM krithi_sections WHERE krithi_id=%s ORDER BY order_index",
+            (krithi_id,),
+        )
         return {r["order_index"]: r["sid"] for r in cur.fetchall()}
 
 
@@ -158,7 +170,7 @@ def plan(conn, kid: str):
         if not vid:
             return None, f"no variant id for {lang}"
         if en_last and len(secs[-1].text) > 2.0 * en_last:
-            deferred[lang] = f"trailer {len(secs[-1].text)/en_last:.1f}x"
+            deferred[lang] = f"trailer {len(secs[-1].text) / en_last:.1f}x"
             continue
         ok, ratio = _content_preserved(_stored_blob(conn, vid), "\n".join(s.text for s in secs))
         if not ok:
@@ -166,7 +178,7 @@ def plan(conn, kid: str):
             continue
         variant_plan[lang] = (vid, secs)
     if "en" not in variant_plan:
-        return None, f"en variant failed its own gate ({deferred.get('en','?')})"
+        return None, f"en variant failed its own gate ({deferred.get('en', '?')})"
 
     # Build the corrected template payload (1-based order_index, matching DB).
     charanam = 0
@@ -177,8 +189,13 @@ def plan(conn, kid: str):
         template_payload.append({"sectionType": t, "orderIndex": i, "label": _label_for(t, charanam)})
 
     return {
-        "krithi_id": kid, "title": res.title, "template_before": tmpl, "template_after": corrected,
-        "prepend": corrected[:k], "template_payload": template_payload, "variants": variant_plan,
+        "krithi_id": kid,
+        "title": res.title,
+        "template_before": tmpl,
+        "template_after": corrected,
+        "prepend": corrected[:k],
+        "template_payload": template_payload,
+        "variants": variant_plan,
         "deferred": deferred,
     }, None
 
@@ -210,27 +227,40 @@ def main() -> int:
                 continue
             eligible += 1
             defer_note = f"  [defer: {p['deferred']}]" if p["deferred"] else ""
-            print(f"\n{p['title']} [{kid[:8]}]  {p['template_before']}  ->  {p['template_after']}  (+{p['prepend']}){defer_note}")
+            print(
+                f"\n{p['title']} [{kid[:8]}]  {p['template_before']}  ->  "
+                f"{p['template_after']}  (+{p['prepend']}){defer_note}"
+            )
 
             if args.apply:
-                _request("POST", f"{API}/v1/admin/krithis/{kid}/sections",
-                         headers={"Authorization": f"Bearer {token}"},
-                         json={"sections": p["template_payload"]})
+                _request(
+                    "POST",
+                    f"{API}/v1/admin/krithis/{kid}/sections",
+                    headers={"Authorization": f"Bearer {token}"},
+                    json={"sections": p["template_payload"]},
+                )
                 sid_by_order = _section_ids_by_order(conn, kid)  # re-read after template change
 
             for lang, (vid, secs) in p["variants"].items():
                 variant_writes += 1
                 if args.apply:
-                    payload = {"sections": [{"sectionId": sid_by_order[i + 1], "text": s.text}
-                                            for i, s in enumerate(secs)]}
-                    rr = _request("POST", f"{API}/v1/admin/variants/{vid}/sections",
-                                  headers={"Authorization": f"Bearer {token}"}, json=payload)
+                    payload = {
+                        "sections": [{"sectionId": sid_by_order[i + 1], "text": s.text} for i, s in enumerate(secs)]
+                    }
+                    rr = _request(
+                        "POST",
+                        f"{API}/v1/admin/variants/{vid}/sections",
+                        headers={"Authorization": f"Bearer {token}"},
+                        json=payload,
+                    )
                     print(f"    {lang}: {len(secs)} sections -> HTTP {rr.status_code}")
                 else:
                     print(f"    {lang}: {len(secs)} sections -> DRY-RUN")
 
-    print(f"\n{'APPLIED' if args.apply else 'DRY-RUN'}: {eligible} krithis eligible, "
-          f"{variant_writes} variant re-splits, {skipped} krithis skipped")
+    print(
+        f"\n{'APPLIED' if args.apply else 'DRY-RUN'}: {eligible} krithis eligible, "
+        f"{variant_writes} variant re-splits, {skipped} krithis skipped"
+    )
     return 0
 
 

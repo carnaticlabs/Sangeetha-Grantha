@@ -15,7 +15,9 @@ from __future__ import annotations
 import os
 import shutil
 import subprocess
+from collections.abc import Iterator
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -24,9 +26,7 @@ from src.db import ExtractionQueueDB
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
 MIGRATIONS_DIR = REPO_ROOT / "database" / "migrations"
-GOLDEN_FIXTURE = (
-    REPO_ROOT / "shared" / "domain" / "model" / "import" / "fixtures" / "canonical-extraction-golden.json"
-)
+GOLDEN_FIXTURE = REPO_ROOT / "shared" / "domain" / "model" / "import" / "fixtures" / "canonical-extraction-golden.json"
 CANONICAL_SCHEMA = REPO_ROOT / "shared" / "domain" / "model" / "import" / "canonical-extraction-schema.json"
 
 # Match the versions pinned in compose.yaml / gradle/libs.versions.toml
@@ -44,11 +44,14 @@ def _docker_available() -> bool:
 def _flyway_migrate(host_port: int, dbname: str, user: str, password: str) -> None:
     """Apply all V__ + R__ migrations via the Flyway CLI container (ADR-013)."""
     cmd = [
-        "docker", "run", "--rm",
+        "docker",
+        "run",
+        "--rm",
         # Reaches the testcontainer's host-mapped port from inside the Flyway
         # container: native on Docker Desktop, host-gateway alias on Linux CI.
         "--add-host=host.docker.internal:host-gateway",
-        "-v", f"{MIGRATIONS_DIR}:/flyway/sql:ro",
+        "-v",
+        f"{MIGRATIONS_DIR}:/flyway/sql:ro",
         FLYWAY_IMAGE,
         f"-url=jdbc:postgresql://host.docker.internal:{host_port}/{dbname}",
         f"-user={user}",
@@ -59,13 +62,11 @@ def _flyway_migrate(host_port: int, dbname: str, user: str, password: str) -> No
     ]
     result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
     if result.returncode != 0:
-        raise RuntimeError(
-            f"Flyway migrate failed (exit {result.returncode}):\n{result.stdout}\n{result.stderr}"
-        )
+        raise RuntimeError(f"Flyway migrate failed (exit {result.returncode}):\n{result.stdout}\n{result.stderr}")
 
 
 @pytest.fixture(scope="session")
-def database_url() -> str:
+def database_url() -> Iterator[str]:
     external = os.environ.get("TEST_DATABASE_URL")
     if external:
         yield external
@@ -89,7 +90,7 @@ def database_url() -> str:
 
 
 @pytest.fixture()
-def queue_db(database_url: str, monkeypatch: pytest.MonkeyPatch) -> ExtractionQueueDB:
+def queue_db(database_url: str, monkeypatch: pytest.MonkeyPatch) -> Iterator[ExtractionQueueDB]:
     """A connected ExtractionQueueDB against the migrated container, cleaned after each test."""
     monkeypatch.setenv("DATABASE_URL", database_url)
     db = ExtractionQueueDB(ExtractorConfig())
@@ -132,14 +133,17 @@ def insert_pending_task(
                 "max_attempts": max_attempts,
             },
         )
-        task_id = cur.fetchone()["id"]
+        row = cur.fetchone()
+        assert row is not None
+        task_id = row["id"]
     db.conn.commit()
     return task_id
 
 
-def fetch_task_row(db: ExtractionQueueDB, task_id) -> dict:
+def fetch_task_row(db: ExtractionQueueDB, task_id: str) -> dict[str, Any]:
     with db.conn.cursor() as cur:
         cur.execute("SELECT * FROM extraction_queue WHERE id = %(id)s", {"id": task_id})
         row = cur.fetchone()
     db.conn.rollback()
+    assert row is not None
     return row

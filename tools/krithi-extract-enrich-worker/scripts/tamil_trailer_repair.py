@@ -24,6 +24,7 @@ Usage:
     python scripts/tamil_trailer_repair.py --from-report .triage-cache/triage_report.json
     python scripts/tamil_trailer_repair.py --krithi <uuid> --lang ta --apply
 """
+
 from __future__ import annotations
 
 import argparse
@@ -40,12 +41,18 @@ sys.path.insert(0, str(_HERE))
 sys.path.insert(0, str(_HERE.parent))
 
 from section_repair import (  # noqa: E402  (reuse the audited helpers)
-    _request, _stored_blob, _template_sections, _token, _variant_ids, API,
+    API,
+    _request,
+    _stored_blob,
+    _template_sections,
+    _token,
+    _variant_ids,
 )
 from section_triage import DB_URL, _fetch, triage  # noqa: E402
+
 from src.diacritic_normalizer import normalize_garbled_diacritics  # noqa: E402
 from src.html_extractor import HtmlTextExtractor  # noqa: E402
-from src.structure_parser import StructureParser, _PRONUNCIATION_DIGIT  # noqa: E402
+from src.structure_parser import _PRONUNCIATION_DIGIT, StructureParser  # noqa: E402
 
 _MIN_TRAILER_CHARS = 40
 _MIN_SHARED_RUN = 20
@@ -55,17 +62,19 @@ def _parse(url: str, *, strip: bool):
     p = StructureParser()
     p._trailer_strip_enabled = strip
     html = _fetch(url)
-    return {v.language: v for v in p.parse(
-        normalize_garbled_diacritics(HtmlTextExtractor().extract(html, base_url=url).text)
-    ).lyric_variants}
+    return {
+        v.language: v
+        for v in p.parse(
+            normalize_garbled_diacritics(HtmlTextExtractor().extract(html, base_url=url).text)
+        ).lyric_variants
+    }
 
 
 def _longest_shared_run(a: str, b: str) -> int:
     na, nb = re.sub(r"\s+", "", a), re.sub(r"\s+", "", b)
     if not na or not nb:
         return 0
-    return difflib.SequenceMatcher(None, na, nb, autojunk=False).find_longest_match(
-        0, len(na), 0, len(nb)).size
+    return difflib.SequenceMatcher(None, na, nb, autojunk=False).find_longest_match(0, len(na), 0, len(nb)).size
 
 
 def _assess(res, lang, template, stored_blob):
@@ -83,8 +92,9 @@ def _assess(res, lang, template, stored_blob):
     full_last, strip_last = full.sections[-1].text, secs[-1].text
     if full_last == strip_last:
         return None, f"{lang} no trailer removed — use section_repair"
-    dropped = (full_last[len(strip_last):] if full_last.startswith(strip_last)
-               else full_last[len(strip_last):]).strip()
+    dropped = (
+        full_last[len(strip_last) :] if full_last.startswith(strip_last) else full_last[len(strip_last) :]
+    ).strip()
     if len(dropped) < _MIN_TRAILER_CHARS:
         return None, f"{lang} removed tail too short ({len(dropped)} chars)"
     if _PRONUNCIATION_DIGIT.search(dropped):
@@ -103,9 +113,12 @@ def main() -> int:
     ap.add_argument("--krithi", action="append", default=[])
     ap.add_argument("--from-report")
     ap.add_argument("--lang", default="ta", help="variant language to repair (default: ta)")
-    ap.add_argument("--reclean", action="store_true",
-                    help="re-write even when the section count already matches the template "
-                         "(e.g. to apply a later parser fix such as the preamble strip)")
+    ap.add_argument(
+        "--reclean",
+        action="store_true",
+        help="re-write even when the section count already matches the template "
+        "(e.g. to apply a later parser fix such as the preamble strip)",
+    )
     ap.add_argument("--apply", action="store_true")
     args = ap.parse_args()
 
@@ -140,12 +153,15 @@ def main() -> int:
                     skipped += 1
                 continue
             sid_by_order = {oi: sid for oi, _, sid in template}
-            payload = {"sections": [{"sectionId": sid_by_order[i + 1], "text": s.text}
-                                    for i, s in enumerate(secs)]}
+            payload = {"sections": [{"sectionId": sid_by_order[i + 1], "text": s.text} for i, s in enumerate(secs)]}
             trailer_note = f"(last {len(secs[-1].text)}ch, was trailer-laden)"
             if args.apply:
-                resp = _request("POST", f"{API}/v1/admin/variants/{vid}/sections",
-                                headers={"Authorization": f"Bearer {token}"}, json=payload)
+                resp = _request(
+                    "POST",
+                    f"{API}/v1/admin/variants/{vid}/sections",
+                    headers={"Authorization": f"Bearer {token}"},
+                    json=payload,
+                )
                 print(f"{res.title[:32]:32} {args.lang}: {len(secs)} secs -> HTTP {resp.status_code} {trailer_note}")
             else:
                 print(f"{res.title[:32]:32} {args.lang}: {len(secs)} secs -> DRY-RUN {trailer_note}")

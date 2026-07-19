@@ -23,6 +23,7 @@ Env:
     DATABASE_URL   default postgresql://postgres:postgres@localhost:5432/sangita_grantha
     TRIAGE_CACHE   default <repo>/.triage-cache   (downloaded source HTML)
 """
+
 from __future__ import annotations
 
 import argparse
@@ -45,9 +46,7 @@ from src.diacritic_normalizer import normalize_garbled_diacritics  # noqa: E402
 from src.html_extractor import HtmlTextExtractor  # noqa: E402
 from src.structure_parser import StructureParser  # noqa: E402
 
-DB_URL = os.environ.get(
-    "DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/sangita_grantha"
-)
+DB_URL = os.environ.get("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/sangita_grantha")
 CACHE_DIR = Path(os.environ.get("TRIAGE_CACHE", _WORKER_ROOT.parents[1] / ".triage-cache"))
 
 INDIC_LANGS = ("sa", "ta", "te", "kn", "ml")
@@ -79,8 +78,7 @@ class TriageResult:
 def _source_url(conn, krithi_id: str) -> str | None:
     with conn.cursor(row_factory=dict_row) as cur:
         cur.execute(
-            "SELECT source_url FROM krithi_source_evidence WHERE krithi_id=%s "
-            "AND source_url IS NOT NULL LIMIT 1",
+            "SELECT source_url FROM krithi_source_evidence WHERE krithi_id=%s AND source_url IS NOT NULL LIMIT 1",
             (krithi_id,),
         )
         row = cur.fetchone()
@@ -109,8 +107,7 @@ def _load_from_db(conn, krithi_id: str) -> TriageResult:
         title = row["title"] if row else "?"
 
         cur.execute(
-            "SELECT section_type::text AS t FROM krithi_sections "
-            "WHERE krithi_id=%s ORDER BY order_index",
+            "SELECT section_type::text AS t FROM krithi_sections WHERE krithi_id=%s ORDER BY order_index",
             (krithi_id,),
         )
         template_types = [r["t"] for r in cur.fetchall()]
@@ -162,7 +159,9 @@ def _classify(res: TriageResult) -> None:
         res.note = "parser matches template for all variants; re-split siblings via API"
     elif all_agree and parsed_n is not None and parsed_n > tmpl:
         res.classification = "template-undercount"
-        res.note = f"parser finds {parsed_n} sections for all variants; template has {tmpl} (fix template, then re-split)"
+        res.note = (
+            f"parser finds {parsed_n} sections for all variants; template has {tmpl} (fix template, then re-split)"
+        )
     elif all_agree and parsed_n is not None and parsed_n < tmpl:
         res.classification = "parser-undercount"
         res.note = f"parser finds {parsed_n} < template {tmpl}; parser still misses markers (needs code fix)"
@@ -212,26 +211,37 @@ def main() -> int:
             out.append(res)
 
     if args.json:
-        print(json.dumps([
-            {
-                "krithi_id": r.krithi_id, "title": r.title, "classification": r.classification,
-                "template_n": r.template_n, "template_types": r.template_types,
-                "stored_counts": r.stored_counts,
-                "parsed": {l: {"n": p.n_sections, "types": p.types} for l, p in r.parsed.items()},
-                "source_url": r.source_url, "note": r.note,
-            } for r in out
-        ], ensure_ascii=False, indent=2))
+        print(
+            json.dumps(
+                [
+                    {
+                        "krithi_id": r.krithi_id,
+                        "title": r.title,
+                        "classification": r.classification,
+                        "template_n": r.template_n,
+                        "template_types": r.template_types,
+                        "stored_counts": r.stored_counts,
+                        "parsed": {lang: {"n": p.n_sections, "types": p.types} for lang, p in r.parsed.items()},
+                        "source_url": r.source_url,
+                        "note": r.note,
+                    }
+                    for r in out
+                ],
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
         return 0
 
     for r in out:
         print(f"\n=== {r.title}  [{r.krithi_id}]")
         print(f"    template: {r.template_n} {r.template_types}")
         print(f"    stored  : {r.stored_counts}")
-        print(f"    parsed  : " + ", ".join(f"{l}={p.n_sections}" for l, p in r.parsed.items()))
+        print("    parsed  : " + ", ".join(f"{lang}={p.n_sections}" for lang, p in r.parsed.items()))
         print(f"    -> {r.classification.upper()}: {r.note}")
         if args.show_source:
-            for l, p in r.parsed.items():
-                print(f"       {l}: {p.types}")
+            for lang, p in r.parsed.items():
+                print(f"       {lang}: {p.types}")
     return 0
 
 

@@ -137,7 +137,7 @@ class GeminiMetadataEnricher:
 
                 if is_rate_limit:
                     if attempt < max_retries:
-                        delay = 2 * (2 ** attempt) + random.uniform(0, 1)
+                        delay = 2 * (2**attempt) + random.uniform(0, 1)
                         logger.warning(
                             "Gemini 429 ResourceExhausted. Retrying in %.2fs (Attempt %d/%d)",
                             delay,
@@ -182,7 +182,7 @@ class GeminiMetadataEnricher:
             model=self._config.model,
             applied=True,
             confidence=suggestion.confidence or 0.8,
-            fieldsUpdated=fields_updated,
+            fields_updated=fields_updated,
         )
 
     def _is_missing(self, value: str | None) -> bool:
@@ -206,7 +206,8 @@ class GeminiMetadataEnricher:
         snippet = source_text[:4000]
 
         return (
-            "You are an expert Musicologist specializing in Carnatic Music, specifically the kritis of Trinity of Carnatic Music.\n"
+            "You are an expert Musicologist specializing in Carnatic Music, "
+            "specifically the kritis of Trinity of Carnatic Music.\n"
             "Analyze the text for:\n"
             "1. Vaggeyakara (Composer) signature (e.g., 'Guruguha').\n"
             "2. Raga Mudra (The raga name often hidden in lyrics like 'jujāvanti' for Dvijavanti).\n"
@@ -263,10 +264,7 @@ class GeminiMetadataEnricher:
 
         batch_job = self._raw_client.batches.create(
             model=self._config.model,
-            requests=[
-                {"contents": [{"parts": [{"text": p}]}], "config": config}
-                for p in requests
-            ],
+            requests=[{"contents": [{"parts": [{"text": p}]}], "config": config} for p in requests],
         )
 
         logger.info("Batch job submitted: %s (%d requests)", batch_job.name, len(requests))
@@ -284,34 +282,40 @@ class GeminiMetadataEnricher:
         results: list[CanonicalMetadataEnrichment | None] = []
         responses = self._raw_client.batches.list_results(name=batch_job.name)
 
-        for i, (response, (extraction, _, source_format)) in enumerate(zip(responses, items)):
+        for i, (response, (extraction, _, source_format)) in enumerate(zip(responses, items, strict=False)):
             try:
                 suggestion = self._parse_response(response)
                 if suggestion is None:
-                    results.append(CanonicalMetadataEnrichment(
-                        provider=PROVIDER_LABEL,
-                        model=self._config.model,
-                        applied=False,
-                        warnings=["batch_parse_failure"],
-                    ))
+                    results.append(
+                        CanonicalMetadataEnrichment(
+                            provider=PROVIDER_LABEL,
+                            model=self._config.model,
+                            applied=False,
+                            warnings=["batch_parse_failure"],
+                        )
+                    )
                     continue
 
                 fields_updated = self._apply_suggestion(extraction, suggestion, source_format)
-                results.append(CanonicalMetadataEnrichment(
-                    provider=PROVIDER_LABEL,
-                    model=self._config.model,
-                    applied=True,
-                    confidence=suggestion.confidence or 0.8,
-                    fieldsUpdated=fields_updated,
-                ))
+                results.append(
+                    CanonicalMetadataEnrichment(
+                        provider=PROVIDER_LABEL,
+                        model=self._config.model,
+                        applied=True,
+                        confidence=suggestion.confidence or 0.8,
+                        fields_updated=fields_updated,
+                    )
+                )
             except Exception as exc:
                 logger.warning("Batch result %d parse error: %s", i, exc)
-                results.append(CanonicalMetadataEnrichment(
-                    provider=PROVIDER_LABEL,
-                    model=self._config.model,
-                    applied=False,
-                    warnings=[f"batch_error:{type(exc).__name__}"],
-                ))
+                results.append(
+                    CanonicalMetadataEnrichment(
+                        provider=PROVIDER_LABEL,
+                        model=self._config.model,
+                        applied=False,
+                        warnings=[f"batch_error:{type(exc).__name__}"],
+                    )
+                )
 
         return results
 

@@ -20,7 +20,6 @@ from __future__ import annotations
 
 import re
 
-
 # ─── Normalisation rules (Section 4.1 of spec) ──────────────────────────
 #
 # Rules 1–7 are safe for broad application.  Rule 8 (consonant + dot) is

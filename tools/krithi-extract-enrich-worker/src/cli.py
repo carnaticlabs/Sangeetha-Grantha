@@ -12,8 +12,9 @@ from __future__ import annotations
 import json
 import logging
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 
 import click
 
@@ -88,7 +89,7 @@ def extract(
     click.echo(f"Detected {len(segments)} Krithi segments")
 
     # Process each segment
-    results: list[dict] = []
+    results: list[dict[str, Any]] = []
     for i, segment in enumerate(segments):
         metadata = metadata_parser.parse(
             segment.body_text[:500],
@@ -97,9 +98,7 @@ def extract(
         parse_result = structure_parser.parse(segment.body_text)
         canonical_sections = structure_parser.to_canonical_sections(parse_result.sections)
         lyric_variants = structure_parser.to_canonical_lyric_variants(parse_result.lyric_variants)
-        metadata_boundaries = structure_parser.to_canonical_metadata_boundaries(
-            parse_result.metadata_boundaries
-        )
+        metadata_boundaries = structure_parser.to_canonical_metadata_boundaries(parse_result.metadata_boundaries)
         if not lyric_variants and parse_result.sections:
             fallback_script = transliterator.detect_script(segment.body_text) or "devanagari"
             fallback_language = "sa" if fallback_script == "devanagari" else "en"
@@ -113,23 +112,23 @@ def extract(
 
         extraction = CanonicalExtraction(
             title=metadata.title,
-            alternateTitle=metadata.alternate_title,
+            alternate_title=metadata.alternate_title,
             composer=metadata.composer or composer or "Unknown",
-            musicalForm=MusicalForm.KRITHI,
+            musical_form=MusicalForm.KRITHI,
             ragas=[CanonicalRaga(name=metadata.raga or "Unknown")],
             tala=metadata.tala or "Unknown",
             sections=canonical_sections,
-            lyricVariants=lyric_variants,
-            metadataBoundaries=metadata_boundaries,
+            lyric_variants=lyric_variants,
+            metadata_boundaries=metadata_boundaries,
             deity=metadata.deity,
             temple=metadata.temple,
-            templeLocation=metadata.temple_location,
-            sourceUrl=input_path,
-            sourceName=source_name,
-            sourceTier=source_tier,
-            extractionMethod=ExtractionMethod.PDF_PYMUPDF,
-            extractionTimestamp=datetime.now(timezone.utc).isoformat(),
-            pageRange=segment.page_range_str,
+            temple_location=metadata.temple_location,
+            source_url=input_path,
+            source_name=source_name,
+            source_tier=source_tier,
+            extraction_method=ExtractionMethod.PDF_PYMUPDF,
+            extraction_timestamp=datetime.now(UTC).isoformat(),
+            page_range=segment.page_range_str,
             checksum=document.checksum,
         )
 

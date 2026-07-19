@@ -11,7 +11,6 @@ from __future__ import annotations
 import logging
 import re
 from dataclasses import dataclass, field
-from typing import Optional
 
 from .extractor import DocumentContent, PageContent, TextBlock
 
@@ -296,9 +295,7 @@ class PageSegmenter:
         rather than actual titles.
         """
         # Filter out number-only blocks when there are text blocks available
-        text_blocks = [
-            (idx, b) for idx, b in group if not b.text.strip().isdigit()
-        ]
+        text_blocks = [(idx, b) for idx, b in group if not b.text.strip().isdigit()]
         candidates = text_blocks if text_blocks else group
         return max(candidates, key=lambda x: len(x[1].text))
 

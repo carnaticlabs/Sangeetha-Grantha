@@ -54,7 +54,7 @@ class ExtractionQueueDB:
 
     def __init__(self, config: ExtractorConfig) -> None:
         self._config = config
-        self._conn: psycopg.Connection | None = None
+        self._conn: psycopg.Connection[dict[str, Any]] | None = None
 
     def connect(self) -> None:
         """Establish database connection."""
@@ -72,7 +72,7 @@ class ExtractionQueueDB:
             logger.info("Database connection closed")
 
     @property
-    def conn(self) -> psycopg.Connection:
+    def conn(self) -> psycopg.Connection[dict[str, Any]]:
         if self._conn is None or self._conn.closed:
             self.connect()
         assert self._conn is not None

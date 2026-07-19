@@ -11,9 +11,7 @@ from __future__ import annotations
 
 import logging
 import re
-from collections import Counter
 from dataclasses import dataclass, field
-from typing import Optional
 
 from .schema import (
     CanonicalLyricSection,
@@ -169,24 +167,42 @@ SECTION_HEADER_PATTERNS: list[tuple[re.Pattern[str], str]] = [
         ),
         "CHARANAM",
     ),
-    (re.compile(r"^\s*[\-–—•*()=\[\]]*\s*samashti\s+(?:ch|c)ara?nam(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE), "SAMASHTI_CHARANAM"),
-    (re.compile(r"^\s*[\-–—•*()=\[\]]*\s*samash?ti\s+(?:ch|c)ara?nam(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE), "SAMASHTI_CHARANAM"),
+    (
+        re.compile(r"^\s*[\-–—•*()=\[\]]*\s*samashti\s+(?:ch|c)ara?nam(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE),
+        "SAMASHTI_CHARANAM",
+    ),
+    (
+        re.compile(r"^\s*[\-–—•*()=\[\]]*\s*samash?ti\s+(?:ch|c)ara?nam(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE),
+        "SAMASHTI_CHARANAM",
+    ),
     (re.compile(r"^\s*[\-–—•*()=\[\]]*\s*chittaswaram(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE), "CHITTASWARAM"),
-    (re.compile(r"^\s*[\-–—•*()=\[\]]*\s*madhyama\s+kAla(?:\s+sAhityam)?(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE), "MADHYAMAKALA"),
-    (re.compile(r"^\s*[\-–—•*()=\[\]]*\s*madhyama\s+kala(?:\s+sahityam)?(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE), "MADHYAMAKALA"),
-    (re.compile(r"^\s*[\-–—•*()=\[\]]*\s*madhyamakala(?:\s+sahityam)?(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE), "MADHYAMAKALA"),
-    (re.compile(r"^\s*[\-–—•*()=\[\]]*\s*m\.\s*k(?:\s+sahityam)?(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE), "MADHYAMAKALA"),
+    (
+        re.compile(r"^\s*[\-–—•*()=\[\]]*\s*madhyama\s+kAla(?:\s+sAhityam)?(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE),
+        "MADHYAMAKALA",
+    ),
+    (
+        re.compile(r"^\s*[\-–—•*()=\[\]]*\s*madhyama\s+kala(?:\s+sahityam)?(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE),
+        "MADHYAMAKALA",
+    ),
+    (
+        re.compile(r"^\s*[\-–—•*()=\[\]]*\s*madhyamakala(?:\s+sahityam)?(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE),
+        "MADHYAMAKALA",
+    ),
+    (
+        re.compile(r"^\s*[\-–—•*()=\[\]]*\s*m\.\s*k(?:\s+sahityam)?(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE),
+        "MADHYAMAKALA",
+    ),
     (re.compile(r"^\s*[\-–—•*()=\[\]]*\s*svara\s+sahitya(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE), "SWARA_SAHITYA"),
     (re.compile(r"^\s*[\-–—•*()=\[\]]*\s*swarasahitya(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE), "SWARA_SAHITYA"),
     # Indic-script "svara sAhitya N" headers (CAT-B: Syama Sastri kritis whose
     # swara-sahitya sections are labelled inline in each variant's own script).
     # Without these, the whole Indic variant collapses into one PALLAVI blob and
     # never matches the multi-section template.
-    (re.compile(r"^\s*स्वर\s+साहित्य(?:\s|:|\-|\.|\)|]|\d|$)"), "SWARA_SAHITYA"),      # Devanagari
-    (re.compile(r"^\s*ஸ்வர\s+ஸாஹித்ய(?:\s|:|\-|\.|\)|]|\d|$)"), "SWARA_SAHITYA"),      # Tamil
-    (re.compile(r"^\s*స్వర\s+సాహిత్య(?:\s|:|\-|\.|\)|]|\d|$)"), "SWARA_SAHITYA"),      # Telugu
-    (re.compile(r"^\s*ಸ್ವರ\s+ಸಾಹಿತ್ಯ(?:\s|:|\-|\.|\)|]|\d|$)"), "SWARA_SAHITYA"),      # Kannada
-    (re.compile(r"^\s*സ്വര\s+സാഹിത്യ(?:\s|:|\-|\.|\)|]|\d|$)"), "SWARA_SAHITYA"),      # Malayalam
+    (re.compile(r"^\s*स्वर\s+साहित्य(?:\s|:|\-|\.|\)|]|\d|$)"), "SWARA_SAHITYA"),  # Devanagari
+    (re.compile(r"^\s*ஸ்வர\s+ஸாஹித்ய(?:\s|:|\-|\.|\)|]|\d|$)"), "SWARA_SAHITYA"),  # Tamil
+    (re.compile(r"^\s*స్వర\s+సాహిత్య(?:\s|:|\-|\.|\)|]|\d|$)"), "SWARA_SAHITYA"),  # Telugu
+    (re.compile(r"^\s*ಸ್ವರ\s+ಸಾಹಿತ್ಯ(?:\s|:|\-|\.|\)|]|\d|$)"), "SWARA_SAHITYA"),  # Kannada
+    (re.compile(r"^\s*സ്വര\s+സാഹിത്യ(?:\s|:|\-|\.|\)|]|\d|$)"), "SWARA_SAHITYA"),  # Malayalam
     # Inline C + digit(s) (thyagaraja-vaibhavam blog format): "C1 venuka tIka",
     # "C12 rAjillu SrI tyAgarAja". Uppercase only, unambiguous — no lyric line
     # starts with "C" + digit + space.
@@ -271,15 +287,21 @@ SECTION_HEADER_PATTERNS: list[tuple[re.Pattern[str], str]] = [
 # positives from navigation links like "Meaning of Kriti-1" or "Notes on the composition".
 # A genuine metadata header is a standalone label, optionally followed by `:`, `-`, or newline.
 METADATA_BOUNDARY_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
-    ("MEANING", re.compile(
-        r"^\s*(?:meaning(?!\s+of\b)|artha|artham|भावार्थ)\b",
-        re.IGNORECASE | re.MULTILINE,
-    )),
+    (
+        "MEANING",
+        re.compile(
+            r"^\s*(?:meaning(?!\s+of\b)|artha|artham|भावार्थ)\b",
+            re.IGNORECASE | re.MULTILINE,
+        ),
+    ),
     ("GIST", re.compile(r"^\s*(?:gist|summary)\b", re.IGNORECASE | re.MULTILINE)),
-    ("NOTES", re.compile(
-        r"^\s*(?:notes?(?!\s+(?:on|about|from|by|for)\b)|tippani)\b",
-        re.IGNORECASE | re.MULTILINE,
-    )),
+    (
+        "NOTES",
+        re.compile(
+            r"^\s*(?:notes?(?!\s+(?:on|about|from|by|for)\b)|tippani)\b",
+            re.IGNORECASE | re.MULTILINE,
+        ),
+    ),
     ("WORD_DIVISION", re.compile(r"^\s*(?:word\s*division|pada\s*ccheda)\b", re.IGNORECASE | re.MULTILINE)),
     ("VARIATIONS", re.compile(r"^\s*(?:variations?|alternate\s*reading)\b", re.IGNORECASE | re.MULTILINE)),
 ]
@@ -308,26 +330,24 @@ _INLINE_CHARANAM_PROBE = re.compile(r"(?m)^\s*C(?:\d{1,2})? (?=[a-zA-Z\d])")
 # that use full-word Indic headers are unaffected. The trailing period is the
 # disambiguator — natural lyric lines do not begin "<consonant>.".
 INLINE_INDIC_PAC_PATTERNS: list[tuple[re.Pattern[str], str]] = [
-    (re.compile(r"^\s*प\d*\s*\.\s*(?=\S)"), "PALLAVI"),      # Devanagari
+    (re.compile(r"^\s*प\d*\s*\.\s*(?=\S)"), "PALLAVI"),  # Devanagari
     (re.compile(r"^\s*अ\d*\s*\.\s*(?=\S)"), "ANUPALLAVI"),
     (re.compile(r"^\s*च\d*\s*\.\s*(?=\S)"), "CHARANAM"),
-    (re.compile(r"^\s*ప\d*\s*\.\s*(?=\S)"), "PALLAVI"),      # Telugu
+    (re.compile(r"^\s*ప\d*\s*\.\s*(?=\S)"), "PALLAVI"),  # Telugu
     (re.compile(r"^\s*అ\d*\s*\.\s*(?=\S)"), "ANUPALLAVI"),
     (re.compile(r"^\s*చ\d*\s*\.\s*(?=\S)"), "CHARANAM"),
-    (re.compile(r"^\s*ಪ\d*\s*\.\s*(?=\S)"), "PALLAVI"),      # Kannada
+    (re.compile(r"^\s*ಪ\d*\s*\.\s*(?=\S)"), "PALLAVI"),  # Kannada
     (re.compile(r"^\s*ಅ\d*\s*\.\s*(?=\S)"), "ANUPALLAVI"),
     (re.compile(r"^\s*ಚ\d*\s*\.\s*(?=\S)"), "CHARANAM"),
-    (re.compile(r"^\s*പ\d*\s*\.\s*(?=\S)"), "PALLAVI"),      # Malayalam
+    (re.compile(r"^\s*പ\d*\s*\.\s*(?=\S)"), "PALLAVI"),  # Malayalam
     (re.compile(r"^\s*അ\d*\s*\.\s*(?=\S)"), "ANUPALLAVI"),
     (re.compile(r"^\s*ച\d*\s*\.\s*(?=\S)"), "CHARANAM"),
-    (re.compile(r"^\s*ப\d*\s*\.\s*(?=\S)"), "PALLAVI"),      # Tamil
+    (re.compile(r"^\s*ப\d*\s*\.\s*(?=\S)"), "PALLAVI"),  # Tamil
     (re.compile(r"^\s*அ\d*\s*\.\s*(?=\S)"), "ANUPALLAVI"),
     (re.compile(r"^\s*ச\d*\s*\.\s*(?=\S)"), "CHARANAM"),
 ]
 
-_INLINE_INDIC_PAC_PROBE = re.compile(
-    r"(?m)^\s*(?:प|अ|च|ప|అ|చ|ಪ|ಅ|ಚ|പ|അ|ച|ப|அ|ச)\d*\s*\.\s*(?=\S)"
-)
+_INLINE_INDIC_PAC_PROBE = re.compile(r"(?m)^\s*(?:प|अ|च|ప|అ|చ|ಪ|ಅ|ಚ|പ|അ|ച|ப|அ|ச)\d*\s*\.\s*(?=\S)")
 
 METADATA_KEYWORDS = (
     "title",
@@ -360,7 +380,7 @@ _MIN_TRAILER_CHARS = 40
 _MIN_TRAILER_LINES = 2
 
 
-def strip_refrain_trailer(sections: list["DetectedSection"]) -> list["DetectedSection"]:
+def strip_refrain_trailer(sections: list[DetectedSection]) -> list[DetectedSection]:
     """Trim an inline translation trailer from a variant's last section.
 
     Govindan-blog Tamil variants append a word-by-word Tamil *meaning* after the
@@ -387,7 +407,7 @@ def strip_refrain_trailer(sections: list["DetectedSection"]) -> list["DetectedSe
             last_lyric = i
     if last_lyric == -1:
         return sections  # no transliteration markers — cannot locate a boundary
-    trailer_lines = lines[last_lyric + 1:]
+    trailer_lines = lines[last_lyric + 1 :]
     if len(trailer_lines) < _MIN_TRAILER_LINES:
         return sections  # not a multi-line prose block — leave as lyric
     trailer = "\n".join(trailer_lines).strip()
@@ -398,8 +418,12 @@ def strip_refrain_trailer(sections: list["DetectedSection"]) -> list["DetectedSe
         return sections
     return sections[:-1] + [
         DetectedSection(
-            section_type=last.section_type, order=last.order, label=last.label,
-            text=trimmed, start_pos=last.start_pos, end_pos=last.end_pos,
+            section_type=last.section_type,
+            order=last.order,
+            label=last.label,
+            text=trimmed,
+            start_pos=last.start_pos,
+            end_pos=last.end_pos,
         )
     ]
 
@@ -536,21 +560,26 @@ class StructureParser:
         flush()
         return blocks
 
-    def _detect_header(self, line: str) -> Optional[_HeaderMatch]:
+    def _detect_header(self, line: str) -> _HeaderMatch | None:
         language = self._detect_language_header(line)
         if language is not None:
             return language
         return self._detect_section_header(line)
 
-    def _detect_language_header(self, line: str) -> Optional[_HeaderMatch]:
+    def _detect_language_header(self, line: str) -> _HeaderMatch | None:
         lowered = line.lower()
         for key, label in LANGUAGE_HEADER_CANDIDATES:
-            if lowered == key or lowered.startswith(f"{key}:") or lowered.startswith(f"{key} -") or lowered.startswith(f"{key} –"):
+            if (
+                lowered == key
+                or lowered.startswith(f"{key}:")
+                or lowered.startswith(f"{key} -")
+                or lowered.startswith(f"{key} –")
+            ):
                 remainder = line[len(key) :].lstrip(":-– ")
                 return _HeaderMatch(label=label, remainder=remainder)
         return None
 
-    def _detect_section_header(self, line: str) -> Optional[_HeaderMatch]:
+    def _detect_section_header(self, line: str) -> _HeaderMatch | None:
         for pattern, label in SECTION_HEADER_PATTERNS:
             if pattern.search(line):
                 remainder = pattern.sub("", line, count=1).strip()
@@ -685,12 +714,16 @@ class StructureParser:
                         )
                     elif mks_text.strip() and not result:
                         # No parent — keep as OTHER
-                        result.append(DetectedSection(
-                            section_type=SectionType.OTHER,
-                            order=0, label="Madhyama Kala",
-                            text=mks_text, start_pos=section.start_pos,
-                            end_pos=section.end_pos,
-                        ))
+                        result.append(
+                            DetectedSection(
+                                section_type=SectionType.OTHER,
+                                order=0,
+                                label="Madhyama Kala",
+                                text=mks_text,
+                                start_pos=section.start_pos,
+                                end_pos=section.end_pos,
+                            )
+                        )
                     # Add the extracted sections
                     result.extend(new_sections)
                 elif result:
@@ -718,9 +751,7 @@ class StructureParser:
             )
         return result
 
-    def _split_mks_inline_headers(
-        self, mks_section: DetectedSection
-    ) -> tuple[str, list[DetectedSection]] | None:
+    def _split_mks_inline_headers(self, mks_section: DetectedSection) -> tuple[str, list[DetectedSection]] | None:
         """Check if MKS text contains inline section headers (e.g. చరణమ్).
 
         Returns (mks_text_before_header, [new_sections]) or None if no inline header found.
@@ -735,19 +766,21 @@ class StructureParser:
                     section_text_lines = []
                     if header.remainder:
                         section_text_lines.append(header.remainder)
-                    section_text_lines.extend(lines[i + 1:])
+                    section_text_lines.extend(lines[i + 1 :])
                     section_text = "\n".join(section_text_lines).strip()
 
                     new_sections = []
                     if section_text:
-                        new_sections.append(DetectedSection(
-                            section_type=section_type,
-                            order=0,
-                            label=section_type.value.replace("_", " ").title(),
-                            text=section_text,
-                            start_pos=mks_section.start_pos,
-                            end_pos=mks_section.end_pos,
-                        ))
+                        new_sections.append(
+                            DetectedSection(
+                                section_type=section_type,
+                                order=0,
+                                label=section_type.value.replace("_", " ").title(),
+                                text=section_text,
+                                start_pos=mks_section.start_pos,
+                                end_pos=mks_section.end_pos,
+                            )
+                        )
                     return (mks_text, new_sections)
         return None
 
@@ -767,29 +800,33 @@ class StructureParser:
                     norm_a = re.sub(r"\s+", "", section.text)
                     norm_b = re.sub(r"\s+", "", next_section.text)
                     if norm_a and norm_b:
-                        overlap = sum(1 for ca, cb in zip(norm_a, norm_b) if ca == cb)
+                        overlap = sum(1 for ca, cb in zip(norm_a, norm_b, strict=False) if ca == cb)
                         max_len = max(len(norm_a), len(norm_b))
                         if max_len > 0 and overlap / max_len > 0.9:
                             # Keep the longer one (word-division has more spaces)
                             kept = next_section if len(next_section.text) >= len(section.text) else section
-                            result.append(DetectedSection(
-                                section_type=kept.section_type,
-                                order=len(result) + 1,
-                                label=kept.label,
-                                text=kept.text,
-                                start_pos=kept.start_pos,
-                                end_pos=kept.end_pos,
-                            ))
+                            result.append(
+                                DetectedSection(
+                                    section_type=kept.section_type,
+                                    order=len(result) + 1,
+                                    label=kept.label,
+                                    text=kept.text,
+                                    start_pos=kept.start_pos,
+                                    end_pos=kept.end_pos,
+                                )
+                            )
                             skip_next = True
                             continue
-            result.append(DetectedSection(
-                section_type=section.section_type,
-                order=len(result) + 1,
-                label=section.label,
-                text=section.text,
-                start_pos=section.start_pos,
-                end_pos=section.end_pos,
-            ))
+            result.append(
+                DetectedSection(
+                    section_type=section.section_type,
+                    order=len(result) + 1,
+                    label=section.label,
+                    text=section.text,
+                    start_pos=section.start_pos,
+                    end_pos=section.end_pos,
+                )
+            )
         return result
 
     def _detect_ragamalika_subsections(
@@ -806,19 +843,23 @@ class StructureParser:
             viloma_match = VILOMA_SUBSECTION_PATTERN.search(line.text)
             raga_match = RAGA_SUBSECTION_PATTERN.search(line.text)
             if viloma_match is not None:
-                subsections.append(RagamalikaSubsection(
-                    raga_name=viloma_match.group(1).strip(),
-                    parent_section_type=section_type,
-                    is_viloma=True,
-                    order=0,
-                ))
+                subsections.append(
+                    RagamalikaSubsection(
+                        raga_name=viloma_match.group(1).strip(),
+                        parent_section_type=section_type,
+                        is_viloma=True,
+                        order=0,
+                    )
+                )
             elif raga_match is not None:
-                subsections.append(RagamalikaSubsection(
-                    raga_name=raga_match.group(1).strip(),
-                    parent_section_type=section_type,
-                    is_viloma=False,
-                    order=0,
-                ))
+                subsections.append(
+                    RagamalikaSubsection(
+                        raga_name=raga_match.group(1).strip(),
+                        parent_section_type=section_type,
+                        is_viloma=False,
+                        order=0,
+                    )
+                )
         return subsections
 
     def _extract_lyric_variants(
@@ -838,7 +879,7 @@ class StructureParser:
         canonical_sections: list[DetectedSection],
     ) -> list[DetectedLyricVariant]:
         variants: list[DetectedLyricVariant] = []
-        current_label: Optional[str] = None
+        current_label: str | None = None
         current_blocks: list[_TextBlock] = []
 
         def flush() -> None:
@@ -848,9 +889,7 @@ class StructureParser:
             language, script = self._language_script_for_label(current_label)
             sections = self._sections_from_variant_blocks(current_blocks, canonical_sections)
             if sections:
-                variants.append(
-                    DetectedLyricVariant(language=language, script=script, sections=sections)
-                )
+                variants.append(DetectedLyricVariant(language=language, script=script, sections=sections))
             current_label = None
             current_blocks = []
 
@@ -890,7 +929,7 @@ class StructureParser:
         _INDIC_LABELS = {"DEVANAGARI", "TAMIL", "TELUGU", "KANNADA", "MALAYALAM", "SANSKRIT", "HINDI"}
 
         variants: list[DetectedLyricVariant] = []
-        current_label: Optional[str] = None
+        current_label: str | None = None
         current_blocks: list[_TextBlock] = []
 
         def flush() -> None:
@@ -901,9 +940,7 @@ class StructureParser:
             if script not in existing_scripts:
                 sections = self._sections_from_variant_blocks(current_blocks, canonical_sections)
                 if sections:
-                    variants.append(
-                        DetectedLyricVariant(language=language, script=script, sections=sections)
-                    )
+                    variants.append(DetectedLyricVariant(language=language, script=script, sections=sections))
             current_label = None
             current_blocks = []
 
@@ -916,9 +953,7 @@ class StructureParser:
                 flush()
                 current_label = block.label
                 if block.lines:
-                    sub_blocks = self._reparse_lines_for_sections(
-                        block.lines, block.start_pos, block.end_pos
-                    )
+                    sub_blocks = self._reparse_lines_for_sections(block.lines, block.start_pos, block.end_pos)
                     current_blocks.extend(sub_blocks)
                 continue
 
@@ -951,7 +986,9 @@ class StructureParser:
                 DetectedSection(
                     section_type=section_type,
                     order=0,
-                    label=section_type.value.replace("_", " ").title() if section_type != SectionType.OTHER else "Other",
+                    label=section_type.value.replace("_", " ").title()
+                    if section_type != SectionType.OTHER
+                    else "Other",
                     text=text,
                     start_pos=block.start_pos,
                     end_pos=block.end_pos,
@@ -1037,12 +1074,14 @@ class StructureParser:
         def flush() -> None:
             nonlocal current_lines
             if current_lines:
-                blocks.append(_TextBlock(
-                    label=current_label,
-                    lines=current_lines,
-                    start_pos=current_lines[0].start_pos,
-                    end_pos=current_lines[-1].end_pos,
-                ))
+                blocks.append(
+                    _TextBlock(
+                        label=current_label,
+                        lines=current_lines,
+                        start_pos=current_lines[0].start_pos,
+                        end_pos=current_lines[-1].end_pos,
+                    )
+                )
                 current_lines = []
 
         for line in lines:
@@ -1051,11 +1090,13 @@ class StructureParser:
                 flush()
                 current_label = header.label
                 if header.remainder:
-                    current_lines.append(_LineToken(
-                        text=header.remainder,
-                        start_pos=line.start_pos,
-                        end_pos=line.end_pos,
-                    ))
+                    current_lines.append(
+                        _LineToken(
+                            text=header.remainder,
+                            start_pos=line.start_pos,
+                            end_pos=line.end_pos,
+                        )
+                    )
             else:
                 current_lines.append(line)
 
@@ -1150,9 +1191,7 @@ class StructureParser:
         if "pronunciation guide" in lowered:
             return True
         # Devanagari vowel/consonant mapping lines (e.g. "ऎ,कॆ,चॆ.. - e,ke,ce..(short)")
-        if ("(short)" in lowered or "(long)" in lowered) and re.search(
-            r"[\u0900-\u097F].*-\s*[a-zA-Z]", line
-        ):
+        if ("(short)" in lowered or "(long)" in lowered) and re.search(r"[\u0900-\u097F].*-\s*[a-zA-Z]", line):
             return True
         # Transliteration-key preamble lines (Modified HK chart at the top of each
         # script block on Govindan blogs \u2014 ADR-015 head-capture fix). Three forms,
@@ -1161,7 +1200,8 @@ class StructureParser:
         if re.match(r"^[\u0900-\u0D7F]\s*,\s*[\u0900-\u0D7F]", line):
             return True
         #   2. a cross-script mapping row \u2014 Devanagari mixed with another Indic
-        #      script ("\u0BB81 \u0936 - \u0936\u093F\u0935 - \u0B9A\u0BBF\u0BB5\u0BA9\u0BCD"); lyric is always one script per line.
+        #      script ("\u0BB81 \u0936 - \u0936\u093F\u0935 - \u0B9A\u0BBF\u0BB5\u0BA9\u0BCD");
+        #      lyric is always one script per line.
         if re.search(r"[\u0900-\u097F]", line) and re.search(r"[\u0B00-\u0D7F]", line):
             return True
         #   3. a parenthesised sandhi mapping, whole line ("(\u0B9A3 - \u0B9C)"); lyric
@@ -1221,7 +1261,7 @@ class StructureParser:
             "latin": "en",
         }.get(script, "en")
 
-    def _detect_script(self, text: str) -> Optional[str]:
+    def _detect_script(self, text: str) -> str | None:
         counts = {
             "devanagari": 0,
             "tamil": 0,
@@ -1260,11 +1300,7 @@ class StructureParser:
         ]
 
     def to_canonical_lyric_sections(self, detected: list[DetectedSection]) -> list[CanonicalLyricSection]:
-        return [
-            CanonicalLyricSection(sectionOrder=d.order, text=d.text)
-            for d in detected
-            if d.text
-        ]
+        return [CanonicalLyricSection(section_order=d.order, text=d.text) for d in detected if d.text]
 
     def to_canonical_lyric_variants(
         self,
@@ -1287,8 +1323,8 @@ class StructureParser:
         return [
             CanonicalMetadataBoundary(
                 label=b.label,
-                startOffset=b.start_pos,
-                endOffset=b.end_pos,
+                start_offset=b.start_pos,
+                end_offset=b.end_pos,
             )
             for b in boundaries
         ]

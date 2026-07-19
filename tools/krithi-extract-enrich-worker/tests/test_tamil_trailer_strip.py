@@ -14,9 +14,9 @@ from pathlib import Path
 
 from src.diacritic_normalizer import normalize_garbled_diacritics
 from src.html_extractor import HtmlTextExtractor
+from src.schema import SectionType
 from src.structure_parser import (
     DetectedSection,
-    SectionType,
     StructureParser,
     strip_refrain_trailer,
 )
@@ -25,21 +25,14 @@ FIXTURE_DIR = Path(__file__).parent / "fixtures" / "html"
 
 
 def _sec(order: int, type_: SectionType, text: str) -> DetectedSection:
-    return DetectedSection(section_type=type_, order=order, label=type_.value.title(),
-                           text=text, start_pos=0, end_pos=len(text))
+    return DetectedSection(
+        section_type=type_, order=order, label=type_.value.title(), text=text, start_pos=0, end_pos=len(text)
+    )
 
 
 # A transliterated charanam (digit-bearing lines) followed by a Tamil prose trailer.
-_LYRIC_CHARANAM = (
-    "யோகி3 ஹ்ரு2த3ய நீவே க3தி(ய)னு ஜன\n"
-    "பா4க3வத ப்ரிய த்யாக3ராஜ நுத\n"
-    "நா(கா3)சலமுபை பா3கு3க3 நெலகொன்ன (வேங்க)"
-)
-_TAMIL_TRAILER = (
-    "வேங்கடேசா! உன்னை சேவிக்க\n"
-    "பதினாயிரம் கண்கள் வேணுமய்யா\n"
-    "மங்களமான, தெய்வீக உருவமேற்றுக்கொண்ட வேங்கடேசா!"
-)
+_LYRIC_CHARANAM = "யோகி3 ஹ்ரு2த3ய நீவே க3தி(ய)னு ஜன\nபா4க3வத ப்ரிய த்யாக3ராஜ நுத\nநா(கா3)சலமுபை பா3கு3க3 நெலகொன்ன (வேங்க)"
+_TAMIL_TRAILER = "வேங்கடேசா! உன்னை சேவிக்க\nபதினாயிரம் கண்கள் வேணுமய்யா\nமங்களமான, தெய்வீக உருவமேற்றுக்கொண்ட வேங்கடேசா!"
 
 
 class TestStripRefrainTrailerUnit:
@@ -89,7 +82,12 @@ class TestVenkatesaFixture:
         variants = self._parse()
         ta = variants["ta"]
         assert [s.section_type.value for s in ta.sections] == [
-            "PALLAVI", "ANUPALLAVI", "CHARANAM", "CHARANAM", "CHARANAM"]
+            "PALLAVI",
+            "ANUPALLAVI",
+            "CHARANAM",
+            "CHARANAM",
+            "CHARANAM",
+        ]
         # last section ends at the refrain cue, and is no longer a 5-18x trailer blob
         assert ta.sections[-1].text.rstrip().endswith("(வேங்க)")
         en_last = len(variants["en"].sections[-1].text)

@@ -1,7 +1,7 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Not Started |
-| **Version** | 1.0.0 |
+| **Status** | Completed |
+| **Version** | 1.1.0 |
 | **Last Updated** | 2026-07-19 |
 | **Author** | Sangeetha Grantha Team |
 
@@ -57,3 +57,50 @@ Run inside `tools/krithi-extract-enrich-worker/`:
 * `uv run ruff format --check .` → clean
 * `uv run mypy .` → 0 errors
 * `uv run pytest` → all green (210 unit + 18 integration at time of writing)
+
+## Outcome (2026-07-19)
+
+Verified locally, all four gates from a clean `.mypy_cache`:
+
+| Gate | Before | After |
+|:---|:---|:---|
+| `ruff check .` | 125 errors | **0** |
+| `ruff format --check .` | n/a | **53 files clean** |
+| `mypy .` | 226 errors | **0** |
+| `pytest` (unit) | 210 passed | **210 passed** |
+| `pytest tests/integration` | 18 passed | **18 passed** |
+
+`src/` is clean under **full** strict mypy — no relaxations and no `type: ignore`
+anywhere in the tree. How the two big error classes cleared:
+
+* **Pydantic aliases (64 `call-arg`)** — the models already set
+  `populate_by_name`, but as a bare dict, which the plugin does not read. Switching
+  to `ConfigDict(populate_by_name=True)` let the plugin generate `__init__` by field
+  name; the 106 camelCase call-site kwargs were then rewritten to snake_case field
+  names. Runtime behaviour is unchanged (`populate_by_name` accepts both, and the
+  wire format still comes from `to_json_dict(by_alias=True)`).
+* **psycopg generics (63 errors)** — cleared by two annotations in `src/db.py`
+  (`psycopg.Connection[dict[str, Any]]` on `_conn` and the `conn` property).
+
+Notes and deviations:
+
+* `zip(..., strict=False)` was used at both `B905` sites rather than `strict=True`:
+  `structure_parser.py` compares deliberately ragged strings, and the
+  `gemini_enricher.py` batch site is TRACK-128's territory. Making either strict
+  would be a behaviour change.
+* `scripts/` sibling imports (`section_triage`, `section_repair`) resolve via
+  runtime `sys.path` insertion that mypy cannot follow, so they carry an
+  `ignore_missing_imports` override pointing at **TRACK-127**, per this track's
+  Out of Scope note.
+* One dead placeholder list in `repair_comprehensive.py` (`parser.parse("").__class__`)
+  was removed — it was unconditionally overwritten two statements later.
+* Test method stubs in `test_worker.py` moved to `monkeypatch.setattr` (13 sites).
+* Enums moved from `(str, Enum)` to `StrEnum`; verified no f-string/`str()`
+  interpolation of these members exists, so serialization is unaffected.
+
+**Follow-up (not adopted here):** ruff groups `SIM`/`C4`/`PTH`/`RUF` report 128
+additional findings. 24 are `RUF002`/`RUF003` ambiguous-unicode false positives
+(the corpus is Indic text), and the `SIM` rewrites are behaviour-adjacent, so
+adopting them conflicts with this track's zero-behaviour-change guarantee.
+23 `RUF100` unused-`noqa` removals are the cheap subset if a later track wants them.
+Coverage thresholds remain unmeasured.

@@ -9,16 +9,20 @@ from __future__ import annotations
 
 import re
 import unicodedata
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from difflib import SequenceMatcher
-
-try:
-    from rapidfuzz import fuzz
-except Exception:  # pragma: no cover - defensive fallback
-    fuzz = None
+from typing import Any
 
 from .schema import CanonicalIdentityCandidate, CanonicalIdentityCandidates
+
+fuzz: Any | None
+try:
+    from rapidfuzz import fuzz as _rapidfuzz_fuzz
+
+    fuzz = _rapidfuzz_fuzz
+except Exception:  # pragma: no cover - defensive fallback
+    fuzz = None
 
 
 @dataclass(frozen=True)
@@ -108,7 +112,7 @@ class IdentityCandidateDiscovery:
         self,
         query_values: list[str],
         entities: list[ReferenceEntity],
-        normalizer,
+        normalizer: Callable[[str], str],
     ) -> list[CanonicalIdentityCandidate]:
         normalized_queries = [normalizer(value) for value in query_values if value and value.strip()]
         normalized_queries = [value for value in normalized_queries if value]
@@ -142,11 +146,11 @@ class IdentityCandidateDiscovery:
                 confidence = "MEDIUM"
 
             candidate = CanonicalIdentityCandidate(
-                entityId=entity.entity_id,
+                entity_id=entity.entity_id,
                 name=entity.name,
                 score=best_score,
                 confidence=confidence,
-                matchedOn=matched_on,
+                matched_on=matched_on,
             )
             existing = best_by_entity.get(entity.entity_id)
             if existing is None or candidate.score > existing.score:

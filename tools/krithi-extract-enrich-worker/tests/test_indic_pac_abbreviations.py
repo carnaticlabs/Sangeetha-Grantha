@@ -29,15 +29,21 @@ class TestIndicPacSplitting:
     def test_blob_splits_into_pac(self, script: str, blob: str) -> None:
         sections = StructureParser().parse(blob).sections
         types = [s.section_type.value for s in sections]
-        assert types == ["PALLAVI", "ANUPALLAVI", "CHARANAM", "CHARANAM"], (
-            f"{script}: {types}"
-        )
+        assert types == ["PALLAVI", "ANUPALLAVI", "CHARANAM", "CHARANAM"], f"{script}: {types}"
 
-    @pytest.mark.parametrize("header,expected", [
-        ("प. foo", "PALLAVI"), ("अ. foo", "ANUPALLAVI"), ("च1.foo", "CHARANAM"),
-        ("ప. foo", "PALLAVI"), ("చ2. foo", "CHARANAM"),
-        ("ಪ. foo", "PALLAVI"), ("ച3.foo", "CHARANAM"), ("ப. foo", "PALLAVI"),
-    ])
+    @pytest.mark.parametrize(
+        "header,expected",
+        [
+            ("प. foo", "PALLAVI"),
+            ("अ. foo", "ANUPALLAVI"),
+            ("च1.foo", "CHARANAM"),
+            ("ప. foo", "PALLAVI"),
+            ("చ2. foo", "CHARANAM"),
+            ("ಪ. foo", "PALLAVI"),
+            ("ച3.foo", "CHARANAM"),
+            ("ப. foo", "PALLAVI"),
+        ],
+    )
     def test_detect_when_enabled(self, header: str, expected: str) -> None:
         parser = StructureParser()
         parser._inline_indic_pac_enabled = True

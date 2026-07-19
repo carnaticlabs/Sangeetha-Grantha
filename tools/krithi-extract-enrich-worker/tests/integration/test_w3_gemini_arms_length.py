@@ -32,15 +32,11 @@ GEMINI_HOST = "generativelanguage.googleapis.com"
 
 
 def _golden_extraction() -> CanonicalExtraction:
-    return CanonicalExtraction.model_validate(
-        json.loads(GOLDEN_FIXTURE.read_text(encoding="utf-8"))
-    )
+    return CanonicalExtraction.model_validate(json.loads(GOLDEN_FIXTURE.read_text(encoding="utf-8")))
 
 
 def _enricher() -> GeminiMetadataEnricher:
-    return GeminiMetadataEnricher(
-        GeminiEnricherConfig(enabled=True, api_key="test-key", model="gemini-2.5-flash")
-    )
+    return GeminiMetadataEnricher(GeminiEnricherConfig(enabled=True, api_key="test-key", model="gemini-2.5-flash"))
 
 
 @respx.mock(assert_all_called=False)
@@ -48,11 +44,7 @@ def test_malformed_gemini_output_degrades_without_touching_metadata(respx_mock) 
     respx_mock.route(host=GEMINI_HOST).mock(
         return_value=httpx.Response(
             200,
-            json={
-                "candidates": [
-                    {"content": {"parts": [{"text": "THIS IS {{{ NOT JSON"}], "role": "model"}}
-                ]
-            },
+            json={"candidates": [{"content": {"parts": [{"text": "THIS IS {{{ NOT JSON"}], "role": "model"}}]},
         )
     )
 
@@ -120,9 +112,7 @@ def test_failing_source_fetch_marks_job_failed_with_diagnostics(
         worker.db.close()
 
 
-def test_recovered_source_fetch_completes_the_same_task(
-    queue_db, database_url: str, tmp_path, monkeypatch
-) -> None:
+def test_recovered_source_fetch_completes_the_same_task(queue_db, database_url: str, tmp_path, monkeypatch) -> None:
     """Sanity companion: with a healthy source the same pipeline lands on DONE."""
     monkeypatch.setenv("DATABASE_URL", database_url)
     monkeypatch.setenv("EXTRACTION_CACHE_DIR", str(tmp_path / "cache"))
@@ -142,9 +132,7 @@ def test_recovered_source_fetch_completes_the_same_task(
     </body></html>
     """
 
-    task_id = insert_pending_task(
-        queue_db, source_url="https://healthy.example.org/krithi/ok", source_format="HTML"
-    )
+    task_id = insert_pending_task(queue_db, source_url="https://healthy.example.org/krithi/ok", source_format="HTML")
 
     worker = ExtractionWorker(ExtractorConfig())
     try:
@@ -152,9 +140,7 @@ def test_recovered_source_fetch_completes_the_same_task(
         assert task is not None
 
         with respx.mock(assert_all_called=False) as respx_mock:
-            respx_mock.route(host="healthy.example.org").mock(
-                return_value=httpx.Response(200, text=html)
-            )
+            respx_mock.route(host="healthy.example.org").mock(return_value=httpx.Response(200, text=html))
             worker._process_task(task)
 
         row = fetch_task_row(worker.db, task_id)

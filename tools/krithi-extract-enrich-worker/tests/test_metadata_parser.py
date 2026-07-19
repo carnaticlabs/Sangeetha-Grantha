@@ -34,10 +34,7 @@ def test_title_normalization_strips_leading_serial_numbers() -> None:
 def test_extracts_inline_raga_tala_from_blog_line_without_colon() -> None:
     parser = MetadataParser()
     metadata = parser.parse(
-        header_text=(
-            "ardha nArISvaram\n"
-            "ardha nArISvaram - rAgaM kumudakriyA - tALaM - rUpakaM"
-        ),
+        header_text=("ardha nArISvaram\nardha nArISvaram - rAgaM kumudakriyA - tALaM - rUpakaM"),
         title_hint="Dikshitar Kriti - Ardha Naareesvaram - Raga Kumuda Kriya",
     )
 
@@ -59,11 +56,7 @@ def test_extracts_parenthesised_tala_from_title_hint() -> None:
 def test_uses_first_line_metadata_when_title_hint_present() -> None:
     parser = MetadataParser()
     metadata = parser.parse(
-        header_text=(
-            "ambA nIlAyatAkshi - rAgaM nIlAmbari - tALaM Adi\n"
-            "pallavi\n"
-            "ambA nIlAyatAkshi karuNA kaTAkshi"
-        ),
+        header_text=("ambA nIlAyatAkshi - rAgaM nIlAmbari - tALaM Adi\npallavi\nambA nIlAyatAkshi karuNA kaTAkshi"),
         title_hint="Guru Guha Vaibhavam: Dikshitar Kriti - Amba Neelaayathaakshi Karunaa - Raga Neelambari",
     )
 
