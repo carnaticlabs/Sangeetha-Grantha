@@ -78,6 +78,17 @@ Verified locally, all four gates from a clean `.mypy_cache`:
 > `# type: ignore[arg-type]` that predates this track and survived it. The
 > accurate claim is that TRACK-126 *added* none. (A second one, introduced by
 > TRACK-128 in `gemini_enricher.py`, was removed once spotted.)
+>
+> **Resolved (2026-07-19, post-track):** `page_segmenter.py:138` no longer carries
+> it. `max(size_counts, key=size_counts.get)` failed `arg-type` because
+> `dict.get` is `(float) -> int | None`, which is not a valid sort key; indexing
+> instead (`key=lambda size: size_counts[size]`) types cleanly. Verified
+> value-identical, including tie-breaking, over 200,000 generated dicts.
+>
+> One `type: ignore` remains in `src/` — `config.py`'s
+> `@computed_field  # type: ignore[prop-decorator]`. That one is unavoidable:
+> mypy reports "Decorators on top of @property are not supported" without it,
+> confirmed by removing it and re-running.
 
 How the two big error classes cleared:
 

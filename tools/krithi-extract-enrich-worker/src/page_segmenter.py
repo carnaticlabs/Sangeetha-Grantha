@@ -135,7 +135,7 @@ class PageSegmenter:
             return 12.0  # Default fallback
 
         # Most common size by character count is the body font
-        return max(size_counts, key=size_counts.get)  # type: ignore[arg-type]
+        return max(size_counts, key=lambda size: size_counts[size])
 
     def _find_title_positions(
         self,

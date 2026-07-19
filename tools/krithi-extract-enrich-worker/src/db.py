@@ -71,7 +71,8 @@ class ExtractionQueueDB:
 
     @property
     def conn(self) -> psycopg.Connection[dict[str, Any]]:
-        assert self._conn is not None, "Database connection not established. Call ensure_connected() first."
+        if self._conn is None:
+            raise RuntimeError("Database connection not established. Call ensure_connected() first.")
         return self._conn
 
     def ensure_connected(self) -> None:

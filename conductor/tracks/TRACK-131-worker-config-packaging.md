@@ -111,10 +111,13 @@ One flagged, **not** changed — needs a call:
 
 ### Notes
 
-* `db.py` uses `assert` for the connection invariant, which is stripped under
-  `python -O`, and `worker.py`'s rollback handler (`except Exception: pass`) now
-  swallows that AssertionError. Impact is contained — the next
-  `ensure_connected()` recovers — but a `RuntimeError` would be the sturdier guard.
+* `db.py` used `assert` for the connection invariant — **resolved
+  (2026-07-19, post-track)**, now an explicit `RuntimeError`. The concern was not
+  theoretical: under `python -O` the old form returned `None` from the `conn`
+  property with the guard silently gone, demonstrated directly. The new guard
+  holds under `-O`, and a regression test pins it.
+  `worker.py`'s rollback handler (`except Exception: pass`) still swallows the
+  error, but the next `ensure_connected()` recovers, so impact stays contained.
 * `from __future__ import annotations` was dropped only from the files this track
   touched; 17 files in `src/` still carry it. Consistent with the DoD's
   "while touching files" scoping, not a full sweep.

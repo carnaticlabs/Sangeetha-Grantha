@@ -274,13 +274,16 @@ class VelthuisDecoder:
         try:
             import fitz
 
-            doc = fitz.open(pdf_path)
-            stream = doc.xref_stream_raw(xref)
+            # Context manager: xref_stream_raw/decompress/decode can all raise,
+            # and the handler below swallows the exception, so an explicit
+            # close() on the success path alone leaked the document (TRACK-129
+            # bug class, followed up after that track's named-file scope).
+            with fitz.open(pdf_path) as doc:
+                stream = doc.xref_stream_raw(xref)
             decompressed = zlib.decompress(stream)
             # First ~4200 bytes contain the encoding vector
             header = decompressed[:5000].decode("latin-1")
             entries = re.findall(r"dup\s+(\d+)\s+/(\S+)\s+put", header)
-            doc.close()
             return {int(pos): name for pos, name in entries} if entries else None
         except Exception:
             logger.debug("Could not extract encoding from xref %d", xref, exc_info=True)

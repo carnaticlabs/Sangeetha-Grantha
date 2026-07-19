@@ -110,3 +110,44 @@ def test_ocr_missing_stack_still_returns_one_entry_per_page(three_page_pdf, monk
     result = OcrFallback().extract_document_text(three_page_pdf, page_range=(0, 1))
 
     assert result == {0: "", 1: ""}
+
+
+def test_velthuis_encoding_extraction_closes_handle_on_failure(three_page_pdf, monkeypatch) -> None:
+    """The extractor swallows its own exceptions, so a leak here would be silent.
+
+    Follow-up to TRACK-129: same bug class as extractor.py/ocr_fallback.py, but
+    outside that track's named-file scope.
+    """
+    from src.velthuis_decoder import VelthuisDecoder
+
+    opened: list[fitz.Document] = []
+    real_open = fitz.open
+
+    def tracking_open(*args, **kwargs):
+        doc = real_open(*args, **kwargs)
+        opened.append(doc)
+        return doc
+
+    monkeypatch.setattr(fitz, "open", tracking_open)
+
+    # xref 9999 does not exist, so xref_stream_raw raises inside the `with`.
+    result = VelthuisDecoder.extract_encoding_from_pdf(str(three_page_pdf), 9999)
+
+    assert result is None, "failure path should return None"
+    assert opened, "expected the decoder to open the document"
+    assert all(doc.is_closed for doc in opened), "document handle leaked on the exception path"
+
+
+def test_conn_guard_raises_runtime_error_not_assert() -> None:
+    """The connection invariant must survive `python -O`.
+
+    `assert` statements are stripped under -O, which would have turned this
+    guard into an AttributeError on None (or worse, a silent None deref) in an
+    optimised container.
+    """
+    from src.config import ExtractorConfig
+    from src.db import ExtractionQueueDB
+
+    db = ExtractionQueueDB(ExtractorConfig())
+    with pytest.raises(RuntimeError, match="ensure_connected"):
+        _ = db.conn

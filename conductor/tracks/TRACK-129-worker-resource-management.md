@@ -121,10 +121,15 @@ this change.
 `ruff check` 0, `ruff format --check` clean (52 files), `mypy` 0,
 `pytest` 220 unit + 18 integration passing.
 
-### Follow-up (deliberately not done here)
+### Follow-up — RESOLVED (2026-07-19, post-track)
 
-`src/velthuis_decoder.py:277` opens a document and closes it only on the success
-path, so it leaks the handle when `xref_stream_raw`/`zlib.decompress` raises. It
-is a real instance of this track's bug class, but this DoD names only
-`extractor.py` and `ocr_fallback.py`, so it was left alone rather than widening
-scope. One-line fix when someone wants it.
+`src/velthuis_decoder.py:277` opened a document and closed it only on the success
+path, leaking the handle when `xref_stream_raw`/`zlib.decompress` raised — a real
+instance of this track's bug class, but outside this DoD's named files
+(`extractor.py`, `ocr_fallback.py`), so it was left alone here.
+
+Fixed afterwards in a dedicated follow-up commit: the read is now scoped by
+`with fitz.open(...) as doc:`. Because the method swallows its own exceptions and
+returns `None`, the leak was completely silent, so it is covered by a regression
+test (`test_velthuis_encoding_extraction_closes_handle_on_failure`) that was
+proved to fail against the pre-fix code.
