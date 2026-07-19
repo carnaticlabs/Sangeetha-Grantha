@@ -1,4 +1,8 @@
-"""Phase 4A repair script: Re-parse lyrics to fill missing krithi_lyric_sections.
+"""RETIRED (TRACK-127, 2026-07-19) — completed one-shot repair, kept as a record.
+Not runnable as-is: the package-relative imports below only resolved while this
+file lived in the worker's src/. See README.md in this directory.
+
+Phase 4A repair script: Re-parse lyrics to fill missing krithi_lyric_sections.
 
 For each krithi with inconsistent section counts across variants:
 1. Read the lyrics text from each variant
@@ -22,10 +26,9 @@ from .structure_parser import StructureParser
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
-DATABASE_URL = os.environ.get(
-    "DATABASE_URL",
-    "postgresql://sangita:sangita@localhost:5432/sangita_grantha",
-)
+# TRACK-127: the previous hardcoded fallback used credentials that match no
+# environment. Archived tooling requires DATABASE_URL to be set explicitly.
+DATABASE_URL = os.environ["DATABASE_URL"]
 
 
 def main() -> None:

@@ -1,7 +1,7 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Not Started |
-| **Version** | 1.0.0 |
+| **Status** | Completed |
+| **Version** | 1.1.0 |
 | **Last Updated** | 2026-07-19 |
 | **Author** | Sangeetha Grantha Team |
 
@@ -50,3 +50,54 @@
 * `uv run pytest` green (no test imports the moved modules — verify with grep).
 * `docker build` succeeds; `docker run --rm <img> python -c "import src.worker"` works; image contains no `repair_*` files.
 * `grep -rn "repair_comprehensive\|repair_sections\|repair_section_text\|import_dikshitar\|browser_batch" --include="*.py" --include="*.md" .` shows only archive/scripts paths.
+
+## Outcome (2026-07-19)
+
+Relocation only — no script logic was rewritten.
+
+| Script | Disposition | Why |
+|:---|:---|:---|
+| `repair_comprehensive.py` | `archive/tools/krithi-worker-repairs/` | Phase-4A repair, completed under TRACK-079 (Completed) |
+| `repair_sections.py` | `archive/tools/krithi-worker-repairs/` | as above |
+| `repair_section_text.py` | `archive/tools/krithi-worker-repairs/` | as above |
+| `import_dikshitar_krithis.py` | `scripts/` | TRACK-093 is **Paused**, not abandoned — still live tooling |
+| `browser_batch_extract.py` | `scripts/` | live batch tool |
+
+`src/` now holds only the live pipeline: worker, strategies, parsers, enricher,
+db, cli, schema, heuristics.
+
+Hazards removed:
+
+* `repair_sections.py` had a hardcoded fallback DSN
+  (`postgresql://sangita:sangita@…`) whose credentials match no environment. It now
+  requires `DATABASE_URL`. Every other script resolves through the new
+  `scripts/_common.py:database_url()`, which carries the one correct dev default
+  (`postgres:postgres`) — including `section_triage.DB_URL`, which the sibling
+  scripts import.
+* The `sys.path.insert` in `browser_batch_extract.py` is gone. Both relocated
+  scripts run from the worker root as
+  `PYTHONPATH=. uv run python scripts/<name>.py`, documented in `scripts/_common.py`.
+
+Verification run:
+
+* `docker build` succeeded; `import src.worker` and `from src.worker import health_check`
+  both OK inside the image; `ls /app/src/` confirms no `repair_*`, `import_dikshitar*`,
+  or `browser_batch*` files ship. The Dockerfile needed no change — it only ever
+  copied `src/`, which is precisely why moving the files out was sufficient.
+* Relocated scripts smoke-tested: `browser_batch_extract.py --help` renders,
+  `import_dikshitar_krithis` imports, `section_triage.DB_URL` resolves via the helper.
+* `ruff check` 0, `ruff format --check` clean (51 files), `mypy` 0,
+  `pytest` 210 unit + 18 integration passing.
+* DoD grep shows only `archive/`, `scripts/`, and historical conductor records.
+
+Notes:
+
+* The archived scripts keep their package-relative imports and are **not runnable
+  as-is** — rewriting untested archived code is riskier than leaving an accurate
+  record. Each carries a RETIRED docstring banner and the directory has a README.
+* `TRACK-105`'s references to the old `src/browser_batch_extract.py` path were left
+  alone: that document is a record of a past reconciliation, not current guidance.
+* The mypy `ignore_missing_imports` override for the bare sibling imports
+  (`section_triage`, `section_repair`) that TRACK-126 added is still present. Those
+  scripts were not in this track's move list, so restructuring their imports was
+  left out of scope.

@@ -1,4 +1,8 @@
-"""Phase 4A comprehensive repair: Fix all remaining section issues.
+"""RETIRED (TRACK-127, 2026-07-19) — completed one-shot repair, kept as a record.
+Not runnable as-is: the package-relative imports below only resolved while this
+file lived in the worker's src/. See README.md in this directory.
+
+Phase 4A comprehensive repair: Fix all remaining section issues.
 
 Handles:
 1. 34 krithis with ZERO krithi_sections — creates sections from lyrics

@@ -74,7 +74,9 @@ PostgreSQL (484 krithis, ~1623 sections, 216 ragas, 25 talas)
 
 ## 4. Import Script: `import_dikshitar_krithis.py`
 
-**Location:** `tools/krithi-extract-enrich-worker/src/import_dikshitar_krithis.py`
+**Location:** `tools/krithi-extract-enrich-worker/scripts/import_dikshitar_krithis.py`
+(moved out of the shipped `src/` package by TRACK-127; run it from the worker root with
+`PYTHONPATH=. uv run python scripts/import_dikshitar_krithis.py`)
 
 **Data quality fixes applied (TRACK-070 Phase 3):**
 
@@ -149,7 +151,7 @@ See [Frontend UI Specs — KrithiList](../05-frontend/admin-web/ui-specs.md#81-k
 | File | Purpose |
 |:---|:---|
 | `database/for_import/extract_toc_based.py` | TOC-based PDF extraction script |
-| `tools/krithi-extract-enrich-worker/src/import_dikshitar_krithis.py` | Database import script |
+| `tools/krithi-extract-enrich-worker/scripts/import_dikshitar_krithis.py` | Database import script |
 | `database/for_import/eng_krithis.json` | Generated English/IAST krithi data |
 | `database/for_import/skt_krithis.json` | Generated Sanskrit krithi data |
 | `database/for_import/krithi_comparison_matched.csv` | Cross-referenced metadata CSV |

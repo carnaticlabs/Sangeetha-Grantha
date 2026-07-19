@@ -42,11 +42,12 @@ from psycopg.rows import dict_row
 _WORKER_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(_WORKER_ROOT))
 
+from scripts._common import database_url  # noqa: E402
 from src.diacritic_normalizer import normalize_garbled_diacritics  # noqa: E402
 from src.html_extractor import HtmlTextExtractor  # noqa: E402
 from src.structure_parser import StructureParser  # noqa: E402
 
-DB_URL = os.environ.get("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/sangita_grantha")
+DB_URL = database_url()
 CACHE_DIR = Path(os.environ.get("TRIAGE_CACHE", _WORKER_ROOT.parents[1] / ".triage-cache"))
 
 INDIC_LANGS = ("sa", "ta", "te", "kn", "ml")

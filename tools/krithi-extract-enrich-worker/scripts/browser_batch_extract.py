@@ -4,8 +4,8 @@ Takes HTML files saved from browser navigation and runs them through
 the existing HtmlTextExtractor + StructureParser to produce
 CanonicalExtraction JSON output.
 
-Usage:
-    python -m src.browser_batch_extract \
+Usage (from the worker root):
+    PYTHONPATH=. uv run python scripts/browser_batch_extract.py \
         --html-dir ../../database/for_import/raw_pages/syama-sastri \
         --csv ../../database/for_import/Syama-Sastri-Krithi-For-Import.csv \
         --composer "Syama Sastri" \
@@ -20,13 +20,9 @@ import json
 import logging
 import os
 import re
-import sys
-from pathlib import Path
 from typing import Any
 
-# Add parent to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
+from scripts._common import setup_logging
 from src.html_extractor import HtmlTextExtractor
 from src.structure_parser import StructureParser
 
@@ -290,7 +286,7 @@ def run_batch(
 
 
 def main() -> None:
-    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+    setup_logging()
 
     parser = argparse.ArgumentParser(description="Browser-assisted batch extraction")
     parser.add_argument("--csv", required=True, help="Path to the composer CSV file")

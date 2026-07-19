@@ -1,4 +1,8 @@
-"""Phase 4A repair step 2: Fix section text content for existing krithi_lyric_sections.
+"""RETIRED (TRACK-127, 2026-07-19) — completed one-shot repair, kept as a record.
+Not runnable as-is: the package-relative imports below only resolved while this
+file lived in the worker's src/. See README.md in this directory.
+
+Phase 4A repair step 2: Fix section text content for existing krithi_lyric_sections.
 
 The first repair added missing sections, but existing sections may have wrong text
 (e.g., Anupallavi containing leaked Charanam text). This script re-parses all lyrics

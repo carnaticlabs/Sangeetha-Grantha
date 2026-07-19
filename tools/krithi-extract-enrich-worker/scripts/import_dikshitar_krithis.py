@@ -22,8 +22,9 @@ import logging
 import re
 import uuid
 
-from .config import ExtractorConfig
-from .db import ExtractionQueueDB
+from scripts._common import setup_logging
+from src.config import ExtractorConfig
+from src.db import ExtractionQueueDB
 
 logger = logging.getLogger(__name__)
 
@@ -173,7 +174,7 @@ def detect_primary_language(composer_name: str) -> str:
 
 
 def main() -> None:
-    logging.basicConfig(level=logging.INFO)
+    setup_logging()
 
     csv_path = "../../database/for_import/krithi_comparison_matched.csv"
 
