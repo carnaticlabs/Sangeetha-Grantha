@@ -10,6 +10,8 @@ Shared rules are in [CLAUDE.md](../../../CLAUDE.md); versions in [current-versio
 ## Layering: route → service → repository
 
 - Routes (in `modules/backend/api/.../routes/`) stay thin: deserialize, auth-check, call the service, map the result to an HTTP status. Business rules live in services; data access in repositories behind interfaces, injected via Koin.
+- The boundary runs both ways: a route never builds an Exposed query, and a repository never touches `ApplicationCall`, `HttpStatusCode`, or any other Ktor scope. Model expected failures as a `sealed class`/`sealed interface` returned from the service so the `when` at the route layer is exhaustive — exceptions are for the unexpected.
+- IO-bound work is `suspend`; never block a coroutine thread with synchronous IO inside a route or service.
 - Error handling goes through StatusPages / centralized interception, not per-route try/catch.
 
 ## Non-negotiables
@@ -35,3 +37,4 @@ class KrithiService(private val repo: KrithiRepository, private val audit: Audit
 
 - Build: `./gradlew :modules:backend:api:build` (fat JAR) · Run dev: `runDev`
 - Tests: `make test` (unit) and `make test-integration`; integration tests self-provision Postgres via Testcontainers using shared infra in `:modules:backend:test-support` (`IntegrationTestBase`, `SangitaPostgres`) and migrate via the Flyway JVM API — never a custom runner.
+- Every business rule in a service has a test that fails if the rule is deleted — mock the injected repository interface rather than standing up a database for rule-level tests. Coverage percentage is not the target; rule-by-rule falsifiability is.

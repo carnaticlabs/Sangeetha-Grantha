@@ -29,17 +29,19 @@ Frontend development must reflect strict, modern type-safety and architectural e
     onSelect,
   }) => {
     return (
-      <div 
-        className="p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer"
+      <button
+        type="button"
+        className="w-full text-left p-4 border rounded-lg hover:shadow-md transition-shadow"
         onClick={() => onSelect(title)}
       >
         <span className="text-xs uppercase tracking-wider text-muted">{type}</span>
         <h4 className="font-semibold text-lg">{title}</h4>
         <p className="mt-2 text-sm text-foreground/80 line-clamp-3 whitespace-pre-wrap">{lyrics}</p>
-      </div>
+      </button>
     );
   };
   ```
+  Note the `button`, not a clickable `div` — see §6.
 
 ## 2. Package & Build Tooling (Bun-centric)
 - **Always use Bun**: Use `bun install` for package management, `bun run dev` to start the dev server (port 5001), and `bun run build` for compiling production bundles.
@@ -57,5 +59,14 @@ Frontend development must reflect strict, modern type-safety and architectural e
 - **API Clients**: Keep API requests centralized using a structured fetch wrapper or client pattern to handle auth headers and JWT tokens automatically.
 
 ## 5. Testing
-- **Unit/Component Testing**: Written with **Vitest**. Run via `bun test` or `bun run test:unit`.
-- **E2E Testing**: Managed with **Playwright**. Run via `make test-frontend` or the `e2e-test-runner` workflow.
+- **Unit/Component Testing**: Written with **Vitest**. Run via `bun run test:unit` (single run) or `bun run test` (watch). **Never `bun test`** — that invokes Bun's own test runner instead of Vitest and will not run this suite.
+- **E2E Testing**: Managed with **Playwright**. Run via `bun run test:e2e` (config in `e2e/`); the money-path subset is `bun run test:e2e:money`, which runs nightly in CI. `make test-frontend` and the `e2e-test-runner` workflow wrap these.
+
+## 6. Component Architecture & Accessibility
+- **Layering**: `src/pages/` holds route screens, `src/components/` shared UI, `src/hooks/` reusable logic, `src/api/` the API layer. Components under `src/components/` are prop-driven and free of data fetching; screens in `src/pages/` compose data hooks with those components.
+- **Server state** goes through **TanStack Query** in the api/hooks layer — not ad-hoc `fetch` inside components. Every query surface handles all three states (loading, error, empty), not just the success path.
+- **Effects** declare exhaustive dependencies and never set state during render. Anything derivable from props or state is computed during render, not synced into state via an effect.
+- **Semantics**: interactive elements are real semantic elements (`button`, `a`, `label` + `input`). A `div` with an `onClick` is not keyboard- or screen-reader-reachable.
+
+## 7. Debugging
+For CORS/auth issues check `.env` files and `VITE_API_BASE_URL` first — frontend proxy configuration is the most common root cause (per CLAUDE.md).

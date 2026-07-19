@@ -11,6 +11,7 @@ Architecture split: **Intelligence in Python, Ingestion in Kotlin, Review in Cur
 
 - All data crossing a function boundary is a `pydantic.BaseModel` (schemas live in `src/schema.py`) — typed fields, defaults, validators. Passing raw dicts around or procedural top-level scripts is rejected; encapsulate logic in classes with narrow responsibilities.
 - Gemini calls (`gemini_enricher.py`, google-genai 2.x SDK) use structured outputs mapped to Pydantic schemas, never free-text parsing of model replies.
+- Failures isolate per item: one unparseable PDF, page, or krithi is caught, logged with enough context to locate the source, and recorded as a failed unit — it must never abort the batch or silently drop the items that parsed cleanly. A batch result reports what succeeded *and* what failed; a partial run that looks like a clean run is the worst outcome.
 
 ## Key modules (src/)
 
@@ -20,7 +21,8 @@ Architecture split: **Intelligence in Python, Ingestion in Kotlin, Review in Cur
 
 ## Environment & dependencies
 
-- Python 3.11+ via mise (a mise-managed `.venv` is created automatically at the repo root); dependencies managed with **uv**: declare in `pyproject.toml`, lock with `uv.lock`, install via `uv sync`.
+- The worker requires **Python 3.14+** (`requires-python = ">=3.14"` in `pyproject.toml`; mypy pinned to `python_version = "3.14"`), and `.mise.toml` pins `python = "3.14"` to match. Keep those three in step — a mise pin below `requires-python` makes `uv sync` fail on a clean machine.
+- A mise-managed `.venv` is created automatically at the repo root; dependencies managed with **uv**: declare in `pyproject.toml`, lock with `uv.lock`, install via `uv sync`.
 
 ## Testing & quality (run from the tool directory)
 

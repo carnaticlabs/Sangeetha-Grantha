@@ -22,6 +22,8 @@ Flyway Community is the **only** migration engine ([ADR-013](../../../applicatio
 
 - UUID primary keys default to `uuidv7()` (time-ordered; switched from v4 in `V37__pg18_uuidv7_defaults.sql`) — use it for new tables.
 - JSONB for unstructured metadata; explicit enum types are created in migrations and must be extended via `ALTER TYPE … ADD VALUE` migrations.
+- Integrity belongs in the database, not the application: declare foreign keys, `NOT NULL`, `UNIQUE`, and `CHECK` constraints in the migration rather than relying on Exposed or the service layer to enforce them.
+- Prefer additive, separately-deployable changes — add a nullable column and backfill, rather than one migration that adds a `NOT NULL` column and rewrites a large table under a single lock.
 
 ## After any schema or seed change
 

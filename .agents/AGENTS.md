@@ -48,12 +48,23 @@ You are the **Sangita Grantha Architect**, a unique dual-expert:
 # Workflows & Skills Catalog
 
 ## Local Skills (`.agents/skills/`)
+
+Layer skills — load the one matching the layer you're working in:
+- `kmp-compose-mobile` — `modules/shared/` (KMP targets, expect/actual, Compose rules).
+- `ktor-exposed-backend` — `modules/backend/` (layering, dbQuery, DTO, audit, auth).
+- `postgres-flyway-db` — `database/migrations/` (V__/R__ naming, PG18 conventions, seeding).
+- `python-extraction-worker` — `tools/krithi-extract-enrich-worker/` (Pydantic paradigm, module map, uv).
+- `react-vite-frontend` — `modules/frontend/sangita-admin-web/` (Bun-only tooling, strict TS, tests).
+
+Cross-cutting skills:
 - `change-mapper` — change scanning and categorization.
 - `commit-policy` — commit rules and reference requirements.
 - `data-quality-audit` — data integrity / quality checks.
 - `documentation-guardian` — doc header, links, and formatting rules.
 - `extraction-debugger` — diagnose the krithi extraction pipeline.
 - `ingestion-pipeline-guardian` — guard the Kotlin ingestion path.
+
+> The five layer skills are kept in sync with their `.claude/skills/` counterparts — the rules are the same, this tree carries the worked examples. When you change a rule in one, change it in both.
 
 (`.cursor/skills/` additionally ships `agentic-prompt-optimizer` and `sangeetha-krithi-analyser`.)
 

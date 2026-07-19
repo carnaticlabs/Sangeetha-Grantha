@@ -11,7 +11,7 @@ This skill enforces standards for environment configuration, services build, and
 The local development environment is managed using **`mise`** (defined in `.mise.toml`):
 - **Tool Versions**:
   - Java: `temurin-25` (JVM toolchain version 25)
-  - Python: `3.11` (for `krithi-extract-enrich-worker`)
+  - Python: `3.14` (for `krithi-extract-enrich-worker`; must stay ≥ the worker's `requires-python = ">=3.14"`)
   - Bun: `1.3.7` (for React admin frontend)
   - Rust: `1.93.0` (archived tool legacy)
 - **Setup & Usage**:

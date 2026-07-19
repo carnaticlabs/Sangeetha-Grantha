@@ -10,7 +10,7 @@ Versions live in [current-versions.md](../../../application_documentation/00-met
 ## Module layout
 
 - `modules/shared/domain` — pure Kotlin, `src/commonMain` only. `@Serializable` DTOs, serializers (e.g. `UuidSerializer`), domain support logic. No platform or UI dependencies; it still targets iosX64.
-- `modules/shared/presentation` — Compose Multiplatform UI. Targets: `androidLibrary` (compileSdk 36, minSdk 24), `iosArm64`, `iosSimulatorArm64`. **iosX64 is intentionally dropped** — CMP 1.11.x stopped publishing x64 iOS artifacts; do not re-add it. Source sets: `commonMain` (Compose + domain), `androidMain` (okhttp client, activity-compose), per-target iOS source sets. iOS framework baseName is `presentation`.
+- `modules/shared/presentation` — Compose Multiplatform UI. **Scaffolded but empty: there is no `src/` directory yet** — only `build.gradle.kts`. The source sets below are declared in the build file and will exist once the first file lands; don't expect to find composables here today. Targets: `androidLibrary` (compileSdk 36, minSdk 24), `iosArm64`, `iosSimulatorArm64`. **iosX64 is intentionally dropped** — CMP 1.11.x stopped publishing x64 iOS artifacts; do not re-add it. Source sets: `commonMain` (Compose + domain), `androidMain` (okhttp client, activity-compose), per-target iOS source sets. iOS framework baseName is `presentation`.
 - Compose dependencies are explicit catalog entries (`libs.compose.*`) — the `compose.*` plugin accessors are deprecated as of CMP 1.11; material3 rides its own version train.
 
 ## expect/actual
@@ -20,8 +20,10 @@ Keep `expect` declarations to a minimum — only for genuinely platform-specific
 ## Compose conventions
 
 - Hoist state: composables stay stateless, state lives in a presenter/holder; pass state down, events up.
+- Unidirectional data flow: UI renders a single immutable state object, and mutations happen only in the presenter via `copy()` — never by mutating state a composable can reach. Domain and presentation logic live in `commonMain` so they're testable from `commonTest` with no UI or platform harness.
 - Pass immutable DTO lists into composables — mutable collections defeat recomposition skipping.
 - Load shared assets through the Compose Multiplatform resource API; never reference `R.drawable.*` or iOS bundle paths from `commonMain`.
+- Flow collection needs a lifecycle-aware collector, and this module doesn't have one yet: `androidx.lifecycle:lifecycle-runtime-compose` (which supplies `collectAsStateWithLifecycle`) is **not** in `gradle/libs.versions.toml`. Add the catalog entry and the `androidMain` dependency as part of the first change that collects a flow in UI — don't reach for a bare `collectAsState`, which keeps collecting while the screen is backgrounded.
 
 ## Kotlin style (this layer)
 

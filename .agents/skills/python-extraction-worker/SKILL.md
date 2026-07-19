@@ -11,6 +11,7 @@ This skill defines python development standards and guidelines for the document 
 To prevent code drift and untyped dictionary parsing bugs, Python code in this module must adhere to the following rules:
 - **Class-Based Design**: Encapsulate logic in domain-specific class structures rather than writing procedural scripts. Avoid parsing data as unstructured `dict` objects.
 - **Pydantic Validation**: All data flow schemas must extend `pydantic.BaseModel`. Declare strict typing, defaults, and optional fields. Leverage Pydantic's built-in validation features.
+- **Per-Item Failure Isolation**: One unparseable PDF, page, or krithi is caught, logged with enough context to locate the source, and recorded as a failed unit — it must never abort the batch or silently drop the items that parsed cleanly. A batch result reports what succeeded *and* what failed; a partial run that looks like a clean run is the worst outcome.
 - **Example of Gold-Standard Python**:
   ```python
   from typing import List, Optional
@@ -39,7 +40,7 @@ To prevent code drift and untyped dictionary parsing bugs, Python code in this m
   ```
 
 ## 2. Environment & Dependency Management
-- **Mise & UV**: Tooling is controlled via `mise` (Python 3.14+) and **`uv`**.
+- **Mise & UV**: Tooling is controlled via `mise` and **`uv`**. The worker requires **Python 3.14+** (`requires-python = ">=3.14"` in `pyproject.toml`; mypy is pinned to `python_version = "3.14"`).
 - Dependency additions must go through `pyproject.toml` and be locked using `uv.lock`.
 - To install/update local environments, run `uv sync` or `uv pip install`.
 

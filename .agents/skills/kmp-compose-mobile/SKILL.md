@@ -40,8 +40,10 @@ To ensure maximum code readability, type safety, and clean architecture, Kotlin 
 
 ## 2. Multiplatform Code Organization
 The multiplatform components reside in `modules/shared/`:
-- **`shared/domain/`**: Contains pure domain DTOs, network models, and business logic. It must remain 100% platform-independent and library-minimal.
-- **`shared/presentation/`**: Contains Compose Multiplatform UI components, themes, and screen definitions.
+- **`shared/domain/`**: Contains pure domain DTOs, network models, and business logic. It must remain 100% platform-independent and library-minimal. `src/commonMain` only; it still targets iosX64.
+- **`shared/presentation/`**: Intended for Compose Multiplatform UI components, themes, and screen definitions — but it is currently **scaffolded and empty: there is no `src/` directory yet**, only `build.gradle.kts`. Don't expect to find composables here today; the source sets below exist in the build file and materialize once the first file lands.
+  - Targets: `androidLibrary` (compileSdk 36, minSdk 24), `iosArm64`, `iosSimulatorArm64`. **iosX64 is intentionally dropped** — Compose Multiplatform 1.11.x stopped publishing x64 iOS artifacts; do not re-add it. iOS framework baseName is `presentation`.
+  - Compose dependencies are explicit catalog entries (`libs.compose.*`) — the `compose.*` plugin accessors are deprecated as of CMP 1.11; material3 rides its own version train.
 
 ## 3. Platform Abstractions (`expect` / `actual`)
 - Keep `expect` declarations to an absolute minimum. Use them only when platform-specific behavior (e.g., local storage, platform logging, keychains) is required.
@@ -50,8 +52,9 @@ The multiplatform components reside in `modules/shared/`:
 
 ## 4. Compose Multiplatform Best Practices
 - **State Hoisting**: Keep composables stateless by hoisting state to the parent or a presenter/ViewModel component. Pass state down and events up.
+- **Unidirectional Data Flow**: UI renders a single immutable state object, and mutations happen only in the presenter via `copy()` — never by mutating state a composable can reach. Domain and presentation logic live in `commonMain` so they're testable from `commonTest` with no UI or platform harness.
 - **Immutability**: Avoid passing mutable state lists/maps directly. Use immutable DTO lists to prevent unnecessary re-compositions.
-- **Lifecycle-Aware State Collection**: When collecting flows inside Compose, use lifecycle-aware collection helpers to avoid background resource consumption.
+- **Lifecycle-Aware State Collection**: Flow collection needs a lifecycle-aware collector, and this module doesn't have one yet — `androidx.lifecycle:lifecycle-runtime-compose` (which supplies `collectAsStateWithLifecycle`) is **not** in `gradle/libs.versions.toml`. Add the catalog entry and the `androidMain` dependency as part of the first change that collects a flow in UI; don't reach for a bare `collectAsState`, which keeps collecting while the screen is backgrounded.
 
 ## 5. Multiplatform Resources
 - Use the Compose Multiplatform Resource API for loading shared assets (images, fonts, localizable string keys).

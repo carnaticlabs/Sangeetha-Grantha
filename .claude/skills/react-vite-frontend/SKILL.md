@@ -24,6 +24,9 @@ Strict typing throughout: no `any` (use `unknown` + narrowing at boundaries), ex
 - `src/pages/` route screens, `src/components/` shared UI, `src/hooks/` reusable logic, `src/api/` the API layer.
 - Routing via `react-router-dom` (v7) with explicitly declared routes and typed params.
 - Server state via TanStack Query — queries/mutations in the api/hooks layer, not ad-hoc `fetch` in components; auth headers (JWT) handled centrally in the API client.
+- Components under `src/components/` are prop-driven and free of data fetching; screens in `src/pages/` compose data hooks with those components. Every query surface handles all three states — loading, error, empty — not just the success path.
+- Effects declare exhaustive dependencies and never set state during render. Anything derivable from props or state is computed during render, not synced into state via an effect.
+- Interactive elements are real semantic elements (`button`, `a`, `label` + `input`) — a `div` with an `onClick` is not keyboard- or screen-reader-reachable.
 - Styling via Tailwind 4 utilities (PostCSS plugin `@tailwindcss/postcss`). Follow the existing look: tailored slate/indigo/emerald/amber palettes, subtle transitions — no raw default reds/blues.
 
 ## Debugging

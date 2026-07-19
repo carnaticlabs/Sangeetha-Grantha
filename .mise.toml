@@ -33,7 +33,7 @@ rust = "1.93.0"
 bun = "1.3.7"
 
 # Python is required for the extraction worker in tools/krithi-extract-enrich-worker
-python = "3.11"
+python = "3.14"
 
 # Docker Compose for database container management
 # Note: Docker Desktop/Engine must be installed separately (system requirement)
