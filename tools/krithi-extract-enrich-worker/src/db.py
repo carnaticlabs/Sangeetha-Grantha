@@ -6,8 +6,6 @@ Provides claim/update/query operations that the worker loop uses to:
 3. Query queue statistics for health monitoring
 """
 
-from __future__ import annotations
-
 import json
 import logging
 from dataclasses import dataclass
@@ -73,10 +71,14 @@ class ExtractionQueueDB:
 
     @property
     def conn(self) -> psycopg.Connection[dict[str, Any]]:
-        if self._conn is None or self._conn.closed:
-            self.connect()
-        assert self._conn is not None
+        assert self._conn is not None, "Database connection not established. Call ensure_connected() first."
         return self._conn
+
+    def ensure_connected(self) -> None:
+        """Ensure database connection is open, reconnecting if necessary."""
+        if self._conn is None or self._conn.closed:
+            logger.info("Reconnecting to database...")
+            self.connect()
 
     @property
     def is_connected(self) -> bool:
@@ -89,6 +91,7 @@ class ExtractionQueueDB:
         Returns the claimed task or None if the queue is empty.
         The task is atomically transitioned to PROCESSING status.
         """
+        self.ensure_connected()
         with self.conn.cursor() as cur:
             cur.execute(
                 """
@@ -153,6 +156,7 @@ class ExtractionQueueDB:
         source_checksum: str | None = None,
     ) -> None:
         """Mark a task as successfully completed with results."""
+        self.ensure_connected()
         with self.conn.cursor() as cur:
             cur.execute(
                 """
@@ -187,6 +191,7 @@ class ExtractionQueueDB:
 
     def mark_failed(self, task_id: UUID, error_detail: dict[str, Any]) -> None:
         """Mark a task as failed with error details."""
+        self.ensure_connected()
         with self.conn.cursor() as cur:
             cur.execute(
                 """
@@ -212,6 +217,7 @@ class ExtractionQueueDB:
 
     def get_queue_stats(self) -> QueueStats:
         """Get current queue depth by status."""
+        self.ensure_connected()
         with self.conn.cursor() as cur:
             cur.execute(
                 """
@@ -228,6 +234,7 @@ class ExtractionQueueDB:
 
     def list_composer_reference_rows(self) -> list[dict[str, Any]]:
         """Load composer reference rows (with aliases where available)."""
+        self.ensure_connected()
         with self.conn.cursor() as cur:
             try:
                 cur.execute(
@@ -262,6 +269,7 @@ class ExtractionQueueDB:
 
     def list_raga_reference_rows(self) -> list[dict[str, Any]]:
         """Load raga reference rows used by identity candidate discovery."""
+        self.ensure_connected()
         with self.conn.cursor() as cur:
             cur.execute(
                 """
@@ -277,6 +285,7 @@ class ExtractionQueueDB:
 
     def health_check(self) -> bool:
         """Verify database connectivity."""
+        self.ensure_connected()
         try:
             with self.conn.cursor() as cur:
                 cur.execute("SELECT 1")

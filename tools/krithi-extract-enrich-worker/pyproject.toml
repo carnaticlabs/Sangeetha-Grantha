@@ -19,6 +19,7 @@ dependencies = [
 
     # Data validation
     "pydantic>=2.6.0",          # Schema validation for canonical extraction format
+    "pydantic-settings>=2.2.1", # Environment-based config validation
 
     # Database
     "psycopg[binary]>=3.1.0",   # PostgreSQL driver (async-capable)

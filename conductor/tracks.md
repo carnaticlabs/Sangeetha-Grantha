@@ -1,7 +1,7 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.12.0 |
+| **Version** | 1.13.0 |
 | **Last Updated** | 2026-07-19 |
 | **Author** | Sangeetha Grantha Team |
 
@@ -134,7 +134,7 @@
 | [TRACK-128](./tracks/TRACK-128-gemini-enricher-hardening.md) | Gemini Enricher Hardening — Typed Errors, SDK-Native Parsing, Batch Safety | Completed |
 | [TRACK-129](./tracks/TRACK-129-worker-resource-management.md) | Worker Resource Management — fitz Context Managers, Single-Open OCR, Shared HTTP Client | Completed |
 | [TRACK-130](./tracks/TRACK-130-heuristics-consolidation-cli-dedup.md) | Consolidate Matching Heuristics & De-duplicate the CLI Extraction Pipeline | Completed |
-| [TRACK-131](./tracks/TRACK-131-worker-config-packaging.md) | Worker Config → pydantic-settings + Reproducible Docker Build | Not Started |
+| [TRACK-131](./tracks/TRACK-131-worker-config-packaging.md) | Worker Config → pydantic-settings + Reproducible Docker Build | Completed |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)

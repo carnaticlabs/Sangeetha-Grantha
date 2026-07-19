@@ -1,7 +1,7 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Not Started |
-| **Version** | 1.0.0 |
+| **Status** | Completed |
+| **Version** | 1.1.0 |
 | **Last Updated** | 2026-07-19 |
 | **Author** | Sangeetha Grantha Team |
 
@@ -60,3 +60,67 @@
 * Negative test: `SG_IDENTITY_MIN_SCORE=abc uv run python -c "from src.config import load_config; load_config()"` fails with a validation error naming the variable.
 * `docker build` succeeds; container starts, health check passes, and processes a queued HTML task against a dev DB.
 * `git check-ignore cache/<any-file>` returns 0.
+
+## Outcome (2026-07-19)
+
+### Provenance
+
+The implementation was authored in an earlier session and sat uncommitted in the
+working tree while this track still read *Not Started*. It was reviewed rather
+than rewritten; the four defects below were found in review and three were fixed
+before commit.
+
+### DoD, verified functionally (not by inspection)
+
+| Item | Evidence |
+|:---|:---|
+| `BaseSettings` port, same env names/defaults | 292 unit + 18 integration pass unchanged |
+| Malformed value fails naming the variable | `SG_IDENTITY_MIN_SCORE=abc` → `ValidationError ... SG_IDENTITY_MIN_SCORE` |
+| Range constraints | `SG_IDENTITY_MIN_SCORE=999` → "less than or equal to 100" |
+| `extractor_version` at instantiation | `computed_field` over `EXTRACTOR_VERSION`; container reports `krithi-extract-enrich-worker:1.0.0` |
+| Concurrency knobs deleted (option b) | zero refs in `src/` or `compose.yaml`; worker docstring updated |
+| `ensure_connected()` | explicit, logs on reconnect, called by every public DB method |
+| Dockerfile from lockfile | `uv sync --frozen --no-dev`; image builds; `src.worker` + `health_check` import inside it |
+| `cache/` ignored | `git check-ignore` exits 0 |
+| Skill doc Python version | `3.11+` → `3.14+` |
+
+### Review findings
+
+Three fixed before commit:
+
+1. **`mypy` was failing** — `config.py` carried `# type: ignore[misc]` on the
+   `computed_field`; mypy wanted the narrower `[prop-decorator]`. This broke the
+   CI gate TRACK-126 had just added. Fixed.
+2. **Immutability regression** — the previous `ExtractorConfig` was
+   `@dataclass(frozen=True)`; `BaseSettings` is mutable by default, so
+   `config.database_url = ...` silently succeeded at runtime. Restored via
+   `SettingsConfigDict(frozen=True)`, confirmed by an explicit mutation attempt.
+3. **Unpinned build tooling** — `COPY --from=ghcr.io/astral-sh/uv:latest`
+   directly undermined this track's reproducible-build goal. Pinned to
+   `uv:0.11.25`; image rebuilt and re-verified.
+
+One flagged, **not** changed — needs a call:
+
+4. **`env_file=".env"`** adds a configuration source the DoD did not ask for
+   ("same env var names, same defaults"). No `.env` exists in the worker
+   directory today, so nothing is currently affected, and real environment
+   variables still take precedence over the file. But this repo does use `.env`
+   files elsewhere, so a future stray file would change worker config without any
+   code change. Left in place with an explanatory comment in `config.py`; remove
+   it if config should read the environment only.
+
+### Notes
+
+* `db.py` uses `assert` for the connection invariant, which is stripped under
+  `python -O`, and `worker.py`'s rollback handler (`except Exception: pass`) now
+  swallows that AssertionError. Impact is contained — the next
+  `ensure_connected()` recovers — but a `RuntimeError` would be the sturdier guard.
+* `from __future__ import annotations` was dropped only from the files this track
+  touched; 17 files in `src/` still carry it. Consistent with the DoD's
+  "while touching files" scoping, not a full sweep.
+
+### Verification
+
+`ruff check` 0, `ruff format --check` clean (55 files), `mypy` 0,
+`pytest` 292 unit + 18 integration passing, `docker build` succeeds with the
+pinned uv image and the entrypoint imports inside it.

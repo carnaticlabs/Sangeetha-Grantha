@@ -17,12 +17,8 @@ Environment variables:
     SG_ENABLE_GEMINI_ENRICHMENT: Enable optional Gemini metadata fill for missing fields
     SG_ENABLE_IDENTITY_DISCOVERY: Enable RapidFuzz identity candidates for composer/raga
     EXTRACTION_POLL_INTERVAL_S: Seconds between poll attempts (default: 5)
-    EXTRACTION_BATCH_SIZE: Max tasks to process per cycle (default: 10)
-    EXTRACTION_MAX_CONCURRENT: Max concurrent extractions (default: 3)
     LOG_LEVEL: Logging level (default: INFO)
 """
-
-from __future__ import annotations
 
 import logging
 import signal

@@ -136,6 +136,7 @@
 | pytesseract | `0.3.13` | Tesseract OCR wrapper |
 | indic-transliteration | `2.3.76` | Script conversion (Devanagari ↔ Tamil/Telugu/etc.) |
 | Pydantic | `2.13.4` | Schema validation |
+| Pydantic Settings | `2.14.2` | Environment-based config validation |
 | psycopg | `3.3.4` | PostgreSQL driver (async-capable) |
 | google-genai | `>=2.0.0` (resolved `2.9.0`) | Unified Gemini SDK; 2.0 breaking changes are Interactions-API-only — the worker's generate_content/batches surface is unaffected (TRACK-124) |
 | RapidFuzz | `3.14.3` | Fast fuzzy matching |

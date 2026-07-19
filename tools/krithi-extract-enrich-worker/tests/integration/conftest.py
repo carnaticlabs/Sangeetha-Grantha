@@ -96,6 +96,7 @@ def queue_db(database_url: str, monkeypatch: pytest.MonkeyPatch) -> Iterator[Ext
     db = ExtractionQueueDB(ExtractorConfig())
     yield db
     try:
+        db.ensure_connected()
         with db.conn.cursor() as cur:
             # CASCADE: variant_match holds an FK into extraction_queue
             cur.execute("TRUNCATE extraction_queue CASCADE")
@@ -114,6 +115,7 @@ def insert_pending_task(
     status: str = "PENDING",
 ) -> str:
     """Insert a queue row the way the Kotlin backend does; returns the task id."""
+    db.ensure_connected()
     with db.conn.cursor() as cur:
         cur.execute(
             """
@@ -141,6 +143,7 @@ def insert_pending_task(
 
 
 def fetch_task_row(db: ExtractionQueueDB, task_id: str) -> dict[str, Any]:
+    db.ensure_connected()
     with db.conn.cursor() as cur:
         cur.execute("SELECT * FROM extraction_queue WHERE id = %(id)s", {"id": task_id})
         row = cur.fetchone()

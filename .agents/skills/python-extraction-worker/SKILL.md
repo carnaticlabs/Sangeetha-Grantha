@@ -39,7 +39,7 @@ To prevent code drift and untyped dictionary parsing bugs, Python code in this m
   ```
 
 ## 2. Environment & Dependency Management
-- **Mise & UV**: Tooling is controlled via `mise` (Python 3.11+) and **`uv`**.
+- **Mise & UV**: Tooling is controlled via `mise` (Python 3.14+) and **`uv`**.
 - Dependency additions must go through `pyproject.toml` and be locked using `uv.lock`.
 - To install/update local environments, run `uv sync` or `uv pip install`.
 

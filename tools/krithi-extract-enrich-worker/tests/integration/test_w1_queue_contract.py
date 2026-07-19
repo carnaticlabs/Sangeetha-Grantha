@@ -109,6 +109,7 @@ def test_skip_locked_two_workers_never_claim_the_same_task(
     try:
         # Hold the first claim's row lock open mid-transaction by claiming
         # without committing on a raw connection.
+        queue_db.ensure_connected()
         with queue_db.conn.cursor() as cur:
             cur.execute(
                 """

@@ -21,14 +21,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
+# Install uv — pinned, because an unpinned `:latest` would undermine the
+# reproducible-build goal this stage exists to serve (TRACK-131).
+COPY --from=ghcr.io/astral-sh/uv:0.11.25 /uv /uvx /bin/
+
 WORKDIR /app
 
 # Install Python dependencies first (layer caching)
-COPY pyproject.toml .
-RUN pip install --no-cache-dir -e .
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-dev
 
 # Copy application source
 COPY src/ ./src/
+
+# Activate virtualenv for the entrypoint
+ENV PATH="/app/.venv/bin:$PATH"
 
 # Create cache directory for downloaded PDFs
 RUN mkdir -p /app/cache
