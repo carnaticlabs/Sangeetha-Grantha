@@ -24,12 +24,12 @@ from pathlib import Path
 
 import pytest
 
+from src.config import ExtractorConfig
 from src.diacritic_normalizer import normalize_garbled_diacritics
 from src.html_extractor import HtmlTextExtractor
 from src.schema import CanonicalLyricSection, CanonicalLyricVariant
 from src.structure_parser import StructureParser
 from src.worker import ExtractionWorker
-from src.config import ExtractorConfig
 
 FIXTURE_DIR = Path(__file__).parent / "fixtures" / "html"
 
@@ -104,7 +104,7 @@ class TestWorkerDoesNotTruncateLyricSections:
                 sections=[CanonicalLyricSection(sectionOrder=1, text=long_text)],
             )
         ]
-        out = worker._filter_empty_lyric_sections(variants)
+        out = worker.pdf_strategy._filter_empty_lyric_sections(variants)
         assert out[0].sections[0].text == long_text, "lyric section was truncated"
 
     def test_empty_sections_still_filtered(self) -> None:
@@ -119,6 +119,6 @@ class TestWorkerDoesNotTruncateLyricSections:
                 ],
             )
         ]
-        out = worker._filter_empty_lyric_sections(variants)
+        out = worker.pdf_strategy._filter_empty_lyric_sections(variants)
         assert len(out[0].sections) == 1
         assert out[0].sections[0].text == "pallavi text"
