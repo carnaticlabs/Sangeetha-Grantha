@@ -33,17 +33,59 @@ jobs:
           docker compose --profile dev logs --tail 100
           exit 1
 
-      - name: Provision admin user
-        # The E2E flows authenticate via adminToken + email (/v1/auth/token),
-        # which only requires the user row to exist — password_hash is
-        # nullable and unused on this path. The gradle-based bootstrap-admin
-        # can't run here anyway: it contends on the gradle-cache volume lock
-        # held by the running backend container.
+      - name: Provision admin user and its role assignment
+        # The E2E flows authenticate via adminToken + email (/v1/auth/token).
+        # The gradle-based bootstrap-admin can't run here — it contends on the
+        # gradle-cache volume lock held by the running backend container — so the
+        # user row is inserted directly.
+        #
+        # The role assignment is NOT optional. Since b073fa0 ("enforce roles from
+        # storage"), every admin route sits behind requireRole(Roles.ADMIN) and
+        # roles are read from `role_assignments`, never from the request. All
+        # three money paths go through that gate — curatorRoutes (Path 1),
+        # bulkImportRoutes (Path 2), adminKrithiRoutes (Path 3) — so a user row
+        # without the role yields 403s that surface as an empty review queue and
+        # a 120s Playwright timeout rather than an obvious auth error.
+        # `grp_sangita_admin` itself is reference data from R__seed_01.
         run: |
-          docker compose exec -T db psql -U postgres -d sangita_grantha -c \
+          docker compose exec -T db psql -U postgres -d sangita_grantha -v ON_ERROR_STOP=1 -c \
             "INSERT INTO users (email, full_name, display_name)
              VALUES ('admin@sangitagrantha.org', 'E2E Nightly Admin', 'E2E Nightly Admin')
-             ON CONFLICT (email) DO NOTHING"
+             ON CONFLICT (email) DO NOTHING;
+
+             INSERT INTO role_assignments (user_id, role_code)
+             SELECT u.id, 'grp_sangita_admin'
+             FROM users u
+             WHERE u.email = 'admin@sangitagrantha.org'
+             ON CONFLICT (user_id, role_code) DO NOTHING;"
+
+      - name: Verify the admin can actually reach an admin route
+        # Fail fast and legibly here rather than 11 minutes later as a Playwright
+        # timeout. This asserts the whole auth chain the money paths depend on:
+        # token issuance -> role lookup from storage -> requireRole admission.
+        run: |
+          set -euo pipefail
+          TOKEN=$(curl -fsS -X POST http://localhost:8080/v1/auth/token \
+            -H 'Content-Type: application/json' \
+            -d '{"adminToken":"dev-admin-token","email":"admin@sangitagrantha.org"}' \
+            | sed -n 's/.*"token"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')
+          if [ -z "$TOKEN" ]; then
+            echo "::error::/v1/auth/token returned no token — admin user provisioning failed" >&2
+            exit 1
+          fi
+          STATUS=$(curl -s -o /dev/null -w '%{http_code}' \
+            -H "Authorization: Bearer $TOKEN" http://localhost:8080/v1/admin/composers)
+          if [ "$STATUS" = "403" ]; then
+            echo "::error::Admin token rejected with 403 — 'grp_sangita_admin' is not assigned to the E2E admin user. See the provisioning step above." >&2
+            docker compose exec -T db psql -U postgres -d sangita_grantha \
+              -c "SELECT u.email, ra.role_code FROM users u LEFT JOIN role_assignments ra ON ra.user_id = u.id"
+            exit 1
+          fi
+          if [ "$STATUS" != "200" ]; then
+            echo "::error::Unexpected status $STATUS from an admin route — the stack is not in a testable state" >&2
+            exit 1
+          fi
+          echo "admin auth chain OK (token issued, role admitted, 200 from admin route)"
 
       - uses: oven-sh/setup-bun@v2
       - name: Install frontend deps
