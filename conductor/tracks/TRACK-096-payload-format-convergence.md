@@ -1,9 +1,26 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Paused |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-03-15 |
+| **Status** | Ready — unblocked, cleanup pending |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-07-19 |
 | **Author** | Sangeetha Grantha Team |
+
+> **2026-07-19 — unblocked.** This track was paused waiting for the legacy payloads to drain from
+> the corpus. The TRACK-093 re-import has done that: **all 1,238 `imported_krithis.parsed_payload`
+> rows are canonical (`CanonicalExtractionDto`), with zero legacy `ScrapedKrithiMetadata`.**
+>
+> ```sql
+> SELECT CASE WHEN parsed_payload ? 'sections' THEN 'canonical'
+>             WHEN parsed_payload ? 'rawLyrics' OR parsed_payload ? 'scrapedAt' THEN 'legacy'
+>             ELSE 'other' END AS shape, COUNT(*)
+> FROM imported_krithis GROUP BY 1;
+> -- canonical | 1238
+> ```
+>
+> The remaining work is the deletion cleanup: remove `ScrapedKrithiMetadata` and the dual-format
+> fallback branches now that nothing produces or reads the old shape. Re-run the query above
+> immediately before deleting — the guarantee is "no legacy rows *right now*", not a schema
+> constraint, so a stray import between now and then would reintroduce one.
 
 # Goal
 

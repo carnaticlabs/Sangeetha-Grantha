@@ -1,14 +1,20 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | In Progress (implementation done; re-import pending) |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-07-10 |
+| **Status** | Completed |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-07-19 |
 | **Author** | Sangeetha Grantha Team |
-| **Priority** | P1 — time-sensitive (gates TRACK-093/096 resume) |
+| **Priority** | P1 — time-sensitive (gated TRACK-093/096 resume; both now unblocked) |
 | **Epic** | [TRACK-109](./TRACK-109-production-readiness-roadmap.md) (N5 data model) |
 | **Decisions** | D1 ([decision log](../../application_documentation/north-star-production-readiness-decision.md)) |
 | **Depends on** | TRACK-116 (ADR-014 + design), TRACK-110 (Flyway cutover) |
-| **Interacts with** | TRACK-093 (paused), TRACK-096 (paused) |
+| **Interacts with** | TRACK-093 (completed), TRACK-096 (unblocked) |
+
+> **2026-07-19 — the re-import is done; this track is closed.** Verified against the dev DB:
+> `krithi_revisions` holds 1,292 rows across 1,225 of 1,226 krithis, and `krithi_section_revisions`
+> holds 15,651 rows — so history and per-section provenance were captured from row one exactly as
+> the D1 "re-import from scratch" call intended, with no retrofit. See
+> [TRACK-093](./TRACK-093-trinity-krithi-bulk-import.md) for the full corpus verification table.
 
 # TRACK-117: Versioned Canon — Implementation + Re-Import (N5)
 

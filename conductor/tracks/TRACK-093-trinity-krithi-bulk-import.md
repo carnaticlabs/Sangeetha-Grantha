@@ -1,11 +1,30 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Paused |
-| **Version** | 1.2.1 |
-| **Last Updated** | 2026-07-11 |
+| **Status** | Completed |
+| **Version** | 1.3.0 |
+| **Last Updated** | 2026-07-19 |
 | **Author** | Sangeetha Grantha Team |
 
-> **2026-07-11 — held by decision.** The prerequisites for a *clean* re-import are now in place:
+> **2026-07-19 — completed.** The re-import held below has since run. Verified against the dev DB:
+>
+> | Check | Result |
+> |:---|:---|
+> | Krithis imported | **1,226** of the 1,245 target (98.5%) — Tyagaraja 675, Dikshitar 481, Syama Sastri 70 |
+> | Krithis with canonical sections | 1,225 of 1,226 |
+> | Krithis with a raga link | 1,226 (zero unresolved) |
+> | `krithi_revisions` | 1,292 rows across 1,225 krithis (versioned canon populated from row one) |
+> | `krithi_section_revisions` | 15,651 rows |
+> | `parsed_payload` format | 1,238 of 1,238 canonical — **zero legacy `ScrapedKrithiMetadata`** |
+>
+> The last row is TRACK-096's explicit unblock condition; that track is now clear to run its
+> deletion cleanup. Residual data quality is tracked separately, not here:
+> **29 krithis (2.4%) with section-count mismatches** → [TRACK-133](./TRACK-133-section-mismatch-remediation.md);
+> **16 duplicate raga pairs** created by an import-side normalisation gap → [TRACK-132](./TRACK-132-raga-deduplication-normalizer-fix.md).
+
+<details>
+<summary>2026-07-11 — held by decision (superseded)</summary>
+
+> The prerequisites for a *clean* re-import are now in place:
 > the versioned-canon schema + write path (TRACK-117), the auto-approval revision attribution
 > (TRACK-117 — approvals now record provenance from the extraction), and the structural-voting
 > migration off the legacy scraper DTO (TRACK-096). The re-import itself (`make db-reset` → three
@@ -14,6 +33,8 @@
 > outward-facing scrape. When it runs, it will populate `krithi_revisions` + per-section provenance
 > from row one, and unblock TRACK-096's final cleanup (deleting `ScrapedKrithiMetadata` + the
 > dual-format fallback once no legacy payloads remain).
+
+</details>
 
 # Goal
 

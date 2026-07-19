@@ -1,7 +1,7 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.13.0 |
+| **Version** | 1.14.0 |
 | **Last Updated** | 2026-07-19 |
 | **Author** | Sangeetha Grantha Team |
 
@@ -96,10 +96,10 @@
 | [TRACK-090](./tracks/TRACK-090-audit-log-display-fix.md) | Audit Log Display Fix — DTO Alignment & Actor Resolution | Completed |
 | [TRACK-091](./tracks/TRACK-091-comprehensive-raga-reference-data.md) | Comprehensive Raga Reference Data | Completed |
 | [TRACK-092](./tracks/TRACK-092-raga-tree-grid-ui.md) | Raga Tree-Grid UI with Melakarta Hierarchy | Completed |
-| [TRACK-093](./tracks/TRACK-093-trinity-krithi-bulk-import.md) | Trinity Krithi Bulk Import (Dikshitar, Syama Sastri, Thyagaraja) | Paused |
+| [TRACK-093](./tracks/TRACK-093-trinity-krithi-bulk-import.md) | Trinity Krithi Bulk Import (Dikshitar, Syama Sastri, Thyagaraja) | Completed |
 | [TRACK-094](./tracks/TRACK-094-lyric-persistence-fix-backfill.md) | Lyric Persistence Fix & Backfill (CanonicalExtractionDto Support) | Completed |
 | [TRACK-095](./tracks/TRACK-095-import-pipeline-test-validation.md) | Import Pipeline End-to-End Testing & Validation | Completed |
-| [TRACK-096](./tracks/TRACK-096-payload-format-convergence.md) | Payload Format Convergence — Deprecate ScrapedKrithiMetadata | Paused |
+| [TRACK-096](./tracks/TRACK-096-payload-format-convergence.md) | Payload Format Convergence — Deprecate ScrapedKrithiMetadata | Ready — unblocked, cleanup pending |
 | [TRACK-097](./tracks/TRACK-097-guru-guha-blog-source-adapter.md) | Guru-Guha Blog Source Adapter — Fix Extraction & Lyrics | Completed |
 | [TRACK-098](./tracks/TRACK-098-agent-workflow-additions.md) | Agent Workflow Additions & Tooling Cleanup | Completed |
 | [TRACK-099](./tracks/TRACK-099-backend-compiler-warning-cleanup.md) | Backend Compiler Warning Cleanup — Zero Warnings Target | Completed |
@@ -120,7 +120,7 @@
 | [TRACK-114](./tracks/TRACK-114-password-hashing.md) | Authentication Hardening — Password Hashing (N1, re-scoped) | Completed |
 | [TRACK-115](./tracks/TRACK-115-repo-hygiene-secret-rotation.md) | Repository Hygiene & Secret Rotation (N8) | Completed |
 | [TRACK-116](./tracks/TRACK-116-versioned-canon-spike.md) | Versioned Canon — Architecture Spike + ADR-014 (N5) | Completed |
-| [TRACK-117](./tracks/TRACK-117-versioned-canon-implementation.md) | Versioned Canon — Implementation + Re-Import (N5) | In Progress (implementation done; re-import pending) |
+| [TRACK-117](./tracks/TRACK-117-versioned-canon-implementation.md) | Versioned Canon — Implementation + Re-Import (N5) | Completed |
 | [TRACK-118](./tracks/TRACK-118-frontend-component-tests.md) | Frontend Component Tests (Vitest) | Completed |
 | [TRACK-119](./tracks/TRACK-119-oauth-otp-auth.md) | Interactive Auth — OAuth / OTP (deferred N1 items) | Not Started |
 | [TRACK-120](./tracks/TRACK-120-dependency-upgrades-safe-jun-2026.md) | Dependency Upgrades Batch 1 — Security + Safe Drop-ins (Jun 2026) | Completed |
@@ -135,6 +135,8 @@
 | [TRACK-129](./tracks/TRACK-129-worker-resource-management.md) | Worker Resource Management — fitz Context Managers, Single-Open OCR, Shared HTTP Client | Completed |
 | [TRACK-130](./tracks/TRACK-130-heuristics-consolidation-cli-dedup.md) | Consolidate Matching Heuristics & De-duplicate the CLI Extraction Pipeline | Completed |
 | [TRACK-131](./tracks/TRACK-131-worker-config-packaging.md) | Worker Config → pydantic-settings + Reproducible Docker Build | Completed |
+| [TRACK-132](./tracks/TRACK-132-raga-deduplication-normalizer-fix.md) | Raga Deduplication & Import Normaliser Fix | Ready — adjudication complete, migration pending |
+| [TRACK-133](./tracks/TRACK-133-section-mismatch-remediation.md) | Section-Count Mismatch Remediation (29 krithis) | Not Started |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)
