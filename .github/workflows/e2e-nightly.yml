@@ -87,7 +87,35 @@ jobs:
           fi
           echo "admin auth chain OK (token issued, role admitted, 200 from admin route)"
 
-      - uses: oven-sh/setup-bun@v2
+      # Bun is pinned to the version in .mise.toml so CI and local dev agree, and
+      # so setup-bun resolves a concrete release instead of looking "latest" up
+      # through the GitHub tags API — that lookup 503'd and sank the 2026-07-16
+      # nightly. The fallback covers whatever transient failure remains: bun is a
+      # hard prerequisite here, so a network blip should cost a retry, not a run.
+      - name: Set up Bun
+        id: setup_bun
+        continue-on-error: true
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.7
+
+      - name: Install Bun directly (fallback, retried)
+        if: steps.setup_bun.outcome == 'failure'
+        run: |
+          set -euo pipefail
+          echo "::warning::setup-bun failed; falling back to the direct installer"
+          for attempt in 1 2 3; do
+            echo "bun install attempt $attempt/3"
+            if curl -fsSL --retry 3 --retry-delay 5 --retry-all-errors \
+                 https://bun.sh/install | bash -s "bun-v1.3.7"; then
+              echo "$HOME/.bun/bin" >> "$GITHUB_PATH"
+              exit 0
+            fi
+            sleep $((attempt * 10))
+          done
+          echo "::error::Bun could not be installed — setup-bun failed and the direct installer failed 3 times" >&2
+          exit 1
+
       - name: Install frontend deps
         working-directory: modules/frontend/sangita-admin-web
         run: bun install --frozen-lockfile
