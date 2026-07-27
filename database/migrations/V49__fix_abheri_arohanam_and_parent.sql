@@ -27,44 +27,61 @@
 --
 -- Ref: application_documentation/02-architecture/decisions/ADR-016-raga-naming-authority.md
 
--- Guards: fail loudly rather than write a NULL parent or hit an ambiguous match.
--- (A silent NULL parent is exactly how V40 left seven janyas orphaned.)
+-- ORDERING NOTE — why this migration skips instead of failing on a fresh database.
+-- Abheri and melakarta #22 Kharaharapriyā are both seeded by the repeatable
+-- R__seed_04_raga_reference.sql, which Flyway runs AFTER every versioned migration.
+-- On a fresh database neither row exists when this migration runs, so R__seed_04 —
+-- which now seeds Abheri correctly at source — is authoritative and this migration
+-- skips. It only has real work to do on an already-seeded existing database that
+-- predates the fix. A hard failure here aborted the whole migrate and broke the
+-- nightly compose stack.
 DO $$
 DECLARE
     abheri_count INT;
     mela22_count INT;
+    v_parent_id  UUID;
+    v_abheri_id  UUID;
 BEGIN
     SELECT COUNT(*) INTO abheri_count FROM ragas WHERE name_normalized = 'abheri';
+    SELECT COUNT(*) INTO mela22_count FROM ragas WHERE melakarta_number = 22;
+
+    -- Fresh database: reference data not seeded yet — defer to R__seed_04.
+    IF abheri_count = 0 OR mela22_count = 0 THEN
+        RAISE NOTICE 'V49: reference data not present yet (abheri=%, mela22=%); correction deferred to R__seed_04, skipping.', abheri_count, mela22_count;
+        RETURN;
+    END IF;
+
+    -- Present but ambiguous: fail loudly rather than write a silently-wrong parent.
     IF abheri_count <> 1 THEN
         RAISE EXCEPTION 'V49: expected exactly 1 raga with name_normalized=''abheri'', found %', abheri_count;
     END IF;
-
-    SELECT COUNT(*) INTO mela22_count FROM ragas WHERE melakarta_number = 22;
     IF mela22_count <> 1 THEN
         RAISE EXCEPTION 'V49: expected exactly 1 raga with melakarta_number=22, found %', mela22_count;
     END IF;
+
+    SELECT id INTO v_parent_id FROM ragas WHERE melakarta_number = 22;
+
+    UPDATE ragas
+    SET arohanam       = 'S G2 M1 P N2 S',
+        parent_raga_id = v_parent_id,
+        updated_at     = NOW()
+    WHERE name_normalized = 'abheri'
+    RETURNING id INTO v_abheri_id;
+
+    -- Audit log (every mutation must be recorded — see CLAUDE.md).
+    INSERT INTO audit_log (entity_table, entity_id, action, diff, metadata)
+    VALUES ('ragas', v_abheri_id, 'CORRECT_RAGA_LAKSHANA',
+        jsonb_build_object(
+            'before', jsonb_build_object('arohanam', 'S M1 G2 M1 P P S',
+                                         'parent', 'Natabhairavi (melakarta 20)'),
+            'after',  jsonb_build_object('arohanam', 'S G2 M1 P N2 S',
+                                         'parent', 'Kharaharapriya (melakarta 22)')
+        ),
+        jsonb_build_object(
+            'reason',    'Arohanam was corrupted (doubled P, no nishadam); parent violated the janya subset rule (Abheri carries D2, melakarta 20 has D1)',
+            'source',    'Wikipedia List of Janya ragas (ADR-016 canonical janya authority)',
+            'migration', 'V49',
+            'krithi_links_affected', 0
+        )
+    );
 END $$;
-
-UPDATE ragas
-SET arohanam       = 'S G2 M1 P N2 S',
-    parent_raga_id = (SELECT id FROM ragas WHERE melakarta_number = 22),
-    updated_at     = NOW()
-WHERE name_normalized = 'abheri';
-
--- Audit log (every mutation must be recorded — see CLAUDE.md).
-INSERT INTO audit_log (entity_table, entity_id, action, diff, metadata)
-SELECT 'ragas', id, 'CORRECT_RAGA_LAKSHANA',
-       jsonb_build_object(
-           'before', jsonb_build_object('arohanam', 'S M1 G2 M1 P P S',
-                                        'parent', 'Natabhairavi (melakarta 20)'),
-           'after',  jsonb_build_object('arohanam', arohanam,
-                                        'parent', 'Kharaharapriya (melakarta 22)')
-       ),
-       jsonb_build_object(
-           'reason',    'Arohanam was corrupted (doubled P, no nishadam); parent violated the janya subset rule (Abheri carries D2, melakarta 20 has D1)',
-           'source',    'Wikipedia List of Janya ragas (ADR-016 canonical janya authority)',
-           'migration', 'V49',
-           'krithi_links_affected', 0
-       )
-FROM ragas
-WHERE name_normalized = 'abheri';

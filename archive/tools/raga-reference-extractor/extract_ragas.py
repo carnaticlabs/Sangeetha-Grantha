@@ -100,6 +100,93 @@ class Raga:
 
 
 # ---------------------------------------------------------------------------
+# Curated corrections — authoritative overrides applied AFTER scraping
+# ---------------------------------------------------------------------------
+# The Wikipedia/karnatik scrape has no domain validation, so it can mis-file a
+# janya under the wrong melakarta section or carry a garbled swara string. When we
+# have adjudicated the correct value against a canonical source (ADR-016), record it
+# here so a regeneration cannot silently reintroduce the error. Keyed by
+# name_normalized. Only the listed fields are overridden; None means "leave as-is".
+#
+# Each entry MUST cite why, so this stays an audited list and not a dumping ground.
+KNOWN_JANYA_CORRECTIONS: dict[str, dict] = {
+    # Abheri is a janya of #22 Kharaharapriyā, not #20 Natabhairavi: its avarohanam
+    # carries D2, which mela #20 (D1) lacks, so #20 cannot be its parent (janya
+    # subset rule, domain-model §6.4). The scraped arohanam 'S M1 G2 M1 P P S' was
+    # corrupted (doubled P, no nishadam). Corrected to the Wikipedia "List of Janya
+    # ragas" values (ADR-016 canonical janya authority); matches migration V49.
+    "abheri": {
+        "parent_melakarta": 22,
+        "arohanam": "S G2 M1 P N2 S",
+        "avarohanam": "S N2 D2 P M1 G2 R2 S",
+        "reason": "V49/ADR-016: reparent #20→#22, repair corrupted arohanam",
+    },
+}
+
+
+def apply_known_corrections(ragas: list[Raga]) -> None:
+    """Overlay KNOWN_JANYA_CORRECTIONS onto the merged ragas, in place."""
+    by_norm = {r.name_normalized: r for r in ragas}
+    for norm, fields in KNOWN_JANYA_CORRECTIONS.items():
+        raga = by_norm.get(norm)
+        if raga is None:
+            print(f"  NOTE: correction for '{norm}' has no matching scraped raga (skipped)")
+            continue
+        for key in ("parent_melakarta", "arohanam", "avarohanam"):
+            new_val = fields.get(key)
+            if new_val is not None and getattr(raga, key) != new_val:
+                print(f"  CORRECTED {norm}.{key}: {getattr(raga, key)!r} -> {new_val!r} "
+                      f"({fields.get('reason', 'curated override')})")
+                setattr(raga, key, new_val)
+
+
+# ---------------------------------------------------------------------------
+# Janya-subset validation (domain-model §6.4)
+# ---------------------------------------------------------------------------
+
+_SWARA_TOKEN_RE = re.compile(r"^[RGMDN][123]$")
+
+
+def _pitched_swaras(scale: str) -> set[str]:
+    """Distinct variant-bearing swaras (R1/G3/M2/D2/N3…) in a scale string.
+
+    S and P have no variants and are excluded (always shared), so only the
+    distinguishing swarasthanas are compared.
+    """
+    return {tok for tok in scale.split() if _SWARA_TOKEN_RE.match(tok)}
+
+
+def validate_janya_subsets(ragas: list[Raga]) -> list[str]:
+    """Flag janyas whose swaras are NOT a subset of their parent melakarta's.
+
+    This is the exact check the scrape lacks — it would have caught Abheri filed
+    under a D1 melakarta while carrying D2. Returned as WARNINGS, not errors:
+    bhashanga (anya-swara) ragas legitimately borrow a swara outside their parent,
+    so a hit is a review candidate, not proof of a bug.
+    """
+    mela_swaras: dict[int, set[str]] = {}
+    for r in ragas:
+        if r.melakarta_number is not None:
+            mela_swaras[r.melakarta_number] = _pitched_swaras(r.arohanam) | _pitched_swaras(r.avarohanam)
+
+    warnings: list[str] = []
+    for r in ragas:
+        if r.melakarta_number is not None or r.parent_melakarta is None:
+            continue
+        parent = mela_swaras.get(r.parent_melakarta)
+        if not parent:
+            continue
+        used = _pitched_swaras(r.arohanam) | _pitched_swaras(r.avarohanam)
+        foreign = used - parent
+        if foreign:
+            warnings.append(
+                f"  SUBSET? {r.name_normalized} (janya of #{r.parent_melakarta}) "
+                f"uses {sorted(foreign)} absent from parent — bhashanga, or mis-filed?"
+            )
+    return warnings
+
+
+# ---------------------------------------------------------------------------
 # 72 Melakarta Ragas (Venkatamakhi / Katapayadi scheme)
 # ---------------------------------------------------------------------------
 # These are the foundational 72 parent scales of Carnatic music.
@@ -442,7 +529,12 @@ def merge_ragas(
                 checked += 1
                 time.sleep(0.3)
 
-    return list(by_normalized.values())
+    merged = list(by_normalized.values())
+
+    # 4. Overlay adjudicated corrections that the scrape cannot get right on its own.
+    apply_known_corrections(merged)
+
+    return merged
 
 
 # ---------------------------------------------------------------------------
@@ -458,8 +550,14 @@ SQL_HEADER = """\
 --   2. Janya ragas from Wikipedia "List of Janya ragas"
 --   3. Cross-referenced with karnatik.com for canonical names
 --
--- Generated by: tools/raga-reference-extractor/extract_ragas.py
+-- Generated by: archive/tools/raga-reference-extractor/extract_ragas.py (ARCHIVED)
 -- Idempotent: uses ON CONFLICT (name_normalized) DO UPDATE
+--
+-- SUPERSEDED: the live reference seed is hand-maintained at
+--   database/migrations/R__seed_04_raga_reference.sql
+-- This generator is kept for provenance only. If you regenerate, DIFF against the
+-- live file and re-apply any hand corrections — the scrape has no domain validation
+-- beyond KNOWN_JANYA_CORRECTIONS and the janya-subset warnings. Do not blind-copy.
 -- =============================================================================
 
 -- First: Insert all melakarta ragas (parent_raga_id = NULL)
@@ -611,6 +709,15 @@ def main():
     # 4. Merge and generate SQL
     print("\n[4/4] Merging and generating SQL...")
     all_ragas = merge_ragas(melakartas, wiki_janyas, karnatik_index)
+
+    # Domain check: warn on janyas whose swaras fall outside their parent melakarta.
+    subset_warnings = validate_janya_subsets(all_ragas)
+    if subset_warnings:
+        print(f"\n  {len(subset_warnings)} janya-subset review candidate(s) "
+              f"(bhashanga ragas expected here):")
+        for w in subset_warnings:
+            print(w)
+
     sql = generate_sql(all_ragas)
 
     output_path = Path(args.output)

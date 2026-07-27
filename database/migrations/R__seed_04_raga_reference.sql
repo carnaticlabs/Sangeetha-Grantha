@@ -1297,8 +1297,14 @@ ON CONFLICT (name_normalized) DO UPDATE SET name = EXCLUDED.name, melakarta_numb
 
 -- --- Janyas of Melakarta #20: Natabhairavi ---
 
+-- Abheri is a janya of melakarta #22 Kharaharapriyā, NOT #20 Natabhairavi: its
+-- avarohanam carries D2, which mela #20 (D1) does not contain, so mela #20 cannot
+-- be its parent (janya subset rule, domain-model §6.4). Arohanam corrected from the
+-- corrupted 'S M1 G2 M1 P P S' (doubled P, no nishadam) to 'S G2 M1 P N2 S'. Values
+-- match Wikipedia's "List of Janya ragas" (ADR-016 canonical janya authority) and
+-- supersede the incorrect seed that V49 was written to patch. See V49 for history.
 INSERT INTO ragas (id, name, name_normalized, parent_raga_id, arohanam, avarohanam, created_at, updated_at)
-VALUES (gen_random_uuid(), 'Abheri', 'abheri', (SELECT id FROM ragas WHERE name_normalized = 'natabhairavi'), 'S M1 G2 M1 P P S', 'S N2 D2 P M1 G2 R2 S', NOW(), NOW())
+VALUES (gen_random_uuid(), 'Abheri', 'abheri', (SELECT id FROM ragas WHERE name_normalized = 'kharaharapriya'), 'S G2 M1 P N2 S', 'S N2 D2 P M1 G2 R2 S', NOW(), NOW())
 ON CONFLICT (name_normalized) DO UPDATE SET name = EXCLUDED.name, melakarta_number = NULL, parent_raga_id = COALESCE(EXCLUDED.parent_raga_id, ragas.parent_raga_id), arohanam = COALESCE(EXCLUDED.arohanam, ragas.arohanam), avarohanam = COALESCE(EXCLUDED.avarohanam, ragas.avarohanam), updated_at = NOW();
 
 INSERT INTO ragas (id, name, name_normalized, parent_raga_id, arohanam, avarohanam, created_at, updated_at)
@@ -4161,3 +4167,26 @@ VALUES (gen_random_uuid(), 'Sri', 'sri', (SELECT id FROM ragas WHERE name_normal
 ON CONFLICT (name_normalized) DO UPDATE SET name = EXCLUDED.name, melakarta_number = NULL, parent_raga_id = COALESCE(EXCLUDED.parent_raga_id, ragas.parent_raga_id), arohanam = COALESCE(EXCLUDED.arohanam, ragas.arohanam), avarohanam = COALESCE(EXCLUDED.avarohanam, ragas.avarohanam), updated_at = NOW();
 
 -- Total: 72 melakarta + 890 janya = 962 ragas
+
+-- ---------------------------------------------------------------------------
+-- Post-seed corrections to rows created by earlier VERSIONED migrations
+-- ---------------------------------------------------------------------------
+-- These fix data that a versioned migration inserted (or mis-tagged) but could not
+-- itself resolve, because the melakarta parents referenced here are seeded above in
+-- this same repeatable file — which Flyway runs AFTER every versioned migration. A
+-- versioned migration therefore runs before the parents exist; this block runs after
+-- them and is the authoritative place for the correction. Idempotent: each statement
+-- only rewrites a row that is still in the wrong state, so re-runs are no-ops.
+
+-- 'Gauri' (created by V40__seed_missing_trinity_ragas.sql) was mis-tagged as
+-- melakarta #23 Gourimanohari. Gauri (Gowri) is a janya of melakarta #15
+-- Māyāmāḻavagouḻai (R1 G3 M1 P D1 N3). Its 5 krithi links are correct and untouched.
+-- Ref: conductor/tracks/TRACK-132-raga-deduplication-normalizer-fix.md
+UPDATE ragas
+SET melakarta_number = NULL,
+    parent_raga_id   = (SELECT id FROM ragas WHERE melakarta_number = 15),
+    arohanam         = 'S R1 M1 P N3 S',
+    avarohanam       = 'S N3 D1 P M1 G3 R1 S',
+    updated_at       = NOW()
+WHERE name_normalized = 'gauri'
+  AND melakarta_number IS NOT NULL;   -- still carrying the wrong mela number
