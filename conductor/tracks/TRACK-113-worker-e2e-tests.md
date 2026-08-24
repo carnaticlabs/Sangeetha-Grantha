@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Completed |
-| **Version** | 2.0.0 |
-| **Last Updated** | 2026-07-09 |
+| **Version** | 2.0.1 |
+| **Last Updated** | 2026-08-24 |
 | **Author** | Sangeetha Grantha Team |
 | **Priority** | P1 |
 | **Epic** | [TRACK-109](./TRACK-109-production-readiness-roadmap.md) (W2 / W7) |
@@ -69,6 +69,8 @@ Cross-language worker DB tests + the three E2E money paths, reusing the existing
       dispatch) — compose stack up, health-gated, `bootstrapAdmin`, Playwright chromium,
       `bun run test:e2e:money`, report artifact + stack logs on failure.
       Verified locally: two consecutive full green runs (incl. the rate-limit backoff path).
+      Health wait is 180×5s (15 min): the original 5 min poll lost a cold-Gradle race
+      on 2026-08-19 (run 32305957593) with Ktor up a few seconds after the poller exited.
 
 ## Acceptance Criteria
 

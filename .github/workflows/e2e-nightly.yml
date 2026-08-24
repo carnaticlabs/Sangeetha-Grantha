@@ -23,13 +23,16 @@ jobs:
         run: docker compose --profile dev up --build -d
 
       - name: Wait for backend + frontend health
+        # Cold runners compile the backend from scratch (Gradle download + Kotlin).
+        # 60×5s = 5 min lost the race on 2026-08-19: Ktor started at T+4:57, the
+        # poller gave up at T+5:01 (run 32305957593). 180×5s = 15 min; job budget is 45.
         run: |
-          for i in $(seq 1 60); do
+          for i in $(seq 1 180); do
             curl -fsS http://localhost:8080/health >/dev/null 2>&1 && \
             curl -fsS http://localhost:5001 >/dev/null 2>&1 && exit 0
             sleep 5
           done
-          echo "stack did not become healthy" >&2
+          echo "stack did not become healthy after 15 minutes" >&2
           docker compose --profile dev logs --tail 100
           exit 1
 

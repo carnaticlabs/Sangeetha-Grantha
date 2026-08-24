@@ -2,7 +2,7 @@
 |:---|:---|
 | **Status** | Implemented |
 | **Version** | 1.5.0 — All 6 steps implemented (TRACK-110, 111, 112, 113, 118). Flyway ratified as [ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md). Testcontainers 2.0.5; 47 migrations. |
-| **Last Updated** | 2026-07-18 |
+| **Last Updated** | 2026-08-24 |
 | **Author** | Integration testing analysis (for Seshadri) |
 | **Companion docs** | `../north-star-evaluation.md` (N2/N3), `broken-tests-remediation.md`, `../02-architecture/backend-system-design.md` |
 | **Scope** | Detailed analysis of Testcontainers and equivalent options, plus a recommended integration-test architecture and scenario suite for the whole stack |
@@ -432,7 +432,7 @@ The suite surfaced five defects — one fixed (approval aborting on a payload wi
 extraction, leaving an orphaned krithi), four pinned as characterisation tests. See the
 [TRACK-112 findings table](../../conductor/tracks/TRACK-112-money-path-scenarios.md#findings).
 
-**Step 6 — Worker + E2E ✅ (TRACK-113).** testcontainers-python for 18 worker integration tests; Playwright for the three E2E money paths (login→review→approve, bulk import, krithi edit), nightly schedule (`e2e-nightly.yml`). Admin provisioned via SQL in CI. Green nightly run confirmed.
+**Step 6 — Worker + E2E ✅ (TRACK-113).** testcontainers-python for 18 worker integration tests; Playwright for the three E2E money paths (login→review→approve, bulk import, krithi edit), nightly schedule (`e2e-nightly.yml`). Admin provisioned via SQL in CI. The nightly health wait is 15 minutes (180×5s) so a cold Gradle compile on the runner cannot outlast the poller. Green nightly run confirmed.
 
 **Effort summary: ~4 weeks of part-time work, front-loaded so that the highest-leverage 20% (Steps 1–4) lands in roughly a week.**
 
