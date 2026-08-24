@@ -117,10 +117,13 @@ Load the matching skill before working in a layer instead of re-deriving its con
 - `python-extraction-worker` — `tools/krithi-extract-enrich-worker/` (Pydantic paradigm, module map, uv)
 - `monorepo-orchestration` — mise/Makefile/Compose workflows and layer ownership
 - `verify-import` — post-import data verification checklist
+- `sangita-restart-on-kotlin-change` — bounce Compose after Kotlin or extraction-worker Python edits (`make dev-down` then `make dev`)
+
+Cursor loads the same skills via symlinks under [`.cursor/skills/`](.cursor/skills/). Canonical files stay in `.claude/skills/`. Do not copy the bodies into `.cursor/` or `.cursorrules`.
 
 ### Slash Commands (`.claude/commands/`)
 
-`/dev-start`, `/db-reset`, `/test-all`, `/steel-thread`, `/new-migration`, `/commit` (follows this repo's commit conventions), `/Sangeetha-Krithi-Analyser` (krithi section analysis).
+`/dev-start`, `/db-reset`, `/test-all`, `/steel-thread`, `/new-migration`, `/commit` (follows this repo's commit conventions), `/Sangeetha-Krithi-Analyser` (krithi section analysis). Cursor mirrors these files in [`.cursor/commands/`](.cursor/commands/).
 
 ### Specialist Subagents (`.claude/agents/`)
 
@@ -129,6 +132,10 @@ Delegated to on demand (not loaded every turn): `kotlin-backend-engineer`, `post
 ### Dev Servers & Preview (`.claude/launch.json`)
 
 Named launch configs exist for `frontend` (port 5001), `backend` (8080), and `full-stack` (`make dev`). Start dev servers through the browser-preview tooling with these names — never as raw background Bash — then verify changes in the preview (console/network/page checks) rather than asking the user to check manually.
+
+### Cursor (`.cursor/`)
+
+[`.cursorrules`](.cursorrules) and [`.cursor/rules/project.mdc`](.cursor/rules/project.mdc) are pointers at this file. Git naming is [`.cursor/rules/git-conventions.mdc`](.cursor/rules/git-conventions.mdc). Layer skills and slash commands are **symlinks** to `.claude/skills/` and `.claude/commands/` so they cannot drift. Extra Cursor-only skills: `agentic-prompt-optimizer`, `sangeetha-krithi-analyser`.
 
 ## Conductor Workflow
 

@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-03-10 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-08-24 |
 | **Author** | Sangeetha Grantha Team |
 
 # Agent Skills, Workflows & Hooks Modernization
@@ -40,6 +40,9 @@ Modernize all `.agents/` workflows and skills to reflect the current Makefile + 
 |------|-------|---------|
 | Protected file guard | PreToolUse (Write/Edit) | Block edits to config/*.env files |
 | Migration naming | PreToolUse (Write/Edit) | Enforce NN__description.sql pattern |
+
+### Cursor mirrors (2026-08-24)
+Canonical skill bodies stay in `.claude/skills/`. `.cursor/skills/` and `.cursor/commands/` are git-tracked **symlinks** to those files (plus `commit-policy` → `.agents/skills/commit-policy`). New Claude skills: `sangita-restart-on-kotlin-change` (`make dev-down` / `make dev`); `verify-import` gained YAML frontmatter so Cursor can load it as a skill.
 
 ### Removed
 | File | Reason |

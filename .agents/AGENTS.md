@@ -8,6 +8,7 @@ Tool-specific entrypoints that build on CLAUDE.md:
 - **Codex / ChatGPT** → [`CODEX.md`](../CODEX.md)
 - **Goose** → [`GOOSE.md`](../GOOSE.md)
 - **Claude Code** → [`CLAUDE.md`](../CLAUDE.md) (canonical)
+- **Cursor** → [`.cursorrules`](../.cursorrules), [`.cursor/rules/`](../.cursor/rules/), [`.cursor/skills/`](../.cursor/skills/) (pointers + symlinks to `.claude/`)
 - **Google Antigravity / Gemini** → This file natively serves as the customization root.
 
 ## Current Facts (Authoritative text in CLAUDE.md)
@@ -49,24 +50,27 @@ You are the **Sangita Grantha Architect**, a unique dual-expert:
 
 ## Local Skills (`.agents/skills/`)
 
-Layer skills — load the one matching the layer you're working in:
+Layer skills — load the one matching the layer you're working in (canonical bodies in `.claude/skills/`; `.agents/skills/` copies carry worked examples where they differ):
 - `kmp-compose-mobile` — `modules/shared/` (KMP targets, expect/actual, Compose rules).
 - `ktor-exposed-backend` — `modules/backend/` (layering, dbQuery, DTO, audit, auth).
 - `postgres-flyway-db` — `database/migrations/` (V__/R__ naming, PG18 conventions, seeding).
 - `python-extraction-worker` — `tools/krithi-extract-enrich-worker/` (Pydantic paradigm, module map, uv).
 - `react-vite-frontend` — `modules/frontend/sangita-admin-web/` (Bun-only tooling, strict TS, tests).
+- `monorepo-orchestration` — mise/Makefile/Compose workflows and layer ownership.
+- `verify-import` — post-import data verification checklist (symlink to `.claude/skills/`).
+- `sangita-restart-on-kotlin-change` — `make dev-down` / `make dev` after Kotlin or worker Python edits (symlink to `.claude/skills/`).
 
 Cross-cutting skills:
 - `change-mapper` — change scanning and categorization.
-- `commit-policy` — commit rules and reference requirements.
+- `commit-policy` — commit rules, branch names, and reference requirements.
 - `data-quality-audit` — data integrity / quality checks.
 - `documentation-guardian` — doc header, links, and formatting rules.
 - `extraction-debugger` — diagnose the krithi extraction pipeline.
 - `ingestion-pipeline-guardian` — guard the Kotlin ingestion path.
 
-> The five layer skills are kept in sync with their `.claude/skills/` counterparts — the rules are the same, this tree carries the worked examples. When you change a rule in one, change it in both.
+> Layer *rules* stay in `.claude/skills/`. When you change a rule there, the Cursor mirrors (`.cursor/skills/` symlinks) update automatically. `.agents/skills/` may still hold longer worked examples — update those in the same change if the rule itself moved.
 
-(`.cursor/skills/` additionally ships `agentic-prompt-optimizer` and `sangeetha-krithi-analyser`.)
+Cursor additionally ships `agentic-prompt-optimizer` and `sangeetha-krithi-analyser` under `.cursor/skills/` (not Claude layer skills). Cursor slash-command mirrors live in `.cursor/commands/` → `.claude/commands/`.
 
 ## Workflows (`.agents/workflows/`)
 - `agentic-prompt-optimizer.md` — rewrite an informal request into a structured, tool-friendly prompt.
@@ -90,6 +94,7 @@ through **Flyway** per ADR-013. The historical Rust CLI (`tools/sangita-cli`) is
 
 ## Context Files
 - [`CLAUDE.md`](../CLAUDE.md) — canonical project rules (all assistants).
+- [`.cursorrules`](../.cursorrules) / [`.cursor/rules/`](../.cursor/rules/) — Cursor pointers at CLAUDE.md.
 - `.chatgpt-config.md` — Codex/ChatGPT canonical rules mirror.
 - `.ai-quick-reference.md` — quick commands, stack versions, module map.
 - `.ai-context-guide.md` — cross-assistant index of context files.

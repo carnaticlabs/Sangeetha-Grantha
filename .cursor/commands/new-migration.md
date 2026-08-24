@@ -1,0 +1,1 @@
+../../.claude/commands/new-migration.md

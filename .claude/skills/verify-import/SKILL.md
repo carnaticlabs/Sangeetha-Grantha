@@ -1,3 +1,8 @@
+---
+name: verify-import
+description: Post-import data verification checklist. Use after bulk imports, extraction runs, or migration repairs to confirm junction tables, duplicates, and API spot-checks.
+---
+
 # Verify Import Pipeline
 
 1. Check PostgreSQL is running and accessible
