@@ -33,7 +33,10 @@ replay_pid*
 .DS_Store
 .idea/
 .vscode/
-.cursor/
+# Cursor local state; shared project rules stay tracked.
+.cursor/*
+!.cursor/rules/
+!.cursor/rules/**
 *.iml
 .gradle/
 build/

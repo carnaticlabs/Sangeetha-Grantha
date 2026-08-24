@@ -1,0 +1,29 @@
+---
+description: Git branch names and commit message format for this repo
+alwaysApply: true
+---
+
+# Git branches and commits
+
+Do not use Cursor’s default `cursor/` branch prefix unless the user explicitly asks for it.
+
+## Branches
+
+- Track work: `track-<nnn>-<kebab-slug>` (example: `track-121-frontend-toolchain`)
+- Otherwise: `<type>/<kebab-slug>` where type is `fix`, `feat`, `docs`, `chore`, or `ci` (example: `fix/ragamalika-parser-and-section-matching`)
+- Reuse the current branch when it already matches the work
+- Do not commit on `main` unless the user explicitly asks
+
+## Commits
+
+Follow `.agents/skills/commit-policy/SKILL.md`. Do not commit until the user asks.
+
+```text
+<TRACK-ID>: <short summary>
+
+Ref: application_documentation/<path>.md
+
+- <bullet>
+```
+
+Omit `TRACK-ID` only when no conductor track exists. Every commit needs exactly one `Ref:` line pointing at an existing file under `application_documentation/`.

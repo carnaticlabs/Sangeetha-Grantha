@@ -159,8 +159,11 @@ For CORS/auth issues, always check .env files and VITE_API_BASE_URL first, not T
 
  ## Data & Migrations 
  Always verify seed data populates junction tables (e.g., krithi_ragas), not just foreign key columns on the main entity. After any seed/migration, confirm data appears correctly through the full stack (DB → API → UI).
-## Git & Commits 
-Follow commit-policy skill conventions strictly: include TRACK references, use proper formatting. Never create commits without checking the project's commit message conventions first.
+## Git & Commits
+Follow [commit-policy](.agents/skills/commit-policy/SKILL.md) strictly. Cursor agents also load [`.cursor/rules/git-conventions.mdc`](.cursor/rules/git-conventions.mdc).
+
+- **Branches:** `track-<nnn>-<kebab-slug>` when a conductor track exists; otherwise `<type>/<kebab-slug>` (`fix`, `feat`, `docs`, `chore`, `ci`). Do not use a `cursor/` prefix unless the user asks.
+- **Messages:** `TRACK-ID` in the title when a track exists; exactly one `Ref: application_documentation/...` line; never commit until asked.
 
 ## Infrastructure & Docker 
 When debugging Docker/infrastructure issues: check Dockerfile base image versions match project requirements, verify volume mount paths for the current DB version, and ensure Gradle caches are cleared before assuming code changes aren't taking effect.

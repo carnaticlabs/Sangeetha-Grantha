@@ -1,13 +1,26 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-03-10 |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-08-24 |
 | **Author** | Sangeetha Grantha Team |
 
 # Commit Policy
 
 You are responsible for ensuring that all changes committed to the repository adhere to strict traceability and security guardrails.
+
+## 0. Branch naming
+
+Do not use Cursor’s default `cursor/` prefix unless the user explicitly asks for it.
+
+| Work | Branch name | Example |
+|:---|:---|:---|
+| Conductor track | `track-<nnn>-<kebab-slug>` | `track-121-frontend-toolchain` |
+| No track | `<type>/<kebab-slug>` (`fix`, `feat`, `docs`, `chore`, `ci`) | `fix/ragamalika-parser-and-section-matching` |
+
+Reuse the current branch when it already matches. Do not commit on `main` unless the user explicitly asks.
+
+Cursor agents: `.cursor/rules/git-conventions.mdc` restates this for always-on agent context.
 
 ## 1. Traceability (The Reference Rule)
 

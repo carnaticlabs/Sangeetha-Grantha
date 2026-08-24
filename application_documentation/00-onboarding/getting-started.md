@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.2.0 |
-| **Last Updated** | 2026-07-10 |
+| **Version** | 1.3.0 |
+| **Last Updated** | 2026-08-24 |
 | **Author** | Sangeetha Grantha Team |
 
 # Getting Started with Sangita Grantha
@@ -121,10 +121,12 @@ All work MUST be tracked via the Conductor system located in the `conductor/` di
 - **Strict TypeScript:** No `any`. Use strict interfaces.
 - **State Management:** Use `tanstack-query` for data fetching.
 
-### 5.3 Commit Policy
-Every commit message **MUST** include a reference to the relevant specification:
+### 5.3 Git branches and commits
+**Branches:** `track-<nnn>-<kebab-slug>` when a conductor track exists; otherwise `<type>/<kebab-slug>` (`fix`, `feat`, `docs`, `chore`, `ci`). Do not use Cursor’s default `cursor/` prefix unless asked. Canonical agent rule: [`.cursor/rules/git-conventions.mdc`](../../.cursor/rules/git-conventions.mdc); policy: [commit-policy](../../.agents/skills/commit-policy/SKILL.md).
+
+Every commit message **MUST** include a reference to the relevant specification. Prefer a `TRACK-ID:` title when a track exists:
 ```text
-feat: implement bulk import parser
+TRACK-113: <short summary>
 
 Ref: application_documentation/01-requirements/features/bulk-import/01-strategy/csv-import-strategy.md
 ```

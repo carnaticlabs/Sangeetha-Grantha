@@ -32,8 +32,10 @@ Sangeetha Grantha is a digital compendium of Carnatic Music. It is a multi-modul
 3. **Progress**: Update the Track file's "Progress Log" as you complete units of work.
 
 ## 🛡️ Commit Guardrails (Mandatory)
-- **Reference Required**: Every commit message MUST include a `Ref: application_documentation/...` line pointing to the relevant spec.
+- **Branches**: `track-<nnn>-<kebab-slug>` for conductor work; otherwise `<type>/<kebab-slug>` (`fix`/`feat`/`docs`/`chore`/`ci`). Do not use Cursor’s `cursor/` prefix unless the user asks. See `.cursor/rules/git-conventions.mdc`.
+- **Reference Required**: Every commit message MUST include a `Ref: application_documentation/...` line pointing to the relevant spec. Prefer `TRACK-ID: summary` when a track exists (`.agents/skills/commit-policy/SKILL.md`).
 - **No Secrets**: Never commit API keys or credentials.
+- **Do not commit** until the user asks.
 
 ## 📝 Documentation Standards
 - **Headers**: Maintain standardized metadata headers in all markdown files.

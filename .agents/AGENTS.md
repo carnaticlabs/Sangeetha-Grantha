@@ -14,7 +14,7 @@ Tool-specific entrypoints that build on CLAUDE.md:
 - **Migrations:** **Flyway** only, via `make migrate` / `make db-reset` (ADR-013). Never Liquibase, never a custom runner. The old Rust CLI is archived (`archive/tools/sangita-cli/`); the interim Python `db-migrate` is superseded.
 - **DB access:** always inside `DatabaseFactory.dbQuery { }`; never leak Exposed entities — return `@Serializable` DTOs.
 - **Audit:** every mutation writes to `AUDIT_LOG`.
-- **Commits:** include a `Ref: application_documentation/...` line.
+- **Commits:** include a `Ref: application_documentation/...` line. Branch names: `track-<nnn>-<slug>` or `<type>/<slug>` — not `cursor/` unless asked (`.cursor/rules/git-conventions.mdc`).
 - **Stack versions:** see [Current Versions](../application_documentation/00-meta/current-versions.md) (PostgreSQL 18, Kotlin/Ktor/Exposed, React 19 + TypeScript 5.9). Don't hardcode versions here.
 
 ---
