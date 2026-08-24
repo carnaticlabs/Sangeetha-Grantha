@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.2.0 |
-| **Last Updated** | 2026-07-12 |
+| **Version** | 1.3.0 |
+| **Last Updated** | 2026-08-24 |
 | **Author** | Sangeetha Grantha Team |
 
 # IDE Setup Guide
@@ -457,7 +457,7 @@ For AI-assisted development with Cursor:
 
 ### Configuration
 
-The project includes `.cursorrules` for AI context. Ensure it's loaded:
+The project includes [`.cursorrules`](../../.cursorrules) as a **pointer** at [`CLAUDE.md`](../../CLAUDE.md) (canonical rules). Cursor also auto-loads [`.cursor/rules/`](../../.cursor/rules/). Layer skills and slash commands under `.cursor/` are symlinks to `.claude/` so they cannot drift. Ensure `.cursorrules` is loaded:
 
 1. **Open Settings**: `Cmd + ,`
 2. **Navigate to**: `Features > Cursor`

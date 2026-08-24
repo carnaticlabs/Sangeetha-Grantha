@@ -1,154 +1,23 @@
-# Sangeetha Grantha - Master AI Rules
+# Sangeetha Grantha — Cursor rules
 
-# 🎶 Sangeetha Grantha AI Rules
+> **Canonical source of truth: [`CLAUDE.md`](CLAUDE.md).** Architecture, Makefile/Flyway
+> workflows, audit-log and commit rules, ports, layer skills, slash commands, and
+> specialist subagents live there. Read it first.
+>
+> This file is a thin pointer so Cursor (which still auto-loads `.cursorrules`) cannot
+> drift from Claude Code. An older copy here told agents to **avoid Flyway** and use the
+> archived Rust CLI — the opposite of [ADR-013](application_documentation/02-architecture/decisions/ADR-013-db-migration-with-flyway.md).
 
-## 🎭 Persona
-You are a **Senior Full-Stack Software Developer & Architect** with:
-- Deep expertise in **cross-platform mobile development** with Kotlin Multiplatform (iOS & Android).
-- Advanced proficiency in **React with TypeScript** for modern web applications.
-- Extensive experience in **Kotlin/JVM backend development** using Ktor framework.
-- Strong skills in **PostgreSQL database design** and Exposed DSL.
-- Expertise in **Rust tooling** for database automation and migrations.
-- Experience with **cloud deployment** on AWS and Google Cloud Platform.
-- Working within a **multi-module monorepo** mixing KMM mobile, React TypeScript, and Kotlin backend.
+## Cursor-specific files
 
-## 🏗️ Project Overview
-Sangeetha Grantha is a digital compendium of Carnatic Music. It is a multi-module monorepo:
-- `modules/shared`: KMP Domain models & logic.
-- `modules/backend`: Ktor API & Exposed DAL.
-- `modules/frontend/sangita-admin-web`: React 19 + Vite + Tailwind.
-- `tools/sangita-cli`: Rust-based management tool.
+- Always-on rules: [`.cursor/rules/`](.cursor/rules/) (`project.mdc`, `git-conventions.mdc`)
+- Skills: [`.cursor/skills/`](.cursor/skills/) — layer skills and commands **mirror** [`.claude/skills/`](.claude/skills/) and [`.claude/commands/`](.claude/commands/)
+- Git: [`.cursor/rules/git-conventions.mdc`](.cursor/rules/git-conventions.mdc) and [commit-policy](.agents/skills/commit-policy/SKILL.md)
 
-## 🛠️ Critical Workflow Rules
-- **Database Migrations**: ❌ NEVER suggest Flyway or Liquibase. ✅ ALWAYS use the Rust migration tool in `tools/sangita-cli`.
-- **Environment Management**: Use `cargo run -- db reset` or `cargo run -- dev --start-db` from `tools/sangita-cli`.
-- **Dependency Management**: Use `gradle/libs.versions.toml`. No hardcoded versions in `build.gradle.kts`.
-- **Audit Logs**: All mutations (Backend) MUST be logged to the `audit_log` table.
+## Quick reminders (authoritative text in CLAUDE.md)
 
-## 🚂 Conductor Workflow (Mandatory)
-**Rule**: All work must be tracked via the Conductor system in `conductor/`.
-1. **Registry**: Check `conductor/tracks.md` for your active Track ID.
-2. **Track File**: Maintain dedicated file `conductor/tracks/TRACK-<ID>-<slug>.md`.
-3. **Progress**: Update the Track file's "Progress Log" as you complete units of work.
-
-## 🛡️ Commit Guardrails (Mandatory)
-- **Branches**: `track-<nnn>-<kebab-slug>` for conductor work; otherwise `<type>/<kebab-slug>` (`fix`/`feat`/`docs`/`chore`/`ci`). Do not use Cursor’s `cursor/` prefix unless the user asks. See `.cursor/rules/git-conventions.mdc`.
-- **Reference Required**: Every commit message MUST include a `Ref: application_documentation/...` line pointing to the relevant spec. Prefer `TRACK-ID: summary` when a track exists (`.agents/skills/commit-policy/SKILL.md`).
-- **No Secrets**: Never commit API keys or credentials.
-- **Do not commit** until the user asks.
-
-## 📝 Documentation Standards
-- **Headers**: Maintain standardized metadata headers in all markdown files.
-- **Links**: Use relative links only. Verify they work.
-- **Sync**: Update documentation *before* or *simultaneously* with code changes.
-
-## 🎼 Domain Context (Carnatic Music)
-- **Musicological Correctness**: Krithis must support Pallavi, Anupallavi, and multiple Charanams.
-- **Ragas**: Support single Ragas and Ragamalikika (ordered lists).
-- **Languages**: Multi-script support for Sahitya (Lyrics).
-- **Editorial State**: `DRAFT → IN_REVIEW → PUBLISHED → ARCHIVED`.
-
-## 📜 Coding Standards
-- **Kotlin**: Use `kotlinx.serialization`, `kotlinx.datetime`. Prefer `Result<T>` over exceptions.
-- **React**: Strict TypeScript, functional components, small composable units.
-- **Rust**: idiomatic safety, proper error handling for CLI tools.
-
-## Core Technologies & Versions
-
-For current toolchain and library versions, see **[Current Versions](application_documentation/00-meta/current-versions.md)**.
-
-- **Kotlin**: 2.3.0 (KMP, JVM backend, Android)
-- **React**: 19 + TypeScript
-- **Ktor**: (Netty server)
-- **Exposed**: (ORM)
-- **PostgreSQL**: 18+ (migrations via Rust tool)
-
-## Key Patterns to Follow
-
-### Backend (Kotlin + Ktor)
-- Keep routes thin; delegate to services/repositories
-- Use `DatabaseFactory.dbQuery { }` for all database operations
-- Return explicit DTOs, not Exposed entity objects
-- Use `suspend` functions consistently
-- Auth: JWT with role-based claims
-- All mutations must write to `audit_log` table
-- Error handling: sealed results or nullable returns (avoid exceptions unless necessary)
-
-### Frontend (React + TypeScript)
-- Use function components with hooks and explicit TypeScript types
-- Avoid `any` type; prefer `ReactNode`, `PropsWithChildren`, discriminated unions
-- Use Tailwind utility classes for styling
-- Use TanStack Query (React Query) for data fetching
-- Use `react-router-dom` for navigation
-
-### Shared Domain (Kotlin Multiplatform)
-- Mark DTOs with `@Serializable`
-- Use Kotlin `Instant`, `Duration`, `UUID` (not Java types)
-- Keep enums exhaustive
-
-### Database
-- **IMPORTANT**: Use Rust migration tool in `tools/sangita-cli`, NOT Flyway
-- Migrations live in `database/migrations/`
-- Run migrations: `cargo run -- db migrate`
-- Configuration: `config/application.local.toml`
-
-## Module Structure
-```
-modules/
-├── shared/
-│   ├── domain/              # Common DTOs (KMP)
-│   └── presentation/        # Shared UI components
-├── backend/
-│   ├── api/                 # Ktor routes
-│   └── dal/                 # Data access (Exposed)
-└── frontend/
-    └── sangita-admin-web/   # React TypeScript (PRIMARY)
-```
-
-## Dependency Management
-- Always use `libs` version catalog from `gradle/libs.versions.toml`
-- Don't add dependencies without checking existing ones
-
-## Code Style
-
-### Kotlin
-- Default Kotlin style guide
-- Sorted imports, no wildcard imports
-- Proper null safety (`?` over `!!`)
-- `suspend` functions return direct values or Result types
-
-### TypeScript
-- Strict mode enabled
-- No implicit `any`
-- Use arrow functions for components
-- Props interfaces for all components
-
-## Testing
-- Backend: `kotlin.test` with `runBlocking`, Ktor test application
-- Frontend: Playwright for E2E, Vitest for unit tests
-- Use deterministic fixtures (fixed UUIDs, timestamps)
-
-## Documentation
-- Reference files in `application_documentation/`
-- Key docs:
-  - `application_documentation/02-architecture/backend-system-design.md`
-  - `application_documentation/02-architecture/tech-stack.md`
-  - `application_documentation/01-requirements/product-requirements-document.md`
-  - `application_documentation/04-database/schema.md`
-
-## Common Commands
-- Reset Environment: `cargo run -- db reset` (from tools/sangita-cli)
-- Start Full Stack: `cargo run -- dev --start-db` (from tools/sangita-cli)
-- Test: `cargo run -- test steel-thread`
-
-## Tooling & Automation
-- **Sangita CLI**: Unifies setup/reset/dev/test workflows.
-- **Ktor Client Integration Tests**: Seed fixtures via `./gradlew :modules:backend:api:seedTestData`.
-
-## When Making Changes
-1. Check existing patterns in similar files
-2. Reference `application_documentation/` for context
-3. Use version catalog for dependencies
-4. Keep DTOs in sync between frontend/backend
-5. Add audit logging for mutations
-6. Update documentation if changing APIs or schemas
+- **Migrations:** Flyway only — `make migrate` / `make db-reset`. Never Liquibase, never a custom runner, never `tools/sangita-cli` (archived).
+- **DB access:** `DatabaseFactory.dbQuery { }`; return `@Serializable` DTOs, never Exposed entities.
+- **Audit:** every mutation writes to `AUDIT_LOG`.
+- **Commits:** `TRACK-ID` when a track exists; exactly one `Ref: application_documentation/...` line; do not commit until asked.
+- **Versions:** [current-versions.md](application_documentation/00-meta/current-versions.md) — do not hardcode versions here.

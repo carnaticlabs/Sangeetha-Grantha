@@ -1,0 +1,26 @@
+---
+description: Canonical project rules for Cursor — read CLAUDE.md; use .claude skills/commands
+alwaysApply: true
+---
+
+# Sangita Grantha (Cursor)
+
+**[`CLAUDE.md`](../../CLAUDE.md) is canonical.** Do not re-derive stack, Flyway, audit, or port rules from memory.
+
+## Load the matching Claude skill
+
+Before editing a layer, read the skill (Cursor mirrors live under `.cursor/skills/` → `.claude/skills/`):
+
+- `modules/shared/` → `kmp-compose-mobile`
+- `modules/backend/` → `ktor-exposed-backend`
+- `database/migrations/` → `postgres-flyway-db`
+- `modules/frontend/sangita-admin-web/` → `react-vite-frontend`
+- `tools/krithi-extract-enrich-worker/` → `python-extraction-worker`
+- mise / Makefile / Compose → `monorepo-orchestration`
+- After bulk import → `verify-import`
+
+Specialists (on demand): `.claude/agents/` — `kotlin-backend-engineer`, `postgres-engineer`, `python-engineer`, `carnatic-musicologist`.
+
+Dev servers: named configs in `.claude/launch.json` (`frontend` :5001, `backend` :8080, `full-stack` / `make dev`). After Kotlin or extraction-worker Python edits, use the `sangita-restart-on-kotlin-change` skill (`make dev-down` then `make dev`).
+
+Git: `.cursor/rules/git-conventions.mdc` and `.agents/skills/commit-policy/SKILL.md`.
