@@ -1,0 +1,9 @@
+{
+  "id": "audit-and-dto-claude",
+  "file": "CLAUDE.md",
+  "must_contain": [
+    "AUDIT_LOG",
+    "DatabaseFactory.dbQuery",
+    "not Exposed entity objects"
+  ]
+}

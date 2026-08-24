@@ -1,0 +1,10 @@
+{
+  "id": "flyway-only-claude",
+  "file": "CLAUDE.md",
+  "must_contain": [
+    "Flyway is the only migration engine",
+    "never Liquibase",
+    "Verifying your work",
+    "Things agents get wrong"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "id": "ktor-skill-nonnegotiables",
+  "file": ".claude/skills/ktor-exposed-backend/SKILL.md",
+  "must_contain": [
+    "DatabaseFactory.dbQuery",
+    "Every mutation writes to the audit log",
+    "never Exposed rows"
+  ]
+}

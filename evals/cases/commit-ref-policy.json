@@ -1,0 +1,8 @@
+{
+  "id": "commit-ref-policy",
+  "file": ".agents/skills/commit-policy/SKILL.md",
+  "must_contain": [
+    "Ref: application_documentation/",
+    "No-Secrets Rule"
+  ]
+}

@@ -1,0 +1,35 @@
+name: Agent evals
+
+# TRACK-134: cheap, deterministic checks on the files that steer agents.
+# LLM-in-CI evals (playbook) stay deferred — they need an API key and budget.
+on:
+  pull_request:
+    paths:
+      - 'CLAUDE.md'
+      - 'REVIEW.md'
+      - '.claude/**'
+      - 'evals/**'
+      - '.agents/workflows/conductor-track-manager.md'
+      - '.agents/skills/commit-policy/**'
+  push:
+    branches: [main]
+    paths:
+      - 'CLAUDE.md'
+      - 'REVIEW.md'
+      - '.claude/**'
+      - 'evals/**'
+      - '.agents/workflows/conductor-track-manager.md'
+      - '.agents/skills/commit-policy/**'
+
+permissions:
+  contents: read
+
+jobs:
+  evals:
+    name: Agent config evals
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - name: Run deterministic agent-config evals
+        run: python3 evals/check.py

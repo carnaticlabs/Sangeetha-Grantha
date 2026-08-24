@@ -1,0 +1,8 @@
+{
+  "id": "plan-command-gates",
+  "file": ".claude/commands/plan-from-spec.md",
+  "must_contain": [
+    "Spec Status is Accepted",
+    "Do not edit product code until they set Plan Status to Accepted"
+  ]
+}

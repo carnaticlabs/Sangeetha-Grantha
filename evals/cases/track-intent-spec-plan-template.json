@@ -1,0 +1,10 @@
+{
+  "id": "track-intent-spec-plan-template",
+  "file": ".agents/workflows/conductor-track-manager.md",
+  "must_contain": [
+    "## Intent",
+    "## Spec",
+    "## Plan",
+    "Do not implement until Plan Status is Accepted"
+  ]
+}

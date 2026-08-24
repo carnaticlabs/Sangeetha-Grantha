@@ -29,6 +29,7 @@ make test-integration # Backend integration tests (Testcontainers)
 make test-frontend  # Frontend tests
 make steel-thread   # End-to-end steel thread test
 make check-docs     # Validate documentation links
+make agent-evals    # Deterministic agent-config evals (CLAUDE.md, skills, hooks)
 make clean          # Remove all containers and volumes
 ```
 
@@ -51,6 +52,18 @@ bun run build    # production build
 ./gradlew :modules:backend:api:run        # Run backend
 ./gradlew :modules:backend:api:runDev     # Run backend in dev mode
 ```
+
+## Verifying your work
+
+Run the matching check **before** reporting a task complete, and paste the command output. Do not skip, delete, or weaken a failing test to make a task pass. If a test fails, fix the code, not the test — unless the Plan says the test itself is wrong.
+
+- Backend unit: `make test`
+- Backend integration: `make test-integration`
+- Frontend: `make test-frontend`
+- Import / seed / lyric structure: `verify-import` skill (junction tables, not just FKs)
+- UI: exercise the changed flow in the browser (not a single screenshot)
+- Docs-only: `make check-docs`
+- Agent config (`CLAUDE.md`, `.claude/**`, `REVIEW.md`, `evals/`): `make agent-evals`
 
 ## Architecture
 
@@ -98,6 +111,13 @@ modules/
    - `application_documentation/02-architecture/tech-stack.md`
    - `application_documentation/00-onboarding/getting-started.md`
 
+## Things agents get wrong
+
+- Flyway only (`make migrate` / `make db-reset`). Never Liquibase, never a custom runner, never edit a committed `V__` file — add a new versioned migration.
+- Populate junction tables (e.g. `krithi_ragas`), not only FK columns on the main entity.
+- Do not use a `cursor/` git branch prefix unless the user asks.
+- CORS/auth: check `.env` and `VITE_API_BASE_URL` first, not TOML. Do not read or commit `.env` files.
+
 ## Musicological Domain Rules
 
 Carnatic correctness (*lakshana*) — musical forms (KRITHI/VARNAM/SWARAJATHI section requirements), Ragamalika, notation-vs-lyrics, and raga/tala/terminology rules — is documented in [Domain Model §6](application_documentation/01-requirements/domain-model.md#6-musicological-correctness-rules-lakshana). Treat it as a correctness contract for data entry, extraction, validation, and any generated SQL/seed data.
@@ -123,7 +143,7 @@ Cursor loads the same skills via symlinks under [`.cursor/skills/`](.cursor/skil
 
 ### Slash Commands (`.claude/commands/`)
 
-`/dev-start`, `/db-reset`, `/test-all`, `/steel-thread`, `/new-migration`, `/commit` (follows this repo's commit conventions), `/Sangeetha-Krithi-Analyser` (krithi section analysis). Cursor mirrors these files in [`.cursor/commands/`](.cursor/commands/).
+`/dev-start`, `/db-reset`, `/test-all`, `/steel-thread`, `/new-migration`, `/spec-from-track`, `/plan-from-spec`, `/commit` (follows this repo's commit conventions), `/Sangeetha-Krithi-Analyser` (krithi section analysis). Cursor mirrors these files in [`.cursor/commands/`](.cursor/commands/).
 
 ### Specialist Subagents (`.claude/agents/`)
 
@@ -139,7 +159,7 @@ Named launch configs exist for `frontend` (port 5001), `backend` (8080), and `fu
 
 ## Conductor Workflow
 
-Work is tracked in `conductor/tracks/TRACK-<ID>-<slug>.md` files. Check `conductor/tracks.md` for active tracks before starting work.
+Work is tracked in `conductor/tracks/TRACK-<ID>-<slug>.md` files. Check `conductor/tracks.md` for active tracks before starting work. New work uses Intent → Spec → Plan on the track (see `conductor-track-manager`). Do not implement until **Plan Status is Accepted**. PR review follows `REVIEW.md`.
 
 ## Toolchain & Versions
 
