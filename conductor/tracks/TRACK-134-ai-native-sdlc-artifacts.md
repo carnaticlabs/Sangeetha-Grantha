@@ -1,13 +1,13 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Ready for review |
-| **Version** | 1.1.0 |
+| **Status** | Done |
+| **Version** | 1.2.0 |
 | **Last Updated** | 2026-08-29 |
 | **Author** | Sangeetha Grantha Team |
 
 # Track: AI-native SDLC artifacts
 **ID:** TRACK-134
-**Status:** Ready for review
+**Status:** Done
 **Owner:** Sangeetha Grantha Team
 **Created:** 2026-08-24
 **Updated:** 2026-08-29
@@ -109,3 +109,4 @@ Existing commit hooks must keep working. Hook JSON shapes differ between Claude 
 - **2026-08-29**: Review I1–I4: Cursor `.cursor/hooks.json` + deny JSON; narrower `protect-tests`; Shell/StrReplace/Delete matchers and `.env` dump bypasses; CLAUDE.md `.env` policy vs `.env.example`.
 - **2026-08-29**: I1–I4 fixes validated (evals 38/38, 13 hook probes). Status → Ready for review.
 - **2026-08-29**: Review comment: allow tracked `.env.*.example` templates (e.g. `config/.env.auto-approval.example`) through `deny-secrets`; still deny `config/.env.auto-approval`.
+- **2026-08-29**: deny-secrets tightened to verb-anchored, standalone-token matching (46 evals). PR #7 merged to `main` (`ce94433`); all 8 CI checks green. Status → Done.
