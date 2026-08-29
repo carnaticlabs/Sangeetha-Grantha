@@ -138,7 +138,7 @@
 | [TRACK-132](./tracks/TRACK-132-raga-deduplication-normalizer-fix.md) | Raga Deduplication & Import Normaliser Fix | Ready — adjudication complete, migration pending |
 | [TRACK-133](./tracks/TRACK-133-section-mismatch-remediation.md) | Section-Count Mismatch Remediation (29 krithis) | Not Started |
 | [TRACK-134](./tracks/TRACK-134-ai-native-sdlc-artifacts.md) | AI-native SDLC artifacts (intent/spec/plan, REVIEW.md, evals) | Done |
-| [TRACK-135](./tracks/TRACK-135-library-upgrades-aug-2026.md) | Library Upgrades — August 2026 (Batch 1–2c) | In Progress |
+| [TRACK-135](./tracks/TRACK-135-library-upgrades-aug-2026.md) | Library Upgrades — August 2026 (Batch 1–2c) | Done |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)
