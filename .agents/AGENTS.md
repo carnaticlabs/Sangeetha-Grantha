@@ -94,7 +94,7 @@ through **Flyway** per ADR-013. The historical Rust CLI (`tools/sangita-cli`) is
 
 ## Context Files
 - [`CLAUDE.md`](../CLAUDE.md) — canonical project rules (all assistants).
-- [`.cursorrules`](../.cursorrules) / [`.cursor/rules/`](../.cursor/rules/) — Cursor pointers at CLAUDE.md.
+- [`.cursorrules`](../.cursorrules) / [`.cursor/rules/`](../.cursor/rules/) — Cursor pointers at CLAUDE.md. Edit-time hooks: [`.cursor/hooks.json`](../.cursor/hooks.json) runs `.claude/hooks/*.py`.
 - `.chatgpt-config.md` — Codex/ChatGPT canonical rules mirror.
 - `.ai-quick-reference.md` — quick commands, stack versions, module map.
 - `.ai-context-guide.md` — cross-assistant index of context files.

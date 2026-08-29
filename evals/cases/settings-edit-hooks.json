@@ -5,6 +5,12 @@
     "deny-secrets.py",
     "protect-migrations.py",
     "protect-tests.py",
-    "Read(.env)"
+    "Read(.env)",
+    "StrReplace",
+    "Delete",
+    "Bash|Shell"
+  ],
+  "must_not_contain": [
+    "Read(.env.*)"
   ]
 }

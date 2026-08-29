@@ -137,7 +137,7 @@
 | [TRACK-131](./tracks/TRACK-131-worker-config-packaging.md) | Worker Config → pydantic-settings + Reproducible Docker Build | Completed |
 | [TRACK-132](./tracks/TRACK-132-raga-deduplication-normalizer-fix.md) | Raga Deduplication & Import Normaliser Fix | Ready — adjudication complete, migration pending |
 | [TRACK-133](./tracks/TRACK-133-section-mismatch-remediation.md) | Section-Count Mismatch Remediation (29 krithis) | Not Started |
-| [TRACK-134](./tracks/TRACK-134-ai-native-sdlc-artifacts.md) | AI-native SDLC artifacts (intent/spec/plan, REVIEW.md, evals) | In Progress |
+| [TRACK-134](./tracks/TRACK-134-ai-native-sdlc-artifacts.md) | AI-native SDLC artifacts (intent/spec/plan, REVIEW.md, evals) | Ready for review |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)

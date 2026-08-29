@@ -12,6 +12,7 @@ Exit 0 if all cases and hook smokes pass; 1 otherwise.
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -58,16 +59,24 @@ def run_cases() -> int:
     return failures
 
 
-def _hook(script: str, payload: dict) -> int:
-    proc = subprocess.run(
+def _hook(
+    script: str,
+    payload: dict,
+    env: dict[str, str] | None = None,
+) -> subprocess.CompletedProcess[str]:
+    run_env = os.environ.copy()
+    run_env.pop("SANGITA_ALLOW_TEST_EDITS", None)
+    if env:
+        run_env.update(env)
+    return subprocess.run(
         [sys.executable, str(HOOKS / script)],
         input=json.dumps(payload),
         capture_output=True,
         text=True,
         cwd=ROOT,
+        env=run_env,
         check=False,
     )
-    return proc.returncode
 
 
 def run_hook_smokes() -> int:
@@ -188,14 +197,146 @@ def run_hook_smokes() -> int:
             },
             2,
         ),
+        (
+            "deny-secrets.env-example",
+            "deny-secrets.py",
+            {"tool_name": "Read", "tool_input": {"file_path": ".env.example"}},
+            0,
+        ),
+        (
+            "deny-secrets.env-example-bash",
+            "deny-secrets.py",
+            {"tool_name": "Bash", "tool_input": {"command": "cat .env.example"}},
+            0,
+        ),
+        (
+            "deny-secrets.python-open",
+            "deny-secrets.py",
+            {
+                "tool_name": "Bash",
+                "tool_input": {"command": "python3 -c \"print(open('.env').read())\""},
+            },
+            2,
+        ),
+        (
+            "deny-secrets.rg",
+            "deny-secrets.py",
+            {"tool_name": "Bash", "tool_input": {"command": "rg SECRET .env"}},
+            2,
+        ),
+        (
+            "deny-secrets.source",
+            "deny-secrets.py",
+            {"tool_name": "Bash", "tool_input": {"command": "source .env"}},
+            2,
+        ),
+        (
+            "deny-secrets.cursor-shell",
+            "deny-secrets.py",
+            {
+                "hook_event_name": "beforeShellExecution",
+                "command": "cat .env",
+                "conversation_id": "eval",
+            },
+            2,
+            {"stdout_contains": '"permission": "deny"'},
+        ),
+        (
+            "protect-migrations.delete-v",
+            "protect-migrations.py",
+            {
+                "tool_name": "Delete",
+                "tool_input": {
+                    "path": "database/migrations/V01__baseline-schema-and-types.sql"
+                },
+            },
+            2,
+        ),
+        (
+            "protect-migrations.read-ok",
+            "protect-migrations.py",
+            {
+                "tool_name": "Read",
+                "tool_input": {
+                    "file_path": "database/migrations/V01__baseline-schema-and-types.sql"
+                },
+            },
+            0,
+        ),
+        (
+            "protect-migrations.strreplace",
+            "protect-migrations.py",
+            {
+                "tool_name": "StrReplace",
+                "tool_input": {
+                    "path": "database/migrations/V01__baseline-schema-and-types.sql"
+                },
+            },
+            2,
+        ),
+        (
+            "protect-tests.fixtures-ok",
+            "protect-tests.py",
+            {
+                "tool_name": "Edit",
+                "tool_input": {
+                    "file_path": "modules/backend/api/src/test/kotlin/com/sangita/grantha/backend/api/testsupport/MoneyPathFixtures.kt"
+                },
+            },
+            0,
+        ),
+        (
+            "protect-tests.setup-ok",
+            "protect-tests.py",
+            {
+                "tool_name": "Edit",
+                "tool_input": {
+                    "file_path": "modules/frontend/sangita-admin-web/src/test/setup.ts"
+                },
+            },
+            0,
+        ),
+        (
+            "protect-tests.override-0-still-deny",
+            "protect-tests.py",
+            {
+                "tool_name": "Edit",
+                "tool_input": {
+                    "file_path": "modules/backend/api/src/test/kotlin/com/sangita/grantha/backend/api/services/KrithiServiceTest.kt"
+                },
+            },
+            2,
+            {"env": {"SANGITA_ALLOW_TEST_EDITS": "0"}},
+        ),
+        (
+            "protect-tests.override-1-allow",
+            "protect-tests.py",
+            {
+                "tool_name": "Edit",
+                "tool_input": {
+                    "file_path": "modules/backend/api/src/test/kotlin/com/sangita/grantha/backend/api/services/KrithiServiceTest.kt"
+                },
+            },
+            0,
+            {"env": {"SANGITA_ALLOW_TEST_EDITS": "1"}},
+        ),
     ]
-    for name, script, payload, expected in smokes:
-        code = _hook(script, payload)
-        if code != expected:
-            _fail(f"hook {name}: expected exit {expected}, got {code}")
+    for smoke in smokes:
+        name, script, payload, expected = smoke[:4]
+        extra = smoke[4] if len(smoke) > 4 else {}
+        proc = _hook(script, payload, extra.get("env"))
+        if proc.returncode != expected:
+            _fail(
+                f"hook {name}: expected exit {expected}, got {proc.returncode}"
+            )
             failures += 1
-        else:
-            print(f"ok  hook:{name}")
+            continue
+        needle = extra.get("stdout_contains")
+        if needle and needle not in proc.stdout:
+            _fail(f"hook {name}: stdout missing {needle!r}")
+            failures += 1
+            continue
+        print(f"ok  hook:{name}")
     return failures
 
 

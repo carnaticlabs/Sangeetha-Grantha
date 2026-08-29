@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-08-24 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-08-29 |
 | **Author** | Sangeetha Grantha Team |
 
 # AI-native SDLC artifacts (TRACK-134)
@@ -20,7 +20,7 @@ Conductor remains the source of truth. There is no parallel `intent/` directory.
 | `/plan-from-spec` | `.claude/commands/plan-from-spec.md` |
 | Review policy | `REVIEW.md` |
 | Session verification | `CLAUDE.md` → Verifying your work |
-| Edit-time hooks | `.claude/hooks/deny-secrets.py`, `.claude/hooks/protect-migrations.py`, `.claude/hooks/protect-tests.py`, `.claude/settings.json` |
+| Edit-time hooks | `.claude/hooks/*.py` + `.claude/settings.json` (Claude Code) and `.cursor/hooks.json` (Cursor). Same scripts; Cursor also gets JSON `{ "permission": "deny" }`. |
 | Agent-config evals | `evals/check.py`, `evals/cases/`, `make agent-evals`, CI job `agent-evals` |
 
 ## Gates
@@ -29,12 +29,12 @@ Conductor remains the source of truth. There is no parallel `intent/` directory.
 2. Spec Status **Accepted** (human) before `/plan-from-spec`. Import/seed/lyric specs also get a `carnatic-musicologist` report.
 3. Plan Status **Accepted** (human) before product-code edits.
 4. PR review uses `REVIEW.md`. Findings inform; a human still approves.
-5. Committed `database/migrations/V*.sql` files are immutable at edit time; new `VNN__*.sql` and `R__*.sql` are allowed. `.env` reads are denied.
-6. Committed test files are immutable at edit time (Stage 4: reproduce and fix the code during a bug fix, don't edit the test to pass). New test files are allowed; `SANGITA_ALLOW_TEST_EDITS=1` overrides for deliberate test changes.
+5. Committed `database/migrations/V*.sql` files are immutable at edit time (Write/Edit/StrReplace/Delete); new `VNN__*.sql` and `R__*.sql` are allowed. Reads of `V__` files stay allowed. `.env` reads and shell dumps (`cat`, `python open`, `rg`, `source`, …) are denied. `.env.example` stays readable.
+6. Committed *test* files (`*Test.kt`, `*.test.ts`, `*.spec.ts`, `test_*.py`) are immutable at edit time. Fixtures, Vitest `setup.ts`, and test helpers are not tests. `SANGITA_ALLOW_TEST_EDITS=1` (or `true`/`yes`) overrides; `0`/`false` do not.
 
 ## Evals
 
-`evals/check.py` is deterministic (no model API). It asserts required policy strings still exist in `CLAUDE.md`, skills, commands, and `REVIEW.md`, and smokes the two edit-time hooks. LLM-in-CI evals from the playbook stay deferred until TRACK-109 budget/secrets work.
+`evals/check.py` is deterministic (no model API). It asserts required policy strings still exist in `CLAUDE.md`, skills, commands, `REVIEW.md`, `.cursor/hooks.json`, and `.gitignore`, and smokes the edit-time hooks (including Cursor payload shapes and secret-file shell bypasses). LLM-in-CI evals from the playbook stay deferred until TRACK-109 budget/secrets work.
 
 ## Proof
 

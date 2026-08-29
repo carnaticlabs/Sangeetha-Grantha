@@ -1,16 +1,16 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | In Progress |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-08-24 |
+| **Status** | Ready for review |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-08-29 |
 | **Author** | Sangeetha Grantha Team |
 
 # Track: AI-native SDLC artifacts
 **ID:** TRACK-134
-**Status:** In Progress
+**Status:** Ready for review
 **Owner:** Sangeetha Grantha Team
 **Created:** 2026-08-24
-**Updated:** 2026-08-24
+**Updated:** 2026-08-29
 
 ## Goal
 
@@ -100,9 +100,11 @@ Existing commit hooks must keep working. Hook JSON shapes differ between Claude 
 - [x] `/spec-from-track` and `/plan-from-spec`
 - [x] `REVIEW.md`
 - [x] Verifying your work in CLAUDE.md
-- [x] Edit-time hooks for `.env` and migrations
+- [x] Edit-time hooks for `.env` and migrations (Claude Code + Cursor)
 - [x] `evals/` + CI + `make agent-evals`
 
 ## Progress Log
 - **2026-08-24**: Track created; implementation started from the six concrete artifacts.
 - **2026-08-24**: Six artifacts landed (template, commands, REVIEW.md, verification block, hooks, evals).
+- **2026-08-29**: Review I1–I4: Cursor `.cursor/hooks.json` + deny JSON; narrower `protect-tests`; Shell/StrReplace/Delete matchers and `.env` dump bypasses; CLAUDE.md `.env` policy vs `.env.example`.
+- **2026-08-29**: I1–I4 fixes validated (evals 38/38, 13 hook probes). Status → Ready for review.

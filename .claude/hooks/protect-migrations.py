@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _payload import file_path, load_payload  # noqa: E402
+from _payload import deny, file_path, is_mutating, load_payload  # noqa: E402
 
 _MIGRATIONS = re.compile(r"(^|/)database/migrations/([^/]+)$")
 _VERSIONED = re.compile(r"^V\d{2,}__.+\.sql$", re.IGNORECASE)
@@ -40,6 +40,9 @@ def _tracked(root: Path, rel: str) -> bool:
 
 def main() -> int:
     payload = load_payload()
+    if not is_mutating(payload):
+        return 0
+
     path = file_path(payload)
     if not path:
         return 0
@@ -54,34 +57,31 @@ def main() -> int:
     root = _repo_root()
 
     if name.lower().endswith((".xml", ".yml", ".yaml")):
-        print(
+        return deny(
             "ERROR: Liquibase/changelog files are not allowed. "
             "Flyway only: database/migrations/VNN__description.sql or R__*.sql "
             "(ADR-013). Use /new-migration.",
-            file=sys.stderr,
+            payload,
         )
-        return 2
 
     if _REPEATABLE.match(name):
         return 0
 
     if _VERSIONED.match(name):
         if _tracked(root, rel):
-            print(
+            return deny(
                 f"ERROR: Committed versioned migration {rel} is immutable. "
                 "Add a new VNN__*.sql (next free number) via /new-migration. "
                 "Do not edit applied Flyway files.",
-                file=sys.stderr,
+                payload,
             )
-            return 2
         return 0
 
-    print(
+    return deny(
         f"ERROR: {rel} is not a Flyway name. Use VNN__snake_or-kebab-description.sql "
         "or R__seed_NN_description.sql. See the postgres-flyway-db skill.",
-        file=sys.stderr,
+        payload,
     )
-    return 2
 
 
 if __name__ == "__main__":

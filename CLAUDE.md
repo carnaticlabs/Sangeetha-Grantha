@@ -55,7 +55,7 @@ bun run build    # production build
 
 ## Verifying your work
 
-Run the matching check **before** reporting a task complete, and paste the command output. Do not skip, delete, or weaken a failing test to make a task pass. If a test fails, fix the code, not the test — unless the Plan says the test itself is wrong.
+Run the matching check **before** reporting a task complete, and paste the command output. Do not skip, delete, or weaken a failing test to make a task pass. If a test fails, fix the code, not the test — unless the Plan says the test itself is wrong. Deliberate test edits (new assertions, fixture changes that are themselves tests) require `SANGITA_ALLOW_TEST_EDITS=1`; `0`/`false` do not opt out. Fixtures and `src/test/setup.ts` are not blocked.
 
 - Backend unit: `make test`
 - Backend integration: `make test-integration`
@@ -116,7 +116,7 @@ modules/
 - Flyway only (`make migrate` / `make db-reset`). Never Liquibase, never a custom runner, never edit a committed `V__` file — add a new versioned migration.
 - Populate junction tables (e.g. `krithi_ragas`), not only FK columns on the main entity.
 - Do not use a `cursor/` git branch prefix unless the user asks.
-- CORS/auth: check `.env` and `VITE_API_BASE_URL` first, not TOML. Do not read or commit `.env` files.
+- CORS/auth: check `VITE_API_BASE_URL` and the frontend proxy, plus committed `*.env.example` templates. Never Read or commit `.env` / `config/local.env`.
 
 ## Musicological Domain Rules
 
@@ -155,7 +155,7 @@ Named launch configs exist for `frontend` (port 5001), `backend` (8080), and `fu
 
 ### Cursor (`.cursor/`)
 
-[`.cursorrules`](.cursorrules) and [`.cursor/rules/project.mdc`](.cursor/rules/project.mdc) are pointers at this file. Git naming is [`.cursor/rules/git-conventions.mdc`](.cursor/rules/git-conventions.mdc). Layer skills and slash commands are **symlinks** to `.claude/skills/` and `.claude/commands/` so they cannot drift. Extra Cursor-only skills: `agentic-prompt-optimizer`, `sangeetha-krithi-analyser`.
+[`.cursorrules`](.cursorrules) and [`.cursor/rules/project.mdc`](.cursor/rules/project.mdc) are pointers at this file. Git naming is [`.cursor/rules/git-conventions.mdc`](.cursor/rules/git-conventions.mdc). Layer skills and slash commands are **symlinks** to `.claude/skills/` and `.claude/commands/` so they cannot drift. Edit-time hooks are wired in [`.cursor/hooks.json`](.cursor/hooks.json) and run the same `.claude/hooks/*.py` scripts as Claude Code. Extra Cursor-only skills: `agentic-prompt-optimizer`, `sangeetha-krithi-analyser`.
 
 ## Conductor Workflow
 
@@ -181,8 +181,8 @@ For current toolchain and library versions, see [Current Versions](application_d
 - Integration testing strategy: `application_documentation/07-quality/integration-tests-approach.md`
 - Previous migration tools (archived): `archive/tools/db-migrate/` (Python, superseded by ADR-013), `archive/tools/sangita-cli/` (Rust)
 
-## Debugging Guidelines 
-For CORS/auth issues, always check .env files and VITE_API_BASE_URL first, not TOML config files. Frontend proxy configuration is the most common root cause.
+## Debugging Guidelines
+For CORS/auth issues, check `VITE_API_BASE_URL` and the frontend proxy first, not TOML. Use committed `*.env.example` templates for variable names. Never Read gitignored `.env` files.
 
  ## Data & Migrations 
  Always verify seed data populates junction tables (e.g., krithi_ragas), not just foreign key columns on the main entity. After any seed/migration, confirm data appears correctly through the full stack (DB → API → UI).

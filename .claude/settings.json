@@ -33,17 +33,22 @@
     ],
     "deny": [
       "Read(.env)",
-      "Read(.env.*)",
-      "Read(config/.env*)",
-      "Read(config/*.env)",
+      "Read(.env.local)",
+      "Read(.env.development)",
+      "Read(.env.production)",
+      "Read(.env.staging)",
       "Read(**/.env)",
-      "Read(**/.env.*)"
+      "Read(**/.env.local)",
+      "Read(config/local.env)",
+      "Read(config/development.env)",
+      "Read(config/postgres-local.env)",
+      "Read(config/*.env)"
     ]
   },
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Read|Write|Edit",
+        "matcher": "Read|Write|Edit|StrReplace|Delete",
         "hooks": [
           {
             "type": "command",
@@ -53,7 +58,7 @@
         ]
       },
       {
-        "matcher": "Write|Edit",
+        "matcher": "Write|Edit|StrReplace|Delete",
         "hooks": [
           {
             "type": "command",
@@ -68,7 +73,7 @@
         ]
       },
       {
-        "matcher": "Bash",
+        "matcher": "Bash|Shell",
         "hooks": [
           {
             "type": "command",

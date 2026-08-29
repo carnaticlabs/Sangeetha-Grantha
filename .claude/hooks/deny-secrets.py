@@ -8,21 +8,22 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _payload import bash_command, file_path, load_payload  # noqa: E402
+from _payload import bash_command, deny, file_path, load_payload  # noqa: E402
 
 _ENV_FILE = re.compile(
     r"(^|/)("
     r"\.env([^/]*)"
     r"|config/[^/]*\.env"
-    r"|config/local\.env"
-    r"|config/development\.env"
-    r"|config/postgres-local\.env"
     r")$",
     re.IGNORECASE,
 )
-_EXAMPLE_OK = re.compile(r"\.env\.example$", re.IGNORECASE)
-_BASH_SECRET = re.compile(
-    r"(^|[;&|]\s*)(cat|less|more|head|tail|bat|sed|awk)\s+[^\n]*(\.env\b|config/[^ \n]*\.env)",
+_EXAMPLE_OK = re.compile(r"\.env\.example\b", re.IGNORECASE)
+# After stripping .env.example, any remaining .env or config/*.env path is a dump.
+_SECRET_IN_CMD = re.compile(
+    r"(?:^|[\s\"'`=<(])("
+    r"\.env(?:\.[A-Za-z0-9_-]+)?"
+    r"|config/[\w.-]*\.env[\w.-]*"
+    r")",
     re.IGNORECASE,
 )
 
@@ -34,24 +35,30 @@ def _is_secret(path: str) -> bool:
     return bool(_ENV_FILE.search(normalized))
 
 
+def _command_touches_secret(cmd: str) -> bool:
+    if not cmd:
+        return False
+    stripped = _EXAMPLE_OK.sub("", cmd)
+    return bool(_SECRET_IN_CMD.search(stripped))
+
+
 def main() -> int:
     payload = load_payload()
     path = file_path(payload)
     if _is_secret(path):
-        print(
+        return deny(
             "ERROR: Refusing to read or write env/secret files "
-            f"({path}). Use gitignored config/local.env outside the agent session.",
-            file=sys.stderr,
+            f"({path}). Use committed *.env.example templates and "
+            "VITE_API_BASE_URL; never Read gitignored .env files.",
+            payload,
         )
-        return 2
 
     cmd = bash_command(payload)
-    if cmd and _BASH_SECRET.search(cmd) and ".env.example" not in cmd:
-        print(
+    if _command_touches_secret(cmd):
+        return deny(
             "ERROR: Refusing a shell command that would dump an env/secret file.",
-            file=sys.stderr,
+            payload,
         )
-        return 2
 
     return 0
 

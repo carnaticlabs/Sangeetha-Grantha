@@ -1,0 +1,13 @@
+{
+  "id": "env-debug-policy",
+  "file": "CLAUDE.md",
+  "must_contain": [
+    "VITE_API_BASE_URL",
+    "*.env.example",
+    "SANGITA_ALLOW_TEST_EDITS=1",
+    ".cursor/hooks.json"
+  ],
+  "must_not_contain": [
+    "always check .env files"
+  ]
+}
