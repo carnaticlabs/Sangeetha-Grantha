@@ -270,6 +270,43 @@ def run_hook_smokes() -> int:
             2,
             {"stdout_contains": '"permission": "deny"'},
         ),
+        # Tightened detection: a secret path as TEXT or a search PATTERN is not a dump.
+        (
+            "deny-secrets.grep-pattern-not-file",
+            "deny-secrets.py",
+            {
+                "tool_name": "Bash",
+                "tool_input": {"command": "grep 'Read(.env.*)' .claude/settings.json"},
+            },
+            0,
+        ),
+        (
+            "deny-secrets.grep-env-as-pattern",
+            "deny-secrets.py",
+            {"tool_name": "Bash", "tool_input": {"command": "git diff | grep .env"}},
+            0,
+        ),
+        (
+            "deny-secrets.mentions-in-message",
+            "deny-secrets.py",
+            {
+                "tool_name": "Bash",
+                "tool_input": {"command": "git commit -m 'never read .env files'"},
+            },
+            0,
+        ),
+        (
+            "deny-secrets.head-still-blocked",
+            "deny-secrets.py",
+            {"tool_name": "Bash", "tool_input": {"command": "head -n 5 config/local.env"}},
+            2,
+        ),
+        (
+            "deny-secrets.redirect-blocked",
+            "deny-secrets.py",
+            {"tool_name": "Bash", "tool_input": {"command": "while read l; do :; done < .env"}},
+            2,
+        ),
         (
             "protect-migrations.delete-v",
             "protect-migrations.py",

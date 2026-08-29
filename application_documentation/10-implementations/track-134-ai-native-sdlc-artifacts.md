@@ -29,7 +29,7 @@ Conductor remains the source of truth. There is no parallel `intent/` directory.
 2. Spec Status **Accepted** (human) before `/plan-from-spec`. Import/seed/lyric specs also get a `carnatic-musicologist` report.
 3. Plan Status **Accepted** (human) before product-code edits.
 4. PR review uses `REVIEW.md`. Findings inform; a human still approves.
-5. Committed `database/migrations/V*.sql` files are immutable at edit time (Write/Edit/StrReplace/Delete); new `VNN__*.sql` and `R__*.sql` are allowed. Reads of `V__` files stay allowed. `.env` reads and shell dumps (`cat`, `python open`, `rg`, `source`, …) are denied. Committed env templates (`.env.example`, `*.env.example`, `.env.*.example` such as `config/.env.auto-approval.example`) stay readable.
+5. Committed `database/migrations/V*.sql` files are immutable at edit time (Write/Edit/StrReplace/Delete); new `VNN__*.sql` and `R__*.sql` are allowed. Reads of `V__` files stay allowed. `.env` reads and shell dumps that actually target a secret file (`cat`/`head`/`source`/`< .env` redirection, `open('.env')`, `grep PATTERN .env`, …) are denied; the path merely appearing as text (commit messages, PR bodies) or as a search *pattern* (`grep 'Read(.env' file`) is allowed. Committed env templates (`.env.example`, `*.env.example`, `.env.*.example` such as `config/.env.auto-approval.example`) stay readable.
 6. Committed *test* files (`*Test.kt`, `*.test.ts`, `*.spec.ts`, `test_*.py`) are immutable at edit time. Fixtures, Vitest `setup.ts`, and test helpers are not tests. `SANGITA_ALLOW_TEST_EDITS=1` (or `true`/`yes`) overrides; `0`/`false` do not.
 
 ## Evals

@@ -22,14 +22,39 @@ _EXAMPLE_OK = re.compile(
     r"\.env(?:\.[A-Za-z0-9_-]+)*\.example\b",
     re.IGNORECASE,
 )
-# After stripping example templates, any remaining .env or config/*.env path is a dump.
-_SECRET_IN_CMD = re.compile(
-    r"(?:^|[\s\"'`=<(])("
-    r"\.env(?:\.[A-Za-z0-9_-]+)?"
-    r"|config/[\w.-]*\.env[\w.-]*"
-    r")",
-    re.IGNORECASE,
+
+# A secret env path as a STANDALONE token: not glued to a preceding word char or
+# an opening paren (so `"Read(.env"` in a grep pattern is not a file arg) and not
+# continued by another word char. Quotes, slashes, whitespace, `<`, `=` are fine
+# as delimiters. This is what separates a real file argument from the path merely
+# appearing inside a search pattern or a larger identifier.
+_SECRET = (
+    r"(?<![\w(])(?:\.env(?:\.[A-Za-z0-9_-]+)?|config/[\w.-]*\.env[\w.-]*)(?![\w])"
 )
+# Verbs that print/read/copy a file's contents to somewhere observable.
+_READ_VERB = r"(?:cat|bat|tac|less|more|head|tail|nl|xxd|od|strings|tee|dd|source)"
+# Search/stream verbs take a PATTERN then FILE(s); only the file position leaks.
+_SEARCH_VERB = r"(?:grep|egrep|fgrep|rg|ag|ack|sed|awk|gawk)"
+
+# A command "touches a secret" only when a read/dump/source verb, a redirection,
+# or an open()-style call actually targets the secret path — not when the path
+# merely appears as text (commit messages, PR bodies) or as a search PATTERN
+# (`grep '.env' file`). Each pattern runs per shell segment so a pipe/;/&& to an
+# unrelated command cannot smuggle the verb and the path together.
+_DUMP_PATTERNS = [
+    re.compile(r"<\s*" + _SECRET, re.IGNORECASE),                         # < .env
+    re.compile(r"\b" + _READ_VERB + r"\b[^|;&\n]*" + _SECRET, re.IGNORECASE),  # cat .env
+    re.compile(r"(?:^|[;&|]\s*)\.\s+" + _SECRET, re.IGNORECASE),          # . .env  (dot-source)
+    re.compile(                                                          # open('.env'), load_dotenv('.env')
+        r"(?:open|read_file|read_text|readFileSync|load_dotenv|dotenv|File\.read|Path)\s*\(\s*['\"][^'\"]*"
+        + _SECRET,
+        re.IGNORECASE,
+    ),
+    re.compile(                                                          # grep PATTERN .env (secret in file position)
+        r"\b" + _SEARCH_VERB + r"\b\s+(?:-\S+\s+)*\S+\s+[^|;&\n]*" + _SECRET,
+        re.IGNORECASE,
+    ),
+]
 
 
 def _is_example_template(path: str) -> bool:
@@ -48,7 +73,7 @@ def _command_touches_secret(cmd: str) -> bool:
     if not cmd:
         return False
     stripped = _EXAMPLE_OK.sub("", cmd)
-    return bool(_SECRET_IN_CMD.search(stripped))
+    return any(pattern.search(stripped) for pattern in _DUMP_PATTERNS)
 
 
 def main() -> int:
