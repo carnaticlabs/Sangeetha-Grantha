@@ -6,6 +6,7 @@
 | **Author** | Sangeetha Grantha Team |
 | **Deciders** | Sangeetha Grantha Team (Seshadri) |
 | **Implemented by** | [TRACK-132](../../../conductor/tracks/TRACK-132-raga-deduplication-normalizer-fix.md) |
+| **Extended by** | [ADR-017](./ADR-017-raga-reference-entity-identity-resolution.md) — entity/alias identity model & controlled resolution (the architecture realising this ADR's §5 and long-term direction) |
 
 # ADR-016: Raga Naming Authority & Canonical Reference Data
 

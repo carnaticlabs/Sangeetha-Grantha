@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Ready — adjudication complete, migration pending |
-| **Version** | 1.9.0 |
-| **Last Updated** | 2026-07-19 |
+| **Status** | In progress — Batch A+B merge migration (V50 / R__seed_05) and normaliser landed, verification pending |
+| **Version** | 1.11.0 |
+| **Last Updated** | 2026-08-29 |
 | **Author** | Sangeetha Grantha Team |
 | **Priority** | P2 — data correctness |
 | **Decision** | [ADR-016](../../application_documentation/02-architecture/decisions/ADR-016-raga-naming-authority.md) — raga naming authority (frozen 2026-07-19) |
@@ -267,21 +267,22 @@ nishadam, but Brindavana Saranga's identity *is* its nishada bhedam. Set
 `S R2 M1 P N3 S` / `S N2 P M1 R2 S` from a published source, with the anya swara declared in the same
 `(ANya SwaRa*: N3)` form `R__seed_04` already uses. Do not carry V40's value forward.
 
-#### DEFER — explicitly excluded from this migration
+#### DEFER — ✅ ALL RESOLVED by expert clarifications (2026-08-29, see §0h)
 
-*Three remaining; `rItigauLa - Abheri` was resolved by curator ruling on 2026-07-19 (§0e).*
+*`rItigauLa - Abheri` was resolved by curator ruling on 2026-07-19 (§0e); the three remaining DEFER
+items are now resolved by the returned expert query sheet — see [§0h](#0h-expert-clarifications-returned-2026-08-29).*
 
-> **Out for expert review (2026-07-19).** All three DEFER items, plus the Medium-confidence scale and
-> naming questions, are written up for a trained Carnatic vocalist/violinist (A-grade AIR artist) in
-> **[raga-clarifications-musician-draft.md](./evidence/raga-clarifications-musician-draft.md)**.
-> That document is deliberately free of any project or technical framing — it is a pure musicological
-> query sheet. Answers land back here as adjudications.
+> **Out for expert review (2026-07-19) → ✅ answers returned (2026-08-29).** All three DEFER items,
+> plus the Medium-confidence scale and naming questions, were written up for a trained Carnatic
+> vocalist/violinist (A-grade AIR artist) in
+> **[raga-clarifications-musician-draft.md](./evidence/raga-clarifications-musician-draft.md)**. The
+> answers have landed and are adjudicated in **§0h**; DB tags were cross-checked at the same time.
 
-| Pair | Why |
+| Pair | Resolution (§0h) |
 |:---|:---|
-| `Pūrvi [1]` / `Poorvi [0]` | Needs an SSP check on which Purvi Dikshitar intended for `Srī guru guhasya`. He did set some Hindustani-derived ragas faithfully, so this is not a safe assumption |
-| `Gamakapriyā` / `Gamanapriyā` | **Byte-identical parent and scale, different names, both orphaned.** Either one raga double-seeded, or two ragas with one scale copied over the other. Unresolvable without a source |
-| `Dhāmavathi` vs `Dharmavati` (mela 59) | `Dharmavati` *is* mela 59; `Dhāmavathi` is a janya of 59 with an identical sampurna scale — **the Todi pathology again.** Needs a decision, not a merge |
+| `Pūrvi [1]` / `Poorvi [0]` | ✅ **MERGE `Pūrvi [1]` → `Poorvi [0]`.** Expert (A1): *Srī Guru Guhasya* uses Purvi as the **shuddha-madhyamam (M1) janya of Mayamalavagowla (15)** = the Carnatic `Poorvi`. V40's `Pūrvi` is the Hindustani M2 form (§0a item 7); its 1 krithi belongs on `Poorvi`. |
+| `Gamakapriyā` / `Gamanapriyā` | ✅ **MERGE both → `Gamakakriyā`** (janya of Gamanāśrama 53). Expert (A2): they are orphan corruptions of the mela-53 name; the real kritis already sit on `Gamakakriyā`. Both losing rows hold **0 krithis** (DB-verified). `Gāyakapriyā` stays DISTINCT. |
+| `Dhāmavathi` vs `Dharmavati` (mela 59) | ✅ **MERGE `Dhāmavathi` → `Dharmavati` (mela 59).** Expert (A3): Dhāmavathi is the Venkatamakhin/Dikshitar name for mela 59 — same raga (Todi pathology). Retain `Dhamavati`/`Dhāmavathi` as documented alternate spelling. Sequences after §0c MERGE #12 folds `dhAmavati [2]` in first. |
 
 ~~`rItigauLa - Abheri`~~ — **resolved 2026-07-19, see §0e.** Promoted to MERGE #3b.
 
@@ -295,8 +296,8 @@ Melakarta page verbatim but not the janya list. All four are now checked directl
 |:---|:---|:---|
 | `Nāṭṭai` | **`Nāṭṭai`** — verbatim, under mela 36 | ✅ **Confirmed → High.** DB matches the name *and* both scales exactly |
 | `Reethigowla` | (settled by curator ruling §0e) | ✅ Confirmed → High |
-| `Jujāvanti` | **`Dwijāvanthi /Jujāvanthi`** | ⚠️ **DB spelling is wrong** — needs `th`, see below |
-| `Andhali` | **absent from the list** | ⚠️ **Not source-verifiable** — see below |
+| `Jujāvanti` | **`Dwijāvanthi /Jujāvanthi`** | ⚠️→✅ DB spelling needs `th`; rename to **`Dwijavanthi`** — expert-confirmed preferred form (§0h C4) |
+| `Andhali` | **absent from the list** | ⚠️→✅ **Now source-verified** — expert cites Sangraha Chudamani & SSP; correct spelling `Andhali` (§0h B1) |
 
 #### `Nāṭṭai` — fully confirmed, and it settles the Chalanāṭa question
 
@@ -482,6 +483,53 @@ Two consequences for this track's merge list:
   `Gauri Manohari [2]` (has neither) — a **MERGE** pair that V48 deliberately did not touch, since
   merging is this track's job, not a mis-tag fix's.
 
+### 0h. Expert clarifications returned (2026-08-29)
+
+The query sheet
+[raga-clarifications-musician-draft.md](./evidence/raga-clarifications-musician-draft.md) — sent out
+under §0c — came back answered by the Carnatic musician, and every answer was cross-checked against
+the live DB tags at the same time. Outcomes below; the evidence file carries the full reasoning,
+sources, and per-question DB audit notes.
+
+**Confirms the existing adjudication (no change needed):**
+
+- **A1 Purvi** → resolves DEFER: *Srī Guru Guhasya* is the M1 Mayamalavagowla-15 janya (Carnatic
+  `Poorvi`), not the Hindustani M2 `Pūrvi`. **MERGE `Pūrvi [1]` → `Poorvi [0]`.**
+- **A3 Dharmavati/Dhamavati** → resolves DEFER: same raga, mela 59; Dhāmavathi is the
+  Venkatamakhin/Dikshitar name. **MERGE `Dhāmavathi` → `Dharmavati`** (Todi pathology), keep Dhamavati
+  as alternate spelling.
+- **B1 Andhali** → §0f closed: spelling now **source-verified** (Sangraha Chudamani, SSP). Merge #15
+  spelling promoted from "house choice" to sourced.
+- **B2 Kalāvathi ≠ Kalāvati**, **B3 Shreemati ≠ Srimati** → both DISTINCT verdicts (§0c) independently
+  confirmed on melakarta + gandharam grounds (31 vs 16; 2 vs 8). Negative-case guards in §1 stand.
+- **C4 Dwijavanthi** → §0f closed: rename `Jujāvanti` → **`Dwijavanthi`** (expert-preferred), G2 anya
+  swara confirmed legitimate — declare `(ANya SwaRa*: G2 N3)`.
+
+**Resolves DEFER item — new MERGE:**
+
+- **A2 Gamakapriyā / Gamanapriyā** → both are orphan corruptions of the mela-53 name. DB confirms
+  **0 krithis** on each, while the correctly-named **`Gamakakriyā`** (janya of Gamanāśrama 53) already
+  carries all five real kritis, incl. `mInAkshi mE mudaM` (independently confirmed in Gamaka Kriya by
+  the Guru Guha Dikshitar source). **MERGE `Gamakapriyā` + `Gamanapriyā` → `Gamakakriyā`.**
+  `Gāyakapriyā` (mela 13) stays DISTINCT, as already listed in §0c.
+
+**New actionable findings beyond the original scope — fold into the §2 migration / §0a V40 remediation:**
+
+| # | Finding | Action | Source |
+|:--|:--|:--|:--|
+| H1 | **`Veeravasantham` avarohanam is wrong** — seeded `S N3 D3 P M1 G2 R2 S` is the *linear krama of the parent mela Varunapriya (24)*, not the vakra janya. | Correct the keeper's avarohanam to **`S N3 P M1 G2 R2 S`** (drop D3; ārohaṇam `S R2 G2 M1 P S` is correct) when merge #8 lands. Same shape as merge #17's Brindavana scale fix. Also fix at source in `R__seed_04` (line ~2039). | §0h C2 |
+| H2 | **`Nārērētigowla` → `Nārīrītigowla`** — the corruption noted under "Adjacent issues" is now source-backed (katapayadi: Na=0,Ra=2→20). Scale + Natabhairavi(20) parent confirmed correct. | Rename to **`Nārīrītigowla`** at source (`R__seed_04` line ~1415) and via the V-migration; pairs with `nArI rItigauLa [2]`. | §0h C3 |
+| H3 | **Mis-tag: `kalAvati kamalAsana` (Dikshitar) is on `Kalāvati` (mela 16) but belongs on `Kalāvathi` (mela 31).** Expert splits the three kritis: this one → mela 31; the two Tyagaraja kritis (`ennaDu jUtunO`, `oka pAri jUDaga`) stay on mela 16. | Re-point that one `krithi_ragas` link 16→31 (+ `primary_raga_id`). **Confirm before applying** — Dikshitar's Kalavati attribution has some scholarly debate; expert's SSP-based mela-31 placement is the authority. | §0h B2 |
+
+**Not actioned (completeness only):**
+
+- **B3** — we hold only the mela-8 `Srimati`; the distinct mela-2 `Sreemati` (Ratnangi, G1) is simply
+  absent. Optional future add; neither has krithis.
+- **C1** — the correct Carnatic scale already exists as `Brindāvana Sāranga{Hindustani}` /
+  `Brindāvani{Hindustani}`; expert corroborates merge #17's scale fix. Consider dropping the
+  misleading `{Hindustani}` suffix (this is the Carnatic raga; the Hindustani counterpart is
+  *Brindavani Sarang*) — cosmetic, low priority.
+
 ### 1. Normaliser fix (Python worker) — the root cause
 
 - Extend `normalize_for_matching()` in `tools/krithi-extract-enrich-worker/src/normalizer.py` to fold
@@ -497,14 +545,29 @@ Two consequences for this track's merge list:
 - Add regression cases from the adjudicated MERGE list; each must resolve to the keeper raga.
 - **Mandatory negative cases.** The musicologist ran the proposed folding across all 1,145 rows and
   isolated the groups that collide *while carrying different scales* — i.e. real ragas the folding
-  would destroy. This is the complete set; all four must resolve apart:
+  would destroy. The table below is the original complete set. **Two of these four are homonyms the
+  name-only fold *cannot* keep apart, and are deliberately deferred to TRACK-136 — see the note under
+  the table. Only the `kanada` case is enforced by this track's `match_key`; `purvi` is now a MERGE.**
 
-  | Collision key | Pair | Axis at fault |
-  |:---|:---|:---|
-  | `kanada` | `Kanadā [4]` / `Kannada [7]` | **de-doubling** (`nn`→`n`) — 11 links at risk |
-  | `purvi` | `Poorvi [0]` / `Pūrvi [1]` | `oo`→`u` (disappears if the DEFER on Purvi resolves as a merge) |
-  | `kalavati` | `Kalāvathi [0]` / `Kalāvati [3]` | `th`→`t` — mela 31 vs 16 |
-  | `srimati` | `Shreemati [0]` / `Srimati [0]` | `sh`→`s` + `ee`→`i` — mela 2 vs 8 |
+  | Collision key | Pair | Axis at fault | Enforced by |
+  |:---|:---|:---|:---|
+  | `kanada` | `Kanadā [4]` / `Kannada [7]` | **de-doubling** (`nn`→`n`) — 11 links at risk | ✅ TRACK-132 `match_key` (no `nn`→`n` fold; asserted in `test_raga_track132_matching.py`) |
+  | ~~`purvi`~~ | `Poorvi [0]` / `Pūrvi [1]` | `oo`→`u` | **Reclassified — now a MERGE** (§0h A1: same Carnatic raga). No longer a negative case; it is in `RAGA_MERGE_PAIRS`. |
+  | `kalavati` | `Kalāvathi [0]` / `Kalāvati [3]` | `th`→`t` — mela 31 vs 16 | ⚠️ **Homonym — deferred to TRACK-136** (mela-qualified key, blocker B1/D1). See note. |
+  | `srimati` | `Shreemati [0]` / `Srimati [0]` | `sh`→`s` + `ee`→`i` — mela 2 vs 8 | ⚠️ **Homonym — deferred to TRACK-136** (mela-qualified key, blocker B1/D1). See note. |
+
+  > **Why `kalavati`/`srimati` fold together under this track's key, and why that is safe today.**
+  > The name-only fold necessarily collapses `Kalāvathi`≡`Kalāvati` (`th`→`t`) and
+  > `Shreemati`≡`Srimati` (`sh`→`s` + `ee`→`i`) — there is no name-axis that separates a true homonym
+  > pair. TRACK-136 resolves this structurally with a **mela-qualified** identity key
+  > (`(match_key, mela_disambiguator)`, D1), so `Kalāvathi` (31) ≠ `Kalāvati` (16) by mela. **Until
+  > TRACK-136 lands, these stay distinct at ingestion anyway**, because the live Kotlin import path
+  > matches on `name_normalized` — which does *not* apply `th`→`t`/`sh`→`s` — so `kalavathi`≠`kalavati`
+  > there and no krithi is mis-attributed. The runtime guard for this batch is the
+  > `track132_assert_distinct('Kalāvathi','Kalāvati')` / `('Shreemati','Srimati')` checks in `V50`,
+  > which fail the migration if either pair ever collapses to one row. The `test_raga_track132_matching.py`
+  > suite therefore asserts only `kanada` (and the three defensive cases below) — the two homonyms are
+  > TRACK-136's acceptance criterion 4, not this track's.
 
   Plus three defensive assertions that do not collide today but sit one axis from a merge target:
 
@@ -561,25 +624,23 @@ Two consequences for this track's merge list:
 - **Do not** write a general "delete ragas with no krithis" cleanup: 816 of 1,145 ragas are legitimately
   orphaned curated reference data. The migration must be driven by the explicit pair list.
 
-### 3. Guardrail — the structural fix
+### 3. Guardrail — the structural fix → **transferred to [TRACK-136](./TRACK-136-raga-identity-alias-resolution.md)** (2026-08-29)
 
-Add a **deterministic diacritic-free match key** on `ragas` with a UNIQUE constraint, derived by the
-same normalisation as §1. This is what actually closes the hole: it decouples *display spelling* from
-*identity*, so a future import writing `yadukula kAmbhOji` collides with the existing
-`Yadukula Kāmbhoji` and is forced to match rather than insert.
+> **Ownership moved (decision D5, TRACK-136 review).** The `match_key` UNIQUE guardrail originally
+> scoped here is the *same* constraint TRACK-136 Phase 1 implements — and the review showed it needs to
+> be **mela-qualified**, not name-only, or it destroys the `Kalāvathi`/`Kalāvati` and
+> `Shreemati`/`Srimati` homonym distinctions this very track marks DISTINCT (§0c). To avoid two
+> migrations both adding it, the guardrail is owned by
+> **[TRACK-136](./TRACK-136-raga-identity-alias-resolution.md) §1.4 (identity key) and §1.5
+> (`name_normalized` coexistence)**. TRACK-132 stays scoped to the **merge only** (§2); it must land
+> before TRACK-136's UNIQUE, since existing twins would violate it.
 
-```
-name      = 'Yadukula Kāmbhoji'   -- Wikipedia convention, display
-match_key = 'yadukulakambhoji'    -- UNIQUE, never displayed
-```
-
-Two properties worth stating explicitly:
-
-- The constraint must use the *same* normalisation as §1, or the two drift and the guardrail passes
-  rows the matcher would have merged. Derive the key in one place (ideally generated//`STORED`) rather
-  than computing it independently in SQL and Python.
-- It must be lenient enough to catch the 114 groups but strict enough to keep `kanada` ≠ `kannada`.
-  That single pair is the tightest constraint on the normalisation and makes a good canary test.
+The original intent, retained for context: a **deterministic diacritic-free match key** decouples
+*display spelling* from *identity*, so a future import writing `yadukula kAmbhOji` collides with the
+existing `Yadukula Kāmbhoji` and is forced to match rather than insert. It must use the *same*
+normalisation as §1 (derive it once, `STORED`), be lenient enough to catch the 114 groups but strict
+enough to keep `kanada` ≠ `kannada` — and, per the TRACK-136 review, qualified by melakarta so the
+homonym pairs above stay distinct. See TRACK-136 for the realised design.
 
 ### 4. Verification
 
@@ -638,7 +699,8 @@ Not part of this track's merge, but they sit in the same rows and will otherwise
 silently:
 
 - **`Nārērētigowla`** (mela 20) is a transliteration corruption of **Nārīrītigowla** — a
-  domain-model §6.4 terminology violation. It pairs with `nArI rItigauLa [2]`.
+  domain-model §6.4 terminology violation. It pairs with `nArI rItigauLa [2]`. ✅ **Now
+  source-backed (§0h H2, katapayadi Na=0/Ra=2→20)** — rename in the V-migration and `R__seed_04`.
 - **`rItigauLa - Abheri [1]`** — a raga name field holding two raga names joined by a hyphen. An
   unresolved extraction artifact rather than a raga; needs curator triage.
 - ~~**DB `Chalanāṭṭai` vs Wikipedia `Chalanāṭa`**~~ — **retracted, not drift.** The janya list also
@@ -681,3 +743,9 @@ at the right raga.
   in-memory maps and diffing in Kotlin ([CuratorService.kt:67-84](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/CuratorService.kt)).
   It should be a SQL aggregate. Noted here so it is not lost; belongs with TRACK-133, which touches
   the same code.
+
+## Progress Log
+- **2026-08-29**: Implementation started. Python `normalize_for_matching(..., "raga")` extended
+  (`w→v`, `oo→u`); `RagaRepository.findOrCreate` space-insensitive lookup; `V50` + `R__seed_05`
+  merge Batch A (adjudicated) and Batch B (83 same-fold one-sided Wikipedia keepers); R__seed_04
+  H1/H2/C4 plus removal of Gamakapriyā, Gamanapriyā, Dhāmavathi inserts.

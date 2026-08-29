@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.6.0 |
-| **Last Updated** | 2026-07-19 |
+| **Version** | 1.7.0 |
+| **Last Updated** | 2026-08-29 |
 | **Author** | Sangeetha Grantha Team |
 
 ---
@@ -30,6 +30,7 @@
 | ADR-014 | Versioned Canon & Provenance Graph | Accepted | 2026-06-13 | [ADR-014-versioned-canon.md](./ADR-014-versioned-canon.md) |
 | ADR-015 | Structure-Aware Extraction Adapter for the Govindan Blog Family | **Proposed** (partially implemented) | 2026-07-17 | [ADR-015-govindan-extraction-adapter.md](./ADR-015-govindan-extraction-adapter.md) |
 | ADR-016 | Raga Naming Authority & Canonical Reference Data | Accepted | 2026-07-19 | [ADR-016-raga-naming-authority.md](./ADR-016-raga-naming-authority.md) |
+| ADR-017 | Raga Reference Entity Identity & Resolution | Accepted | 2026-08-29 | [ADR-017-raga-reference-entity-identity-resolution.md](./ADR-017-raga-reference-entity-identity-resolution.md) |
 
 ## How to Propose a New ADR
 

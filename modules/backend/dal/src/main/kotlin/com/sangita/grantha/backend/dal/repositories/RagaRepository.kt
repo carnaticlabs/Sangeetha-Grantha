@@ -66,6 +66,37 @@ class RagaRepository {
     }
 
     /**
+     * Space-insensitive `name_normalized` lookup.
+     *
+     * Import computes keys with spaces stripped (`yadukulakambhoji`) while the
+     * Wikipedia seed stores spaced keys (`yadukula kambhoji`). Without this
+     * probe, [findOrCreate] misses the curated row and mints an ITRANS twin
+     * (TRACK-132). Prefers a row that already has lakshana when two compact
+     * to the same key.
+     */
+    private suspend fun findByCompactNormalized(compact: String): RagaDto? {
+        if (compact.isBlank()) return null
+        return DatabaseFactory.dbQuery {
+            val compactName = CustomFunction<String>(
+                "replace",
+                TextColumnType(),
+                RagasTable.nameNormalized,
+                stringLiteral(" "),
+                stringLiteral(""),
+            )
+            RagasTable
+                .selectAll()
+                .where { compactName eq compact }
+                .map { it.toRagaDto() }
+                .sortedWith(
+                    compareByDescending<RagaDto> { !it.arohanam.isNullOrBlank() }
+                        .thenByDescending { it.parentRagaId != null }
+                )
+                .firstOrNull()
+        }
+    }
+
+    /**
      * Find an existing raga or create a new record.
      */
     suspend fun findOrCreate(
@@ -78,14 +109,19 @@ class RagaRepository {
         notes: String? = null
     ): RagaDto {
         val normalized = nameNormalized ?: normalize(name)
-        
+        val compact = normalized.replace(" ", "")
+
         findByNameNormalized(normalized)?.let { return it }
         findByName(name)?.let { return it }
+        findByCompactNormalized(compact)?.let { return it }
 
         return try {
             create(name, normalized, melakartaNumber, parentRagaId, arohanam, avarohanam, notes)
         } catch (e: Exception) {
-            findByNameNormalized(normalized) ?: findByName(name) ?: throw e
+            findByNameNormalized(normalized)
+                ?: findByName(name)
+                ?: findByCompactNormalized(compact)
+                ?: throw e
         }
     }
 
