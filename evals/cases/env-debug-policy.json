@@ -4,6 +4,7 @@
   "must_contain": [
     "VITE_API_BASE_URL",
     "*.env.example",
+    ".env.*.example",
     "SANGITA_ALLOW_TEST_EDITS=1",
     ".cursor/hooks.json"
   ],

@@ -116,7 +116,7 @@ modules/
 - Flyway only (`make migrate` / `make db-reset`). Never Liquibase, never a custom runner, never edit a committed `V__` file — add a new versioned migration.
 - Populate junction tables (e.g. `krithi_ragas`), not only FK columns on the main entity.
 - Do not use a `cursor/` git branch prefix unless the user asks.
-- CORS/auth: check `VITE_API_BASE_URL` and the frontend proxy, plus committed `*.env.example` templates. Never Read or commit `.env` / `config/local.env`.
+- CORS/auth: check `VITE_API_BASE_URL` and the frontend proxy, plus committed `*.env.example` / `.env.*.example` templates. Never Read or commit `.env` / `config/local.env`.
 
 ## Musicological Domain Rules
 
@@ -182,7 +182,7 @@ For current toolchain and library versions, see [Current Versions](application_d
 - Previous migration tools (archived): `archive/tools/db-migrate/` (Python, superseded by ADR-013), `archive/tools/sangita-cli/` (Rust)
 
 ## Debugging Guidelines
-For CORS/auth issues, check `VITE_API_BASE_URL` and the frontend proxy first, not TOML. Use committed `*.env.example` templates for variable names. Never Read gitignored `.env` files.
+For CORS/auth issues, check `VITE_API_BASE_URL` and the frontend proxy first, not TOML. Use committed `*.env.example` / `.env.*.example` templates for variable names. Never Read gitignored `.env` files.
 
  ## Data & Migrations 
  Always verify seed data populates junction tables (e.g., krithi_ragas), not just foreign key columns on the main entity. After any seed/migration, confirm data appears correctly through the full stack (DB → API → UI).

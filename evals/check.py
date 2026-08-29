@@ -210,6 +210,35 @@ def run_hook_smokes() -> int:
             0,
         ),
         (
+            "deny-secrets.env-auto-approval-example",
+            "deny-secrets.py",
+            {
+                "tool_name": "Read",
+                "tool_input": {"file_path": "config/.env.auto-approval.example"},
+            },
+            0,
+        ),
+        (
+            "deny-secrets.env-auto-approval-example-bash",
+            "deny-secrets.py",
+            {
+                "tool_name": "Bash",
+                "tool_input": {
+                    "command": "cat config/.env.auto-approval.example"
+                },
+            },
+            0,
+        ),
+        (
+            "deny-secrets.env-auto-approval-secret",
+            "deny-secrets.py",
+            {
+                "tool_name": "Read",
+                "tool_input": {"file_path": "config/.env.auto-approval"},
+            },
+            2,
+        ),
+        (
             "deny-secrets.python-open",
             "deny-secrets.py",
             {

@@ -17,8 +17,12 @@ _ENV_FILE = re.compile(
     r")$",
     re.IGNORECASE,
 )
-_EXAMPLE_OK = re.compile(r"\.env\.example\b", re.IGNORECASE)
-# After stripping .env.example, any remaining .env or config/*.env path is a dump.
+# Tracked templates: .env.example, config/.env.auto-approval.example, *.env.example
+_EXAMPLE_OK = re.compile(
+    r"\.env(?:\.[A-Za-z0-9_-]+)*\.example\b",
+    re.IGNORECASE,
+)
+# After stripping example templates, any remaining .env or config/*.env path is a dump.
 _SECRET_IN_CMD = re.compile(
     r"(?:^|[\s\"'`=<(])("
     r"\.env(?:\.[A-Za-z0-9_-]+)?"
@@ -28,9 +32,14 @@ _SECRET_IN_CMD = re.compile(
 )
 
 
+def _is_example_template(path: str) -> bool:
+    name = path.replace("\\", "/").rstrip("/").rsplit("/", 1)[-1]
+    return name.lower().endswith(".example") and bool(_EXAMPLE_OK.search(name))
+
+
 def _is_secret(path: str) -> bool:
     normalized = path.replace("\\", "/").strip()
-    if not normalized or _EXAMPLE_OK.search(normalized):
+    if not normalized or _is_example_template(normalized):
         return False
     return bool(_ENV_FILE.search(normalized))
 
@@ -48,8 +57,9 @@ def main() -> int:
     if _is_secret(path):
         return deny(
             "ERROR: Refusing to read or write env/secret files "
-            f"({path}). Use committed *.env.example templates and "
-            "VITE_API_BASE_URL; never Read gitignored .env files.",
+            f"({path}). Use committed *.env.example / .env.*.example "
+            "templates and VITE_API_BASE_URL; never Read gitignored "
+            ".env files.",
             payload,
         )
 
