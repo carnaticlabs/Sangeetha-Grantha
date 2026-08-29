@@ -1,7 +1,7 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.4.0 |
+| **Version** | 1.5.0 |
 | **Last Updated** | 2026-08-29 |
 | **Author** | Sangeetha Grantha Team |
 
@@ -36,52 +36,52 @@
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| Kotlin | `2.4.0` | Language version |
-| Ktor | `3.5.0` | HTTP server & client framework |
-| Exposed | `1.0.0` | SQL ORM (DSL-based) |
-| Koin | `4.2.1` | Dependency injection |
+| Kotlin | `2.4.10` | Language version |
+| Ktor | `3.5.2` | HTTP server & client framework |
+| Exposed | `1.5.0` | SQL ORM (DSL-based) |
+| Koin | `4.2.2` | Dependency injection |
 
 ### Kotlinx Libraries
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| Coroutines | `1.10.2` | Async programming |
-| DateTime | `0.7.1` | Cross-platform date/time |
-| Serialization JSON | `1.10.0` | JSON serialization |
+| Coroutines | `1.11.0` | Async programming |
+| DateTime | `0.7.1` | Cross-platform date/time (0.8 deferred — TRACK-018 history) |
+| Serialization JSON | `1.11.0` | JSON serialization |
 
 ### Database & Infrastructure
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| PostgreSQL Driver | `42.7.11` | JDBC driver (CVE-2026-42198 fix) |
-| HikariCP | `7.0.2` | Connection pooling |
-| Logback | `1.5.34` | Logging framework |
+| PostgreSQL Driver | `42.7.13` | JDBC driver (CVE-2026-54291 fix) |
+| HikariCP | `7.1.0` | Connection pooling |
+| Logback | `1.5.38` | Logging framework (1.6 deferred) |
 | Logstash Encoder | `8.0` | JSON log formatting |
 | Commons CSV | `1.14.1` | CSV parsing |
-| Jsoup | `1.22.1` | HTML parsing |
-| Caffeine | `3.2.3` | In-memory caching |
+| Jsoup | `1.23.2` | HTML parsing |
+| Caffeine | `3.2.4` | In-memory caching |
 | dotenv-kotlin | `6.5.1` | Environment variable loading |
 
 ### Security & Auth
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| JWT (Auth0) | `4.5.0` | JWT token handling |
-| Google Auth | `1.41.0` | OAuth2 (future SSO) |
-| password4j | `1.8.2` | argon2id password hashing (TRACK-114) |
+| JWT (Auth0) | `4.6.0` | JWT token handling |
+| Google Auth | `1.51.0` | OAuth2 (future SSO) |
+| password4j | `1.8.4` | argon2id password hashing (TRACK-114) |
 
 ### Build & Packaging
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| Shadow Plugin | `9.3.1` | Fat JAR packaging |
-| Micrometer | `1.15.2` | Metrics & monitoring |
+| Shadow Plugin | `9.6.1` | Fat JAR packaging |
+| Micrometer | `1.17.1` | Metrics & monitoring |
 
 ### Testing
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| MockK | `1.14.9` | Kotlin mocking framework |
+| MockK | `1.14.11` | Kotlin mocking framework |
 
 ---
 
@@ -93,31 +93,31 @@
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| React | `19.2.7` | UI framework |
-| TypeScript | `6.0.x` | Type-safe JavaScript |
-| Vite | `8.1.3` | Build tool & dev server (Rolldown bundler) |
+| React | `19.2.8` | UI framework |
+| TypeScript | `6.0.x` | Type-safe JavaScript (TypeScript 7 deferred — no programmatic API until 7.1) |
+| Vite | `8.2.2` | Build tool & dev server (Rolldown bundler) |
 
 ### Styling & UI
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| Tailwind CSS | `4.3.1` | Utility-first CSS |
+| Tailwind CSS | `4.3.3` | Utility-first CSS |
 
 ### Routing & State
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| React Router | `7.18.0` | Client-side routing |
-| TanStack Query | `5.101.1` | Data fetching & caching |
-| Google GenAI | `1.34.0` | AI integration |
+| React Router | `7.18.3` | Client-side routing |
+| TanStack Query | `5.102.8` | Data fetching & caching |
+| Google GenAI | `1.34.0` | AI integration (JS 2.x deferred) |
 
 ### Development & Testing
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| ESLint | `10.6.0` | Code linting (via `bun run`; needs Bun runtime) |
-| Vitest | `4.1.10` | Unit testing (Vitest 5 deferred — still beta) |
-| Playwright | `1.61.1` | E2E testing |
+| ESLint | `10.9.1` | Code linting (via `bun run`; needs Bun runtime). `eslint-plugin-react-hooks` pinned **7.0.1** — 7.1.1's `react-hooks/immutability` is a large UI refactor, deferred. |
+| Vitest | `4.1.11` | Unit testing (Vitest 5 deferred — still RC) |
+| Playwright | `1.62.1` | E2E testing |
 
 ---
 
@@ -131,33 +131,33 @@
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| PyMuPDF | `1.27.2.3` | Primary PDF text extraction |
-| pdfplumber | `0.11.9` | Tabular PDF extraction fallback |
+| PyMuPDF | `1.28.2` | Primary PDF text extraction |
+| pdfplumber | `0.11.10` | Tabular PDF extraction fallback |
 | pytesseract | `0.3.13` | Tesseract OCR wrapper |
-| indic-transliteration | `2.3.76` | Script conversion (Devanagari ↔ Tamil/Telugu/etc.) |
-| Pydantic | `2.13.4` | Schema validation |
-| Pydantic Settings | `2.14.2` | Environment-based config validation |
+| indic-transliteration | `2.3.82` | Script conversion (Devanagari ↔ Tamil/Telugu/etc.) |
+| Pydantic | `2.13.5` | Schema validation |
+| Pydantic Settings | `2.15.0` | Environment-based config validation |
 | psycopg | `3.3.4` | PostgreSQL driver (async-capable) |
-| google-genai | `>=2.0.0` (resolved `2.9.0`) | Unified Gemini SDK; 2.0 breaking changes are Interactions-API-only — the worker's generate_content/batches surface is unaffected (TRACK-124) |
-| RapidFuzz | `3.14.3` | Fast fuzzy matching |
+| google-genai | `>=2.0.0` (resolved `2.20.0`) | Unified Gemini SDK; 2.0 breaking changes are Interactions-API-only — the worker's generate_content/batches surface is unaffected (TRACK-124) |
+| RapidFuzz | `3.14.5` | Fast fuzzy matching |
 | HTTPX | `0.28.1` | Async HTTP client |
-| BeautifulSoup4 | `4.14.3` | HTML parsing |
-| structlog | `25.5.0` | Structured JSON logging |
-| Click | `8.3.1` | CLI framework |
+| BeautifulSoup4 | `4.15.0` | HTML parsing |
+| structlog | `26.1.0` | Structured JSON logging |
+| Click | `8.5.0` | CLI framework |
 
 #### Development & Testing
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| pytest | `9.0.2` | Test framework |
-| Ruff | `0.15.0` | Linter & formatter |
-| mypy | `1.19.1` | Static type checker |
+| pytest | `9.1.1` | Test framework |
+| Ruff | `0.16.5` | Linter & formatter |
+| mypy | `2.3.1` | Static type checker |
 
 ### Migration Tool
 
 | Component | Version | Notes |
 |---------|---------|---------|
-| Flyway Community | `12.9.0` | Single migration engine ([ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)). Make/dev/CI via `flyway/flyway:12.9.0-alpine`; Kotlin Testcontainers via the Flyway JVM API. Pinned in `gradle/libs.versions.toml` (`flyway`) and `compose.yaml`. |
+| Flyway Community | `12.11.0` | Single migration engine ([ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)). Make/dev/CI via `flyway/flyway:12.11.0-alpine`; Kotlin Testcontainers via the Flyway JVM API. Pinned in `gradle/libs.versions.toml` (`flyway`) and `compose.yaml`. Flyway 13 deferred. |
 
 Migrations are standardized on **Flyway Community** ([ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)). The previous Python tool (`tools/db-migrate`, psycopg `>=3.1`) is superseded and archived (`archive/tools/db-migrate/`, TRACK-110).
 
@@ -178,10 +178,10 @@ Shared integration-test infrastructure (`IntegrationTestBase`, `SangitaPostgres`
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| Kotlin | `2.4.0` | Shared with backend |
-| Compose Multiplatform | `1.11.1` | Cross-platform UI (material3 `1.9.0` own train; icons-extended frozen `1.7.3`; iosX64 dropped by CMP 1.11) |
-| Android Gradle Plugin | `9.0.0` | Android build |
-| Ktor Client | `3.5.0` | HTTP client |
+| Kotlin | `2.4.10` | Shared with backend |
+| Compose Multiplatform | `1.12.0` | Cross-platform UI (material3 `1.9.0` own train; icons-extended frozen `1.7.3`; iosX64 dropped by CMP 1.11+; **compileSdk 37** required by AndroidX Compose 1.12) |
+| Android Gradle Plugin | `9.3.2` | Android build (Gradle wrapper `9.7.1`) |
+| Ktor Client | `3.5.2` | HTTP client |
 
 ---
 
@@ -191,8 +191,8 @@ Shared integration-test infrastructure (`IntegrationTestBase`, `SangitaPostgres`
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| AWS SDK | `2.41.22` | S3 storage (future) |
-| Google Auth | `1.41.0` | SSO integration (future) |
+| AWS SDK | `2.54.7` | S3 storage (future) |
+| Google Auth | `1.51.0` | SSO integration (future) |
 
 ---
 
@@ -208,6 +208,7 @@ Shared integration-test infrastructure (`IntegrationTestBase`, `SangitaPostgres`
 
 | Date | Change |
 |------|--------|
+| 2026-08-29 | TRACK-135 (Batch 1–2c): PostgreSQL JDBC 42.7.11→42.7.13 (CVE-2026-54291), Ktor 3.5.0→3.5.2, Exposed 1.0.0→1.5.0, Kotlin 2.4.0→2.4.10, CMP 1.11.1→1.12.0, AGP 9.0.0→9.3.2, Gradle 9.1.0→9.7.1, Flyway 12.9.0→12.11.0, React 19.2.7→19.2.8, Vite 8.1.3→8.2.2, plus catalog/frontend/Python lock drop-ins. TypeScript 7 / Vitest 5 / Flyway 13 / Logback 1.6 / datetime 0.8 deferred. |
 | 2026-08-29 | Bun 1.3.7→1.4.0 (mise pin, CI `oven-sh/setup-bun` + fallback installer, monorepo-orchestration skill). Frontend `bun install` + typecheck + build green on 1.4.0. |
 | 2026-07-10 | TRACK-122 (Batch 3a): Kotlin 2.3.0→2.4.0, Compose Multiplatform 1.10.0→1.11.1. CMP 1.11 fallout: `compose.*` plugin accessors deprecated → explicit catalog deps (material3 on its own `1.9.0` train, icons-extended frozen `1.7.3`); iosX64 no longer published by CMP → target dropped from `:shared:presentation`; `-Xexplicit-backing-fields` now in-language (flag removed); Kotlin/Native `sourceInfoType=none`→`noop`. Backend + KMP builds and full test suites green. |
 | 2026-07-10 | TRACK-124 (Batch 3c): google-genai floor >=1.0.0→>=2.0.0 (resolved 1.34.0→2.9.0); 2.0 breaking changes confined to the Interactions API, worker call sites untouched; 144 worker tests green incl. HTTP-stubbed SDK round-trips. |

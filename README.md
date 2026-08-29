@@ -114,9 +114,9 @@ For a complete and specific list of versions and dependencies, see **[Current Ve
 | **Mobile** | Kotlin Multiplatform (KMM) + Compose Multiplatform |
 | **Backend** | Kotlin + Ktor + Exposed |
 | **Database** | PostgreSQL 18+ |
-| **Migrations** | Flyway Community 12.9.0 (ADR-013), via Makefile |
+| **Migrations** | Flyway Community 12.11.0 (ADR-013), via Makefile |
 | **Extraction** | Python worker (`tools/krithi-extract-enrich-worker`) |
-| **Admin Web** | React 19 + TypeScript 6.0 + Tailwind 4.3 + Vite 8.1 (Rolldown) |
+| **Admin Web** | React 19 + TypeScript 6.0 + Tailwind 4.3 + Vite 8.2 (Rolldown) |
 | **Build** | Gradle (Backend/Mobile), Bun (Frontend) |
 | **Orchestration** | Docker Compose (`compose.yaml`) |
 | **Toolchain** | Managed via [mise](https://mise.jdx.dev/) |
