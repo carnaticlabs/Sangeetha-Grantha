@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.3.0 |
-| **Last Updated** | 2026-07-12 |
+| **Version** | 1.4.0 |
+| **Last Updated** | 2026-08-29 |
 | **Author** | Sangeetha Grantha Team |
 
 # Sangita Grantha – Schema Overview
@@ -128,13 +128,20 @@ Key fields:
 
 ### 4.2 `ragas`
 
-Supports janya/melakarta hierarchy.
+Supports janya/melakarta hierarchy. Identity is **mela-qualified** ([ADR-017](../02-architecture/decisions/ADR-017-raga-reference-entity-identity-resolution.md)): `(match_key, mela_disambiguator)`, not the display name.
 
 Key fields:
-- `name`, `name_normalized`
+- `name`, `name_normalized` (display/search; `name_normalized` is not unique)
+- `match_key` — generated `STORED` via `raga_match_key(name)`
+- `mela_disambiguator` — trigger-maintained: own `melakarta_number`, else parent's, else `0`
 - `melakarta_number`
 - `parent_raga_id`
 - `arohanam`, `avarohanam`
+
+Related:
+- `raga_aliases` — same-identity surface forms (spellings; same-scale tradition names) with provenance
+- `raga_identity_keys` — union of raga + differing-alias keys; PK is the transactional guardrail
+- `raga_relations` — distinct-scale nomenclature pairs (`nomenclature_equivalent`)
 
 ---
 

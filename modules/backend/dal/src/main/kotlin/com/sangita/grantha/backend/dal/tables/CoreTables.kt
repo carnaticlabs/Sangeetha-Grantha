@@ -56,6 +56,10 @@ object ComposersTable : UUIDTable("composers") {
 object RagasTable : UUIDTable("ragas") {
     val name = text("name")
     val nameNormalized = text("name_normalized")
+    /** Generated STORED via raga_match_key(name); do not write on insert. */
+    val matchKey = text("match_key")
+    /** Trigger-maintained: own mela, else parent's, else 0. */
+    val melaDisambiguator = integer("mela_disambiguator")
     val melakartaNumber = integer("melakarta_number").nullable()
     val parentRagaId = javaUUID("parent_raga_id").nullable()
     val arohanam = text("arohanam").nullable()

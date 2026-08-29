@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-08-29 |
 | **Author** | Sangeetha Grantha Team |
 
 # Entity Relationship Diagram
@@ -37,12 +37,38 @@ erDiagram
         uuid id PK
         varchar name
         varchar name_normalized
+        varchar match_key
+        int mela_disambiguator
         int melakarta_number
         uuid parent_raga_id FK
         varchar arohanam
         varchar avarohanam
         timestamp created_at
         timestamp updated_at
+    }
+
+    RAGA_ALIASES {
+        uuid id PK
+        uuid raga_id FK
+        varchar alias
+        varchar match_key
+        varchar alias_type
+        varchar tradition
+        varchar source
+        varchar confidence
+    }
+
+    RAGA_IDENTITY_KEYS {
+        varchar match_key PK
+        int mela_disambiguator PK
+        uuid raga_id FK
+    }
+
+    RAGA_RELATIONS {
+        uuid from_raga_id PK
+        uuid to_raga_id PK
+        varchar relation PK
+        varchar source
     }
 
     TALAS {
@@ -288,6 +314,9 @@ erDiagram
 
     %% Reference Data Relationships
     RAGAS ||--o| RAGAS : "parent_raga_id"
+    RAGAS ||--o{ RAGA_ALIASES : "aliases"
+    RAGAS ||--o{ RAGA_IDENTITY_KEYS : "identity_keys"
+    RAGAS ||--o{ RAGA_RELATIONS : "nomenclature"
     TEMPLES ||--o| DEITIES : "primary_deity_id"
     TEMPLES ||--o{ TEMPLE_NAMES : "has"
 

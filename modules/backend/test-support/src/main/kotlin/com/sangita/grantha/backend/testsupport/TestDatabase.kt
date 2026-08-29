@@ -29,8 +29,17 @@ object TestDatabase {
      * the seed is read-only and the suite is idempotent even against a persistent/external database
      * (the `TEST_DATABASE_URL` hatch). All are `UUIDTable` (PK `id`). roles/composer_aliases are
      * never written by tests, so they are simply preserved (see `IntegrationTestBase.PRESERVED_TABLES`).
+     * `raga_aliases` is reset like the other UUID reference tables. `raga_identity_keys` and
+     * `raga_relations` are preserved and the identity-key union is rebuilt after each reset.
      */
-    val RESET_TABLES: List<String> = listOf("composers", "ragas", "talas", "deities", "import_sources")
+    val RESET_TABLES: List<String> = listOf(
+        "composers",
+        "ragas",
+        "talas",
+        "deities",
+        "import_sources",
+        "raga_aliases",
+    )
 
     /** In-DB snapshot of the seed PKs (table, pk), captured once right after migration. */
     const val SEED_SNAPSHOT_TABLE: String = "_seed_pk_snapshot"

@@ -2,6 +2,7 @@ package com.sangita.grantha.backend.dal.repositories
 
 import com.sangita.grantha.backend.dal.DatabaseFactory
 import com.sangita.grantha.backend.dal.models.toRagaDto
+import com.sangita.grantha.backend.dal.tables.RagaIdentityKeysTable
 import com.sangita.grantha.backend.dal.tables.RagasTable
 import com.sangita.grantha.shared.domain.model.RagaDto
 import com.sangita.grantha.backend.dal.support.toJavaUuid
@@ -97,7 +98,36 @@ class RagaRepository {
     }
 
     /**
+     * Unambiguous identity lookup (TRACK-136 sequencing guard).
+     *
+     * Looks up `raga_identity_keys` by `raga_match_key(name)`. Returns the raga
+     * only on a singleton hit — homonym sets (hits > 1) are *not* auto-picked
+     * (D1). Phase 2 replaces the create branch with the resolution queue.
+     */
+    private suspend fun findUnambiguousByIdentity(name: String): RagaDto? {
+        if (name.isBlank()) return null
+        val ragaIds = DatabaseFactory.dbQuery {
+            val keyExpr = CustomFunction<String>(
+                "raga_match_key",
+                TextColumnType(),
+                stringLiteral(name),
+            )
+            RagaIdentityKeysTable
+                .select(RagaIdentityKeysTable.ragaId)
+                .where { RagaIdentityKeysTable.matchKey eq keyExpr }
+                .map { it[RagaIdentityKeysTable.ragaId] }
+                .distinct()
+        }
+        if (ragaIds.size != 1) return null
+        return findById(ragaIds.single().toKotlinUuid())
+    }
+
+    /**
      * Find an existing raga or create a new record.
+     *
+     * Identity lookup runs first so spelling twins and cited aliases resolve
+     * instead of hitting Phase 1's UNIQUE. The create branch remains until
+     * Phase 2's `resolve_raga`; unique violations fall back to identity lookup.
      */
     suspend fun findOrCreate(
         name: String,
@@ -108,6 +138,8 @@ class RagaRepository {
         avarohanam: String? = null,
         notes: String? = null
     ): RagaDto {
+        findUnambiguousByIdentity(name)?.let { return it }
+
         val normalized = nameNormalized ?: normalize(name)
         val compact = normalized.replace(" ", "")
 
@@ -118,7 +150,8 @@ class RagaRepository {
         return try {
             create(name, normalized, melakartaNumber, parentRagaId, arohanam, avarohanam, notes)
         } catch (e: Exception) {
-            findByNameNormalized(normalized)
+            findUnambiguousByIdentity(name)
+                ?: findByNameNormalized(normalized)
                 ?: findByName(name)
                 ?: findByCompactNormalized(compact)
                 ?: throw e

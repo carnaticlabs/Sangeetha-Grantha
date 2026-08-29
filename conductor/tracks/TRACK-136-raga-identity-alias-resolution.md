@@ -1,6 +1,6 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Ready to start — Spec & Plan Accepted; TRACK-132 Phase 0 gate cleared (PR #14 merged 2026-08-29) |
+| **Status** | In Progress — Phase 1 (P1.1–P1.6) |
 | **Version** | 1.3.0 |
 | **Last Updated** | 2026-08-29 |
 | **Author** | Sangeetha Grantha Team |
@@ -452,12 +452,12 @@ ADR-014 discipline). Expert clarifications enter as first-class provenance.
 ---
 
 ## Implementation Plan
-- [ ] P1.1 `raga_match_key()` function + inline assertions (VNN)
-- [ ] P1.2 `ragas.match_key` generated column (VNN, no unique yet)
+- [x] P1.1 `raga_match_key()` function + inline assertions (VNN)
+- [x] P1.2 `ragas.match_key` generated column (VNN, no unique yet)
 - [x] P1.3 (gate) TRACK-132 Phase 0 **Batch A + B** merged — cleared 2026-08-29 (PR #14, `9dc29f3`)
-- [ ] P1.4 `raga_aliases` + `raga_relations` + `raga_identity_keys`/triggers; drop `name_normalized` UNIQUE (VNN)
-- [ ] P1.5 `R__seed_04` alias + relation backfill; `ON CONFLICT` → identity key
-- [ ] P1.6 Exposed tables + `Ragas.match_key` **and `Ragas.mela_disambiguator`**; integration tests
+- [x] P1.4 `raga_aliases` + `raga_relations` + `raga_identity_keys`/triggers; drop `name_normalized` UNIQUE (V53) — incl. the pre-UNIQUE Sri/Shree/"SrI rAgaM" residual merge (2026-08-30); preflight ASSERT verified clean on both fresh and incremental paths
+- [x] P1.5 `R__seed_04` alias + relation backfill; `ON CONFLICT` → identity key
+- [x] P1.6 Exposed tables + `Ragas.match_key` **and `Ragas.mela_disambiguator`**; integration tests
 - [ ] P2.7 `resolve_raga()` — delete `findOrCreate` create branch; key via DB in Kotlin txn
 - [ ] P2.8 `raga_resolution_queue` with **partial unique `(match_key, kind) WHERE status='pending'`** (VNN)
 - [ ] P2.9 Close all mint paths (EntityResolution, ReferenceData, retire python INSERT + CI guard)
@@ -474,3 +474,5 @@ ADR-014 discipline). Expert clarifications enter as first-class provenance.
 - **2026-08-29 (r3)**: Third review pass — **zero blockers, "Plan is Acceptable"**. Five nits folded in (N1 partial-unique pending-only queue index; N2 BEFORE trigger; N3 preflight ASSERT + corrected 7-of-181 Phase-0 claim; N4 doc hygiene — stale B5 row, P1.1 case count, Exposed files list; N5 ADR seed conflict-target). Version → 1.3.0. Ready for the Plan accept gate.
 - **2026-08-29**: Spec and Plan **Accepted** (Seshadri). Track status → Ready; implementation remains gated on TRACK-132 Phase 0 Batch A+B.
 - **2026-08-29**: TRACK-132 Phase 0 (Batch A+B) **merged to main** (PR #14, `9dc29f3`, CI green). P1.3 gate cleared → status **Ready to start**; implementation may begin at P1.1 (`raga_match_key()` function).
+- **2026-08-29**: Implementation started. Phase 1 (P1.1–P1.6): `raga_match_key()` (V51), generated `match_key` (V52), mela-qualified identity + aliases/relations/union keys (V53), `R__seed_04` upserts on `ragas_identity_uq` with §1.7 backfill, Exposed tables, identity lookup in `findOrCreate` (sequencing guard until Phase 2).
+- **2026-08-30**: Phase 1 review found a residual TRACK-132 duplicate the identity key could not catch — **`Sri` / `Shree` / `SrI rAgaM`** are one raga (Śrī, janya of Kharaharapriyā 22) but fold to three different keys (`sri` / `sri` after `sh→s,ee→i` / `sriragam`). On an existing DB the V53 preflight ASSERT tripped on the `Shree`/`Sri` (match_key `sri`, mela 22) pair; on a fresh reset `R__seed_04` silently `ON CONFLICT`-collapsed them into one inconsistent row. Routed the scale question to `carnatic-musicologist`: ruling = one raga, keeper **`Sri`** (ADR-016 §5 override of the janya-list `Shree`), vakra avarohanam `S N2 P D2 N2 P M1 R2 G2 R2 S`. Fix: (a) V53 merges `Shree` + `SrI rAgaM` → `Sri` and sets the vakra scale *before* the UNIQUE; (b) `R__seed_04` drops the `Shree` insert and gives `Sri` the vakra avarohanam; (c) normaliser + `raga_match_key()` strip a trailing raga-descriptor word (`"Sri rAgaM" → sri`) and **stop honorific-stripping for ragas** (Python was emptying `Sri` and would collapse the distinct `Śrīranjani` spelling `"Sri ranjani"` onto `Ranjani`; SQL never stripped honorifics — now aligned). `Śrīranjani` (`Shreeranjani`, match_key `sriranjani`, mela 22) stays a **separate identity** from both `Sri` (`sri`) and `Ranjani` (`ranjani`, mela 59) — untouched by the merge. Verified: 70 worker normalisation tests; `MigrationsFromScratchTest` + `RagaIdentityTrack136Test` (5) + `RagaFindOrCreateTrack132Test`; read-only proof that **0** `(match_key, mela)` collisions remain after the merge (incremental path safe).
