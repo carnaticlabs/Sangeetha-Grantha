@@ -1,0 +1,9 @@
+{
+  "id": "githooks-strip-cursor-coauthor",
+  "file": ".githooks/commit-msg",
+  "must_contain": [
+    "Co-authored-by",
+    "cursoragent@cursor.com",
+    "strip_cursor_trailers"
+  ]
+}
