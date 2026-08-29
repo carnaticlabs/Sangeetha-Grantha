@@ -20,15 +20,15 @@ accidental:
 Order is significant: longer patterns must precede their prefixes (`ksh` before
 `sh`, `chh` before `ch`), which is why these are ordered tuples and not dicts.
 
-**Kotlin counterpart.** There is deliberately no mirror table on the Kotlin side
-any more. `NameNormalizationService` delegated consonant collapse to this Python
-implementation in its Phase 3 "Simplify and Ship" pass — see the comments there:
-"transliteration collapse is now handled by Python normalizer". Kotlin still
-applies the long-vowel collapses itself for ragas
-(`aa→a`, `ee→i`, `oo→o`, `uu→u`, then space removal), which is the counterpart of
-`LONG_VOWEL_COLLAPSE_RULES` below and of `normalize_for_matching(..., "raga")`.
-Python is therefore authoritative for the consonant table; keep the vowel rules
-in step with Kotlin's raga branch.
+**Kotlin counterpart.** There is deliberately no mirror consonant table on the
+Kotlin side any more. `NameNormalizationService` delegated consonant collapse to
+this Python implementation in its Phase 3 "Simplify and Ship" pass. Kotlin still
+applies a lighter raga fold for `name_normalized` lookup (`aa→a`, `ee→i`, `oo→o`,
+`uu→u`, space removal) — that is *not* the TRACK-132 identity key. The raga
+matching key lives in `normalize_for_matching(..., "raga")` (and, from TRACK-136,
+in the SQL `raga_match_key()` function). Python `oo→u` for ragas is intentional
+and stricter than Kotlin's `oo→o`; do not "fix" them into agreement without
+updating both plus the SQL function.
 """
 
 from __future__ import annotations

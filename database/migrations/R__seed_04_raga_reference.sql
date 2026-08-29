@@ -1411,8 +1411,10 @@ INSERT INTO ragas (id, name, name_normalized, parent_raga_id, arohanam, avarohan
 VALUES (gen_random_uuid(), 'Nāgagāndhāri', 'nagagandhari', (SELECT id FROM ragas WHERE name_normalized = 'natabhairavi'), 'S R2 M1 G2 M1 P D1 N2 S', 'S N2 D1 P M1 G2 R2 S', NOW(), NOW())
 ON CONFLICT (name_normalized) DO UPDATE SET name = EXCLUDED.name, melakarta_number = NULL, parent_raga_id = COALESCE(EXCLUDED.parent_raga_id, ragas.parent_raga_id), arohanam = COALESCE(EXCLUDED.arohanam, ragas.arohanam), avarohanam = COALESCE(EXCLUDED.avarohanam, ragas.avarohanam), updated_at = NOW();
 
+-- TRACK-132 §0h H2: katapayadi Na=0, Ra=2 → mela 20. Was seeded as the
+-- transliteration corruption Nārērētigowla; the Wikipedia/SSP name is Nārīrītigowla.
 INSERT INTO ragas (id, name, name_normalized, parent_raga_id, arohanam, avarohanam, created_at, updated_at)
-VALUES (gen_random_uuid(), 'Nārērētigowla', 'nareretigowla', (SELECT id FROM ragas WHERE name_normalized = 'natabhairavi'), 'S G2 R2 G2 M1 N2 D1 M1 N2 N2 S', 'S N2 D1 M1 G2 M1 P M1 G2 R2 S', NOW(), NOW())
+VALUES (gen_random_uuid(), 'Nārīrītigowla', 'nariritigowla', (SELECT id FROM ragas WHERE name_normalized = 'natabhairavi'), 'S G2 R2 G2 M1 N2 D1 M1 N2 N2 S', 'S N2 D1 M1 G2 M1 P M1 G2 R2 S', NOW(), NOW())
 ON CONFLICT (name_normalized) DO UPDATE SET name = EXCLUDED.name, melakarta_number = NULL, parent_raga_id = COALESCE(EXCLUDED.parent_raga_id, ragas.parent_raga_id), arohanam = COALESCE(EXCLUDED.arohanam, ragas.arohanam), avarohanam = COALESCE(EXCLUDED.avarohanam, ragas.avarohanam), updated_at = NOW();
 
 INSERT INTO ragas (id, name, name_normalized, parent_raga_id, arohanam, avarohanam, created_at, updated_at)
@@ -2036,7 +2038,9 @@ ON CONFLICT (name_normalized) DO UPDATE SET name = EXCLUDED.name, melakarta_numb
 -- --- Janyas of Melakarta #24: Varuṇapriyā ---
 
 INSERT INTO ragas (id, name, name_normalized, parent_raga_id, arohanam, avarohanam, created_at, updated_at)
-VALUES (gen_random_uuid(), 'Veeravasantham', 'veeravasantham', (SELECT id FROM ragas WHERE name_normalized = 'varunapriya'), 'S R2 G2 M1 P S', 'S N3 D3 P M1 G2 R2 S', NOW(), NOW())
+-- TRACK-132 §0h H1: avarohanam is the vakra janya (drop D3). The previously
+-- seeded S N3 D3 P M1 G2 R2 S was the linear krama of parent Varunapriya (24).
+VALUES (gen_random_uuid(), 'Veeravasantham', 'veeravasantham', (SELECT id FROM ragas WHERE name_normalized = 'varunapriya'), 'S R2 G2 M1 P S', 'S N3 P M1 G2 R2 S', NOW(), NOW())
 ON CONFLICT (name_normalized) DO UPDATE SET name = EXCLUDED.name, melakarta_number = NULL, parent_raga_id = COALESCE(EXCLUDED.parent_raga_id, ragas.parent_raga_id), arohanam = COALESCE(EXCLUDED.arohanam, ragas.arohanam), avarohanam = COALESCE(EXCLUDED.avarohanam, ragas.avarohanam), updated_at = NOW();
 
 
@@ -2212,7 +2216,9 @@ VALUES (gen_random_uuid(), 'Dwaithachintāmani', 'dwaithachintamani', (SELECT id
 ON CONFLICT (name_normalized) DO UPDATE SET name = EXCLUDED.name, melakarta_number = NULL, parent_raga_id = COALESCE(EXCLUDED.parent_raga_id, ragas.parent_raga_id), arohanam = COALESCE(EXCLUDED.arohanam, ragas.arohanam), avarohanam = COALESCE(EXCLUDED.avarohanam, ragas.avarohanam), updated_at = NOW();
 
 INSERT INTO ragas (id, name, name_normalized, parent_raga_id, arohanam, avarohanam, created_at, updated_at)
-VALUES (gen_random_uuid(), 'Dwijāvanthi /Jujāvanthi', 'dwijavanthi /jujavanthi', (SELECT id FROM ragas WHERE name_normalized = 'harikambhoji'), 'S R2 M1 G3 M1 P D2 S', 'S N2 D2 P M1 G3 M1 R2 G2 R2 S N2 D2 N2 S (ANya SwaRa*: G2 N3)', NOW(), NOW())
+-- TRACK-132 §0h C4: expert-preferred display name Dwijavanthi (Wikipedia listed
+-- Dwijāvanthi /Jujāvanthi). Anya swara G2 N3 is already declared.
+VALUES (gen_random_uuid(), 'Dwijavanthi', 'dwijavanthi', (SELECT id FROM ragas WHERE name_normalized = 'harikambhoji'), 'S R2 M1 G3 M1 P D2 S', 'S N2 D2 P M1 G3 M1 R2 G2 R2 S N2 D2 N2 S (ANya SwaRa*: G2 N3)', NOW(), NOW())
 ON CONFLICT (name_normalized) DO UPDATE SET name = EXCLUDED.name, melakarta_number = NULL, parent_raga_id = COALESCE(EXCLUDED.parent_raga_id, ragas.parent_raga_id), arohanam = COALESCE(EXCLUDED.arohanam, ragas.arohanam), avarohanam = COALESCE(EXCLUDED.avarohanam, ragas.avarohanam), updated_at = NOW();
 
 INSERT INTO ragas (id, name, name_normalized, parent_raga_id, arohanam, avarohanam, created_at, updated_at)
@@ -3340,13 +3346,9 @@ INSERT INTO ragas (id, name, name_normalized, parent_raga_id, arohanam, avarohan
 VALUES (gen_random_uuid(), 'Deepakam', 'deepakam', (SELECT id FROM ragas WHERE name_normalized = 'panthuvarali'), 'S R2 M2 P D1 P S', 'S N3 D1 N3 P M2 G3 R1 S', NOW(), NOW())
 ON CONFLICT (name_normalized) DO UPDATE SET name = EXCLUDED.name, melakarta_number = NULL, parent_raga_id = COALESCE(EXCLUDED.parent_raga_id, ragas.parent_raga_id), arohanam = COALESCE(EXCLUDED.arohanam, ragas.arohanam), avarohanam = COALESCE(EXCLUDED.avarohanam, ragas.avarohanam), updated_at = NOW();
 
-INSERT INTO ragas (id, name, name_normalized, parent_raga_id, arohanam, avarohanam, created_at, updated_at)
-VALUES (gen_random_uuid(), 'Gamakapriyā', 'gamakapriya', (SELECT id FROM ragas WHERE name_normalized = 'panthuvarali'), 'S R1 G3 M2 P N3 D1 S', 'S D1 P M2 G3 R1 S', NOW(), NOW())
-ON CONFLICT (name_normalized) DO UPDATE SET name = EXCLUDED.name, melakarta_number = NULL, parent_raga_id = COALESCE(EXCLUDED.parent_raga_id, ragas.parent_raga_id), arohanam = COALESCE(EXCLUDED.arohanam, ragas.arohanam), avarohanam = COALESCE(EXCLUDED.avarohanam, ragas.avarohanam), updated_at = NOW();
-
-INSERT INTO ragas (id, name, name_normalized, parent_raga_id, arohanam, avarohanam, created_at, updated_at)
-VALUES (gen_random_uuid(), 'Gamanapriyā', 'gamanapriya', (SELECT id FROM ragas WHERE name_normalized = 'panthuvarali'), 'S R1 G3 M2 P N3 D1 S', 'S D1 P M2 G3 R1 S', NOW(), NOW())
-ON CONFLICT (name_normalized) DO UPDATE SET name = EXCLUDED.name, melakarta_number = NULL, parent_raga_id = COALESCE(EXCLUDED.parent_raga_id, ragas.parent_raga_id), arohanam = COALESCE(EXCLUDED.arohanam, ragas.arohanam), avarohanam = COALESCE(EXCLUDED.avarohanam, ragas.avarohanam), updated_at = NOW();
+-- TRACK-132 §0h A2: Gamakapriyā and Gamanapriyā were orphan corruptions of the
+-- mela-53 name; they are merged into Gamakakriyā (janya of Gamanāśrama) by
+-- V50 / R__seed_05 and must not be re-inserted here. Gāyakapriyā (mela 13) stays.
 
 INSERT INTO ragas (id, name, name_normalized, parent_raga_id, arohanam, avarohanam, created_at, updated_at)
 VALUES (gen_random_uuid(), 'Hamsanārāyani', 'hamsanarayani', (SELECT id FROM ragas WHERE name_normalized = 'panthuvarali'), 'S R1 G3 M2 P S', 'S N3 P M2 G3 R1 S', NOW(), NOW())
@@ -3683,10 +3685,9 @@ ON CONFLICT (name_normalized) DO UPDATE SET name = EXCLUDED.name, melakarta_numb
 
 
 -- --- Janyas of Melakarta #59: Dharmavati ---
-
-INSERT INTO ragas (id, name, name_normalized, parent_raga_id, arohanam, avarohanam, created_at, updated_at)
-VALUES (gen_random_uuid(), 'Dhāmavathi', 'dhamavathi', (SELECT id FROM ragas WHERE name_normalized = 'dharmavati'), 'S R2 G2 M2 P D2 N3 S', 'S N3 D2 P M2 G2 R2 S', NOW(), NOW())
-ON CONFLICT (name_normalized) DO UPDATE SET name = EXCLUDED.name, melakarta_number = NULL, parent_raga_id = COALESCE(EXCLUDED.parent_raga_id, ragas.parent_raga_id), arohanam = COALESCE(EXCLUDED.arohanam, ragas.arohanam), avarohanam = COALESCE(EXCLUDED.avarohanam, ragas.avarohanam), updated_at = NOW();
+-- TRACK-132 §0h A3: Dhāmavathi is the Venkatamakhin/Dikshitar name for mela 59
+-- itself (Todi pathology — identical scale), not a janya. Merged into Dharmavati
+-- by V50 / R__seed_05; TRACK-136 will keep Dhāmavathi as a nomenclature alias.
 
 INSERT INTO ragas (id, name, name_normalized, parent_raga_id, arohanam, avarohanam, created_at, updated_at)
 VALUES (gen_random_uuid(), 'Gowrikriya', 'gowrikriya', (SELECT id FROM ragas WHERE name_normalized = 'dharmavati'), 'S G2 M2 P D2 N3 S', 'S N3 D2 N3 P M2 G2 S', NOW(), NOW())

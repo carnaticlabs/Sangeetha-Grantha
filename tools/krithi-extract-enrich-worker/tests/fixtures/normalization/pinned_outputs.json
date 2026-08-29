@@ -16,7 +16,7 @@
       "identity_raga": "akilandeswari",
       "matching_composer": "akilaandeswari",
       "matching_deity": "akilaandeswari",
-      "matching_raga": "akilandeswari",
+      "matching_raga": "akilandesvari",
       "matching_tala": "akilaandeswari",
       "matching_temple": "akilaandeswari",
       "matching_title": "aklaandswari"
@@ -26,7 +26,7 @@
       "identity_raga": "akilandeswari",
       "matching_composer": "akilandeswari",
       "matching_deity": "akilandeswari",
-      "matching_raga": "akilandeswari",
+      "matching_raga": "akilandesvari",
       "matching_tala": "akilandeswari",
       "matching_temple": "akilandeswari",
       "matching_title": "aklndswari"
@@ -56,7 +56,7 @@
       "identity_raga": "arulmigukapaliswarartemple",
       "matching_composer": "arulmigu kapaleeswarar temple",
       "matching_deity": "kapaleeswarar temple",
-      "matching_raga": "arulmigukapaliswarartemple",
+      "matching_raga": "arulmigukapalisvarartemple",
       "matching_tala": "arulmigu kapaleeswarar temple",
       "matching_temple": "kapaleeswarar temple",
       "matching_title": "arulmgu kpleeswar tmple"
@@ -136,7 +136,7 @@
       "identity_raga": "dwijavanti",
       "matching_composer": "dwijavanti",
       "matching_deity": "dwijavanti",
-      "matching_raga": "dwijavanti",
+      "matching_raga": "dvijavanti",
       "matching_tala": "dwijavanti",
       "matching_temple": "dwijavanti",
       "matching_title": "dwijvnti"
@@ -186,7 +186,7 @@
       "identity_raga": "hamsadwani",
       "matching_composer": "hamsadwani",
       "matching_deity": "hamsadwani",
-      "matching_raga": "hamsadwani",
+      "matching_raga": "hamsadvani",
       "matching_tala": "hamsadwani",
       "matching_temple": "hamsadwani",
       "matching_title": "hamsdwani"
@@ -306,7 +306,7 @@
       "identity_raga": "mutuswamidiksitar",
       "matching_composer": "muttusvami diksitar",
       "matching_deity": "mutuswami diksitar",
-      "matching_raga": "mutuswamidiksitar",
+      "matching_raga": "mutusvamidiksitar",
       "matching_tala": "mutuswami diksitar",
       "matching_temple": "mutuswami diksitar",
       "matching_title": "mutuswami dkstr"
@@ -356,7 +356,7 @@
       "identity_raga": "porvikalyani",
       "matching_composer": "poorvikalyani",
       "matching_deity": "poorvikalyani",
-      "matching_raga": "porvikalyani",
+      "matching_raga": "purvikalyani",
       "matching_tala": "poorvikalyani",
       "matching_temple": "poorvikalyani",
       "matching_title": "poorvklyani"
@@ -446,7 +446,7 @@
       "identity_raga": "srimutuswamydiksitar",
       "matching_composer": "muttusvami diksitar",
       "matching_deity": "mutuswamy diksitar",
-      "matching_raga": "mutuswamydiksitar",
+      "matching_raga": "mutusvamydiksitar",
       "matching_tala": "mutuswamy diksitar",
       "matching_temple": "mutuswamy diksitar",
       "matching_title": "mutuswamy dkstr"
@@ -466,7 +466,7 @@
       "identity_raga": "srivenkateswara",
       "matching_composer": "venkateswara",
       "matching_deity": "venkateswara",
-      "matching_raga": "venkateswara",
+      "matching_raga": "venkatesvara",
       "matching_tala": "venkateswara",
       "matching_temple": "venkateswara",
       "matching_title": "vnktswara"
@@ -476,7 +476,7 @@
       "identity_raga": "swatitirunal",
       "matching_composer": "swati tirunal",
       "matching_deity": "swati tirunal",
-      "matching_raga": "swatitirunal",
+      "matching_raga": "svatitirunal",
       "matching_tala": "swati tirunal",
       "matching_temple": "swati tirunal",
       "matching_title": "swati trunl"

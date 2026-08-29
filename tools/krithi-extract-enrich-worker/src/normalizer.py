@@ -60,7 +60,22 @@ def normalize_for_matching(text: str, entity_type: str = "title") -> str:
         elif result in {"syama sastri", "syama sastry"}:
             result = "syama sastri"
     elif entity_type == "raga":
-        result = result.replace("aa", "a").replace("ee", "i").replace("oo", "o").replace("uu", "u").replace(" ", "")
+        # TRACK-132 / ADR-016 matching key. Consonant aspirates (th/dh/gh/kh/bh/jh,
+        # ch, sh) are already folded by MATCHING_COLLAPSE_RULES above. This branch
+        # adds the remaining raga axes: w/v, long-vowel ITRANS (oo→u), spaces.
+        # Terminal -am is NOT stripped here: `Shankarabharanam` must keep its
+        # final m (pinned TRACK-061/130 tests). Mohana/Mohanam and similar
+        # anusvara pairs are merged by V50 rather than by this key.
+        # Do NOT de-double consonants (Kanadā ≠ Kannada) and do NOT fold
+        # terminal -i (Bhairavi ≠ Bhairava). Digraphs are mapped, never deleted.
+        result = (
+            result.replace("w", "v")
+            .replace("aa", "a")
+            .replace("ee", "i")
+            .replace("oo", "u")
+            .replace("uu", "u")
+            .replace(" ", "")
+        )
     elif entity_type == "tala":
         if result.endswith("am") and len(result) > 4:
             result = f"{result[:-2]}a"
