@@ -1,6 +1,6 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | In progress — Batch A+B merge migration (V50 / R__seed_05) and normaliser landed, verification pending |
+| **Status** | Completed — Batch A+B merge migration (V50 / R__seed_05) and normaliser landed and merged (PR #14, 2026-08-29) |
 | **Version** | 1.11.0 |
 | **Last Updated** | 2026-08-29 |
 | **Author** | Sangeetha Grantha Team |
