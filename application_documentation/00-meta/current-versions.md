@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.3.0 |
-| **Last Updated** | 2026-07-12 |
+| **Version** | 1.4.0 |
+| **Last Updated** | 2026-08-29 |
 | **Author** | Sangeetha Grantha Team |
 
 # Current Technology Versions
@@ -22,7 +22,7 @@
 | Tool | Version | Notes |
 |------|---------|-------|
 | Java | `temurin-25` | Temurin distribution, JVM toolchain |
-| Bun | `1.3.7` | Frontend package manager & runtime |
+| Bun | `1.4.0` | Frontend package manager & runtime |
 | Python | `3.11+` | Migration tool & extraction worker (runtime: 3.14) |
 | Docker Compose | `latest` | Container orchestration |
 
@@ -208,6 +208,7 @@ Shared integration-test infrastructure (`IntegrationTestBase`, `SangitaPostgres`
 
 | Date | Change |
 |------|--------|
+| 2026-08-29 | Bun 1.3.7→1.4.0 (mise pin, CI `oven-sh/setup-bun` + fallback installer, monorepo-orchestration skill). Frontend `bun install` + typecheck + build green on 1.4.0. |
 | 2026-07-10 | TRACK-122 (Batch 3a): Kotlin 2.3.0→2.4.0, Compose Multiplatform 1.10.0→1.11.1. CMP 1.11 fallout: `compose.*` plugin accessors deprecated → explicit catalog deps (material3 on its own `1.9.0` train, icons-extended frozen `1.7.3`); iosX64 no longer published by CMP → target dropped from `:shared:presentation`; `-Xexplicit-backing-fields` now in-language (flag removed); Kotlin/Native `sourceInfoType=none`→`noop`. Backend + KMP builds and full test suites green. |
 | 2026-07-10 | TRACK-124 (Batch 3c): google-genai floor >=1.0.0→>=2.0.0 (resolved 1.34.0→2.9.0); 2.0 breaking changes confined to the Interactions API, worker call sites untouched; 144 worker tests green incl. HTTP-stubbed SDK round-trips. |
 | 2026-07-10 | TRACK-123 (Batch 3b): Testcontainers 1.21.4→2.0.5 — artifact renamed to `org.testcontainers:testcontainers-postgresql`, `PostgreSQLContainer` moved to `org.testcontainers.postgresql` and lost its self-type generic; full backend + DAL integration suites green. |
