@@ -1,6 +1,6 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Ready — Intent, Spec & Plan Accepted; implementation gated on TRACK-132 Phase 0 (Batch A+B) |
+| **Status** | Ready to start — Spec & Plan Accepted; TRACK-132 Phase 0 gate cleared (PR #14 merged 2026-08-29) |
 | **Version** | 1.3.0 |
 | **Last Updated** | 2026-08-29 |
 | **Author** | Sangeetha Grantha Team |
@@ -454,7 +454,7 @@ ADR-014 discipline). Expert clarifications enter as first-class provenance.
 ## Implementation Plan
 - [ ] P1.1 `raga_match_key()` function + inline assertions (VNN)
 - [ ] P1.2 `ragas.match_key` generated column (VNN, no unique yet)
-- [ ] P1.3 (gate) TRACK-132 Phase 0 **Batch A + B** merged
+- [x] P1.3 (gate) TRACK-132 Phase 0 **Batch A + B** merged — cleared 2026-08-29 (PR #14, `9dc29f3`)
 - [ ] P1.4 `raga_aliases` + `raga_relations` + `raga_identity_keys`/triggers; drop `name_normalized` UNIQUE (VNN)
 - [ ] P1.5 `R__seed_04` alias + relation backfill; `ON CONFLICT` → identity key
 - [ ] P1.6 Exposed tables + `Ragas.match_key` **and `Ragas.mela_disambiguator`**; integration tests
@@ -473,3 +473,4 @@ ADR-014 discipline). Expert clarifications enter as first-class provenance.
 - **2026-08-29 (r2)**: Re-review incorporated; prior 5 blockers confirmed closed. R1–R5 + nits validated and folded in: `mela_disambiguator` NOT NULL sentinel `0` (181 orphans verified) with a **real trigger-maintained column + `UNIQUE(match_key, mela_disambiguator)` on `ragas`** as the seed `ON CONFLICT` target (a `GENERATED` column is impossible — janya mela is a parent join), `raga_identity_keys` unions alias keys; D4 refined for ragamalika holes (write resolved slots, NULL primary only if primary unknown, verify palindrome post-drain); `nomenclature`+`tradition` restored on same-identity aliases; `raga_relations CHECK(from<to)`; triggers on UPDATE; cache singleton-only; `EntityResolutionServiceImpl` reclassified (resolution, not mint); ADR-017 §§1–2 body patched (R4). Version → 1.2.0. Still Draft — awaiting Plan accept gate.
 - **2026-08-29 (r3)**: Third review pass — **zero blockers, "Plan is Acceptable"**. Five nits folded in (N1 partial-unique pending-only queue index; N2 BEFORE trigger; N3 preflight ASSERT + corrected 7-of-181 Phase-0 claim; N4 doc hygiene — stale B5 row, P1.1 case count, Exposed files list; N5 ADR seed conflict-target). Version → 1.3.0. Ready for the Plan accept gate.
 - **2026-08-29**: Spec and Plan **Accepted** (Seshadri). Track status → Ready; implementation remains gated on TRACK-132 Phase 0 Batch A+B.
+- **2026-08-29**: TRACK-132 Phase 0 (Batch A+B) **merged to main** (PR #14, `9dc29f3`, CI green). P1.3 gate cleared → status **Ready to start**; implementation may begin at P1.1 (`raga_match_key()` function).
