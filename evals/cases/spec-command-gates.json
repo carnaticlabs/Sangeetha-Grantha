@@ -1,0 +1,9 @@
+{
+  "id": "spec-command-gates",
+  "file": ".claude/commands/spec-from-track.md",
+  "must_contain": [
+    "Intent Status is Accepted",
+    "carnatic-musicologist",
+    "Do not run `/plan-from-spec`"
+  ]
+}

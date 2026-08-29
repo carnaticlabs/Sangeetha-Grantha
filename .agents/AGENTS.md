@@ -87,14 +87,14 @@ Cursor additionally ships `agentic-prompt-optimizer` and `sangeetha-krithi-analy
 - `verify-db-status.md` — verify the local database schema matches the migration files.
 
 ## Commands
-See [`CLAUDE.md` → Essential Commands](../CLAUDE.md#essential-commands). The full stack runs via
-the Makefile + Docker Compose (`make dev`, `make db-reset`, `make migrate`); database work goes
+See [`CLAUDE.md` → Essential Commands](../CLAUDE.md#essential-commands). Slash commands live in `.claude/commands/` (Cursor mirrors under `.cursor/commands/`): `/spec-from-track` and `/plan-from-spec` write Spec/Plan on a conductor track and must not implement code until those sections are Accepted. The full stack runs via
+the Makefile + Docker Compose (`make dev`, `make db-reset`, `make migrate`, `make agent-evals`); database work goes
 through **Flyway** per ADR-013. The historical Rust CLI (`tools/sangita-cli`) is **archived** under
 `archive/tools/sangita-cli/` — do not invoke it.
 
 ## Context Files
 - [`CLAUDE.md`](../CLAUDE.md) — canonical project rules (all assistants).
-- [`.cursorrules`](../.cursorrules) / [`.cursor/rules/`](../.cursor/rules/) — Cursor pointers at CLAUDE.md.
+- [`.cursorrules`](../.cursorrules) / [`.cursor/rules/`](../.cursor/rules/) — Cursor pointers at CLAUDE.md. Edit-time hooks: [`.cursor/hooks.json`](../.cursor/hooks.json) runs `.claude/hooks/*.py`.
 - `.chatgpt-config.md` — Codex/ChatGPT canonical rules mirror.
 - `.ai-quick-reference.md` — quick commands, stack versions, module map.
 - `.ai-context-guide.md` — cross-assistant index of context files.

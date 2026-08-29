@@ -1,0 +1,12 @@
+{
+  "id": "cursor-hooks-wired",
+  "file": ".cursor/hooks.json",
+  "must_contain": [
+    "deny-secrets.py",
+    "protect-migrations.py",
+    "protect-tests.py",
+    "preToolUse",
+    "beforeReadFile",
+    "beforeShellExecution"
+  ]
+}

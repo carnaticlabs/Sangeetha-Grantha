@@ -1,4 +1,4 @@
-.PHONY: dev dev-down db db-reset seed seed-dev migrate migrate-status bootstrap-admin test test-integration test-frontend check-docs steel-thread clean
+.PHONY: dev dev-down db db-reset seed seed-dev migrate migrate-status bootstrap-admin test test-integration test-frontend check-docs agent-evals steel-thread clean
 
 COMPOSE := docker compose
 # Flyway runs as the compose `migrate` service (flyway/flyway image) on the db network.
@@ -61,6 +61,10 @@ test-frontend:
 # Verify every relative Markdown link resolves (docs rot silently when files move)
 check-docs:
 	python3 tools/check-doc-links.py
+
+# Deterministic agent-config evals (CLAUDE.md, skills, hooks, REVIEW.md)
+agent-evals:
+	python3 evals/check.py
 
 # Run steel thread E2E test
 steel-thread:

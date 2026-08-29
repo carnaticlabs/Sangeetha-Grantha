@@ -30,6 +30,15 @@ jobs:
       - name: Check relative Markdown links
         run: python3 tools/check-doc-links.py
 
+  agent-evals:
+    name: Agent config evals (TRACK-134)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - name: Run deterministic agent-config evals
+        run: python3 evals/check.py
+
   backend-unit:
     name: Backend unit (<30s, D9)
     runs-on: ubuntu-latest

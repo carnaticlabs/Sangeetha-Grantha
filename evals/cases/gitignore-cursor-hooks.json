@@ -1,0 +1,7 @@
+{
+  "id": "gitignore-cursor-hooks",
+  "file": ".gitignore",
+  "must_contain": [
+    "!.cursor/hooks.json"
+  ]
+}

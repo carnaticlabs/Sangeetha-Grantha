@@ -1,0 +1,11 @@
+{
+  "id": "review-policy",
+  "file": "REVIEW.md",
+  "must_contain": [
+    "## Passes",
+    "Security",
+    "Compliance",
+    "lakshana",
+    "does not approve"
+  ]
+}

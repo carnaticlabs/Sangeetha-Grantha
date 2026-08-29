@@ -1,0 +1,8 @@
+{
+  "id": "flyway-skill-immutable",
+  "file": ".claude/skills/postgres-flyway-db/SKILL.md",
+  "must_contain": [
+    "never Liquibase",
+    "Committed versioned migrations are immutable"
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "hooks": {
+    "preToolUse": [
+      {
+        "command": "python3 .claude/hooks/deny-secrets.py"
+      },
+      {
+        "command": "python3 .claude/hooks/protect-migrations.py"
+      },
+      {
+        "command": "python3 .claude/hooks/protect-tests.py"
+      }
+    ],
+    "beforeReadFile": [
+      {
+        "command": "python3 .claude/hooks/deny-secrets.py"
+      }
+    ],
+    "beforeTabFileRead": [
+      {
+        "command": "python3 .claude/hooks/deny-secrets.py"
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": "python3 .claude/hooks/deny-secrets.py"
+      }
+    ]
+  }
+}
