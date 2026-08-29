@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.2.0 |
-| **Last Updated** | 2026-07-12 |
+| **Version** | 1.3.0 |
+| **Last Updated** | 2026-08-29 |
 | **Author** | Sangeetha Grantha Team |
 
 # Tech Stack
@@ -24,7 +24,7 @@ For current toolchain and library versions, see **[Current Versions](../00-meta/
 ### Admin Web (React/TypeScript)
 - **Framework**: React 19
 - **Language**: TypeScript 6.0
-- **Build Tool**: Vite 8.1 (Rolldown bundler)
+- **Build Tool**: Vite 8.2 (Rolldown bundler)
 - **Styling**: Tailwind CSS 4.3
 - **State Management**: TanStack Query (React Query)
 - **Testing**: Vitest (55 component tests), Playwright (E2E nightly)
@@ -46,7 +46,7 @@ For current toolchain and library versions, see **[Current Versions](../00-meta/
 
 ### Tooling & Infrastructure
 - **Version Manager**: `mise` (Java, Bun)
-- **Migration Tool**: Flyway Community 12.9.0 for database migrations ([ADR-013](./decisions/ADR-013-db-migration-with-flyway.md); replaces the Python `db-migrate` tool, archived)
+- **Migration Tool**: Flyway Community 12.11.0 for database migrations ([ADR-013](./decisions/ADR-013-db-migration-with-flyway.md); replaces the Python `db-migrate` tool, archived)
 - **Dev Orchestration**: Makefile + Docker Compose (DB, backend, frontend, extraction)
 - **Containerization**: Docker Compose for full dev stack
 - **Package Manager**: `bun` for frontend, `gradle` for backend/mobile

@@ -9,11 +9,11 @@ plugins {
 kotlin {
     androidLibrary {
         namespace = "com.sangita.grantha.shared.presentation"
-        compileSdk = 36
+        compileSdk = 37
         minSdk = 24
     }
 
-    // iosX64 (Intel simulator) dropped: Compose Multiplatform 1.11.x no longer
+    // iosX64 (Intel simulator) dropped: Compose Multiplatform 1.11+ no longer
     // publishes x64 iOS artifacts. The pure-Kotlin :domain module still targets it.
     iosArm64()
     iosSimulatorArm64()

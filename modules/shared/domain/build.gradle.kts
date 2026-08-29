@@ -7,7 +7,7 @@ plugins {
 kotlin {
     androidLibrary {
         namespace = "com.sangita.grantha.shared.domain"
-        compileSdk = 36
+        compileSdk = 37
         minSdk = 24
     }
     jvm()

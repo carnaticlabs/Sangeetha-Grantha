@@ -31,7 +31,7 @@ CANONICAL_SCHEMA = REPO_ROOT / "shared" / "domain" / "model" / "import" / "canon
 
 # Match the versions pinned in compose.yaml / gradle/libs.versions.toml
 POSTGRES_IMAGE = "postgres:18.3-alpine"
-FLYWAY_IMAGE = "flyway/flyway:12.9.0-alpine"
+FLYWAY_IMAGE = "flyway/flyway:12.11.0-alpine"
 
 
 def _docker_available() -> bool:
@@ -41,8 +41,24 @@ def _docker_available() -> bool:
     return result.returncode == 0
 
 
+def _ensure_image(image: str) -> None:
+    """Pull *image* if it is not cached so `docker run` does not hide a Hub pull
+    inside the migrate timeout (cold Docker Desktop / first TRACK-135 pin)."""
+    inspect = subprocess.run(
+        ["docker", "image", "inspect", image],
+        capture_output=True,
+        timeout=30,
+    )
+    if inspect.returncode == 0:
+        return
+    pull = subprocess.run(["docker", "pull", image], capture_output=True, text=True, timeout=600)
+    if pull.returncode != 0:
+        raise RuntimeError(f"Failed to pull {image}:\n{pull.stdout}\n{pull.stderr}")
+
+
 def _flyway_migrate(host_port: int, dbname: str, user: str, password: str) -> None:
     """Apply all V__ + R__ migrations via the Flyway CLI container (ADR-013)."""
+    _ensure_image(FLYWAY_IMAGE)
     cmd = [
         "docker",
         "run",
