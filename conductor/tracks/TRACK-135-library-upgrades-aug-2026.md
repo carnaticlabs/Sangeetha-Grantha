@@ -1,13 +1,13 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | In Progress |
-| **Version** | 1.0.0 |
+| **Status** | Done |
+| **Version** | 1.1.0 |
 | **Last Updated** | 2026-08-29 |
 | **Author** | Sangeetha Grantha Team |
 
 # Track: Library Upgrades — August 2026
 **ID:** TRACK-135
-**Status:** In Progress
+**Status:** Done
 **Owner:** Sangeetha Grantha Team
 **Created:** 2026-08-29
 **Updated:** 2026-08-29
@@ -136,3 +136,4 @@ None for this slice.
 - **2026-08-29**: Track created. Intent/Spec/Plan accepted via implementation request. Starting Batches 1–2c.
 - **2026-08-29**: Worker integration: pulled `flyway/flyway:12.11.0-alpine`; `uv run pytest tests/integration` **18 passed**. conftest now `_ensure_image` before migrate so a cold Hub pull cannot eat the 600s `docker run` timeout.
 - **2026-08-29**: Full pre-commit validation green — Gradle build (backend + shared, Gradle 9.7.1/AGP 9.3.2), backend integration (dal + api), frontend 56/56 (Vitest 4.1.11), worker unit 294 + integration 18, check-docs, registry sync. Exposed 1.5 and CMP 1.12 landed with no API/accessor churn. Batches 1–2c ready to commit.
+- **2026-08-29**: PR #12 merged to `main` (`01305cc`); all 8 CI checks green (backend unit + integration, Flyway validate, frontend, worker). Status → Done.
