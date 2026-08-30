@@ -14,9 +14,9 @@ import { useSourceDetail } from '../hooks/useSourcingQueries';
 import { TierBadge } from '../components/sourcing/shared';
 import { AuthorityWarning } from '../components/import-review/AuthorityWarning';
 import ConfirmationModal from '../components/ConfirmationModal';
-import { StatCard, TabButton, FormField, SectionIssuesTab } from '../components/curator-review';
+import { StatCard, TabButton, FormField, SectionIssuesTab, UnresolvedRagasTab } from '../components/curator-review';
 
-type Tab = 'pending' | 'sections';
+type Tab = 'pending' | 'sections' | 'ragas';
 
 type ModalState =
     | { type: 'none' }
@@ -87,6 +87,8 @@ const CuratorReviewPage: React.FC = () => {
     // Section issues state
     const [sectionPage, setSectionPage] = useState(0);
     const sectionPageSize = 50;
+    const [ragaPage, setRagaPage] = useState(0);
+    const ragaPageSize = 50;
 
     const selectedItem = imports.find(i => i.id === selectedId);
     const { data: sourceDetail } = useSourceDetail(selectedItem?.importSourceId ?? '');
@@ -355,12 +357,13 @@ const CuratorReviewPage: React.FC = () => {
                 </div>
 
                 {stats && (
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
                         <StatCard label="Total Krithis" value={stats.totalKrithis} />
                         <StatCard label="Pending" value={stats.totalPending} color="text-yellow-600" />
                         <StatCard label="Approved" value={stats.totalApproved} color="text-green-600" />
                         <StatCard label="Rejected" value={stats.totalRejected} color="text-red-600" />
                         <StatCard label="Section Issues" value={stats.sectionIssuesCount} color="text-orange-600" />
+                        <StatCard label="Unresolved ragas" value={stats.unresolvedRagaCount ?? 0} color="text-indigo-600" />
                     </div>
                 )}
 
@@ -369,11 +372,11 @@ const CuratorReviewPage: React.FC = () => {
                     <nav className="flex gap-6">
                         <TabButton active={activeTab === 'pending'} onClick={() => setActiveTab('pending')} label="Pending Matches" count={stats?.totalPending} />
                         <TabButton active={activeTab === 'sections'} onClick={() => setActiveTab('sections')} label="Section Issues" count={stats?.sectionIssuesCount} />
+                        <TabButton active={activeTab === 'ragas'} onClick={() => setActiveTab('ragas')} label="Unresolved ragas" count={stats?.unresolvedRagaCount} />
                     </nav>
                 </div>
             </div>
 
-            {/* Tab Content */}
             {activeTab === 'pending' ? (
                 <div className="flex-1 flex gap-0 overflow-hidden border border-border-light rounded-xl bg-white shadow-sm">
                     {/* Left: List Panel */}
@@ -558,6 +561,14 @@ const CuratorReviewPage: React.FC = () => {
                         )}
                     </div>
                 </div>
+            ) : activeTab === 'ragas' ? (
+                <UnresolvedRagasTab
+                    page={ragaPage}
+                    pageSize={ragaPageSize}
+                    onPageChange={setRagaPage}
+                    onError={showError}
+                    onSuccess={success}
+                />
             ) : (
                 /* Section Issues Tab */
                 <SectionIssuesTab data={sectionIssues} loading={sectionsLoading} page={sectionPage} onPageChange={setSectionPage} pageSize={sectionPageSize} />

@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.17.0 |
-| **Last Updated** | 2026-08-29 |
+| **Version** | 1.18.0 |
+| **Last Updated** | 2026-08-30 |
 | **Author** | Sangeetha Grantha Team |
 
 # Conductor Tracks Registry
@@ -139,7 +139,7 @@
 | [TRACK-133](./tracks/TRACK-133-section-mismatch-remediation.md) | Section-Count Mismatch Remediation (29 krithis) | Not Started |
 | [TRACK-134](./tracks/TRACK-134-ai-native-sdlc-artifacts.md) | AI-native SDLC artifacts (intent/spec/plan, REVIEW.md, evals) | Done |
 | [TRACK-135](./tracks/TRACK-135-library-upgrades-aug-2026.md) | Library Upgrades — August 2026 (Batch 1–2c) | Done |
-| [TRACK-136](./tracks/TRACK-136-raga-identity-alias-resolution.md) | Raga Identity — Alias Table, Match-Key & Controlled Resolution (ADR-017 Phases 1–3) | In Progress — Phase 1 |
+| [TRACK-136](./tracks/TRACK-136-raga-identity-alias-resolution.md) | Raga Identity — Alias Table, Match-Key & Controlled Resolution (ADR-017 Phases 1–3) | In Progress — Phase 2–3 |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)

@@ -39,6 +39,7 @@ object TestDatabase {
         "deities",
         "import_sources",
         "raga_aliases",
+        "raga_resolution_queue",
     )
 
     /** In-DB snapshot of the seed PKs (table, pk), captured once right after migration. */

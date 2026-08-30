@@ -6,6 +6,8 @@ import com.sangita.grantha.backend.dal.enums.MusicalForm
 import com.sangita.grantha.backend.dal.enums.ScriptCode
 import com.sangita.grantha.backend.dal.enums.WorkflowState
 import com.sangita.grantha.backend.dal.repositories.KrithiCreateParams
+import com.sangita.grantha.backend.dal.repositories.RagaResolution
+import com.sangita.grantha.backend.dal.repositories.RagaResolveContext
 import com.sangita.grantha.backend.dal.repositories.RevisionWrite
 import com.sangita.grantha.backend.dal.repositories.SectionRevisionWrite
 import com.sangita.grantha.backend.dal.support.toJavaUuid
@@ -59,18 +61,33 @@ class KrithiCreationFromExtractionService(
         )
         logger.debug("Resolved composer '${extraction.composer}' -> ${composer.id} (${composer.name})")
 
-        // ── 2. Resolve ragas ────────────────────────────────────────────────
-        val ragaJavaIds = extraction.ragas.mapNotNull { ragaDto ->
+        // ── 2. Resolve ragas (TRACK-136: never mint; hold unresolved slots per D4)
+        val ragaSlots = mutableListOf<Pair<Int, UUID>>()
+        val pendingRagas = mutableListOf<Pair<Int, Pair<Uuid, Boolean>>>()
+        extraction.ragas.forEachIndexed { index, ragaDto ->
             val ragaNormalized = normalizer.normalizeRaga(ragaDto.name)
                 ?.takeUnless { isPlaceholderRagaNormalized(it) }
-                ?: return@mapNotNull null
-            val raga = dal.ragas.findOrCreate(
+                ?: return@forEachIndexed
+            when (val resolution = dal.ragas.resolveRaga(
                 name = ragaDto.name,
-                nameNormalized = ragaNormalized,
-            )
-            logger.debug("Resolved raga '${ragaDto.name}' -> ${raga.id} (${raga.name})")
-            raga.id.toJavaUuid()
-        }.distinct()
+                context = RagaResolveContext(
+                    title = extraction.title,
+                    orderIndex = index,
+                    isPrimary = index == 0,
+                    sourceUrl = extraction.sourceUrl,
+                    extractionRun = extractionTaskId.toString(),
+                ),
+            )) {
+                is RagaResolution.Resolved -> {
+                    logger.debug("Resolved raga '${ragaDto.name}' -> ${resolution.raga.id} (${resolution.raga.name})")
+                    ragaSlots += index to resolution.raga.id.toJavaUuid()
+                }
+                is RagaResolution.Unresolved -> {
+                    logger.info("Unresolved raga '${ragaDto.name}' kind=${resolution.kind} queue=${resolution.queueId}")
+                    pendingRagas += index to (resolution.queueId to (index == 0))
+                }
+            }
+        }
 
         // ── 3. Resolve tala ─────────────────────────────────────────────────
         val talaNormalized = normalizer.normalizeTala(extraction.tala)
@@ -98,7 +115,7 @@ class KrithiCreationFromExtractionService(
             CanonicalMusicalForm.SWARAJATHI -> MusicalForm.SWARAJATHI
         }
 
-        val isRagamalika = ragaJavaIds.size > 1
+        val isRagamalika = extraction.ragas.size > 1
 
         // Infer primary language from the first lyric variant, default to Sanskrit
         val primaryLanguage = extraction.lyricVariants.firstOrNull()?.language?.let { lang ->
@@ -134,16 +151,31 @@ class KrithiCreationFromExtractionService(
                 composerId = composer.id.toJavaUuid(),
                 musicalForm = musicalForm,
                 primaryLanguage = primaryLanguage,
-                primaryRagaId = ragaJavaIds.firstOrNull(),
+                primaryRagaId = ragaSlots.find { it.first == 0 }?.second,
                 talaId = tala.id.toJavaUuid(),
                 deityId = deityJavaId,
                 isRagamalika = isRagamalika,
-                ragaIds = ragaJavaIds,
+                ragaSlots = ragaSlots,
                 workflowState = WorkflowState.DRAFT,
                 notes = "Auto-created from extraction [${extraction.sourceName}]",
             ),
         )
         logger.info("Created Krithi '${extraction.title}' -> ${krithi.id}")
+
+        for ((index, pending) in pendingRagas) {
+            val (queueId, isPrimary) = pending
+            dal.ragas.appendQueueContext(
+                queueId,
+                RagaResolveContext(
+                    krithiId = krithi.id.toString(),
+                    title = extraction.title,
+                    orderIndex = index,
+                    isPrimary = isPrimary,
+                    sourceUrl = extraction.sourceUrl,
+                    extractionRun = extractionTaskId.toString(),
+                ),
+            )
+        }
 
         // ── 8. Create canonical sections ────────────────────────────────────
         if (extraction.sections.isNotEmpty()) {
@@ -204,7 +236,8 @@ class KrithiCreationFromExtractionService(
             put("sourceName", extraction.sourceName)
             put("extractionTaskId", extractionTaskId.toString())
             put("composerResolved", composer.name)
-            put("ragaCount", ragaJavaIds.size)
+            put("ragaCount", ragaSlots.size)
+            put("unresolvedRagaCount", pendingRagas.size)
             put("sectionCount", extraction.sections.size)
             put("lyricVariantCount", extraction.lyricVariants.size)
         }

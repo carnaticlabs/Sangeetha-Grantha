@@ -17,6 +17,8 @@ import com.sangita.grantha.shared.domain.model.ImportedKrithiDto
 import com.sangita.grantha.shared.domain.model.import.CanonicalExtractionDto
 import com.sangita.grantha.shared.domain.model.import.CanonicalExtractionMethod
 import com.sangita.grantha.backend.dal.repositories.KrithiCreateParams
+import com.sangita.grantha.backend.dal.repositories.RagaResolution
+import com.sangita.grantha.backend.dal.repositories.RagaResolveContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
@@ -315,12 +317,22 @@ class ImportServiceImpl(
                     throw IllegalArgumentException("Composer is required to create krithi from import")
                 }
                 
-                // Find or create raga (if provided)
-                val ragaId = effectiveRaga?.let { ragaName ->
-                    dal.ragas.findOrCreate(
-                        name = ragaName,
-                        nameNormalized = ragaName.let { normalizer.normalizeRaga(it) }
-                    ).id.toJavaUuid()
+                // Resolve raga (TRACK-136: never mint). Unresolved names go on the queue (D4).
+                var ragaId: UUID? = null
+                var unresolvedRagaQueueId: kotlin.uuid.Uuid? = null
+                if (effectiveRaga != null) {
+                    when (val resolution = dal.ragas.resolveRaga(
+                        name = effectiveRaga,
+                        context = RagaResolveContext(
+                            title = effectiveTitle,
+                            isPrimary = true,
+                            sourceUrl = sourceKey,
+                            orderIndex = 0,
+                        ),
+                    )) {
+                        is RagaResolution.Resolved -> ragaId = resolution.raga.id.toJavaUuid()
+                        is RagaResolution.Unresolved -> unresolvedRagaQueueId = resolution.queueId
+                    }
                 }
                 
                 // Find or create tala (if provided)
@@ -509,6 +521,19 @@ class ImportServiceImpl(
                     )
                     
                     createdKrithiId = createdKrithi.id.toJavaUuid()
+
+                    unresolvedRagaQueueId?.let { queueId ->
+                        dal.ragas.appendQueueContext(
+                            queueId,
+                            RagaResolveContext(
+                                krithiId = createdKrithi.id.toString(),
+                                title = effectiveTitle,
+                                orderIndex = 0,
+                                isPrimary = true,
+                                sourceUrl = sourceKey,
+                            ),
+                        )
+                    }
                     
                     dal.auditLogs.append(
                         action = "CREATE_KRITHI_FROM_IMPORT",

@@ -65,6 +65,9 @@ object RagasTable : UUIDTable("ragas") {
     val arohanam = text("arohanam").nullable()
     val avarohanam = text("avarohanam").nullable()
     val notes = text("notes").nullable()
+    /** TRACK-136 provenance (V55). Column name `source` clashes with Exposed ColumnSet.source. */
+    val sourceInfo = text("source")
+    val confidence = text("confidence")
     val createdAt = timestampWithTimeZone("created_at")
     val updatedAt = timestampWithTimeZone("updated_at")
 }

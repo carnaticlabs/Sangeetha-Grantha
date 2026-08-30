@@ -8,6 +8,7 @@ import com.sangita.grantha.backend.dal.tables.KrithiLyricSectionsTable
 import com.sangita.grantha.backend.dal.tables.KrithiLyricVariantsTable
 import com.sangita.grantha.backend.dal.tables.KrithiSectionsTable
 import com.sangita.grantha.backend.dal.tables.KrithisTable
+import com.sangita.grantha.backend.dal.tables.RagaResolutionQueueTable
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.v1.core.*
 import org.jetbrains.exposed.v1.jdbc.*
@@ -19,6 +20,7 @@ data class CuratorStats(
     val totalRejected: Long,
     val totalKrithis: Long,
     val sectionIssuesCount: Long,
+    val unresolvedRagaCount: Long = 0,
 )
 
 @Serializable
@@ -83,12 +85,18 @@ class CuratorService(private val dal: SangitaDal) {
             if (actualCount != expectedCount) sectionIssuesCount++
         }
 
+        val unresolvedRagaCount = RagaResolutionQueueTable
+            .selectAll()
+            .where { RagaResolutionQueueTable.status eq "pending" }
+            .count()
+
         CuratorStats(
             totalPending = pending,
             totalApproved = approved,
             totalRejected = rejected,
             totalKrithis = totalKrithis,
             sectionIssuesCount = sectionIssuesCount,
+            unresolvedRagaCount = unresolvedRagaCount,
         )
     }
 

@@ -221,21 +221,28 @@ def main() -> None:
                 sections_en_raw = eng_dict.get(title_en, {})
                 sections_sa_raw = skt_dict.get(title_sa, {})
 
-                # Ensure Raga
-                raga_norm = raga_en.lower()
-                cur.execute("SELECT id FROM ragas WHERE name_normalized = %s", (raga_norm,))
-                raga_row = cur.fetchone()
-                if raga_row:
-                    raga_id = raga_row["id"]
-                elif raga_en:
-                    raga_id = str(uuid.uuid4())
+                # TRACK-136: never mint ragas from this one-off script. Resolve via identity
+                # key; skip the row when unknown or ambiguous (curator queue is the path).
+                raga_id = None
+                if raga_en:
                     cur.execute(
-                        "INSERT INTO ragas (id, name, name_normalized, created_at, updated_at)"
-                        " VALUES (%s, %s, %s, NOW(), NOW())",
-                        (raga_id, raga_en, raga_norm),
+                        """
+                        SELECT DISTINCT k.raga_id
+                          FROM raga_identity_keys k
+                         WHERE k.match_key = raga_match_key(%s)
+                        """,
+                        (raga_en,),
                     )
-                else:
-                    raga_id = None
+                    raga_rows = cur.fetchall()
+                    if len(raga_rows) == 1:
+                        raga_id = raga_rows[0]["raga_id"]
+                    else:
+                        kind = "ambiguous" if len(raga_rows) > 1 else "unknown"
+                        print(
+                            f"SKIP: raga {raga_en!r} is {kind} "
+                            "(TRACK-136: use curator Unresolved ragas queue)"
+                        )
+                        continue
 
                 # Ensure Tala
                 tala_norm = tala_en

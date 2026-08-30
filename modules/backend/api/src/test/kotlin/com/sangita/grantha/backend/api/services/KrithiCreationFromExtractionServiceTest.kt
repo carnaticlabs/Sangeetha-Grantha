@@ -2,6 +2,7 @@ package com.sangita.grantha.backend.api.services
 
 import com.sangita.grantha.backend.testsupport.TestFixtures
 import com.sangita.grantha.backend.dal.SangitaDal
+import com.sangita.grantha.backend.dal.repositories.RagaResolution
 import com.sangita.grantha.shared.domain.model.*
 import com.sangita.grantha.shared.domain.model.import.*
 import io.mockk.*
@@ -70,7 +71,7 @@ class KrithiCreationFromExtractionServiceTest {
             every { normalizer.normalizeTitle(any()) } returns "nagumomu ganaleni"
 
             coEvery { dal.composers.findOrCreate(any(), any()) } returns composer(composerId)
-            coEvery { dal.ragas.findOrCreate(any(), any()) } returns raga()
+            coEvery { dal.ragas.resolveRaga(any(), any(), any()) } returns RagaResolution.Resolved(raga())
             coEvery { dal.talas.findOrCreate(any(), any()) } returns tala()
             coEvery { dal.krithis.create(any()) } returns TestFixtures.buildKrithiDto(id = krithiId, composerId = composerId)
             coEvery { dal.krithis.getSections(any()) } returns emptyList()
@@ -104,7 +105,7 @@ class KrithiCreationFromExtractionServiceTest {
 
             val result = service.createFromExtraction(TestFixtures.buildCanonicalExtraction(ragaName = "Unknown"), Uuid.random())
             assertNotNull(result)
-            coVerify(exactly = 0) { dal.ragas.findOrCreate(any(), any()) }
+            coVerify(exactly = 0) { dal.ragas.resolveRaga(any(), any(), any()) }
         }
 
         @Test
@@ -121,8 +122,8 @@ class KrithiCreationFromExtractionServiceTest {
             every { normalizer.normalizeTitle(any()) } returns "test ragamalika"
 
             coEvery { dal.composers.findOrCreate(any(), any()) } returns composer(composerId)
-            coEvery { dal.ragas.findOrCreate("Kalyani", "kalyani") } returns raga(ragaId1, "Kalyani", "kalyani")
-            coEvery { dal.ragas.findOrCreate("Bhairavi", "bhairavi") } returns raga(ragaId2, "Bhairavi", "bhairavi")
+            coEvery { dal.ragas.resolveRaga("Kalyani", any(), any()) } returns RagaResolution.Resolved(raga(ragaId1, "Kalyani", "kalyani"))
+            coEvery { dal.ragas.resolveRaga("Bhairavi", any(), any()) } returns RagaResolution.Resolved(raga(ragaId2, "Bhairavi", "bhairavi"))
             coEvery { dal.talas.findOrCreate(any(), any()) } returns tala()
             coEvery { dal.krithis.create(any()) } returns TestFixtures.buildKrithiDto(id = krithiId, composerId = composerId, isRagamalika = true)
             coEvery { dal.krithis.getSections(any()) } returns emptyList()
@@ -132,8 +133,8 @@ class KrithiCreationFromExtractionServiceTest {
             )
             val result = service.createFromExtraction(extraction, Uuid.random())
             assertNotNull(result)
-            coVerify { dal.ragas.findOrCreate("Kalyani", "kalyani") }
-            coVerify { dal.ragas.findOrCreate("Bhairavi", "bhairavi") }
+            coVerify { dal.ragas.resolveRaga("Kalyani", any(), any()) }
+            coVerify { dal.ragas.resolveRaga("Bhairavi", any(), any()) }
         }
     }
 
@@ -157,7 +158,7 @@ class KrithiCreationFromExtractionServiceTest {
             every { normalizer.normalizeTitle(any()) } returns "test"
 
             coEvery { dal.composers.findOrCreate(any(), any()) } returns composer(composerId)
-            coEvery { dal.ragas.findOrCreate(any(), any()) } returns raga()
+            coEvery { dal.ragas.resolveRaga(any(), any(), any()) } returns RagaResolution.Resolved(raga())
             coEvery { dal.talas.findOrCreate(any(), any()) } returns tala()
             coEvery { dal.deities.findOrCreate(any(), any()) } returns deity(deityId)
             coEvery { dal.krithis.create(any()) } returns TestFixtures.buildKrithiDto(id = krithiId, composerId = composerId, deityId = deityId)
@@ -179,7 +180,7 @@ class KrithiCreationFromExtractionServiceTest {
             every { normalizer.normalizeTitle(any()) } returns "test"
 
             coEvery { dal.composers.findOrCreate(any(), any()) } returns composer(composerId)
-            coEvery { dal.ragas.findOrCreate(any(), any()) } returns raga()
+            coEvery { dal.ragas.resolveRaga(any(), any(), any()) } returns RagaResolution.Resolved(raga())
             coEvery { dal.talas.findOrCreate(any(), any()) } returns tala()
             coEvery { dal.krithis.create(any()) } returns TestFixtures.buildKrithiDto(id = krithiId, composerId = composerId)
             coEvery { dal.krithis.getSections(any()) } returns emptyList()
@@ -220,7 +221,7 @@ class KrithiCreationFromExtractionServiceTest {
             every { normalizer.normalizeTitle("Alternate Title") } returns "alternate title"
 
             coEvery { dal.composers.findOrCreate(any(), any()) } returns composer(composerId)
-            coEvery { dal.ragas.findOrCreate(any(), any()) } returns raga()
+            coEvery { dal.ragas.resolveRaga(any(), any(), any()) } returns RagaResolution.Resolved(raga())
             coEvery { dal.talas.findOrCreate(any(), any()) } returns tala()
             coEvery { dal.krithis.create(any()) } returns TestFixtures.buildKrithiDto(id = krithiId, composerId = composerId)
             coEvery { dal.krithis.getSections(any()) } returns emptyList()

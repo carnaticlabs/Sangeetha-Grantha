@@ -1,4 +1,4 @@
-.PHONY: dev dev-down db db-reset seed seed-dev migrate migrate-status bootstrap-admin test test-integration test-frontend check-docs agent-evals steel-thread clean
+.PHONY: dev dev-down db db-reset seed seed-dev migrate migrate-status bootstrap-admin test test-integration test-frontend check-docs agent-evals steel-thread clean raga-lakshana-checks mint-guard
 
 COMPOSE := docker compose
 # Flyway runs as the compose `migrate` service (flyway/flyway image) on the db network.
@@ -65,6 +65,23 @@ check-docs:
 # Deterministic agent-config evals (CLAUDE.md, skills, hooks, REVIEW.md)
 agent-evals:
 	python3 evals/check.py
+
+# TRACK-136 §3.2: janya⊄parent + mela-as-own-janya (requires a migrated DB)
+raga-lakshana-checks:
+	$(PSQL_DB) -d sangita_grantha -f database/checks/raga_lakshana.sql
+
+# TRACK-136: no live SQL mint of ragas outside Flyway migrations
+mint-guard:
+	@if git grep -n -I -E 'INSERT[[:space:]]+INTO[[:space:]]+ragas[[:space:]]*\(' -- \
+		'*.py' '*.kt' '*.ts' '*.sql' \
+		':!database/migrations/**' \
+		':!archive/**'; then \
+		echo "ERROR: INSERT INTO ragas is forbidden outside database/migrations (TRACK-136)" >&2; \
+		exit 1; \
+	fi
+	@echo "mint-guard: clean"
+
+# Run steel thread E2E test
 
 # Run steel thread E2E test
 steel-thread:

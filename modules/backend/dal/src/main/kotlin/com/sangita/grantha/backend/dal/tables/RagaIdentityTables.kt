@@ -1,5 +1,6 @@
 package com.sangita.grantha.backend.dal.tables
 
+import com.sangita.grantha.backend.dal.support.jsonbText
 import org.jetbrains.exposed.v1.core.Table
 import org.jetbrains.exposed.v1.core.dao.id.java.UUIDTable
 import org.jetbrains.exposed.v1.core.java.javaUUID
@@ -30,6 +31,21 @@ object RagaIdentityKeysTable : Table("raga_identity_keys") {
     val ragaId = javaUUID("raga_id")
 
     override val primaryKey = PrimaryKey(matchKey, melaDisambiguator)
+}
+
+/**
+ * TRACK-136 / ADR-017 Phase 2: unknown / ambiguous names held for curator resolution.
+ */
+object RagaResolutionQueueTable : UUIDTable("raga_resolution_queue") {
+    val rawName = text("raw_name")
+    val matchKey = text("match_key")
+    val kind = text("kind")
+    val context = jsonbText("context").nullable()
+    val proposedLakshana = jsonbText("proposed_lakshana").nullable()
+    val status = text("status")
+    val resolvedRagaId = javaUUID("resolved_raga_id").nullable()
+    val createdAt = timestampWithTimeZone("created_at")
+    val resolvedAt = timestampWithTimeZone("resolved_at").nullable()
 }
 
 /**

@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.4.0 |
-| **Last Updated** | 2026-08-29 |
+| **Version** | 1.5.0 |
+| **Last Updated** | 2026-08-30 |
 | **Author** | Sangeetha Grantha Team |
 
 # Sangita Grantha – Schema Overview
@@ -137,11 +137,13 @@ Key fields:
 - `melakarta_number`
 - `parent_raga_id`
 - `arohanam`, `avarohanam`
+- `source`, `confidence` — provenance (mirrors `raga_aliases`)
 
 Related:
 - `raga_aliases` — same-identity surface forms (spellings; same-scale tradition names) with provenance
 - `raga_identity_keys` — union of raga + differing-alias keys; PK is the transactional guardrail
 - `raga_relations` — distinct-scale nomenclature pairs (`nomenclature_equivalent`)
+- `raga_resolution_queue` — unknown / ambiguous names held for curator attach-alias, confirm-new, or disambiguate (pending-only unique on `(match_key, kind)`)
 
 ---
 
