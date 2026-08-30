@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Not Started |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-07-19 |
+| **Status** | Not Started — re-verified 2026-08-30 (figures unchanged) |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-08-30 |
 | **Author** | Sangeetha Grantha Team |
 | **Priority** | P3 — backlog; 2.4% of corpus, no data loss |
 | **Depends on** | [TRACK-093](./TRACK-093-trinity-krithi-bulk-import.md) (corpus imported) |
@@ -21,6 +21,14 @@ Resolve the residual section-count mismatches left by the Trinity import: **29 k
 - All 108 mismatches are **"fewer sections than canon"**. There are **zero** missing-sections rows —
   no variant is empty, so nothing was lost, only under-segmented.
 - 1,225 of 1,226 krithis have canonical sections; exactly one has none.
+
+> **Re-verified 2026-08-30** against the restored corpus (dump `sangita_grantha_20260830_post_v56`,
+> Flyway v57, after TRACK-136/137 raga-identity work): **108 mismatch variant rows across 29 krithis,
+> all "fewer than canon" (0 rows exceed canon), 1 krithi with no canonical sections, 1,226 total.**
+> Every figure is unchanged — the raga-identity/orphan-cleanup migrations do not touch section data,
+> and the restore reproduced the same state. The count is now visible in the live curator dashboard
+> (`/v1/admin/curator/stats` → `sectionIssuesCount: 108`). This track's diagnosis and plan below still
+> stand; nothing needs re-adjudication.
 
 ```sql
 WITH canon AS (SELECT krithi_id, COUNT(*) c FROM krithi_sections GROUP BY 1),
