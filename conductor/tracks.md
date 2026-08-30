@@ -140,7 +140,7 @@
 | [TRACK-134](./tracks/TRACK-134-ai-native-sdlc-artifacts.md) | AI-native SDLC artifacts (intent/spec/plan, REVIEW.md, evals) | Done |
 | [TRACK-135](./tracks/TRACK-135-library-upgrades-aug-2026.md) | Library Upgrades — August 2026 (Batch 1–2c) | Done |
 | [TRACK-136](./tracks/TRACK-136-raga-identity-alias-resolution.md) | Raga Identity — Alias Table, Match-Key & Controlled Resolution (ADR-017 Phases 1–3) | Done |
-| [TRACK-137](./tracks/TRACK-137-orphan-twin-raga-cleanup.md) | Orphan-Twin Raga Cleanup (residual TRACK-132 duplicates) | Implemented — proof green, awaiting commit |
+| [TRACK-137](./tracks/TRACK-137-orphan-twin-raga-cleanup.md) | Orphan-Twin Raga Cleanup (residual TRACK-132 duplicates) | Done |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)
