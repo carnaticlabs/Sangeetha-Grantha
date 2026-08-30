@@ -70,10 +70,11 @@ fun appModule(env: ApiEnvironment, metricsRegistry: PrometheusMeterRegistry) = m
 
     single<IKrithiService> { KrithiServiceImpl(get()) }
     single { KrithiNotationService(get()) }
-    single<IReferenceDataService> { ReferenceDataServiceImpl(get()) }
+    single<IReferenceDataService> { ReferenceDataServiceImpl(get(), get()) }
     single { AuditLogService(get()) }
     single { AdminDashboardService(get()) }
     single { com.sangita.grantha.backend.api.services.CuratorService(get()) }
+    single { com.sangita.grantha.backend.api.services.RagaResolutionService(get(), get()) }
     single { UserManagementService(get()) }
 
     single<IBulkImportWorker> {

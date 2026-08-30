@@ -618,6 +618,7 @@ export interface CuratorStats {
     totalRejected: number;
     totalKrithis: number;
     sectionIssuesCount: number;
+    unresolvedRagaCount?: number;
 }
 
 export interface SectionIssue {
@@ -644,6 +645,56 @@ export const getCuratorSectionIssues = (page = 0, size = 50) => {
     params.append('size', String(size));
     return request<SectionIssuesPage>(`/admin/curator/section-issues?${params}`);
 };
+
+export interface RagaQueueItem {
+    id: string;
+    rawName: string;
+    matchKey: string;
+    kind: 'unknown' | 'ambiguous' | string;
+    context: string | null;
+    proposedLakshana: string | null;
+    status: string;
+    resolvedRagaId: string | null;
+    createdAt: string;
+    resolvedAt: string | null;
+}
+
+export interface RagaQueuePage {
+    items: RagaQueueItem[];
+    total: number;
+    page: number;
+    size: number;
+}
+
+export const getUnresolvedRagas = (page = 0, size = 50) => {
+    const params = new URLSearchParams();
+    params.append('page', String(page));
+    params.append('size', String(size));
+    return request<RagaQueuePage>(`/admin/curator/raga-queue?${params}`);
+};
+
+export const attachRagaAlias = (queueId: string, ragaId: string, aliasType = 'transliteration') =>
+    request<Raga>(`/admin/curator/raga-queue/${queueId}/attach`, {
+        method: 'POST',
+        body: JSON.stringify({ ragaId, aliasType, source: 'curator' }),
+    });
+
+export const confirmNewRaga = (
+    queueId: string,
+    body: { parentRagaId: string; arohanam: string; avarohanam: string; melakartaNumber?: number; name?: string },
+) => request<Raga>(`/admin/curator/raga-queue/${queueId}/confirm-new`, {
+    method: 'POST',
+    body: JSON.stringify(body),
+});
+
+export const disambiguateRaga = (queueId: string, ragaId: string) =>
+    request<Raga>(`/admin/curator/raga-queue/${queueId}/disambiguate`, {
+        method: 'POST',
+        body: JSON.stringify({ ragaId }),
+    });
+
+export const scanRagaScaleCollisions = () =>
+    request<{ inserted: number }>('/admin/curator/raga-queue/scan-scale-collisions', { method: 'POST' });
 
 // --- Notation API ---
 

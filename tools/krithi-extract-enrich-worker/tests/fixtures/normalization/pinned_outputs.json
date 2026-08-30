@@ -396,7 +396,7 @@
       "identity_raga": "sainttyagaraja",
       "matching_composer": "tyagaraja",
       "matching_deity": "tyagaraja",
-      "matching_raga": "tyagaraja",
+      "matching_raga": "sainttyagaraja",
       "matching_tala": "tyagaraja",
       "matching_temple": "tyagaraja",
       "matching_title": "tyagrja"
@@ -446,7 +446,7 @@
       "identity_raga": "srimutuswamydiksitar",
       "matching_composer": "muttusvami diksitar",
       "matching_deity": "mutuswamy diksitar",
-      "matching_raga": "mutusvamydiksitar",
+      "matching_raga": "srimutusvamydiksitar",
       "matching_tala": "mutuswamy diksitar",
       "matching_temple": "mutuswamy diksitar",
       "matching_title": "mutuswamy dkstr"
@@ -456,7 +456,7 @@
       "identity_raga": "srisubrahmanyayanamaste",
       "matching_composer": "subrahmanyaya namaste",
       "matching_deity": "subrahmanyaya namaste",
-      "matching_raga": "subrahmanyayanamaste",
+      "matching_raga": "srisubrahmanyayanamaste",
       "matching_tala": "subrahmanyaya namaste",
       "matching_temple": "subrahmanyaya namaste",
       "matching_title": "subrahmnyaya nmste"
@@ -466,7 +466,7 @@
       "identity_raga": "srivenkateswara",
       "matching_composer": "venkateswara",
       "matching_deity": "venkateswara",
-      "matching_raga": "venkatesvara",
+      "matching_raga": "srivenkatesvara",
       "matching_tala": "venkateswara",
       "matching_temple": "venkateswara",
       "matching_title": "vnktswara"

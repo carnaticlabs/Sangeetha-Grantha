@@ -95,6 +95,23 @@ jobs:
             -url="jdbc:postgresql://localhost:5432/sangita_grantha_ci" \
             -user=postgres -password=postgres -locations=filesystem:/flyway/sql \
             -baselineOnMigrate=false migrate validate
+      - name: Standing lakshana checks (TRACK-136 §3.2)
+        run: |
+          docker run --rm --network host \
+            -e PGPASSWORD=postgres \
+            -v "${{ github.workspace }}/database/checks:/checks:ro" \
+            postgres:18.3-alpine \
+            psql -h localhost -U postgres -d sangita_grantha_ci -v ON_ERROR_STOP=1 \
+              -f /checks/raga_lakshana.sql
+
+  mint-guard:
+    name: No INSERT INTO ragas outside migrations (TRACK-136)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - name: Forbid live raga mint SQL
+        run: make mint-guard
 
   frontend:
     name: Frontend typecheck + unit tests + build

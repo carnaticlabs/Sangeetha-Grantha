@@ -50,6 +50,8 @@ data class KrithiCreateParams(
     val templeId: UUID? = null,
     val isRagamalika: Boolean,
     val ragaIds: List<UUID> = emptyList(),
+    /** Sparse ragamalika slots (D4). When non-empty, used instead of [ragaIds].withIndex(). */
+    val ragaSlots: List<Pair<Int, UUID>> = emptyList(),
     val workflowState: WorkflowState,
     val sahityaSummary: String? = null,
     val notes: String? = null,
@@ -131,8 +133,13 @@ class KrithiRepository {
             ?.toKrithiDto()
             ?: error("Failed to insert krithi")
 
-        if (params.ragaIds.isNotEmpty()) {
-            KrithiRagasTable.batchInsert(params.ragaIds.withIndex()) { (index, ragaId) ->
+        val junction = if (params.ragaSlots.isNotEmpty()) {
+            params.ragaSlots
+        } else {
+            params.ragaIds.withIndex().map { (index, ragaId) -> index to ragaId }
+        }
+        if (junction.isNotEmpty()) {
+            KrithiRagasTable.batchInsert(junction) { (index, ragaId) ->
                 this[KrithiRagasTable.krithiId] = krithiId
                 this[KrithiRagasTable.ragaId] = ragaId
                 this[KrithiRagasTable.orderIndex] = index

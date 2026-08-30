@@ -5,7 +5,7 @@ info:
     Sangita Grantha is an authoritative, multilingual digital compendium
     of Carnatic classical music compositions (Krithis).
     This API serves both public read-only clients and authenticated admin workflows.
-  version: 1.1.0
+  version: 1.2.0
   contact:
     name: Sangita Grantha Maintainers
 servers:
@@ -409,6 +409,78 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/AuditLog"
+
+  /v1/admin/curator/raga-queue:
+    get:
+      tags: [Admin]
+      summary: List pending unresolved ragas (TRACK-136)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, default: 0 }
+        - name: size
+          in: query
+          schema: { type: integer, default: 50 }
+      responses:
+        "200":
+          description: Pending unknown and ambiguous raga names
+
+  /v1/admin/curator/raga-queue/{id}/attach:
+    post:
+      tags: [Admin]
+      summary: Attach an unknown spelling as an alias of an existing raga
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200": { description: Alias attached; held krithi_ragas written }
+        "400": { description: Not pending, not unknown, or identity collision }
+        "404": { description: Queue item or raga not found }
+
+  /v1/admin/curator/raga-queue/{id}/confirm-new:
+    post:
+      tags: [Admin]
+      summary: Create a new raga from proposed lakshana (parent, arohana, avarohana required)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200": { description: Raga created and queue item resolved }
+        "400": { description: Missing lakshana or identity collision }
+
+  /v1/admin/curator/raga-queue/{id}/disambiguate:
+    post:
+      tags: [Admin]
+      summary: Pick which homonym an ambiguous name meant
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200": { description: Queue item disambiguated; held links written }
+
+  /v1/admin/curator/raga-queue/scan-scale-collisions:
+    post:
+      tags: [Admin]
+      summary: Enqueue same-scale groups as merge candidates (never auto-merged)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Count of newly inserted queue rows
 
 components:
 

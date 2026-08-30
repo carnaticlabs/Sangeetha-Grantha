@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Ready to start — Spec & Plan Accepted; TRACK-132 Phase 0 gate cleared (PR #14 merged 2026-08-29) |
-| **Version** | 1.3.0 |
-| **Last Updated** | 2026-08-29 |
+| **Status** | Done — Phases 1–3 implemented, validated & committed (2026-08-30) |
+| **Version** | 1.4.1 |
+| **Last Updated** | 2026-08-30 |
 | **Author** | Sangeetha Grantha Team |
 | **Priority** | P1 — structural fix; removes the root cause behind TRACK-132 |
 | **Decision** | [ADR-017](../../application_documentation/02-architecture/decisions/ADR-017-raga-reference-entity-identity-resolution.md) — raga reference entity identity & resolution; extends [ADR-016](../../application_documentation/02-architecture/decisions/ADR-016-raga-naming-authority.md) |
@@ -452,20 +452,20 @@ ADR-014 discipline). Expert clarifications enter as first-class provenance.
 ---
 
 ## Implementation Plan
-- [ ] P1.1 `raga_match_key()` function + inline assertions (VNN)
-- [ ] P1.2 `ragas.match_key` generated column (VNN, no unique yet)
+- [x] P1.1 `raga_match_key()` function + inline assertions (VNN)
+- [x] P1.2 `ragas.match_key` generated column (VNN, no unique yet)
 - [x] P1.3 (gate) TRACK-132 Phase 0 **Batch A + B** merged — cleared 2026-08-29 (PR #14, `9dc29f3`)
-- [ ] P1.4 `raga_aliases` + `raga_relations` + `raga_identity_keys`/triggers; drop `name_normalized` UNIQUE (VNN)
-- [ ] P1.5 `R__seed_04` alias + relation backfill; `ON CONFLICT` → identity key
-- [ ] P1.6 Exposed tables + `Ragas.match_key` **and `Ragas.mela_disambiguator`**; integration tests
-- [ ] P2.7 `resolve_raga()` — delete `findOrCreate` create branch; key via DB in Kotlin txn
-- [ ] P2.8 `raga_resolution_queue` with **partial unique `(match_key, kind) WHERE status='pending'`** (VNN)
-- [ ] P2.9 Close all mint paths (EntityResolution, ReferenceData, retire python INSERT + CI guard)
-- [ ] P2.10 Curator "Unresolved ragas" queue UI + attach/confirm/disambiguate (audited, role-gated); cache read-through + invalidation
-- [ ] P2.11 `R__seed_04` upsert-on-identity-key
-- [ ] P3.12 `ragas` provenance columns (VNN) + backfill
-- [ ] P3.13 janya⊄parent + mela-as-own-janya checks in CI; scale-collision alarm
-- [ ] Verification suite + re-import dry-run proving acceptance criteria
+- [x] P1.4 `raga_aliases` + `raga_relations` + `raga_identity_keys`/triggers; drop `name_normalized` UNIQUE (V53) — incl. the pre-UNIQUE Sri/Shree/"SrI rAgaM" residual merge (2026-08-30); preflight ASSERT verified clean on both fresh and incremental paths
+- [x] P1.5 `R__seed_04` alias + relation backfill; `ON CONFLICT` → identity key
+- [x] P1.6 Exposed tables + `Ragas.match_key` **and `Ragas.mela_disambiguator`**; integration tests
+- [x] P2.7 `resolve_raga()` — delete `findOrCreate` create branch; key via DB in Kotlin txn
+- [x] P2.8 `raga_resolution_queue` with **partial unique `(match_key, kind) WHERE status='pending'`** (V54)
+- [x] P2.9 Close all mint paths (EntityResolution, ReferenceData, retire python INSERT + CI guard)
+- [x] P2.10 Curator "Unresolved ragas" queue UI + attach/confirm/disambiguate (audited, role-gated); cache read-through + invalidation
+- [x] P2.11 `R__seed_04` upsert-on-identity-key
+- [x] P3.12 `ragas` provenance columns (V55) + backfill
+- [x] P3.13 janya⊄parent + mela-as-own-janya checks in CI; scale-collision alarm
+- [x] Verification suite + re-import dry-run proving acceptance criteria (2026-08-30) — AC1–AC6 validated (see progress log). On a pristine seed every corpus merge-loser spelling resolves (0 unknown, 0 ambiguous); the only residual is ~18 orphan-twin rows that exist **in the live dev DB as import cruft, not in the seed**, and resolve safely as *ambiguous* pending a data-cleanup batch.
 
 ## Progress Log
 - **2026-08-29**: Track created from [ADR-017](../../application_documentation/02-architecture/decisions/ADR-017-raga-reference-entity-identity-resolution.md). Intent accepted; Spec & Plan drafted.
@@ -474,3 +474,7 @@ ADR-014 discipline). Expert clarifications enter as first-class provenance.
 - **2026-08-29 (r3)**: Third review pass — **zero blockers, "Plan is Acceptable"**. Five nits folded in (N1 partial-unique pending-only queue index; N2 BEFORE trigger; N3 preflight ASSERT + corrected 7-of-181 Phase-0 claim; N4 doc hygiene — stale B5 row, P1.1 case count, Exposed files list; N5 ADR seed conflict-target). Version → 1.3.0. Ready for the Plan accept gate.
 - **2026-08-29**: Spec and Plan **Accepted** (Seshadri). Track status → Ready; implementation remains gated on TRACK-132 Phase 0 Batch A+B.
 - **2026-08-29**: TRACK-132 Phase 0 (Batch A+B) **merged to main** (PR #14, `9dc29f3`, CI green). P1.3 gate cleared → status **Ready to start**; implementation may begin at P1.1 (`raga_match_key()` function).
+- **2026-08-29**: Implementation started. Phase 1 (P1.1–P1.6): `raga_match_key()` (V51), generated `match_key` (V52), mela-qualified identity + aliases/relations/union keys (V53), `R__seed_04` upserts on `ragas_identity_uq` with §1.7 backfill, Exposed tables, identity lookup in `findOrCreate` (sequencing guard until Phase 2).
+- **2026-08-30**: Phase 1 review found a residual TRACK-132 duplicate the identity key could not catch — **`Sri` / `Shree` / `SrI rAgaM`** are one raga (Śrī, janya of Kharaharapriyā 22) but fold to three different keys (`sri` / `sri` after `sh→s,ee→i` / `sriragam`). On an existing DB the V53 preflight ASSERT tripped on the `Shree`/`Sri` (match_key `sri`, mela 22) pair; on a fresh reset `R__seed_04` silently `ON CONFLICT`-collapsed them into one inconsistent row. Routed the scale question to `carnatic-musicologist`: ruling = one raga, keeper **`Sri`** (ADR-016 §5 override of the janya-list `Shree`), vakra avarohanam `S N2 P D2 N2 P M1 R2 G2 R2 S`. Fix: (a) V53 merges `Shree` + `SrI rAgaM` → `Sri` and sets the vakra scale *before* the UNIQUE; (b) `R__seed_04` drops the `Shree` insert and gives `Sri` the vakra avarohanam; (c) normaliser + `raga_match_key()` strip a trailing raga-descriptor word (`"Sri rAgaM" → sri`) and **stop honorific-stripping for ragas**. `Śrīranjani` stays a **separate identity**.
+- **2026-08-30**: Phase 2–3: `resolveRaga` (no silent mint), `raga_resolution_queue` (V54), provenance (V55), lakshana helpers (V56) + CI/`make` checks, mint-guard grep, curator Unresolved ragas UI (attach / confirm-new / disambiguate), `Kalyani` common alias of Mechakalyāni, Dikshitar one-off script lookup-only. Wikipedia janyas with unmarked bhashanga swaras (63 rows) now parenthesize those tokens so the standing janya⊂parent check has zero seed false positives (AC5).
+- **2026-08-30**: Phase 1–3 validation. **Test suites all green** — DAL integration 36/0 (incl. `MigrationsFromScratchTest`, `RagaIdentityTrack136Test` 5, `RagaResolutionTrack136Test` 6), API unit 109/0, worker 70/0, frontend 59/0. Live stack: dev DB migrated to v56, login works. **AC2–AC6 confirmed** against the DB: homonyms distinct (AC4), colliding alias insert fails at the DB (AC3), lakshana checks 0/0 false positives (AC5), no mint path — `findOrCreate` is a throwing wrapper, callers route through `resolveRaga`, `make mint-guard` clean, no `INSERT INTO ragas` outside migrations (AC6). **AC1 re-import dry-run found and fixed a gap:** 6 merge-loser spellings whose fold does not reach the keeper (`Todi`→`Hanumatodi`, `Gauri`→`Gowri`, `Mohana`→`Mohanam`, `Gaula`→`Gowla`, `Riti Gaula`→`Reethigowla`, `vIra vasanta`→`Veeravasantham`, …) would have queued as *unknown* — the §1.7(a) full merge-list alias backfill was incomplete (only the 9 §0h aliases seeded). Added 21 transliteration aliases in a new **`R__seed_06_merge_loser_aliases.sql`** that runs **after** `R__seed_05` (the loser rows must be merged/deleted first — placing them in `R__seed_04` collided on the still-present V40-seeded `Gauri` at mela 15). Pristine-seed dry-run now: **39/39 loser spellings resolve, 0 unknown, 0 ambiguous.** Remaining ~18 orphan-twin rows are live-DB import cruft (not in the seed) and resolve safely as ambiguous — flagged for a data-cleanup batch.

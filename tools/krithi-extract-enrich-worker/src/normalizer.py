@@ -34,8 +34,12 @@ def normalize_for_matching(text: str, entity_type: str = "title") -> str:
     result = _strip_diacritics(text)
     # 2. Lowercase
     result = result.lower()
-    # 3. Strip honorific prefixes
-    result = _HONORIFIC_RE.sub(" ", result)
+    # 3. Strip honorific prefixes — NOT for ragas. 'Sri' is a legitimate raga name
+    #    (Śrī rāgam), so honorific stripping would empty it and would collapse the
+    #    distinct 'Sri ranjani' (Śrīranjani) onto 'Ranjani'. SQL raga_match_key()
+    #    likewise does not strip honorifics; keep the two in step (TRACK-136).
+    if entity_type != "raga":
+        result = _HONORIFIC_RE.sub(" ", result)
     # 4. Remove special characters (alphanumeric + space only)
     result = _NON_ALNUM_SPACE_RE.sub(" ", result)
     # 5. Transliteration collapse (longest match first; includes the `kh`
@@ -68,6 +72,13 @@ def normalize_for_matching(text: str, entity_type: str = "title") -> str:
         # anusvara pairs are merged by V50 rather than by this key.
         # Do NOT de-double consonants (Kanadā ≠ Kannada) and do NOT fold
         # terminal -i (Bhairavi ≠ Bhairava). Digraphs are mapped, never deleted.
+        #
+        # Strip a trailing raga-descriptor word ("... ragam"/"raga"/"ragamu") so
+        # "Sri rAgaM" folds to the raga NAME, not the descriptor (TRACK-136): the
+        # DB row `SrI rAgaM` had stranded on its own key and never matched `Sri`.
+        # Only a *separate trailing* token is removed (needs preceding space), so a
+        # bare "ragam" is never emptied. Mirrors SQL raga_match_key() — keep in step.
+        result = re.sub(r"\s+raga[mu]*$", "", result)
         result = (
             result.replace("w", "v")
             .replace("aa", "a")

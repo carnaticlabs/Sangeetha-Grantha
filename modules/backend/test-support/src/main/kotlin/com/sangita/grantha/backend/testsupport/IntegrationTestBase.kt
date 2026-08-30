@@ -45,6 +45,9 @@ abstract class IntegrationTestBase {
             // Reference tables never written by tests — kept as-is.
             "roles",
             "composer_aliases",
+            // TRACK-136: trigger-maintained / seed-only; test ragas CASCADE-clean their keys.
+            "raga_identity_keys",
+            "raga_relations",
         )
 
         @JvmStatic
@@ -108,6 +111,25 @@ abstract class IntegrationTestBase {
                             "(SELECT pk FROM ${TestDatabase.SEED_SNAPSHOT_TABLE} WHERE tbl = '$table')"
                     )
                 }
+                // replica mode skips FK CASCADE, so drop identity keys whose raga is gone
+                // and rebuild the union from remaining ragas + aliases (seed aliases survive RESET).
+                exec("DELETE FROM raga_identity_keys")
+                exec(
+                    """
+                    INSERT INTO raga_identity_keys (match_key, mela_disambiguator, raga_id)
+                    SELECT match_key, mela_disambiguator, id FROM ragas
+                    """.trimIndent(),
+                )
+                exec(
+                    """
+                    INSERT INTO raga_identity_keys (match_key, mela_disambiguator, raga_id)
+                    SELECT a.match_key, r.mela_disambiguator, a.raga_id
+                      FROM raga_aliases a
+                      JOIN ragas r ON r.id = a.raga_id
+                     WHERE a.match_key IS DISTINCT FROM r.match_key
+                    ON CONFLICT DO NOTHING
+                    """.trimIndent(),
+                )
                 exec("SET session_replication_role = DEFAULT")
             }
         }

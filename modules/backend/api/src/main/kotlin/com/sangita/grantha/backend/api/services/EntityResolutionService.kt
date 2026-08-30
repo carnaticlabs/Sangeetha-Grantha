@@ -37,6 +37,9 @@ interface IEntityResolver {
      * Resolve imported krithi metadata against reference data.
      */
     suspend fun resolve(importedKrithi: ImportedKrithiDto): ResolutionResult
+
+    /** Invalidate the persistent + in-memory cache for [entityType] (TRACK-136 §2.5). */
+    suspend fun invalidateCache(entityType: String, entityId: kotlin.uuid.Uuid)
 }
 
 class EntityResolutionServiceImpl(
@@ -61,7 +64,6 @@ class EntityResolutionServiceImpl(
     
     // Normalized maps for O(1) lookup: NormalizedName -> Entity
     private var composerMap: Map<String, ComposerDto> = emptyMap()
-    private var ragaMap: Map<String, RagaDto> = emptyMap()
     private var talaMap: Map<String, TalaDto> = emptyMap()
     private var deityMap: Map<String, DeityDto> = emptyMap()
     private var templeMap: Map<String, TempleDto> = emptyMap()
@@ -86,9 +88,6 @@ class EntityResolutionServiceImpl(
                 cachedComposers.find { it.id == composerId }?.let { alias to it }
             }
             
-            ragaMap = cachedRagas.groupBy { normalizer.normalizeRaga(it.name) ?: it.name.lowercase() }
-                .mapValues { (_, group) -> group.first() }
-            
             talaMap = cachedTalas.groupBy { normalizer.normalizeTala(it.name) ?: it.name.lowercase() }
                 .mapValues { (_, group) -> group.first() }
                 
@@ -106,7 +105,6 @@ class EntityResolutionServiceImpl(
         ensureCache()
 
         val normComposer = normalizer.normalizeComposer(importedKrithi.rawComposer)
-        val normRaga = normalizer.normalizeRaga(importedKrithi.rawRaga)
         val normTala = normalizer.normalizeTala(importedKrithi.rawTala)
         val normDeity = normalizer.normalizeDeity(importedKrithi.rawDeity)
         val normTemple = normalizer.normalizeTemple(importedKrithi.rawTemple)
@@ -120,13 +118,7 @@ class EntityResolutionServiceImpl(
             allEntities = cachedComposers
         ) { normalizer.normalizeComposer(it.name) ?: it.name.lowercase() }
 
-        val ragaCandidates = resolveWithCache(
-            entityType = "raga",
-            rawName = importedKrithi.rawRaga,
-            normalized = normRaga,
-            exactMatch = normRaga?.let { ragaMap[it] },
-            allEntities = cachedRagas
-        ) { normalizer.normalizeRaga(it.name) ?: it.name.lowercase() }
+        val ragaCandidates = resolveRagaCandidates(importedKrithi.rawRaga, importedKrithi.rawTitle, importedKrithi.sourceKey)
 
         val talaCandidates = resolveWithCache(
             entityType = "tala",
@@ -166,6 +158,56 @@ class EntityResolutionServiceImpl(
             templeCandidates = templeCandidates,
             resolved = fullyResolved
         )
+    }
+
+    /**
+     * TRACK-136: identity lookup in front of the generic cache. Cache only singleton hits;
+     * misses and homonyms enqueue on `raga_resolution_queue` and are not cached.
+     */
+    private suspend fun resolveRagaCandidates(
+        rawName: String?,
+        title: String?,
+        sourceKey: String?,
+    ): List<Candidate<RagaDto>> {
+        if (rawName.isNullOrBlank()) return emptyList()
+        val matchKey = dal.ragas.computeMatchKey(rawName)
+        val cached = dal.entityResolutionCache.findByNormalizedName("raga", matchKey)
+        if (cached != null && cached.confidence >= 90) {
+            val entity = cachedRagas.find { it.id == cached.resolvedEntityId }
+                ?: dal.ragas.findById(cached.resolvedEntityId)
+            if (entity != null) {
+                return listOf(Candidate(entity, cached.confidence, "HIGH"))
+            }
+            dal.entityResolutionCache.deleteByEntityId("raga", cached.resolvedEntityId)
+        }
+
+        when (val resolution = dal.ragas.resolveRaga(
+            name = rawName,
+            context = com.sangita.grantha.backend.dal.repositories.RagaResolveContext(
+                title = title,
+                sourceUrl = sourceKey,
+            ),
+        )) {
+            is com.sangita.grantha.backend.dal.repositories.RagaResolution.Resolved -> {
+                dal.entityResolutionCache.save(
+                    entityType = "raga",
+                    rawName = rawName,
+                    normalizedName = matchKey,
+                    resolvedEntityId = resolution.raga.id,
+                    confidence = 100,
+                )
+                return listOf(Candidate(resolution.raga, 100, "HIGH"))
+            }
+            is com.sangita.grantha.backend.dal.repositories.RagaResolution.Unresolved -> {
+                if (resolution.kind == "ambiguous") {
+                    val hits = dal.ragas.lookupIdentityHits(rawName)
+                    return hits.map { Candidate(it.raga, 80, "MEDIUM") }
+                }
+                return match(normalizer.normalizeRaga(rawName), cachedRagas) {
+                    normalizer.normalizeRaga(it.name) ?: it.name.lowercase()
+                }
+            }
+        }
     }
 
     // TRACK-013: Two-tier caching with database persistence
@@ -213,8 +255,8 @@ class EntityResolutionServiceImpl(
         // 3. Fuzzy match fallback (O(N) * L)
         val fuzzyResults = match(normalized, allEntities, normalizedNameSelector)
 
-        // Cache high-confidence fuzzy matches
-        if (fuzzyResults.isNotEmpty()) {
+        // Cache high-confidence fuzzy matches (never ragas — those go through resolveRagaCandidates)
+        if (entityType != "raga" && fuzzyResults.isNotEmpty()) {
             val topCandidate = fuzzyResults.first()
             if (topCandidate.score >= 90) {
                 val entityId = getEntityId(topCandidate.entity)
@@ -261,7 +303,7 @@ class EntityResolutionServiceImpl(
      * Invalidate cache when entities are created/updated/deleted
      * Call this from entity CRUD operations
      */
-    suspend fun invalidateCache(entityType: String, entityId: kotlin.uuid.Uuid) {
+    override suspend fun invalidateCache(entityType: String, entityId: kotlin.uuid.Uuid) {
         dal.entityResolutionCache.deleteByEntityId(entityType, entityId)
         // Also clear in-memory cache for this entity type
         cacheMutex.withLock {

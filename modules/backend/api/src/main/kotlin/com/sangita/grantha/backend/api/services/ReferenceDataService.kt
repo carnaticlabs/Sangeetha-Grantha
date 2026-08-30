@@ -14,7 +14,10 @@ import com.sangita.grantha.shared.domain.model.TalaDto
 import com.sangita.grantha.shared.domain.model.TempleDto
 import kotlin.uuid.Uuid
 
-class ReferenceDataServiceImpl(private val dal: SangitaDal) : IReferenceDataService {
+class ReferenceDataServiceImpl(
+    private val dal: SangitaDal,
+    private val entityResolver: IEntityResolver? = null,
+) : IReferenceDataService {
 
     // Composers
     override suspend fun listComposers(): List<ComposerDto> = dal.composers.listAll()
@@ -76,15 +79,24 @@ class ReferenceDataServiceImpl(private val dal: SangitaDal) : IReferenceDataServ
     override suspend fun getRaga(id: Uuid): RagaDto? = dal.ragas.findById(id)
 
     override suspend fun createRaga(request: RagaCreateRequest): RagaDto {
-        val created = dal.ragas.create(
-            name = request.name,
-            nameNormalized = request.nameNormalized,
-            melakartaNumber = request.melakartaNumber,
-            parentRagaId = request.parentRagaId.toJavaUuidOrNull("parentRagaId"),
-            arohanam = request.arohanam,
-            avarohanam = request.avarohanam,
-            notes = request.notes
-        )
+        val created = try {
+            dal.ragas.create(
+                name = request.name,
+                nameNormalized = request.nameNormalized,
+                melakartaNumber = request.melakartaNumber,
+                parentRagaId = request.parentRagaId.toJavaUuidOrNull("parentRagaId"),
+                arohanam = request.arohanam,
+                avarohanam = request.avarohanam,
+                notes = request.notes,
+                source = "curator",
+                confidence = "high",
+            )
+        } catch (e: com.sangita.grantha.backend.dal.errors.DuplicateKeyException) {
+            throw IllegalArgumentException(
+                "A raga with this identity already exists (${e.constraint ?: "ragas_identity_uq"})"
+            )
+        }
+        entityResolver?.invalidateCache("raga", created.id)
         dal.auditLogs.append(
             action = "CREATE_RAGA",
             entityTable = "ragas",
@@ -105,6 +117,7 @@ class ReferenceDataServiceImpl(private val dal: SangitaDal) : IReferenceDataServ
             notes = request.notes
         )
         if (updated != null) {
+            entityResolver?.invalidateCache("raga", id)
             dal.auditLogs.append(
                 action = "UPDATE_RAGA",
                 entityTable = "ragas",
@@ -117,6 +130,7 @@ class ReferenceDataServiceImpl(private val dal: SangitaDal) : IReferenceDataServ
     override suspend fun deleteRaga(id: Uuid): Boolean {
         val deleted = dal.ragas.delete(id)
         if (deleted) {
+            entityResolver?.invalidateCache("raga", id)
             dal.auditLogs.append(
                 action = "DELETE_RAGA",
                 entityTable = "ragas",
