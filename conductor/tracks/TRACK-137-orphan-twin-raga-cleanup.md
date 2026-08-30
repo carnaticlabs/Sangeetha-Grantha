@@ -1,6 +1,6 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Implemented — proof green, awaiting commit |
+| **Status** | Done — merged to main (PR #16), verified end-to-end against the restored corpus (2026-08-30) |
 | **Version** | 1.5.0 |
 | **Last Updated** | 2026-08-30 |
 | **Author** | Sangeetha Grantha Team |
