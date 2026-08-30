@@ -238,10 +238,7 @@ def main() -> None:
                         raga_id = raga_rows[0]["raga_id"]
                     else:
                         kind = "ambiguous" if len(raga_rows) > 1 else "unknown"
-                        print(
-                            f"SKIP: raga {raga_en!r} is {kind} "
-                            "(TRACK-136: use curator Unresolved ragas queue)"
-                        )
+                        print(f"SKIP: raga {raga_en!r} is {kind} (TRACK-136: use curator Unresolved ragas queue)")
                         continue
 
                 # Ensure Tala

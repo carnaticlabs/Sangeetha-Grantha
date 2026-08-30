@@ -98,12 +98,11 @@ jobs:
       - name: Standing lakshana checks (TRACK-136 §3.2)
         run: |
           docker run --rm --network host \
+            -e PGPASSWORD=postgres \
             -v "${{ github.workspace }}/database/checks:/checks:ro" \
             postgres:18.3-alpine \
             psql -h localhost -U postgres -d sangita_grantha_ci -v ON_ERROR_STOP=1 \
               -f /checks/raga_lakshana.sql
-        env:
-          PGPASSWORD: postgres
 
   mint-guard:
     name: No INSERT INTO ragas outside migrations (TRACK-136)
