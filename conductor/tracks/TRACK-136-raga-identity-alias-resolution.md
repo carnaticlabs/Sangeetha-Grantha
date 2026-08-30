@@ -1,7 +1,7 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Done — Phases 1–3 implemented, validated & committed (2026-08-30) |
-| **Version** | 1.4.1 |
+| **Version** | 1.4.2 |
 | **Last Updated** | 2026-08-30 |
 | **Author** | Sangeetha Grantha Team |
 | **Priority** | P1 — structural fix; removes the root cause behind TRACK-132 |
@@ -365,7 +365,7 @@ ADR-014 discipline). Expert clarifications enter as first-class provenance.
 2. The frozen suite (2 same-key homonym pairs distinct + 4 defensive assertions) passes against the identity key.
 3. Inserting a `ragas`/`raga_aliases` row whose `(match_key, mela)` collides with a *different* raga's
    identity **fails at the DB**, not silently.
-4. `Kanadā`/`Kannada`, both `Kalāvati`s, `Shreemati`/`Srimati` remain distinct identities post-migration.
+4. `Kanadā`/`Kannada` and both `Kalāvati`s remain distinct identities post-migration. `Srimati [8]` remains; `Shreemati` is an alias of `Shreemani`, not a separate identity.
 5. The two lakshana checks (3.2) run green in CI and flag zero known-good rows as false positives.
 6. No ingestion path inserts a `ragas` row (CI grep guard green; `findOrCreate` has no create branch).
 

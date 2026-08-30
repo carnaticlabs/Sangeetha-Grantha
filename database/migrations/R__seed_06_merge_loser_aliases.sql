@@ -138,3 +138,9 @@ SELECT id, 'Brindāvana Sāranga', 'transliteration', NULL,
   FROM ragas WHERE name = 'bRndAvana sAranga'
 ON CONFLICT (raga_id, alias) DO NOTHING;
 
+INSERT INTO raga_aliases (raga_id, alias, alias_type, tradition, source, confidence)
+SELECT id, 'Shreemati', 'transliteration', NULL,
+       'TRACK-137 #20 safety rail: ghost spelling of Shreemani (vs Srimati [8])', 'high'
+  FROM ragas WHERE name = 'Shreemani'
+ON CONFLICT (raga_id, alias) DO NOTHING;
+
