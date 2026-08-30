@@ -51,7 +51,7 @@ class RagaIdentityTrack136Test : IntegrationTestBase() {
                 """
                 SELECT name, match_key, mela_disambiguator
                   FROM ragas
-                 WHERE name IN ('Kalāvathi','Kalāvati','Shreemati','Srimati','Kanadā','Kannada')
+                 WHERE name IN ('Kalāvathi','Kalāvati','Srimati','Kanadā','Kannada')
                 """.trimIndent(),
             ) { rs ->
                 buildList {
@@ -70,11 +70,16 @@ class RagaIdentityTrack136Test : IntegrationTestBase() {
         assertEquals(31, kalavathi.mela)
         assertEquals(16, kalavati.mela)
 
-        val shreemati = row("Shreemati")
         val srimati = row("Srimati")
-        assertEquals(shreemati.matchKey, srimati.matchKey)
-        assertEquals(2, shreemati.mela)
+        assertEquals("srimati", srimati.matchKey)
         assertEquals(8, srimati.mela)
+
+        val shreematiRows = DatabaseFactory.dbQuery {
+            exec("SELECT count(*) FROM ragas WHERE name = 'Shreemati'") { rs ->
+                if (rs.next()) rs.getInt(1) else 0
+            } ?: 0
+        }
+        assertEquals(0, shreematiRows, "Shreemati is a TRACK-137 alias of Shreemani, not a ragas row")
 
         assertNotEquals(row("Kanadā").matchKey, row("Kannada").matchKey)
     }

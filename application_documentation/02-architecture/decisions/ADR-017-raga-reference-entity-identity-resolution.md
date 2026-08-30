@@ -1,12 +1,12 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Accepted |
-| **Version** | 1.3.0 |
-| **Last Updated** | 2026-08-29 |
+| **Version** | 1.4.0 |
+| **Last Updated** | 2026-08-30 |
 | **Author** | Sangeetha Grantha Team |
 | **Deciders** | Sangeetha Grantha Team (Seshadri) |
 | **Extends** | [ADR-016](./ADR-016-raga-naming-authority.md) — raga naming authority (the bootstrap this ADR builds identity on top of) |
-| **Implemented by** | [TRACK-136](../../../conductor/tracks/TRACK-136-raga-identity-alias-resolution.md) (Phases 1–3); [TRACK-132](../../../conductor/tracks/TRACK-132-raga-deduplication-normalizer-fix.md) is Phase 0 (remediation) |
+| **Implemented by** | [TRACK-136](../../../conductor/tracks/TRACK-136-raga-identity-alias-resolution.md) (Phases 1–3); [TRACK-132](../../../conductor/tracks/TRACK-132-raga-deduplication-normalizer-fix.md) is Phase 0 (remediation); [TRACK-137](../../../conductor/tracks/TRACK-137-orphan-twin-raga-cleanup.md) cleans residual orphan twins |
 
 # ADR-017: Raga Reference Entity Identity & Resolution
 
@@ -30,7 +30,7 @@ A raga name cannot serve as a primary key, because the mapping is many-to-many i
 |:---|:---|:---|
 | One raga → many **spellings** | `Yadukula Kāmbhoji` = `yadukula kAmbhOji` | Import mints a twin; corpus splits across two rows |
 | One raga → many **tradition-names** | `Dharmavati` (Govindacharya) = `Dhāmavathi` (Venkatamakhin); `Gamanashrama` (53) = `Gamakakriyā` | No home for the second name except "duplicate" or "lossy merge" |
-| Many ragas → one **near-name** | `Kanadā` ≠ `Kannada`; `Kalāvathi` (mela 31) ≠ `Kalāvati` (mela 16); `Shreemati` (mela 2) ≠ `Srimati` (mela 8) | A too-aggressive normaliser silently corrupts links |
+| Many ragas → one **near-name** | `Kanadā` ≠ `Kannada`; `Kalāvathi` (mela 31) ≠ `Kalāvati` (mela 16) | A too-aggressive normaliser silently corrupts links |
 
 The four bug classes TRACK-132 documents — silent twin-minting on import, seed migrations that
 re-create existing ragas (V40: ~85 links), un-mergeable nomenclature pairs, and un-distinguishable
@@ -104,8 +104,9 @@ guardrail passes rows the matcher would have merged. Remove the possibility of d
 - `match_key` is a **generated `STORED` column** on **both** `ragas` and `raga_aliases`, computed by a
   single SQL normalisation function (`raga_match_key(text)`). Identity is **mela-qualified** —
   `(match_key, mela_disambiguator)`, not `match_key` alone — because the fold deliberately collapses
-  spelling twins that then also collapse true homonyms (`Kalāvathi` 31 / `Kalāvati` 16;
-  `Shreemati` 2 / `Srimati` 8). The UNIQUE spans the **union** of both tables on that qualified key: no
+  spelling twins that then also collapse true homonyms (`Kalāvathi` 31 / `Kalāvati` 16). The fold
+  `srimati` still maps the spelling `Shreemati` onto `Srimati` [8] (and, via alias, Shreemani [2]).
+  The UNIQUE spans the **union** of both tables on that qualified key: no
   two distinct ragas may share an identity, and an alias may not collide with a *different* raga's
   identity. (Mechanism — a trigger-maintained `mela_disambiguator` column + identity table — is
   detailed in [TRACK-136](../../../conductor/tracks/TRACK-136-raga-identity-alias-resolution.md) §1.4;
@@ -185,8 +186,9 @@ they refine Decision §1–§2 without changing the direction:
 
 - **Identity is mela-qualified, not name-only.** The normalisation contract deliberately folds
   `th→t` and `sh/ee→s/i` to collapse spelling twins — but those same folds map genuinely **distinct**
-  ragas to one key (`Kalāvathi` mela 31 / `Kalāvati` mela 16 → `kalavati`; `Shreemati` mela 2 /
-  `Srimati` mela 8 → `srimati`). A name-only UNIQUE would therefore be unsatisfiable. The identity key
+  ragas to one key (`Kalāvathi` mela 31 / `Kalāvati` mela 16 → `kalavati`). The fold `srimati` still
+  maps `Shreemati` onto `Srimati` [8] (mela-2 identity is a Shreemani alias, not a separate row).
+  A name-only UNIQUE would therefore be unsatisfiable. The identity key
   is `(match_key, mela_disambiguator)` — the row's own melakarta number, or its parent's for a janya.
   Twins share a mela and still collapse; homonyms differ by mela and stay distinct. At import, a bare
   name that matches **more than one** identity is **ambiguous → resolution queue**, never auto-picked.

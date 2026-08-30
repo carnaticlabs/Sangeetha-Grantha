@@ -459,9 +459,9 @@ INSERT INTO ragas (id, name, name_normalized, parent_raga_id, arohanam, avarohan
 VALUES (gen_random_uuid(), 'Shreemani', 'shreemani', (SELECT id FROM ragas WHERE name_normalized = 'ratnangi'), 'S R1 G1 P D1 S', 'S N2 D1 P G1 R1 S', NOW(), NOW())
 ON CONFLICT ON CONSTRAINT ragas_identity_uq DO UPDATE SET name = EXCLUDED.name, melakarta_number = NULL, parent_raga_id = COALESCE(EXCLUDED.parent_raga_id, ragas.parent_raga_id), arohanam = COALESCE(EXCLUDED.arohanam, ragas.arohanam), avarohanam = COALESCE(EXCLUDED.avarohanam, ragas.avarohanam), updated_at = NOW();
 
-INSERT INTO ragas (id, name, name_normalized, parent_raga_id, arohanam, avarohanam, created_at, updated_at)
-VALUES (gen_random_uuid(), 'Shreemati', 'shreemati', (SELECT id FROM ragas WHERE name_normalized = 'ratnangi'), 'S R1 G1 P D1 S', 'S N2 D1 P G1 R1 S', NOW(), NOW())
-ON CONFLICT ON CONSTRAINT ragas_identity_uq DO UPDATE SET name = EXCLUDED.name, melakarta_number = NULL, parent_raga_id = COALESCE(EXCLUDED.parent_raga_id, ragas.parent_raga_id), arohanam = COALESCE(EXCLUDED.arohanam, ragas.arohanam), avarohanam = COALESCE(EXCLUDED.avarohanam, ragas.avarohanam), updated_at = NOW();
+-- TRACK-137: 'Shreemati' is a ghost duplicate of 'Shreemani' (byte-identical
+-- Ratnāngi scale). Merged into the keeper; the row is no longer seeded here.
+-- Alias 'Shreemati' → Shreemani is in R__seed_06 (safety rail vs Srimati [8]).
 
 INSERT INTO ragas (id, name, name_normalized, parent_raga_id, arohanam, avarohanam, created_at, updated_at)
 VALUES (gen_random_uuid(), 'Svadhya', 'svadhya', (SELECT id FROM ragas WHERE name_normalized = 'ratnangi'), 'S R1 M1 P N2 S', 'S N2 D1 P M1 R1 S', NOW(), NOW())
