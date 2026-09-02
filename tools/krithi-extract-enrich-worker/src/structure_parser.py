@@ -475,9 +475,7 @@ def _is_caranam_lyric_line(line: str) -> bool:
 # gated so it fires ONLY when the document has multiple raga headers AND no ordinary
 # P/A/C structure — an ordinary ragamalika (raga markers nested inside P/A/C, e.g.
 # SrI viSva nAthaM) keeps its P/A/C segmentation with ragas as metadata subsections.
-_RAGA_SEGMENT_HEADER_PROBE = re.compile(
-    rf"(?mi)^\s*(?:\d+[.।]?\s*)?\S[^\n]*?\s+(?:rAgaM|{_INDIC_RAGA_WORD})\s*$"
-)
+_RAGA_SEGMENT_HEADER_PROBE = re.compile(rf"(?mi)^\s*(?:\d+[.।]?\s*)?\S[^\n]*?\s+(?:rAgaM|{_INDIC_RAGA_WORD})\s*$")
 _STANDARD_SECTION_PROBE = re.compile(
     r"(?mi)^\s*[\-–—•*()=\[\]]*\s*(?:"
     r"pallavi|anupallavi|(?:ch|c)ara?n(?:\.\s*am|am)|caraṇam|samash?ti|chittaswaram|"
@@ -1152,9 +1150,7 @@ class StructureParser:
         flush()
         return variants
 
-    def _merge_leading_prefix_into_first_raga_segment(
-        self, blocks: list[_TextBlock]
-    ) -> list[_TextBlock]:
+    def _merge_leading_prefix_into_first_raga_segment(self, blocks: list[_TextBlock]) -> list[_TextBlock]:
         """Fold any leading non-stanza blocks into the first RAGA_SEGMENT stanza.
 
         Only applies in pure-ragamalika mode. If the blocks contain no RAGA_SEGMENT

@@ -226,6 +226,14 @@ fun Route.importRoutes(
                 }
             }
 
+            val escapedPattern = sourcePattern.replace("\\", "\\\\").replace("\"", "\\\"")
+            dal.auditLogs.append(
+                action = "RE_EXTRACT",
+                entityTable = "extraction_queue",
+                actorUserId = call.currentUserId(),
+                metadata = """{"sourceUrlPattern":"$escapedPattern","totalMatching":${matchingIds.size},"requeued":$requeued,"variantsCleared":$variantsCleared}""",
+            )
+
             call.respond(ReExtractResponse(
                 totalMatching = matchingIds.size,
                 requeued = requeued,
