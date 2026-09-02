@@ -1,6 +1,6 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Not Started — re-verified 2026-08-30 (figures unchanged) |
+| **Status** | Completed — merged to main (PR #19), 108 → 0 mismatch rows (2026-09-02) |
 | **Version** | 1.1.0 |
 | **Last Updated** | 2026-08-30 |
 | **Author** | Sangeetha Grantha Team |
