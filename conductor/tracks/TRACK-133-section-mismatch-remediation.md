@@ -868,3 +868,24 @@ The four findings surfaced during remediation were fixed in-session (not deferre
    `(மத் 4 யம கால ஸாஹித்யம்)`, so Tamil demotes MKS like the other scripts.
 
 Worker suite 358 passed; backend `ReExtractCapTest` + `ReingestMappedKrithiTest` green; dal/api compile clean.
+
+---
+
+## Last residual CLOSED — 0 mismatches (2026-09-02)
+
+`ramA ramaNa rArA` was reclassified from "accepted residual" to fixed after it was inspected in the
+Curator UI: the 4 Indic variants (sa/te/kn/ml) visibly glued charanams 4+5 under "CHARANAM 4" and
+skipped to "CHARANAM 6", while English/Tamil were correct.
+
+**V62 applied** — splits each Indic variant's merged oi5 at the internal pallavi-echo refrain "(ramA)":
+part A (C4) stays in oi5, part B (C5) → oi6, and the shifted C6 (birAna) → a new oi7 row. Canon (7)
+unchanged; en/ta untouched. Self-guarding (no-op if oi7 already present / structure differs), audited
+(`RESPLIT_SECTIONS`). All 6 variants now read 7, content verified (oi5=raNAdhi/C4, oi6=mukhAbjamunu/C5,
+oi7=birAna/C6).
+
+**Known parser gap (durable fix):** the splitter still doesn't split a charanam at an internal
+pallavi-echo refrain, so a fresh re-extract could reintroduce the glue and V62 would need re-running.
+The corpus-repair migrations (V58–V62) are tied to the imported snapshot by design; the durable fix is
+a parser refrain-split.
+
+### FINAL: mismatch query returns **0 rows / 0 krithis** (was 108 / 29). Definition of Done met.
