@@ -150,12 +150,28 @@ SECTION_LABEL_TO_TYPE: dict[str, SectionType] = {
     "SWARA_SAHITYA": SectionType.SWARA_SAHITYA,
     "MADHYAMAKALA": SectionType.MADHYAMA_KALA,
     "MADHYAMA_KALA": SectionType.MADHYAMA_KALA,
+    # TRACK-133 (WORK ITEM 2): a per-raga stanza boundary in a "pure" ragamalika
+    # (each avatara stanza headed only by "<raga> rAgaM", no P/A/C). Section-type
+    # assignment per stanza is a lakshana call owned by the curator/musicologist,
+    # so the splitter emits OTHER and leaves the typing decision downstream.
+    "RAGA_SEGMENT": SectionType.OTHER,
 }
 
 # Kotlin parity: matches "1. SrI rAgaM" or "Arabhi rAgaM"
 RAGA_SUBSECTION_PATTERN = re.compile(r"^(?:\d+\.\s*)?(.+?)\s+rAgaM\s*$", re.IGNORECASE)
 # Kotlin parity: matches "vilOma - mOhana rAgaM"
 VILOMA_SUBSECTION_PATTERN = re.compile(r"^vilOma\s*-\s*(.+?)\s+rAgaM\s*$", re.IGNORECASE)
+# TRACK-133 follow-up: the Latin patterns above only match the transliterated
+# "<raga> rAgaM" header. In multi-script sources (e.g. the Dashavatara ragamalika
+# mAdhavO mAM pAtu) each script variant carries the SAME raga header in its own
+# script — Devanagari "नाट रागं", Tamil "நாட ராகம்", Telugu "నాట రాగం",
+# Kannada "ನಾಟ ರಾಗಂ", Malayalam "നാട രാഗം". Without an Indic-script form the
+# raga boundary is invisible in the transliterated variants, so the whole stanza
+# sequence collapses into one section on the variant side while the (Latin-built)
+# canonical structure segments correctly. This mirrors RAGA_SUBSECTION_PATTERN for
+# the five Indic scripts; the raga word is "rāga" + an anusvāra / virāma-m ending.
+_INDIC_RAGA_WORD = r"(?:राग[ंम]्?|ராக[ம]்?|రాగ[ంమ]్?|ರಾಗ[ಂಮ]್?|രാഗ[ംമ]്?)"
+RAGA_SUBSECTION_INDIC_PATTERN = re.compile(rf"^(?:\d+[.।]?\s*)?(.+?)\s+{_INDIC_RAGA_WORD}\s*$")
 
 SECTION_HEADER_PATTERNS: list[tuple[re.Pattern[str], str]] = [
     (re.compile(r"^\s*[\-–—•*()=\[\]]*\s*pallavi(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE), "PALLAVI"),
@@ -234,29 +250,34 @@ SECTION_HEADER_PATTERNS: list[tuple[re.Pattern[str], str]] = [
     # Devanagari full headers.
     (re.compile(r"^\s*पल्लवि(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "PALLAVI"),
     (re.compile(r"^\s*अनुपल्लवि(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "ANUPALLAVI"),
-    (re.compile(r"^\s*चरण[म्ंम]+(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "CHARANAM"),
+    # TRACK-133 (WORK ITEM 1, form 2): accept the dental-nasal spelling variant
+    # चरन/చరన/சரந/ಚರನ/ചരന ("caraNam" written with dental na) alongside the
+    # retroflex चरण form. Some Indic variants (e.g. ennEramum un pAda) label the
+    # inline charanam with the dental spelling, which the retroflex-only patterns
+    # missed, so every charanam collapsed into the preceding anupallavi block.
+    (re.compile(r"^\s*चर[णन][म्ंम]+(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "CHARANAM"),
     (re.compile(r"^\s*समष्टि\s+चरण[म्ंम]+(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "SAMASHTI_CHARANAM"),
     (re.compile(r"^\s*[(]?मध्यम\s+काल\s+साहित्य[म्ंम]*[)]?(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "MADHYAMAKALA"),
     # Tamil full headers.
     (re.compile(r"^\s*பல்லவி(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "PALLAVI"),
     (re.compile(r"^\s*அனுபல்லவி(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "ANUPALLAVI"),
-    (re.compile(r"^\s*சரணம்(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "CHARANAM"),
+    (re.compile(r"^\s*சர[ணநன]ம்(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "CHARANAM"),
     (re.compile(r"^\s*ஸமஷ்டி\s+சரணம்(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "SAMASHTI_CHARANAM"),
     # Telugu full headers (both anusvara చరణం and explicit చరణమ్ forms).
     (re.compile(r"^\s*పల్లవి(?:\s|:|\-|\)|]|$)", re.IGNORECASE), "PALLAVI"),
     (re.compile(r"^\s*అనుపల్లవి(?:\s|:|\-|\)|]|$)", re.IGNORECASE), "ANUPALLAVI"),
-    (re.compile(r"^\s*చరణం(?:\s|:|\-|\)|]|$)", re.IGNORECASE), "CHARANAM"),
-    (re.compile(r"^\s*చరణమ్(?:\s|:|\-|\)|]|$)", re.IGNORECASE), "CHARANAM"),
+    (re.compile(r"^\s*చర[ణన]ం(?:\s|:|\-|\)|]|$)", re.IGNORECASE), "CHARANAM"),
+    (re.compile(r"^\s*చర[ణన]మ్(?:\s|:|\-|\)|]|$)", re.IGNORECASE), "CHARANAM"),
     (re.compile(r"^\s*సమష్టి\s+చరణ[ంమ్]+(?:\s|:|\-|\)|]|$)", re.IGNORECASE), "SAMASHTI_CHARANAM"),
     # Kannada full headers (both short ಚರಣ and full ಚರಣಮ್/ಚರಣಂ forms).
     (re.compile(r"^\s*ಪಲ್ಲವಿ(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "PALLAVI"),
     (re.compile(r"^\s*ಅನುಪಲ್ಲವಿ(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "ANUPALLAVI"),
-    (re.compile(r"^\s*ಚರಣ[ಮ್ಂ]*(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "CHARANAM"),
+    (re.compile(r"^\s*ಚರ[ಣನ][ಮ್ಂ]*(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "CHARANAM"),
     (re.compile(r"^\s*ಸಮಷ್ಟಿ\s+ಚರಣ[ಮ್ಂ]*(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "SAMASHTI_CHARANAM"),
     # Malayalam full headers (both ചരണം and ചരണമ് forms).
     (re.compile(r"^\s*പല്ലവി(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "PALLAVI"),
     (re.compile(r"^\s*അനുപല്ലവി(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "ANUPALLAVI"),
-    (re.compile(r"^\s*ചരണ[ംമ്]+(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "CHARANAM"),
+    (re.compile(r"^\s*ചര[ണന][ംമ്]+(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "CHARANAM"),
     (re.compile(r"^\s*സമഷ്ടി\s+ചരണ[ംമ്]+(?:\s|:|\-|\.|\)|]|$)", re.IGNORECASE), "SAMASHTI_CHARANAM"),
     # Telugu parenthesized MKS: (మధ్యమ కాల సాహిత్యం)
     (re.compile(r"^\s*[(]మధ్యమ\s+కాల\s+సాహిత్య[ంమ్]+[)]\s*$", re.IGNORECASE), "MADHYAMAKALA"),
@@ -264,8 +285,10 @@ SECTION_HEADER_PATTERNS: list[tuple[re.Pattern[str], str]] = [
     (re.compile(r"^\s*[(]ಮಧ್ಯಮ\s+ಕಾಲ\s+ಸಾಹಿತ್ಯ[ಂಮ್]*[)]\s*$", re.IGNORECASE), "MADHYAMAKALA"),
     # Malayalam parenthesized MKS: (മധ്യമ കാല സാഹിത്യം)
     (re.compile(r"^\s*[(]മധ്യമ\s+കാല\s+സാഹിത്യ[ംമ്]+[)]\s*$", re.IGNORECASE), "MADHYAMAKALA"),
-    # Tamil parenthesized MKS: (மத்யம கால ஸாஹித்யம்)
-    (re.compile(r"^\s*[(]மத்யம\s+கால\s+ஸாஹித்ய[ம்]+[)]\s*$", re.IGNORECASE), "MADHYAMAKALA"),
+    # Tamil parenthesized MKS: (மத்யம கால ஸாஹித்யம்) and the grantha-numeral form
+    # (மத் 4 யம கால ஸாஹித்யம்), where the aspirated dha is written "த் 4" with the
+    # superscript number spaced out (as emitted by the guruguha Tamil transliteration).
+    (re.compile(r"^\s*[(]மத்\s*[0-9]*\s*யம\s+கால\s+ஸாஹித்ய[ம்]+[)]\s*$", re.IGNORECASE), "MADHYAMAKALA"),
     # Bracket-format headers with underscores (from stored lyrics).
     (re.compile(r"^\s*\[PALLAVI\]\s*$", re.IGNORECASE), "PALLAVI"),
     (re.compile(r"^\s*\[ANUPALLAVI\]\s*$", re.IGNORECASE), "ANUPALLAVI"),
@@ -348,6 +371,121 @@ INLINE_INDIC_PAC_PATTERNS: list[tuple[re.Pattern[str], str]] = [
 ]
 
 _INLINE_INDIC_PAC_PROBE = re.compile(r"(?m)^\s*(?:प|अ|च|ప|అ|చ|ಪ|ಅ|ಚ|പ|അ|ച|ப|அ|ச)\d*\s*\.\s*(?=\S)")
+
+# Indic-script inline swara-sahitya ordinal markers "स्व1." / "ஸ்வ4(A)." (TRACK-133,
+# thyagaraja-vaibhavam blog format, Indic variants). The English/IAST variant labels
+# each swara-sahitya sub-block with the full words "svara sAhitya N"; the Indic variants
+# use the abbreviated cluster "sva" + ordinal + period instead ("स्व1.", "ஸ்வ4(A)."),
+# which the full-word CAT-B header patterns above do NOT match. Without these, only the
+# lone bare "स्वर साहित्य" group title is detected and every "sva N" sub-block collapses
+# into that single SWARA_SAHITYA section, under-segmenting the Indic variant relative to
+# the English canonical skeleton (e.g. sAdhincenE: 11 canon vs 5 Indic).
+#
+# Like INLINE_INDIC_PAC_PATTERNS these are context-gated (only activated when the block
+# actually contains such markers, via _INLINE_INDIC_SWARA_PROBE), so blocks that use only
+# the full-word header are unaffected. The bare "स्वर साहित्य" group-title line that
+# precedes "sva 1." then becomes a header with no body and is dropped by the empty-block
+# guard in _extract_sections, so the count matches the English side (N sub-blocks, not N+1).
+# The trailing period is the disambiguator — natural lyric lines do not begin "स्व<digit>.".
+# The optional "(A)" suffix mirrors the English "svara sAhitya 4A" continuation marker.
+_SVA_CLUSTERS = "स्व|ஸ்வ|స్వ|ಸ್ವ|സ്വ"  # Devanagari, Tamil, Telugu, Kannada, Malayalam
+INLINE_INDIC_SWARA_PATTERNS: list[tuple[re.Pattern[str], str]] = [
+    (re.compile(rf"^\s*(?:{_SVA_CLUSTERS})\d+(?:\([A-Za-z]\))?\s*\.\s*(?=\S)"), "SWARA_SAHITYA"),
+]
+_INLINE_INDIC_SWARA_PROBE = re.compile(rf"(?m)^\s*(?:{_SVA_CLUSTERS})\d+(?:\([A-Za-z]\))?\s*\.\s*(?=\S)")
+
+# --- TRACK-133 WORK ITEM 1: second inline-Indic charanam-marker gap ------------
+#
+# A distinct class of undetected inline Indic P/A/C markers, the analogue of the
+# INLINE_INDIC_PAC (period) and INLINE_INDIC_SWARA (sva-ordinal) seams. Three forms,
+# each context-gated so full-word-header documents stay unaffected:
+#
+#   form 3 — DIGIT WITHOUT TRAILING PERIOD: "च4 सुर तारक …" (vs the "च4." form that
+#            INLINE_INDIC_PAC already handles). Seen in rAma Eva daivataM (sa), where
+#            the no-period charanam 4 marker leaks and charanam 4 merges into 3.
+#   form 1 — BARE AKSHARA, no digit and no period: "च अल नाडु सौमित्रि". Seen in
+#            kaNTa jUDumi / enta bhAgyamu, where the charanam collapses into the
+#            preceding block. Real source has UNMARKED pallavi/anupallavi, so form 1
+#            is self-gated on the bare-charanam-token line itself (see below), not on
+#            a bare P/A twin. The digit (form 3) and the bare token followed by
+#            whitespace (form 1) are the disambiguators against ordinary sahitya.
+_INDIC_PALLAVI_AKSHARAS = "प|ప|ಪ|പ|ப"
+_INDIC_ANUPALLAVI_AKSHARAS = "अ|అ|ಅ|അ|அ"
+_INDIC_CHARANAM_AKSHARAS = "च|చ|ಚ|ച|ச"
+
+INLINE_INDIC_DIGIT_PATTERNS: list[tuple[re.Pattern[str], str]] = [
+    (re.compile(rf"^\s*(?:{_INDIC_PALLAVI_AKSHARAS})\d+\s+(?=\S)"), "PALLAVI"),
+    (re.compile(rf"^\s*(?:{_INDIC_ANUPALLAVI_AKSHARAS})\d+\s+(?=\S)"), "ANUPALLAVI"),
+    (re.compile(rf"^\s*(?:{_INDIC_CHARANAM_AKSHARAS})\d+\s+(?=\S)"), "CHARANAM"),
+]
+_INLINE_INDIC_DIGIT_PROBE = re.compile(
+    rf"(?m)^\s*(?:{_INDIC_PALLAVI_AKSHARAS}|{_INDIC_ANUPALLAVI_AKSHARAS}|{_INDIC_CHARANAM_AKSHARAS})\d+\s+(?=\S)"
+)
+
+# Form 1 - bare charanam akshara as its own token. Charanam-only: the real source
+# marks only the charanam this way (pallavi/anupallavi are unmarked), so this is NOT
+# gated on a bare P/A twin. The trailing "\s+" is the discriminator - a bare akshara
+# followed by whitespace ("च ") is a marker; an akshara bound to a vowel matra with no
+# space ("चॆन्त"/"चिन्त"/"செந்த"/"சிந்த") is the first consonant of a lyric word.
+INLINE_INDIC_BARE_PATTERNS: list[tuple[re.Pattern[str], str]] = [
+    (re.compile(rf"^\s*(?:{_INDIC_CHARANAM_AKSHARAS})\s+(?=\S)"), "CHARANAM"),
+]
+# Self-gate: enable only when a bare charanam-akshara-as-token line actually exists.
+_INLINE_INDIC_BARE_CA_PROBE = re.compile(rf"(?m)^\s*(?:{_INDIC_CHARANAM_AKSHARAS})\s+(?=\S)")
+
+# --- TRACK-133 WORK ITEM 1: "caraNam"-in-sahitya false-positive guard ----------
+#
+# A real spelled charanam header sits alone on its line (optionally with an ordinal
+# like "caraNam 2" / "caraNam 4A"). When the word "caraNam" instead heads a line but
+# is FOLLOWED by more sahitya on the same line, it is lyric — a hyphenation
+# continuation such as "…SaraNAgata tvac-\ncaraNam bhava tAraNambu cEsunu"
+# (ramA ramaNa rArA, over-split in en/ta). This guard keeps the trailing-lyric case
+# from faking a charanam header, so re-extract cannot reintroduce the spurious split.
+_CARANAM_WORD_AT_START = re.compile(
+    r"^\s*[\-–—•*()=\[\]]*\s*"
+    r"(?:(?:ch|c)ara?nam|caraṇam|चर[णन][म्ंम]+|சர[ணநன]ம்|చర[ணన][ంమ్]+|ಚರ[ಣನ][ಮ್ಂ]*|ചര[ണന][ംമ്]+)",
+    re.IGNORECASE,
+)
+# Allowed tail after the header word: ordinal digits, a "(A)" or bare "A"
+# continuation, or punctuation. Anything with letters remaining is lyric.
+_CARANAM_ORDINAL_TAIL = re.compile(r"^[\s:.\-)\]]*\d*\s*(?:\([A-Za-z]\)|[A-Za-z])?\s*")
+
+
+def _is_caranam_lyric_line(line: str) -> bool:
+    """True when a line opens with the word ``caraNam`` but continues with lyric.
+
+    Distinguishes a genuine standalone charanam header (``caraNam`` / ``caraNam 4A``)
+    from a sahitya line that merely begins with the word after a hyphenation break
+    (``tvac-caraNam bhava tAraNambu``). Only the latter must be suppressed.
+    """
+    match = _CARANAM_WORD_AT_START.match(line)
+    if match is None:
+        return False
+    tail = line[match.end() :]
+    tail = _CARANAM_ORDINAL_TAIL.sub("", tail, count=1)
+    return bool(re.search(r"[^\W\d_]", tail))
+
+
+# --- TRACK-133 WORK ITEM 2: pure-ragamalika raga-header segmentation -----------
+#
+# A "pure" ragamalika (e.g. mAdhavO mAM pAtu, the Dashavatara Ragamalika) has no
+# pallavi/anupallavi/charanam headers at all — each avatara stanza is headed only by
+# "<raga> rAgaM" and carries a Madhyamakala Sahitya. Without treating the raga header
+# as a section boundary the whole lyric collapses into one unsegmented block. This is
+# gated so it fires ONLY when the document has multiple raga headers AND no ordinary
+# P/A/C structure — an ordinary ragamalika (raga markers nested inside P/A/C, e.g.
+# SrI viSva nAthaM) keeps its P/A/C segmentation with ragas as metadata subsections.
+_RAGA_SEGMENT_HEADER_PROBE = re.compile(rf"(?mi)^\s*(?:\d+[.।]?\s*)?\S[^\n]*?\s+(?:rAgaM|{_INDIC_RAGA_WORD})\s*$")
+_STANDARD_SECTION_PROBE = re.compile(
+    r"(?mi)^\s*[\-–—•*()=\[\]]*\s*(?:"
+    r"pallavi|anupallavi|(?:ch|c)ara?n(?:\.\s*am|am)|caraṇam|samash?ti|chittaswaram|"
+    r"पल्लवि|अनुपल्लवि|चर[णन]|समष्टि|"
+    r"பல்லவி|அனுபல்லவி|சர[ணநன]|"
+    r"పల్లవి|అనుపల్లవి|చర[ణన]|"
+    r"ಪಲ್ಲವಿ|ಅನುಪಲ್ಲವಿ|ಚರ[ಣನ]|"
+    r"പല്ലവി|അനുപല്ലവി|ചര[ണന]"
+    r")"
+)
 
 METADATA_KEYWORDS = (
     "title",
@@ -496,6 +634,14 @@ class StructureParser:
 
         self._inline_pa_enabled = bool(_INLINE_CHARANAM_PROBE.search(raw_text))
         self._inline_indic_pac_enabled = bool(_INLINE_INDIC_PAC_PROBE.search(raw_text))
+        self._inline_indic_swara_enabled = bool(_INLINE_INDIC_SWARA_PROBE.search(raw_text))
+        self._inline_indic_digit_enabled = bool(_INLINE_INDIC_DIGIT_PROBE.search(raw_text))
+        self._inline_indic_bare_enabled = bool(_INLINE_INDIC_BARE_CA_PROBE.search(raw_text))
+        # Pure-ragamalika segmentation: multiple "<raga> rAgaM" headers and no
+        # ordinary P/A/C structure anywhere in the block.
+        self._raga_segment_enabled = (
+            len(_RAGA_SEGMENT_HEADER_PROBE.findall(raw_text)) >= 2 and _STANDARD_SECTION_PROBE.search(raw_text) is None
+        )
 
         tokens: list[_LineToken] = []
         offset = 0
@@ -580,8 +726,13 @@ class StructureParser:
         return None
 
     def _detect_section_header(self, line: str) -> _HeaderMatch | None:
+        # TRACK-133: a line that opens with "caraNam" but continues with sahitya is
+        # lyric (hyphenation continuation), not a charanam header — suppress it.
+        caranam_lyric = _is_caranam_lyric_line(line)
         for pattern, label in SECTION_HEADER_PATTERNS:
             if pattern.search(line):
+                if label == "CHARANAM" and caranam_lyric:
+                    continue
                 remainder = pattern.sub("", line, count=1).strip()
                 remainder = re.sub(r"^[:\-)\]\.\s]+", "", remainder).strip()
                 # TRACK-101: Strip residual numbers from "caraNam 1" / "svara sAhitya 2" headers
@@ -599,6 +750,38 @@ class StructureParser:
                     remainder = pattern.sub("", line, count=1).strip()
                     remainder = re.sub(r"^\d+\s*", "", remainder).strip()
                     return _HeaderMatch(label=label, remainder=remainder)
+        if getattr(self, "_inline_indic_swara_enabled", False):
+            for pattern, label in INLINE_INDIC_SWARA_PATTERNS:
+                if pattern.search(line):
+                    remainder = pattern.sub("", line, count=1).strip()
+                    remainder = re.sub(r"^\d+\s*", "", remainder).strip()
+                    return _HeaderMatch(label=label, remainder=remainder)
+        # TRACK-133 form 3: digit-without-period inline Indic markers ("च4 सुर …").
+        if getattr(self, "_inline_indic_digit_enabled", False):
+            for pattern, label in INLINE_INDIC_DIGIT_PATTERNS:
+                if pattern.search(line):
+                    if label == "CHARANAM" and caranam_lyric:
+                        continue
+                    remainder = pattern.sub("", line, count=1).strip()
+                    remainder = re.sub(r"^\d+\s*", "", remainder).strip()
+                    return _HeaderMatch(label=label, remainder=remainder)
+        # TRACK-133 form 1: bare single-akshara inline Indic markers ("च अल नाडु …"),
+        # only when the document uses the bare-marker convention.
+        if getattr(self, "_inline_indic_bare_enabled", False):
+            for pattern, label in INLINE_INDIC_BARE_PATTERNS:
+                if pattern.search(line):
+                    if label == "CHARANAM" and caranam_lyric:
+                        continue
+                    remainder = pattern.sub("", line, count=1).strip()
+                    remainder = re.sub(r"^\d+\s*", "", remainder).strip()
+                    return _HeaderMatch(label=label, remainder=remainder)
+        # TRACK-133 WORK ITEM 2: pure-ragamalika "<raga> rAgaM" stanza boundary.
+        if getattr(self, "_raga_segment_enabled", False) and (
+            VILOMA_SUBSECTION_PATTERN.search(line)
+            or RAGA_SUBSECTION_PATTERN.search(line)
+            or RAGA_SUBSECTION_INDIC_PATTERN.search(line)
+        ):
+            return _HeaderMatch(label="RAGA_SEGMENT", remainder="")
         return None
 
     def _extract_sections(
@@ -967,6 +1150,27 @@ class StructureParser:
         flush()
         return variants
 
+    def _merge_leading_prefix_into_first_raga_segment(self, blocks: list[_TextBlock]) -> list[_TextBlock]:
+        """Fold any leading non-stanza blocks into the first RAGA_SEGMENT stanza.
+
+        Only applies in pure-ragamalika mode. If the blocks contain no RAGA_SEGMENT
+        (or the first block already is one) the list is returned unchanged.
+        """
+        first_seg = next((i for i, b in enumerate(blocks) if b.label == "RAGA_SEGMENT"), None)
+        if first_seg is None or first_seg == 0:
+            return blocks
+        prefix_lines: list[_LineToken] = []
+        for b in blocks[:first_seg]:
+            prefix_lines.extend(b.lines)
+        target = blocks[first_seg]
+        merged = _TextBlock(
+            label=target.label,
+            lines=prefix_lines + target.lines,
+            start_pos=blocks[0].start_pos,
+            end_pos=target.end_pos,
+        )
+        return [merged, *blocks[first_seg + 1 :]]
+
     def _sections_from_variant_blocks(
         self,
         blocks: list[_TextBlock],
@@ -974,6 +1178,16 @@ class StructureParser:
     ) -> list[DetectedSection]:
         if not blocks:
             return []
+
+        # TRACK-133 follow-up: in a pure ragamalika the stanzas are the RAGA_SEGMENT
+        # blocks. Any block before the first RAGA_SEGMENT (a title / "dasa raga
+        # malika - tala" prefix line that carries no raga header of its own) is not a
+        # stanza — the canonical builder drops such leading UNLABELED blocks. Here we
+        # fold their text into the first stanza instead of dropping it, so the variant
+        # keeps every stanza slot aligned 1:1 with canon (an extra leading section
+        # would shift the mapping and drop the final stanza).
+        if getattr(self, "_raga_segment_enabled", False):
+            blocks = self._merge_leading_prefix_into_first_raga_segment(blocks)
 
         # Collect raw parsed sections from blocks, applying MKS demotion
         raw_sections: list[DetectedSection] = []
@@ -1008,15 +1222,22 @@ class StructureParser:
         # leading OTHER section the type of the next unmatched canonical section.
         # This handles pages where e.g. Devanagari Pallavi text appears directly
         # after the language header without a "पल्लवि" section header.
+        #
+        # TRACK-133 follow-up: in a *pure* ragamalika every canonical section is a
+        # legitimately-distinct OTHER stanza (RAGA_SEGMENT). Promoting/merging leading
+        # OTHER runs here would fold all N stanzas into one section — the exact
+        # variant-side collapse this path is fixing. Gate the promotion off on the
+        # same signal as the canonical RAGA_SEGMENT path so the N stanzas map 1:1.
         promoted_count = 0
-        canonical_iter = iter(canonical_sections)
-        for s in raw_sections:
-            if s.section_type != SectionType.OTHER:
-                break
-            canon = next(canonical_iter, None)
-            if canon is not None:
-                s.section_type = canon.section_type
-                promoted_count += 1
+        if not getattr(self, "_raga_segment_enabled", False):
+            canonical_iter = iter(canonical_sections)
+            for s in raw_sections:
+                if s.section_type != SectionType.OTHER:
+                    break
+                canon = next(canonical_iter, None)
+                if canon is not None:
+                    s.section_type = canon.section_type
+                    promoted_count += 1
 
         # Merge promoted sections into the following typed section when both
         # share the same type (e.g. a title-only promoted PALLAVI followed by

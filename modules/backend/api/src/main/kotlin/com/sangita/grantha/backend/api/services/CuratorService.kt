@@ -10,6 +10,7 @@ import com.sangita.grantha.backend.dal.tables.KrithiSectionsTable
 import com.sangita.grantha.backend.dal.tables.KrithisTable
 import com.sangita.grantha.backend.dal.tables.RagaResolutionQueueTable
 import kotlinx.serialization.Serializable
+import org.jetbrains.exposed.v1.core.statements.StatementType
 import org.jetbrains.exposed.v1.core.*
 import org.jetbrains.exposed.v1.jdbc.*
 
@@ -43,6 +44,31 @@ data class SectionIssuesPage(
 
 class CuratorService(private val dal: SangitaDal) {
 
+    private companion object {
+        /**
+         * Canonical section-mismatch count as a single aggregate: number of
+         * (krithi, language) variant rows whose lyric-section count differs from the
+         * krithi's canonical `krithi_sections` count. LEFT JOINs so a variant with zero
+         * lyric sections counts as 0 (still a mismatch when the krithi has sections),
+         * matching the track's reference query. Returns exactly one row (a bare COUNT).
+         */
+        val SECTION_ISSUES_COUNT_SQL = """
+            WITH canon AS (
+                SELECT krithi_id, COUNT(*) AS c FROM krithi_sections GROUP BY krithi_id
+            ),
+            var AS (
+                SELECT v.krithi_id, v.language, COUNT(s.id) AS c
+                FROM krithi_lyric_variants v
+                LEFT JOIN krithi_lyric_sections s ON s.lyric_variant_id = v.id
+                GROUP BY v.krithi_id, v.language
+            )
+            SELECT COUNT(*) AS mismatch_count
+            FROM var
+            LEFT JOIN canon ON canon.krithi_id = var.krithi_id
+            WHERE var.c <> COALESCE(canon.c, 0)
+        """.trimIndent()
+    }
+
     suspend fun getStats(): CuratorStats = DatabaseFactory.dbQuery {
         val pending = ImportedKrithisTable
             .selectAll()
@@ -65,24 +91,15 @@ class CuratorService(private val dal: SangitaDal) {
             .selectAll()
             .count()
 
-        // Count section issues inline
-        val sectionCountCol = KrithiSectionsTable.id.count()
-        val krithiSectionCounts = KrithiSectionsTable
-            .select(KrithiSectionsTable.krithiId, sectionCountCol)
-            .groupBy(KrithiSectionsTable.krithiId)
-            .associate { it[KrithiSectionsTable.krithiId] to it[sectionCountCol] }
-
-        val lyricSectionCountCol = KrithiLyricSectionsTable.id.count()
-        val variantSectionCounts = KrithiLyricSectionsTable
-            .innerJoin(KrithiLyricVariantsTable, { KrithiLyricSectionsTable.lyricVariantId }, { KrithiLyricVariantsTable.id })
-            .select(KrithiLyricVariantsTable.krithiId, KrithiLyricVariantsTable.language, lyricSectionCountCol)
-            .groupBy(KrithiLyricVariantsTable.krithiId, KrithiLyricVariantsTable.language)
-            .map { it[KrithiLyricVariantsTable.krithiId] to it[lyricSectionCountCol] }
-
+        // Count section-issue variant rows with a single SQL aggregate rather than
+        // scanning krithi_sections + krithi_lyric_sections into memory and diffing in
+        // Kotlin (TRACK-133 folded-in cleanup). A "section issue" is a (krithi, language)
+        // variant whose lyric-section count differs from its krithi's canonical section
+        // count; sectionIssuesCount is the number of such variant rows. Mirrors the
+        // track's canonical mismatch query and AuditSqlQueries.SECTION_COUNT_MISMATCH_SQL.
         var sectionIssuesCount = 0L
-        for ((krithiId, actualCount) in variantSectionCounts) {
-            val expectedCount = krithiSectionCounts[krithiId] ?: 0L
-            if (actualCount != expectedCount) sectionIssuesCount++
+        exec(SECTION_ISSUES_COUNT_SQL, emptyList(), StatementType.SELECT) { rs ->
+            if (rs.next()) sectionIssuesCount = rs.getLong(1)
         }
 
         val unresolvedRagaCount = RagaResolutionQueueTable

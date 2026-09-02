@@ -207,25 +207,27 @@ class LyricVariantPersistenceService(
         // 1. Ensure canonical section structure exists (or upgrade stale sections)
         // TRACK-097: If the extraction has proper section types (PALLAVI, ANUPALLAVI, etc.)
         // and the existing sections are all OTHER, replace them via saveSections (which diffs).
+        // TRACK-133: also replace when the section *count* changed (e.g. 1 OTHER blob →
+        // 10 ragamalika OTHER stanzas). Without this, reingest mapped variant text onto
+        // the old canonical rows and trailing stanzas are dropped.
         val savedSections = dal.krithis.getSections(krithiId)
-        val shouldUpdateSections = extraction.sections.isNotEmpty() && (
+        val sectionsToSave = extraction.sections
+            .filter { it.type != CanonicalSectionType.MADHYAMA_KALA } // Rule 1: MKS not top-level
+            .mapIndexed { index, section ->
+                Triple(
+                    mapCanonicalSectionType(section.type).name,
+                    index + 1,
+                    section.label,
+                )
+            }
+        val shouldUpdateSections = sectionsToSave.isNotEmpty() && (
             savedSections.isEmpty() ||
+            savedSections.size != sectionsToSave.size ||
             (savedSections.all { it.sectionType == "OTHER" } &&
              extraction.sections.any { it.type != CanonicalSectionType.OTHER })
         )
         if (shouldUpdateSections) {
-            val sectionsToSave = extraction.sections
-                .filter { it.type != CanonicalSectionType.MADHYAMA_KALA } // Rule 1: MKS not top-level
-                .mapIndexed { index, section ->
-                    Triple(
-                        mapCanonicalSectionType(section.type).name,
-                        index + 1,
-                        section.label,
-                    )
-                }
-            if (sectionsToSave.isNotEmpty()) {
-                dal.krithis.saveSections(krithiId, sectionsToSave)
-            }
+            dal.krithis.saveSections(krithiId, sectionsToSave)
         }
 
         val updatedSections = dal.krithis.getSections(krithiId)

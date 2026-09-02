@@ -1,0 +1,7 @@
+{
+  "sections": ["PALLAVI", "ANUPALLAVI", "CHARANAM", "SWARA_SAHITYA", "SWARA_SAHITYA", "SWARA_SAHITYA", "CHARANAM"],
+  "variantScripts": ["latin", "devanagari", "tamil", "telugu", "kannada", "malayalam"],
+  "variantLanguages": ["en", "sa", "ta", "te", "kn", "ml"],
+  "metadataBoundaryLabels": ["GIST", "NOTES"],
+  "perVariantSectionCount": 7
+}

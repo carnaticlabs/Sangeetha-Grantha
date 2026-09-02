@@ -63,3 +63,33 @@ def test_uses_first_line_metadata_when_title_hint_present() -> None:
     assert metadata.title == "ambA nIlAyatAkshi"
     assert metadata.raga == "Nilambari"
     assert metadata.tala == "Adi"
+
+
+def test_ragamalika_title_descriptor_not_parsed_as_raga() -> None:
+    """TRACK-133 BUG 1: a ragamalika title descriptor ("... rAga mAlikA") must not
+    be mis-parsed as a raga. The naive raga label previously ate the "m" of "mAlikA"
+    and emitted a bogus raga "Alika"; the count word ("daSa") must not leak either.
+    Ragas for a ragamalika are recovered per-section by the structure parser."""
+    parser = MetadataParser()
+    metadata = parser.parse(
+        header_text="pallavi\nmAdhavO mAM pAtu",
+        title_hint="mAdhavO mAM pAtu - daSa rAga mAlikA - tALaM rUpakam",
+    )
+
+    assert metadata.is_ragamalika is True
+    assert metadata.raga not in {"Alika", "Malika", "Mālikā", "Dasa"}
+    assert metadata.raga is None
+    # The tala after the descriptor is still recovered.
+    assert metadata.tala == "Rupakam"
+
+
+def test_ragamalika_ascii_title_descriptor_not_parsed_as_raga() -> None:
+    """The plain-ASCII descriptor form "Dasa Raga Malika" is handled the same way."""
+    parser = MetadataParser()
+    metadata = parser.parse(
+        header_text="pallavi\nmadhavo mam paatu",
+        title_hint="Madhavo Mam Paatu - Dasa Raga Malika",
+    )
+
+    assert metadata.is_ragamalika is True
+    assert metadata.raga is None
