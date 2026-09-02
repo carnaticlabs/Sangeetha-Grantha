@@ -83,6 +83,16 @@ fun Route.importRoutes(
             call.respond(updated)
         }
 
+        // TRACK-133: Re-ingest an already-mapped krithi from the import's latest parsed_payload.
+        // Supports the re-extract → re-approve loop where reviewImport() short-circuits because the
+        // import is already APPROVED with a mapped_krithi_id. Idempotent; creates no new krithi.
+        post("/{id}/reingest") {
+            val id = parseUuidParam(call.parameters["id"], "importId")
+                ?: return@post call.respondText("Missing import ID", status = HttpStatusCode.BadRequest)
+            val updated = importService.reingestMappedKrithi(id, call.currentUserId())
+            call.respond(updated)
+        }
+
         post("/scrape") {
             val request = call.receive<ScrapeRequest>()
 
@@ -181,16 +191,17 @@ fun Route.importRoutes(
             val sourcePattern = body["sourceUrlPattern"]
                 ?: return@post call.respondText("Missing sourceUrlPattern", status = HttpStatusCode.BadRequest)
 
-            // Find extraction queue entries matching the pattern
-            val (tasks, total) = dal.extractionQueue.list(
+            // TRACK-133: push the source-URL match into SQL so ALL matching rows are
+            // requeued — the old list(limit=1000) + in-memory filter silently capped at
+            // 1000 and returned totalMatching:0 for URL families with more queue rows.
+            val matchingIds = dal.extractionQueue.findIdsBySourceUrlPattern(
+                pattern = sourcePattern,
                 status = listOf("INGESTED", "DONE", "FAILED"),
-                limit = 1000,
             )
-            val matching = tasks.filter { it.sourceUrl.contains(sourcePattern, ignoreCase = true) }
 
             var requeued = 0
-            for (task in matching) {
-                val success = dal.extractionQueue.retry(task.id)
+            for (taskId in matchingIds) {
+                val success = dal.extractionQueue.retry(taskId)
                 if (success) requeued++
             }
 
@@ -216,7 +227,7 @@ fun Route.importRoutes(
             }
 
             call.respond(ReExtractResponse(
-                totalMatching = matching.size,
+                totalMatching = matchingIds.size,
                 requeued = requeued,
                 variantsCleared = variantsCleared,
             ))

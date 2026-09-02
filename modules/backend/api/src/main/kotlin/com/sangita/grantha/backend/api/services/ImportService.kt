@@ -72,6 +72,16 @@ interface IImportService {
     suspend fun reviewImport(id: Uuid, request: ImportReviewRequest, reviewerUserId: Uuid?): ImportedKrithiDto
 
     /**
+     * TRACK-133: Re-persist lyric variants and sections onto an import's already-mapped
+     * krithi from its latest parsed_payload. Supports the re-extract → re-approve loop:
+     * once an import is APPROVED with a mapped_krithi_id, reviewImport() short-circuits and
+     * never re-persists, so a krithi promoted with missing/partial sections that is later
+     * re-extracted had no supported path to pick up the corrected sections. Idempotent
+     * (existing variants are cleared first); never creates a duplicate krithi.
+     */
+    suspend fun reingestMappedKrithi(id: Uuid, reviewerUserId: Uuid?): ImportedKrithiDto
+
+    /**
      * Calculate summary stats for a batch to decide if it can be finalized.
      */
     suspend fun finalizeBatch(batchId: Uuid): Map<String, Any>
@@ -662,6 +672,39 @@ class ImportServiceImpl(
         )
 
         return updated
+    }
+
+    override suspend fun reingestMappedKrithi(id: Uuid, reviewerUserId: Uuid?): ImportedKrithiDto {
+        // TRACK-133: one transaction — clear + re-persist + audit commit atomically, or none does.
+        return DatabaseFactory.dbQuery {
+            val importData = dal.imports.findById(id)
+                ?: throw NoSuchElementException("Import not found")
+
+            val mappedId = importData.mappedKrithiId
+                ?: throw IllegalArgumentException("Import $id has no mapped krithi to reingest")
+
+            if (importData.parsedPayload == null && importData.rawLyrics == null && importData.rawTitle == null) {
+                throw IllegalArgumentException("Import $id has no parsed payload to reingest")
+            }
+
+            // Idempotency: drop any variants persisted by a prior (partial) run before re-persisting,
+            // so re-ingesting never stacks duplicate variants onto the same krithi.
+            val cleared = dal.krithiLyrics.deleteAllVariants(mappedId)
+
+            // persistFromCanonical replaces sections when extraction.sections is non-empty
+            // (see LyricVariantPersistenceService); no new krithi is created here.
+            lyricVariantPersistence.persistLyricVariants(mappedId, importData, overrides = null)
+
+            dal.auditLogs.append(
+                action = "REINGEST_MAPPED_KRITHI",
+                entityTable = "krithis",
+                entityId = mappedId,
+                actorUserId = reviewerUserId,
+                metadata = """{"importId":"$id","mappedKrithiId":"$mappedId","variantsCleared":$cleared}""",
+            )
+
+            dal.imports.findById(id) ?: importData
+        }
     }
 
     // TRACK-004: Finalize Batch

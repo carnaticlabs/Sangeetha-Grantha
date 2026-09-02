@@ -29,6 +29,7 @@ class KrithiMetadata:
     deity: str | None = None
     temple: str | None = None
     temple_location: str | None = None
+    is_ragamalika: bool = False
 
 
 # ─── Label patterns that handle all four encoding categories ─────────────
@@ -132,6 +133,18 @@ class MetadataParser:
         r"(?:composer|vāggeyakāra|वाग्गेयकार)\s*[:—–\-]\s*(.+?)$",
         re.IGNORECASE | re.MULTILINE,
     )
+    # Ragamalika title descriptor: "... raga malika", "daSa rAga mAlikA",
+    # "ragamalika", "raagamaalika", etc. This is a *musical form* descriptor, NOT a
+    # raga name — the naive raga label would otherwise eat the "m" of "mAlikA" and
+    # emit a bogus raga ("Alika"). An optional preceding count word (daSa/nava/…) is
+    # absorbed so it cannot be mistaken for a raga either. Ragas for a ragamalika are
+    # recovered per-section by the structure parser, not from this title phrase.
+    RAGAMALIKA_DESCRIPTOR = re.compile(
+        r"(?:\b\w+\s+)?"  # optional count word, e.g. "daSa"/"dasa"/"nava"
+        r"r[¯ā]?a+ga\s*"  # raga (ASCII/IAST/garbled)
+        r"m[aāĀ]*lik[aāĀ]",  # malika / mAlikA / mālikā
+        re.IGNORECASE,
+    )
     METADATA_LABEL_PATTERN = re.compile(
         _RAGA_LABEL + r"|" + _TALA_LABEL,
         re.IGNORECASE,
@@ -206,16 +219,26 @@ class MetadataParser:
         # Normalise garbled diacritics in metadata before regex matching
         normalised_text = normalize_garbled_diacritics(metadata_text)
 
-        raga, tala = self._extract_raga_tala(normalised_text)
+        # Detect the ragamalika descriptor so "... rAga mAlikA" in a title is never
+        # mis-parsed as a raga (the naive raga label eats the "m" of "mAlikA" and
+        # yields a bogus "Alika"). Extraction below is descriptor-aware: raga is read
+        # from text with the descriptor removed, while tala is still recovered from
+        # the original text so a trailing "- tALaM X" survives.
+        is_ragamalika = any(
+            self.RAGAMALIKA_DESCRIPTOR.search(text)
+            for text in (normalised_text, metadata_text, title or "", title_hint or "")
+        )
+
+        raga, tala = self._extract_raga_tala_descriptor_aware(normalised_text)
 
         # If normalised text didn't match, try the raw text as fallback
         if not raga and not tala:
-            raga, tala = self._extract_raga_tala(metadata_text)
+            raga, tala = self._extract_raga_tala_descriptor_aware(metadata_text)
 
         # Fallback: title_hint often carries raga/tala in blog pages
         # e.g. "Syama Sastry Kriti - trilOka mAtA – rAga paraju (tALa cApu)"
         if not raga and not tala and title_hint:
-            raga, tala = self._extract_raga_tala(title_hint)
+            raga, tala = self._extract_raga_tala_descriptor_aware(title_hint)
 
         # Clean up extracted names
         if raga:
@@ -234,7 +257,35 @@ class MetadataParser:
             composer=composer,
             deity=deity,
             temple=temple,
+            is_ragamalika=is_ragamalika,
         )
+
+    def _extract_raga_tala_descriptor_aware(self, text: str) -> tuple[str | None, str | None]:
+        """Extract raga/tala, guarding against the ragamalika form descriptor.
+
+        When no descriptor is present this is exactly ``_extract_raga_tala``. When
+        one is present, the raga is read from text with the descriptor stripped (so
+        no bogus raga is emitted), while the tala is still recovered from the
+        original text (a trailing "- tALaM X" needs the neighbouring label to parse).
+        """
+        if not self.RAGAMALIKA_DESCRIPTOR.search(text):
+            return self._extract_raga_tala(text)
+        stripped = self._strip_ragamalika_descriptor(text)
+        raga, _ = self._extract_raga_tala(stripped)
+        _, tala = self._extract_raga_tala(text)
+        return raga, tala
+
+    def _strip_ragamalika_descriptor(self, text: str) -> str:
+        """Remove the ragamalika form descriptor from text used for raga extraction.
+
+        Newlines are preserved (multi-line metadata blocks rely on per-line anchors);
+        only the descriptor phrase and the dangling separator it leaves are removed.
+        """
+        cleaned = self.RAGAMALIKA_DESCRIPTOR.sub(" ", text)
+        # Tidy separators left dangling by the removal (e.g. "title -  - tALaM ...").
+        cleaned = re.sub(r"[ \t]*[—–\-][ \t]*[—–\-][ \t]*", " - ", cleaned)
+        cleaned = re.sub(r"[ \t]+", " ", cleaned)
+        return cleaned.strip()
 
     def _normalize_title_boilerplate(self, title: str) -> str:
         """Remove known blog/page-title prefixes that hurt title matching."""

@@ -123,6 +123,42 @@ class ExtractionQueueRepository {
         Pair(items, total)
     }
 
+    /**
+     * TRACK-133: Every extraction-queue task whose source_url contains [pattern]
+     * (case-insensitive substring), optionally restricted to the given status
+     * db-values. The pattern is pushed into SQL as an ILIKE so this is NOT capped
+     * by a caller-supplied page size — `list(limit = 1000)` + in-memory filtering
+     * silently dropped matches beyond the first 1000 rows (a real corpus can hold
+     * >1200 INGESTED rows for one URL family), making a re-extract a no-op.
+     *
+     * Returns the matching task ids so the caller can requeue each one.
+     */
+    suspend fun findIdsBySourceUrlPattern(
+        pattern: String,
+        status: List<String>? = null,
+    ): List<Uuid> = DatabaseFactory.dbQuery {
+        // Escape LIKE wildcards in the pattern so it matches as a literal substring
+        // (mirrors the previous String.contains behaviour) — no injection via % / _.
+        val escaped = pattern.lowercase()
+            .replace("\\", "\\\\")
+            .replace("%", "\\%")
+            .replace("_", "\\_")
+
+        var query = T.select(T.id)
+            .where { T.sourceUrl.lowerCase() like "%${escaped}%" }
+
+        status?.takeIf { it.isNotEmpty() }?.let { statuses ->
+            val enumStatuses = statuses.mapNotNull { s ->
+                ExtractionStatus.entries.firstOrNull { it.dbValue == s }
+            }
+            if (enumStatuses.isNotEmpty()) {
+                query = query.andWhere { T.status inList enumStatuses }
+            }
+        }
+
+        query.map { it[T.id].value.toKotlinUuid() }
+    }
+
     suspend fun findById(id: Uuid): ExtractionDetailDto? = DatabaseFactory.dbQuery {
         T.selectAll()
             .andWhere { T.id eq id.toJavaUuid() }
