@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-03-10 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-09-05 |
 | **Author** | Sangeetha Grantha Team |
 
 # Curator Review UI & Section Issue Tracking
@@ -15,7 +15,7 @@ Provide a curator review interface for managing unmatched PDF extractions and tr
 
 ### Backend
 - `CuratorRoutes.kt`: Two endpoints — stats and section issues (paginated)
-- `CuratorService.kt`: Stats aggregation across `imported_krithis`, section issue detection comparing `krithi_sections` vs `krithi_lyric_sections` counts per variant
+- `CuratorService.kt`: Stats aggregation across `imported_krithis`. Section-issue counts are a SQL aggregate of variant-vs-canon section counts (TRACK-133); the paginated section-issues list still compares `krithi_sections` vs `krithi_lyric_sections` per variant.
 - `BulkImportTaskRepository.kt`: Fixed idempotency key to include jobType (`batchId::jobType::sourceUrl`)
 
 ### Frontend

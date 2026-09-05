@@ -1,14 +1,16 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Completed — merged to main (PR #19), 108 → 0 mismatch rows (2026-09-02) |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-08-30 |
+| **Status** | Completed — 108 → 0 mismatch rows; durable pallavi-echo parser 2026-09-05 |
+| **Version** | 1.3.0 |
+| **Last Updated** | 2026-09-05 |
 | **Author** | Sangeetha Grantha Team |
 | **Priority** | P3 — backlog; 2.4% of corpus, no data loss |
 | **Depends on** | [TRACK-093](./TRACK-093-trinity-krithi-bulk-import.md) (corpus imported) |
 | **Interacts with** | [TRACK-100](./TRACK-100-multi-pass-indic-script-extraction.md) (multi-pass Indic parsing), [TRACK-079](./TRACK-079-e2e-pipeline-section-fix.md) (previous section-consistency remediation) |
 
 # TRACK-133: Section-Count Mismatch Remediation (29 krithis)
+
+Implementation summary: [track-133-section-mismatch-remediation.md](../../application_documentation/10-implementations/track-133-section-mismatch-remediation.md).
 
 ## Goal
 
@@ -883,9 +885,127 @@ unchanged; en/ta untouched. Self-guarding (no-op if oi7 already present / struct
 (`RESPLIT_SECTIONS`). All 6 variants now read 7, content verified (oi5=raNAdhi/C4, oi6=mukhAbjamunu/C5,
 oi7=birAna/C6).
 
-**Known parser gap (durable fix):** the splitter still doesn't split a charanam at an internal
+**Known parser gap (durable fix; resolved below on 2026-09-05):** the splitter still doesn't split a charanam at an internal
 pallavi-echo refrain, so a fresh re-extract could reintroduce the glue and V62 would need re-running.
 The corpus-repair migrations (V58–V62) are tied to the imported snapshot by design; the durable fix is
 a parser refrain-split.
 
 ### FINAL: mismatch query returns **0 rows / 0 krithis** (was 108 / 29). Definition of Done met.
+
+---
+
+## Durable pallavi-echo parser fix — verified 2026-09-05
+
+**Plan Status: Accepted** — user explicitly requested implementation of the documented durable
+worker fix, four Indic regressions, English/Tamil and ordinary-refrain protection, the full worker
+suite, and validation against the source URL.
+
+**Implemented:** `StructureParser._split_charanam_pallavi_echoes` splits variant blocks before
+canonical mapping. For an Indic variant with fewer charanams than canon, it recognises a line-final
+parenthesised echo matching both the variant pallavi's opening word and its closing refrain. An
+internal echo closes the preceding charanam; the following lyric starts the next charanam. The
+refrain stays attached to C4, C5 gets its own source span, and the existing birAna C6 maps to oi7.
+The final stanza must also close with the same echo, the next line must use the same script, and
+**exactly one** glued `CHARANAM` block may be repaired — that block's extra stanza count must equal
+the charanam deficit. Summing cuts across several charanams is rejected (a spurious mid-stanza echo
+plus a real glue elsewhere must not add up to a repair). Otherwise no repair is attempted. Already
+aligned variants, Latin text, Anupallavi bodies, inline parentheses, and terminal-only refrains
+are unchanged. No composition title, database ID, or V62 dependency is embedded in the parser.
+
+This runs in the shared variant-block path, including TRACK-100 post-metadata Indic extraction.
+Kotlin parity remains as established above: ingestion persists worker sections without re-segmenting
+them; the deprecated Kotlin scraper is not part of this path. No DTO or migration changes.
+
+**Fixtures and tests:**
+[fixture provenance](../../tools/krithi-extract-enrich-worker/tests/fixtures/structure_parser/rama_ramana_rara_echo.md)
+and [focused tests](../../tools/krithi-extract-enrich-worker/tests/test_pallavi_echo_split.py).
+The four Indic repairs assert exact text/type/order/label for all seven sections, distinct C4/C5/C6
+source spans, and identical canonical English output, before and after a metadata boundary.
+English/Tamil retain their complete text, including the `tvac-caraNaM` continuation. Additional
+regressions cover explicit headings, ordinary internal and terminal refrains, inline parentheses,
+non-pallavi parentheses, missing closing cues, non-charanam blocks, ambiguous/excess/insufficient
+boundaries, mixed true+false cuts across blocks, two missing headings in one glued block, an
+Anupallavi whose echo lines stay unsplit, and stable re-parsing. Deliberate test edits used
+`SANGITA_ALLOW_TEST_EDITS=1`.
+
+### Verification evidence
+
+Commands run from `tools/krithi-extract-enrich-worker` with the existing Python 3.14.7 environment:
+
+```text
+.venv/bin/pytest tests/test_pallavi_echo_split.py -q
+Before fix: 9 failed, 17 passed (four Indic repairs × two paths, plus re-parse)
+After fix:  26 passed in 0.14s
+
+.venv/bin/pytest -q
+384 passed, 94 warnings in 20.01s
+
+.venv/bin/ruff check src/structure_parser.py tests/test_pallavi_echo_split.py
+All checks passed!
+
+.venv/bin/mypy .
+Success: no issues found in 62 source files
+```
+
+Warnings originate from third-party deprecations (google-genai, PyMuPDF/SWIG, and
+indic-transliteration). Ruff formatting and `git diff --check` also passed.
+
+**Live source validation:** fetched the complete
+[original source page](https://thyagaraja-vaibhavam.blogspot.com/2008/03/thyagaraja-kriti-ramaa-ramana-rara-raga.html)
+and ran `HtmlTextExtractor.extract(html, base_url=url)` → `normalize_garbled_diacritics` →
+`StructureParser.parse`. Canon = **7**, and **en/sa/ta/te/kn/ml = 7 each**. Every variant's complete
+text/type/order/label matches the pre-change live snapshot in the expected JSON fixture.
+
+**Reproduction distinction:** the current live page explicitly contains all C5 headings and already
+parses to seven sections before this change. It does not reproduce the historical failure as-is.
+Removing only the four Indic C5 marker prefixes from the full extracted live text reproduces the
+documented merged C4+C5 shape: before the fix, sa/te/kn/ml = 6; after it, all six variants = 7,
+with exact equality to the intact live-page output. The committed fixture records this controlled
+transformation explicitly; it is not presented as an original failing HTML snapshot.
+
+**Runtime verification:** started Docker Desktop and ran `make dev-down` then `make dev`.
+The worker image rebuilt successfully, and the Compose source mount is present. A standalone
+`docker compose run --rm --no-deps -T --entrypoint python extraction -` check parsed the merged
+fixture and verified all six variants against the expected JSON. It logged the new
+`TRACK-133 pallavi-echo split: restored 1 ... charanam boundary(s)` marker once for each of
+Devanagari, Telugu, Kannada, and Malayalam.
+
+**Environment limitation:** full-stack startup stopped at PostgreSQL with
+`FATAL: could not write lock file "postmaster.pid": No space left on device`.
+Backend health and DB/API verification therefore could not complete. No corpus re-ingestion,
+data deletion, or V62 rerun was performed; source validation here is worker extraction/segmentation,
+not a claim of newly persisted database state. Docker storage must be freed before the stack can
+start. V62 remains the historical snapshot repair; the missing-heading case now has worker coverage.
+
+### Docker startup blocker resolved (2026-09-05)
+
+The user requested resolution of the Docker disk error. Host storage had 82 GiB free, but Docker's
+60 GiB virtual disk was full (`df`: 59G filesystem, 56G used, 0 available, 100%). Inodes were only
+38% used. Removed build cache older than seven days and old dangling images, then reclaimed the
+build layers released by those images. Docker reported 1.799 GB + 2.463 GB + 3.462 GB reclaimed;
+the filesystem now has **7.7 GiB available (87% used)**. No volumes or application containers were
+pruned.
+
+`make dev` subsequently succeeded: PostgreSQL completed recovery, Flyway validated 72 migrations
+and confirmed schema V62 was current without applying migrations, and the extraction worker
+connected to the database. `GET http://localhost:8080/health` returned `OK`; the admin UI at
+`http://localhost:5001/` returned HTTP 200. A read-only count confirmed **1,226 krithis** remain.
+This resolves the runtime-startup limitation above; no corpus re-ingestion was performed.
+
+### Post-validation hardening (2026-09-05)
+
+Independent review of the uncommitted parser found no production bugs. Two nits were then
+applied before commit:
+
+1. **Anupallavi negative test** now maps Telugu against an English Anupallavi, so the assertion
+   is the unsplit Anupallavi body (type + full text), not “Pallavi survived after canonical
+   mapping dropped the Anupallavi.”
+2. **Single glued block** — `_split_charanam_pallavi_echoes` repairs only when exactly one
+   `CHARANAM` block has internal echo boundaries and that extra-stanza count equals the deficit.
+   A mixed true+false cut across two charanams is rejected. A single block short by two headings
+   still splits.
+
+Independent re-run after those edits: focused pallavi-echo + charanam-guard **54 passed**;
+full worker suite **386 passed**; `ruff` and `mypy .` (62 files) clean. Live mismatch SQL
+still **0 rows**; `ramA ramaNa rArA` remains 6 variants × 7 non-empty lyric sections. The
+mounted extraction image parsed the merged fixture to 7 sections in every language.

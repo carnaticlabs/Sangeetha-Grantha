@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Completed — Batch A+B merge migration (V50 / R__seed_05) and normaliser landed and merged (PR #14, 2026-08-29) |
-| **Version** | 1.11.0 |
-| **Last Updated** | 2026-08-29 |
+| **Version** | 1.11.1 |
+| **Last Updated** | 2026-09-05 |
 | **Author** | Sangeetha Grantha Team |
 | **Priority** | P2 — data correctness |
 | **Decision** | [ADR-016](../../application_documentation/02-architecture/decisions/ADR-016-raga-naming-authority.md) — raga naming authority (frozen 2026-07-19) |
@@ -738,11 +738,11 @@ at the right raga.
 
 ## Out of scope
 
-- The 29 krithis with section-count mismatches → [TRACK-133](./TRACK-133-section-mismatch-remediation.md).
-- `CuratorService.getStats()` computes section-issue counts by loading every section row into two
-  in-memory maps and diffing in Kotlin ([CuratorService.kt:67-84](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/CuratorService.kt)).
-  It should be a SQL aggregate. Noted here so it is not lost; belongs with TRACK-133, which touches
-  the same code.
+- The 29 krithis with section-count mismatches → [TRACK-133](./TRACK-133-section-mismatch-remediation.md)
+  (**closed**: 108 → 0 rows; durable pallavi-echo parser 2026-09-05 —
+  [implementation](../../application_documentation/10-implementations/track-133-section-mismatch-remediation.md)).
+- `CuratorService.getStats()` section-issue count is now a SQL aggregate (TRACK-133, PR #19).
+  The prior in-memory two-table scan is gone.
 
 ## Progress Log
 - **2026-08-29**: Implementation started. Python `normalize_for_matching(..., "raga")` extended

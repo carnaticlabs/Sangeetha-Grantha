@@ -1171,6 +1171,79 @@ class StructureParser:
         )
         return [merged, *blocks[first_seg + 1 :]]
 
+    def _split_charanam_pallavi_echoes(
+        self, blocks: list[_TextBlock], canonical_sections: list[DetectedSection]
+    ) -> list[_TextBlock]:
+        """Recover missing Indic charanam headings only when echo evidence fills the deficit.
+
+        TRACK-133: a line-final pallavi echo can close an unlabelled stanza inside
+        a charanam. It remains part of that stanza. Require a closing echo on the
+        final stanza too, and repair only a single glued block whose extra stanzas
+        exactly equal the charanam deficit. Summing cuts across several charanams
+        could keep a mixed true+false split. Split tokens before canonical mapping
+        so later charanams retain their slots and each new section has source offsets.
+        """
+        deficit = sum(s.section_type == SectionType.CHARANAM for s in canonical_sections) - sum(
+            b.label == "CHARANAM" and bool(b.lines) for b in blocks
+        )
+        if deficit <= 0:
+            return blocks
+
+        pallavi = next((b for b in blocks if b.label == "PALLAVI" and b.lines), None)
+        if pallavi is None:
+            return blocks
+        script = self._detect_script(pallavi.lines[0].text)
+        if script not in {"devanagari", "telugu", "kannada", "malayalam", "tamil"}:
+            return blocks
+        echo_match = re.search(r"\(([^()\s]+)\)\s*$", pallavi.lines[-1].text)
+        if echo_match is None:
+            return blocks
+        echo = echo_match.group(1)
+        opening = re.sub(r"^\d+\s*", "", pallavi.lines[0].text)
+        if not opening.startswith(echo + " "):
+            return blocks
+        closing_echo = re.compile(r"\(" + re.escape(echo) + r"\)\s*$")
+
+        glued: list[tuple[int, list[int]]] = []
+        for index, block in enumerate(blocks):
+            if block.label != "CHARANAM" or not block.lines:
+                continue
+            if not closing_echo.search(block.lines[-1].text):
+                continue
+            boundaries = [
+                i + 1
+                for i, line in enumerate(block.lines[:-1])
+                if closing_echo.search(line.text) and self._detect_script(block.lines[i + 1].text) == script
+            ]
+            if boundaries:
+                glued.append((index, boundaries))
+
+        if len(glued) != 1:
+            return blocks
+        index, boundaries = glued[0]
+        if len(boundaries) != deficit:
+            return blocks
+
+        repaired: list[_TextBlock] = []
+        for i, block in enumerate(blocks):
+            if i != index:
+                repaired.append(block)
+                continue
+            start = 0
+            for end in (*boundaries, len(block.lines)):
+                lines = block.lines[start:end]
+                repaired.append(
+                    _TextBlock(
+                        label="CHARANAM",
+                        lines=lines,
+                        start_pos=lines[0].start_pos,
+                        end_pos=lines[-1].end_pos,
+                    )
+                )
+                start = end
+        logger.info("TRACK-133 pallavi-echo split: restored %d %s charanam boundary(s)", deficit, script)
+        return repaired
+
     def _sections_from_variant_blocks(
         self,
         blocks: list[_TextBlock],
@@ -1188,6 +1261,8 @@ class StructureParser:
         # would shift the mapping and drop the final stanza).
         if getattr(self, "_raga_segment_enabled", False):
             blocks = self._merge_leading_prefix_into_first_raga_segment(blocks)
+
+        blocks = self._split_charanam_pallavi_echoes(blocks, canonical_sections)
 
         # Collect raw parsed sections from blocks, applying MKS demotion
         raw_sections: list[DetectedSection] = []

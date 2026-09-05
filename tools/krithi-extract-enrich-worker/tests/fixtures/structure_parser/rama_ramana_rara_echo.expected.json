@@ -1,0 +1,266 @@
+{
+  "en": [
+    {
+      "type": "PALLAVI",
+      "order": 1,
+      "label": "Pallavi",
+      "text": "1 ramA ramaNa rArA O (ramA)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 2,
+      "label": "Charanam",
+      "text": "samAnam(e)varu vinumA nA manavini\n2 tam(A)su pogaDa taram(A)hi patikini (ramA)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 3,
+      "label": "Charanam 2",
+      "text": "budh(A)d(y)avana daSarath(A)rbhaka 3 manO-\nrathamb(o)sagu 4 suma rath(A)rha sad-guNa (ramA)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 4,
+      "label": "Charanam 3",
+      "text": "5 kal(A)rtha bhUsha sakal(A)rtha SaSa dhara\nkalA dhara nuta vikal(A)rti 6 samhAra (ramA)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 5,
+      "label": "Charanam 4",
+      "text": "raN(A)dhi SUra SaraN(A)gata 7 tvac-\ncaraNaM bhava tAraNambu cEsunu (ramA)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 6,
+      "label": "Charanam 5",
+      "text": "mukh(A)bjamunu 8 Sata mukh(A)ri jUpu\nsamukhAna kolutu 9 durmukh(A)sura haraNa (ramA)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 7,
+      "label": "Charanam 6",
+      "text": "birAna brOvaga rAdA SrImad-aga\nrAja dhara tyAgarAja sannuta (ramA)"
+    }
+  ],
+  "sa": [
+    {
+      "type": "PALLAVI",
+      "order": 1,
+      "label": "Pallavi",
+      "text": "रमा रमण रारा ओ (रमा)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 2,
+      "label": "Charanam",
+      "text": "समान(मॆ)वरु विनुमा ना मनविनि\nत(मा)सु पॊगड तर(मा)हि पतिकिनि (रमा)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 3,
+      "label": "Charanam 2",
+      "text": "बु(धा)(द्य)वन दशर(था)र्भक मनो-\nरथ(म्बॊ)सगु सुम र(था)र्ह सद्गुण (रमा)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 4,
+      "label": "Charanam 3",
+      "text": "क(ला)र्थ भूष सक(ला)र्थ शश धर\nकला धर नुत विक(ला)र्ति संहार (रमा)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 5,
+      "label": "Charanam 4",
+      "text": "र(णा)धि शूर शर(णा)गत\nत्वच्चरणम् भव तारणम्बु चेसुनु (रमा)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 6,
+      "label": "Charanam 5",
+      "text": "मु(खा)ब्जमुनु शत मु(खा)रि जूपु\nसमुखान कॊलुतु दुर्मु(खा)सुर हरण (रमा)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 7,
+      "label": "Charanam 6",
+      "text": "बिरान ब्रोवग रादा श्रीम(द)ग\nराज धर त्यागराज सन्नुत (रमा)"
+    }
+  ],
+  "ta": [
+    {
+      "type": "PALLAVI",
+      "order": 1,
+      "label": "Pallavi",
+      "text": "ரமா ரமண ராரா ஓ (ரமா)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 2,
+      "label": "Charanam",
+      "text": "ஸமான(மெ)வரு வினுமா நா மனவினி\nத(மா)ஸு பொக3ட3 தர(மா)ஹி பதிகினி (ரமா)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 3,
+      "label": "Charanam 2",
+      "text": "பு3(தா4)(த்3ய)வன த3ஸ1ர(தா2)ர்ப4க மனோ-\nரத2ம்(பொ3)ஸகு3 ஸும ர(தா2)ர்ஹ ஸத்3-கு3ண (ரமா)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 4,
+      "label": "Charanam 3",
+      "text": "க(லா)ர்த2 பூ4ஷ ஸக(லா)ர்த2 ஸ1ஸ1 த4ர\nகலா த4ர நுத விக(லா)ர்தி ஸம்ஹார (ரமா)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 5,
+      "label": "Charanam 4",
+      "text": "ர(ணா)தி4 ஸூ1ர ஸ1ர(ணா)க3த த்வச்-\nசரணம் ப4வ தாரணம்பு3 சேஸுனு (ரமா)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 6,
+      "label": "Charanam 5",
+      "text": "மு(கா2)ப்3ஜமுனு ஸ1த மு(கா2)ரி ஜூபு\nஸமுகா2ன கொலுது து3ர்மு(கா2)ஸுர ஹரண (ரமா)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 7,
+      "label": "Charanam 6",
+      "text": "பி3ரான ப்3ரோவக3 ராதா3 ஸ்ரீம(த3)க3\nராஜ த4ர த்யாக3ராஜ ஸன்னுத (ரமா)"
+    }
+  ],
+  "te": [
+    {
+      "type": "PALLAVI",
+      "order": 1,
+      "label": "Pallavi",
+      "text": "రమా రమణ రారా ఓ (రమా)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 2,
+      "label": "Charanam",
+      "text": "సమానమెవరు వినుమా నా మనవిని\nతమాసు పొగడ తరమాహి పతికిని (రమా)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 3,
+      "label": "Charanam 2",
+      "text": "బుధాద్యవన దశరథార్భక మనో-\nరథంబొసగు సుమ రథార్హ సద్గుణ (రమా)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 4,
+      "label": "Charanam 3",
+      "text": "కలార్థ భూష సకలార్థ శశ ధర\nకలా ధర నుత వికలార్తి సంహార (రమా)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 5,
+      "label": "Charanam 4",
+      "text": "రణాధి శూర శరణాగత\nత్వచ్చరణం భవ తారణంబు చేసును (రమా)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 6,
+      "label": "Charanam 5",
+      "text": "ముఖాబ్జమును శత ముఖారి జూపు\nసముఖాన కొలుతు దుర్ముఖాసుర హరణ (రమా)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 7,
+      "label": "Charanam 6",
+      "text": "బిరాన బ్రోవగ రాదా శ్రీమదగ\nరాజ ధర త్యాగరాజ సన్నుత (రమా)"
+    }
+  ],
+  "kn": [
+    {
+      "type": "PALLAVI",
+      "order": 1,
+      "label": "Pallavi",
+      "text": "ರಮಾ ರಮಣ ರಾರಾ ಓ (ರಮಾ)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 2,
+      "label": "Charanam",
+      "text": "ಸಮಾನಮೆವರು ವಿನುಮಾ ನಾ ಮನವಿನಿ\nತಮಾಸು ಪೊಗಡ ತರಮಾಹಿ ಪತಿಕಿನಿ (ರಮಾ)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 3,
+      "label": "Charanam 2",
+      "text": "ಬುಧಾದ್ಯವನ ದಶರಥಾರ್ಭಕ ಮನೋ-\nರಥಂಬೊಸಗು ಸುಮ ರಥಾರ್ಹ ಸದ್ಗುಣ (ರಮಾ)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 4,
+      "label": "Charanam 3",
+      "text": "ಕಲಾರ್ಥ ಭೂಷ ಸಕಲಾರ್ಥ ಶಶ ಧರ\nಕಲಾ ಧರ ನುತ ವಿಕಲಾರ್ತಿ ಸಂಹಾರ (ರಮಾ)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 5,
+      "label": "Charanam 4",
+      "text": "ರಣಾಧಿ ಶೂರ ಶರಣಾಗತ\nತ್ವಚ್ಚರಣಂ ಭವ ತಾರಣಂಬು ಚೇಸುನು (ರಮಾ)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 6,
+      "label": "Charanam 5",
+      "text": "ಮುಖಾಬ್ಜಮುನು ಶತ ಮುಖಾರಿ ಜೂಪು\nಸಮುಖಾನ ಕೊಲುತು ದುರ್ಮುಖಾಸುರ ಹರಣ (ರಮಾ)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 7,
+      "label": "Charanam 6",
+      "text": "ಬಿರಾನ ಬ್ರೋವಗ ರಾದಾ ಶ್ರೀಮದಗ\nರಾಜ ಧರ ತ್ಯಾಗರಾಜ ಸನ್ನುತ (ರಮಾ)"
+    }
+  ],
+  "ml": [
+    {
+      "type": "PALLAVI",
+      "order": 1,
+      "label": "Pallavi",
+      "text": "രമാ രമണ രാരാ ഓ (രമാ)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 2,
+      "label": "Charanam",
+      "text": "സമാനമെവരു വിനുമാ നാ മനവിനി\nതമാസു പൊഗഡ തരമാഹി പതികിനി (രമാ)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 3,
+      "label": "Charanam 2",
+      "text": "ബുധാദ്യവന ദശരഥാര്ഭക മനോ-\nരഥമ്ബൊസഗു സുമ രഥാര്ഹ സദ്ഗുണ (രമാ)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 4,
+      "label": "Charanam 3",
+      "text": "കലാര്ഥ ഭൂഷ സകലാര്ഥ ശശ ധര\nകലാ ധര നുത വികലാര്തി സംഹാര (രമാ)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 5,
+      "label": "Charanam 4",
+      "text": "രണാധി ശൂര ശരണാഗത\nത്വച്ചരണമ് ഭവ താരണമ്ബു ചേസുനു (രമാ)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 6,
+      "label": "Charanam 5",
+      "text": "മുഖാബ്ജമുനു ശത മുഖാരി ജൂപു\nസമുഖാന കൊലുതു ദുര്മുഖാസുര ഹരണ (രമാ)"
+    },
+    {
+      "type": "CHARANAM",
+      "order": 7,
+      "label": "Charanam 6",
+      "text": "ബിരാന ബ്രോവഗ രാദാ ശ്രീമദഗ\nരാജ ധര ത്യാഗരാജ സന്നുത (രമാ)"
+    }
+  ]
+}
