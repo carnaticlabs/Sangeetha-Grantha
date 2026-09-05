@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 3.2.0 |
-| **Last Updated** | 2026-08-29 |
+| **Version** | 3.3.0 |
+| **Last Updated** | 2026-09-05 |
 | **Author** | Sangeetha Grantha Team |
 
 # Database Migrations (Sangita Grantha)
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS new_table (...);
 
 ## 2. Migration files
 
-47 versioned migrations (`V01`–`V47`) plus 4 repeatable seed migrations. Foundational set:
+62 versioned migrations (`V01`–`V62`) plus 6 repeatable seed migrations. Foundational set:
 
 | File | Purpose | Key Entities |
 |------|---------|--------------|
@@ -58,6 +58,16 @@ CREATE TABLE IF NOT EXISTS new_table (...);
 | `V46__delete_incomplete_devanagari_amba_nilayatakshi.sql` | Data cleanup — incomplete Devanagari import | |
 | `V47__demerge_ragamalika_visvanatham_from_natabharanam.sql` | Ragamalika demerge — separate ragamalika krithi from natabhranam raga | |
 
+TRACK-133 corpus repairs (Trinity section-count mismatches). Each writes `audit_log` and is a no-op if the target krithi is absent. The durable parser for the V62 case is documented in [track-133-section-mismatch-remediation.md](../10-implementations/track-133-section-mismatch-remediation.md).
+
+| File | Purpose | Key Entities |
+|------|---------|--------------|
+| `V58__track133_delete_phantom_empty_charanam_sections.sql` | Delete empty trailing canonical charanams (`rAma sItA rAma` 10→6, `Rama Rama Rama Sita` 14→6) | `krithi_sections`, `krithi_lyric_sections`, `audit_log` |
+| `V59__track133_merge_missplit_canon_sections.sql` | Merge English/Tamil mis-split canon sections (`Raanidi Raadu`, `ramA ramaNa rArA` `tvac-caraNam`) | `krithi_sections`, `krithi_lyric_sections`, `audit_log` |
+| `V60__track133_fix_alakalallaladaga_pallavi_missplit.sql` | Fold pallavi line 2 out of a spurious anupallavi (`Alakalallalaadaga` → P+A+C) | `krithi_sections`, `krithi_lyric_sections`, `audit_log` |
+| `V61__track133_madhavo_ragamalika_metadata.sql` | Dashavatara ragamalika metadata for `mAdhavO mAM pAtu` (10 ordered ragas + aliases) | `krithis`, `krithi_ragas`, `raga_aliases`, `audit_log` |
+| `V62__track133_ramaramanarara_indic_charanam_resplit.sql` | Snapshot re-split of Indic C4+C5 glue on `ramA ramaNa rArA` | `krithi_lyric_sections`, `audit_log` |
+
 ### Repeatable seed migrations (reference data)
 
 | File | Seeds |
@@ -66,6 +76,8 @@ CREATE TABLE IF NOT EXISTS new_table (...);
 | `R__seed_02_composer_aliases.sql` | composer name aliases (FK → composers) |
 | `R__seed_03_import_sources_authority.sql` | import-source authority tiers & metadata |
 | `R__seed_04_raga_reference.sql` | comprehensive raga reference (~972 ragas) |
+| `R__seed_05_merge_duplicate_ragas.sql` | TRACK-132 duplicate-raga merge keepers |
+| `R__seed_06_merge_loser_aliases.sql` | TRACK-132/137 merge-loser alias rows |
 
 ### Enum types
 
@@ -98,7 +110,7 @@ make bootstrap-admin # provision/update the admin user (argon2id); needs ADMIN_E
 
 ### Creating a new migration
 
-1. Create `database/migrations/V<next>__description.sql` (next sequential version, e.g. `V48__...`).
+1. Create `database/migrations/V<next>__description.sql` (next sequential version, e.g. `V63__...`).
 2. Write idempotent SQL (`IF NOT EXISTS`, `ON CONFLICT`); no `-- migrate:down` section.
 3. Test: `make db-reset` (full from-scratch apply) and `make migrate` (incremental).
 4. Update this file and `domain-model.md` / schema docs if entities change.
@@ -114,7 +126,7 @@ For reference-data changes, edit the relevant `R__seed_*.sql` instead — Flyway
 
 ### Ordering
 
-Versioned migrations apply in version order; repeatables apply afterwards in description (alphabetical) order. Dependency highlights: `V01` (enums/roles) → `V02` (domain tables) → `V03/04/05/06` (constraints, import, sections, notation). Repeatable seeds depend on the schema and on each other in `R__seed_01 → 02 → 03 → 04` order.
+Versioned migrations apply in version order; repeatables apply afterwards in description (alphabetical) order. Dependency highlights: `V01` (enums/roles) → `V02` (domain tables) → `V03/04/05/06` (constraints, import, sections, notation). Repeatable seeds depend on the schema and on each other in `R__seed_01 → 02 → 03 → 04 → 05 → 06` order.
 
 ---
 

@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.19.0 |
-| **Last Updated** | 2026-08-30 |
+| **Version** | 1.20.0 |
+| **Last Updated** | 2026-09-05 |
 | **Author** | Sangeetha Grantha Team |
 
 # Conductor Tracks Registry
@@ -136,7 +136,7 @@
 | [TRACK-130](./tracks/TRACK-130-heuristics-consolidation-cli-dedup.md) | Consolidate Matching Heuristics & De-duplicate the CLI Extraction Pipeline | Completed |
 | [TRACK-131](./tracks/TRACK-131-worker-config-packaging.md) | Worker Config → pydantic-settings + Reproducible Docker Build | Completed |
 | [TRACK-132](./tracks/TRACK-132-raga-deduplication-normalizer-fix.md) | Raga Deduplication & Import Normaliser Fix | Completed — V50/R__seed_05 merge + normaliser landed (PR #14) |
-| [TRACK-133](./tracks/TRACK-133-section-mismatch-remediation.md) | Section-Count Mismatch Remediation (29 krithis) | Completed — merged via PR #19 (108 → 0 mismatch rows) |
+| [TRACK-133](./tracks/TRACK-133-section-mismatch-remediation.md) | Section-Count Mismatch Remediation (29 krithis) | Completed — 108 → 0 mismatch rows; durable pallavi-echo parser 2026-09-05 |
 | [TRACK-134](./tracks/TRACK-134-ai-native-sdlc-artifacts.md) | AI-native SDLC artifacts (intent/spec/plan, REVIEW.md, evals) | Done |
 | [TRACK-135](./tracks/TRACK-135-library-upgrades-aug-2026.md) | Library Upgrades — August 2026 (Batch 1–2c) | Done |
 | [TRACK-136](./tracks/TRACK-136-raga-identity-alias-resolution.md) | Raga Identity — Alias Table, Match-Key & Controlled Resolution (ADR-017 Phases 1–3) | Done |

@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-03-10 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-09-05 |
 | **Author** | Sangeetha Grantha Team |
 
 # E2E Pipeline Validation & Lyric Section Consistency Fix
@@ -43,5 +43,7 @@ Prove the CSV bulk import + PDF extraction pipeline end-to-end with real Dikshit
 - 0 auto-created krithis (was 141)
 - 172 unmatched → pending review
 - 0 section inconsistencies (was 435)
+
+Trinity-import residue after the later 1,226-krithi corpus is closed in [TRACK-133](./track-133-section-mismatch-remediation.md) (108 → 0).
 
 Ref: application_documentation/10-implementations/track-079-e2e-pipeline-section-fix.md

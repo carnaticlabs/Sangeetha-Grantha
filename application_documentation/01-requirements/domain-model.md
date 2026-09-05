@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.2.0 |
-| **Last Updated** | 2026-06-13 |
+| **Version** | 1.3.0 |
+| **Last Updated** | 2026-09-05 |
 | **Author** | Sangeetha Grantha Team |
 
 # Sangita Grantha Domain Model Overview
@@ -210,7 +210,11 @@ has different structural requirements, so validation must not treat one
 form's sections as another's.
 
 - **Krithi**: Pallavi → Anupallavi (optional) → one or more Charanams. May
-  also carry Chittaswaram, Swara-sahitya, or Madhyamakala sahitya.
+  also carry Chittaswaram, Swara-sahitya, or Madhyamakala sahitya. A
+  parenthesised pallavi-echo refrain at the end of a charanam line belongs
+  to the stanza it closes; it is not a section of its own. Distinct
+  charanams must still be stored as separate `CHARANAM` rows even when a
+  source omits a heading between them.
 - **Varnam**: requires Pallavi, Anupallavi, **Muktayi Swaram**, the
   Charanam (pallavi-of-charanam) line, and a set of Chittaswarams (Ettugada
   swaras). Swara and sahitya are positionally aligned — model the notation

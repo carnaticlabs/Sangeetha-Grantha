@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.2.0 |
-| **Last Updated** | 2026-03-17 |
+| **Version** | 1.3.0 |
+| **Last Updated** | 2026-09-05 |
 | **Author** | Sangeetha Grantha Team |
 
 # Trinity Krithi Bulk Import
@@ -49,5 +49,7 @@ Kotlin-side HTML scraping produced corrupted lyrics (Devanagari pronunciation gu
 - Three-batch import strategy: Syama Sastri → Dikshitar → Thyagaraja
 - All transliteration variants resolve correctly via fuzzy matching
 - Clean lyrics produced through Python extraction pipeline
+
+Section-count mismatches left by the Trinity import are closed in [TRACK-133](./track-133-section-mismatch-remediation.md) (108 → 0 rows; durable pallavi-echo parser 2026-09-05).
 
 Ref: application_documentation/10-implementations/track-093-trinity-krithi-bulk-import.md

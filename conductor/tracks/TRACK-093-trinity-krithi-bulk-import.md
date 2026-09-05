@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Completed |
-| **Version** | 1.3.0 |
-| **Last Updated** | 2026-07-19 |
+| **Version** | 1.3.1 |
+| **Last Updated** | 2026-09-05 |
 | **Author** | Sangeetha Grantha Team |
 
 > **2026-07-19 — completed.** The re-import held below has since run. Verified against the dev DB:
@@ -17,8 +17,10 @@
 > | `parsed_payload` format | 1,238 of 1,238 canonical — **zero legacy `ScrapedKrithiMetadata`** |
 >
 > The last row is TRACK-096's explicit unblock condition; that track is now clear to run its
-> deletion cleanup. Residual data quality is tracked separately, not here:
-> **29 krithis (2.4%) with section-count mismatches** → [TRACK-133](./TRACK-133-section-mismatch-remediation.md);
+> deletion cleanup. Residual data quality was tracked separately:
+> **29 krithis (2.4%) with section-count mismatches** → [TRACK-133](./TRACK-133-section-mismatch-remediation.md)
+> (closed 2026-09-02, **108 → 0** rows; durable pallavi-echo parser 2026-09-05 —
+> [implementation](../../application_documentation/10-implementations/track-133-section-mismatch-remediation.md));
 > **16 duplicate raga pairs** created by an import-side normalisation gap → [TRACK-132](./TRACK-132-raga-deduplication-normalizer-fix.md).
 
 <details>
