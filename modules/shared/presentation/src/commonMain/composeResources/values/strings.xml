@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Rasika</string>
+    <string name="catalogue_name">Sangita Grantha</string>
+    <string name="tab_search">Search</string>
+    <string name="tab_browse">Browse</string>
+    <string name="tab_favourites">Favourites</string>
+    <string name="search_placeholder">Search kritis by name</string>
+    <string name="search_action">Search</string>
+    <string name="empty_search">No published kritis match.</string>
+    <string name="retry">Retry</string>
+    <string name="add_favourite">Save favourite</string>
+    <string name="remove_favourite">Remove favourite</string>
+    <string name="ragamalika">Ragamalika</string>
+    <string name="browse_ragas">Ragas</string>
+    <string name="browse_composers">Composers</string>
+    <string name="preferences">Preferences</string>
+    <string name="back">Back</string>
+    <string name="script">Script</string>
+    <string name="reading">Reading</string>
+</resources>
