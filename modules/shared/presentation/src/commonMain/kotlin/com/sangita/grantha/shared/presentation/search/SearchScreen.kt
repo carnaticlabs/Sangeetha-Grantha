@@ -12,10 +12,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueKrithiSummaryDto
 import com.sangita.grantha.shared.presentation.RasikaCopy
 import com.sangita.grantha.shared.presentation.components.KrithiCard
@@ -37,7 +37,7 @@ fun SearchScreen(
     onToggleFavourite: (Uuid, String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val state by presenter.state.collectAsState()
+    val state by presenter.state.collectAsStateWithLifecycle()
     Column(modifier.fillMaxSize()) {
         RasikaScreenHeader(
             title = RasikaCopy.SEARCH_TITLE,

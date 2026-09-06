@@ -1,5 +1,6 @@
 package com.sangita.grantha.backend.api.routes
 
+import com.sangita.grantha.backend.api.plugins.captureCatalogueResultCount
 import com.sangita.grantha.backend.api.services.CatalogueResult
 import com.sangita.grantha.backend.api.services.CatalogueService
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueErrorCodeDto
@@ -47,6 +48,7 @@ fun Route.catalogueRoutes(catalogueService: CatalogueService) {
 private suspend inline fun <reified T : Any> ApplicationCall.respondCatalogue(result: CatalogueResult<T>) {
     when (result) {
         is CatalogueResult.Ok -> {
+            captureCatalogueResultCount(result.value)
             response.headers.append(HttpHeaders.CacheControl, "no-store")
             respond(HttpStatusCode.OK, result.value)
         }

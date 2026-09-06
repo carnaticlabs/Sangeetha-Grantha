@@ -2,6 +2,7 @@ package com.sangita.grantha.backend.dal.repositories
 
 import com.sangita.grantha.backend.dal.DatabaseFactory
 import com.sangita.grantha.backend.dal.enums.WorkflowState
+import com.sangita.grantha.backend.dal.models.CatalogueLike
 import com.sangita.grantha.backend.dal.models.CatalogueReadingDefaults
 import com.sangita.grantha.backend.dal.models.toDto
 import com.sangita.grantha.backend.dal.support.toJavaUuid
@@ -43,6 +44,7 @@ import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.inList
 import org.jetbrains.exposed.v1.core.inSubQuery
 import org.jetbrains.exposed.v1.core.like
+import org.jetbrains.exposed.v1.core.LikePattern
 import org.jetbrains.exposed.v1.core.lowerCase
 import org.jetbrains.exposed.v1.core.or
 import org.jetbrains.exposed.v1.jdbc.select
@@ -280,19 +282,19 @@ class CatalogueRepository {
     private fun krithiFilter(query: String?, composerId: UUID?, ragaId: UUID?): Op<Boolean> {
         var condition: Op<Boolean> = KrithisTable.workflowState eq WorkflowState.PUBLISHED
         query?.trim()?.takeIf { it.isNotEmpty() }?.let { raw ->
-            val token = "%${raw.lowercase()}%"
+            val pattern = literalContains(raw)
             val composerByName = ComposersTable
                 .select(ComposersTable.id)
-                .where { ComposersTable.nameNormalized like token }
+                .where { ComposersTable.nameNormalized like pattern }
             val composerByAlias = ComposerAliasesTable
                 .select(ComposerAliasesTable.composerId)
-                .where { ComposerAliasesTable.aliasNormalized like token }
+                .where { ComposerAliasesTable.aliasNormalized like pattern }
             val ragaByName = RagasTable
                 .select(RagasTable.id)
-                .where { RagasTable.nameNormalized like token }
+                .where { RagasTable.nameNormalized like pattern }
             val ragaByAlias = RagaAliasesTable
                 .select(RagaAliasesTable.ragaId)
-                .where { RagaAliasesTable.alias.lowerCase() like token }
+                .where { RagaAliasesTable.alias.lowerCase() like pattern }
             val krithiByRaga = KrithiRagasTable
                 .select(KrithiRagasTable.krithiId)
                 .where {
@@ -300,8 +302,8 @@ class CatalogueRepository {
                         (KrithiRagasTable.ragaId inSubQuery ragaByAlias)
                 }
             condition = condition and (
-                (KrithisTable.titleNormalized like token) or
-                    (KrithisTable.incipitNormalized like token) or
+                (KrithisTable.titleNormalized like pattern) or
+                    (KrithisTable.incipitNormalized like pattern) or
                     (KrithisTable.composerId inSubQuery composerByName) or
                     (KrithisTable.composerId inSubQuery composerByAlias) or
                     (KrithisTable.id inSubQuery krithiByRaga)
@@ -320,21 +322,21 @@ class CatalogueRepository {
     private fun ragaFilter(query: String?): Op<Boolean> {
         val raw = query?.trim().orEmpty()
         if (raw.isEmpty()) return Op.TRUE
-        val token = "%${raw.lowercase()}%"
+        val pattern = literalContains(raw)
         val aliasHits = RagaAliasesTable
             .select(RagaAliasesTable.ragaId)
-            .where { RagaAliasesTable.alias.lowerCase() like token }
-        return (RagasTable.nameNormalized like token) or (RagasTable.id inSubQuery aliasHits)
+            .where { RagaAliasesTable.alias.lowerCase() like pattern }
+        return (RagasTable.nameNormalized like pattern) or (RagasTable.id inSubQuery aliasHits)
     }
 
     private fun composerFilter(query: String?): Op<Boolean> {
         val raw = query?.trim().orEmpty()
         if (raw.isEmpty()) return Op.TRUE
-        val token = "%${raw.lowercase()}%"
+        val pattern = literalContains(raw)
         val aliasHits = ComposerAliasesTable
             .select(ComposerAliasesTable.composerId)
-            .where { ComposerAliasesTable.aliasNormalized like token }
-        return (ComposersTable.nameNormalized like token) or (ComposersTable.id inSubQuery aliasHits)
+            .where { ComposerAliasesTable.aliasNormalized like pattern }
+        return (ComposersTable.nameNormalized like pattern) or (ComposersTable.id inSubQuery aliasHits)
     }
 
     private fun hydrateSummaries(ids: List<UUID>): List<CatalogueKrithiSummaryDto> {
@@ -536,4 +538,7 @@ class CatalogueRepository {
         }
         return links
     }
+
+    private fun literalContains(raw: String): LikePattern =
+        LikePattern(CatalogueLike.containsPattern(raw), CatalogueLike.ESCAPE_CHAR)
 }

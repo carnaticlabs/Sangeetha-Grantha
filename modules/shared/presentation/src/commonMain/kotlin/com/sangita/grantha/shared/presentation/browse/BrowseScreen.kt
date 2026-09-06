@@ -13,11 +13,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sangita.grantha.shared.presentation.RasikaCopy
 import com.sangita.grantha.shared.presentation.components.KrithiCard
 import com.sangita.grantha.shared.presentation.components.LoadState
@@ -39,7 +39,7 @@ fun BrowseScreen(
     onToggleFavourite: (Uuid, String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val state by presenter.state.collectAsState()
+    val state by presenter.state.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) {
         if (state.ragas.isEmpty() && state.load is LoadState.Idle) presenter.loadDirectory()
     }

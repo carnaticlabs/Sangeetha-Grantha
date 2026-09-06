@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -17,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.backhandler.BackHandler
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sangita.grantha.shared.presentation.browse.BrowsePresenter
 import com.sangita.grantha.shared.presentation.browse.BrowseScreen
 import com.sangita.grantha.shared.presentation.components.RasikaTabBar
@@ -41,7 +41,7 @@ fun RasikaApp(container: MobileAppContainer) {
     var current by remember { mutableStateOf(navigator.current) }
     var selectedTab by remember { mutableStateOf(navigator.selectedTab) }
     val prefsPresenter = remember { PreferencesPresenter(container.preferences) }
-    val prefs by prefsPresenter.state.collectAsState()
+    val prefs by prefsPresenter.state.collectAsStateWithLifecycle()
     val searchPresenter = remember {
         SearchPresenter(container.catalogue, container.session, container.appScope)
     }

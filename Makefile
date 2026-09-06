@@ -66,7 +66,8 @@ test-mobile:
 mobile-android:
 	./gradlew :modules:mobile:androidApp:assembleDebug
 
-# TRACK-138: iOS simulator host (pass a destination as the first argument if needed)
+# TRACK-138: iOS simulator host. Locally prefers iOS 26.5; CI uses a generic
+# destination (RASIKA_IOS_DESTINATION). Pass a destination as the first argument.
 mobile-ios:
 	bash tools/mobile/verify-ios.sh
 
