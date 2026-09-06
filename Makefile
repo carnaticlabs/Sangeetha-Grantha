@@ -1,4 +1,4 @@
-.PHONY: dev dev-down db db-reset seed seed-dev migrate migrate-status bootstrap-admin test test-integration test-frontend check-docs agent-evals steel-thread clean raga-lakshana-checks mint-guard
+.PHONY: dev dev-down db db-reset seed seed-dev migrate migrate-status bootstrap-admin test test-integration test-frontend test-mobile mobile-android mobile-ios check-docs agent-evals steel-thread clean raga-lakshana-checks mint-guard
 
 COMPOSE := docker compose
 # Flyway runs as the compose `migrate` service (flyway/flyway image) on the db network.
@@ -57,6 +57,19 @@ test-integration:
 # Run frontend tests
 test-frontend:
 	cd modules/frontend/sangita-admin-web && bun test
+
+# TRACK-138: shared mobile client/presenter tests (JVM)
+test-mobile:
+	./gradlew :modules:shared:mobile-data:jvmTest :modules:shared:presentation:jvmTest
+
+# TRACK-138: Android debug APK
+mobile-android:
+	./gradlew :modules:mobile:androidApp:assembleDebug
+
+# TRACK-138: iOS simulator host. Locally prefers iOS 26.5; CI uses a generic
+# destination (RASIKA_IOS_DESTINATION). Pass a destination as the first argument.
+mobile-ios:
+	bash tools/mobile/verify-ios.sh
 
 # Verify every relative Markdown link resolves (docs rot silently when files move)
 check-docs:

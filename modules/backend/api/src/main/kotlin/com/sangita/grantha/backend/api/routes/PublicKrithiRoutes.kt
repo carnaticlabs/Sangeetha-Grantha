@@ -5,12 +5,11 @@ import com.sangita.grantha.backend.api.services.IReferenceDataService
 import com.sangita.grantha.backend.api.services.KrithiNotationService
 import com.sangita.grantha.backend.api.support.computeEtag
 import com.sangita.grantha.shared.domain.model.KrithiSearchRequest
+import com.sangita.grantha.shared.domain.model.WorkflowStateDto
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.HttpHeaders
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
-import io.ktor.server.auth.jwt.JWTPrincipal
-import io.ktor.server.auth.principal
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.Route
@@ -37,21 +36,30 @@ fun Route.publicKrithiRoutes(
                     page = call.request.queryParameters["page"]?.toIntOrNull() ?: 0,
                     pageSize = call.request.queryParameters["pageSize"]?.toIntOrNull() ?: 50
                 )
-                // For admin console, show all items by default (not just published)
-                // Allow publishedOnly to be controlled via query parameter if needed
-                val publishedOnly = call.request.queryParameters["publishedOnly"]?.toBoolean() ?: false
+                // Anonymous and non-admin callers are published-only. A client flag cannot
+                // unlock drafts. Authenticated admins keep the console default (all states)
+                // and may still pass publishedOnly=true.
+                val publishedOnly = if (call.hasAdminRole()) {
+                    call.request.queryParameters["publishedOnly"]?.toBoolean() ?: false
+                } else {
+                    true
+                }
                 call.respond(krithiService.search(request, publishedOnly = publishedOnly))
             }
-        }
 
-        get("/krithis/{id}") {
-            val id = parseUuidParam(call.parameters["id"], "krithiId")
-                ?: return@get call.respondText("Missing krithi ID", status = HttpStatusCode.BadRequest)
-            val krithi = krithiService.getKrithi(id)
-            if (krithi == null) {
-                call.respondText("Not found", status = HttpStatusCode.NotFound)
-            } else {
-                call.respond(krithi)
+            get("/krithis/{id}") {
+                val id = parseUuidParam(call.parameters["id"], "krithiId")
+                    ?: return@get call.respondText("Missing krithi ID", status = HttpStatusCode.BadRequest)
+                val krithi = krithiService.getKrithi(id)
+                if (krithi == null || (
+                    krithi.workflowState != WorkflowStateDto.PUBLISHED && !call.hasAdminRole()
+                    )
+                ) {
+                    call.respondText("Not found", status = HttpStatusCode.NotFound)
+                } else {
+                    call.response.headers.append(HttpHeaders.CacheControl, "no-store")
+                    call.respond(krithi)
+                }
             }
         }
 
@@ -59,7 +67,7 @@ fun Route.publicKrithiRoutes(
             get("/krithis/{id}/notation") {
                 val id = parseUuidParam(call.parameters["id"], "krithiId")
                     ?: return@get call.respondText("Missing krithi ID", status = HttpStatusCode.BadRequest)
-                val isAdmin = call.principal<JWTPrincipal>() != null
+                val isAdmin = call.hasAdminRole()
                 val notation = if (isAdmin) {
                     notationService.getAdminNotation(id)
                 } else {

@@ -4,6 +4,7 @@ import com.sangita.grantha.backend.dal.repositories.AuditLogRepository
 import com.sangita.grantha.backend.dal.repositories.BulkImportEventRepository
 import com.sangita.grantha.backend.dal.repositories.BulkImportRepository
 import com.sangita.grantha.backend.dal.repositories.BulkImportTaskRepository
+import com.sangita.grantha.backend.dal.repositories.CatalogueRepository
 import com.sangita.grantha.backend.dal.repositories.ComposerAliasRepository
 import com.sangita.grantha.backend.dal.repositories.ComposerRepository
 import com.sangita.grantha.backend.dal.repositories.DeityRepository
@@ -37,6 +38,7 @@ interface SangitaDal {
 //    val userRoles: UserRoleRepository
     val krithis: KrithiRepository
     val krithiSearch: KrithiSearchRepository
+    val catalogue: CatalogueRepository
     val krithiLyrics: KrithiLyricRepository
     val composerAliases: ComposerAliasRepository
     val composers: ComposerRepository
@@ -73,6 +75,7 @@ class SangitaDalImpl : SangitaDal {
 //    override val userRoles = UserRoleRepository()
     override val krithis = KrithiRepository()
     override val krithiSearch = KrithiSearchRepository()
+    override val catalogue = CatalogueRepository()
     override val krithiLyrics = KrithiLyricRepository()
     override val composerAliases = ComposerAliasRepository()
     override val composers = ComposerRepository(composerAliases)

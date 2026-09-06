@@ -37,10 +37,11 @@ paths:
   /v1/krithis/search:
     get:
       tags: [Public]
-      summary: Search Krithis
+      summary: Search Krithis (published-only for non-admin)
       description: >
-        Search krithis using multiple filters including lyrics substring.
-        Supports ragamalika (multiple ragas).
+        Anonymous and non-admin callers always receive published works only.
+        A client flag cannot unlock drafts. The admin console uses
+        GET /v1/admin/krithis/search, which returns all workflow states.
       parameters:
         - name: query
           in: query
@@ -67,15 +68,72 @@ paths:
           in: query
           schema:
             $ref: "#/components/schemas/LanguageCode"
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 0, default: 0 }
+        - name: pageSize
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
       responses:
         "200":
-          description: List of matching krithis
+          description: Paged matching krithis
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/KrithiSummary"
+                $ref: "#/components/schemas/KrithiSearchResult"
+
+  /v1/admin/krithis/search:
+    get:
+      tags: [Admin]
+      summary: Admin krithi search (all workflow states)
+      description: >
+        Authorized admin search used by the curator console. Returns drafts and
+        published works. Page default 0, pageSize default 50, max 200.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: query
+          in: query
+          schema: { type: string }
+        - name: composerId
+          in: query
+          schema: { type: string, format: uuid }
+        - name: ragaId
+          in: query
+          schema: { type: string, format: uuid }
+        - name: talaId
+          in: query
+          schema: { type: string, format: uuid }
+        - name: deityId
+          in: query
+          schema: { type: string, format: uuid }
+        - name: templeId
+          in: query
+          schema: { type: string, format: uuid }
+        - name: lyric
+          in: query
+          schema: { type: string }
+        - name: primaryLanguage
+          in: query
+          schema:
+            $ref: "#/components/schemas/LanguageCode"
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 0, default: 0 }
+        - name: pageSize
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+      responses:
+        "200":
+          description: Paged krithi summaries including unpublished
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KrithiSearchResult"
+        "401":
+          description: Missing or invalid bearer token
+        "403":
+          description: Authenticated but not an admin
 
   /v1/krithis/{id}:
     get:
@@ -316,6 +374,17 @@ components:
         ragas:
           type: array
           items: { $ref: "#/components/schemas/RagaRef" }
+
+    KrithiSearchResult:
+      type: object
+      required: [items, total, page, pageSize]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/KrithiSummary" }
+        total: { type: integer, format: int64 }
+        page: { type: integer, minimum: 0 }
+        pageSize: { type: integer, minimum: 1 }
 
     KrithiDetail:
       type: object

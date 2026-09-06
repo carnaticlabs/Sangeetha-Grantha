@@ -95,7 +95,7 @@ object LogbackConfig {
         // Note: Exposed framework often uses the logger name "Exposed" directly
         for (loggerName in listOf("org.jetbrains.exposed", "Exposed")) {
             val logger = context.getLogger(loggerName)
-            logger.level = Level.DEBUG
+            logger.level = Level.INFO
             logger.isAdditive = false
             logger.addAppender(fileAppender)
         }
@@ -108,6 +108,8 @@ object LogbackConfig {
             context.getLogger("io.ktor.server.Application").level = Level.INFO 
         }
         
+        context.getLogger("catalogue-usage").level = Level.INFO
+
         // Internal logger for this config
         val selfLogger = context.getLogger(LogbackConfig::class.java)
         selfLogger.info("Logback configured programmatically for environment: ${env.environment}, Level: $rootLevel")

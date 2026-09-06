@@ -1,5 +1,6 @@
 package com.sangita.grantha.backend.api.plugins
 
+import com.sangita.grantha.backend.api.routes.catalogueRoutes
 import com.sangita.grantha.backend.api.routes.adminDashboardRoutes
 import com.sangita.grantha.backend.api.routes.adminKrithiRoutes
 import com.sangita.grantha.backend.api.routes.adminNotationRoutes
@@ -19,6 +20,7 @@ import com.sangita.grantha.backend.api.routes.sourcingRoutes
 import com.sangita.grantha.backend.api.routes.userManagementRoutes
 import com.sangita.grantha.backend.api.config.ApiEnvironment
 import com.sangita.grantha.backend.api.config.JwtConfig
+import com.sangita.grantha.backend.api.services.CatalogueService
 import com.sangita.grantha.backend.api.services.AdminDashboardService
 import com.sangita.grantha.backend.api.services.AuditLogService
 import com.sangita.grantha.backend.api.services.CuratorService
@@ -47,6 +49,7 @@ import org.koin.ktor.ext.inject
 
 fun Application.configureRouting() {
     val krithiService by inject<IKrithiService>()
+    val catalogueService by inject<CatalogueService>()
     val notationService by inject<KrithiNotationService>()
     val referenceDataService by inject<IReferenceDataService>()
     val importService by inject<IImportService>()
@@ -72,6 +75,7 @@ fun Application.configureRouting() {
     routing {
         healthRoutes()
         authRoutes(env, jwtConfig, userManagementService)
+        catalogueRoutes(catalogueService)
         publicKrithiRoutes(krithiService, referenceDataService, notationService)
 
         authenticate("admin-auth") {

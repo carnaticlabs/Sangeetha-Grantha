@@ -30,6 +30,30 @@ fun Route.adminKrithiRoutes(
     transliterationService: ITransliterator
 ) {
     route("/v1/admin/krithis") {
+        get("/search") {
+            val request = com.sangita.grantha.shared.domain.model.KrithiSearchRequest(
+                query = call.request.queryParameters["query"],
+                lyric = call.request.queryParameters["lyric"],
+                composerId = call.request.queryParameters["composerId"],
+                ragaId = call.request.queryParameters["ragaId"],
+                talaId = call.request.queryParameters["talaId"],
+                deityId = call.request.queryParameters["deityId"],
+                templeId = call.request.queryParameters["templeId"],
+                language = parseLanguageParam(call.request.queryParameters["primaryLanguage"], "primaryLanguage"),
+                page = call.request.queryParameters["page"]?.toIntOrNull() ?: 0,
+                pageSize = call.request.queryParameters["pageSize"]?.toIntOrNull() ?: 50,
+            )
+            call.respond(krithiService.search(request, publishedOnly = false))
+        }
+
+        get("/{id}") {
+            val id = parseUuidParam(call.parameters["id"], "krithiId")
+                ?: return@get call.respondText("Missing krithi ID", status = HttpStatusCode.BadRequest)
+            val krithi = krithiService.getKrithi(id)
+                ?: return@get call.respondText("Krithi not found", status = HttpStatusCode.NotFound)
+            call.respond(krithi)
+        }
+
         post {
             val request = call.receive<KrithiCreateRequest>()
             val created = krithiService.createKrithi(request, call.currentUserId())

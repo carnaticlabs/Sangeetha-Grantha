@@ -81,6 +81,12 @@ fun parseUuidParam(value: String?, label: String): Uuid? {
     return value.toKotlinUuidOrNull(label)
 }
 
+fun io.ktor.server.application.ApplicationCall.hasAdminRole(): Boolean {
+    val principal = principal<JWTPrincipal>() ?: return false
+    val granted = principal.payload.getClaim("roles")?.asList(String::class.java).orEmpty()
+    return com.sangita.grantha.backend.api.support.Roles.ADMIN in granted
+}
+
 fun parseLanguageParam(value: String?, label: String): LanguageCodeDto? {
     if (value.isNullOrBlank()) return null
     require(value.isNotBlank()) { "$label must not be blank" }

@@ -11,7 +11,13 @@ kotlin {
         namespace = "com.sangita.grantha.shared.presentation"
         compileSdk = 37
         minSdk = 24
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        }
     }
+
+    // Fast presenter tests without a device. UI execution remains Android/iOS hosts.
+    jvm()
 
     // iosX64 (Intel simulator) dropped: Compose Multiplatform 1.11+ no longer
     // publishes x64 iOS artifacts. The pure-Kotlin :domain module still targets it.
@@ -27,12 +33,16 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(project(":modules:shared:domain"))
+                api(project(":modules:shared:mobile-data"))
 
                 implementation(libs.compose.runtime)
                 implementation(libs.compose.foundation)
                 implementation(libs.compose.material3)
                 implementation(libs.compose.material.icons.extended)
                 implementation(libs.compose.ui)
+                implementation(libs.compose.components.resources)
+                implementation(libs.compose.ui.backhandler)
+                implementation(libs.androidx.lifecycle.runtime.compose)
 
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.kotlinx.datetime)
@@ -54,8 +64,8 @@ kotlin {
             }
         }
 
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
+        val jvmMain by getting
+        val jvmTest by getting
 
         val iosArm64Test by getting
         val iosSimulatorArm64Test by getting
@@ -74,4 +84,11 @@ kotlin {
                 }
             }
         }
+}
+
+compose {
+    resources {
+        publicResClass = true
+        packageOfResClass = "com.sangita.grantha.shared.presentation"
+    }
 }

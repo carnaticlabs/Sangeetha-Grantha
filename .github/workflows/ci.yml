@@ -160,6 +160,56 @@ jobs:
       - name: Build
         run: bun run build
 
+  mobile-jvm:
+    name: Mobile shared JVM tests (TRACK-138)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v6
+      - name: mobile-data + presentation jvmTest
+        run: ./gradlew :modules:shared:mobile-data:jvmTest :modules:shared:presentation:jvmTest --console=plain
+
+  mobile-android:
+    name: Android debug APK (TRACK-138)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v6
+      - uses: android-actions/setup-android@v3
+      - name: Assemble debug APK
+        run: ./gradlew :modules:mobile:androidApp:assembleDebug --console=plain
+
+  mobile-ios:
+    name: iOS simulator host build (TRACK-138)
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v6
+      - name: Show Xcode
+        run: xcodebuild -version
+      - name: xcodebuild RasikaApp
+        # Compile for the simulator SDK. Do not boot a UDID: CoreSimulator on
+        # hosted macos-15 is flaky, and the image may not include iOS 26.5.
+        # A real Kotlin/Native or Swift compile error still fails this job.
+        env:
+          RASIKA_IOS_DESTINATION: generic/platform=iOS Simulator
+        run: bash tools/mobile/verify-ios.sh
+
   worker:
     name: Worker lint + typecheck + pytest
     runs-on: ubuntu-latest

@@ -100,14 +100,11 @@ export const searchKrithis = (opts?: {
     if (opts?.page !== undefined) params.append('page', String(opts.page));
     if (opts?.pageSize !== undefined) params.append('pageSize', String(opts.pageSize));
     const queryString = params.toString();
-    return request<KrithiSearchResult>(`/krithis/search${queryString ? `?${queryString}` : ''}`);
+    return request<KrithiSearchResult>(`/admin/krithis/search${queryString ? `?${queryString}` : ''}`);
 };
 
-export const getKrithi = (id: string, admin = false) => {
-    // If admin context, we might want different fields, but spec currently reuses public GET logic mostly
-    // or implies specific Admin GET might exist if authentication is checked logic-side.
-    // For now using the public endpoint which provides detail.
-    return request<KrithiDetail>(`/krithis/${id}`);
+export const getKrithi = (id: string) => {
+    return request<KrithiDetail>(`/admin/krithis/${id}`);
 };
 
 // --- Admin Krithi Management ---

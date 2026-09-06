@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.5.0 |
-| **Last Updated** | 2026-08-29 |
+| **Version** | 1.5.1 |
+| **Last Updated** | 2026-09-05 |
 | **Author** | Sangeetha Grantha Team |
 
 # Current Technology Versions
@@ -180,6 +180,7 @@ Shared integration-test infrastructure (`IntegrationTestBase`, `SangitaPostgres`
 |---------|---------|---------|
 | Kotlin | `2.4.10` | Shared with backend |
 | Compose Multiplatform | `1.12.0` | Cross-platform UI (material3 `1.9.0` own train; icons-extended frozen `1.7.3`; iosX64 dropped by CMP 1.11+; **compileSdk 37** required by AndroidX Compose 1.12) |
+| JetBrains Lifecycle (KMP) | `2.11.0` | `lifecycle-runtime-compose` / `lifecycle-viewmodel-compose` companion to CMP 1.12 (TRACK-138) |
 | Android Gradle Plugin | `9.3.2` | Android build (Gradle wrapper `9.7.1`) |
 | Ktor Client | `3.5.2` | HTTP client |
 
@@ -208,7 +209,7 @@ Shared integration-test infrastructure (`IntegrationTestBase`, `SangitaPostgres`
 
 | Date | Change |
 |------|--------|
-| 2026-08-29 | TRACK-135 (Batch 1–2c): PostgreSQL JDBC 42.7.11→42.7.13 (CVE-2026-54291), Ktor 3.5.0→3.5.2, Exposed 1.0.0→1.5.0, Kotlin 2.4.0→2.4.10, CMP 1.11.1→1.12.0, AGP 9.0.0→9.3.2, Gradle 9.1.0→9.7.1, Flyway 12.9.0→12.11.0, React 19.2.7→19.2.8, Vite 8.1.3→8.2.2, plus catalog/frontend/Python lock drop-ins. TypeScript 7 / Vitest 5 / Flyway 13 / Logback 1.6 / datetime 0.8 deferred. |
+| 2026-09-05 | TRACK-138: recorded JetBrains Lifecycle KMP `2.11.0` (CMP 1.12 companion) for Rasika mobile. |
 | 2026-08-29 | Bun 1.3.7→1.4.0 (mise pin, CI `oven-sh/setup-bun` + fallback installer, monorepo-orchestration skill). Frontend `bun install` + typecheck + build green on 1.4.0. |
 | 2026-07-10 | TRACK-122 (Batch 3a): Kotlin 2.3.0→2.4.0, Compose Multiplatform 1.10.0→1.11.1. CMP 1.11 fallout: `compose.*` plugin accessors deprecated → explicit catalog deps (material3 on its own `1.9.0` train, icons-extended frozen `1.7.3`); iosX64 no longer published by CMP → target dropped from `:shared:presentation`; `-Xexplicit-backing-fields` now in-language (flag removed); Kotlin/Native `sourceInfoType=none`→`noop`. Backend + KMP builds and full test suites green. |
 | 2026-07-10 | TRACK-124 (Batch 3c): google-genai floor >=1.0.0→>=2.0.0 (resolved 1.34.0→2.9.0); 2.0 breaking changes confined to the Interactions API, worker call sites untouched; 144 worker tests green incl. HTTP-stubbed SDK round-trips. |

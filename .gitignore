@@ -75,7 +75,10 @@ local.properties
 **/config/local.env
 **/config/.env.production
 **/config/postgres-local.env
+# Local blob dumps. Do not ignore Kotlin source packages named `storage`.
 **/storage/**
+!**/src/**/storage/
+!**/src/**/storage/**
 **/database/for_import/**
 **/*_logs.txt
 **/test_output/**

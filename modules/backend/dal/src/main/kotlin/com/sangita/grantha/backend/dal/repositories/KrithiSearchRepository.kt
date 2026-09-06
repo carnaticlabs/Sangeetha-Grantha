@@ -74,7 +74,7 @@ class KrithiSearchRepository {
         }
 
         filters.composerId?.let { idQuery.andWhere { KrithisTable.composerId eq it } }
-        filters.ragaId?.let { idQuery.andWhere { KrithisTable.primaryRagaId eq it } }
+        filters.ragaId?.let { idQuery.andWhere { KrithiRagasTable.ragaId eq it } }
         filters.talaId?.let { idQuery.andWhere { KrithisTable.talaId eq it } }
         filters.deityId?.let { idQuery.andWhere { KrithisTable.deityId eq it } }
         filters.templeId?.let { idQuery.andWhere { KrithisTable.templeId eq it } }
@@ -83,7 +83,15 @@ class KrithiSearchRepository {
         idQuery.orderBy(KrithisTable.titleNormalized to SortOrder.ASC)
 
         val total = idQuery.count()
-        val pagedIds = idQuery.limit(safeSize).offset(offset)
+        val orderedIds = idQuery.limit(safeSize).offset(offset).map { it[KrithisTable.id].value }
+        if (orderedIds.isEmpty()) {
+            return@dbQuery KrithiSearchResult(
+                items = emptyList(),
+                total = total,
+                page = safePage,
+                pageSize = safeSize,
+            )
+        }
 
         val dataQuery = join
             .select(
@@ -95,7 +103,7 @@ class KrithiSearchRepository {
                         KrithiRagasTable.orderIndex
                     )
             )
-            .where { KrithisTable.id inSubQuery pagedIds }
+            .where { KrithisTable.id inList orderedIds }
 
         val summaries = linkedMapOf<UUID, KrithiSummary>()
         val ragasByKrithi = linkedMapOf<UUID, MutableList<RagaRefDto>>()
@@ -124,8 +132,9 @@ class KrithiSearchRepository {
             }
         }
 
-        val items = summaries.values.map { summary ->
-            val ragas = ragasByKrithi[summary.id.toJavaUuid()]?.sortedBy { it.orderIndex } ?: emptyList()
+        val items = orderedIds.mapNotNull { id ->
+            val summary = summaries[id] ?: return@mapNotNull null
+            val ragas = ragasByKrithi[id]?.sortedBy { it.orderIndex } ?: emptyList()
             summary.copy(ragas = ragas)
         }
 
