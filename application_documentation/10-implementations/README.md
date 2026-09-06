@@ -1,7 +1,7 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.4.0 |
+| **Version** | 1.4.1 |
 | **Last Updated** | 2026-09-05 |
 | **Author** | Sangeetha Grantha Team |
 
@@ -13,6 +13,8 @@ This directory contains detailed summaries and guides for specific platform and 
 
 - **Agent / SDLC**
   - [AI-native SDLC artifacts (TRACK-134)](./track-134-ai-native-sdlc-artifacts.md)
+- **Mobile**
+  - [Rasika mobile MVP evidence (TRACK-138)](./track-138-rasika-mobile-mvp.md)
 - **[01 Platform](./01-platform/README.md)**
   - [Environment Variable Standardization](./01-platform/environment-variable-standardization.md)
   - [Dependency Updates (Feb 2026)](./01-platform/dependency-updates-feb-2026.md)
