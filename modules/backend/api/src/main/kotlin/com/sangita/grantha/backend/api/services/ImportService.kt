@@ -17,6 +17,7 @@ import com.sangita.grantha.shared.domain.model.ImportedKrithiDto
 import com.sangita.grantha.shared.domain.model.import.CanonicalExtractionDto
 import com.sangita.grantha.shared.domain.model.import.CanonicalExtractionMethod
 import com.sangita.grantha.backend.dal.repositories.KrithiCreateParams
+import com.sangita.grantha.backend.dal.repositories.KrithiUpdateParams
 import com.sangita.grantha.backend.dal.repositories.RagaResolution
 import com.sangita.grantha.backend.dal.repositories.RagaResolveContext
 import kotlinx.serialization.encodeToString
@@ -108,6 +109,12 @@ class ImportServiceImpl(
      */
     private fun normalize(value: String): String =
         normalizer.normalizeTitle(value) ?: value.trim().lowercase()
+
+    /** Payload names that are descriptors, not ragas. Must not include `sri` (that is a raga). */
+    private val placeholderRagaNames = setOf(
+        "unknown", "na", "n a", "none", "alika",
+        "ragamalika", "raga malika",
+    )
 
     /** Canonical extraction method → source_documents.source_format (ADR-014). */
     private fun canonicalMethodToFormat(method: CanonicalExtractionMethod): String = when (method) {
@@ -695,6 +702,8 @@ class ImportServiceImpl(
             // (see LyricVariantPersistenceService); no new krithi is created here.
             lyricVariantPersistence.persistLyricVariants(mappedId, importData, overrides = null)
 
+            applyExtractionRagas(mappedId, importData)
+
             dal.auditLogs.append(
                 action = "REINGEST_MAPPED_KRITHI",
                 entityTable = "krithis",
@@ -746,6 +755,56 @@ class ImportServiceImpl(
             "csv" -> reportGenerator.generateCsvReport(batch, imports)
             else -> throw IllegalArgumentException("Unsupported format: $format")
         }
+    }
+
+    /**
+     * TRACK-139: persist ordered ragamalika membership from the extraction payload.
+     * Replaces SQL data-fixes such as V61. No-op when the payload has a single
+     * placeholder raga (Unknown) or none of the names resolve.
+     */
+    private suspend fun applyExtractionRagas(krithiId: Uuid, importData: ImportedKrithiDto) {
+        val extraction = importData.parsedPayload
+            ?.let { runCatching { Json.decodeFromString<CanonicalExtractionDto>(it) }.getOrNull() }
+            ?: return
+
+        val resolved = mutableListOf<UUID>()
+        extraction.ragas.forEachIndexed { index, ragaDto ->
+            // Do not use NameNormalizationService.normalizeRaga here: basicNormalize
+            // strips the honorific word "sri", which empties the seeded raga 'Sri'
+            // (V51 forbids that fold). Placeholders only.
+            val folded = ragaDto.name.trim().lowercase()
+                .replace(Regex("[^a-z0-9\\s]"), " ")
+                .replace(Regex("\\s+"), " ")
+                .trim()
+            if (folded.isEmpty() || folded in placeholderRagaNames) {
+                return@forEachIndexed
+            }
+            when (
+                val resolution = dal.ragas.resolveRaga(
+                    name = ragaDto.name,
+                    context = RagaResolveContext(
+                        krithiId = krithiId.toString(),
+                        title = extraction.title,
+                        orderIndex = index,
+                        isPrimary = index == 0,
+                        sourceUrl = extraction.sourceUrl,
+                    ),
+                )
+            ) {
+                is RagaResolution.Resolved -> resolved += resolution.raga.id.toJavaUuid()
+                is RagaResolution.Unresolved -> { /* queue already recorded */ }
+            }
+        }
+        if (resolved.isEmpty()) return
+
+        dal.krithis.update(
+            KrithiUpdateParams(
+                id = krithiId,
+                isRagamalika = resolved.size > 1,
+                primaryRagaId = resolved.first(),
+                ragaIds = resolved,
+            ),
+        )
     }
 
 }

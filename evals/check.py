@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -319,6 +320,41 @@ def run_hook_smokes() -> int:
             2,
         ),
         (
+            "protect-migrations.delete-corpus-fix",
+            "protect-migrations.py",
+            {
+                "tool_name": "Delete",
+                "tool_input": {
+                    "path": "database/migrations/V45__remove_stale_anupallavi_brhannayaki.sql"
+                },
+            },
+            0,
+        ),
+        (
+            "protect-migrations.new-corpus-dml",
+            "protect-migrations.py",
+            {
+                "tool_name": "Write",
+                "tool_input": {
+                    "file_path": "database/migrations/V99__fix_krithi_sections.sql",
+                    "contents": "DELETE FROM krithi_sections WHERE id = '00000000-0000-0000-0000-000000000000';\n",
+                },
+            },
+            2,
+        ),
+        (
+            "protect-migrations.new-corpus-dml-override",
+            "protect-migrations.py",
+            {
+                "tool_name": "Write",
+                "tool_input": {
+                    "file_path": "database/migrations/V99__curator_mirror.sql",
+                    "contents": "-- corpus-data-fix: allow\nDELETE FROM krithi_sections WHERE id = '00000000-0000-0000-0000-000000000000';\n",
+                },
+            },
+            0,
+        ),
+        (
             "protect-migrations.read-ok",
             "protect-migrations.py",
             {
@@ -406,8 +442,48 @@ def run_hook_smokes() -> int:
     return failures
 
 
+_VERSIONED_FILE = re.compile(r"^V(\d+)__.+\.sql$", re.IGNORECASE)
+_CORPUS_TABLES = re.compile(
+    r"\b(krithis|krithi_sections|krithi_lyric_variants|krithi_lyric_sections|"
+    r"krithi_ragas|krithi_revisions)\b",
+    re.IGNORECASE,
+)
+_DML = re.compile(r"\b(INSERT|UPDATE|DELETE)\b", re.IGNORECASE)
+_CORPUS_ALLOW = re.compile(r"--\s*corpus-data-fix:\s*allow\b", re.IGNORECASE)
+# Pre-TRACK-139 files may touch krithi_* (raga identity or data-fixes). New V__
+# after V57 must not mutate corpus tables without an override comment.
+# V58–V62 were retired; the next versioned file is V58 and is not grandfathered.
+_CORPUS_DML_MAX_GRANDFATHER = 57
+
+
+def run_corpus_migration_lint() -> int:
+    """Fail when a non-grandfathered V__ mutates krithi_* corpus tables (TRACK-139)."""
+    failures = 0
+    migrations = ROOT / "database" / "migrations"
+    if not migrations.is_dir():
+        _fail("corpus-migration-lint: missing database/migrations")
+        return 1
+    for path in sorted(migrations.glob("V*.sql")):
+        match = _VERSIONED_FILE.match(path.name)
+        if not match:
+            continue
+        version = int(match.group(1))
+        if version <= _CORPUS_DML_MAX_GRANDFATHER:
+            continue
+        text = path.read_text(encoding="utf-8")
+        if _DML.search(text) and _CORPUS_TABLES.search(text) and not _CORPUS_ALLOW.search(text):
+            _fail(
+                f"corpus-migration-lint: {path.name} mutates krithi_* corpus tables; "
+                "use parser/import/curation (ADR-012/013) or `-- corpus-data-fix: allow`"
+            )
+            failures += 1
+    if failures == 0:
+        print("ok  corpus-migration-lint")
+    return failures
+
+
 def main() -> int:
-    failures = run_cases() + run_hook_smokes()
+    failures = run_cases() + run_hook_smokes() + run_corpus_migration_lint()
     if failures:
         print(f"{failures} agent-eval failure(s)", file=sys.stderr)
         return 1

@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Accepted |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-06-13 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-09-06 |
 | **Author** | Sangeetha Grantha Team |
 | **Deciders** | Sangeetha Grantha Team (Seshadri) |
 | **Spike** | [TRACK-116](../../../conductor/tracks/TRACK-116-versioned-canon-spike.md) (this ADR is its deliverable) |
@@ -285,6 +285,12 @@ re-import captures everything from row one; `AUDIT_LOG` stays lean (who/when) wh
 tables grow monotonically (bounded, prunable far in the future if ever needed).
 **To revisit:** adding **valid-time** (bitemporal) if "as the source dates it" becomes a requirement; whether
 `krithi_source_evidence` is retired in favour of a generated rollup over `krithi_section_revisions`.
+
+### Corpus corrections are not Flyway versions (TRACK-139)
+
+A one-off `UPDATE`/`DELETE` of `krithi_sections` (or sibling corpus tables) in a `V__` file is **not** a revision and is **not** attributable provenance. It also makes schema history depend on the exact shape of composition rows, so a valid earlier dump can abort `make migrate` (TRACK-138 restoring `post_v56` died at `V58`).
+
+Corrections of composition structure belong on the path this ADR already names as a revision writer: **parser → extraction → import/reingest → curator**. Provenance is the import / extraction / revision row, not a deleted SQL file. TRACK-139 retired `V58`–`V62` on that basis and added a guardrail so new corpus-mutating `V__` files fail `make agent-evals` unless they carry `-- corpus-data-fix: allow`. Ops (delete + Flyway history alignment, dump restore) live in [migrations.md §5](../../04-database/migrations.md#5-rollback--history-tracking).
 
 ## Action Items (TRACK-117)
 

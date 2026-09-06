@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-09-05 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-09-06 |
 | **Author** | Sangeetha Grantha Team |
 
 # Section-Count Mismatch Remediation (TRACK-133)
@@ -20,8 +20,9 @@ Working log: [TRACK-133](../../conductor/tracks/TRACK-133-section-mismatch-remed
 | Flyway V58–V61 (canon repairs + `mAdhavO` ragamalika metadata) | 4 | 1 |
 | Flyway V62 (snapshot re-split of `ramA ramaNa rArA`) | **0** | **0** |
 | Durable pallavi-echo parser (2026-09-05) | **0** (and a fresh missing-C5 extract stays 0) | **0** |
+| TRACK-139 (2026-09-06): retired `V58`–`V62`; parser + reingest own the five krithis | (re-import, not SQL) | 5 |
 
-Live mismatch query (dev, 2026-09-05): **0 rows**. Corpus size unchanged at **1,226** krithis. Schema current at **V62**. Curator `sectionIssuesCount` is a SQL aggregate of that same query.
+Live mismatch query (dev, 2026-09-05): **0 rows**. Corpus size unchanged at **1,226** krithis. Schema current at **V57** after TRACK-139 retired the corpus data-fix files. Curator `sectionIssuesCount` is a SQL aggregate of that same query.
 
 ## Root causes (not 29 independent bugs)
 
@@ -61,17 +62,17 @@ Worker suite after this follow-up: **386 passed**. `ruff` and `mypy .` (62 files
 
 The current live Thyagaraja Vaibhavam page already has C5 headings and parses to 7 without this repair. The merged fixture is the documented failure shape.
 
-## Corpus migrations (already applied)
+## Corpus migrations (retired by [TRACK-139](../../conductor/tracks/TRACK-139-retire-corpus-data-fix-migrations.md))
 
-All write `audit_log`. They are no-ops if the target krithi is absent (`make db-reset` before corpus load).
+These `V__` files were one-off corpus DML. TRACK-139 deleted them; Flyway history on long-lived DBs is aligned to **V57**. Structure for the five krithis is owned by the parser + `POST /re-extract` + `POST /{id}/reingest`. `R__seed_06` still carries the Dashavatara ITRANS aliases (`nATa`, `gauLa`, `kEdAra`, `saurAshTra`).
 
-| Migration | Repair |
+| Retired file | What the parser / reingest must reproduce |
 |:---|:---|
 | `V58__track133_delete_phantom_empty_charanam_sections.sql` | Empty trailing charanams: `rAma sItA rAma` 10→6, `Rama Rama Rama Sita` 14→6 |
 | `V59__track133_merge_missplit_canon_sections.sql` | `Raanidi Raadu` P,A,C,A→P,A,C; `ramA ramaNa rArA` `tvac-caraNam` over-split |
-| `V60__track133_fix_alakalallaladaga_pallavi_missplit.sql` | `Alakalallalaadaga` English pallavi line-2 mislabelled as anupallavi → P+A+C |
-| `V61__track133_madhavo_ragamalika_metadata.sql` | `mAdhavO mAM pAtu`: `is_ragamalika`, 10 ordered `krithi_ragas`, aliases `kEdAra`→Kedaram and `saurAshTra`→saurAshTraM |
-| `V62__track133_ramaramanarara_indic_charanam_resplit.sql` | Indic C4+C5 snapshot split at the pallavi echo |
+| `V60__track133_fix_alakalallaladaga_pallavi_missplit.sql` | `Alakalallalaadaga` English pallavi line-2 (hyphen wrap) → P+A+C |
+| `V61__track133_madhavo_ragamalika_metadata.sql` | `mAdhavO mAM pAtu`: `is_ragamalika`, 10 ordered `krithi_ragas` |
+| `V62__track133_ramaramanarara_indic_charanam_resplit.sql` | Indic C4+C5 split at the pallavi echo |
 
 See [migrations.md](../04-database/migrations.md).
 
@@ -84,4 +85,4 @@ Also in this track: uncapped `/re-extract` by source URL, `POST /v1/admin/import
 
 ## Boundary
 
-The worker does not write canonical tables. Re-extract / reingest goes through Kotlin. Do not treat V62 as a substitute for the parser, and do not treat the parser as a reason to rewrite V62.
+The worker does not write canonical tables. Re-extract / reingest goes through Kotlin. Do not put a new corpus data-fix in Flyway — TRACK-139 retired that vehicle.

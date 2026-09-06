@@ -87,12 +87,14 @@ class _TextBlock:
     lines: list[_LineToken]
     start_pos: int
     end_pos: int
+    raga_name: str | None = None
 
 
 @dataclass
 class _HeaderMatch:
     label: str
     remainder: str
+    raga_name: str | None = None
 
 
 LANGUAGE_LABELS = {
@@ -172,6 +174,29 @@ VILOMA_SUBSECTION_PATTERN = re.compile(r"^vilOma\s*-\s*(.+?)\s+rAgaM\s*$", re.IG
 # the five Indic scripts; the raga word is "rāga" + an anusvāra / virāma-m ending.
 _INDIC_RAGA_WORD = r"(?:राग[ंम]्?|ராக[ம]்?|రాగ[ంమ]్?|ರಾಗ[ಂಮ]್?|രാഗ[ംമ]്?)"
 RAGA_SUBSECTION_INDIC_PATTERN = re.compile(rf"^(?:\d+[.।]?\s*)?(.+?)\s+{_INDIC_RAGA_WORD}\s*$")
+# Honorific "SrI " before a raga name (e.g. "SrI gauLa rAgaM") is a blog artifact,
+# not the raga Sri. Bare "SrI rAgaM" stays "SrI".
+_SRI_HONORIFIC_PREFIX = re.compile(r"^SrI\s+", re.IGNORECASE)
+# Blog line-wrap of a hyphenated word ("kani(y)-" / "A rAN-muni") must not be read
+# as an inline P/A/C header. TRACK-139 / Alakalallalaadaga two-line pallavi.
+_INLINE_PAC_LABELS = frozenset({"PALLAVI", "ANUPALLAVI", "CHARANAM"})
+
+
+def _strip_sri_honorific(name: str) -> str:
+    """Drop a leading honorific 'SrI ' when a raga name remains after it.
+
+    'SrI gauLa' → 'gauLa' (blog artifact). Bare 'SrI' (the raga) is unchanged.
+    """
+    stripped = _SRI_HONORIFIC_PREFIX.sub("", name, count=1).strip()
+    return stripped or name
+
+
+def _raga_name_from_segment_header(line: str) -> str | None:
+    match = RAGA_SUBSECTION_PATTERN.search(line) or RAGA_SUBSECTION_INDIC_PATTERN.search(line)
+    if match is None:
+        return None
+    return _strip_sri_honorific(match.group(1).strip())
+
 
 SECTION_HEADER_PATTERNS: list[tuple[re.Pattern[str], str]] = [
     (re.compile(r"^\s*[\-–—•*()=\[\]]*\s*pallavi(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE), "PALLAVI"),
@@ -669,9 +694,10 @@ class StructureParser:
         current_label = "UNLABELED"
         current_start = tokens[0].start_pos
         current_lines: list[_LineToken] = []
+        current_raga_name: str | None = None
 
         def flush() -> None:
-            nonlocal current_lines
+            nonlocal current_lines, current_raga_name
             if current_lines or current_label in LANGUAGE_LABELS:
                 block_start = current_start if not current_lines else current_lines[0].start_pos
                 block_end = current_lines[-1].end_pos if current_lines else current_start
@@ -681,15 +707,28 @@ class StructureParser:
                         lines=current_lines,
                         start_pos=block_start,
                         end_pos=block_end,
+                        raga_name=current_raga_name,
                     )
                 )
                 current_lines = []
+                current_raga_name = None
 
+        prev_hyphen = False
         for token in tokens:
             header = self._detect_header(token.text)
+            if (
+                header is not None
+                and prev_hyphen
+                and header.label in _INLINE_PAC_LABELS
+                and any(pattern.search(token.text) for pattern, _ in INLINE_PAC_PATTERNS)
+            ):
+                # Hyphenation wrap: previous line ended "-" and this line's leading
+                # P/A/C is the rest of the broken word, not a section marker.
+                header = None
             if header is not None:
                 flush()
                 current_label = header.label
+                current_raga_name = header.raga_name
                 current_start = token.start_pos
                 if header.remainder:
                     current_lines.append(
@@ -699,9 +738,11 @@ class StructureParser:
                             end_pos=token.end_pos,
                         )
                     )
+                prev_hyphen = token.text.rstrip().endswith("-")
                 continue
 
             current_lines.append(token)
+            prev_hyphen = token.text.rstrip().endswith("-")
 
         flush()
         return blocks
@@ -781,7 +822,11 @@ class StructureParser:
             or RAGA_SUBSECTION_PATTERN.search(line)
             or RAGA_SUBSECTION_INDIC_PATTERN.search(line)
         ):
-            return _HeaderMatch(label="RAGA_SEGMENT", remainder="")
+            return _HeaderMatch(
+                label="RAGA_SEGMENT",
+                remainder="",
+                raga_name=_raga_name_from_segment_header(line),
+            )
         return None
 
     def _extract_sections(
@@ -824,6 +869,15 @@ class StructureParser:
             detected_subs = self._detect_ragamalika_subsections(section_type, block)
             if detected_subs:
                 ragamalika_subsections.extend(detected_subs)
+            elif block.label == "RAGA_SEGMENT" and block.raga_name:
+                ragamalika_subsections.append(
+                    RagamalikaSubsection(
+                        raga_name=block.raga_name,
+                        parent_section_type=SectionType.OTHER,
+                        is_viloma=False,
+                        order=0,
+                    )
+                )
 
             # Always create ONE section per structural block
             block_text = "\n".join(line.text for line in block.lines).strip()

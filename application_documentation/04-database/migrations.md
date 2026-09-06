@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 3.3.0 |
-| **Last Updated** | 2026-09-05 |
+| **Version** | 3.4.0 |
+| **Last Updated** | 2026-09-06 |
 | **Author** | Sangeetha Grantha Team |
 
 # Database Migrations (Sangita Grantha)
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS new_table (...);
 
 ## 2. Migration files
 
-62 versioned migrations (`V01`–`V62`) plus 6 repeatable seed migrations. Foundational set:
+57 versioned migrations (`V01`–`V57`) plus 6 repeatable seed migrations. Foundational set:
 
 | File | Purpose | Key Entities |
 |------|---------|--------------|
@@ -58,15 +58,10 @@ CREATE TABLE IF NOT EXISTS new_table (...);
 | `V46__delete_incomplete_devanagari_amba_nilayatakshi.sql` | Data cleanup — incomplete Devanagari import | |
 | `V47__demerge_ragamalika_visvanatham_from_natabharanam.sql` | Ragamalika demerge — separate ragamalika krithi from natabhranam raga | |
 
-TRACK-133 corpus repairs (Trinity section-count mismatches). Each writes `audit_log` and is a no-op if the target krithi is absent. The durable parser for the V62 case is documented in [track-133-section-mismatch-remediation.md](../10-implementations/track-133-section-mismatch-remediation.md).
-
-| File | Purpose | Key Entities |
-|------|---------|--------------|
-| `V58__track133_delete_phantom_empty_charanam_sections.sql` | Delete empty trailing canonical charanams (`rAma sItA rAma` 10→6, `Rama Rama Rama Sita` 14→6) | `krithi_sections`, `krithi_lyric_sections`, `audit_log` |
-| `V59__track133_merge_missplit_canon_sections.sql` | Merge English/Tamil mis-split canon sections (`Raanidi Raadu`, `ramA ramaNa rArA` `tvac-caraNam`) | `krithi_sections`, `krithi_lyric_sections`, `audit_log` |
-| `V60__track133_fix_alakalallaladaga_pallavi_missplit.sql` | Fold pallavi line 2 out of a spurious anupallavi (`Alakalallalaadaga` → P+A+C) | `krithi_sections`, `krithi_lyric_sections`, `audit_log` |
-| `V61__track133_madhavo_ragamalika_metadata.sql` | Dashavatara ragamalika metadata for `mAdhavO mAM pAtu` (10 ordered ragas + aliases) | `krithis`, `krithi_ragas`, `raga_aliases`, `audit_log` |
-| `V62__track133_ramaramanarara_indic_charanam_resplit.sql` | Snapshot re-split of Indic C4+C5 glue on `ramA ramaNa rArA` | `krithi_lyric_sections`, `audit_log` |
+> [!IMPORTANT]
+> **Corpus rows are not a Flyway concern.** Versioned `V__` files carry schema. Repeatable `R__` files carry **reference** data (ragas, aliases, import-source authority). Composition content (`krithis`, `krithi_sections`, `krithi_lyric_*`, `krithi_ragas`, `krithi_revisions`) is produced by the parser → import → curator path ([ADR-012](../02-architecture/decisions/ADR-012-unified-extraction-architecture.md), [ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md), [ADR-014](../02-architecture/decisions/ADR-014-versioned-canon.md)). TRACK-139 retired the TRACK-133 data-fix files `V58`–`V62`; structure for those krithis is restored by re-extract + reingest. The durable parsers live in the worker ([track-133-section-mismatch-remediation.md](../10-implementations/track-133-section-mismatch-remediation.md), TRACK-139 two-line pallavi and dasāvatāra sequence).
+>
+> A new `V__` that runs `INSERT`/`UPDATE`/`DELETE` against those corpus tables is denied by `.claude/hooks/protect-migrations.py` and `make agent-evals` unless it includes `-- corpus-data-fix: allow`. Pre-TRACK-139 files `V38` / `V45`–`V47` remain as historical corpus cleanup (grandfathered; not a template). The next versioned file is **`V58`** (schema or reference only).
 
 ### Repeatable seed migrations (reference data)
 
@@ -110,7 +105,7 @@ make bootstrap-admin # provision/update the admin user (argon2id); needs ADMIN_E
 
 ### Creating a new migration
 
-1. Create `database/migrations/V<next>__description.sql` (next sequential version, e.g. `V63__...`).
+1. Create `database/migrations/V<next>__description.sql` (next sequential version, e.g. `V58__...`).
 2. Write idempotent SQL (`IF NOT EXISTS`, `ON CONFLICT`); no `-- migrate:down` section.
 3. Test: `make db-reset` (full from-scratch apply) and `make migrate` (incremental).
 4. Update this file and `domain-model.md` / schema docs if entities change.
@@ -122,6 +117,7 @@ For reference-data changes, edit the relevant `R__seed_*.sql` instead — Flyway
 - ✅ Idempotent DDL/DML (`IF NOT EXISTS`, `ON CONFLICT … DO NOTHING`).
 - ✅ Add indexes after the table exists (same or later migration).
 - ❌ **Never edit a versioned migration after it has been applied** — Flyway's checksum validation (`flyway validate`, a CI gate) rejects it. Write a new `V__` instead.
+- ❌ **Never put corpus-data corrections in a `V__` file** — use parser / re-import / curator review (TRACK-139).
 - ❌ **Never bypass the Makefile / Flyway** — no Liquibase, ad-hoc SQL executors, or custom runners ([ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)).
 
 ### Ordering
@@ -146,6 +142,17 @@ Versioned migrations apply in version order; repeatables apply afterwards in des
 - Flyway records every applied migration in **`flyway_schema_history`** (version, description, checksum, success).
 - Flyway Community has **no `undo`**. The local rollback story is `make db-reset` (drop → create → re-apply). Data reversibility is the domain of versioned canon (north-star N5, [ADR-014](../02-architecture/decisions/ADR-014-versioned-canon.md)).
 - **Existing long-lived databases** (migrated by the retired tooling) are adopted with `flyway baseline -baselineVersion=47`, then migrated normally. Rehearse the baseline against a Testcontainers instance restored from a dump **before** touching any real database (ADR-013 Migration Plan §6).
+- **Retiring a corpus data-fix `V__` (TRACK-139):** delete the file (the protect-migrations hook allows delete of corpus-only / allowlisted data-fix scripts). Flyway Community `repair` realigns checksums and failed rows; it does **not** remove history rows for missing versions. After delete, `flyway info` may still report those versions as *Future* and warn that the schema version is newer than the latest available file. Align history with:
+
+  ```sql
+  DELETE FROM flyway_schema_history WHERE version IN ('58', '59', /* … */);
+  ```
+
+  That statement is Flyway metadata, not corpus DML. Then `make migrate-status` should show latest versioned = `V57` (until the next schema `V58`). Fresh `make db-reset` databases never had the deleted files and need no repair.
+
+### Dump restore (`raga_match_key` search_path)
+
+`raga_aliases.match_key` is `GENERATED ALWAYS AS (raga_match_key(alias))`, and `raga_match_key()` calls unqualified `strip_diacritics()`. `pg_restore` uses an empty `search_path`, so a one-shot `--exit-on-error` restore fails. Workaround: schema-only restore → `ALTER FUNCTION public.raga_match_key(text) SET search_path = public` → data-only restore with `--disable-triggers`. Pinning `search_path` (or schema-qualifying the call) in a later schema migration is follow-up hygiene, not a corpus data-fix.
 
 ---
 
