@@ -18,12 +18,6 @@ _RETIRABLE_DATA_FIX = re.compile(
     r"^V(38|45|46|47|58|59|60|61|62)__.+\.sql$",
     re.IGNORECASE,
 )
-_CORPUS_TABLES = re.compile(
-    r"\b(krithis|krithi_sections|krithi_lyric_variants|krithi_lyric_sections|"
-    r"krithi_ragas|krithi_revisions)\b",
-    re.IGNORECASE,
-)
-_DML = re.compile(r"\b(INSERT|UPDATE|DELETE)\b", re.IGNORECASE)
 _DDL = re.compile(
     r"\b(CREATE|ALTER)\s+(OR\s+REPLACE\s+)?(UNIQUE\s+)?"
     r"(TABLE|INDEX|TYPE|FUNCTION|SCHEMA|SEQUENCE|VIEW)\b"
@@ -69,7 +63,15 @@ def _sql_from_payload_or_disk(root: Path, rel: str, payload: dict) -> str:
 
 
 def _has_corpus_dml(sql: str) -> bool:
-    return bool(_DML.search(sql) and _CORPUS_TABLES.search(sql))
+    return bool(
+        re.search(
+            r"\b(?:INSERT\s+INTO|UPDATE|DELETE\s+FROM)\s+(?:ONLY\s+)?(?:public\.)?"
+            r"(krithis|krithi_sections|krithi_lyric_variants|krithi_lyric_sections|"
+            r"krithi_ragas|krithi_revisions)\b",
+            sql,
+            re.IGNORECASE,
+        )
+    )
 
 
 def _is_corpus_only_data_fix(sql: str) -> bool:

@@ -767,11 +767,9 @@ class ImportServiceImpl(
             ?.let { runCatching { Json.decodeFromString<CanonicalExtractionDto>(it) }.getOrNull() }
             ?: return
 
-        val resolved = mutableListOf<UUID>()
+        var namedCount = 0
+        val slots = mutableListOf<Pair<Int, UUID>>()
         extraction.ragas.forEachIndexed { index, ragaDto ->
-            // Do not use NameNormalizationService.normalizeRaga here: basicNormalize
-            // strips the honorific word "sri", which empties the seeded raga 'Sri'
-            // (V51 forbids that fold). Placeholders only.
             val folded = ragaDto.name.trim().lowercase()
                 .replace(Regex("[^a-z0-9\\s]"), " ")
                 .replace(Regex("\\s+"), " ")
@@ -779,6 +777,7 @@ class ImportServiceImpl(
             if (folded.isEmpty() || folded in placeholderRagaNames) {
                 return@forEachIndexed
             }
+            namedCount += 1
             when (
                 val resolution = dal.ragas.resolveRaga(
                     name = ragaDto.name,
@@ -791,18 +790,18 @@ class ImportServiceImpl(
                     ),
                 )
             ) {
-                is RagaResolution.Resolved -> resolved += resolution.raga.id.toJavaUuid()
+                is RagaResolution.Resolved -> slots += index to resolution.raga.id.toJavaUuid()
                 is RagaResolution.Unresolved -> { /* queue already recorded */ }
             }
         }
-        if (resolved.isEmpty()) return
+        if (namedCount == 0) return
 
         dal.krithis.update(
             KrithiUpdateParams(
                 id = krithiId,
-                isRagamalika = resolved.size > 1,
-                primaryRagaId = resolved.first(),
-                ragaIds = resolved,
+                isRagamalika = namedCount > 1,
+                primaryRagaId = slots.firstOrNull { it.first == 0 }?.second,
+                ragaSlots = slots,
             ),
         )
     }

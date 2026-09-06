@@ -355,6 +355,21 @@ def run_hook_smokes() -> int:
             0,
         ),
         (
+            "protect-migrations.fk-mention-not-corpus-dml",
+            "protect-migrations.py",
+            {
+                "tool_name": "Write",
+                "tool_input": {
+                    "file_path": "database/migrations/V99__krithi_aux.sql",
+                    "contents": (
+                        "CREATE TABLE krithi_aux (krithi_id uuid REFERENCES krithis);\n"
+                        "INSERT INTO krithi_aux (krithi_id) SELECT id FROM krithis;\n"
+                    ),
+                },
+            },
+            0,
+        ),
+        (
             "protect-migrations.read-ok",
             "protect-migrations.py",
             {
@@ -443,13 +458,19 @@ def run_hook_smokes() -> int:
 
 
 _VERSIONED_FILE = re.compile(r"^V(\d+)__.+\.sql$", re.IGNORECASE)
-_CORPUS_TABLES = re.compile(
-    r"\b(krithis|krithi_sections|krithi_lyric_variants|krithi_lyric_sections|"
-    r"krithi_ragas|krithi_revisions)\b",
-    re.IGNORECASE,
-)
-_DML = re.compile(r"\b(INSERT|UPDATE|DELETE)\b", re.IGNORECASE)
 _CORPUS_ALLOW = re.compile(r"--\s*corpus-data-fix:\s*allow\b", re.IGNORECASE)
+
+def _mutates_corpus_tables(sql: str) -> bool:
+    """True only when DML *targets* a corpus table, not when the name appears as an FK."""
+    return bool(
+        re.search(
+            r"\b(?:INSERT\s+INTO|UPDATE|DELETE\s+FROM)\s+(?:ONLY\s+)?(?:public\.)?"
+            r"(krithis|krithi_sections|krithi_lyric_variants|krithi_lyric_sections|"
+            r"krithi_ragas|krithi_revisions)\b",
+            sql,
+            re.IGNORECASE,
+        )
+    )
 # Pre-TRACK-139 files may touch krithi_* (raga identity or data-fixes). New V__
 # after V57 must not mutate corpus tables without an override comment.
 # V58–V62 were retired; the next versioned file is V58 and is not grandfathered.
@@ -471,7 +492,7 @@ def run_corpus_migration_lint() -> int:
         if version <= _CORPUS_DML_MAX_GRANDFATHER:
             continue
         text = path.read_text(encoding="utf-8")
-        if _DML.search(text) and _CORPUS_TABLES.search(text) and not _CORPUS_ALLOW.search(text):
+        if _mutates_corpus_tables(text) and not _CORPUS_ALLOW.search(text):
             _fail(
                 f"corpus-migration-lint: {path.name} mutates krithi_* corpus tables; "
                 "use parser/import/curation (ADR-012/013) or `-- corpus-data-fix: allow`"
