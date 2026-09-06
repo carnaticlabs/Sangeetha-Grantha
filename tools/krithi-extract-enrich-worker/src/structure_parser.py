@@ -79,6 +79,7 @@ class _LineToken:
     text: str
     start_pos: int
     end_pos: int
+    preceded_by_blank: bool = False
 
 
 @dataclass
@@ -87,12 +88,16 @@ class _TextBlock:
     lines: list[_LineToken]
     start_pos: int
     end_pos: int
+    raga_name: str | None = None
+    is_viloma: bool = False
 
 
 @dataclass
 class _HeaderMatch:
     label: str
     remainder: str
+    raga_name: str | None = None
+    is_viloma: bool = False
 
 
 LANGUAGE_LABELS = {
@@ -172,6 +177,39 @@ VILOMA_SUBSECTION_PATTERN = re.compile(r"^vilOma\s*-\s*(.+?)\s+rAgaM\s*$", re.IG
 # the five Indic scripts; the raga word is "rāga" + an anusvāra / virāma-m ending.
 _INDIC_RAGA_WORD = r"(?:राग[ंम]्?|ராக[ம]்?|రాగ[ంమ]్?|ರಾಗ[ಂಮ]್?|രാഗ[ംമ]്?)"
 RAGA_SUBSECTION_INDIC_PATTERN = re.compile(rf"^(?:\d+[.।]?\s*)?(.+?)\s+{_INDIC_RAGA_WORD}\s*$")
+# Honorific "SrI " before a raga name (e.g. "SrI gauLa rAgaM") is a blog artifact,
+# not the raga Sri. Bare "SrI rAgaM" stays "SrI".
+_SRI_HONORIFIC_PREFIX = re.compile(r"^SrI\s+", re.IGNORECASE)
+# Blog line-wrap of a hyphenated word ("kani(y)-" / "A rAN-muni") must not be read
+# as an inline P/A/C header. TRACK-139 / Alakalallalaadaga two-line pallavi.
+_INLINE_PAC_LABELS = frozenset({"PALLAVI", "ANUPALLAVI", "CHARANAM"})
+
+
+# Only the Dashavatara blog spelling 'SrI gauLa' is an honorific+raga, not Sri ranjani.
+_SRI_HONORIFIC_REMAINDERS = frozenset({"gaula"})
+
+
+def _strip_sri_honorific(name: str) -> str:
+    """Drop a leading honorific 'SrI ' only for the adjudicated blog spelling.
+
+    'SrI gauLa' → 'gauLa'. Bare 'SrI' (the raga) and 'SrI ranjani' stay intact
+    (Śrīranjani ≠ Ranjani; TRACK-136 / normalize_for_matching).
+    """
+    match = _SRI_HONORIFIC_PREFIX.match(name)
+    if match is None:
+        return name
+    remainder = name[match.end() :].strip()
+    if remainder.casefold() in _SRI_HONORIFIC_REMAINDERS:
+        return remainder
+    return name
+
+
+def _raga_name_from_segment_header(line: str) -> str | None:
+    match = RAGA_SUBSECTION_PATTERN.search(line) or RAGA_SUBSECTION_INDIC_PATTERN.search(line)
+    if match is None:
+        return None
+    return _strip_sri_honorific(match.group(1).strip())
+
 
 SECTION_HEADER_PATTERNS: list[tuple[re.Pattern[str], str]] = [
     (re.compile(r"^\s*[\-–—•*()=\[\]]*\s*pallavi(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE), "PALLAVI"),
@@ -645,10 +683,12 @@ class StructureParser:
 
         tokens: list[_LineToken] = []
         offset = 0
+        preceded_by_blank = False
         for raw_line in raw_text.splitlines(keepends=True):
             line_without_newline = raw_line.rstrip("\n")
             stripped = line_without_newline.strip()
             if not stripped:
+                preceded_by_blank = True
                 offset += len(raw_line)
                 continue
 
@@ -660,7 +700,15 @@ class StructureParser:
             normalized = self._normalize_line(stripped)
             if not normalized or self._is_boilerplate(normalized):
                 continue
-            tokens.append(_LineToken(text=normalized, start_pos=start_pos, end_pos=end_pos))
+            tokens.append(
+                _LineToken(
+                    text=normalized,
+                    start_pos=start_pos,
+                    end_pos=end_pos,
+                    preceded_by_blank=preceded_by_blank,
+                )
+            )
+            preceded_by_blank = False
 
         if not tokens:
             return []
@@ -669,9 +717,11 @@ class StructureParser:
         current_label = "UNLABELED"
         current_start = tokens[0].start_pos
         current_lines: list[_LineToken] = []
+        current_raga_name: str | None = None
+        current_is_viloma = False
 
         def flush() -> None:
-            nonlocal current_lines
+            nonlocal current_lines, current_raga_name, current_is_viloma
             if current_lines or current_label in LANGUAGE_LABELS:
                 block_start = current_start if not current_lines else current_lines[0].start_pos
                 block_end = current_lines[-1].end_pos if current_lines else current_start
@@ -681,15 +731,32 @@ class StructureParser:
                         lines=current_lines,
                         start_pos=block_start,
                         end_pos=block_end,
+                        raga_name=current_raga_name,
+                        is_viloma=current_is_viloma,
                     )
                 )
                 current_lines = []
+                current_raga_name = None
+                current_is_viloma = False
 
+        prev_hyphen = False
         for token in tokens:
             header = self._detect_header(token.text)
+            if (
+                header is not None
+                and prev_hyphen
+                and not token.preceded_by_blank
+                and header.label in _INLINE_PAC_LABELS
+                and any(pattern.search(token.text) for pattern, _ in INLINE_PAC_PATTERNS)
+            ):
+                # Hyphenation wrap: previous *adjacent* line ended "-" and this
+                # line's leading P/A/C is the rest of the broken word, not a header.
+                header = None
             if header is not None:
                 flush()
                 current_label = header.label
+                current_raga_name = header.raga_name
+                current_is_viloma = header.is_viloma
                 current_start = token.start_pos
                 if header.remainder:
                     current_lines.append(
@@ -699,9 +766,11 @@ class StructureParser:
                             end_pos=token.end_pos,
                         )
                     )
+                prev_hyphen = token.text.rstrip().endswith("-")
                 continue
 
             current_lines.append(token)
+            prev_hyphen = token.text.rstrip().endswith("-")
 
         flush()
         return blocks
@@ -776,12 +845,21 @@ class StructureParser:
                     remainder = re.sub(r"^\d+\s*", "", remainder).strip()
                     return _HeaderMatch(label=label, remainder=remainder)
         # TRACK-133 WORK ITEM 2: pure-ragamalika "<raga> rAgaM" stanza boundary.
-        if getattr(self, "_raga_segment_enabled", False) and (
-            VILOMA_SUBSECTION_PATTERN.search(line)
-            or RAGA_SUBSECTION_PATTERN.search(line)
-            or RAGA_SUBSECTION_INDIC_PATTERN.search(line)
-        ):
-            return _HeaderMatch(label="RAGA_SEGMENT", remainder="")
+        if getattr(self, "_raga_segment_enabled", False):
+            viloma = VILOMA_SUBSECTION_PATTERN.search(line)
+            if viloma:
+                return _HeaderMatch(
+                    label="RAGA_SEGMENT",
+                    remainder="",
+                    raga_name=viloma.group(1).strip(),
+                    is_viloma=True,
+                )
+            if RAGA_SUBSECTION_PATTERN.search(line) or RAGA_SUBSECTION_INDIC_PATTERN.search(line):
+                return _HeaderMatch(
+                    label="RAGA_SEGMENT",
+                    remainder="",
+                    raga_name=_raga_name_from_segment_header(line),
+                )
         return None
 
     def _extract_sections(
@@ -824,6 +902,15 @@ class StructureParser:
             detected_subs = self._detect_ragamalika_subsections(section_type, block)
             if detected_subs:
                 ragamalika_subsections.extend(detected_subs)
+            elif block.label == "RAGA_SEGMENT" and block.raga_name:
+                ragamalika_subsections.append(
+                    RagamalikaSubsection(
+                        raga_name=block.raga_name,
+                        parent_section_type=SectionType.OTHER,
+                        is_viloma=block.is_viloma,
+                        order=0,
+                    )
+                )
 
             # Always create ONE section per structural block
             block_text = "\n".join(line.text for line in block.lines).strip()

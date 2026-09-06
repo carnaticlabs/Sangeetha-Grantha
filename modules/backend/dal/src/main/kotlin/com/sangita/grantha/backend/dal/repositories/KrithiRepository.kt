@@ -74,6 +74,8 @@ data class KrithiUpdateParams(
     val templeId: UUID? = null,
     val isRagamalika: Boolean? = null,
     val ragaIds: List<UUID>? = null,
+    /** Sparse ragamalika slots (D4). When non-empty, used instead of compact [ragaIds]. */
+    val ragaSlots: List<Pair<Int, UUID>>? = null,
     val workflowState: WorkflowState? = null,
     val sahityaSummary: String? = null,
     val notes: String? = null,
@@ -185,7 +187,13 @@ class KrithiRepository {
             return@dbQuery null
         }
 
-        params.ragaIds?.let { ragas ->
+        val junctionPairs: List<Pair<UUID, Int>>? = when {
+            params.ragaSlots != null -> params.ragaSlots.map { (index, ragaId) -> ragaId to index }
+            params.ragaIds != null -> params.ragaIds.withIndex().map { it.value to it.index }
+            else -> null
+        }
+
+        junctionPairs?.let { ragas ->
             val javaKrithiId = params.id.toJavaUuid()
 
             val existingRagas = KrithiRagasTable
@@ -195,9 +203,7 @@ class KrithiRepository {
                     it[KrithiRagasTable.ragaId] to it[KrithiRagasTable.orderIndex]
                 }
 
-            val newRagasMap = ragas.withIndex().associateBy {
-                it.value to it.index
-            }
+            val newRagasMap = ragas.associateBy { it }
 
             val toInsert = mutableListOf<Pair<UUID, Int>>()
             val toDelete = mutableListOf<Pair<UUID, Int>>()

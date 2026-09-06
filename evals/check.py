@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -319,6 +320,56 @@ def run_hook_smokes() -> int:
             2,
         ),
         (
+            "protect-migrations.delete-corpus-fix",
+            "protect-migrations.py",
+            {
+                "tool_name": "Delete",
+                "tool_input": {
+                    "path": "database/migrations/V45__remove_stale_anupallavi_brhannayaki.sql"
+                },
+            },
+            0,
+        ),
+        (
+            "protect-migrations.new-corpus-dml",
+            "protect-migrations.py",
+            {
+                "tool_name": "Write",
+                "tool_input": {
+                    "file_path": "database/migrations/V99__fix_krithi_sections.sql",
+                    "contents": "DELETE FROM krithi_sections WHERE id = '00000000-0000-0000-0000-000000000000';\n",
+                },
+            },
+            2,
+        ),
+        (
+            "protect-migrations.new-corpus-dml-override",
+            "protect-migrations.py",
+            {
+                "tool_name": "Write",
+                "tool_input": {
+                    "file_path": "database/migrations/V99__curator_mirror.sql",
+                    "contents": "-- corpus-data-fix: allow\nDELETE FROM krithi_sections WHERE id = '00000000-0000-0000-0000-000000000000';\n",
+                },
+            },
+            0,
+        ),
+        (
+            "protect-migrations.fk-mention-not-corpus-dml",
+            "protect-migrations.py",
+            {
+                "tool_name": "Write",
+                "tool_input": {
+                    "file_path": "database/migrations/V99__krithi_aux.sql",
+                    "contents": (
+                        "CREATE TABLE krithi_aux (krithi_id uuid REFERENCES krithis);\n"
+                        "INSERT INTO krithi_aux (krithi_id) SELECT id FROM krithis;\n"
+                    ),
+                },
+            },
+            0,
+        ),
+        (
             "protect-migrations.read-ok",
             "protect-migrations.py",
             {
@@ -406,8 +457,54 @@ def run_hook_smokes() -> int:
     return failures
 
 
+_VERSIONED_FILE = re.compile(r"^V(\d+)__.+\.sql$", re.IGNORECASE)
+_CORPUS_ALLOW = re.compile(r"--\s*corpus-data-fix:\s*allow\b", re.IGNORECASE)
+
+def _mutates_corpus_tables(sql: str) -> bool:
+    """True only when DML *targets* a corpus table, not when the name appears as an FK."""
+    return bool(
+        re.search(
+            r"\b(?:INSERT\s+INTO|UPDATE|DELETE\s+FROM)\s+(?:ONLY\s+)?(?:public\.)?"
+            r"(krithis|krithi_sections|krithi_lyric_variants|krithi_lyric_sections|"
+            r"krithi_ragas|krithi_revisions)\b",
+            sql,
+            re.IGNORECASE,
+        )
+    )
+# Pre-TRACK-139 files may touch krithi_* (raga identity or data-fixes). New V__
+# after V57 must not mutate corpus tables without an override comment.
+# V58–V62 were retired; the next versioned file is V58 and is not grandfathered.
+_CORPUS_DML_MAX_GRANDFATHER = 57
+
+
+def run_corpus_migration_lint() -> int:
+    """Fail when a non-grandfathered V__ mutates krithi_* corpus tables (TRACK-139)."""
+    failures = 0
+    migrations = ROOT / "database" / "migrations"
+    if not migrations.is_dir():
+        _fail("corpus-migration-lint: missing database/migrations")
+        return 1
+    for path in sorted(migrations.glob("V*.sql")):
+        match = _VERSIONED_FILE.match(path.name)
+        if not match:
+            continue
+        version = int(match.group(1))
+        if version <= _CORPUS_DML_MAX_GRANDFATHER:
+            continue
+        text = path.read_text(encoding="utf-8")
+        if _mutates_corpus_tables(text) and not _CORPUS_ALLOW.search(text):
+            _fail(
+                f"corpus-migration-lint: {path.name} mutates krithi_* corpus tables; "
+                "use parser/import/curation (ADR-012/013) or `-- corpus-data-fix: allow`"
+            )
+            failures += 1
+    if failures == 0:
+        print("ok  corpus-migration-lint")
+    return failures
+
+
 def main() -> int:
-    failures = run_cases() + run_hook_smokes()
+    failures = run_cases() + run_hook_smokes() + run_corpus_migration_lint()
     if failures:
         print(f"{failures} agent-eval failure(s)", file=sys.stderr)
         return 1

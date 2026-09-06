@@ -15,7 +15,7 @@ Flyway Community is the **only** migration engine ([ADR-013](../../../applicatio
 
 ## File naming (match the existing files exactly)
 
-- **Versioned**: `VNN__snake_or-kebab-description.sql`, two-digit zero-padded sequence (`V01__…` … currently `V47__…`). Take the next free number. Committed versioned migrations are immutable — fix mistakes with a new migration, never by editing an applied one.
+- **Versioned**: `VNN__snake_or-kebab-description.sql`, two-digit zero-padded sequence (`V01__…` … currently `V57__…`; next is `V58`). Take the next free number. Committed versioned migrations are immutable — fix mistakes with a new migration, never by editing an applied one. Do **not** put corpus-row DML (`krithis`, `krithi_sections`, `krithi_lyric_*`, `krithi_ragas`, `krithi_revisions`) in a `V__` file — parser / import / curator own composition correctness (TRACK-139). The hook and `make agent-evals` deny it unless the file contains `-- corpus-data-fix: allow`.
 - **Repeatable**: `R__seed_NN_description.sql` (e.g. `R__seed_04_raga_reference.sql`) for reference data — ragas, talas, composer aliases, import-source authority. They re-run whenever their checksum changes, so they must be idempotent (`INSERT … ON CONFLICT DO UPDATE`). New reference data goes here, not in a V__ file.
 
 ## PostgreSQL 18 conventions

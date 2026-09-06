@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.23.0 |
-| **Last Updated** | 2026-09-05 |
+| **Version** | 1.24.0 |
+| **Last Updated** | 2026-09-06 |
 | **Author** | Sangeetha Grantha Team |
 
 # Conductor Tracks Registry
@@ -142,6 +142,7 @@
 | [TRACK-136](./tracks/TRACK-136-raga-identity-alias-resolution.md) | Raga Identity — Alias Table, Match-Key & Controlled Resolution (ADR-017 Phases 1–3) | Done |
 | [TRACK-137](./tracks/TRACK-137-orphan-twin-raga-cleanup.md) | Orphan-Twin Raga Cleanup (residual TRACK-132 duplicates) | Done |
 | [TRACK-138](./tracks/TRACK-138-rasika-mobile-app.md) | Rasika Mobile App — Search, Browse and Read | Plan accepted — Node C |
+| [TRACK-139](./tracks/TRACK-139-retire-corpus-data-fix-migrations.md) | Retire Corpus Data-Fix Migrations | In Progress — V58–V62 retired; five krithis reingested |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)

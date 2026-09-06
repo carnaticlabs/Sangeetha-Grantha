@@ -144,3 +144,17 @@ SELECT id, 'Shreemati', 'transliteration', NULL,
   FROM ragas WHERE name = 'Shreemani'
 ON CONFLICT (raga_id, alias) DO NOTHING;
 
+-- TRACK-139: Dashavatara ragamalika blog spellings (V61). match_key does not
+-- fold nATa→Nāṭṭai, gauLa→Gowla, kEdAra→Kedaram, or saurAshTra→saurAshTraM.
+INSERT INTO raga_aliases (raga_id, alias, alias_type, tradition, source, confidence)
+SELECT id, v.alias, 'transliteration', NULL,
+       'TRACK-139: Dashavatara ragamalika source spelling', 'high'
+  FROM (VALUES
+    ('nATa',       'Nāṭṭai'),
+    ('gauLa',      'Gowla'),
+    ('kEdAra',     'Kedaram'),
+    ('saurAshTra', 'saurAshTraM')
+  ) AS v(alias, keeper)
+  JOIN ragas r ON r.name = v.keeper
+ON CONFLICT (raga_id, alias) DO NOTHING;
+
