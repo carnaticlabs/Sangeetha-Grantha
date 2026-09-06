@@ -4,6 +4,7 @@ import com.sangita.grantha.backend.api.config.ApiEnvironmentLoader
 import com.sangita.grantha.backend.api.config.LogbackConfig
 import com.sangita.grantha.backend.api.di.appModule
 import com.sangita.grantha.backend.api.di.dalModule
+import com.sangita.grantha.backend.api.plugins.configureCatalogueUsage
 import com.sangita.grantha.backend.api.plugins.configureCaching
 import com.sangita.grantha.backend.api.plugins.configureMetrics
 import com.sangita.grantha.backend.api.plugins.configureRequestValidation
@@ -49,7 +50,8 @@ fun main() {
                 password = dbConfig.password,
                 schema = dbConfig.schema,
                 meterRegistry = metricsRegistry,
-                enableQueryLogging = env.environment != com.sangita.grantha.backend.api.config.Environment.PROD,
+                // TRACK-138: do not expand SQL parameter values in the API default runtime.
+                enableQueryLogging = false,
                 slowQueryThresholdMs = 100
             )
         )
@@ -60,6 +62,7 @@ fun main() {
 
         configureSerialization()
         configureRequestLogging()
+        configureCatalogueUsage()
         configureCors(env)
         configureSecurity(env)
         configureStatusPages()

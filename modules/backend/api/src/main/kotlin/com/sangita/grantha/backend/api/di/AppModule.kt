@@ -69,6 +69,8 @@ fun appModule(env: ApiEnvironment, metricsRegistry: PrometheusMeterRegistry) = m
     single { AutoApprovalService(get()) }
 
     single<IKrithiService> { KrithiServiceImpl(get()) }
+    single { com.sangita.grantha.backend.api.services.CatalogueService(get()) }
+    single { com.sangita.grantha.backend.api.services.CatalogueUsageRecorder(environment = env.environment.name.lowercase()) }
     single { KrithiNotationService(get()) }
     single<IReferenceDataService> { ReferenceDataServiceImpl(get(), get()) }
     single { AuditLogService(get()) }

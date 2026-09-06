@@ -483,16 +483,20 @@ class MoneyPathApiTest : IntegrationTestBase() {
                     "an approved import must report the canonical krithi it produced"
                 )
 
-                // 3. It is visible on the public surface.
+                // 3. Approval creates a draft. Public reads are published-only (TRACK-138).
                 val public = client.get("/v1/krithis/$krithiId")
                 assertEquals(
-                    HttpStatusCode.OK, public.status,
-                    "the approved krithi must be readable via the public route"
+                    HttpStatusCode.NotFound, public.status,
+                    "an approved-but-unpublished krithi must not leak on the public route"
                 )
+                val stored = assertNotNull(
+                    dal.krithis.findById(Uuid.parse(krithiId)),
+                    "approval must still create the canonical krithi",
+                )
+                assertEquals("Api Workflow Krithi", stored.title)
                 assertEquals(
-                    "Api Workflow Krithi",
-                    public.json()["title"]?.jsonPrimitive?.content,
-                    "the public DTO must carry the imported title"
+                    com.sangita.grantha.shared.domain.model.WorkflowStateDto.DRAFT,
+                    stored.workflowState,
                 )
 
                 // 4. The mutation is audited (Critical Rule #3).
