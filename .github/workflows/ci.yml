@@ -200,7 +200,14 @@ jobs:
           distribution: temurin
           java-version: '25'
       - uses: gradle/actions/setup-gradle@v6
+      - name: Show Xcode
+        run: xcodebuild -version
       - name: xcodebuild RasikaApp
+        # Compile for the simulator SDK. Do not boot a UDID: CoreSimulator on
+        # hosted macos-15 is flaky, and the image may not include iOS 26.5.
+        # A real Kotlin/Native or Swift compile error still fails this job.
+        env:
+          RASIKA_IOS_DESTINATION: generic/platform=iOS Simulator
         run: bash tools/mobile/verify-ios.sh
 
   worker:
