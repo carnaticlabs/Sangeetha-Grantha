@@ -1,0 +1,2289 @@
+{
+  "review_date": "2026-09-08",
+  "method": "20 frozen queries per live endpoint, limit=5; shipped scorer predicates; not a reliable acceptance metric",
+  "results": [
+    {
+      "mode": "semantic",
+      "id": "EVAL-01",
+      "query": "Vatapi Ganapatim Bhajeham",
+      "seconds": 0.726,
+      "rr_as_shipped": 1.0,
+      "items": [
+        {
+          "krithiId": "1e59e6a5-5bd3-44d9-9527-efb4f2091cb0",
+          "title": "vAtApi gaNa patiM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Hamsadhwani",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8976888910373101
+        },
+        {
+          "krithiId": "b2afbef6-504a-4b39-bf5c-d9a0dfb3f6c5",
+          "title": "SvEta gaNa patiM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Rāgachoodāmani",
+          "talaName": "Triputa",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8513002472073847
+        },
+        {
+          "krithiId": "07f679e9-2b2c-4fd2-a146-8eb8fb172e69",
+          "title": "vighnESvaraM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Malahari",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8465298117663821
+        },
+        {
+          "krithiId": "535cfbe1-80c6-4af2-b228-d03b75c1bcac",
+          "title": "gaNa patE mahA matE",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Mechakalyāni",
+          "talaName": "Rupaka",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8449938179536277
+        },
+        {
+          "krithiId": "1eafd98f-443b-48e6-b72f-15f5009adaa9",
+          "title": "mahA gaNa patE",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "naTa nArAyaNi",
+          "talaName": "Adi",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.8425057560940848
+        }
+      ]
+    },
+    {
+      "mode": "semantic",
+      "id": "EVAL-02",
+      "query": "karambuja pasa bijapura kalpakalita",
+      "seconds": 0.707,
+      "rr_as_shipped": 0.3333333333333333,
+      "items": [
+        {
+          "krithiId": "86c2bd79-0341-43c5-a15a-3f9199b9c125",
+          "title": "hasti vadanAya",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Navaroj",
+          "talaName": "Misra Capu",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.7771583993122113
+        },
+        {
+          "krithiId": "ef0a382b-fca3-4de4-b91f-fa57fd0ab265",
+          "title": "panca mAtanga mukha",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Malahari",
+          "talaName": "Rupaka",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.7762362565150226
+        },
+        {
+          "krithiId": "1e59e6a5-5bd3-44d9-9527-efb4f2091cb0",
+          "title": "vAtApi gaNa patiM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Hamsadhwani",
+          "talaName": "Adi",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.769207550930539
+        },
+        {
+          "krithiId": "e53781f7-c99e-4837-94b5-920d6a7b96df",
+          "title": "kari kaLabha",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Sāveri",
+          "talaName": "Rupaka",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.7649216792034225
+        },
+        {
+          "krithiId": "07f679e9-2b2c-4fd2-a146-8eb8fb172e69",
+          "title": "vighnESvaraM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Malahari",
+          "talaName": "Adi",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.7639927723403451
+        }
+      ]
+    },
+    {
+      "mode": "semantic",
+      "id": "EVAL-03",
+      "query": "Dikshitar krithi praising Lord Ganesha in Hamsadhvani raga",
+      "seconds": 0.728,
+      "rr_as_shipped": 0,
+      "items": [
+        {
+          "krithiId": "6be434b9-d403-4bc4-b167-4e12d48edf1a",
+          "title": "gaNa nAyakaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Rudrapriyā",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8827687345741261
+        },
+        {
+          "krithiId": "b2afbef6-504a-4b39-bf5c-d9a0dfb3f6c5",
+          "title": "SvEta gaNa patiM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Rāgachoodāmani",
+          "talaName": "Triputa",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8702904764077961
+        },
+        {
+          "krithiId": "e8fdd062-5beb-43fd-906d-51afe0df3b50",
+          "title": "SrI gaNa nAthaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Eeshamanohari",
+          "talaName": "Rupaka",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8695970773915598
+        },
+        {
+          "krithiId": "6b272269-1e21-41d9-97da-7e1a37d5eb1d",
+          "title": "Sakti sahita",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "SankarAbharaNaM",
+          "talaName": "Tisra Ekam",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.868714529459034
+        },
+        {
+          "krithiId": "079141cf-0f41-4449-b6ed-06f075150fd5",
+          "title": "gajAnana yutaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Vegavāhini",
+          "talaName": "Catusra Ekam",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8673013190240142
+        }
+      ]
+    },
+    {
+      "mode": "semantic",
+      "id": "EVAL-04",
+      "query": "Endaro Mahanubhavulu Andariki Vandanamulu",
+      "seconds": 0.7,
+      "rr_as_shipped": 1.0,
+      "items": [
+        {
+          "krithiId": "2b65609e-9fbf-4232-baae-096cafdf4e79",
+          "title": "Endaro Mahaanubhaavulu",
+          "composerName": "Tyagaraja",
+          "ragaName": "Sri",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8565339531580253
+        },
+        {
+          "krithiId": "82dd8598-5a91-4ffc-b26b-e4800a18d4b9",
+          "title": "Endundi Vedalitivo",
+          "composerName": "Tyagaraja",
+          "ragaName": "Darbar",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.774924524150943
+        },
+        {
+          "krithiId": "1a5f7193-3f44-4170-b510-d13b78ad9390",
+          "title": "Neeke Teliyaka",
+          "composerName": "Tyagaraja",
+          "ragaName": "Anandabhairavi",
+          "talaName": "Unknown",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.7717172743095626
+        }
+      ]
+    },
+    {
+      "mode": "semantic",
+      "id": "EVAL-05",
+      "query": "Dikshitar krithi in Chidambaram describing the cosmic dance of Shiva",
+      "seconds": 0.662,
+      "rr_as_shipped": 0.2,
+      "items": [
+        {
+          "krithiId": "605549ea-5065-4cdf-a5d3-641a5da69821",
+          "title": "cidambara naTarAjaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Kedaram",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8738510608673158
+        },
+        {
+          "krithiId": "6a32d166-96f2-448d-9dcc-0105f5c90063",
+          "title": "cidambara naTarAja mUrtiM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Tanukeerti",
+          "talaName": "Misra Capu",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8721701686534626
+        },
+        {
+          "krithiId": "34abe64a-5481-4f12-a22c-bdad4f4c008e",
+          "title": "cidambarESvaraM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Dhunibhinnashadjam",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8593955039978088
+        },
+        {
+          "krithiId": "084a3d03-b9fe-414b-a269-78c10a64087e",
+          "title": "Siva kAmESvaraM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Ārabhi",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8573067272631587
+        },
+        {
+          "krithiId": "060bcaa4-86e4-4c74-8127-647e061b28c1",
+          "title": "Ananda naTana prakASaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Kedaram",
+          "talaName": "Misra Capu",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.848874959148497
+        }
+      ]
+    },
+    {
+      "mode": "semantic",
+      "id": "EVAL-06",
+      "query": "Abhayamba series krithi in Kalyani raga",
+      "seconds": 0.717,
+      "rr_as_shipped": 1.0,
+      "items": [
+        {
+          "krithiId": "b4d81789-28d1-4440-bdee-01d4fda63814",
+          "title": "SrI abhayAmbA",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Sri",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8710787555896962
+        },
+        {
+          "krithiId": "3a9c0d2f-1f91-424a-ab71-b368acba374b",
+          "title": "abhayAmbikAyai aSva",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Yadukula Kāmbhoji",
+          "talaName": "Rupaka",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8689887523651185
+        },
+        {
+          "krithiId": "7c6b3e67-397e-47c4-94d7-f055d547f4a2",
+          "title": "abhayAmbA jagadambA",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Mechakalyāni",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.868155924834289
+        },
+        {
+          "krithiId": "1b30c43b-dcd8-4f22-8e7c-d794a9f5fd33",
+          "title": "ambikAyAH abhayAmbikAyAH",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Kedaram",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8662919921824829
+        },
+        {
+          "krithiId": "c7de213b-73b5-423b-a4dd-9957e0111360",
+          "title": "dAkshAyaNi",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Hanumatodi",
+          "talaName": "Rupaka",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.8629960944344707
+        }
+      ]
+    },
+    {
+      "mode": "semantic",
+      "id": "EVAL-07",
+      "query": "adhayam arundh thava thikshidar keerthanai",
+      "seconds": 0.68,
+      "rr_as_shipped": 0,
+      "items": [
+        {
+          "krithiId": "605549ea-5065-4cdf-a5d3-641a5da69821",
+          "title": "cidambara naTarAjaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Kedaram",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7310610804143904
+        },
+        {
+          "krithiId": "b447b92a-9e7b-428f-9325-a4849d39eb17",
+          "title": "tiruvaTISvaraM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Gamakakriyā",
+          "talaName": "Rupaka",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.7295806254311868
+        },
+        {
+          "krithiId": "a913eac9-62c2-495f-b4bb-5e30aada2658",
+          "title": "ardha nArISvaraM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Kumudhakriyā",
+          "talaName": "Rupaka",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.7218308977677783
+        },
+        {
+          "krithiId": "e9e05804-83cf-4686-bc21-bd143555021a",
+          "title": "tyAgarAjAdanyaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Darbar",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7208815577273359
+        },
+        {
+          "krithiId": "955e376d-199a-49fe-89c8-f5cdb92f9bbf",
+          "title": "stava rAjAdi",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Sthavarājam",
+          "talaName": "Misra Capu",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7193957996008903
+        }
+      ]
+    },
+    {
+      "mode": "semantic",
+      "id": "EVAL-08",
+      "query": "Muthuswami Dikshitar krithi in Anandabhairavi",
+      "seconds": 0.73,
+      "rr_as_shipped": 0,
+      "items": [
+        {
+          "krithiId": "34abe64a-5481-4f12-a22c-bdad4f4c008e",
+          "title": "cidambarESvaraM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Dhunibhinnashadjam",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8554502298340411
+        },
+        {
+          "krithiId": "0ced3d7b-985c-4559-bf87-d5f506d88e20",
+          "title": "bRhannAyaki vara dAyaki",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Andhali",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8543273378307231
+        },
+        {
+          "krithiId": "44b472bf-c416-4409-ad3c-8f10ccbb17d9",
+          "title": "kAla bhairavaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Bhairavam",
+          "talaName": "Adi",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.8537029718361733
+        },
+        {
+          "krithiId": "f7f17188-9cf4-43c5-9f29-6998923f6c70",
+          "title": "guru guha bhava",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Chaturāngini",
+          "talaName": "Misra Capu",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.8535944056277603
+        },
+        {
+          "krithiId": "ee3ad8cf-a682-4303-a6cb-3249c175bcf3",
+          "title": "AnandESvarENa",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Anandabhairavi",
+          "talaName": "Misra Capu",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.8535040028534236
+        }
+      ]
+    },
+    {
+      "mode": "semantic",
+      "id": "EVAL-09",
+      "query": "Jagadanandakaraka Jaya Janaki Prananayaka",
+      "seconds": 0.671,
+      "rr_as_shipped": 0,
+      "items": [
+        {
+          "krithiId": "2e115182-dcc2-4a41-962c-8381821a7489",
+          "title": "jagadAnanda kAraka",
+          "composerName": "Tyagaraja",
+          "ragaName": "Nāṭṭai",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8633606798556288
+        },
+        {
+          "krithiId": "7253c9f5-6903-4ad3-b63f-1eb6b9f01052",
+          "title": "SrI rAma rAma jagadAtma",
+          "composerName": "Tyagaraja",
+          "ragaName": "Poornachandrika",
+          "talaName": "Khanda Capu",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.8205486780568655
+        },
+        {
+          "krithiId": "df731af2-9892-4e46-a3f4-f773dacf50af",
+          "title": "jaya jaya SrI raghurAma",
+          "composerName": "Tyagaraja",
+          "ragaName": "Mangalakaishiki",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8157420307668749
+        },
+        {
+          "krithiId": "4e6c1010-d9a5-4461-b4d0-49c6b6e73b45",
+          "title": "Sri Janaki Manohari",
+          "composerName": "Tyagaraja",
+          "ragaName": "Eeshamanohari",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8145086565786009
+        }
+      ]
+    },
+    {
+      "mode": "semantic",
+      "id": "EVAL-10",
+      "query": "kalyana ramani kamaniya kanchana vadani",
+      "seconds": 0.703,
+      "rr_as_shipped": 0.3333333333333333,
+      "items": [
+        {
+          "krithiId": "604bbad4-7a8c-4935-9467-bf7db2d850d0",
+          "title": "Paahi Kalyaana Rama",
+          "composerName": "Tyagaraja",
+          "ragaName": "Kāpi",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8051295636555857
+        },
+        {
+          "krithiId": "28f4d47f-3e15-44e9-b178-559f6cbd048b",
+          "title": "Kanulu Taakani",
+          "composerName": "Tyagaraja",
+          "ragaName": "Kalyāna Vasantam",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8045527462261423
+        },
+        {
+          "krithiId": "f5081739-3f8e-4427-90c7-becb3b1eeba9",
+          "title": "sItA kalyANa",
+          "composerName": "Tyagaraja",
+          "ragaName": "SankarAbharaNaM",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8044302690067969
+        },
+        {
+          "krithiId": "cd6fdf67-8092-49f8-9a35-61851937370d",
+          "title": "Laavanya Rama",
+          "composerName": "Tyagaraja",
+          "ragaName": "Purna Shadjam",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7950271590143158
+        },
+        {
+          "krithiId": "be43d382-8fba-4cff-b60f-67bf7e36307e",
+          "title": "kalaSa vArdhijAM",
+          "composerName": "Tyagaraja",
+          "ragaName": "Ratnāngi",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7931343882386918
+        }
+      ]
+    },
+    {
+      "mode": "semantic",
+      "id": "EVAL-11",
+      "query": "Tyagaraja composition in Kharaharapriya pleading for Rama's mercy",
+      "seconds": 0.659,
+      "rr_as_shipped": 1.0,
+      "items": [
+        {
+          "krithiId": "40792364-1527-4e70-804d-00e1323c621c",
+          "title": "Ramaabhirama Ramaneeya",
+          "composerName": "Tyagaraja",
+          "ragaName": "Darbar",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8783850843011394
+        },
+        {
+          "krithiId": "1d2d8060-66e8-48e4-933b-62a7ff17cb28",
+          "title": "Rama Paahi",
+          "composerName": "Tyagaraja",
+          "ragaName": "Kāpi",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8726205153838614
+        },
+        {
+          "krithiId": "26fe209d-d385-416f-8c88-e007f0f2380a",
+          "title": "SrI raghu vara karuNAkara",
+          "composerName": "Tyagaraja",
+          "ragaName": "Devagāndhāri",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8708672129729137
+        },
+        {
+          "krithiId": "f8fd0f11-c316-40c8-b9d1-25e334dbddd6",
+          "title": "nI dayacE rAma",
+          "composerName": "Tyagaraja",
+          "ragaName": "Yadukula Kāmbhoji",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8702109506161846
+        },
+        {
+          "krithiId": "2e539247-6fc1-4880-bbf0-5ad079d5d7bd",
+          "title": "Sri Rama Paadamaa",
+          "composerName": "Tyagaraja",
+          "ragaName": "Amrta Vahini",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8700668650029365
+        }
+      ]
+    },
+    {
+      "mode": "semantic",
+      "id": "EVAL-12",
+      "query": "Compositions in Bhairavi raga with multiple charanams",
+      "seconds": 0.722,
+      "rr_as_shipped": 0.5,
+      "items": [
+        {
+          "krithiId": "44b472bf-c416-4409-ad3c-8f10ccbb17d9",
+          "title": "kAla bhairavaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Bhairavam",
+          "talaName": "Adi",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.8449603436994084
+        },
+        {
+          "krithiId": "c876a731-58e5-4d9e-89ab-62f4a353e683",
+          "title": "Neevanti Daivamu",
+          "composerName": "Tyagaraja",
+          "ragaName": "Bhairavi",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8326668588519793
+        },
+        {
+          "krithiId": "79c5ac50-423e-4f35-81e0-dd68e289c63f",
+          "title": "bhakti biccam",
+          "composerName": "Tyagaraja",
+          "ragaName": "SankarAbharaNaM",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8275863219952025
+        },
+        {
+          "krithiId": "bfb7993f-dde1-43b8-bf24-31b69874e7a3",
+          "title": "lalitAmbikAyai",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Bhairavi",
+          "talaName": "Misra Capu",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8261685552999045
+        },
+        {
+          "krithiId": "60b8e375-123e-4625-8b53-6764df3dddb2",
+          "title": "Nammina Vaarini",
+          "composerName": "Tyagaraja",
+          "ragaName": "Bhairavi",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8251433268274859
+        }
+      ]
+    },
+    {
+      "mode": "semantic",
+      "id": "EVAL-13",
+      "query": "Kamakshi Anudinamu Maruvakane",
+      "seconds": 0.739,
+      "rr_as_shipped": 0,
+      "items": [
+        {
+          "krithiId": "f5a415fd-b4ed-4394-ae0b-6f89cacb4fca",
+          "title": "(ambA) kAmAkshi anudinamu",
+          "composerName": "Syama Sastri",
+          "ragaName": "Bhairavi",
+          "talaName": "Capu",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.8460031884918554
+        },
+        {
+          "krithiId": "47778a06-c335-453f-aac9-adc936c0c26d",
+          "title": "kAmAkshi karuNA",
+          "composerName": "Syama Sastri",
+          "ragaName": "paraju",
+          "talaName": "Triputa",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.8389917036265804
+        },
+        {
+          "krithiId": "ad1178e5-0a7d-4250-a2c9-9da675aa20ac",
+          "title": "kAmAkshi kAma kOTi",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "sumadyuti",
+          "talaName": "Rupaka",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.8387653385489026
+        },
+        {
+          "krithiId": "68fd82df-a2ae-4601-950b-f5c00bbaf4cd",
+          "title": "kAmAkshi lOka sAkshiNI",
+          "composerName": "Syama Sastri",
+          "ragaName": "Madhyamāvathi",
+          "talaName": "Triputa",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.8356909057909805
+        },
+        {
+          "krithiId": "7c15e1c9-5c30-4f68-8ab4-a414847e06be",
+          "title": "kAmAkshi nI pada",
+          "composerName": "Syama Sastri",
+          "ragaName": "Yadukula Kāmbhoji",
+          "talaName": "Capu",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8303420048748267
+        }
+      ]
+    },
+    {
+      "mode": "semantic",
+      "id": "EVAL-14",
+      "query": "Songs praising Goddess Meenakshi in Madurai",
+      "seconds": 0.674,
+      "rr_as_shipped": 1.0,
+      "items": [
+        {
+          "krithiId": "0e7775c9-9f0d-4767-acd0-bf7a29edf9ee",
+          "title": "madhurAmbikAyAM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Deshisimhāravam",
+          "talaName": "Rupaka",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8076489430311091
+        },
+        {
+          "krithiId": "bc184f5e-6de2-4677-9bc5-ac1765758276",
+          "title": "madhurAmbAM bhaja",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Sthavarājam",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7927570939064026
+        },
+        {
+          "krithiId": "1404ab1d-d4ec-44e5-8610-cb03ccdfbc44",
+          "title": "mInAkshi mE mudaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Gamakakriyā",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7924621555074324
+        },
+        {
+          "krithiId": "fd68ab72-b7e4-4ad0-bd4f-a29e5b296d6c",
+          "title": "SrI madhurA puri vihAriNi",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Bilahari",
+          "talaName": "Rupaka",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7898998230397525
+        },
+        {
+          "krithiId": "70c68c94-c968-4b40-8cfc-163094a97025",
+          "title": "madhurAmbAyAstava",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Begada",
+          "talaName": "Misra Capu",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7810038765379103
+        }
+      ]
+    },
+    {
+      "mode": "semantic",
+      "id": "EVAL-15",
+      "query": "guruguha swaminatha paripalayamam",
+      "seconds": 0.689,
+      "rr_as_shipped": 1.0,
+      "items": [
+        {
+          "krithiId": "f2b70e4a-915f-422a-a307-88b2296ee694",
+          "title": "SrI svAmi nAthAyA",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Kamās",
+          "talaName": "Khanda Capu",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8647300134557429
+        },
+        {
+          "krithiId": "15c38a42-4d07-4ff2-874a-24dd8e20d5c6",
+          "title": "svAmi nAtha",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "cala nATa",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8644953097116455
+        },
+        {
+          "krithiId": "db2532c2-ceca-4834-9af5-ab0cc1c4438b",
+          "title": "guru guhAya bhakta",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "sAma",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.855260653323537
+        },
+        {
+          "krithiId": "04dc3aa5-16ce-4f92-8ac3-f9fc94fb84bc",
+          "title": "guru guha svAmini",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Bhānumati",
+          "talaName": "Khanda Triputa",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8502583935626435
+        },
+        {
+          "krithiId": "b3faac1c-fd42-45b4-b9ba-77b783752a61",
+          "title": "guru guha pada",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "SankarAbharaNaM",
+          "talaName": "Tisra Ekam",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8456037364491379
+        }
+      ]
+    },
+    {
+      "mode": "semantic",
+      "id": "EVAL-16",
+      "query": "Ragamalika composition describing Navagrahas or Chaturdasa ragas",
+      "seconds": 0.716,
+      "rr_as_shipped": 1.0,
+      "items": [
+        {
+          "krithiId": "ab99b150-7244-4518-a7d0-557fd14f2995",
+          "title": "viSva nAthaM bhajEhaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Natābharanam",
+          "talaName": "Adi",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.8369053479457734
+        },
+        {
+          "krithiId": "fa6a5251-af31-4c97-9777-57a0d5e8ef0c",
+          "title": "nava ratna mAlinIM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Gamakakriyā",
+          "talaName": "Khanda Ekam",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8360244231197084
+        },
+        {
+          "krithiId": "70623fa6-f90b-44f6-a61f-9136936e8be2",
+          "title": "viSva nAthaM bhajEhaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Sri",
+          "talaName": "Adi",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.8349985972052234
+        },
+        {
+          "krithiId": "ab2cb69a-ad62-4c7a-9f12-0a742d367bfe",
+          "title": "Raga Ratna",
+          "composerName": "Tyagaraja",
+          "ragaName": "Reethigowla",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8241474379702611
+        },
+        {
+          "krithiId": "12a1c4e4-792b-49c2-8d7a-ccad150d5460",
+          "title": "smarAmyahaM sadA",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Ramāmanohari",
+          "talaName": "Rupaka",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8233004949627958
+        }
+      ]
+    },
+    {
+      "mode": "semantic",
+      "id": "EVAL-17",
+      "query": "Aada Modi Galadae Ramayya Naa Mada",
+      "seconds": 0.757,
+      "rr_as_shipped": 1.0,
+      "items": [
+        {
+          "krithiId": "823cf8d7-f2e9-4a9d-bedd-506dffd550c1",
+          "title": "Aada Modi Galadae",
+          "composerName": "Tyagaraja",
+          "ragaName": "Chārukesi",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8235294433201187
+        },
+        {
+          "krithiId": "34ee92f6-8f4e-428a-8822-9ca37913349e",
+          "title": "SrI rAma SrI rAma",
+          "composerName": "Tyagaraja",
+          "ragaName": "Varāli",
+          "talaName": "Adi",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.7381755773582477
+        },
+        {
+          "krithiId": "b8b35e19-e62b-4508-9204-486ab0763307",
+          "title": "ADavAramella",
+          "composerName": "Tyagaraja",
+          "ragaName": "Yadukula Kāmbhoji",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7351674060573953
+        },
+        {
+          "krithiId": "4cae5d72-c291-465d-b117-242dff25e96c",
+          "title": "rAmA rAma rAma rAmAyani",
+          "composerName": "Tyagaraja",
+          "ragaName": "Mohanam",
+          "talaName": "Unknown",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.7316998781235075
+        },
+        {
+          "krithiId": "882c4c90-15d7-4b65-b52f-48515600bb63",
+          "title": "kadaluvADu",
+          "composerName": "Tyagaraja",
+          "ragaName": "nArAyaNa gauLa",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7312945038292439
+        }
+      ]
+    },
+    {
+      "mode": "semantic",
+      "id": "EVAL-18",
+      "query": "Prayer for removal of obstacles in the beginning of concert",
+      "seconds": 0.745,
+      "rr_as_shipped": 0,
+      "items": [
+        {
+          "krithiId": "6be434b9-d403-4bc4-b167-4e12d48edf1a",
+          "title": "gaNa nAyakaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Rudrapriyā",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7532830687334316
+        },
+        {
+          "krithiId": "32444251-c229-40b2-ae79-7d6dfe1fa731",
+          "title": "hErambAya",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Atāna",
+          "talaName": "Rupaka",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7445855166504516
+        },
+        {
+          "krithiId": "6c7c2ef7-8acb-4bf1-aa48-733847e90385",
+          "title": "mangaLa dEvatE",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Mārgadesi",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7401110112336258
+        },
+        {
+          "krithiId": "1f4904e8-42a2-43df-958d-a2c2ebdfb9ca",
+          "title": "giri rAja sutA",
+          "composerName": "Tyagaraja",
+          "ragaName": "Bangāla",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7400339579460824
+        },
+        {
+          "krithiId": "6b272269-1e21-41d9-97da-7e1a37d5eb1d",
+          "title": "Sakti sahita",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "SankarAbharaNaM",
+          "talaName": "Tisra Ekam",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.7395795493692043
+        }
+      ]
+    },
+    {
+      "mode": "semantic",
+      "id": "EVAL-19",
+      "query": "Lambodara Vinayaka elephant-headed god",
+      "seconds": 0.64,
+      "rr_as_shipped": 0,
+      "items": [
+        {
+          "krithiId": "5e6129ac-5dbb-49b0-ad46-bf82aca238e1",
+          "title": "lambOdarAya",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Varāli",
+          "talaName": "Khanda Capu",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7435912459331784
+        },
+        {
+          "krithiId": "b2afbef6-504a-4b39-bf5c-d9a0dfb3f6c5",
+          "title": "SvEta gaNa patiM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Rāgachoodāmani",
+          "talaName": "Triputa",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7153779694663586
+        },
+        {
+          "krithiId": "834cdf46-0941-4fb7-bb42-03d8e71bd7fd",
+          "title": "Eka dantaM bhajEhaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Bilahari",
+          "talaName": "Misra Capu",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7141893846361008
+        },
+        {
+          "krithiId": "67e6b6b7-c667-4211-9522-e1c04760b354",
+          "title": "vAmAnka sthitayA",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Atāna",
+          "talaName": "Khanda Ekam",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.71329607288271
+        },
+        {
+          "krithiId": "6be434b9-d403-4bc4-b167-4e12d48edf1a",
+          "title": "gaNa nAyakaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Rudrapriyā",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7096368824137029
+        }
+      ]
+    },
+    {
+      "mode": "semantic",
+      "id": "EVAL-20",
+      "query": "Praise of Lord Shiva Nataraja in Kedaram raga",
+      "seconds": 0.656,
+      "rr_as_shipped": 1.0,
+      "items": [
+        {
+          "krithiId": "605549ea-5065-4cdf-a5d3-641a5da69821",
+          "title": "cidambara naTarAjaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Kedaram",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8855743867843612
+        },
+        {
+          "krithiId": "6a32d166-96f2-448d-9dcc-0105f5c90063",
+          "title": "cidambara naTarAja mUrtiM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Tanukeerti",
+          "talaName": "Misra Capu",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8647841827121197
+        },
+        {
+          "krithiId": "084a3d03-b9fe-414b-a269-78c10a64087e",
+          "title": "Siva kAmESvaraM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Ārabhi",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8586532383014087
+        },
+        {
+          "krithiId": "34abe64a-5481-4f12-a22c-bdad4f4c008e",
+          "title": "cidambarESvaraM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Dhunibhinnashadjam",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8533260647447186
+        },
+        {
+          "krithiId": "060bcaa4-86e4-4c74-8127-647e061b28c1",
+          "title": "Ananda naTana prakASaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Kedaram",
+          "talaName": "Misra Capu",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8483901168078668
+        }
+      ]
+    },
+    {
+      "mode": "hybrid",
+      "id": "EVAL-01",
+      "query": "Vatapi Ganapatim Bhajeham",
+      "seconds": 1.284,
+      "rr_as_shipped": 1.0,
+      "items": [
+        {
+          "krithiId": "1e59e6a5-5bd3-44d9-9527-efb4f2091cb0",
+          "title": "vAtApi gaNa patiM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Hamsadhwani",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8976888910373101,
+          "lexicalScore": 0.6896551847457886,
+          "rrfScore": 0.03278688524590164
+        },
+        {
+          "krithiId": "c4cbcde6-5521-49e5-9138-50dd8b115785",
+          "title": "rakta gaNa patiM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Mohanam",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8399399697512286,
+          "lexicalScore": 0.4482758641242981,
+          "rrfScore": 0.025859192525859193
+        },
+        {
+          "krithiId": "abe91c1c-322a-408e-9327-e7496902ce99",
+          "title": "ucchishTa gaNapatau",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Kāshirāmakriyā",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8327848709987994,
+          "lexicalScore": 0.4193548262119293,
+          "rrfScore": 0.024390243902439025
+        },
+        {
+          "krithiId": "834cdf46-0941-4fb7-bb42-03d8e71bd7fd",
+          "title": "Eka dantaM bhajEhaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Bilahari",
+          "talaName": "Misra Capu",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8263290745698892,
+          "lexicalScore": 0.3461538553237915,
+          "rrfScore": 0.02075268817204301
+        },
+        {
+          "krithiId": "b2afbef6-504a-4b39-bf5c-d9a0dfb3f6c5",
+          "title": "SvEta gaNa patiM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Rāgachoodāmani",
+          "talaName": "Triputa",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8513002472073847,
+          "rrfScore": 0.014705882352941176
+        }
+      ]
+    },
+    {
+      "mode": "hybrid",
+      "id": "EVAL-02",
+      "query": "karambuja pasa bijapura kalpakalita",
+      "seconds": 1.232,
+      "rr_as_shipped": 1.0,
+      "items": [
+        {
+          "krithiId": "1e59e6a5-5bd3-44d9-9527-efb4f2091cb0",
+          "title": "vAtApi gaNa patiM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Hamsadhwani",
+          "talaName": "Adi",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.769207550930539,
+          "lexicalScore": 0.6285714507102966,
+          "rrfScore": 0.0317780580075662
+        },
+        {
+          "krithiId": "86c2bd79-0341-43c5-a15a-3f9199b9c125",
+          "title": "hasti vadanAya",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Navaroj",
+          "talaName": "Misra Capu",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.7701357603073175,
+          "lexicalScore": 0.31111112236976624,
+          "rrfScore": 0.02970950704225352
+        },
+        {
+          "krithiId": "ef0a382b-fca3-4de4-b91f-fa57fd0ab265",
+          "title": "panca mAtanga mukha",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Malahari",
+          "talaName": "Rupaka",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.7762362565150226,
+          "rrfScore": 0.016129032258064516
+        },
+        {
+          "krithiId": "53cee258-f022-4a5f-af74-576260574421",
+          "title": "akshaya linga vibhO",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "SankarAbharaNaM",
+          "talaName": "Misra Capu",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.0,
+          "lexicalScore": 0.3617021143436432,
+          "rrfScore": 0.015873015873015872
+        },
+        {
+          "krithiId": "61205a3a-0ef2-43be-8008-970f7c64267b",
+          "title": "gata mOhASrita",
+          "composerName": "Tyagaraja",
+          "ragaName": "SankarAbharaNaM",
+          "talaName": "Unknown",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.0,
+          "lexicalScore": 0.3513513505458832,
+          "rrfScore": 0.015384615384615385
+        }
+      ]
+    },
+    {
+      "mode": "hybrid",
+      "id": "EVAL-03",
+      "query": "Dikshitar krithi praising Lord Ganesha in Hamsadhvani raga",
+      "seconds": 1.266,
+      "rr_as_shipped": 0,
+      "items": [
+        {
+          "krithiId": "1e59e6a5-5bd3-44d9-9527-efb4f2091cb0",
+          "title": "vAtApi gaNa patiM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Hamsadhwani",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8646244534213822,
+          "lexicalScore": 0.3870967626571655,
+          "rrfScore": 0.030679156908665104
+        },
+        {
+          "krithiId": "6be434b9-d403-4bc4-b167-4e12d48edf1a",
+          "title": "gaNa nAyakaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Rudrapriyā",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8827687345741261,
+          "rrfScore": 0.01639344262295082
+        },
+        {
+          "krithiId": "bd72672e-b1b9-4749-acde-3ff676423ab1",
+          "title": "pArvatI patiM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Hamsadhwani",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.0,
+          "lexicalScore": 0.3870967626571655,
+          "rrfScore": 0.016129032258064516
+        },
+        {
+          "krithiId": "b2afbef6-504a-4b39-bf5c-d9a0dfb3f6c5",
+          "title": "SvEta gaNa patiM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Rāgachoodāmani",
+          "talaName": "Triputa",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8702904764077961,
+          "rrfScore": 0.016129032258064516
+        },
+        {
+          "krithiId": "e8fdd062-5beb-43fd-906d-51afe0df3b50",
+          "title": "SrI gaNa nAthaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Eeshamanohari",
+          "talaName": "Rupaka",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8695970773915598,
+          "rrfScore": 0.015873015873015872
+        }
+      ]
+    },
+    {
+      "mode": "hybrid",
+      "id": "EVAL-04",
+      "query": "Endaro Mahanubhavulu Andariki Vandanamulu",
+      "seconds": 1.262,
+      "rr_as_shipped": 1.0,
+      "items": [
+        {
+          "krithiId": "2b65609e-9fbf-4232-baae-096cafdf4e79",
+          "title": "Endaro Mahaanubhaavulu",
+          "composerName": "Tyagaraja",
+          "ragaName": "Sri",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8565339531580253,
+          "lexicalScore": 0.800000011920929,
+          "rrfScore": 0.03278688524590164
+        },
+        {
+          "krithiId": "82dd8598-5a91-4ffc-b26b-e4800a18d4b9",
+          "title": "Endundi Vedalitivo",
+          "composerName": "Tyagaraja",
+          "ragaName": "Darbar",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.774924524150943,
+          "rrfScore": 0.013157894736842105
+        },
+        {
+          "krithiId": "1a5f7193-3f44-4170-b510-d13b78ad9390",
+          "title": "Neeke Teliyaka",
+          "composerName": "Tyagaraja",
+          "ragaName": "Anandabhairavi",
+          "talaName": "Unknown",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.7717172743095626,
+          "rrfScore": 0.012658227848101266
+        },
+        {
+          "krithiId": "bdbcc661-264b-4943-9c46-5c824056a239",
+          "title": "O rAjIvAksha",
+          "composerName": "Tyagaraja",
+          "ragaName": "Ārabhi",
+          "talaName": "Unknown",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.0,
+          "lexicalScore": 0.3947368562221527,
+          "rrfScore": 0.007462686567164179
+        },
+        {
+          "krithiId": "bf785ecf-eb8b-4b25-95db-313b0d0a8904",
+          "title": "SivE pAhi mAM",
+          "composerName": "Tyagaraja",
+          "ragaName": "Mechakalyāni",
+          "talaName": "Adi",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.0,
+          "lexicalScore": 0.3243243098258972,
+          "rrfScore": 0.007352941176470588
+        }
+      ]
+    },
+    {
+      "mode": "hybrid",
+      "id": "EVAL-05",
+      "query": "Dikshitar krithi in Chidambaram describing the cosmic dance of Shiva",
+      "seconds": 1.3,
+      "rr_as_shipped": 0.2,
+      "items": [
+        {
+          "krithiId": "605549ea-5065-4cdf-a5d3-641a5da69821",
+          "title": "cidambara naTarAjaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Kedaram",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8738510608673158,
+          "rrfScore": 0.01639344262295082
+        },
+        {
+          "krithiId": "6a32d166-96f2-448d-9dcc-0105f5c90063",
+          "title": "cidambara naTarAja mUrtiM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Tanukeerti",
+          "talaName": "Misra Capu",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8721701686534626,
+          "rrfScore": 0.016129032258064516
+        },
+        {
+          "krithiId": "34abe64a-5481-4f12-a22c-bdad4f4c008e",
+          "title": "cidambarESvaraM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Dhunibhinnashadjam",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8593955039978088,
+          "rrfScore": 0.015873015873015872
+        },
+        {
+          "krithiId": "084a3d03-b9fe-414b-a269-78c10a64087e",
+          "title": "Siva kAmESvaraM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Ārabhi",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8573067272631587,
+          "rrfScore": 0.015625
+        },
+        {
+          "krithiId": "060bcaa4-86e4-4c74-8127-647e061b28c1",
+          "title": "Ananda naTana prakASaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Kedaram",
+          "talaName": "Misra Capu",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.848874959148497,
+          "rrfScore": 0.014925373134328358
+        }
+      ]
+    },
+    {
+      "mode": "hybrid",
+      "id": "EVAL-06",
+      "query": "Abhayamba series krithi in Kalyani raga",
+      "seconds": 1.277,
+      "rr_as_shipped": 0.5,
+      "items": [
+        {
+          "krithiId": "3a9c0d2f-1f91-424a-ab71-b368acba374b",
+          "title": "abhayAmbikAyai aSva",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Yadukula Kāmbhoji",
+          "talaName": "Rupaka",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8689887523651185,
+          "lexicalScore": 0.3404255211353302,
+          "rrfScore": 0.030621785881252923
+        },
+        {
+          "krithiId": "b4d81789-28d1-4440-bdee-01d4fda63814",
+          "title": "SrI abhayAmbA",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Sri",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8710787555896962,
+          "lexicalScore": 0.3404255211353302,
+          "rrfScore": 0.028588564574170333
+        },
+        {
+          "krithiId": "b7eb3147-0e9f-4dd4-9ede-a4d6bf5cd447",
+          "title": "abhayAmbikAyAH anyaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "kEdAra gauLa",
+          "talaName": "Jhampa",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8532909059411378,
+          "lexicalScore": 0.3404255211353302,
+          "rrfScore": 0.02821939586645469
+        },
+        {
+          "krithiId": "ff8b54f0-34af-435b-bf17-046fe2c533e7",
+          "title": "sadASrayE abhayAmbikE",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Chāmaram",
+          "talaName": "Rupaka",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.8545914287013275,
+          "lexicalScore": 0.3404255211353302,
+          "rrfScore": 0.02797339593114241
+        },
+        {
+          "krithiId": "7c6b3e67-397e-47c4-94d7-f055d547f4a2",
+          "title": "abhayAmbA jagadambA",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Mechakalyāni",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.868155924834289,
+          "lexicalScore": 0.3404255211353302,
+          "rrfScore": 0.025774005972025775
+        }
+      ]
+    },
+    {
+      "mode": "hybrid",
+      "id": "EVAL-07",
+      "query": "adhayam arundh thava thikshidar keerthanai",
+      "seconds": 1.24,
+      "rr_as_shipped": 0,
+      "items": [
+        {
+          "krithiId": "605549ea-5065-4cdf-a5d3-641a5da69821",
+          "title": "cidambara naTarAjaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Kedaram",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7310610804143904,
+          "rrfScore": 0.01639344262295082
+        },
+        {
+          "krithiId": "b447b92a-9e7b-428f-9325-a4849d39eb17",
+          "title": "tiruvaTISvaraM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Gamakakriyā",
+          "talaName": "Rupaka",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.7295806254311868,
+          "rrfScore": 0.016129032258064516
+        },
+        {
+          "krithiId": "a913eac9-62c2-495f-b4bb-5e30aada2658",
+          "title": "ardha nArISvaraM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Kumudhakriyā",
+          "talaName": "Rupaka",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.7218308977677783,
+          "rrfScore": 0.015873015873015872
+        },
+        {
+          "krithiId": "e9e05804-83cf-4686-bc21-bd143555021a",
+          "title": "tyAgarAjAdanyaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Darbar",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7208815577273359,
+          "rrfScore": 0.015625
+        },
+        {
+          "krithiId": "955e376d-199a-49fe-89c8-f5cdb92f9bbf",
+          "title": "stava rAjAdi",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Sthavarājam",
+          "talaName": "Misra Capu",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7193957996008903,
+          "rrfScore": 0.015384615384615385
+        }
+      ]
+    },
+    {
+      "mode": "hybrid",
+      "id": "EVAL-08",
+      "query": "Muthuswami Dikshitar krithi in Anandabhairavi",
+      "seconds": 1.37,
+      "rr_as_shipped": 0.3333333333333333,
+      "items": [
+        {
+          "krithiId": "1be3608b-0ffd-47f5-8af0-f6d6b9f9662f",
+          "title": "para dEvatE namastE",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Anandabhairavi",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8499103933305963,
+          "lexicalScore": 0.7058823704719543,
+          "rrfScore": 0.03047794966520434
+        },
+        {
+          "krithiId": "ee3ad8cf-a682-4303-a6cb-3249c175bcf3",
+          "title": "AnandESvarENa",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Anandabhairavi",
+          "talaName": "Misra Capu",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.8535040028534236,
+          "lexicalScore": 0.5538461804389954,
+          "rrfScore": 0.029273504273504274
+        },
+        {
+          "krithiId": "b6339478-713f-49b6-aea8-2eeea1de56f1",
+          "title": "abhayAmbA nAyaka hari sAyaka",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Anandabhairavi",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8469483192538995,
+          "lexicalScore": 0.7058823704719543,
+          "rrfScore": 0.028629032258064516
+        },
+        {
+          "krithiId": "34abe64a-5481-4f12-a22c-bdad4f4c008e",
+          "title": "cidambarESvaraM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Dhunibhinnashadjam",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8554502298340411,
+          "rrfScore": 0.01639344262295082
+        },
+        {
+          "krithiId": "0ced3d7b-985c-4559-bf87-d5f506d88e20",
+          "title": "bRhannAyaki vara dAyaki",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Andhali",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8543273378307231,
+          "rrfScore": 0.016129032258064516
+        }
+      ]
+    },
+    {
+      "mode": "hybrid",
+      "id": "EVAL-09",
+      "query": "Jagadanandakaraka Jaya Janaki Prananayaka",
+      "seconds": 1.184,
+      "rr_as_shipped": 0,
+      "items": [
+        {
+          "krithiId": "2e115182-dcc2-4a41-962c-8381821a7489",
+          "title": "jagadAnanda kAraka",
+          "composerName": "Tyagaraja",
+          "ragaName": "Nāṭṭai",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8633606798556288,
+          "lexicalScore": 0.6944444179534912,
+          "rrfScore": 0.03278688524590164
+        },
+        {
+          "krithiId": "7253c9f5-6903-4ad3-b63f-1eb6b9f01052",
+          "title": "SrI rAma rAma jagadAtma",
+          "composerName": "Tyagaraja",
+          "ragaName": "Poornachandrika",
+          "talaName": "Khanda Capu",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.8205486780568655,
+          "rrfScore": 0.013888888888888888
+        },
+        {
+          "krithiId": "df731af2-9892-4e46-a3f4-f773dacf50af",
+          "title": "jaya jaya SrI raghurAma",
+          "composerName": "Tyagaraja",
+          "ragaName": "Mangalakaishiki",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8157420307668749,
+          "rrfScore": 0.012987012987012988
+        },
+        {
+          "krithiId": "4e6c1010-d9a5-4461-b4d0-49c6b6e73b45",
+          "title": "Sri Janaki Manohari",
+          "composerName": "Tyagaraja",
+          "ragaName": "Eeshamanohari",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8145086565786009,
+          "rrfScore": 0.0125
+        },
+        {
+          "krithiId": "9c3072cf-e1d8-4206-ab48-978b32ad71af",
+          "title": "jAnaki nAyaka",
+          "composerName": "Tyagaraja",
+          "ragaName": "Dhanyāsi",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.0,
+          "lexicalScore": 0.40625,
+          "rrfScore": 0.007462686567164179
+        }
+      ]
+    },
+    {
+      "mode": "hybrid",
+      "id": "EVAL-10",
+      "query": "kalyana ramani kamaniya kanchana vadani",
+      "seconds": 1.188,
+      "rr_as_shipped": 1.0,
+      "items": [
+        {
+          "krithiId": "f5081739-3f8e-4427-90c7-becb3b1eeba9",
+          "title": "sItA kalyANa",
+          "composerName": "Tyagaraja",
+          "ragaName": "SankarAbharaNaM",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8044302690067969,
+          "lexicalScore": 0.46666666865348816,
+          "rrfScore": 0.029386529386529386
+        },
+        {
+          "krithiId": "5833cc94-ff83-47a8-8008-90dd847de096",
+          "title": "Rama Ninnae Nammi",
+          "composerName": "Tyagaraja",
+          "ragaName": "Huseni",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7865669278512444,
+          "lexicalScore": 0.5517241358757019,
+          "rrfScore": 0.028612012987012988
+        },
+        {
+          "krithiId": "604bbad4-7a8c-4935-9467-bf7db2d850d0",
+          "title": "Paahi Kalyaana Rama",
+          "composerName": "Tyagaraja",
+          "ragaName": "Kāpi",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8051295636555857,
+          "lexicalScore": 0.4137931168079376,
+          "rrfScore": 0.02815814850530376
+        },
+        {
+          "krithiId": "b6de335c-33da-46d8-9993-7f57a9b7a910",
+          "title": "Rama Kothanda Rama",
+          "composerName": "Tyagaraja",
+          "ragaName": "Bhairavi",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7873527731351574,
+          "lexicalScore": 0.4137931168079376,
+          "rrfScore": 0.0261986301369863
+        },
+        {
+          "krithiId": "60b8e375-123e-4625-8b53-6764df3dddb2",
+          "title": "Nammina Vaarini",
+          "composerName": "Tyagaraja",
+          "ragaName": "Bhairavi",
+          "talaName": "Unknown",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.7826575999660186,
+          "lexicalScore": 0.517241358757019,
+          "rrfScore": 0.025678061306371368
+        }
+      ]
+    },
+    {
+      "mode": "hybrid",
+      "id": "EVAL-11",
+      "query": "Tyagaraja composition in Kharaharapriya pleading for Rama's mercy",
+      "seconds": 1.559,
+      "rr_as_shipped": 1.0,
+      "items": [
+        {
+          "krithiId": "498f50fb-3632-498c-888d-2c04e78f771d",
+          "title": "Paahi Rama Ramayanucu",
+          "composerName": "Tyagaraja",
+          "ragaName": "Kharaharapriyā",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8692484034763202,
+          "lexicalScore": 0.4749999940395355,
+          "rrfScore": 0.031054405392392875
+        },
+        {
+          "krithiId": "a5d69bd6-cb2f-40e6-9007-75e1c57259e6",
+          "title": "Rama Nee Samaanamu",
+          "composerName": "Tyagaraja",
+          "ragaName": "Kharaharapriyā",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8625357128531498,
+          "lexicalScore": 0.4749999940395355,
+          "rrfScore": 0.029386529386529386
+        },
+        {
+          "krithiId": "97d3a36f-e933-4e17-81da-47907fb1a4fe",
+          "title": "Rama Neeyeda",
+          "composerName": "Tyagaraja",
+          "ragaName": "Kharaharapriyā",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8597775341406505,
+          "lexicalScore": 0.4868420958518982,
+          "rrfScore": 0.02815814850530376
+        },
+        {
+          "krithiId": "40792364-1527-4e70-804d-00e1323c621c",
+          "title": "Ramaabhirama Ramaneeya",
+          "composerName": "Tyagaraja",
+          "ragaName": "Darbar",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8783850843011394,
+          "rrfScore": 0.01639344262295082
+        },
+        {
+          "krithiId": "1d2d8060-66e8-48e4-933b-62a7ff17cb28",
+          "title": "Rama Paahi",
+          "composerName": "Tyagaraja",
+          "ragaName": "Kāpi",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8726205153838614,
+          "rrfScore": 0.016129032258064516
+        }
+      ]
+    },
+    {
+      "mode": "hybrid",
+      "id": "EVAL-12",
+      "query": "Compositions in Bhairavi raga with multiple charanams",
+      "seconds": 1.291,
+      "rr_as_shipped": 1.0,
+      "items": [
+        {
+          "krithiId": "4215e9b5-17dd-4730-a140-55d48014b034",
+          "title": "Lalitae Sri Pravriddhae",
+          "composerName": "Tyagaraja",
+          "ragaName": "Bhairavi",
+          "talaName": "Unknown",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.8168888763587238,
+          "lexicalScore": 0.4363636374473572,
+          "rrfScore": 0.02249747219413549
+        },
+        {
+          "krithiId": "44b472bf-c416-4409-ad3c-8f10ccbb17d9",
+          "title": "kAla bhairavaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Bhairavam",
+          "talaName": "Adi",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.8449603436994084,
+          "rrfScore": 0.01639344262295082
+        },
+        {
+          "krithiId": "e17ac587-44d1-4e1a-82c1-ffda7bc0b3f3",
+          "title": "Sarvantaryaami",
+          "composerName": "Tyagaraja",
+          "ragaName": "Bhairavi",
+          "talaName": "Unknown",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.0,
+          "lexicalScore": 0.4363636374473572,
+          "rrfScore": 0.01639344262295082
+        },
+        {
+          "krithiId": "86be01e9-7532-42fa-9077-265654bc41ca",
+          "title": "dEvi jagadISvari",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Bhairavi",
+          "talaName": "Rupaka",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.0,
+          "lexicalScore": 0.4363636374473572,
+          "rrfScore": 0.016129032258064516
+        },
+        {
+          "krithiId": "c876a731-58e5-4d9e-89ab-62f4a353e683",
+          "title": "Neevanti Daivamu",
+          "composerName": "Tyagaraja",
+          "ragaName": "Bhairavi",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8326668588519793,
+          "rrfScore": 0.015384615384615385
+        }
+      ]
+    },
+    {
+      "mode": "hybrid",
+      "id": "EVAL-13",
+      "query": "Kamakshi Anudinamu Maruvakane",
+      "seconds": 1.209,
+      "rr_as_shipped": 0,
+      "items": [
+        {
+          "krithiId": "f5a415fd-b4ed-4394-ae0b-6f89cacb4fca",
+          "title": "(ambA) kAmAkshi anudinamu",
+          "composerName": "Syama Sastri",
+          "ragaName": "Bhairavi",
+          "talaName": "Capu",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8355293273925781,
+          "lexicalScore": 0.8181818127632141,
+          "rrfScore": 0.03128054740957967
+        },
+        {
+          "krithiId": "7c15e1c9-5c30-4f68-8ab4-a414847e06be",
+          "title": "kAmAkshi nI pada",
+          "composerName": "Syama Sastri",
+          "ragaName": "Yadukula Kāmbhoji",
+          "talaName": "Capu",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8303420048748267,
+          "lexicalScore": 0.6333333253860474,
+          "rrfScore": 0.028381642512077296
+        },
+        {
+          "krithiId": "47778a06-c335-453f-aac9-adc936c0c26d",
+          "title": "kAmAkshi karuNA",
+          "composerName": "Syama Sastri",
+          "ragaName": "paraju",
+          "talaName": "Triputa",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8289097171261217,
+          "lexicalScore": 0.36666667461395264,
+          "rrfScore": 0.02074074074074074
+        },
+        {
+          "krithiId": "59481d29-4ec6-4991-874f-e16ba4a06ef5",
+          "title": "kAmAkshi mAM pAhi",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Shuddha Desi",
+          "talaName": "Rupaka",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8273653962727348,
+          "lexicalScore": 0.36666667461395264,
+          "rrfScore": 0.020512820512820513
+        },
+        {
+          "krithiId": "f70f0e00-f4a9-47a4-90a8-bd9c301928bc",
+          "title": "SrI kAmAkshI",
+          "composerName": "Syama Sastri",
+          "ragaName": "Mechakalyāni",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8257128984585939,
+          "lexicalScore": 0.34375,
+          "rrfScore": 0.01923717521652232
+        }
+      ]
+    },
+    {
+      "mode": "hybrid",
+      "id": "EVAL-14",
+      "query": "Songs praising Goddess Meenakshi in Madurai",
+      "seconds": 1.221,
+      "rr_as_shipped": 1.0,
+      "items": [
+        {
+          "krithiId": "0e7775c9-9f0d-4767-acd0-bf7a29edf9ee",
+          "title": "madhurAmbikAyAM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Deshisimhāravam",
+          "talaName": "Rupaka",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8076489430311091,
+          "rrfScore": 0.01639344262295082
+        },
+        {
+          "krithiId": "bc184f5e-6de2-4677-9bc5-ac1765758276",
+          "title": "madhurAmbAM bhaja",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Sthavarājam",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7927570939064026,
+          "rrfScore": 0.016129032258064516
+        },
+        {
+          "krithiId": "1404ab1d-d4ec-44e5-8610-cb03ccdfbc44",
+          "title": "mInAkshi mE mudaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Gamakakriyā",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7924621555074324,
+          "rrfScore": 0.015873015873015872
+        },
+        {
+          "krithiId": "fd68ab72-b7e4-4ad0-bd4f-a29e5b296d6c",
+          "title": "SrI madhurA puri vihAriNi",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Bilahari",
+          "talaName": "Rupaka",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7898998230397525,
+          "rrfScore": 0.015625
+        },
+        {
+          "krithiId": "70c68c94-c968-4b40-8cfc-163094a97025",
+          "title": "madhurAmbAyAstava",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Begada",
+          "talaName": "Misra Capu",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7810038765379103,
+          "rrfScore": 0.014925373134328358
+        }
+      ]
+    },
+    {
+      "mode": "hybrid",
+      "id": "EVAL-15",
+      "query": "guruguha swaminatha paripalayamam",
+      "seconds": 1.177,
+      "rr_as_shipped": 1.0,
+      "items": [
+        {
+          "krithiId": "15c38a42-4d07-4ff2-874a-24dd8e20d5c6",
+          "title": "svAmi nAtha",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "cala nATa",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8644953097116455,
+          "lexicalScore": 0.44736841320991516,
+          "rrfScore": 0.03128054740957967
+        },
+        {
+          "krithiId": "bca5dc45-2f66-47d5-8d81-c09b5d7acaff",
+          "title": "kumAra svAminaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Asāveri",
+          "talaName": "Adi",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.834129531798586,
+          "lexicalScore": 0.3589743673801422,
+          "rrfScore": 0.025238095238095237
+        },
+        {
+          "krithiId": "f2b70e4a-915f-422a-a307-88b2296ee694",
+          "title": "SrI svAmi nAthAyA",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Kamās",
+          "talaName": "Khanda Capu",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8647300134557429,
+          "rrfScore": 0.01639344262295082
+        },
+        {
+          "krithiId": "21ac6786-eefe-4225-90ad-c016de27fad3",
+          "title": "cEtaH SrI bAla kRshNaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Dwijavanthi",
+          "talaName": "Rupaka",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.0,
+          "lexicalScore": 0.4736842215061188,
+          "rrfScore": 0.01639344262295082
+        },
+        {
+          "krithiId": "8e37a3b6-a1c7-478d-bd1f-7f52be2a30a4",
+          "title": "SankaraM abhirAmI",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Manohari",
+          "talaName": "Rupaka",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.0,
+          "lexicalScore": 0.4571428596973419,
+          "rrfScore": 0.015873015873015872
+        }
+      ]
+    },
+    {
+      "mode": "hybrid",
+      "id": "EVAL-16",
+      "query": "Ragamalika composition describing Navagrahas or Chaturdasa ragas",
+      "seconds": 1.451,
+      "rr_as_shipped": 1.0,
+      "items": [
+        {
+          "krithiId": "fa6a5251-af31-4c97-9777-57a0d5e8ef0c",
+          "title": "nava ratna mAlinIM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Gamakakriyā",
+          "talaName": "Khanda Ekam",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8360244231197084,
+          "lexicalScore": 0.3030303120613098,
+          "rrfScore": 0.03225806451612903
+        },
+        {
+          "krithiId": "08469fb9-a0ec-4542-8273-72ee5d37e67c",
+          "title": "nava ratna vilAsa",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Navarathna Vilāsam",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8225642413969972,
+          "lexicalScore": 0.30000001192092896,
+          "rrfScore": 0.02702702702702703
+        },
+        {
+          "krithiId": "ab99b150-7244-4518-a7d0-557fd14f2995",
+          "title": "viSva nAthaM bhajEhaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Natābharanam",
+          "talaName": "Adi",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.8369053479457734,
+          "rrfScore": 0.01639344262295082
+        },
+        {
+          "krithiId": "70623fa6-f90b-44f6-a61f-9136936e8be2",
+          "title": "viSva nAthaM bhajEhaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Sri",
+          "talaName": "Adi",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.8349985972052234,
+          "rrfScore": 0.015873015873015872
+        },
+        {
+          "krithiId": "ab2cb69a-ad62-4c7a-9f12-0a742d367bfe",
+          "title": "Raga Ratna",
+          "composerName": "Tyagaraja",
+          "ragaName": "Reethigowla",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8241474379702611,
+          "rrfScore": 0.013888888888888888
+        }
+      ]
+    },
+    {
+      "mode": "hybrid",
+      "id": "EVAL-17",
+      "query": "Aada Modi Galadae Ramayya Naa Mada",
+      "seconds": 1.201,
+      "rr_as_shipped": 1.0,
+      "items": [
+        {
+          "krithiId": "823cf8d7-f2e9-4a9d-bedd-506dffd550c1",
+          "title": "Aada Modi Galadae",
+          "composerName": "Tyagaraja",
+          "ragaName": "Chārukesi",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8235294433201187,
+          "lexicalScore": 0.5483871102333069,
+          "rrfScore": 0.03278688524590164
+        },
+        {
+          "krithiId": "34ee92f6-8f4e-428a-8822-9ca37913349e",
+          "title": "SrI rAma SrI rAma",
+          "composerName": "Tyagaraja",
+          "ragaName": "Varāli",
+          "talaName": "Adi",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.7381755773582477,
+          "rrfScore": 0.014705882352941176
+        },
+        {
+          "krithiId": "b8b35e19-e62b-4508-9204-486ab0763307",
+          "title": "ADavAramella",
+          "composerName": "Tyagaraja",
+          "ragaName": "Yadukula Kāmbhoji",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7351674060573953,
+          "rrfScore": 0.014492753623188406
+        },
+        {
+          "krithiId": "4cae5d72-c291-465d-b117-242dff25e96c",
+          "title": "rAmA rAma rAma rAmAyani",
+          "composerName": "Tyagaraja",
+          "ragaName": "Mohanam",
+          "talaName": "Unknown",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.7316998781235075,
+          "rrfScore": 0.013888888888888888
+        },
+        {
+          "krithiId": "882c4c90-15d7-4b65-b52f-48515600bb63",
+          "title": "kadaluvADu",
+          "composerName": "Tyagaraja",
+          "ragaName": "nArAyaNa gauLa",
+          "talaName": "Unknown",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7312945038292439,
+          "rrfScore": 0.0136986301369863
+        }
+      ]
+    },
+    {
+      "mode": "hybrid",
+      "id": "EVAL-18",
+      "query": "Prayer for removal of obstacles in the beginning of concert",
+      "seconds": 1.209,
+      "rr_as_shipped": 0,
+      "items": [
+        {
+          "krithiId": "6be434b9-d403-4bc4-b167-4e12d48edf1a",
+          "title": "gaNa nAyakaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Rudrapriyā",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7532830687334316,
+          "rrfScore": 0.01639344262295082
+        },
+        {
+          "krithiId": "32444251-c229-40b2-ae79-7d6dfe1fa731",
+          "title": "hErambAya",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Atāna",
+          "talaName": "Rupaka",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7445855166504516,
+          "rrfScore": 0.016129032258064516
+        },
+        {
+          "krithiId": "6c7c2ef7-8acb-4bf1-aa48-733847e90385",
+          "title": "mangaLa dEvatE",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Mārgadesi",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7401110112336258,
+          "rrfScore": 0.015873015873015872
+        },
+        {
+          "krithiId": "1f4904e8-42a2-43df-958d-a2c2ebdfb9ca",
+          "title": "giri rAja sutA",
+          "composerName": "Tyagaraja",
+          "ragaName": "Bangāla",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7400339579460824,
+          "rrfScore": 0.015625
+        },
+        {
+          "krithiId": "6b272269-1e21-41d9-97da-7e1a37d5eb1d",
+          "title": "Sakti sahita",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "SankarAbharaNaM",
+          "talaName": "Tisra Ekam",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.7395795493692043,
+          "rrfScore": 0.015384615384615385
+        }
+      ]
+    },
+    {
+      "mode": "hybrid",
+      "id": "EVAL-19",
+      "query": "Lambodara Vinayaka elephant-headed god",
+      "seconds": 1.167,
+      "rr_as_shipped": 0,
+      "items": [
+        {
+          "krithiId": "5e6129ac-5dbb-49b0-ad46-bf82aca238e1",
+          "title": "lambOdarAya",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Varāli",
+          "talaName": "Khanda Capu",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7435912459331784,
+          "rrfScore": 0.01639344262295082
+        },
+        {
+          "krithiId": "b2afbef6-504a-4b39-bf5c-d9a0dfb3f6c5",
+          "title": "SvEta gaNa patiM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Rāgachoodāmani",
+          "talaName": "Triputa",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7153779694663586,
+          "rrfScore": 0.015384615384615385
+        },
+        {
+          "krithiId": "834cdf46-0941-4fb7-bb42-03d8e71bd7fd",
+          "title": "Eka dantaM bhajEhaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Bilahari",
+          "talaName": "Misra Capu",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7141893846361008,
+          "rrfScore": 0.015151515151515152
+        },
+        {
+          "krithiId": "67e6b6b7-c667-4211-9522-e1c04760b354",
+          "title": "vAmAnka sthitayA",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Atāna",
+          "talaName": "Khanda Ekam",
+          "documentKind": "SECTION_PASSAGE",
+          "similarityScore": 0.71329607288271,
+          "rrfScore": 0.014925373134328358
+        },
+        {
+          "krithiId": "6be434b9-d403-4bc4-b167-4e12d48edf1a",
+          "title": "gaNa nAyakaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Rudrapriyā",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.7096368824137029,
+          "rrfScore": 0.014705882352941176
+        }
+      ]
+    },
+    {
+      "mode": "hybrid",
+      "id": "EVAL-20",
+      "query": "Praise of Lord Shiva Nataraja in Kedaram raga",
+      "seconds": 1.218,
+      "rr_as_shipped": 1.0,
+      "items": [
+        {
+          "krithiId": "605549ea-5065-4cdf-a5d3-641a5da69821",
+          "title": "cidambara naTarAjaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Kedaram",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8855743867843612,
+          "lexicalScore": 0.3125,
+          "rrfScore": 0.0317780580075662
+        },
+        {
+          "krithiId": "060bcaa4-86e4-4c74-8127-647e061b28c1",
+          "title": "Ananda naTana prakASaM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Kedaram",
+          "talaName": "Misra Capu",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8483901168078668,
+          "lexicalScore": 0.3125,
+          "rrfScore": 0.029910714285714287
+        },
+        {
+          "krithiId": "7d556895-a35c-4b48-b922-e2815fa492e9",
+          "title": "O ramA ramaNa",
+          "composerName": "Tyagaraja",
+          "ragaName": "Kedaram",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.0,
+          "lexicalScore": 0.35555556416511536,
+          "rrfScore": 0.01639344262295082
+        },
+        {
+          "krithiId": "f8bbbeb4-ca30-4de9-a9f6-6be0d8b95753",
+          "title": "maracE vADanA",
+          "composerName": "Tyagaraja",
+          "ragaName": "Kedaram",
+          "talaName": "Adi",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.0,
+          "lexicalScore": 0.35555556416511536,
+          "rrfScore": 0.016129032258064516
+        },
+        {
+          "krithiId": "6a32d166-96f2-448d-9dcc-0105f5c90063",
+          "title": "cidambara naTarAja mUrtiM",
+          "composerName": "Muthuswami Dikshitar",
+          "ragaName": "Tanukeerti",
+          "talaName": "Misra Capu",
+          "documentKind": "COMPOSITION_OVERVIEW",
+          "similarityScore": 0.8647841827121197,
+          "rrfScore": 0.015873015873015872
+        }
+      ]
+    }
+  ]
+}

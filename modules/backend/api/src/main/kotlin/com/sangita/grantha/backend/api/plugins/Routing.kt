@@ -16,11 +16,13 @@ import com.sangita.grantha.backend.api.routes.publicKrithiRoutes
 import com.sangita.grantha.backend.api.routes.requireRole
 import com.sangita.grantha.backend.api.routes.referenceDataRoutes
 import com.sangita.grantha.backend.api.routes.remediationRoutes
+import com.sangita.grantha.backend.api.routes.semanticSearchRoutes
 import com.sangita.grantha.backend.api.routes.sourcingRoutes
 import com.sangita.grantha.backend.api.routes.userManagementRoutes
 import com.sangita.grantha.backend.api.config.ApiEnvironment
 import com.sangita.grantha.backend.api.config.JwtConfig
 import com.sangita.grantha.backend.api.services.CatalogueService
+import com.sangita.grantha.backend.api.services.HybridSearchService
 import com.sangita.grantha.backend.api.services.AdminDashboardService
 import com.sangita.grantha.backend.api.services.AuditLogService
 import com.sangita.grantha.backend.api.services.CuratorService
@@ -67,6 +69,7 @@ fun Application.configureRouting() {
     val extractionProcessor by inject<ExtractionResultProcessor>()
     val curatorService by inject<CuratorService>()
     val ragaResolutionService by inject<RagaResolutionService>()
+    val hybridSearchService by inject<HybridSearchService>()
     val metricsRegistry by inject<PrometheusMeterRegistry>()
     val env by inject<ApiEnvironment>()
     val jwtConfig by inject<JwtConfig>()
@@ -77,6 +80,7 @@ fun Application.configureRouting() {
         authRoutes(env, jwtConfig, userManagementService)
         catalogueRoutes(catalogueService)
         publicKrithiRoutes(krithiService, referenceDataService, notationService)
+        semanticSearchRoutes(hybridSearchService)
 
         authenticate("admin-auth") {
             // Refresh only needs a valid identity — it re-reads roles from storage and reissues,

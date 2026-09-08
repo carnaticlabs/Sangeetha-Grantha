@@ -1,6 +1,7 @@
 services:
   db:
-    image: postgres:18.3-alpine
+    image: pgvector/pgvector:pg18
+    shm_size: 1g
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres

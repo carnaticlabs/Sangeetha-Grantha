@@ -1,6 +1,8 @@
 package com.sangita.grantha.backend.api.di
 
 import com.sangita.grantha.backend.api.clients.GeminiApiClient
+import com.sangita.grantha.backend.api.clients.GeminiEmbeddingClient
+import com.sangita.grantha.backend.api.services.HybridSearchService
 import com.sangita.grantha.backend.api.config.ApiEnvironment
 import com.sangita.grantha.backend.api.config.JwtConfig
 import com.sangita.grantha.backend.api.services.AdminDashboardService
@@ -49,6 +51,17 @@ fun appModule(env: ApiEnvironment, metricsRegistry: PrometheusMeterRegistry) = m
             requestTimeoutMs = env.geminiRequestTimeoutMs,
             fallbackModelUrl = env.geminiFallbackModelUrl,
             useSchemaMode = env.geminiUseSchemaMode
+        )
+    }
+    single {
+        GeminiEmbeddingClient(
+            apiKey = env.geminiApiKey ?: ""
+        )
+    }
+    single {
+        HybridSearchService(
+            dal = get(),
+            embeddingClient = get()
         )
     }
     single<ITransliterator> { TransliterationServiceImpl(get()) }

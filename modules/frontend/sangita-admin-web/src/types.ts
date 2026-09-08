@@ -388,3 +388,22 @@ export interface ImportEvent {
   data?: string | null;
   createdAt: string;
 }
+
+export interface SemanticSearchResultItem {
+  krithiId: string;
+  title: string;
+  composerName: string;
+  ragaName: string | null;
+  talaName: string | null;
+  documentKind: string;
+  matchedContent: string;
+  similarityScore: number;
+  lexicalScore?: number | null;
+  rrfScore?: number | null;
+}
+
+export interface SemanticSearchResponse {
+  query: string;
+  totalMatches: number;
+  items: SemanticSearchResultItem[];
+}

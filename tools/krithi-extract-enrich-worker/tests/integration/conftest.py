@@ -30,7 +30,7 @@ GOLDEN_FIXTURE = REPO_ROOT / "shared" / "domain" / "model" / "import" / "fixture
 CANONICAL_SCHEMA = REPO_ROOT / "shared" / "domain" / "model" / "import" / "canonical-extraction-schema.json"
 
 # Match the versions pinned in compose.yaml / gradle/libs.versions.toml
-POSTGRES_IMAGE = "postgres:18.3-alpine"
+POSTGRES_IMAGE = "pgvector/pgvector:pg18"
 FLYWAY_IMAGE = "flyway/flyway:12.11.0-alpine"
 
 
