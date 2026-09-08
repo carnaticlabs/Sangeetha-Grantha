@@ -21,12 +21,12 @@ const Sidebar: React.FC<SidebarProps> = () => {
 
 
   return (
-    <aside className="w-64 bg-surface-light border-r border-border-light flex-shrink-0 hidden md:flex flex-col z-20">
+    <aside className="w-64 bg-cream-deep border-r border-border-light flex-shrink-0 hidden md:flex flex-col z-20">
       {/* Brand Header */}
       <div className="p-6">
         <div className="flex flex-col gap-1">
-          <h1 className="text-ink-900 text-lg font-display font-bold leading-normal tracking-tight">Sangita Grantha</h1>
-          <p className="text-ink-500 text-xs font-medium uppercase tracking-wide">Admin Portal</p>
+          <h1 className="text-ink-900 text-lg font-display font-medium leading-tight tracking-tight">Sangīta Grantha</h1>
+          <p className="text-primary-dark text-xs font-semibold uppercase tracking-[0.16em]">Curator Console</p>
         </div>
       </div>
 
@@ -50,8 +50,8 @@ const Sidebar: React.FC<SidebarProps> = () => {
               key={item.id}
               to={path}
               className={({ isActive }) => `w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200 group ${isActive
-                ? 'bg-primary-light text-primary'
-                : 'text-ink-500 hover:bg-slate-100 hover:text-ink-900'
+                ? 'bg-cream text-primary shadow-[inset_2px_0_0_var(--color-saffron)]'
+                : 'text-ink-500 hover:bg-cream hover:text-ink-900'
                 }`}
             >
               {({ isActive }) => (
@@ -72,15 +72,15 @@ const Sidebar: React.FC<SidebarProps> = () => {
         <div className="mt-8 px-3 py-2 text-xs font-bold text-ink-400 uppercase tracking-wider">
           System
         </div>
-        <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-ink-500 hover:bg-slate-100 hover:text-ink-900 transition-colors group">
+        <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-ink-500 hover:bg-cream hover:text-ink-900 transition-colors group">
           <span className="material-symbols-outlined text-2xl group-hover:text-primary transition-colors">settings</span>
           Settings
         </button>
         <NavLink
           to="/users"
           className={({ isActive }) => `w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${isActive
-            ? 'bg-primary-light text-primary'
-            : 'text-ink-500 hover:bg-slate-100 hover:text-ink-900'
+            ? 'bg-cream text-primary shadow-[inset_2px_0_0_var(--color-saffron)]'
+            : 'text-ink-500 hover:bg-cream hover:text-ink-900'
           }`}
         >
           {({ isActive }) => (
@@ -93,8 +93,8 @@ const Sidebar: React.FC<SidebarProps> = () => {
         <NavLink
           to="/roles"
           className={({ isActive }) => `w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${isActive
-            ? 'bg-primary-light text-primary'
-            : 'text-ink-500 hover:bg-slate-100 hover:text-ink-900'
+            ? 'bg-cream text-primary shadow-[inset_2px_0_0_var(--color-saffron)]'
+            : 'text-ink-500 hover:bg-cream hover:text-ink-900'
           }`}
         >
           {({ isActive }) => (

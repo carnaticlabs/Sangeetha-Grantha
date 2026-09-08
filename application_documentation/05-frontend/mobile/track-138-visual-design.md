@@ -1,88 +1,112 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Last Updated** | 2026-09-05 |
-| **Version** | 1.0.0 |
+| **Last Updated** | 2026-09-08 |
+| **Version** | 2.0.0 |
 | **Author** | TRACK-138 Rasika mobile |
 
-# TRACK-138 Rasika visual design
+# Rasika visual design
 
-Source of truth for Rasika Compose UI. Implement these tokens in `RasikaTheme`; do not invent a second palette or type scale. System fonts only for this MVP (on-device script shaping). No decorative generated assets.
+Source of truth for the Rasika visual identity across **both** surfaces — the Compose mobile app and the React admin web console. The canonical token values are the ones shipped in
+[`RasikaTheme.kt`](../../../modules/shared/presentation/src/commonMain/kotlin/com/sangita/grantha/shared/presentation/theme/RasikaTheme.kt)
+(`RasikaTokens`); the web app mirrors them in `modules/frontend/sangita-admin-web/src/index.css`. Do not invent a second palette or type scale in either layer — repoint the tokens.
 
-The tone is a concert programme on handmade paper: warm, quiet, and readable for long lyric lines — not a generic dashboard or neon “AI” look.
+> **v2.0.0 reconciliation (2026-09-08).** v1 documented a quieter "concert programme" set
+> (`saffron #B44A1F`, `templeTeal #1F4E5F`, system fonts, no ornament). The shipped Compose
+> theme evolved past that into the richer **Tamil Nadu gopuram** palette below — polychrome
+> cornice banding, a distinct saffron/teal/gold triad, and the Fraunces + Work Sans type
+> pairing. That shipped code is now the single source of truth; the v1 values are retired.
+> The web console adopts this same set so web and mobile read as one product.
+
+The tone is a painted temple interior on handmade paper: warm, polychrome, and readable for long lyric lines — not a generic dashboard or neon “AI” look. The cornice band, more than colour alone, is what carries the temple-interior identity.
 
 ---
 
 ## Color
 
-Values are sRGB hex. Use the Material 3 scheme mapping below; do not mix in unlisted accents.
+Values are sRGB hex, taken from `RasikaTokens` in `RasikaTheme.kt`. Use the Material 3 scheme mapping below (Compose) or the web token names in brackets; do not mix in unlisted accents. Gold and teal-light are **ornament fills only, never text colours** — any label under 14sp/14px uses `saffronDeep`, `inkSoft`, or `teal`.
 
 ### Light (default)
 
-| Token | Hex | Use |
+| Token (web var) | Hex | Use |
 |:---|:---|:---|
-| `paper` | `#F6F0E6` | Screen background |
-| `paperRaised` | `#FFFBF4` | Cards, sheets, fields |
-| `ink` | `#1C1410` | Primary text |
-| `inkMuted` | `#6B5B4F` | Secondary text, meta |
-| `saffron` | `#B44A1F` | Primary actions, selected tab, focus |
-| `saffronSoft` | `#F3D9C8` | Selected chip / subtle fill |
-| `templeTeal` | `#1F4E5F` | Secondary (raga identity, links) |
-| `goldLine` | `#C4A35A` | Hairline dividers, tab indicator |
-| `error` | `#A33B32` | Errors only |
-| `success` | `#2F6B4F` | Favourited / success only |
+| `saffronDeep` (`--color-primary-dark`) | `#A92815` | Small text, section labels, active-tab ink |
+| `saffron` (`--color-primary`) | `#C1350F` | Primary action, active chip, selection, focus |
+| `coral` | `#E0553F` | Ornament fills, cornice base band |
+| `gold` | `#E9A838` | Rules, anga boundaries, kalaśam |
+| `teal` (`--color-accent`) | `#1F6B70` | Secondary action, counts, links, raga identity |
+| `tealLight` | `#2D8B90` | Ornament vault, cornice teal band |
+| `cream` (`--color-background`) | `#FDF3E3` | Screen ground |
+| `creamDeep` (`--color-surface-variant`) | `#FBE8CF` | Tab/side strip, notices, selected-nav fill |
+| `paper` (`--color-surface-light`) | `#FFFFFF` | Cards |
+| `ink` (`--color-ink-900`) | `#2A1A12` | Primary text |
+| `inkSoft` (`--color-ink-500`) | `#7A5C4A` | Secondary text (5.5:1 on cream) |
+| `hairline` (`--color-border-light`) | `rgba(169,40,21,.20)` | Card borders, dividers |
+| `onDark` | `#FFF6E8` | Text over artwork and teal |
+
+### Painted-cornice bands
+
+The banded moulding that closes every screen header — the signature motif. Stacked top→bottom: green, gold, a teal band with a repeating cream scallop, coral base. Web renders it as a slim CSS band; Compose draws it in `RasikaOrnaments.PaintedCornice`.
+
+| Token | Hex |
+|:---|:---|
+| `corniceGreen` | `#7BA23F` |
+| `corniceGold` | `#F2C53D` |
+| `tealLight` (band) | `#2D8B90` |
+| `corniceScallop` | `#FDF3E3` |
+| `cornicePink` (base) | `#E07A8A` |
 
 ### Dark
 
+Dark is provisional (an R7 dark pass is still owed) but shipped in `RasikaTokens` and mirrored on web.
+
 | Token | Hex | Use |
 |:---|:---|:---|
-| `paper` | `#161210` | Screen background |
-| `paperRaised` | `#231C18` | Cards, sheets, fields |
-| `ink` | `#F3EBE0` | Primary text |
-| `inkMuted` | `#B6A598` | Secondary text |
-| `saffron` | `#E08A4C` | Primary |
-| `saffronSoft` | `#3A2418` | Selected chip |
-| `templeTeal` | `#7FB3C3` | Secondary |
-| `goldLine` | `#8A7340` | Hairlines |
-| `error` | `#E08A84` | Errors |
-| `success` | `#7FBF9A` | Favourited |
+| `paperDark` | `#161210` | Screen background |
+| `cardDark` | `#231C18` | Cards, sheets, fields, side strip |
+| `inkDark` | `#F3EBE0` | Primary text |
+| `inkSoftDark` | `#B6A598` | Secondary text |
+| `saffronDark` | `#E08A4C` | Primary |
+| `saffronSoftDark` | `#3A2418` | Selected chip |
+| `tealDark` | `#7FB3C3` | Secondary |
+| `goldDark` | `#8A7340` | Hairlines |
+| `errorDark` | `#E08A84` | Errors |
 
-**Contrast:** body text on `paper` / `paperRaised` must stay above WCAG AA. Do not place saffron text on saffron fills.
+**Contrast:** body text on `cream` / `paper` must stay above WCAG AA. Do not place saffron text on saffron fills.
 
-**Material 3 mapping**
+**Material 3 mapping** (see `LightScheme` / `DarkScheme` in `RasikaTheme.kt` for the full map)
 
 | Role | Light | Dark |
 |:---|:---|:---|
-| `primary` | saffron | saffron |
-| `onPrimary` | `#FFFBF4` | `#1C1410` |
-| `secondary` | temple teal | temple teal |
-| `background` / `surface` | paper | paper |
-| `surfaceContainer` | paperRaised | paperRaised |
-| `onSurface` | ink | ink |
-| `onSurfaceVariant` | inkMuted | inkMuted |
-| `outline` | goldLine | goldLine |
-| `error` | error | error |
+| `primary` | saffron | saffronDark |
+| `onPrimary` | cream | ink |
+| `secondary` | teal | tealDark |
+| `background` / `surface` | cream | paperDark |
+| `surfaceContainer*` | paper | cardDark |
+| `onSurface` | ink | inkDark |
+| `onSurfaceVariant` | inkSoft | inkSoftDark |
+| `outline` | hairline / gold | goldDark |
+| `error` | saffronDeep | errorDark |
 
-Appearance follows the stored preference: system, light, or dark.
+Appearance follows the stored preference on mobile (system, light, or dark) and `prefers-color-scheme` on web.
 
 ---
 
 ## Type
 
-Use the platform default sans (`FontFamily.SansSerif`). Do not bundle display fonts in this slice.
+Two families, shared by mobile and web: **Fraunces** (serif) carries titles and lyrics; **Work Sans** carries labels, body and the tracked uppercase eyebrows. Indic scripts (Devanagari / Tamil / Telugu / Kannada) fall back to the platform font automatically — Fraunces is Latin-only, used for transliterations. Sizes below are the shipped `rasikaTypography` values.
 
-| Role | Size / line / weight | Use |
-|:---|:---|:---|
-| Display | 32 / 40 / 600 | Kriti title on the reader |
-| Title | 22 / 28 / 600 | Screen titles, tab context |
-| Card title | 17 / 24 / 600 | `KrithiCard` name |
-| Body | 16 / 26 / 400 | English UI copy |
-| Lyric | 18 / 32 / 400 | Stored lyric text (scale with text-size preference) |
-| Section | 13 / 18 / 600 | Pallavi / Anupallavi / Charanam labels (letter-spacing 0.08em, saffron) |
-| Meta | 13 / 18 / 400 | Composer, raga, tala, counts |
-| Caption | 12 / 16 / 400 | Helper, timestamps |
+| Role (M3) | Size / line / weight | Family | Use |
+|:---|:---|:---|:---|
+| displayLarge | 28 / 32 / Medium | Fraunces | Kriti title on the reader |
+| titleLarge | 25 / 29 / Medium | Fraunces | Screen titles |
+| titleMedium | 16 / 21 / Medium | Fraunces | Item / result / setting titles, `KrithiCard` name |
+| bodyLarge | 14 / 20 / Regular | Work Sans | English UI copy, search input, helper text |
+| bodyMedium (lyric) | 17.5 / 33 / Regular | Fraunces | Stored lyric text (scales with text-size preference) |
+| labelLarge | 10.5 / 15 / SemiBold, 0.16em | Work Sans | Section labels, tab labels — uppercase, saffron |
+| labelMedium | 10.5 / 15 / Regular, 0.04em | Work Sans | Meta lines: composer, raga, tala, counts |
 
-Lyric line height stays at least 1.7× the font size so Indian scripts can shape. Text-size preference multiplies lyric and body only: `small` 0.9, `medium` 1.0, `large` 1.2, `extraLarge` 1.4.
+Lyric line height stays ≥ 1.9× the font size so Indic stacked mātras don't clip. Text-size preference multiplies lyric (and body): `small` 0.86, `medium` 1.0, `large` 1.14, `extraLarge` 1.32.
 
 ---
 
@@ -102,10 +126,9 @@ Lyric line height stays at least 1.7× the font size so Indian scripts can shape
 
 | Token | dp |
 |:---|---:|
-| Card radius | 16 |
-| Chip / field radius | 12 |
-| Button radius | 12 |
-| Card elevation | 0 (1 dp hairline `goldLine` instead of drop shadow) |
+| Card radius | 14 |
+| Chip / field / button radius | 10 |
+| Card elevation | 0 (1 dp `hairline` instead of drop shadow) |
 | Tap target | ≥ 48 |
 
 ---

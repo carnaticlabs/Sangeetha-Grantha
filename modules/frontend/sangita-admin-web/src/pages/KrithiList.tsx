@@ -114,7 +114,7 @@ const KrithiList: React.FC = () => {
         </div>
         <button
           onClick={() => navigate('/krithis/new')}
-          className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-dark transition-colors shadow-sm shadow-blue-500/20"
+          className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-dark transition-colors shadow-sm shadow-primary/20"
         >
           <span className="material-symbols-outlined text-[20px]">add</span>
           Add New
@@ -151,7 +151,7 @@ const KrithiList: React.FC = () => {
                 onClick={() => setSearchMode('standard')}
                 className={`px-3 py-1.5 rounded-md transition-all ${
                   searchMode === 'standard'
-                    ? 'bg-white text-ink-900 shadow-sm font-semibold'
+                    ? 'bg-surface-light text-ink-900 shadow-sm font-semibold'
                     : 'text-ink-600 hover:text-ink-900'
                 }`}
               >
@@ -162,7 +162,7 @@ const KrithiList: React.FC = () => {
                 onClick={() => setSearchMode('hybrid')}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all ${
                   searchMode === 'hybrid'
-                    ? 'bg-white text-blue-600 shadow-sm font-semibold'
+                    ? 'bg-surface-light text-primary shadow-sm font-semibold'
                     : 'text-ink-600 hover:text-ink-900'
                 }`}
               >
@@ -174,7 +174,7 @@ const KrithiList: React.FC = () => {
                 onClick={() => setSearchMode('semantic')}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all ${
                   searchMode === 'semantic'
-                    ? 'bg-white text-purple-600 shadow-sm font-semibold'
+                    ? 'bg-surface-light text-accent shadow-sm font-semibold'
                     : 'text-ink-600 hover:text-ink-900'
                 }`}
               >
@@ -312,7 +312,7 @@ const KrithiList: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 text-sm text-ink-700 uppercase">{item.primaryLanguage || '-'}</td>
                     <td className="px-6 py-4 text-right">
-                      <button className="text-ink-400 hover:text-primary p-2 rounded-full hover:bg-blue-50 transition-colors opacity-0 group-hover:opacity-100">
+                      <button className="text-ink-400 hover:text-primary p-2 rounded-full hover:bg-primary-light transition-colors opacity-0 group-hover:opacity-100">
                         <span className="material-symbols-outlined text-[20px]">edit</span>
                       </button>
                     </td>
@@ -356,7 +356,7 @@ const KrithiList: React.FC = () => {
                   <tr
                     key={item.krithiId}
                     onClick={() => navigate(`/krithis/${item.krithiId}`)}
-                    className="hover:bg-blue-50/40 cursor-pointer transition-colors group"
+                    className="hover:bg-primary-light/40 cursor-pointer transition-colors group"
                   >
                     <td className="px-6 py-4">
                       <div className="flex flex-col">
@@ -406,7 +406,7 @@ const KrithiList: React.FC = () => {
                                 Hybrid Match
                               </span>
                             ) : item.similarityScore > 0 ? (
-                              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800 border border-blue-200">
+                              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-accent-soft text-accent border border-accent/20">
                                 {Math.round(item.similarityScore * 100)}% Semantic
                               </span>
                             ) : (
@@ -425,7 +425,7 @@ const KrithiList: React.FC = () => {
                             </div>
                           </>
                         ) : (
-                          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800 border border-blue-200">
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-accent-soft text-accent border border-accent/20">
                             {Math.round(item.similarityScore * 100)}% Match
                           </span>
                         )}

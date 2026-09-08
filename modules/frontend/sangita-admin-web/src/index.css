@@ -1,40 +1,80 @@
-@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Work+Sans:wght@300..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..600&family=Work+Sans:wght@300..700&display=swap");
 
 @import "tailwindcss";
 
+/*
+ * Rasika gopuram palette — single source of truth is RasikaTokens in
+ * modules/shared/presentation/.../theme/RasikaTheme.kt, documented in
+ * application_documentation/05-frontend/mobile/track-138-visual-design.md.
+ * Tailwind v4 utilities compile to var(--color-*), so the dark overrides at the
+ * bottom flip the whole app by redefining these variables.
+ */
 @theme {
-  --color-ink: #1b1a24;
-  --color-ink-50: #f8f8fa;
-  --color-ink-100: #efeff1;
-  --color-ink-200: #dcdde2;
-  --color-ink-300: #c0c2cb;
-  --color-ink-400: #9fa3b0;
-  --color-ink-500: #808596;
-  --color-ink-600: #64697a;
-  --color-ink-700: #525664;
-  --color-ink-800: #464954;
-  --color-ink-900: #3e4049;
+  /* -- Ink ramp: warm, from ink (#2A1A12) to near-cream. ink-500 = inkSoft. -- */
+  --color-ink: #2a1a12;
+  --color-ink-50: #fbf3e7;
+  --color-ink-100: #f2e6d6;
+  --color-ink-200: #e0d3c5;
+  --color-ink-300: #c0ab9c;
+  --color-ink-400: #9c8272;
+  --color-ink-500: #7a5c4a;
+  --color-ink-600: #6a4a38;
+  --color-ink-700: #52392b;
+  --color-ink-800: #3d2a1f;
+  --color-ink-900: #2a1a12;
 
-  --color-accent: #d94e1f;
-  --color-accent-soft: rgba(217, 78, 31, 0.12);
+  /* -- Warmed neutral (slate + gray) ramps so untouched grounds read cream -- */
+  --color-slate-50: #fbf3e7;
+  --color-slate-100: #f5e9d8;
+  --color-slate-200: #ead9c7;
+  --color-slate-300: #dcc7b2;
+  --color-gray-50: #fbf3e7;
+  --color-gray-100: #f5e9d8;
+  --color-gray-200: #ead9c7;
+  --color-gray-300: #dcc7b2;
 
-  --color-primary: #3b82f6;
-  --color-primary-dark: #2563eb;
-  --color-primary-light: #dbeafe;
+  /* -- Primary = saffron; primary-dark = saffronDeep; light = creamDeep fill -- */
+  --color-primary: #c1350f;
+  --color-primary-dark: #a92815;
+  --color-primary-light: #fbe8cf;
+  --color-primary-50: #fbe8cf;
+  --color-primary-100: #f7d9c2;
+  --color-primary-600: #a92815;
+  --color-primary-700: #8f2010;
+  --color-primary-800: #7a1c0e;
 
-  --color-surface: rgba(255, 255, 255, 0.86);
+  /* -- Secondary = temple teal (counts, links, raga identity) -- */
+  --color-accent: #1f6b70;
+  --color-accent-soft: rgba(31, 107, 112, 0.12);
+  --color-teal: #1f6b70;
+  --color-teal-light: #2d8b90;
+
+  /* -- Gopuram signature tokens -- */
+  --color-saffron: #c1350f;
+  --color-saffron-deep: #a92815;
+  --color-coral: #e0553f;
+  --color-gold: #e9a838;
+  --color-cream: #fdf3e3;
+  --color-cream-deep: #fbe8cf;
+  --color-on-dark: #fff6e8;
+
+  /* -- Surfaces & borders -- */
+  --color-surface: #ffffff;
   --color-surface-light: #ffffff;
+  --color-border: rgba(169, 40, 21, 0.2);
+  --color-border-light: rgba(169, 40, 21, 0.2);
 
-  --color-border: #e2e8f0;
-  --color-border-light: #e2e8f0;
+  /* -- Cornice bands -- */
+  --color-cornice-green: #7ba23f;
+  --color-cornice-gold: #f2c53d;
+  --color-cornice-pink: #e07a8a;
 
-  --font-sans: "Work Sans", sans-serif;
+  --font-sans: "Work Sans", "Segoe UI", sans-serif;
   --font-serif: "Fraunces", serif;
   --font-display: "Fraunces", serif;
 
-  --shadow-soft: 0 22px 60px rgba(16, 14, 32, 0.18);
+  --shadow-soft: 0 18px 44px rgba(74, 40, 20, 0.14);
 }
-
 
 *,
 *::before,
@@ -44,203 +84,117 @@
 
 :root {
   color-scheme: light;
-  --ink: #1b1a24;
-  --muted: #5f5c73;
-  --accent: #d94e1f;
-  --accent-soft: rgba(217, 78, 31, 0.12);
-  --surface: rgba(255, 255, 255, 0.86);
-  --shadow: 0 22px 60px rgba(16, 14, 32, 0.18);
+  --ink: #2a1a12;
+  --muted: #7a5c4a;
+  --accent: #c1350f;
+  --accent-soft: rgba(193, 53, 15, 0.1);
+  --surface: #ffffff;
+  --shadow: 0 18px 44px rgba(74, 40, 20, 0.14);
 }
 
 body {
   margin: 0;
   font-family: "Work Sans", "Segoe UI", sans-serif;
   color: var(--ink);
-  background: radial-gradient(circle at top, #f8efe4 0%, #f5f3ff 50%, #eef2f8 100%);
+  /* Flat handmade-paper cream ground — replaces the old cool radial gradient. */
+  background: #fdf3e3;
 }
 
-.page {
-  min-height: 100vh;
-  padding: 32px 8vw 72px;
+/* ============================================================
+   Painted cornice — the signature temple-header band (§Color).
+   Green · gold · scalloped teal · coral base. Pure CSS, no assets.
+   ============================================================ */
+.rasika-cornice {
+  height: 12px;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  flex: none;
 }
-
-.hero {
-  background: var(--surface);
-  border-radius: 32px;
-  padding: 32px 40px 40px;
-  box-shadow: var(--shadow);
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-  animation: fadeUp 0.7s ease-out;
-}
-
-.hero__nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.9rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.hero__mark {
-  font-weight: 700;
-}
-
-.hero__pill {
-  padding: 6px 14px;
-  border-radius: 999px;
-  background: var(--accent-soft);
-  color: var(--accent);
-  font-weight: 600;
-}
-
-.hero__content h1 {
-  font-family: "Fraunces", serif;
-  font-size: clamp(2.6rem, 4vw, 4rem);
-  margin: 0 0 12px;
-}
-
-.hero__content p {
-  max-width: 560px;
-  line-height: 1.6;
-  margin: 0 0 24px;
-  color: var(--muted);
-}
-
-.hero__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.btn {
-  border-radius: 999px;
-  padding: 12px 24px;
-  font-weight: 600;
-  border: 1px solid transparent;
-  cursor: pointer;
-  font-family: inherit;
-}
-
-.btn--solid {
-  background: var(--accent);
-  color: white;
-  box-shadow: 0 12px 24px rgba(217, 78, 31, 0.3);
-}
-
-.btn--ghost {
-  background: transparent;
-  border-color: rgba(27, 26, 36, 0.2);
-  color: var(--ink);
-}
-
-.hero__stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 16px;
-  border-top: 1px solid rgba(27, 26, 36, 0.08);
-  padding-top: 20px;
-}
-
-.stat__label {
+.rasika-cornice > i {
   display: block;
-  font-size: 0.75rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
+}
+.rasika-cornice .band-green {
+  height: 3px;
+  background: var(--color-cornice-green, #7ba23f);
+}
+.rasika-cornice .band-gold {
+  height: 2px;
+  background: var(--color-cornice-gold, #f2c53d);
+}
+.rasika-cornice .band-teal {
+  flex: 1;
+  background: var(--color-teal-light, #2d8b90);
+  -webkit-mask: radial-gradient(6px at 50% 100%, transparent 98%, #000) 0 0 / 15px 100%;
+  mask: radial-gradient(6px at 50% 100%, transparent 98%, #000) 0 0 / 15px 100%;
+}
+.rasika-cornice .band-coral {
+  height: 3px;
+  background: var(--color-cornice-pink, #e07a8a);
 }
 
-.stat__value {
-  font-weight: 600;
-}
+/* ============================================================
+   Dark theme (provisional, from RasikaTokens dark set). Tailwind v4
+   utilities reference these vars, so redefining them re-skins the app.
+   Follows prefers-color-scheme, matching mobile's SYSTEM default.
+   ============================================================ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --ink: #f3ebe0;
+    --muted: #b6a598;
+    --accent: #e08a4c;
+    --surface: #231c18;
+    --shadow: 0 18px 44px rgba(0, 0, 0, 0.5);
 
-.grid {
-  display: grid;
-  gap: 20px;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-}
+    --color-ink: #f3ebe0;
+    --color-ink-50: #1e1712;
+    --color-ink-100: #251d17;
+    --color-ink-200: #34291f;
+    --color-ink-300: #6a5647;
+    --color-ink-400: #8f7b6c;
+    --color-ink-500: #b6a598;
+    --color-ink-600: #cbbdb0;
+    --color-ink-700: #ddd2c6;
+    --color-ink-800: #ebe2d7;
+    --color-ink-900: #f3ebe0;
 
-.card {
-  background: rgba(255, 255, 255, 0.75);
-  border-radius: 20px;
-  padding: 24px;
-  box-shadow: 0 16px 30px rgba(20, 18, 40, 0.08);
-  animation: fadeUp 0.8s ease-out;
-}
+    --color-slate-50: #1e1712;
+    --color-slate-100: #251d17;
+    --color-slate-200: #34291f;
+    --color-slate-300: #4a3a2d;
+    --color-gray-50: #1e1712;
+    --color-gray-100: #251d17;
+    --color-gray-200: #34291f;
+    --color-gray-300: #4a3a2d;
 
-.card h3 {
-  margin: 0 0 8px;
-  font-family: "Fraunces", serif;
-}
+    --color-primary: #e08a4c;
+    --color-primary-dark: #e8a06a;
+    --color-primary-light: #3a2418;
+    --color-primary-50: #3a2418;
+    --color-primary-100: #472d1e;
+    --color-primary-600: #e8a06a;
+    --color-primary-700: #eeb488;
+    --color-primary-800: #f2c6a3;
 
-.card p {
-  margin: 0;
-  color: var(--muted);
-  line-height: 1.5;
-}
+    --color-accent: #7fb3c3;
+    --color-accent-soft: rgba(127, 179, 195, 0.14);
+    --color-teal: #7fb3c3;
+    --color-teal-light: #6fa2b2;
 
-.panel {
-  display: grid;
-  gap: 24px;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  align-items: center;
-  padding: 28px 32px;
-  border-radius: 24px;
-  background: linear-gradient(120deg, rgba(255, 255, 255, 0.86), rgba(250, 240, 231, 0.9));
-  box-shadow: var(--shadow);
-}
+    --color-saffron: #e08a4c;
+    --color-saffron-deep: #e8a06a;
+    --color-gold: #8a7340;
+    --color-cream: #161210;
+    --color-cream-deep: #231c18;
 
-.panel h2 {
-  margin: 0 0 12px;
-  font-family: "Fraunces", serif;
-}
-
-.panel p {
-  margin: 0;
-  color: var(--muted);
-  line-height: 1.6;
-}
-
-.panel ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 10px;
-  color: var(--ink);
-}
-
-.panel li::before {
-  content: "•";
-  color: var(--accent);
-  margin-right: 8px;
-}
-
-@keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
+    --color-surface: #231c18;
+    --color-surface-light: #231c18;
+    --color-border: rgba(224, 138, 76, 0.22);
+    --color-border-light: rgba(224, 138, 76, 0.22);
   }
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@media (max-width: 768px) {
-  .page {
-    padding: 24px;
-  }
-
-  .hero {
-    padding: 24px;
+  body {
+    background: #161210;
   }
 }

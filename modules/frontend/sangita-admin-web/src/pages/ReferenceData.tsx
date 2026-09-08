@@ -98,11 +98,11 @@ const ReferenceData: React.FC = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {renderCard('Composers', stats?.composerCount || 0, 'Vaggeyakaras and lyricists.', 'bg-orange-500', 'Composers')}
-                    {renderCard('Ragas', stats?.ragaCount || 0, 'Melakarta and Janya ragas.', 'bg-blue-500', 'Ragas')}
-                    {renderCard('Talas', stats?.talaCount || 0, 'Suladi Sapta and other talas.', 'bg-purple-500', 'Talas')}
-                    {renderCard('Temples', stats?.templeCount || 0, 'Kshetras and holy sites.', 'bg-emerald-500', 'Temples')}
-                    {renderCard('Deities', stats?.deityCount || 0, 'Gods and Goddesses.', 'bg-rose-500', 'Deities')}
+                    {renderCard('Composers', stats?.composerCount || 0, 'Vaggeyakaras and lyricists.', 'bg-saffron', 'Composers')}
+                    {renderCard('Ragas', stats?.ragaCount || 0, 'Melakarta and Janya ragas.', 'bg-teal', 'Ragas')}
+                    {renderCard('Talas', stats?.talaCount || 0, 'Suladi Sapta and other talas.', 'bg-gold', 'Talas')}
+                    {renderCard('Temples', stats?.templeCount || 0, 'Kshetras and holy sites.', 'bg-cornice-green', 'Temples')}
+                    {renderCard('Deities', stats?.deityCount || 0, 'Gods and Goddesses.', 'bg-coral', 'Deities')}
                 </div>
             </div>
         );

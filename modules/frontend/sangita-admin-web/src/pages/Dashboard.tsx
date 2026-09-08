@@ -97,7 +97,7 @@ const Dashboard: React.FC = () => {
         </div>
         <button
           onClick={() => navigate('/krithis/new')}
-          className="flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-dark transition-colors shadow-sm shadow-blue-500/20"
+          className="flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-dark transition-colors shadow-sm shadow-primary/20"
         >
           <span className="material-symbols-outlined text-[20px]">add</span>
           New Composition
@@ -166,20 +166,20 @@ const Dashboard: React.FC = () => {
                   <p className="text-xs text-amber-700 mt-1">15 records are missing 'Tala' information.</p>
                 </div>
               </div>
-              <div className="p-3 bg-blue-50 border border-blue-100 rounded-lg flex gap-3">
-                <span className="material-symbols-outlined text-blue-600 mt-0.5">verified</span>
+              <div className="p-3 bg-accent-soft border border-accent/20 rounded-lg flex gap-3">
+                <span className="material-symbols-outlined text-accent mt-0.5">verified</span>
                 <div>
-                  <h5 className="text-sm font-bold text-blue-900">Validation Required</h5>
-                  <p className="text-xs text-blue-700 mt-1">New batch of 50 Kritis imported.</p>
+                  <h5 className="text-sm font-bold text-accent">Validation Required</h5>
+                  <p className="text-xs text-ink-600 mt-1">New batch of 50 Kritis imported.</p>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-primary rounded-xl shadow-lg shadow-blue-900/20 p-6 text-white relative overflow-hidden">
+          <div className="bg-primary rounded-xl shadow-lg shadow-primary/25 p-6 text-white relative overflow-hidden">
             <div className="relative z-10">
               <h3 className="font-display text-lg font-bold mb-2">Reference Library</h3>
-              <p className="text-blue-100 text-sm mb-4">Manage the taxonomy of Ragas, Talas, Composers, Temples, and Deities.</p>
+              <p className="text-white/80 text-sm mb-4">Manage the taxonomy of Ragas, Talas, Composers, Temples, and Deities.</p>
               <button
                 onClick={() => navigate('/reference')}
                 className="text-xs font-bold uppercase tracking-wider bg-white/10 hover:bg-white/20 px-4 py-2 rounded border border-white/20 transition-colors"
