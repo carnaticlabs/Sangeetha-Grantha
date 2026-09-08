@@ -73,7 +73,8 @@ jobs:
     timeout-minutes: 10
     services:
       postgres:
-        image: postgres:18.3-alpine
+        # pgvector is required by V58 (TRACK-108). Same image as compose.yaml / SangitaPostgres.
+        image: pgvector/pgvector:pg18
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres

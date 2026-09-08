@@ -202,13 +202,24 @@ def search_hybrid(
         ORDER BY f.rrf_score DESC
         LIMIT %s
     """
-    params = [
-        vec_str, vec_str, vec_str, candidate_limit,
-        query_text, query_text, query_text, query_text,
-    ] + token_params + [
-        query_text, candidate_limit,
-        top_k,
-    ]
+    params = (
+        [
+            vec_str,
+            vec_str,
+            vec_str,
+            candidate_limit,
+            query_text,
+            query_text,
+            query_text,
+            query_text,
+        ]
+        + token_params
+        + [
+            query_text,
+            candidate_limit,
+            top_k,
+        ]
+    )
     with conn.cursor(row_factory=dict_row) as cur:
         cur.execute(sql, params)
         return cur.fetchall()

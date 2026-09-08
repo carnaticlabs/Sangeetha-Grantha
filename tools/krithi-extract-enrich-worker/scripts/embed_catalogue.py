@@ -309,8 +309,14 @@ def index_krithi(
                         RETURNING id
                         """,
                         (
-                            krithi_id, sec_id, variant_id, sec.get("language"),
-                            sec.get("script"), sec_text, passage_text, content_hash,
+                            krithi_id,
+                            sec_id,
+                            variant_id,
+                            sec.get("language"),
+                            sec.get("script"),
+                            sec_text,
+                            passage_text,
+                            content_hash,
                         ),
                     )
                     sec_doc_row = cur.fetchone()

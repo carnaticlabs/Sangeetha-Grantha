@@ -82,7 +82,7 @@ def update_headers(db_url: str, dry_run: bool = False) -> None:
                     continue
 
                 new_raga_tag = format_raga_header(original_raga)
-                new_content = content[:match.start()] + new_raga_tag + content[match.end():]
+                new_content = content[: match.start()] + new_raga_tag + content[match.end() :]
 
                 if dry_run:
                     logger.info(

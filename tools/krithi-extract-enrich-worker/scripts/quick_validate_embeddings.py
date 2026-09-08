@@ -51,13 +51,14 @@ test_queries = [
     },
 ]
 
+
 def main():
     embedder = GeminiEmbedder()
     conn = psycopg.connect("postgresql://postgres:postgres@localhost:5432/sangita_grantha")
 
-    print(f"\n{'='*75}")
+    print(f"\n{'=' * 75}")
     print(f"LIVE VALIDATION OF EMBEDDINGS ({len(test_queries)} Test Queries)")
-    print(f"{'='*75}\n")
+    print(f"{'=' * 75}\n")
 
     correct_top1 = 0
     correct_top3 = 0
@@ -66,13 +67,13 @@ def main():
         q = item["query"]
         expected = item["expected"]
         theme = item["theme"]
-        
-        print(f"[{i}/{len(test_queries)}] Query: \"{q}\"")
+
+        print(f'[{i}/{len(test_queries)}] Query: "{q}"')
         print(f"    Target Expectation: {expected} ({theme})")
-        
+
         q_vec = embedder.embed_query(q)
         vec_str = "[" + ",".join(str(v) for v in q_vec) + "]"
-        
+
         with conn.cursor(row_factory=dict_row) as cur:
             cur.execute(
                 f"""
@@ -109,14 +110,19 @@ def main():
 
         print(f"    Result: {status}")
         for rank, h in enumerate(hits, 1):
-            print(f"       #{rank} ({h['similarity']:.4f}) | {h['title']} | {h['composer']} | {h.get('raga') or 'N/A'} [{h['document_kind']}]")
+            print(
+                f"       #{rank} ({h['similarity']:.4f}) | {h['title']} | {h['composer']} | {h.get('raga') or 'N/A'} [{h['document_kind']}]"
+            )
             print(f"          Snippet: {h['snippet']}...")
         print("-" * 75)
 
     print(f"\nSummary:")
-    print(f"Top-1 Accuracy: {correct_top1}/{len(test_queries)} ({correct_top1/len(test_queries)*100:.1f}%)")
-    print(f"Top-3 Accuracy: {(correct_top1+correct_top3)}/{len(test_queries)} ({(correct_top1+correct_top3)/len(test_queries)*100:.1f}%)")
-    print(f"{'='*75}\n")
+    print(f"Top-1 Accuracy: {correct_top1}/{len(test_queries)} ({correct_top1 / len(test_queries) * 100:.1f}%)")
+    print(
+        f"Top-3 Accuracy: {(correct_top1 + correct_top3)}/{len(test_queries)} ({(correct_top1 + correct_top3) / len(test_queries) * 100:.1f}%)"
+    )
+    print(f"{'=' * 75}\n")
+
 
 if __name__ == "__main__":
     main()

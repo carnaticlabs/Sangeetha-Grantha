@@ -48,6 +48,7 @@ from src.embeddings.gemini_embedder import GeminiEmbedder
 def md5_hash(text: str) -> str:
     return hashlib.md5(text.encode("utf-8")).hexdigest()
 
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
@@ -319,7 +320,16 @@ def process_single_krithi(
                                       updated_at = clock_timestamp()
                         RETURNING id
                         """,
-                        (krithi_id, sec_id, variant_id, sec.get("language"), sec.get("script"), sec_text, passage_text, content_hash),
+                        (
+                            krithi_id,
+                            sec_id,
+                            variant_id,
+                            sec.get("language"),
+                            sec.get("script"),
+                            sec_text,
+                            passage_text,
+                            content_hash,
+                        ),
                     )
                     sec_doc_row = cur.fetchone()
                     if not sec_doc_row:
@@ -423,7 +433,7 @@ def generate_markdown_report(
     md = f"""# Gemini Embedding 2 Catalogue Execution Report
 
 **Execution Timestamp:** {now_str}  
-**Model:** `{summary['model']}` (768-D Matryoshka Representation Learning)  
+**Model:** `{summary["model"]}` (768-D Matryoshka Representation Learning)  
 **Database:** PostgreSQL 18 with `pgvector` HNSW index  
 
 ---
@@ -432,17 +442,17 @@ def generate_markdown_report(
 
 | Metric | Value |
 |:---|:---|
-| **Total Krithis in Catalogue** | {summary['total_catalogue_krithis']} |
-| **Krithis Target in this Run** | {summary['target_krithis']} |
-| **Krithis Processed Successfully** | {summary['krithis_succeeded']} |
-| **Krithis Failed** | {summary['krithis_failed']} |
-| **New Embeddings Generated** | **{summary['total_embedded']}** |
-| **Embeddings Skipped (Unchanged)** | {summary['total_skipped']} |
-| **Obsolete Documents Retired** | {summary['total_retired']} |
-| **Elapsed Duration** | {summary['elapsed_formatted']} |
-| **Embedding Rate** | {summary['docs_per_sec']:.2f} docs/sec |
-| **Estimated Tokens Consumed** | ~{summary['estimated_tokens']:,} |
-| **Estimated API Cost** | **~${summary['estimated_cost']:.4f} USD** |
+| **Total Krithis in Catalogue** | {summary["total_catalogue_krithis"]} |
+| **Krithis Target in this Run** | {summary["target_krithis"]} |
+| **Krithis Processed Successfully** | {summary["krithis_succeeded"]} |
+| **Krithis Failed** | {summary["krithis_failed"]} |
+| **New Embeddings Generated** | **{summary["total_embedded"]}** |
+| **Embeddings Skipped (Unchanged)** | {summary["total_skipped"]} |
+| **Obsolete Documents Retired** | {summary["total_retired"]} |
+| **Elapsed Duration** | {summary["elapsed_formatted"]} |
+| **Embedding Rate** | {summary["docs_per_sec"]:.2f} docs/sec |
+| **Estimated Tokens Consumed** | ~{summary["estimated_tokens"]:,} |
+| **Estimated API Cost** | **~${summary["estimated_cost"]:.4f} USD** |
 
 ---
 
@@ -450,10 +460,10 @@ def generate_markdown_report(
 
 | Table | Total Rows |
 |:---|:---|
-| `search_documents` (Composition Overviews) | {summary['db_overview_count']} |
-| `search_documents` (Section Passages) | {summary['db_passage_count']} |
-| `document_embeddings` (Active Vectors) | **{summary['db_total_embeddings']}** |
-| HNSW Cosine Index Status | `{summary['index_status']}` |
+| `search_documents` (Composition Overviews) | {summary["db_overview_count"]} |
+| `search_documents` (Section Passages) | {summary["db_passage_count"]} |
+| `document_embeddings` (Active Vectors) | **{summary["db_total_embeddings"]}** |
+| HNSW Cosine Index Status | `{summary["index_status"]}` |
 
 ---
 
@@ -463,7 +473,7 @@ Verification of vector retrieval against live embedded krithis:
 
 """
     for res in sanity_results:
-        md += f"### Query: *\"{res['query']}\"*\n\n"
+        md += f'### Query: *"{res["query"]}"*\n\n'
         if not res.get("hits"):
             md += "_No matches returned or dry-run execution._\n\n"
         else:
@@ -471,7 +481,7 @@ Verification of vector retrieval against live embedded krithis:
             md += "|:---|:---|:---|:---|:---|:---|\n"
             for i, hit in enumerate(res["hits"], 1):
                 sim_pct = f"{hit['similarity'] * 100:.1f}%"
-                clean_snippet = hit['snippet'].replace("\n", " ")
+                clean_snippet = hit["snippet"].replace("\n", " ")
                 md += f"| #{i} | **{hit['title']}** | {hit['composer']} | {hit['raga'] or '-'} | `{sim_pct}` | {clean_snippet}... |\n"
             md += "\n"
 
@@ -521,7 +531,11 @@ def main() -> None:
     if args.dry_run:
         profile = find_profile(conn, DEFAULT_MODEL, DEFAULT_DIMENSIONS)
         if profile is None:
-            logger.info("[DRY-RUN] No embedding profile for %s/%d yet; a real run would create it", DEFAULT_MODEL, DEFAULT_DIMENSIONS)
+            logger.info(
+                "[DRY-RUN] No embedding profile for %s/%d yet; a real run would create it",
+                DEFAULT_MODEL,
+                DEFAULT_DIMENSIONS,
+            )
         profile_id = profile.id if profile else None
     else:
         profile = ensure_profile(conn, DEFAULT_MODEL, DEFAULT_DIMENSIONS, actor=SCRIPT_NAME)
@@ -698,7 +712,9 @@ def main() -> None:
     logger.info("==================================================")
 
     if krithis_failed > 0:
-        logger.error("Run incomplete: %d krithi(s) failed; profile activation skipped. See %s", krithis_failed, failures_path)
+        logger.error(
+            "Run incomplete: %d krithi(s) failed; profile activation skipped. See %s", krithis_failed, failures_path
+        )
         conn.close()
         sys.exit(1)
 
