@@ -33,6 +33,7 @@ replay_pid*
 .DS_Store
 .idea/
 .vscode/
+.air/
 # Cursor local state; shared project rules, skills, commands, and hooks stay tracked.
 .cursor/*
 !.cursor/rules/
@@ -124,3 +125,4 @@ ds-bundle/
 
 # Disposable krithi section-triage cache (downloaded source HTML + reports)
 .triage-cache/
+/tools/krithi-extract-enrich-worker/reports/*
