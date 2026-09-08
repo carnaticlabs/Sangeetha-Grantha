@@ -36,6 +36,30 @@ const scriptLabels: Record<string, string> = {
     malayalam: 'Malayalam',
 };
 
+// A representative akshara per script — the script's own letter reads far better
+// than a generic icon (and the broken `language_*` Material Symbol names).
+const scriptGlyphByScript: Record<string, string> = {
+    latin: 'A',
+    devanagari: 'अ',
+    tamil: 'அ',
+    telugu: 'అ',
+    kannada: 'ಅ',
+    malayalam: 'അ',
+};
+
+const scriptGlyphByLanguage: Record<string, string> = {
+    en: 'A',
+    sa: 'अ',
+    hi: 'अ',
+    ta: 'அ',
+    te: 'అ',
+    kn: 'ಅ',
+    ml: 'അ',
+};
+
+const glyphFor = (v: LyricVariant): string =>
+    scriptGlyphByScript[v.script] || scriptGlyphByLanguage[v.language] || '文';
+
 const LyricVariantTabs: React.FC<LyricVariantTabsProps> = ({ variants }) => {
     const [activeTab, setActiveTab] = useState(0);
 
@@ -60,25 +84,33 @@ const LyricVariantTabs: React.FC<LyricVariantTabsProps> = ({ variants }) => {
 
     return (
         <div className="space-y-4">
-            {/* Tab Bar */}
-            <div className="flex items-center gap-1 border-b border-border-light">
-                {variants.map((variant, idx) => (
-                    <button
-                        key={variant.id}
-                        onClick={() => setActiveTab(idx)}
-                        className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${activeTab === idx
-                                ? 'border-primary text-primary'
-                                : 'border-transparent text-ink-500 hover:text-ink-700 hover:border-ink-200'
-                            }`}
-                    >
-                        <span className="material-symbols-outlined text-sm align-middle mr-1">
-                            {variant.script === 'devanagari' ? 'language_hindi_devanagari'
-                                : variant.script === 'tamil' ? 'language_tamil'
-                                    : 'translate'}
-                        </span>
-                        {tabLabel(variant)}
-                    </button>
-                ))}
+            {/* Script chips — mirrors the mobile Rasika variant chip spec */}
+            <div className="flex flex-wrap items-center gap-2">
+                {variants.map((variant, idx) => {
+                    const isActive = activeTab === idx;
+                    return (
+                        <button
+                            key={variant.id}
+                            onClick={() => setActiveTab(idx)}
+                            aria-pressed={isActive}
+                            className={`group inline-flex items-center gap-2.5 rounded-full border py-1.5 pl-1.5 pr-4 text-sm font-medium transition-colors ${isActive
+                                    ? 'border-primary bg-primary-light text-primary'
+                                    : 'border-border-light bg-surface-light text-ink-600 hover:border-primary/40 hover:text-primary'
+                                }`}
+                        >
+                            <span
+                                aria-hidden="true"
+                                className={`grid h-7 w-7 place-items-center rounded-full font-serif text-base leading-none transition-colors ${isActive
+                                        ? 'bg-primary text-white'
+                                        : 'bg-cream-deep text-ink-500 group-hover:text-primary'
+                                    }`}
+                            >
+                                {glyphFor(variant)}
+                            </span>
+                            {tabLabel(variant)}
+                        </button>
+                    );
+                })}
             </div>
 
             {/* Tab Content */}
@@ -96,7 +128,7 @@ const LyricVariantTabs: React.FC<LyricVariantTabsProps> = ({ variants }) => {
                                 </span>
                             )}
                         </div>
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold bg-slate-100 text-ink-500 rounded-full">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-[10px] font-bold tracking-wider bg-cream-deep text-primary-dark border border-gold/40 rounded-full">
                             <span className="material-symbols-outlined text-xs">lock</span>
                             READ-ONLY
                         </span>

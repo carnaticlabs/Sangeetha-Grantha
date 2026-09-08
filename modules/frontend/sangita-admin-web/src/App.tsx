@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 
 import Sidebar from './components/Sidebar';
 import TopBar from './components/TopBar';
+import Cornice from './components/Cornice';
 import Dashboard from './pages/Dashboard';
 import KrithiList from './pages/KrithiList';
 import KrithiEditor from './pages/KrithiEditor';
@@ -43,13 +44,14 @@ const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <Router>
-        <div className="flex h-screen overflow-hidden bg-slate-50 font-sans text-ink-900">
+        <div className="flex h-screen overflow-hidden bg-cream font-sans text-ink-900">
           {/* Sidebar */}
           <Sidebar />
 
           {/* Main Content Area */}
           <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
             <TopBar />
+            <Cornice />
             <main className="flex-1 overflow-y-auto p-6 md:p-8 lg:px-12 scroll-smooth">
               <Routes>
                 <Route path="/login" element={<Login />} />

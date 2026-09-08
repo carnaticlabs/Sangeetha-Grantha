@@ -90,7 +90,10 @@ const KrithiEditor: React.FC = () => {
             }
         }
 
-        if (tab === 'Lyrics' && krithiId && !state.lyricVariantsLoaded) {
+        // Both the Lyrics and Lyric Variants tabs read state.krithi.lyricVariants,
+        // so load variants when either is opened (direct-navigating to Lyric
+        // Variants previously showed an empty page until Lyrics had been visited).
+        if ((tab === 'Lyrics' || tab === 'Lyric Variants') && krithiId && !state.lyricVariantsLoaded) {
             const variants = await loadVariants(krithiId, referenceData.sampradayas);
             if (variants) {
                 dispatch({ type: 'UPDATE_FIELD', field: 'lyricVariants', value: variants });
