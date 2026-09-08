@@ -16,7 +16,7 @@ import org.testcontainers.utility.DockerImageName
  */
 object SangitaPostgres {
     private val image: DockerImageName =
-        DockerImageName.parse("docker.io/library/postgres:18.3-alpine")
+        DockerImageName.parse("docker.io/pgvector/pgvector:pg18")
             .asCompatibleSubstituteFor("postgres")
 
     val container: PostgreSQLContainer by lazy {

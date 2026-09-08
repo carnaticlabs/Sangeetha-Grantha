@@ -1,0 +1,177 @@
+[
+  {
+    "id": "EVAL-01",
+    "category": "direct_incipit",
+    "query": "Vatapi Ganapatim Bhajeham",
+    "expected_title_contains": "Vatapi",
+    "expected_composer": "Muthuswami Dikshitar",
+    "notes": "Classic Ganesha invocation in Hamsadhvani"
+  },
+  {
+    "id": "EVAL-02",
+    "category": "remembered_line_charanam",
+    "query": "karambuja pasa bijapura kalpakalita",
+    "expected_title_contains": "Vatapi",
+    "expected_composer": "Muthuswami Dikshitar",
+    "notes": "Remembered phrase from Anupallavi of Vatapi Ganapatim"
+  },
+  {
+    "id": "EVAL-03",
+    "category": "thematic_deity_raga",
+    "query": "Dikshitar krithi praising Lord Ganesha in Hamsadhvani raga",
+    "expected_title_contains": "Vatapi",
+    "expected_composer": "Muthuswami Dikshitar",
+    "expected_raga": "Hamsadhvani",
+    "notes": "Natural language thematic query"
+  },
+  {
+    "id": "EVAL-04",
+    "category": "direct_incipit",
+    "query": "Endaro Mahanubhavulu Andariki Vandanamulu",
+    "expected_title_contains": "Endaro",
+    "expected_composer": "Tyagaraja",
+    "notes": "Sri Raga Pancharatna krithi"
+  },
+  {
+    "id": "EVAL-05",
+    "category": "thematic_kshetra",
+    "query": "Dikshitar krithi in Chidambaram describing the cosmic dance of Shiva",
+    "expected_title_contains": "Ananda",
+    "expected_composer": "Muthuswami Dikshitar",
+    "notes": "Ananda Natana Prakasham in Kedaram"
+  },
+  {
+    "id": "EVAL-06",
+    "category": "thematic_deity",
+    "query": "Abhayamba series krithi in Kalyani raga",
+    "expected_title_contains": "abhayAmbA",
+    "expected_composer": "Muthuswami Dikshitar",
+    "notes": "Abhayamba Vibhakti series"
+  },
+  {
+    "id": "EVAL-07",
+    "category": "remembered_line_tamil_phonetic",
+    "query": "adhayam arundh thava thikshidar keerthanai",
+    "expected_title_contains": "abhayAmbA",
+    "notes": "Informal phonetic transliteration"
+  },
+  {
+    "id": "EVAL-08",
+    "category": "raga_composer_filter",
+    "query": "Muthuswami Dikshitar krithi in Anandabhairavi",
+    "expected_title_contains": "abhayAmbA nAyaka",
+    "expected_composer": "Muthuswami Dikshitar",
+    "notes": "Abhayamba Nayaka Hari Sayaka in Anandabhairavi"
+  },
+  {
+    "id": "EVAL-09",
+    "category": "direct_incipit",
+    "query": "Jagadanandakaraka Jaya Janaki Prananayaka",
+    "expected_title_contains": "jagadAnanda kAraka",
+    "expected_composer": "Tyagaraja",
+    "notes": "Nata Pancharatna"
+  },
+  {
+    "id": "EVAL-10",
+    "category": "remembered_line",
+    "query": "kalyana ramani kamaniya kanchana vadani",
+    "expected_title_contains": "Kalyana",
+    "notes": "Charanam line lookup"
+  },
+  {
+    "id": "EVAL-11",
+    "category": "thematic_composer",
+    "query": "Tyagaraja composition in Kharaharapriya pleading for Rama's mercy",
+    "expected_composer": "Tyagaraja",
+    "notes": "Chakkani Raja or Rama Nee Samanamevaru"
+  },
+  {
+    "id": "EVAL-12",
+    "category": "thematic_raga",
+    "query": "Compositions in Bhairavi raga with multiple charanams",
+    "expected_raga": "Bhairavi",
+    "notes": "Upacharamu or Aanandamaananda"
+  },
+  {
+    "id": "EVAL-13",
+    "category": "direct_incipit",
+    "query": "Kamakshi Anudinamu Maruvakane",
+    "expected_title_contains": "kAmAkshi",
+    "expected_composer": "Syama Sastri",
+    "notes": "Syama Sastri Bhairavi Swarajathi"
+  },
+  {
+    "id": "EVAL-14",
+    "category": "thematic_deity",
+    "query": "Songs praising Goddess Meenakshi in Madurai",
+    "expected_composer": "Muthuswami Dikshitar",
+    "notes": "Meenakshi Memudam Dehi"
+  },
+  {
+    "id": "EVAL-15",
+    "category": "remembered_phrase",
+    "query": "guruguha swaminatha paripalayamam",
+    "expected_composer": "Muthuswami Dikshitar",
+    "notes": "Swaminatha Paripalayamam in Nata"
+  },
+  {
+    "id": "EVAL-16",
+    "category": "form_ragamalika",
+    "query": "Ragamalika composition describing Navagrahas or Chaturdasa ragas",
+    "expected_composer": "Muthuswami Dikshitar",
+    "notes": "Ragamalika search"
+  },
+  {
+    "id": "EVAL-17",
+    "category": "direct_incipit_telugu",
+    "query": "Aada Modi Galadae Ramayya Naa Mada",
+    "expected_title_contains": "Aada Modi",
+    "expected_composer": "Tyagaraja",
+    "notes": "Charukesi masterpiece"
+  },
+  {
+    "id": "EVAL-18",
+    "category": "thematic_bhakti",
+    "query": "Prayer for removal of obstacles in the beginning of concert",
+    "expected_title_contains": "Vatapi",
+    "notes": "Ganesha invocation matching"
+  },
+  {
+    "id": "EVAL-19",
+    "category": "deity_epithet",
+    "query": "Lambodara Vinayaka elephant-headed god",
+    "expected_title_contains": "Ganapati",
+    "notes": "Iconographic epithets without literal title matching"
+  },
+  {
+    "id": "EVAL-20",
+    "category": "negative_separation",
+    "query": "Praise of Lord Shiva Nataraja in Kedaram raga",
+    "unexpected_composer": "Purandara Dasa",
+    "notes": "Separating Shaiva vs Vaishnava repertoire"
+  },
+  {
+    "id": "EVAL-21",
+    "category": "raga_composer_deity",
+    "query": "kamakshi bhairavi",
+    "expected_title_contains": "kAmAkshi anudinamu",
+    "expected_composer": "Syama Sastri",
+    "expected_raga": "Bhairavi",
+    "notes": "Syama Sastri Bhairavi Swarajathi"
+  },
+  {
+    "id": "EVAL-22",
+    "category": "form_composer",
+    "query": "Swarajathi Kritis of Syama Sastri",
+    "expected_composer": "Syama Sastri",
+    "notes": "Syama Sastri Swarajathi retrieval"
+  },
+  {
+    "id": "EVAL-23",
+    "category": "title_raga",
+    "query": "vatapi hamsadhvani",
+    "expected_title_contains": "vAtApi",
+    "expected_raga": "Hamsadhvani",
+    "notes": "Dikshitar Vatapi Ganapatim"
+  }
+]

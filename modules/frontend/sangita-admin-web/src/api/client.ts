@@ -22,7 +22,8 @@ import {
     ImportTaskRun,
     ImportEvent,
     BulkBatchStatus,
-    BulkTaskStatus
+    BulkTaskStatus,
+    SemanticSearchResponse,
 } from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/v1';
@@ -101,6 +102,21 @@ export const searchKrithis = (opts?: {
     if (opts?.pageSize !== undefined) params.append('pageSize', String(opts.pageSize));
     const queryString = params.toString();
     return request<KrithiSearchResult>(`/admin/krithis/search${queryString ? `?${queryString}` : ''}`);
+};
+
+export const searchDiscoveryKrithis = (
+    mode: 'hybrid' | 'semantic',
+    opts: {
+        query: string;
+        composerId?: string;
+        ragaId?: string;
+        limit?: number;
+    },
+) => {
+    return request<SemanticSearchResponse>(`/search/${mode}`, {
+        method: 'POST',
+        body: JSON.stringify(opts),
+    });
 };
 
 export const getKrithi = (id: string) => {

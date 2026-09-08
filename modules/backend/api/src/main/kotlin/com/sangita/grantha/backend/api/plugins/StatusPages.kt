@@ -19,6 +19,9 @@ fun Application.configureStatusPages() {
         exception<NoSuchElementException> { call, cause ->
             call.respond(HttpStatusCode.NotFound, ErrorResponse(cause.message ?: "Not found"))
         }
+        exception<com.sangita.grantha.backend.api.clients.EmbeddingServiceUnavailableException> { call, cause ->
+            call.respond(HttpStatusCode.ServiceUnavailable, ErrorResponse(cause.message ?: "Embedding service unavailable"))
+        }
         exception<NotImplementedError> { call, cause ->
             call.respond(HttpStatusCode.NotImplemented, ErrorResponse(cause.message ?: "Not implemented"))
         }

@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.5.1 |
-| **Last Updated** | 2026-09-05 |
+| **Version** | 1.5.2 |
+| **Last Updated** | 2026-09-08 |
 | **Author** | Sangeetha Grantha Team |
 
 # Current Technology Versions
@@ -165,7 +165,7 @@ Migrations are standardized on **Flyway Community** ([ADR-013](../02-architectur
 
 | Component | Version | Notes |
 |---------|---------|---------|
-| Testcontainers | `2.0.5` | `org.testcontainers:testcontainers-postgresql` (artifact renamed in 2.x; `PostgreSQLContainer` now in `org.testcontainers.postgresql`, no self-type generic). Integration tests self-provision `postgres:18.3-alpine`. Pinned in `gradle/libs.versions.toml` (`testcontainers`). TRACK-123. |
+| Testcontainers | `2.0.5` | `org.testcontainers:testcontainers-postgresql` (artifact renamed in 2.x; `PostgreSQLContainer` now in `org.testcontainers.postgresql`, no self-type generic). Integration tests self-provision `pgvector/pgvector:pg18` (TRACK-108). Pinned in `gradle/libs.versions.toml` (`testcontainers`). TRACK-123. |
 | GitHub Actions CI | — | `.github/workflows/ci.yml` (TRACK-111): backend unit/integration, Flyway migrate+validate, frontend typecheck+build, worker pytest. Blocking, PR-triggered (D7/D8). |
 
 Shared integration-test infrastructure (`IntegrationTestBase`, `SangitaPostgres`, `TestDatabase`, `TestFixtures`) lives in the **`:modules:backend:test-support`** module (TRACK-111, D11), consumed by both the `api` and `dal` test classpaths.
@@ -201,7 +201,7 @@ Shared integration-test infrastructure (`IntegrationTestBase`, `SangitaPostgres`
 
 | Component | Version | Notes |
 |-----------|---------|-------|
-| PostgreSQL | `18.3` | Docker image: `postgres:18.3-alpine` |
+| PostgreSQL | `18` (pgvector image) | Docker image: `pgvector/pgvector:pg18` (`compose.yaml`, Testcontainers, CI Flyway job). Ships PostgreSQL 18 plus the `vector` extension required by V58. |
 
 ---
 
@@ -209,6 +209,7 @@ Shared integration-test infrastructure (`IntegrationTestBase`, `SangitaPostgres`
 
 | Date | Change |
 |------|--------|
+| 2026-09-08 | TRACK-108: PostgreSQL Docker image `postgres:18.3-alpine` → `pgvector/pgvector:pg18` (dev Compose, Testcontainers, CI Flyway migrate-from-scratch). |
 | 2026-09-05 | TRACK-138: recorded JetBrains Lifecycle KMP `2.11.0` (CMP 1.12 companion) for Rasika mobile. |
 | 2026-08-29 | Bun 1.3.7→1.4.0 (mise pin, CI `oven-sh/setup-bun` + fallback installer, monorepo-orchestration skill). Frontend `bun install` + typecheck + build green on 1.4.0. |
 | 2026-07-10 | TRACK-122 (Batch 3a): Kotlin 2.3.0→2.4.0, Compose Multiplatform 1.10.0→1.11.1. CMP 1.11 fallout: `compose.*` plugin accessors deprecated → explicit catalog deps (material3 on its own `1.9.0` train, icons-extended frozen `1.7.3`); iosX64 no longer published by CMP → target dropped from `:shared:presentation`; `-Xexplicit-backing-fields` now in-language (flag removed); Kotlin/Native `sourceInfoType=none`→`noop`. Backend + KMP builds and full test suites green. |
