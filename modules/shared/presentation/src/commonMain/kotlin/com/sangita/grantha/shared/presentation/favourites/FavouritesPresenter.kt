@@ -2,6 +2,7 @@ package com.sangita.grantha.shared.presentation.favourites
 
 import com.sangita.grantha.shared.mobile.repository.FavouritesRepository
 import com.sangita.grantha.shared.mobile.storage.BookmarkRecord
+import com.sangita.grantha.shared.mobile.storage.LocalWriteResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,14 +23,14 @@ class FavouritesPresenter(
     }
 
     fun remove(id: Uuid) {
-        favourites.remove(id)
-        refresh()
+        if (favourites.remove(id) is LocalWriteResult.Ok) refresh()
     }
 
     fun isFavourite(id: Uuid): Boolean = favourites.isFavourite(id)
 
     fun toggle(id: Uuid, label: String) {
-        if (favourites.isFavourite(id)) favourites.remove(id) else favourites.save(id, label)
-        refresh()
+        val result =
+            if (favourites.isFavourite(id)) favourites.remove(id) else favourites.save(id, label)
+        if (result is LocalWriteResult.Ok) refresh()
     }
 }

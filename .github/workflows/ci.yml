@@ -188,7 +188,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v6
       - uses: android-actions/setup-android@v3
       - name: Assemble debug APK
-        run: ./gradlew :modules:mobile:androidApp:assembleDebug --console=plain
+        run: ./gradlew :modules:mobile:androidApp:assembleDebug :modules:mobile:androidApp:assembleDebugAndroidTest --console=plain
 
   mobile-ios:
     name: iOS simulator host build (TRACK-138)
@@ -207,6 +207,8 @@ jobs:
         # Compile for the simulator SDK. Do not boot a UDID: CoreSimulator on
         # hosted macos-15 is flaky, and the image may not include iOS 26.5.
         # A real Kotlin/Native or Swift compile error still fails this job.
+        # TRACK-140 journey tests require an explicit UDID via
+        # tools/mobile/verify-rasika-journeys.sh and are not run here.
         env:
           RASIKA_IOS_DESTINATION: generic/platform=iOS Simulator
         run: bash tools/mobile/verify-ios.sh

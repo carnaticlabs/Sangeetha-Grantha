@@ -35,7 +35,7 @@ class CatalogueApiTest {
         val interaction = MobileSession().beginInteraction()
         val page = api.searchKrithis(query = "Vatapi", interaction = interaction)
         assertEquals(1, page.items.size)
-        assertTrue(capturedPath.endsWith("/v1/catalogue/krithis"))
+        assertTrue(capturedPath.endsWith("/v2/catalogue/krithis"))
         assertTrue(capturedQuery.contains("query=Vatapi"))
         assertEquals(interaction.sessionId.toString(), sessionHeader)
     }

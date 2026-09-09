@@ -63,7 +63,7 @@ export const mapKrithiDtoToDetail = (
                 : undefined,
         primaryLanguage:
             dto.primaryLanguage?.toLowerCase() || dto.primaryLanguage || 'te',
-        musicalForm: dto.musicalForm || MusicalForm.KRITHI,
+        musicalForm: dto.musicalForm || MusicalForm.UNESTABLISHED,
         isRagamalika: dto.isRagamalika || false,
         status: workflowState as any,
         sahityaSummary: dto.sahityaSummary,

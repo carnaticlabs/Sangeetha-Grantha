@@ -15,6 +15,7 @@ from pydantic import BaseModel, ConfigDict, Field
 class MusicalForm(StrEnum):
     """Musical form classification."""
 
+    UNESTABLISHED = "UNESTABLISHED"
     KRITHI = "KRITHI"
     VARNAM = "VARNAM"
     SWARAJATHI = "SWARAJATHI"
@@ -138,7 +139,7 @@ class CanonicalExtraction(BaseModel):
     title_normalized: str | None = None
     composer: str = Field(..., description="Raw composer name, resolved downstream")
     composer_normalized: str | None = None
-    musical_form: MusicalForm = Field(MusicalForm.KRITHI, alias="musicalForm")
+    musical_form: MusicalForm = Field(MusicalForm.UNESTABLISHED, alias="musicalForm")
 
     # ─── Musical structure ──────────────────────────────────────────────────
     ragas: list[CanonicalRaga] = Field(..., min_length=1)

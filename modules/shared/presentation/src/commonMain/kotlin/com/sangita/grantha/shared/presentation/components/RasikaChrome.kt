@@ -24,10 +24,10 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
@@ -105,7 +105,11 @@ fun RasikaScreenHeader(
                         color = MaterialTheme.colorScheme.error,
                     )
                 }
-                Text(title, style = MaterialTheme.typography.titleLarge)
+                Text(
+                    title,
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.fillMaxWidth(),
+                )
                 if (!subtitle.isNullOrBlank()) {
                     Text(
                         subtitle,
@@ -348,8 +352,7 @@ fun RasikaPressable(
 }
 
 /**
- * Bottom navigation — three tabs on a teal plinth with a scalloped cream top edge, per
- * R7 and visual-design §5. Preferences is not a tab; it sits behind the header gear.
+ * Bottom navigation — Home, Explore, Library and Settings on a teal plinth.
  */
 @Composable
 fun RasikaTabBar(
@@ -397,7 +400,8 @@ private enum class RasikaTabSpec(
     val label: String,
     val icon: androidx.compose.ui.graphics.vector.ImageVector,
 ) {
-    Search(RasikaTab.Search, RasikaCopy.TAB_SEARCH, Icons.Outlined.Search),
-    Browse(RasikaTab.Browse, RasikaCopy.TAB_BROWSE, Icons.AutoMirrored.Outlined.MenuBook),
-    Favourites(RasikaTab.Favourites, RasikaCopy.TAB_FAVOURITES, Icons.Outlined.FavoriteBorder),
+    Home(RasikaTab.Home, RasikaCopy.TAB_HOME, Icons.Outlined.Home),
+    Explore(RasikaTab.Explore, RasikaCopy.TAB_EXPLORE, Icons.Outlined.Search),
+    Library(RasikaTab.Library, RasikaCopy.TAB_LIBRARY, Icons.Outlined.FavoriteBorder),
+    Settings(RasikaTab.Settings, RasikaCopy.TAB_SETTINGS, Icons.Outlined.Settings),
 }

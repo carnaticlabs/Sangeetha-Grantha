@@ -21,7 +21,7 @@ enum class RagaSectionDto {
 }
 
 @Serializable
-enum class MusicalFormDto { KRITHI, VARNAM, SWARAJATHI }
+enum class MusicalFormDto { KRITHI, VARNAM, SWARAJATHI, UNESTABLISHED }
 
 @Serializable
 enum class NotationTypeDto { SWARA, JATHI }

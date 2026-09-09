@@ -3,30 +3,39 @@ package com.sangita.grantha.shared.presentation.navigation
 import kotlin.uuid.Uuid
 
 enum class RasikaTab {
-    Search,
-    Browse,
-    Favourites,
+    Home,
+    Explore,
+    Library,
+    Settings,
 }
 
 sealed class RasikaDestination {
-    data object Search : RasikaDestination()
+    data object Home : RasikaDestination()
+    data object Explore : RasikaDestination()
+    data object Library : RasikaDestination()
+    data object Settings : RasikaDestination()
     data object Browse : RasikaDestination()
-    data object Favourites : RasikaDestination()
     data class RagaDetail(val ragaId: Uuid) : RasikaDestination()
     data class ComposerDetail(val composerId: Uuid) : RasikaDestination()
     data class KrithiReader(val krithiId: Uuid) : RasikaDestination()
-    data object Preferences : RasikaDestination()
 }
 
 class RasikaNavigator(
-    initialTab: RasikaTab = RasikaTab.Search,
+    initialTab: RasikaTab = RasikaTab.Home,
 ) {
+    companion object {
+        const val MAX_STACK_DEPTH: Int = 8
+    }
+
     private val stacks = mutableMapOf(
-        RasikaTab.Search to mutableListOf<RasikaDestination>(RasikaDestination.Search),
-        RasikaTab.Browse to mutableListOf<RasikaDestination>(RasikaDestination.Browse),
-        RasikaTab.Favourites to mutableListOf<RasikaDestination>(RasikaDestination.Favourites),
+        RasikaTab.Home to mutableListOf<RasikaDestination>(RasikaDestination.Home),
+        RasikaTab.Explore to mutableListOf<RasikaDestination>(RasikaDestination.Explore),
+        RasikaTab.Library to mutableListOf<RasikaDestination>(RasikaDestination.Library),
+        RasikaTab.Settings to mutableListOf<RasikaDestination>(RasikaDestination.Settings),
     )
     var selectedTab: RasikaTab = initialTab
+        private set
+    var stackLimitReached: Boolean = false
         private set
 
     val current: RasikaDestination
@@ -36,15 +45,20 @@ class RasikaNavigator(
         selectedTab = tab
     }
 
-    fun open(destination: RasikaDestination) {
+    fun open(destination: RasikaDestination): Boolean {
         val stack = stacks.getValue(selectedTab)
-        if (stack.last() == destination) return
+        if (stack.last() == destination) return true
+        if (stack.size >= MAX_STACK_DEPTH) {
+            stackLimitReached = true
+            return false
+        }
         stack.add(destination)
+        return true
     }
 
-    fun openOn(tab: RasikaTab, destination: RasikaDestination) {
+    fun openOn(tab: RasikaTab, destination: RasikaDestination): Boolean {
         selectedTab = tab
-        open(destination)
+        return open(destination)
     }
 
     /** @return true if a destination was popped */
@@ -53,6 +67,18 @@ class RasikaNavigator(
         if (stack.size <= 1) return false
         stack.removeAt(stack.lastIndex)
         return true
+    }
+
+    fun returnToRoot() {
+        val stack = stacks.getValue(selectedTab)
+        val root = stack.first()
+        stack.clear()
+        stack.add(root)
+        stackLimitReached = false
+    }
+
+    fun acknowledgeStackLimit() {
+        stackLimitReached = false
     }
 
     fun stackSnapshot(): List<RasikaDestination> = stacks.getValue(selectedTab).toList()

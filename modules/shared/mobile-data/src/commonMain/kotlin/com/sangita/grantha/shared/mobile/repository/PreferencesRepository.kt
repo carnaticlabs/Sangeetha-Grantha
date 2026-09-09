@@ -1,5 +1,6 @@
 package com.sangita.grantha.shared.mobile.repository
 
+import com.sangita.grantha.shared.mobile.storage.LocalWriteResult
 import com.sangita.grantha.shared.mobile.storage.PreferencesRecord
 import com.sangita.grantha.shared.mobile.storage.PreferencesStore
 
@@ -8,7 +9,5 @@ class PreferencesRepository(
 ) {
     fun read(): PreferencesRecord = store.read()
 
-    fun write(record: PreferencesRecord) {
-        store.write(record)
-    }
+    fun write(record: PreferencesRecord): LocalWriteResult = store.write(record)
 }

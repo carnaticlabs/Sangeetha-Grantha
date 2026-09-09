@@ -7,6 +7,9 @@ import com.sangita.grantha.shared.domain.model.catalogue.CatalogueCompletenessDt
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerDetailDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerRefDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerSummaryDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueDiscoveryDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueDiscoveryFeatureDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueSelectionDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueKrithiReaderDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueKrithiSummaryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueLyricSectionDto
@@ -151,8 +154,20 @@ object CatalogueFixtures {
     }
 
     val ragaSummaries = listOf(
-        CatalogueRagaSummaryDto(hamsadhvaniId, "Hamsadhvani", publishedCompositionCount = 1, melakartaNumber = 29),
-        CatalogueRagaSummaryDto(sriId, "Sri", publishedCompositionCount = 1, parentRagaName = "Kharaharapriya"),
+        CatalogueRagaSummaryDto(
+            hamsadhvaniId,
+            "Hamsadhvani",
+            publishedCompositionCount = 1,
+            parentRagaName = "Dheerasankarabharanam",
+            parentMelakartaNumber = 29,
+        ),
+        CatalogueRagaSummaryDto(
+            sriId,
+            "Sri",
+            publishedCompositionCount = 1,
+            parentRagaName = "Kharaharapriya",
+            parentMelakartaNumber = 22,
+        ),
     )
 
     val composerSummaries = listOf(
@@ -166,6 +181,16 @@ object CatalogueFixtures {
  * Production Android/iOS hosts use [com.sangita.grantha.shared.mobile.network.KtorCatalogueApi].
  */
 class FixtureCatalogueApi : CatalogueApi {
+    override suspend fun getDiscovery(interaction: InteractionContext) =
+        CatalogueDiscoveryDto(
+            feature = CatalogueDiscoveryFeatureDto(
+                selection = CatalogueSelectionDto.CATALOGUE_ORDER,
+                heading = "From the collection",
+                summary = CatalogueFixtures.vatapiSummary.incipit ?: "Explore a composition in this library.",
+                krithi = CatalogueFixtures.vatapiSummary,
+            ),
+        )
+
     override suspend fun searchKrithis(
         query: String?,
         composerId: Uuid?,
@@ -235,8 +260,17 @@ class FixtureCatalogueApi : CatalogueApi {
             publishedCompositionCount = summary.publishedCompositionCount,
             melakartaNumber = summary.melakartaNumber,
             parentRagaName = summary.parentRagaName,
-            arohanam = if (id == CatalogueFixtures.hamsadhvaniId) "S R2 G3 P N3 S" else null,
-            avarohanam = if (id == CatalogueFixtures.hamsadhvaniId) "S N3 P G3 R2 S" else null,
+            parentMelakartaNumber = summary.parentMelakartaNumber,
+            arohanam = if (id == CatalogueFixtures.hamsadhvaniId) {
+                "S R2 G3 P N3 S'"
+            } else {
+                "S R2 M1 P N2 S'"
+            },
+            avarohanam = if (id == CatalogueFixtures.hamsadhvaniId) {
+                "S' N3 P G3 R2 S"
+            } else {
+                "S' N2 P M1 R2 S"
+            },
         )
     }
 

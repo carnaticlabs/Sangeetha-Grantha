@@ -69,15 +69,22 @@ class CatalogueUsageRecorder(
 
         fun routeCategory(path: String): String = when {
             path.contains("/lyrics/") -> "catalogue.lyrics"
+            path.endsWith("/discovery") -> "catalogue.discovery"
             path.startsWith(CatalogueContract.KRITHIS_PATH) && path != CatalogueContract.KRITHIS_PATH ->
                 "catalogue.krithi"
             path == CatalogueContract.KRITHIS_PATH -> "catalogue.krithis"
+            path.startsWith("/v2/catalogue/krithis/") -> "catalogue.krithi"
+            path == "/v2/catalogue/krithis" -> "catalogue.krithis"
             path.startsWith(CatalogueContract.RAGAS_PATH) && path != CatalogueContract.RAGAS_PATH ->
                 "catalogue.raga"
             path.startsWith(CatalogueContract.RAGAS_PATH) -> "catalogue.ragas"
+            path.startsWith("/v2/catalogue/ragas/") -> "catalogue.raga"
+            path.startsWith("/v2/catalogue/ragas") -> "catalogue.ragas"
             path.startsWith(CatalogueContract.COMPOSERS_PATH) && path != CatalogueContract.COMPOSERS_PATH ->
                 "catalogue.composer"
             path.startsWith(CatalogueContract.COMPOSERS_PATH) -> "catalogue.composers"
+            path.startsWith("/v2/catalogue/composers/") -> "catalogue.composer"
+            path.startsWith("/v2/catalogue/composers") -> "catalogue.composers"
             else -> "catalogue.other"
         }
 
@@ -87,6 +94,7 @@ class CatalogueUsageRecorder(
             "catalogue.lyrics" -> "lyrics"
             "catalogue.ragas", "catalogue.raga" -> "raga_directory"
             "catalogue.composers", "catalogue.composer" -> "composer_directory"
+            "catalogue.discovery" -> "discovery"
             else -> "other"
         }
     }

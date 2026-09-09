@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.24.0 |
-| **Last Updated** | 2026-09-06 |
+| **Version** | 1.28.0 |
+| **Last Updated** | 2026-09-09 |
 | **Author** | Sangeetha Grantha Team |
 
 # Conductor Tracks Registry
@@ -143,6 +143,7 @@
 | [TRACK-137](./tracks/TRACK-137-orphan-twin-raga-cleanup.md) | Orphan-Twin Raga Cleanup (residual TRACK-132 duplicates) | Done |
 | [TRACK-138](./tracks/TRACK-138-rasika-mobile-app.md) | Rasika Mobile App — Search, Browse and Read | Plan accepted — Node C |
 | [TRACK-139](./tracks/TRACK-139-retire-corpus-data-fix-migrations.md) | Retire Corpus Data-Fix Migrations | In Progress — V58–V62 retired; five krithis reingested |
+| [TRACK-140](./tracks/TRACK-140-rasika-discovery-experience.md) | Rasika — Discovery and Reading Experience | In progress — Plan accepted |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)

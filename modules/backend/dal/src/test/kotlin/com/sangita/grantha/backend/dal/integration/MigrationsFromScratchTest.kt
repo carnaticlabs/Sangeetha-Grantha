@@ -16,6 +16,16 @@ import org.junit.jupiter.api.Test
 class MigrationsFromScratchTest : IntegrationTestBase() {
 
     @Test
+    fun `new composition database default does not invent musical form`() = runTest {
+        val defaultValue = DatabaseFactory.dbQuery {
+            exec("SELECT column_default FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'krithis' AND column_name = 'musical_form'") {
+                rs -> if (rs.next()) rs.getString(1) else ""
+            }
+        }
+        assertTrue(defaultValue.orEmpty().contains("UNESTABLISHED"), "Database default must preserve unknown classification")
+    }
+
+    @Test
     fun `all versioned migrations applied with no failures`() = runTest {
         val (total, failed) = DatabaseFactory.dbQuery {
             val total = exec(

@@ -56,7 +56,7 @@ test-integration:
 
 # Run frontend tests
 test-frontend:
-	cd modules/frontend/sangita-admin-web && bun test
+	cd modules/frontend/sangita-admin-web && bun run test:unit
 
 # TRACK-138: shared mobile client/presenter tests (JVM)
 test-mobile:
@@ -68,6 +68,9 @@ mobile-android:
 
 # TRACK-138: iOS simulator host. Locally prefers iOS 26.5; CI uses a generic
 # destination (RASIKA_IOS_DESTINATION). Pass a destination as the first argument.
+# TRACK-140 journeys require an explicit device and never fall back:
+#   bash tools/mobile/verify-rasika-journeys.sh android <serial>
+#   bash tools/mobile/verify-rasika-journeys.sh ios <udid>
 mobile-ios:
 	bash tools/mobile/verify-ios.sh
 

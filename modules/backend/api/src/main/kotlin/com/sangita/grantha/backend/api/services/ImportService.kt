@@ -523,7 +523,7 @@ class ImportServiceImpl(
                             incipit = null,
                             incipitNormalized = null,
                             composerId = composerId,
-                            musicalForm = MusicalForm.KRITHI,
+                            musicalForm = MusicalForm.UNESTABLISHED,
                             primaryLanguage = languageCode,
                             primaryRagaId = ragaId,
                             talaId = talaId,

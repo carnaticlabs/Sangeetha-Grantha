@@ -23,7 +23,10 @@ data class ReaderUiState(
     val reader: CatalogueKrithiReaderDto? = null,
     val lyrics: CatalogueLyricsDto? = null,
     val selectedVariantId: Uuid? = null,
+    val pendingVariantId: Uuid? = null,
+    val lastFailedVariantId: Uuid? = null,
     val load: LoadState = LoadState.Idle,
+    val lyricsLoad: LoadState = LoadState.Idle,
 )
 
 class KrithiReaderPresenter(
@@ -42,7 +45,9 @@ class KrithiReaderPresenter(
         job?.cancel()
         val interaction = session.beginInteraction()
         job = scope.launch {
-            _state.update { ReaderUiState(krithiId = krithiId, load = LoadState.Loading) }
+            _state.update {
+                ReaderUiState(krithiId = krithiId, load = LoadState.Loading, lyricsLoad = LoadState.Idle)
+            }
             try {
                 val reader = catalogue.getKrithi(krithiId, interaction)
                 if (requested != generation) return@launch
@@ -59,33 +64,70 @@ class KrithiReaderPresenter(
                 throw cancelled
             } catch (failure: CatalogueFailure) {
                 if (requested != generation) return@launch
-                _state.update { it.copy(load = LoadState.Error(failure.userMessage(), retryable = failure !is CatalogueFailure.NotFound)) }
+                _state.update {
+                    it.copy(
+                        load = LoadState.Error(
+                            failure.userMessage(),
+                            retryable = failure !is CatalogueFailure.NotFound,
+                        ),
+                    )
+                }
             }
         }
     }
 
     fun selectVariant(variantId: Uuid) {
-        val krithiId = _state.value.krithiId ?: return
+        val snapshot = _state.value
+        val krithiId = snapshot.krithiId ?: return
+        if (variantId == snapshot.selectedVariantId && snapshot.lyricsLoad !is LoadState.Error) return
         val requested = ++generation
         job?.cancel()
         val interaction = session.beginInteraction()
         job = scope.launch {
-            _state.update { it.copy(selectedVariantId = variantId, load = LoadState.Loading) }
+            _state.update {
+                it.copy(
+                    pendingVariantId = variantId,
+                    lastFailedVariantId = null,
+                    lyricsLoad = LoadState.Loading,
+                )
+            }
             try {
                 val lyrics = catalogue.getLyrics(krithiId, variantId, interaction)
                 if (requested != generation) return@launch
-                _state.update { it.copy(lyrics = lyrics, load = LoadState.Idle) }
+                _state.update {
+                    it.copy(
+                        lyrics = lyrics,
+                        selectedVariantId = variantId,
+                        pendingVariantId = null,
+                        lastFailedVariantId = null,
+                        lyricsLoad = LoadState.Idle,
+                        load = LoadState.Idle,
+                    )
+                }
             } catch (cancelled: kotlinx.coroutines.CancellationException) {
                 throw cancelled
             } catch (failure: CatalogueFailure) {
                 if (requested != generation) return@launch
-                _state.update { it.copy(load = LoadState.Error(failure.userMessage())) }
+                _state.update {
+                    it.copy(
+                        pendingVariantId = null,
+                        lastFailedVariantId = variantId,
+                        lyricsLoad = LoadState.Error(
+                            failure.userMessage(),
+                            retryable = failure !is CatalogueFailure.NotFound,
+                        ),
+                    )
+                }
             }
         }
     }
 
     fun retry() {
-        val id = _state.value.krithiId ?: return
+        val snapshot = _state.value
+        if (snapshot.load is LoadState.Idle && snapshot.lyricsLoad is LoadState.Error) {
+            snapshot.lastFailedVariantId?.let { selectVariant(it); return }
+        }
+        val id = snapshot.krithiId ?: return
         open(id)
     }
 

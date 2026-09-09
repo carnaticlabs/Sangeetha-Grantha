@@ -23,6 +23,7 @@ object CatalogueParameters {
 
     fun parseKrithiSearch(params: Parameters): CatalogueParseResult<CatalogueListQuery> {
         unknown(params, krithiSearchParams)?.let { return it }
+        repeated(params)?.let { return it }
         val query = when (val parsed = parseQuery(params["query"])) {
             is OptionalString.Missing -> null
             is OptionalString.Present -> parsed.value
@@ -57,6 +58,7 @@ object CatalogueParameters {
 
     fun parseDirectory(params: Parameters): CatalogueParseResult<CatalogueListQuery> {
         unknown(params, directoryParams)?.let { return it }
+        repeated(params)?.let { return it }
         val query = when (val parsed = parseQuery(params["query"])) {
             is OptionalString.Missing -> null
             is OptionalString.Present -> parsed.value
@@ -92,7 +94,14 @@ object CatalogueParameters {
 
     fun rejectQueryParameters(params: Parameters): CatalogueParseResult<Unit> {
         unknown(params, emptySet())?.let { return it }
+        repeated(params)?.let { return it }
         return CatalogueParseResult.Ok(Unit)
+    }
+
+    private fun repeated(params: Parameters): CatalogueParseResult.Invalid? {
+        val keys = params.entries().filter { it.value.size > 1 }.map { it.key }.sorted()
+        if (keys.isEmpty()) return null
+        return CatalogueParseResult.Invalid("Repeated parameter: ${keys.joinToString()}")
     }
 
     private fun unknown(params: Parameters, allowed: Set<String>): CatalogueParseResult.Invalid? {

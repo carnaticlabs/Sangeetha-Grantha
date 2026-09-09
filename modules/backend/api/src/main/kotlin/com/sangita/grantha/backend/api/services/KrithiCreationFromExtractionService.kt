@@ -110,6 +110,7 @@ class KrithiCreationFromExtractionService(
 
         // ── 5. Map enums ────────────────────────────────────────────────────
         val musicalForm = when (extraction.musicalForm) {
+            CanonicalMusicalForm.UNESTABLISHED -> MusicalForm.UNESTABLISHED
             CanonicalMusicalForm.KRITHI -> MusicalForm.KRITHI
             CanonicalMusicalForm.VARNAM -> MusicalForm.VARNAM
             CanonicalMusicalForm.SWARAJATHI -> MusicalForm.SWARAJATHI

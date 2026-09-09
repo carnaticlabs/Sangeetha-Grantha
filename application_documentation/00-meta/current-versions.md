@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.5.2 |
-| **Last Updated** | 2026-09-08 |
+| **Version** | 1.5.3 |
+| **Last Updated** | 2026-09-09 |
 | **Author** | Sangeetha Grantha Team |
 
 # Current Technology Versions
@@ -82,6 +82,8 @@
 | Library | Version | Purpose |
 |---------|---------|---------|
 | MockK | `1.14.11` | Kotlin mocking framework |
+| AndroidX Test (core/runner) | `1.7.0` | Rasika Android instrumentation (TRACK-140 N01) |
+| AndroidX Test JUnit | `1.3.0` | `androidx.test.ext:junit` for `RasikaJourneyTest` |
 
 ---
 
@@ -209,7 +211,7 @@ Shared integration-test infrastructure (`IntegrationTestBase`, `SangitaPostgres`
 
 | Date | Change |
 |------|--------|
-| 2026-09-08 | TRACK-108: PostgreSQL Docker image `postgres:18.3-alpine` → `pgvector/pgvector:pg18` (dev Compose, Testcontainers, CI Flyway migrate-from-scratch). |
+| 2026-09-09 | TRACK-140: recorded AndroidX Test core/runner `1.7.0` and ext-junit `1.3.0` for Rasika instrumentation. |
 | 2026-09-05 | TRACK-138: recorded JetBrains Lifecycle KMP `2.11.0` (CMP 1.12 companion) for Rasika mobile. |
 | 2026-08-29 | Bun 1.3.7→1.4.0 (mise pin, CI `oven-sh/setup-bun` + fallback installer, monorepo-orchestration skill). Frontend `bun install` + typecheck + build green on 1.4.0. |
 | 2026-07-10 | TRACK-122 (Batch 3a): Kotlin 2.3.0→2.4.0, Compose Multiplatform 1.10.0→1.11.1. CMP 1.11 fallout: `compose.*` plugin accessors deprecated → explicit catalog deps (material3 on its own `1.9.0` train, icons-extended frozen `1.7.3`); iosX64 no longer published by CMP → target dropped from `:shared:presentation`; `-Xexplicit-backing-fields` now in-language (flag removed); Kotlin/Native `sourceInfoType=none`→`noop`. Backend + KMP builds and full test suites green. |

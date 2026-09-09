@@ -12,6 +12,7 @@ export enum ViewState {
 }
 
 export enum MusicalForm {
+  UNESTABLISHED = 'UNESTABLISHED',
   KRITHI = 'KRITHI',
   VARNAM = 'VARNAM',
   SWARAJATHI = 'SWARAJATHI',

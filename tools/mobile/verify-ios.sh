@@ -84,6 +84,6 @@ fi
 
 xcodebuild -project "$PROJECT" -scheme "$SCHEME" -configuration Debug \
   -destination "$DEST" \
-  -derivedDataPath "$ROOT/build/track-138/ios-derived" \
-  "${SIGNING[@]}" \
+  -derivedDataPath "${RASIKA_IOS_DERIVED_DATA:-$ROOT/build/track-140/ios-derived}" \
+  ${SIGNING[@]+"${SIGNING[@]}"} \
   build

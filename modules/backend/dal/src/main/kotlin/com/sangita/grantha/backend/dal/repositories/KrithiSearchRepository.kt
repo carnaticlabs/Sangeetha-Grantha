@@ -1,6 +1,7 @@
 package com.sangita.grantha.backend.dal.repositories
 
 import com.sangita.grantha.backend.dal.DatabaseFactory
+import com.sangita.grantha.backend.dal.enums.MusicalForm
 import com.sangita.grantha.backend.dal.enums.WorkflowState
 import com.sangita.grantha.backend.dal.models.toKrithiDto
 import com.sangita.grantha.backend.dal.support.toKotlinUuid
@@ -81,6 +82,7 @@ class KrithiSearchRepository {
         page: Int,
         pageSize: Int,
         publishedOnly: Boolean = true,
+        excludeUnestablished: Boolean = false,
     ): KrithiSearchResult = DatabaseFactory.dbQuery {
         val safePage = page.coerceAtLeast(0)
         val safeSize = pageSize.coerceIn(MIN_PAGE_SIZE, MAX_PAGE_SIZE)
@@ -101,6 +103,9 @@ class KrithiSearchRepository {
 
         if (publishedOnly) {
             idQuery.andWhere { KrithisTable.workflowState eq WorkflowState.PUBLISHED }
+        }
+        if (excludeUnestablished) {
+            idQuery.andWhere { KrithisTable.musicalForm neq MusicalForm.UNESTABLISHED }
         }
 
         filters.query?.trim()?.takeIf { it.isNotEmpty() }?.let { query ->

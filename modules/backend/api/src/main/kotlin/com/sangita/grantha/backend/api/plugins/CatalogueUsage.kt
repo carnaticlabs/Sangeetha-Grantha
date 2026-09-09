@@ -30,7 +30,7 @@ fun Application.configureCatalogueUsage() {
 fun Application.installCatalogueUsage(recorder: CatalogueUsageRecorder) {
     intercept(ApplicationCallPipeline.Monitoring) {
         val path = call.request.path()
-        if (!path.startsWith("/v1/catalogue")) {
+        if (!path.startsWith("/v1/catalogue") && !path.startsWith("/v2/catalogue")) {
             return@intercept
         }
         val started = System.nanoTime()

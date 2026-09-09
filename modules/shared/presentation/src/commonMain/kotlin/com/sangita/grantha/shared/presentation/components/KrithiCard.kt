@@ -41,7 +41,6 @@ fun KrithiCard(
 ) {
     val colors = RasikaTheme.colors
     val ragas = summary.ragas.sortedBy { it.orderIndex }
-    val ragaShort = ragas.firstOrNull()?.name?.uppercase()
     val sub = buildString {
         append(summary.composer.name)
         summary.tala?.let { append("  ·  "); append(it.name) }
@@ -61,14 +60,9 @@ fun KrithiCard(
                         color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.weight(1f),
                     )
-                    if (ragaShort != null) {
-                        Text(
-                            ragaShort,
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.secondary,
-                            modifier = Modifier.padding(start = RasikaTokens.xs, top = 2.dp),
-                        )
-                    }
+                }
+                if (ragas.isNotEmpty()) {
+                    RagaSequence(ragas, modifier = Modifier.padding(top = 3.dp))
                 }
                 Text(
                     sub,

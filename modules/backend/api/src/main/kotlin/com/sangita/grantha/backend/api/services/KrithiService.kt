@@ -30,7 +30,11 @@ interface IKrithiService {
     /**
      * Search krithis using filters and pagination, optionally restricting to published items.
      */
-    suspend fun search(request: KrithiSearchRequest, publishedOnly: Boolean = true): KrithiSearchResult
+    suspend fun search(
+        request: KrithiSearchRequest,
+        publishedOnly: Boolean = true,
+        excludeUnestablished: Boolean = false,
+    ): KrithiSearchResult
 
     /**
      * Fetch a single krithi by its ID.
@@ -104,7 +108,11 @@ interface IKrithiService {
 }
 
 class KrithiServiceImpl(private val dal: SangitaDal) : IKrithiService {
-    override suspend fun search(request: KrithiSearchRequest, publishedOnly: Boolean): KrithiSearchResult {
+    override suspend fun search(
+        request: KrithiSearchRequest,
+        publishedOnly: Boolean,
+        excludeUnestablished: Boolean,
+    ): KrithiSearchResult {
         val filters = KrithiSearchFilters(
             query = request.query,
             composerId = request.composerId.toJavaUuidOrNull("composerId"),
@@ -115,7 +123,13 @@ class KrithiServiceImpl(private val dal: SangitaDal) : IKrithiService {
             lyric = request.lyric,
             primaryLanguage = request.language?.let { LanguageCode.valueOf(it.name) }
         )
-        return dal.krithiSearch.search(filters, request.page, request.pageSize, publishedOnly = publishedOnly)
+        return dal.krithiSearch.search(
+            filters,
+            request.page,
+            request.pageSize,
+            publishedOnly = publishedOnly,
+            excludeUnestablished = excludeUnestablished,
+        )
     }
 
     override suspend fun getKrithi(id: Uuid): KrithiDto? = dal.krithis.findById(id)

@@ -7,7 +7,7 @@ const initialState: KrithiEditorState = {
         title: '',
         status: 'DRAFT',
         primaryLanguage: 'te',
-        musicalForm: MusicalForm.KRITHI,
+        musicalForm: MusicalForm.UNESTABLISHED,
         ragas: [],
         sections: [],
         lyricVariants: [],
