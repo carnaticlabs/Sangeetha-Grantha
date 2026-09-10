@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | In progress |
-| **Version** | 0.3.0 |
-| **Last Updated** | 2026-09-09 |
+| **Version** | 0.4.0 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
 
 # TRACK-140 implementation evidence
@@ -93,3 +93,13 @@ Variant swap keeps the previous reading labelled until the new lyrics succeed; T
 |:---|:---|
 | `make test-mobile` | PASS |
 | Device reader journeys | Not run — N01/GA |
+
+## R18 extended journeys — paging, bookmark, script, a11y settings
+
+Native journeys now cover: empty-query Load more against a 33-row paging fixture; bookmark save → Library → restart → remove; Latin/Devanagari source switch; 200% font scale / AccessibilityXXL; animator-scale 0 / Reduce Motion. TalkBack and VoiceOver remain manual: the new tests assert the labelled semantics tree a screen reader consumes, which is necessary but is not a screen-reader pass.
+
+| Check | Result |
+|:---|:---|
+| `make test-mobile` | PASS |
+| `ExplorePagingPresenterTest` | JVM paging across two pages |
+| Android `RasikaR18ExtendedJourneyTest` / iOS `RasikaR18ExtendedJourneyTests` | Written; device runtime still N01/GA |

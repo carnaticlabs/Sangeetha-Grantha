@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | In progress — Plan accepted |
-| **Version** | 1.7.0 |
-| **Last Updated** | 2026-09-09 |
+| **Version** | 1.7.1 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
 
 # Track: Rasika — Discovery and Reading Experience
@@ -463,7 +463,7 @@ Implementation is authorized. States below reflect observed work; planning check
 | U01 | RUNNING | Cursor / 1 | Four-tab Home shell and appearance radios; V3 pass. Native appearance/preview still open. |
 | U02 | DONE | Cursor / 1 | V3: Explore categories, draft/apply filters, paging, entity pages, parent-mela captions. `make test-mobile` PASS. |
 | U03 | DONE | Cursor / 1 | V3: atomic variant swap, M1 section binding, M2–M4 labels, wrapping header. `make test-mobile` PASS. |
-| N01 | RUNNING | Cursor / 2 | Journey script + Android/iOS test targets compile; device runtime not executed. |
+| N01 | RUNNING | Cursor / 3 | Journey script + Android/iOS test targets; extended R18 journeys written (paging, bookmark, script, large-text, reduced-motion). Device runtime not executed. TalkBack/VoiceOver remain manual. |
 | GA | PENDING | — | Depends on B01, U02, U03, N01 |
 | B02 | PENDING | — | Depends on GA |
 | U04 | PENDING | — | Depends on GA |
@@ -478,6 +478,8 @@ Implementation is authorized. States below reflect observed work; planning check
 
 
 ## Progress Log
+
+- **2026-09-10 — R18 residuals:** Added a 31-row paging fixture for native Explore Load more; bookmark and Latin/Devanagari script journeys; large-text and reduced-motion launches via device settings. TalkBack/VoiceOver stay a manual pass; labelled-control checks were expanded.
 
 - **2026-09-09 — product implementation:** Completed S01, B01 and D01 proofs (`make test`, `make test-integration`, `make test-frontend`, worker pytest, `make test-mobile`). Added the N01 journey harness (explicit device IDs only) and U01 Home / four-tab shell. U02 Explore/entity pages and U03 source-faithful reader compiled and passed `make test-mobile`. User database was not migrated. Device journeys remain open.
 
