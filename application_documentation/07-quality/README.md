@@ -1,49 +1,55 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.2.0 |
-| **Last Updated** | 2026-07-12 |
+| **Version** | 1.3.0 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Navigation |
 
-# 07 Quality
+# Quality and verification
 
 ---
 
-## Contents
+Choose checks by the behavior changed. Compilation, isolated scenario tests, live-corpus audits, browser journeys, and native accessibility review answer different questions. Record their results separately.
 
-### Integration Testing Architecture
-- [integration-tests-approach.md](./integration-tests-approach.md) - Testcontainers + Flyway substrate, CI activation, test taxonomy (implemented)
+## Run the matching checks
 
-### API Coverage
-- [API_Coverage_Report.md](./API_Coverage_Report.md)
-- [api-coverage-implementation-plan.md](./api-coverage-implementation-plan.md)
-- [frontend-backend-api-coverage-report.md](./frontend-backend-api-coverage-report.md)
+| Scope | Command | Requirements / evidence |
+|:---|:---|:---|
+| Backend fast unit tests | `./gradlew :modules:backend:api:unitTest` | No database; CI's fast unit lane |
+| Backend complete tests | `make test` | API and DAL tests, including Testcontainers; Docker required |
+| Backend integration | `make test-integration` | Tagged API/DAL scenarios against real PostgreSQL + Flyway |
+| Admin components | `make test-frontend` | Vitest non-watch run |
+| Admin types/build | Module `bun run typecheck` and `bun run build` | Separate checks; Vite build alone is not typechecking |
+| Shared mobile | `make test-mobile` | Client/storage/presenter JVM tests |
+| Android build | `make mobile-android` | Debug APK; CI also compiles instrumentation tests |
+| iOS build | `make mobile-ios` | Simulator host build; not device acceptance |
+| Worker | `uv run ruff check .`, `ruff format --check .`, `mypy .`, `pytest` | Worker directory; frozen dev dependencies; Docker for integration cases |
+| Raga constraints | `make raga-lakshana-checks` | Migrated target database |
+| Repository raga guard | `make mint-guard` | Static SQL-insert boundary check |
+| Docs | `make check-docs` | Relative file-link validation |
+| Agent configuration | `make agent-evals` | Deterministic repository-rule checks |
 
-### E2E Testing
-- [frontend-e2e-scaffolding-implementation.md](./frontend-e2e-scaffolding-implementation.md) - Playwright E2E test implementation
+[CI](../../.github/workflows/ci.yml) is the executable gate definition. Dependency versions belong in [Current Versions](../00-meta/current-versions.md).
 
-### Implementation Summaries
-- [bulk-import-fixes-implementation-plan.md](./bulk-import-fixes-implementation-plan.md)
-- [bulk-import-implementation-review-claude.md](../archive/quality-reports/bulk-import-implementation-review-claude.md)
-- [bulk-import-tracks-technical-review-2026-01-23.md](../archive/quality-reports/bulk-import-tracks-technical-review-2026-01-23.md)
-- [implementation-summary-2026-01-23.md](../archive/quality-reports/implementation-summary-2026-01-23.md)
-- [track-008-013-implementation-summary-2026-01-23.md](../archive/quality-reports/track-008-013-implementation-summary-2026-01-23.md)
-- [track-010-implementation-summary-2026-01-23.md](../archive/quality-reports/track-010-implementation-summary-2026-01-23.md)
-- [track-034-implementation-summary.md](./track-034-implementation-summary.md)
-- [track-036-implementation-summary.md](./track-036-implementation-summary.md)
+## Verify complete user/data journeys
 
-### Data Quality & Remediation
-- [remediation-implementation-plan-2026-02.md](./remediation-implementation-plan-2026-02.md) - Remediation & sourcing logic plan (Feb 2026)
+- **Import:** source → extraction → review → correct composition/variants/sections → provenance/audit → intended public visibility.
+- **Catalogue:** published-only visibility, V1/V2 form boundary, invalid query handling, empty results, reader/variant ownership.
+- **Search:** missing profile, compatible/incompatible profile, current content hashes, lexical/vector behavior, audience visibility.
+- **Curation:** reference identity collisions, unknown/ambiguous raga decisions, ordered raga junctions, accepted revisions.
+- **Rasika:** submitted query, filters, entity pages, paging recovery, source switch, bookmark restart, large text, reduced motion.
 
-### Reviews (Archived)
-- [csv-import-strategy-review-codex.md](../archive/quality-reports/csv-import-strategy-review-codex.md)
-- [csv-import-strategy-implementation-review-goose.md](../archive/quality-reports/csv-import-strategy-implementation-review-goose.md)
+Use [post-import acceptance](./qa/test-plan.md), [E2E testing](./qa/e2e-testing.md), and [mobile verification](../05-frontend/mobile/README.md).
 
-### Test Remediation
-- [broken-tests-remediation.md](./broken-tests-remediation.md)
+## Read evidence correctly
 
-### Subdirectories
-- [qa/](./qa/) - Testing guides, checklists, and verification reports
-- [reports/](./reports/) - Code reviews, refactor checklists, sourcing strategy reports, and test results
-- [results/](./results/) - Quality audit results
-  - [krithi-structural-audit-2026-02.md](./results/krithi-structural-audit-2026-02.md) - Structural consistency audit results (Feb 2026)
+A historical “PASS” is proof for the recorded revision/environment/date. It is not a live deployment assessment. A successful build does not prove a browser or native journey; a passing parser fixture does not prove every source in the corpus is correct.
+
+Native runtime and TalkBack/VoiceOver acceptance remain open for TRACK-140. Some sourcing quality endpoints still return placeholders, so empty charts are not a zero-issue audit.
+
+[Integration testing](./integration-tests-approach.md) describes the implemented substrate. [Reports](./reports/README.md) and [results](./results/README.md) preserve prior observations. [Implementation reports](../10-implementations/README.md) link features to dated evidence.
+
+---
+
+[Section index](./../README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

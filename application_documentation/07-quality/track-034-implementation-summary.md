@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Evidence record |
 
 # Implementation Summary: TRACK-034 Bulk Import & Section Parsing Fixes
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current quality checks](./README.md).
 
 ## 1. Executive Summary
 Successfully resolved critical parsing failures in the bulk import pipeline that resulted in duplicate sections and missing `krithi_lyric_sections` for complex, multi-language compositions. The fix involved hardening the `TextBlocker` regex, preventing duplicate section collection across language variants, and remediating the backend service test suite to ensure stability.
@@ -45,3 +51,7 @@ Successfully resolved critical parsing failures in the bulk import pipeline that
 ## 5. References
 - Ref: `application_documentation/04-database/schema.md`
 - Ref: `conductor/tracks/TRACK-034-fix-text-blocker-parsing.md`
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

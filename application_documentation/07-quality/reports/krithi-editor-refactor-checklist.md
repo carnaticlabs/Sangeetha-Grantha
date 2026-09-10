@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Evidence record |
 
 # KrithiEditor.tsx Refactoring Checklist
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current quality checks](./../README.md).
 
 **Related Review:** [krithi-editor-code-review.md](./krithi-editor-code-review.md)
 **Target File:** `modules/frontend/sangita-admin-web/src/pages/KrithiEditor.tsx`
@@ -299,3 +305,7 @@ For each checklist item:
 - P1.2 (TypeScript) should be done alongside P1.1
 - Consider creating a feature branch: `refactor/krithi-editor-cleanup`
 - Break into multiple PRs if the change becomes too large
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

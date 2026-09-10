@@ -1,19 +1,26 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Navigation |
 
-# QA
+# Acceptance and test guides
 
 ---
 
-## Contents
+Use [Test plan](./test-plan.md) after imports/repairs and [E2E testing](./e2e-testing.md) for current browser setup. The [quality index](../README.md) maps commands to layers and distinguishes native build evidence from device acceptance.
 
-- [e2e-testing.md](./e2e-testing.md) - End-to-end testing guide with Playwright
-- [mobile-upload-test-checklist.md](./mobile-upload-test-checklist.md) - Mobile upload test checklist
-- [performance-testing.md](./performance-testing.md) - Performance and load testing guide
-- [test-plan.md](./test-plan.md) - Comprehensive test plan with scenarios and coverage
-- [testing-readme.md](./testing-readme.md) - Testing overview
-- [verification-report.md](./verification-report.md) - Verification reports
+## In this section
+
+- [Browser end-to-end tests](./e2e-testing.md)
+- [Mobile File Upload Testing Checklist](./mobile-upload-test-checklist.md)
+- [Performance Testing Guide](./performance-testing.md)
+- [Import and catalogue acceptance checklist](./test-plan.md)
+- [Mobile File Upload Testing - Quick Start](./testing-readme.md)
+- [Verification Report – Canonical](./verification-report.md)
+
+---
+
+[Section index](./../README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

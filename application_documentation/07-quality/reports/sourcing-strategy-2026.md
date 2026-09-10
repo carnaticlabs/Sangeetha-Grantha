@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.1 |
-| **Last Updated** | 2026-02-19 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Evidence record |
 
 # Krithi Data Sourcing & Quality — Progress Report
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current quality checks](./../README.md).
 
 > [!NOTE]
 > Current phase: **Phase 0 — Foundation & Quality Baseline** (In Progress)
@@ -71,3 +77,7 @@
 4. Prototype: Extract 10 Dikshitar Krithis from guruguha.org mdskt.pdf using CLI.
 5. Build Kotlin-side integration (ExtractionQueueRepository, ExtractionQueueService, ExtractionResultProcessor).
 6. Validate three-container stack: postgres + krithi-extract-enrich-worker + Kotlin backend.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

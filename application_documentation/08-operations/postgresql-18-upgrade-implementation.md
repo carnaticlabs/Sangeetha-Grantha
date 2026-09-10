@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-02-28 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Design reference |
 
 # PostgreSQL 18 Upgrade Implementation Summary
+
+---
+
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [current operations guides](./README.md) for implemented behavior and current operating steps.
 
 ## Purpose
 This document summarizes the changes made to upgrade the project's PostgreSQL database from version 15 to 18.3 across all environments (local, staging, production), addressing TRACK-072.
@@ -31,3 +37,7 @@ This document summarizes the changes made to upgrade the project's PostgreSQL da
 | `conductor/tracks.md` | Registered TRACK-072 |
 
 Ref: application_documentation/08-operations/postgresql-18-upgrade-implementation.md
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

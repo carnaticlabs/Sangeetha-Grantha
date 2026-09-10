@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Design reference |
 
 # Mobile File Upload Testing - Quick Start
+
+---
+
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [current quality checks](./../README.md) for implemented behavior and current operating steps.
 
 
 ---
@@ -41,27 +47,27 @@ TODO: Update this section.
 
 TODO: Update this section.
 
-# 1. Setup
+## 1. Setup
 
 TODO: Update this document for Sangita Grantha.
 
-# 2. Verify
+## 2. Verify
 
 TODO: Update this document for Sangita Grantha.
 
-# 3. Start backend (in separate terminal)
+## 3. Start backend (in separate terminal)
 
 TODO: Update this document for Sangita Grantha.
 
-# 4. Quick test
+## 4. Quick test
 
 TODO: Update this document for Sangita Grantha.
 
-# 5. Deploy Android
+## 5. Deploy Android
 
 TODO: Update this document for Sangita Grantha.
 
-# 6. Deploy iOS
+## 6. Deploy iOS
 
 TODO: Update this document for Sangita Grantha.
 
@@ -156,3 +162,7 @@ TODO: Update this section.
 ## 🎉 Ready to Start?
 
 TODO: Update this section.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

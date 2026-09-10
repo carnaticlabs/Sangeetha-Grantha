@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Evidence record |
 
 # Data Quality Audit Results (Interim) - Feb 2026
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current quality checks](./../README.md).
 
 ## 1. Executive Summary
 The initial audit phase has identified significant structural inconsistencies in the Krithi repertoire. While the musicological hypothesis states that Krithi structure should be invariant across languages, the database contains variants with widely diverging section counts.
@@ -56,3 +62,7 @@ To ensure structural integrity, the `ImportService` should adopt a "Composer-to-
 1. **Pilot Fix**: Apply normalization logic to high-priority Dikshitar Krithis (e.g., Navavarnas).
 2. **Metadata Purge**: Automated script to remove "Updated on...", "Meaning:", and "Word-by-word" blocks from the `text` field.
 3. **Re-Extraction**: Re-run `TextBlocker` with the enhanced strategy for variants flagged with low section counts.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

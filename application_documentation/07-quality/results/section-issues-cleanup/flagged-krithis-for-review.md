@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-07-18 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Evidence record |
 
 # Flagged Krithis — Section Issues NOT auto-fixed (for review)
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current quality checks](./../../README.md).
 
 ---
 
@@ -241,3 +247,7 @@ Generated 2026-07-16. These are the remaining Curator "Section Issues" that the 
 | Tyagaraja | rAma sItA rAma | en | 10 | 6 | `4f90dd54-c76e-4cce-88f8-1c460cdb3566` |
 | Tyagaraja | ramA ramaNa bhAramA | ta | 5 | 2 | `64e3ccdf-ec93-422b-969c-6ccfd2f3e43c` |
 | Tyagaraja | ramA ramaNa rArA | ta | 8 | 2 | `72407711-358e-4764-a291-15c7fbbb90ad` |
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../../README.md) · [Feature status](./../../../01-requirements/features/README.md)

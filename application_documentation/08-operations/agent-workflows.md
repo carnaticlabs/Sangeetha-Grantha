@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Design reference |
 
 # Agent Workflows
+
+---
+
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [current operations guides](./README.md) for implemented behavior and current operating steps.
 
 This document describes the automated workflows available in `.agents/workflows/` for use with Claude Code and other AI assistants.
 
@@ -54,3 +60,7 @@ Workflows can be invoked by:
 - [Commit Policy](../../.agents/skills/commit-policy/SKILL.md)
 - [Change Mapper](../../.agents/skills/change-mapper/SKILL.md)
 - [CLI Reference](./cli-docs-command.md)
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

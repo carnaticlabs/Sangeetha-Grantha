@@ -1,48 +1,28 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Version** | 1.3.0 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Navigation |
 
-# 08 Operations
-
+# Operations
 
 ---
 
+Use [Configuration](./config.md), [Monitoring](./monitoring.md), and [Runbooks](./runbooks/README.md) for the local stack. [Deployment readiness](./deployment.md) separates available artifacts from cloud/store rollout work.
 
-## Contents
+## In this section
 
-- [agent-workflows.md](./agent-workflows.md) - AI agent workflow documentation
-- [cli-docs-command.md](./cli-docs-command.md) - Sangita CLI documentation commands
-- [config.md](./config.md) - Configuration management
-- [deployment.md](./deployment.md) - Deployment procedures for all environments
-- [monitoring.md](./monitoring.md) - Monitoring, metrics, and alerting
-- [query-optimization-plan.md](./query-optimization-plan.md) - Database query optimization plan
-- [runbooks/](./runbooks/) - Operational runbooks
-  - [database-runbook.md](./runbooks/database-runbook.md) - Database operations and disaster recovery
-  - [incident-response.md](./runbooks/incident-response.md) - Incident response procedures
-  - [steel-thread-runbook.md](./runbooks/steel-thread-runbook.md) - Steel thread test execution
+- [Agent Workflows](./agent-workflows.md)
+- [Sangita CLI – Docs Command (archived)](./cli-docs-command.md)
+- [Runtime configuration](./config.md)
+- [Builds and deployment readiness](./deployment.md)
+- [Runtime diagnostics and monitoring](./monitoring.md)
+- [PostgreSQL 18 Upgrade Implementation Summary](./postgresql-18-upgrade-implementation.md)
+- [Bulk Import Query Optimization Plan](./query-optimization-plan.md)
+- [Operational Runbooks](./runbooks/README.md)
 
-## PDF Extraction Service Operations
+---
 
-The Python PDF extraction service runs as a Docker container alongside PostgreSQL. Key operational commands:
-
-```bash
-# Start extraction service (with database)
-sangita-cli extraction start --with-db
-
-# Check extraction queue status
-sangita-cli extraction status
-
-# View extraction service logs
-sangita-cli extraction logs
-
-# Stop extraction service
-sangita-cli extraction stop
-
-# Docker Compose (direct)
-docker compose --profile extraction up -d
-```
-
-For architecture details, see [Backend System Design §5.8](../02-architecture/backend-system-design.md) and [Krithi Data Sourcing Strategy §8](../01-requirements/krithi-data-sourcing/quality-strategy.md#8-technology-decisions--containerised-deployment).
+[Section index](./../README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)
