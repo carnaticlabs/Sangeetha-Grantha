@@ -61,8 +61,6 @@
 | Logback | `1.6.3` | Logging framework |
 | Logstash Encoder | `9.0` | JSON log formatting |
 | Commons CSV | `1.14.1` | CSV parsing |
-| Jsoup | `1.23.2` | HTML parsing |
-| Caffeine | `3.2.4` | In-memory caching |
 | dotenv-kotlin | `6.5.1` | Environment variable loading |
 
 ### Security & Auth
@@ -214,7 +212,7 @@ Shared integration-test infrastructure (`IntegrationTestBase`, `SangitaPostgres`
 
 | Date | Change |
 |------|--------|
-| 2026-09-10 | TRACK-142: Kotlin 2.4.10→2.4.20, React 19.2.8→19.3.0, AGP 9.3.2→9.4.0, Flyway 12.11.0→13.5.0, Logback 1.5.38→1.6.3 + encoder 9.0, datetime 0.7.1→0.8.0, Vitest 4.1.11→5.0.0, jsdom 26→30, jest-dom 6→7, Bun 1.4.0→1.4.2, plus JVM/frontend/Python patch lines. Removed unused frontend `@google/genai` (LLM stays server-side). Rasika `BackHandler` → `NavigationEventHandler` (`navigationevent-compose` 1.1.0). TypeScript 7 / CMP 1.13-alpha / serialization 1.12-RC / Gradle 9.8-rc deferred. |
+| 2026-09-10 | TRACK-142: Kotlin 2.4.10→2.4.20, React 19.2.8→19.3.0, AGP 9.3.2→9.4.0, Flyway 12.11.0→13.5.0, Logback 1.5.38→1.6.3 + encoder 9.0, datetime 0.7.1→0.8.0, Vitest 4.1.11→5.0.0, jsdom 26→30, jest-dom 6→7, Bun 1.4.0→1.4.2, plus JVM/frontend/Python patch lines. Removed unused frontend `@google/genai` (LLM stays server-side). Rasika `BackHandler` → `NavigationEventHandler` (`navigationevent-compose` 1.1.0). Retired unused Kotlin lyric scrape path (`KrithiStructureParser`, Jsoup, Caffeine). TypeScript 7 / CMP 1.13-alpha / serialization 1.12-RC / Gradle 9.8-rc deferred. |
 | 2026-09-09 | TRACK-140: recorded AndroidX Test core/runner `1.7.0` and ext-junit `1.3.0` for Rasika instrumentation. |
 | 2026-09-05 | TRACK-138: recorded JetBrains Lifecycle KMP `2.11.0` (CMP 1.12 companion) for Rasika mobile. |
 | 2026-08-29 | Bun 1.3.7→1.4.0 (mise pin, CI `oven-sh/setup-bun` + fallback installer, monorepo-orchestration skill). Frontend `bun install` + typecheck + build green on 1.4.0. |

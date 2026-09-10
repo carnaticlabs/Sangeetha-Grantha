@@ -28,8 +28,6 @@ import com.sangita.grantha.backend.api.services.QualityScoringServiceImpl
 import com.sangita.grantha.backend.api.services.ReferenceDataServiceImpl
 import com.sangita.grantha.backend.api.services.TransliterationServiceImpl
 import com.sangita.grantha.backend.api.services.UserManagementService
-import com.sangita.grantha.backend.api.services.GeocodingService
-import com.sangita.grantha.backend.api.services.TempleScrapingService
 import com.sangita.grantha.backend.api.services.bulkimport.BulkImportWorkerServiceImpl
 import com.sangita.grantha.backend.api.services.bulkimport.IBulkImportWorker
 import com.sangita.grantha.backend.api.services.IExtractionWorker
@@ -65,8 +63,6 @@ fun appModule(env: ApiEnvironment, metricsRegistry: PrometheusMeterRegistry) = m
         )
     }
     single<ITransliterator> { TransliterationServiceImpl(get()) }
-    single { GeocodingService(get()) }
-    single { TempleScrapingService(get(), get(), get()) }
     single { NameNormalizationService() }
     single<IEntityResolver> { EntityResolutionServiceImpl(get(), get()) }
     single { DeduplicationService(get(), get()) }

@@ -13,11 +13,10 @@ The bulk import system has tests at multiple layers:
 | Layer | Test Files | Purpose |
 |:---|:---|:---|
 | Backend Unit | `ImportServiceTest.kt` | Core import logic |
-| Scraping | `WebScrapingServiceTest.kt`, `TempleScrapingServiceTest.kt` | Web scraping |
-| Text Processing | `TextBlockerTest.kt`, `ScrapeJsonSanitizerTest.kt` | Content parsing |
+| Extraction ingest | `ExtractionResultProcessorTest.kt`, `ExtractionResultProcessorUnitTest.kt` | Python `CanonicalExtraction` → Kotlin persistence |
+| Structural voting | `StructuralVotingRoundTripTest.kt` | Multi-source section reconciliation |
 | Entity Resolution | `EntityResolutionServiceTest.kt` | Deduplication |
 | Quality | `QualityScoringServiceTest.kt` | Quality scores |
-| Extraction | `ExtractionResultProcessorTest.kt` | PDF extraction pipeline |
 | E2E | `e2e/tests/bulk-import-*.spec.ts` | Full UI flows (deferred) |
 
 ## 1. Run All Backend Tests
@@ -25,7 +24,7 @@ The bulk import system has tests at multiple layers:
 **Trigger:** "Test bulk import" or "Run import tests"
 
 ```bash
-./gradlew :modules:backend:api:test --tests "*Import*" --tests "*Scrap*" --tests "*TextBlocker*" --tests "*EntityResolution*" --tests "*QualityScoring*" --tests "*ExtractionResultProcessor*"
+./gradlew :modules:backend:api:test --tests "*Import*" --tests "*EntityResolution*" --tests "*QualityScoring*" --tests "*ExtractionResultProcessor*"
 ```
 
 Or run the full backend test suite:
@@ -49,23 +48,17 @@ make test
 - `reviewImport` - status transitions
 - Import persistence
 
-### 2.2 Web Scraping Services
+### 2.2 Section parsing (Python)
 
-**Trigger:** "Test scraping" or "Test web scraping"
+**Trigger:** "Test structure parser" or "Test section headers"
 
-```bash
-./gradlew :modules:backend:api:test --tests "*ScrapingServiceTest"
-```
-
-### 2.3 Text Processing
-
-**Trigger:** "Test text processing" or "Test TextBlocker"
+Section headers are owned by the Python worker, not Kotlin.
 
 ```bash
-./gradlew :modules:backend:api:test --tests "TextBlockerTest" --tests "ScrapeJsonSanitizerTest" --tests "HtmlTextExtractorTest"
+cd tools/krithi-extract-enrich-worker && uv run pytest tests/ -k structure_parser
 ```
 
-### 2.4 Entity Resolution
+### 2.3 Entity Resolution
 
 **Trigger:** "Test entity resolution" or "Test deduplication"
 
@@ -73,7 +66,7 @@ make test
 ./gradlew :modules:backend:api:test --tests "EntityResolutionServiceTest"
 ```
 
-### 2.5 Extraction Result Processing
+### 2.4 Extraction Result Processing
 
 **Trigger:** "Test extraction" or "Test PDF pipeline"
 

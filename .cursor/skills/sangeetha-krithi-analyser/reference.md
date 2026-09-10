@@ -173,10 +173,9 @@ CanonicalExtraction
 
 Key files (paths abbreviated):
 
-- `modules/backend/api/.../services/scraping/SectionHeaderDetector.kt`
-- `modules/backend/api/.../services/scraping/KrithiStructureParser.kt`
 - `modules/backend/api/.../services/LyricVariantPersistenceService.kt`
 - `modules/backend/api/.../services/StructuralVotingProcessor.kt`
+- `modules/backend/api/.../services/scraping/StructuralVotingEngine.kt`
 
 ## Validation Checklist (Expanded)
 
@@ -446,10 +445,9 @@ CanonicalExtraction
 
 Key files (paths abbreviated):
 
-- `modules/backend/api/.../services/scraping/SectionHeaderDetector.kt`
-- `modules/backend/api/.../services/scraping/KrithiStructureParser.kt`
 - `modules/backend/api/.../services/LyricVariantPersistenceService.kt`
 - `modules/backend/api/.../services/StructuralVotingProcessor.kt`
+- `modules/backend/api/.../services/scraping/StructuralVotingEngine.kt`
 
 ## Validation Checklist (Expanded)
 
