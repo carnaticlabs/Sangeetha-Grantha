@@ -1,564 +1,64 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Version** | 1.3.0 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Current guide |
 
-# Troubleshooting Guide
-
-This guide covers common issues encountered during development and their solutions.
-
----
-
-## Quick Diagnosis
-
-Before diving into specific issues, run this quick health check:
-
-```bash
-# Check all services
-docker compose ps                          # Database running?
-curl -s http://localhost:8080/health       # Backend healthy?
-curl -s http://localhost:5001 > /dev/null && echo "Frontend OK"  # Frontend running?
-
-# Check tool versions
-mise exec -- java --version                # Java 25+?
-mise exec -- rustc --version               # Rust 1.92+?
-mise exec -- bun --version                 # Bun 1.3+?
-```
+# Troubleshooting local development
 
 ---
 
-## 1. Database Issues
+Identify which component failed before changing data or configuration. The commands below inspect local behavior; schema resets and volume deletion are not routine troubleshooting steps.
 
-### 1.1 Cannot Connect to Database
-
-**Symptoms:**
-- `Connection refused` errors
-- Backend fails to start with database errors
-- `psql: could not connect to server`
-
-**Solutions:**
+## Start with service state
 
 ```bash
-# Check if PostgreSQL container is running
 docker compose ps
-
-# If not running, start it
-docker compose up -d postgres
-
-# If container exists but not running, check logs
-docker compose logs postgres
-
-# Restart container
-docker compose restart postgres
-
-# If container is corrupted, recreate
-docker compose down -v
-docker compose up -d postgres
+docker compose logs --tail=100 backend extraction
+make migrate-status
+curl --fail http://localhost:8080/health
 ```
 
-**Common Causes:**
-- Docker not running
-- Port 5432 already in use by another process
-- Container crashed due to resource constraints
+`/health` only confirms the basic API response. The worker container health check verifies imports, not queue progress. See [monitoring](../08-operations/monitoring.md).
 
-### 1.2 Migration Failures
+## Common symptoms
 
-**Symptoms:**
-- `cargo run -- db migrate` fails
-- SQL syntax errors during migration
-- Foreign key constraint violations
+| Symptom | Likely boundary | Next step |
+|:---|:---|:---|
+| mise reports a missing environment file | `config/postgres-local.env` is referenced by `.mise.toml` | Follow [fresh setup](./getting-started.md); preserve existing values |
+| Port 5432/8080/5001 already in use | Duplicate host/Compose service | Inspect the running process/service; choose one execution mode |
+| Backend never starts | Migration service or Gradle failure | Read the relevant service logs; fix the actual failure |
+| Fresh catalogue is empty | Reference seeds do not include the corpus | Load intended sample/imported content and verify publication state |
+| Login says user not found | Account not provisioned in this database | Run configured `make bootstrap-admin`; do not reset the database |
+| Login/token is rejected | Token, identity, expiry, issuer or role mismatch | Follow [authentication](../00-meta/quick-reference-auth.md) |
+| Console talks to the wrong API | Browser base/proxy configuration | Check `VITE_API_BASE_URL`, `API_PROXY_TARGET`, Vite environment location |
+| Worker remains idle | Wrong database/queue or no pending work | Inspect worker settings and extraction/task state |
+| Local PDF cannot be opened | Host path differs from container path | Use a worker-visible path such as the configured `/app/pdfs` mount |
+| Extraction DONE but composition incomplete | Result processing, mapping, variant or section persistence | Trace the [ingestion stages](../01-requirements/features/bulk-import/02-implementation/technical-implementation-guide.md) |
+| Semantic search returns no results | No active profile or no indexed matches | Inspect index/profile and [search behavior](../03-api/search.md) |
+| Hybrid search reports unavailable | Provider error or incompatible profile | Inspect query embedder and active model/dimensions |
+| Mobile cannot reach backend | Emulator/simulator/device addressing | Use host-specific debug configuration from the [mobile guide](../05-frontend/mobile/README.md) |
 
-**Solutions:**
+## Migration and restore problems
 
-```bash
-# Reset database completely (development only!)
-cd tools/sangita-cli
-cargo run -- db reset
+Flyway is the only engine. Match history entries by complete identity and checksum. Earlier corpus-fix V58–V62 files were retired; current V58–V60 contain different legitimate schema work. Do not copy an old history-row deletion or fixed baseline command.
 
-# If reset fails, manually drop and recreate
-psql -h localhost -U postgres -c "DROP DATABASE IF EXISTS sangita_grantha"
-psql -h localhost -U postgres -c "CREATE DATABASE sangita_grantha OWNER sangita"
-cargo run -- db migrate
-```
+The PostgreSQL 18 volume is `pgdata18` mounted at `/var/lib/postgresql`. Older volumes need a planned/rehearsed dump-and-restore migration. Preserve the old data until the restored database and API have been verified. See [database runbook](../08-operations/runbooks/database-runbook.md).
 
-**Check Migration Syntax:**
-```bash
-# Verify migration files exist
-ls -la database/migrations/
+## Test failures
 
-# Check for SQL syntax errors in specific migration
-psql -h localhost -U sangita -d sangita_grantha -f database/migrations/NN__migration.sql
-```
+Backend integration tests and some worker tests require Docker/Testcontainers. They provision their own database by default. An external test-database override must identify a disposable database; reset-capable tests must never point at a retained corpus.
 
-### 1.3 Permission Denied
+Use the checked-in package scripts and toolchain. `make test` includes API/DAL database-backed tests; `bun run build` does not replace `bun run typecheck`. Shared mobile JVM tests do not replace native runtime acceptance.
 
-**Symptoms:**
-- `permission denied for table`
-- `permission denied for schema public`
+## Stale behavior after edits
 
-**Solutions:**
+Restart the Compose stack after backend/shared Kotlin or worker Python changes using `make dev-down`, then `make dev`. Check the command actually rebuilt/started the intended service. Do not delete volumes or caches before evidence points to them as the cause.
 
-```bash
-# Grant permissions to sangita user
-psql -h localhost -U postgres -d sangita_grantha << 'EOF'
-GRANT ALL PRIVILEGES ON DATABASE sangita_grantha TO sangita;
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO sangita;
-GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO sangita;
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO sangita;
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO sangita;
-EOF
-```
-
-### 1.4 Data Inconsistencies
-
-**Symptoms:**
-- Foreign key violations
-- Missing reference data
-- Queries return unexpected results
-
-**Solutions:**
-
-```bash
-# Verify reference data exists
-psql -h localhost -U sangita -d sangita_grantha << 'EOF'
-SELECT 'composers' as table_name, COUNT(*) FROM composers
-UNION ALL SELECT 'ragas', COUNT(*) FROM ragas
-UNION ALL SELECT 'talas', COUNT(*) FROM talas
-UNION ALL SELECT 'users', COUNT(*) FROM users;
-EOF
-
-# Re-seed reference data (Flyway R__ repeatables) + dev sample data
-make migrate && make seed-dev
-
-# Or full reset (drop → create → Flyway migrate)
-make db-reset
-```
+[Configuration](../08-operations/config.md) · [Quality guide](../07-quality/README.md) · [Onboarding](./README.md)
 
 ---
 
-## 2. Backend Issues
-
-### 2.1 Backend Won't Start
-
-**Symptoms:**
-- Gradle build fails
-- Server crashes immediately
-- Port binding errors
-
-**Solutions:**
-
-**Build Failures:**
-```bash
-# Clean and rebuild
-./gradlew clean
-./gradlew :modules:backend:api:build --refresh-dependencies
-
-# Check for Kotlin version issues
-./gradlew --version
-
-# Clear Gradle cache if needed
-rm -rf ~/.gradle/caches/
-./gradlew build
-```
-
-**Port Already in Use:**
-```bash
-# Find process using port 8080
-lsof -i :8080
-
-# Kill the process
-kill -9 <PID>
-
-# Or use a different port
-API_PORT=8081 ./gradlew :modules:backend:api:run
-```
-
-**Database Connection:**
-```bash
-# Verify DATABASE_URL is set correctly
-echo $DATABASE_URL
-
-# Test connection
-psql $DATABASE_URL -c "SELECT 1"
-```
-
-### 2.2 Build Errors
-
-**Symptoms:**
-- `Unresolved reference` errors
-- `Type mismatch` errors
-- Serialization errors
-
-**Solutions:**
-
-```bash
-# Regenerate Kotlin serialization
-./gradlew clean
-./gradlew :modules:shared:domain:build
-./gradlew :modules:backend:api:build
-
-# If DTO sync issues
-# Check modules/shared/domain/src/commonMain/kotlin/...
-# Ensure @Serializable annotations are present
-
-# Invalidate IDE caches
-# In IntelliJ: File > Invalidate Caches > Invalidate and Restart
-```
-
-### 2.3 API Returns 500 Errors
-
-**Symptoms:**
-- Internal server errors on API calls
-- Stack traces in logs
-- Unexpected null values
-
-**Solutions:**
-
-```bash
-# Check backend logs for stack trace
-# Logs appear in terminal where Gradle is running
-
-# Common issues:
-# 1. Database not connected - restart docker compose
-# 2. Missing seed data - run `make seed-dev` (reference data ships via Flyway R__)
-# 3. Null pointer - check for null handling in service layer
-```
-
-**Enable Debug Logging:**
-```kotlin
-// In application.conf or application.local.toml
-// Set log level to DEBUG temporarily
-```
-
-### 2.4 Authentication Failures
-
-**Symptoms:**
-- `401 Unauthorized` on admin endpoints — no token, or a token this server did not sign
-- `403 Forbidden` with `{"message":"Requires one of: grp_sangita_admin"}` — authenticated, but the
-  user has no admin role assignment (see ADR-004 v1.3; roles come from the database, never from the
-  login request)
-- JWT validation errors, token expired errors
-
-**Solutions:**
-
-```bash
-# 1. Does the admin user exist, and does it have the role?
-#    A user with '(none)' here will authenticate but get 403 on every admin route.
-docker exec sangeetha-grantha-db-1 psql -U postgres -d sangita_grantha -c \
-  "SELECT u.email, COALESCE(string_agg(ra.role_code, ','), '(none)') AS roles
-     FROM users u LEFT JOIN role_assignments ra ON ra.user_id = u.id
-    GROUP BY u.email;"
-
-# 2. No admin user, or no role? Provision one (idempotent; assigns grp_sangita_admin).
-ADMIN_EMAIL=admin@sangitagrantha.org ADMIN_PASSWORD=<choose> make bootstrap-admin
-
-# 3. Get a fresh token (email is preferred; userId also works).
-curl -s -X POST http://localhost:8080/v1/auth/token \
-  -H "Content-Type: application/json" \
-  -d '{"adminToken": "dev-admin-token", "email": "admin@sangitagrantha.org"}'
-
-# 4. Inspect the roles the server actually granted — asking for roles in the
-#    request body has no effect, so this is the authoritative answer.
-TOKEN=<paste>
-echo "$TOKEN" | cut -d. -f2 | base64 -d 2>/dev/null | python3 -m json.tool
-```
-
-> **Note:** `adminToken` must match the server's `ADMIN_TOKEN` (default `dev-admin-token` in dev) — a
-> mismatch is a 401 from `/v1/auth/token` itself, before any user lookup happens.
-
----
-
-## 3. Frontend Issues
-
-### 3.1 Frontend Won't Start
-
-**Symptoms:**
-- `bun run dev` fails
-- Module not found errors
-- Port binding errors
-
-**Solutions:**
-
-**Clean Install:**
-```bash
-cd modules/frontend/sangita-admin-web
-rm -rf node_modules bun.lockb
-bun install
-bun run dev
-```
-
-**Port Already in Use:**
-```bash
-# Find process using port 5001
-lsof -i :5001
-kill -9 <PID>
-
-# Or use different port
-bun run dev --port 5002
-```
-
-### 3.2 API Connection Errors
-
-**Symptoms:**
-- Network errors in browser console
-- CORS errors
-- `Failed to fetch` errors
-
-**Solutions:**
-
-**Verify Backend is Running:**
-```bash
-curl -s http://localhost:8080/health
-# Should return {"status":"ok"}
-```
-
-**Check API URL Configuration:**
-```bash
-# Verify VITE_API_URL in .env.local or environment
-echo $VITE_API_URL
-# Should be http://localhost:8080
-
-# Create/update .env.local in frontend directory
-echo "VITE_API_URL=http://localhost:8080" > .env.local
-```
-
-**CORS Issues:**
-- Backend must allow `http://localhost:5001` origin
-- Check Ktor CORS configuration in backend
-
-### 3.3 TypeScript Errors
-
-**Symptoms:**
-- Type errors in IDE
-- Build fails with type errors
-- `Property does not exist` errors
-
-**Solutions:**
-
-```bash
-# Regenerate types
-bun run build
-
-# If API types changed, sync with backend DTOs
-# Check modules/frontend/sangita-admin-web/src/types/
-
-# Clear TypeScript cache
-rm -rf node_modules/.cache
-```
-
-### 3.4 Blank Page / White Screen
-
-**Symptoms:**
-- App loads but shows nothing
-- Console errors about undefined
-- React errors
-
-**Solutions:**
-
-```bash
-# Check browser console for errors
-# Open DevTools (F12) > Console
-
-# Common causes:
-# 1. API not returning expected data
-# 2. Missing environment variables
-# 3. JavaScript runtime errors
-
-# Try hard refresh
-# Ctrl+Shift+R (Windows/Linux) or Cmd+Shift+R (Mac)
-
-# Clear local storage
-# DevTools > Application > Local Storage > Clear
-```
-
----
-
-## 4. CLI Tool Issues
-
-### 4.1 Rust Build Failures
-
-**Symptoms:**
-- `cargo build` fails
-- Dependency resolution errors
-- Compilation errors
-
-**Solutions:**
-
-```bash
-# Update Rust
-rustup update stable
-
-# Clean and rebuild
-cd tools/sangita-cli
-cargo clean
-cargo build
-
-# If dependency issues
-rm Cargo.lock
-cargo build
-```
-
-### 4.2 CLI Commands Fail
-
-**Symptoms:**
-- `cargo run -- db migrate` fails
-- Connection errors from CLI
-- Timeout errors
-
-**Solutions:**
-
-```bash
-# Verify config exists
-ls -la config/application.local.toml
-
-# Check DATABASE_URL
-grep -i database config/application.local.toml
-
-# Test database connectivity
-cargo run -- db health
-
-# Run with verbose output
-RUST_LOG=debug cargo run -- db migrate
-```
-
----
-
-## 5. Docker Issues
-
-### 5.1 Container Won't Start
-
-**Symptoms:**
-- `docker compose up` fails
-- Container exits immediately
-- Resource allocation errors
-
-**Solutions:**
-
-```bash
-# Check Docker is running
-docker info
-
-# View container logs
-docker compose logs postgres
-
-# Remove and recreate
-docker compose down -v
-docker compose up -d
-
-# If resource issues, prune unused resources
-docker system prune -a
-```
-
-### 5.2 Volume Permission Issues
-
-**Symptoms:**
-- Permission denied on mounted volumes
-- Data not persisting
-
-**Solutions:**
-
-```bash
-# Fix volume permissions (Linux/Mac)
-sudo chown -R $(whoami) ./docker-data/
-
-# Or remove volumes and start fresh
-docker compose down -v
-docker compose up -d
-```
-
----
-
-## 6. IDE Issues
-
-### 6.1 IntelliJ IDEA
-
-**Gradle Sync Issues:**
-1. File > Invalidate Caches > Invalidate and Restart
-2. View > Tool Windows > Gradle > Refresh
-3. Delete `.idea` folder and reimport project
-
-**Kotlin Issues:**
-1. Ensure Kotlin plugin is up to date
-2. Check Project Structure > SDKs has correct JDK
-3. Invalidate caches and restart
-
-### 6.2 VS Code
-
-**TypeScript Issues:**
-1. Cmd/Ctrl+Shift+P > TypeScript: Restart TS Server
-2. Check `tsconfig.json` is valid
-3. Reinstall TypeScript extension
-
-**ESLint Issues:**
-1. Check `.eslintrc` configuration
-2. Run `bun run lint` to see errors
-3. Reinstall ESLint extension
-
----
-
-## 7. Common Error Messages
-
-### Error Reference Table
-
-| Error Message | Likely Cause | Solution |
-|---------------|--------------|----------|
-| `Connection refused` | Database not running | `docker compose up -d postgres` |
-| `401 Unauthorized` | Invalid/missing token | Re-authenticate, check token |
-| `404 Not Found` | Wrong URL or missing resource | Check endpoint URL, verify data exists |
-| `EADDRINUSE` | Port already in use | Kill process or use different port |
-| `Module not found` | Missing dependency | `bun install` or `./gradlew build` |
-| `CORS error` | Backend CORS misconfigured | Check Ktor CORS settings |
-| `Type mismatch` | DTO sync issue | Regenerate shared module |
-| `OOM` | Out of memory | Increase Docker/JVM memory |
-
----
-
-## 8. Getting Help
-
-### Before Asking for Help
-
-1. Check this troubleshooting guide
-2. Search existing issues on GitHub
-3. Check the logs (backend, frontend, Docker)
-4. Try a clean build/reset
-
-### Information to Include
-
-When reporting an issue, include:
-
-```markdown
-**Environment:**
-- OS: [e.g., macOS 14.x, Ubuntu 22.04]
-- Java version: [output of `java --version`]
-- Rust version: [output of `rustc --version`]
-- Bun version: [output of `bun --version`]
-
-**Steps to Reproduce:**
-1. ...
-2. ...
-
-**Expected Behavior:**
-...
-
-**Actual Behavior:**
-...
-
-**Logs/Error Messages:**
-```
-[paste relevant logs]
-```text
-
-**What I've Tried:**
-...
-```
-
----
-
-## Related Documents
-
-- [Getting Started](./getting-started.md)
-- [Steel Thread Runbook](../08-operations/runbooks/steel-thread-runbook.md)
-- [Database Runbook](../08-operations/runbooks/database-runbook.md)
-- [Deployment Guide](../08-operations/deployment.md)
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

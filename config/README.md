@@ -1,24 +1,25 @@
-# Config directory
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 1.0.0 |
+| **Last Updated** | 2026-09-10 |
+| **Author** | Sangeetha Grantha Team |
 
-Local and environment-specific configuration for Sangeetha Grantha. **Do not commit secrets.**
+# Local configuration
 
-## Single source for env values
+---
 
-- **Externalizable env vars** and a **Postgres source** are defined in repo-root **[tools.yaml](./tools.yaml)**. Set actual values **outside the repo** (e.g. Goose/IDE env, or a gitignored file).
-- Prefer **one** of:
-  - **System environment variables** (e.g. from Goose Extensions, IDE run config, or shell).
-  - **A single file** `config/local.env` (gitignored) with `KEY=value` lines. The backend loads it automatically after `config/development.env`; system env still overrides.
-
-## Files in this directory
+Use [Runtime configuration](../application_documentation/08-operations/config.md) for component-specific variables and loading order. This directory contains tooling definitions and local backend configuration; it is not one shared environment source for all applications.
 
 | File | Purpose |
-|------|--------|
-| `application.local.toml` | Backend/database settings (canonical for TOML-based config). |
-| `development.env` | Dev env vars for backend/Vite (gitignored; use `local.env` or system env for values). |
-| `local.env` | **Recommended** single file for local overrides (gitignored). Backend merges it after `development.env`. |
-| `.env.auto-approval.example` | Template for auto-approval env vars; copy and set values outside repo. |
+|:---|:---|
+| [application.local.toml](./application.local.toml) | Legacy/tooling configuration context; inspect the runtime loaders before relying on a field |
+| [tools.yaml](./tools.yaml) | Externalizable variable/tooling reference |
+| [mcp-servers.json](./mcp-servers.json) | Database MCP configuration |
+| [.env.auto-approval.example](./.env.auto-approval.example) | Committed auto-approval example |
+| `development.env`, `local.env` | Ignored local backend environment/overrides |
+| `postgres-local.env` | Ignored file referenced by mise |
 
-## See also
+Keep actual credentials in local ignored files or the intended process/deployment environment. Do not overwrite another developer's existing local values.
 
-- [Configuration (operations)](../application_documentation/08-operations/config.md) – canonical config docs.
-- [tools.yaml](./tools.yaml) – variable list and Postgres source for MCP/Goose.
+The backend merges its environment-specific file, then `local.env`, then process variables. Python reads `.env` from its working directory; Vite has its own environment rules. See [onboarding](../application_documentation/00-onboarding/getting-started.md) for a minimal fresh-checkout setup and [authentication](../application_documentation/00-meta/quick-reference-auth.md) for provisioning and token exchange.

@@ -1,148 +1,130 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.3.0 |
-| **Last Updated** | 2026-08-24 |
+| **Version** | 2.1.0 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Current guide |
 
-# Getting Started with Sangita Grantha
+# Get started locally
 
-Welcome to the **Sangita Grantha** project. This document provides a comprehensive guide for new developers and contributors to set up their local development environment and understand our core workflows.
+---
 
-## 1. Project Overview
+This guide starts the development stack, explains the first empty catalogue, and points you to the appropriate client. Commands run from the repository root unless a step changes directory.
 
-**Sangita Grantha** is the authoritative "System of Record" for Carnatic compositions. It is designed for longevity, musicological integrity, and high-performance access.
+## 1. Prepare the toolchain
 
-For current toolchain and library versions, see **[Current Versions](../00-meta/current-versions.md)**.
+Install Docker Desktop or Docker Engine with Compose and make sure Docker is running. Install mise, then trust and install this repository's tool configuration:
 
-## 2. Prerequisites
-
-Ensure you have the following installed on your system:
-
-- **[mise](https://mise.jafp.info/)**: Our tool version manager (replaces `asdf`, `nvm`, etc.).
-- **Docker & Docker Compose**: For running the full dev stack (DB, backend, frontend, extraction).
-- **Python 3.11+**: For the extraction worker.
-- **Bun**: For frontend package management and building.
-- **JDK 25 (Temurin)**: For Kotlin and Android development. (See [Current Versions](../00-meta/current-versions.md))
-- **Android Studio / Xcode**: For mobile development.
-
-## 3. Local Environment Setup
-
-Follow these steps to get your environment ready:
-
-### 3.1 Tooling Installation
-Run the following command to install the required tool versions managed by `mise`:
 ```bash
+mise trust
 mise install
 ```
 
-### 3.2 Database Setup
-We use Docker Compose to run PostgreSQL. Migrations are managed by **Flyway** (see [ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)):
-```bash
-# Full stack start (DB + Backend + Frontend + Extraction)
-make dev
+[Current Versions](../00-meta/current-versions.md) lists the toolchain; [`.mise.toml`](../../.mise.toml) supplies the pins. Android Studio/SDK and Xcode are additional requirements only for native mobile work. uv is used for local Python worker development.
 
-# Or database only
-make db
+The mise configuration references the ignored file `config/postgres-local.env`. On a fresh checkout, create it if it does not exist. For the default local Compose database, its minimal contents are:
 
-# Reset DB (drop → create → migrate → seed)
-make db-reset
+```dotenv
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=sangita_grantha
+DB_USER=postgres
+DB_PASSWORD=postgres
 ```
 
-> **PostgreSQL 18 volume layout.** The `db` service mounts its volume at
-> `/var/lib/postgresql` (the `postgres:18+` image layout, volume `pgdata18`);
-> fresh checkouts need nothing special. If your machine still has the pre-18
-> `pgdata` volume (mounted at `.../data`, retired 2026-07-10), migrate once:
->
-> ```bash
-> # 1. With the OLD compose.yaml still checked out, back up:
-> docker compose --profile dev up -d db
-> docker exec sangeetha-grantha-db-1 pg_dump -U postgres -Fc sangita_grantha > sangita.dump
-> # 2. Pull the new compose.yaml, then re-create the DB on the new volume:
-> docker compose --profile dev down && docker compose --profile dev up -d --wait db
-> docker exec -i sangeetha-grantha-db-1 pg_restore -U postgres -d sangita_grantha --no-owner < sangita.dump
-> # 3. Verify, then remove the retired volume:
-> docker volume rm sangeetha-grantha_pgdata
-> ```
+These credentials describe the local development container. Keep local files out of version control. Existing local values should be preserved. If mise stops before installing because this file is absent, create it first and repeat `mise install`.
 
-### 3.3 Frontend Dependencies
-Install dependencies for the admin web module using `bun`:
+Backend overrides can be placed in `config/local.env`, or passed in the process environment. The worker and Vite use different loading rules; see [configuration](../08-operations/config.md).
+
+## 2. Start the stack
+
+```bash
+make dev
+```
+
+The command runs in the foreground and builds/starts PostgreSQL, Flyway, the Kotlin backend, the React console, and the Python extraction worker. The database is service `db`, not `postgres`. Flyway must complete successfully before the backend and worker start.
+
+| Service | Local address / role |
+|:---|:---|
+| Curator Console | [http://localhost:5001](http://localhost:5001) |
+| Backend | [http://localhost:8080](http://localhost:8080) |
+| PostgreSQL | `localhost:5432`, database `sangita_grantha` |
+| Extraction worker | Database queue consumer; no browser page |
+
+Use another terminal to inspect readiness:
+
+```bash
+docker compose ps
+curl --fail http://localhost:8080/health
+curl --fail 'http://localhost:8080/v2/catalogue/krithis?page=0&pageSize=5'
+```
+
+An empty `items` array can be a successful first run. Flyway loads reference data, not the composition corpus. Use the [import workflow](../01-requirements/features/bulk-import/README.md), or `make seed-dev` for optional development sample content. Public results also depend on publication state and catalogue version.
+
+## 3. Provision and sign in
+
+`make bootstrap-admin` requires `ADMIN_EMAIL` and `ADMIN_PASSWORD` in the invoking environment. It creates or updates the account, hashes the password with argon2id, and assigns the admin role.
+
+The current console login uses an **admin token and existing email** to obtain a JWT. It does not use the provisioned password as an interactive login credential. Follow the [authentication reference](../00-meta/quick-reference-auth.md), including refresh and role behavior.
+
+## 4. Run services individually
+
+For host-based backend/frontend development:
+
+```bash
+make db
+make migrate
+./gradlew :modules:backend:api:run
+```
+
+In a separate terminal:
+
 ```bash
 cd modules/frontend/sangita-admin-web
-bun install
+bun install --frozen-lockfile
+bun run dev
 ```
 
-## 4. Development Workflow
+Do not run a second backend or frontend on the same ports as an existing Compose instance. `API_PROXY_TARGET` chooses Vite's backend destination; `VITE_API_BASE_URL` overrides the browser client's `/v1` base.
 
-### 4.1 Running the Application
+For local extraction tooling, follow the [worker README](../../tools/krithi-extract-enrich-worker/README.md). Normal catalogue reads do not require Gemini credentials. Optional enrichment and vector indexing have separate prerequisites.
 
-- **Full Dev Stack (recommended):**
+## 5. Build Rasika
+
 ```bash
-  make dev          # Docker Compose: DB + Backend + Frontend + Extraction
-  make dev-down     # Stop all services
+make test-mobile
+make mobile-android
+make mobile-ios
 ```
-- **Backend only:**
+
+Android emulator debug traffic uses `http://10.0.2.2:8080`; the iOS simulator uses `http://127.0.0.1:8080`. Physical devices need an explicitly reachable server address. Release transport requires HTTPS. Rasika builds separately from `make dev` and reads `/v2/catalogue`.
+
+A build is not a device journey. Use the [mobile guide](../05-frontend/mobile/README.md) for native test commands and the outstanding acceptance gate.
+
+## 6. Stop, update, and verify
+
 ```bash
-  ./gradlew :modules:backend:api:run
-```
-- **Frontend only:**
-```bash
-  cd modules/frontend/sangita-admin-web
-  bun run dev
-```
-- **Database Migrations:**
-```bash
-  make migrate      # Run pending migrations
-  make db-reset     # Drop → create → Flyway migrate (schema V__ + reference data R__)
+make dev-down
 ```
 
-### 4.2 The Conductor System
-All work MUST be tracked via the Conductor system located in the `conductor/` directory.
-1. Check `conductor/tracks.md` for active tracks.
-2. If starting a new task, create a track file in `conductor/tracks/`.
-3. Follow the implementation plan defined in your track.
+After backend/shared Kotlin or extraction-worker code changes, restart the Compose stack to serve the current implementation. Database schema updates use `make migrate`; reference seeds arrive through repeatable migrations.
 
-### 4.3 Database Migrations
-**Flyway is the only migration engine** ([ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)). Never use Liquibase, ad-hoc SQL executors, or custom migration runners.
-- All migrations live in `database/migrations/` (`VNN__description.sql`).
-- Run migrations via: `make migrate`
-- Reset the DB (Drop → Create → Flyway migrate, which applies schema + `R__` reference data) via: `make db-reset`
-- Reference seed data ships as Flyway repeatable migrations (`R__seed_*.sql`); dev sample data via `make seed-dev`.
-- History: Rust CLI (ADR-003) → Python `db-migrate` (ADR-010) → Flyway (ADR-013) — the SQL files survived every transition.
+| Changed area | Matching check |
+|:---|:---|
+| Backend | `make test` (includes database-backed tests; Docker required) |
+| Backend integration | `make test-integration` |
+| Admin web | `make test-frontend`; module `bun run typecheck` and `bun run build` |
+| Shared mobile | `make test-mobile` |
+| Worker | Ruff, mypy, pytest from the [worker README](../../tools/krithi-extract-enrich-worker/README.md) |
+| Documentation | `make check-docs` |
 
-## 5. Coding Standards & Mandates
+`make db-reset` drops the local database before rebuilding schema/reference data. `make clean` removes Compose volumes. Use them only when that data loss is intended. For an older PostgreSQL volume or a restored corpus, use the [database runbook](../08-operations/runbooks/database-runbook.md).
 
-### 5.1 Backend (Kotlin)
-- **Result Pattern:** Always use `Result<T, E>` for service layer returns. No exceptions for domain logic.
-- **DTO Separation:** Never leak Exposed DAO entities to the API layer. Map to `@Serializable` DTOs in `modules/shared/domain`.
-- **Database Access:** Use `DatabaseFactory.dbQuery { ... }`.
+## Where to go next
 
-### 5.2 Frontend (React/TS)
-- **Strict TypeScript:** No `any`. Use strict interfaces.
-- **State Management:** Use `tanstack-query` for data fetching.
+[IDE setup](./ide-setup.md) · [Troubleshooting](./troubleshooting.md) · [Architecture](../02-architecture/README.md) · [Feature map](../01-requirements/features/README.md) · [Repository rules](../../CLAUDE.md)
 
-### 5.3 Git branches and commits
-**Branches:** `track-<nnn>-<kebab-slug>` when a conductor track exists; otherwise `<type>/<kebab-slug>` (`fix`, `feat`, `docs`, `chore`, `ci`). Do not use Cursor’s default `cursor/` prefix unless asked. Canonical agent rule: [`.cursor/rules/git-conventions.mdc`](../../.cursor/rules/git-conventions.mdc); policy: [commit-policy](../../.agents/skills/commit-policy/SKILL.md).
+---
 
-Every commit message **MUST** include a reference to the relevant specification. Prefer a `TRACK-ID:` title when a track exists:
-```text
-TRACK-113: <short summary>
-
-Ref: application_documentation/01-requirements/features/bulk-import/01-strategy/csv-import-strategy.md
-```
-
-## 6. Project Structure
-
-- `application_documentation/`: High-level requirements, architecture, and API specs.
-- `conductor/`: Active development tracks and plans.
-- `database/migrations/`: SQL migration files.
-- `modules/backend/`: Ktor API and services.
-- `modules/frontend/sangita-admin-web/`: React admin interface.
-- `modules/shared/domain/`: KMP module with shared DTOs and logic.
-- `archive/tools/db-migrate/`: Python migration tool (superseded by Flyway — [ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md), archived TRACK-110).
-- `tools/krithi-extract-enrich-worker/`: Python extraction & enrichment worker.
-
-## 7. Useful Links
-- [Product Definition](../../conductor/product.md)
-- [Tech Stack](../02-architecture/tech-stack.md)
-- [Database Schema](../04-database/schema.md)
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)
