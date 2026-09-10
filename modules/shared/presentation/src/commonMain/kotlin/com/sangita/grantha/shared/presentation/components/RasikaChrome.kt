@@ -12,9 +12,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -52,6 +50,7 @@ import com.sangita.grantha.shared.presentation.navigation.RasikaTab
 import com.sangita.grantha.shared.presentation.theme.RasikaMotion
 import com.sangita.grantha.shared.presentation.theme.RasikaTheme
 import com.sangita.grantha.shared.presentation.theme.RasikaTokens
+import com.sangita.grantha.shared.presentation.theme.rememberReduceMotion
 
 /** Thin gold rule used inside cards and between rows. */
 @Composable
@@ -329,9 +328,10 @@ fun RasikaPressable(
 ) {
     val interaction = remember { MutableInteractionSource() }
     val pressed by interaction.collectIsPressedAsState()
+    val reduceMotion = rememberReduceMotion()
     val scale by animateFloatAsState(
         targetValue = if (pressed) 0.98f else 1f,
-        animationSpec = tween(RasikaMotion.cardPressMs),
+        animationSpec = tween(if (reduceMotion) 0 else RasikaMotion.cardPressMs),
         label = "rasikaCardPress",
     )
     Surface(
@@ -366,7 +366,8 @@ fun RasikaTabBar(
             Modifier
                 .fillMaxWidth()
                 .background(RasikaTokens.teal)
-                .height(64.dp),
+                .heightIn(min = 64.dp)
+                .padding(vertical = RasikaTokens.xxs),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             RasikaTabSpec.entries.forEach { spec ->
@@ -375,7 +376,7 @@ fun RasikaTabBar(
                 Column(
                     modifier = Modifier
                         .weight(1f)
-                        .fillMaxHeight()
+                        .heightIn(min = 64.dp)
                         .clickable { onSelect(spec.tab) }
                         .semantics { contentDescription = spec.label },
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -387,6 +388,7 @@ fun RasikaTabBar(
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
                         color = tint,
+                        maxLines = 2,
                         modifier = Modifier.padding(top = RasikaTokens.xxs),
                     )
                 }

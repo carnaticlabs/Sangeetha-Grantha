@@ -1,5 +1,7 @@
 package com.sangita.grantha.shared.presentation
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -45,6 +47,7 @@ import com.sangita.grantha.shared.presentation.search.SearchScreen
 import com.sangita.grantha.shared.presentation.theme.RasikaMotion
 import com.sangita.grantha.shared.presentation.theme.RasikaTheme
 import com.sangita.grantha.shared.presentation.theme.RasikaTokens
+import com.sangita.grantha.shared.presentation.theme.rememberReduceMotion
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -85,6 +88,7 @@ fun RasikaApp(container: MobileAppContainer) {
     }
 
     RasikaTheme(appearance = prefs.appearance, textSize = prefs.textSize) {
+        val reduceMotion = rememberReduceMotion()
         BackHandler(enabled = navigator.stackSnapshot().size > 1) {
             navigator.back()
             sync()
@@ -123,11 +127,15 @@ fun RasikaApp(container: MobileAppContainer) {
                     targetState = current,
                     modifier = Modifier.weight(1f),
                     transitionSpec = {
-                        fadeIn(
-                            tween(RasikaMotion.tabCrossfadeMs, easing = RasikaMotion.emphasizedDecelerate),
-                        ) togetherWith fadeOut(
-                            tween(RasikaMotion.tabCrossfadeMs, easing = RasikaMotion.emphasizedDecelerate),
-                        )
+                        if (reduceMotion) {
+                            EnterTransition.None togetherWith ExitTransition.None
+                        } else {
+                            fadeIn(
+                                tween(RasikaMotion.tabCrossfadeMs, easing = RasikaMotion.emphasizedDecelerate),
+                            ) togetherWith fadeOut(
+                                tween(RasikaMotion.tabCrossfadeMs, easing = RasikaMotion.emphasizedDecelerate),
+                            )
+                        }
                     },
                     contentKey = { dest ->
                         when (dest) {

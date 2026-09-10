@@ -28,6 +28,7 @@ import com.sangita.grantha.shared.presentation.RasikaCopy
 import com.sangita.grantha.shared.presentation.theme.RasikaMotion
 import com.sangita.grantha.shared.presentation.theme.RasikaTheme
 import com.sangita.grantha.shared.presentation.theme.RasikaTokens
+import com.sangita.grantha.shared.presentation.theme.rememberReduceMotion
 
 @Composable
 fun LoadStateContent(
@@ -40,7 +41,7 @@ fun LoadStateContent(
 ) {
     when (state) {
         LoadState.Idle -> content()
-        LoadState.Loading -> SkeletonCards(modifier)
+        LoadState.Loading -> SkeletonCards(modifier, reduceMotion = rememberReduceMotion())
         LoadState.Empty -> MessagePane(emptyTitle, emptyBody, retry = null, modifier = modifier)
         is LoadState.Error -> MessagePane(
             title = RasikaCopy.ERROR_TITLE,
@@ -53,14 +54,23 @@ fun LoadStateContent(
 
 /** Three shimmering placeholder cards, matching the prototype's loading pass. */
 @Composable
-private fun SkeletonCards(modifier: Modifier = Modifier) {
-    val transition = rememberInfiniteTransition(label = "skeleton")
-    val alpha by transition.animateFloat(
-        initialValue = 0.4f,
-        targetValue = 0.9f,
-        animationSpec = infiniteRepeatable(tween(900), RepeatMode.Reverse),
-        label = "skeletonAlpha",
-    )
+private fun SkeletonCards(modifier: Modifier = Modifier, reduceMotion: Boolean = false) {
+    if (reduceMotion) {
+        SkeletonBars(modifier, alpha = 0.65f)
+    } else {
+        val transition = rememberInfiniteTransition(label = "skeleton")
+        val alpha by transition.animateFloat(
+            initialValue = 0.4f,
+            targetValue = 0.9f,
+            animationSpec = infiniteRepeatable(tween(900), RepeatMode.Reverse),
+            label = "skeletonAlpha",
+        )
+        SkeletonBars(modifier, alpha)
+    }
+}
+
+@Composable
+private fun SkeletonBars(modifier: Modifier, alpha: Float) {
     Column(
         modifier
             .fillMaxWidth()
@@ -110,7 +120,7 @@ private fun MessagePane(
     Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         AnimatedVisibility(
             visible = true,
-            enter = fadeIn(tween(RasikaMotion.messageAppearMs)),
+            enter = fadeIn(tween(if (rememberReduceMotion()) 0 else RasikaMotion.messageAppearMs)),
         ) {
             Column(
                 modifier = Modifier.padding(RasikaTokens.lg),
