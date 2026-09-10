@@ -2,13 +2,19 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-03-10 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Evidence record |
 
 # Purpose
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../01-requirements/features/README.md).
 Bundle together the Q1 March 2026 dependency updates that span across the frontend, backend, and extraction worker. This changeset directly applies the versions cataloged previously in `TRACK-088: Current Versions & Gitignore Update`.
 
-# Changes Summary
+## Changes Summary
 | File | Change |
 |:---|:---|
 | `gradle/libs.versions.toml` | Bumped PostgreSQL Driver (42.7.10), Logback (1.5.32), Jsoup (1.22.1), and Caffeine (3.2.3) |
@@ -17,3 +23,7 @@ Bundle together the Q1 March 2026 dependency updates that span across the fronte
 | `tools/krithi-extract-enrich-worker/Dockerfile` | Updated python and tooling base versions |
 | `tools/krithi-extract-enrich-worker/pyproject.toml` | Updated dependency versions |
 | `tools/krithi-extract-enrich-worker/uv.lock` | Regenerated lock file with updated hashes and dependencies |
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

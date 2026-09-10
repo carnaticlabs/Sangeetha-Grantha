@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-02-19 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangita Grantha Team |
+| **Document Type** | Evidence record |
 
 # TRACK-064 Unified Extraction Migration Handoff (2026-02-12)
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../01-requirements/features/README.md).
 
 ---
 
@@ -283,3 +289,7 @@ ORDER BY ordinality;
 - `tools/krithi-extract-enrich-worker/tests/test_worker.py`
 - `tools/sangita-cli/src/commands/test.rs`
 - `tools/sangita-cli/README.md`
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-02-19 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Claude Opus 4.6 (requested by Seshadri) |
+| **Document Type** | Evidence record |
 
 # Analysis: Consolidating All Extraction Logic into the Python Service
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../01-requirements/features/README.md).
 
 ---
 
@@ -438,3 +444,7 @@ Apply the retrospective's key lesson: **one working slice first, then expand.**
 ---
 
 *Analysis conducted 2026-02-12 by Claude Opus 4.6.*
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

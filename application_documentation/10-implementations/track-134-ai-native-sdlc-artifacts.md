@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.1 |
-| **Last Updated** | 2026-08-29 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Evidence record |
 
 # AI-native SDLC artifacts (TRACK-134)
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../01-requirements/features/README.md).
 
 Close the gaps around agent Build speed: committed Intent / Spec / Plan on conductor tracks, review policy, session verification, edit-time hooks, and deterministic evals of the files that steer agents.
 
@@ -44,3 +50,7 @@ python3 conductor/check-registry-sync.py
 ```
 
 Ref: [ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md), [Domain Model §6](../01-requirements/domain-model.md#6-musicological-correctness-rules-lakshana).
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

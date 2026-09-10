@@ -2,11 +2,14 @@
 |:---|:---|
 | **Status** | Ready to use — Plan acceptance remains |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-09-05 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Codex, for Seshadri |
+| **Document Type** | Current guide |
 | **Track** | TRACK-138 |
 
 # Track 138: Agentic build guide
+
+---
 
 ## Purpose and current state
 
@@ -199,3 +202,7 @@ The next action is acceptance of the concrete Draft Plan in Track 138; Intent an
 - **2026-09-05 — TRACK-138:** Recorded the user-confirmed build-graph interpretation; prepared the coordination protocol, ownership model, verification loop and kickoff/resume prompt. Required musicological Spec review completed and incorporated in the track. No app implementation or scheduled agent loop started.
 
 - **2026-09-05 — TRACK-138:** Spec acceptance recorded; concrete Draft Plan prepared in the track after read-only backend/mobile specialist inspection. Plan acceptance is the remaining implementation gate.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

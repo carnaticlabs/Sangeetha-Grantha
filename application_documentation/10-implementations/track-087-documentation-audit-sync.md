@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-03-10 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Evidence record |
 
 # Implementation Summary: TRACK-087 Documentation Audit & Sync
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../01-requirements/features/README.md).
 
 ## Purpose
 This document summarizes the synchronization of various text documentation files to match the current technical state of the project. A significant amount of infrastructure has shifted (PostgreSQL 15→18, Rust CLI→Python migration runner) and tests have been fixed, so project meta-documentation, C4 architecture diagrams, and ADRs must be updated.
@@ -29,3 +35,7 @@ Ref: application_documentation/10-implementations/track-087-documentation-audit-
 | `modules/frontend/sangita-admin-web/CLAUDE.md` | Synced context knowledge. |
 | `README.md` | Synced root documentation with the latest infrastructure. |
 | `.gitignore`, `.claude-context.md` | Ignored new Python tools and synced context settings. |
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

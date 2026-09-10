@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Archived |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Archive |
 
 # CSV Import Strategy Implementation - Critical Review
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../../01-requirements/features/README.md).
 
 
 ---
@@ -742,3 +748,7 @@ The implementation is **production-ready for current scale** but needs the above
 ---
 
 *End of Review*
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

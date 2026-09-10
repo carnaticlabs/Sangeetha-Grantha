@@ -2,8 +2,9 @@
 |:---|:---|
 | **Status** | Active — TRACK-140 Plan accepted |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-09-09 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Current guide |
 
 # TRACK-140: dependency graph and execution loop
 
@@ -229,3 +230,7 @@ external need. Keep all three release gates and R01–R18/M1–M9 in scope.
 ## Change record
 
 - **2026-09-09:** Prepared with the TRACK-140 Draft Plan after Seshadri accepted its detailed Spec. No implementation loop has started. The graph is development structure, and this guide is reviewable execution guidance.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

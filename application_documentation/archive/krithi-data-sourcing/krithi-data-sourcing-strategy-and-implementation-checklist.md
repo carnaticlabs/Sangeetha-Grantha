@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Archived |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Archive |
 
 # Krithi Data Sourcing Strategy and Implementation Checklist
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current ingestion guide](./../../01-requirements/features/bulk-import/02-implementation/technical-implementation-guide.md).
 
 > [!WARNING]
 > This document has been **archived**. It is superseded by:
@@ -417,3 +423,7 @@ Use this as the execution checklist for engineering, data, and editorial teams.
 3. Implement structural voting MVP and review UI evidence panel.
 4. Run Dikshitar pilot batch with end-to-end quality measurement.
 5. Finalize production rollout and runbook updates based on pilot outcomes.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

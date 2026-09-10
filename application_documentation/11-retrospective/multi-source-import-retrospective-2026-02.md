@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-07-18 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Evidence record |
 
 # Multi-Source Import Retrospective
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../01-requirements/features/README.md).
 
 ---
 
@@ -300,3 +306,7 @@ Each step is a checkpoint. If step 3 fails, you don't waste time on steps 4-6.
 ---
 
 *Retrospective conducted 2026-02-12 by Claude Opus 4.6, based on analysis of 25 conductor tracks, 3 analysis reports, git history, and codebase exploration.*
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

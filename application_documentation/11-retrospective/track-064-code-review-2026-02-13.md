@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.1 |
-| **Last Updated** | 2026-02-19 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Claude Code Review |
+| **Document Type** | Evidence record |
 
 # TRACK-064 Code Review & Validation (2026-02-13)
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../01-requirements/features/README.md).
 
 ## Purpose
 Independent review of all code changes made under TRACK-064 (Unified Extraction Engine Migration) and the key-collision milestone, assessing alignment with the track plan, code quality, and identifying any course corrections needed.
@@ -124,3 +130,7 @@ The architecture is sound — intelligence is moving to Python, Kotlin is becomi
 - `database/migrations/31__extraction_queue_html_support.sql`
 - `database/migrations/32__normalize_entity_resolution_cache_confidence.sql`
 - `modules/frontend/sangita-admin-web/src/pages/ImportReview.tsx`
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

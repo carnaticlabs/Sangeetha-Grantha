@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-09-05 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Evidence record |
 
 # E2E Pipeline Validation & Lyric Section Consistency Fix
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../01-requirements/features/README.md).
 
 ## Purpose
 
@@ -47,3 +53,7 @@ Prove the CSV bulk import + PDF extraction pipeline end-to-end with real Dikshit
 Trinity-import residue after the later 1,226-krithi corpus is closed in [TRACK-133](./track-133-section-mismatch-remediation.md) (108 → 0).
 
 Ref: application_documentation/10-implementations/track-079-e2e-pipeline-section-fix.md
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

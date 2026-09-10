@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-03-07 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Evidence record |
 
 # Refactor Shared DTOs and DAL Mappers
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../01-requirements/features/README.md).
 
 ## Purpose
 Split large 300+ line DTO and mapper files into focused domain-specific files to improve maintainability and discoverability.
@@ -25,3 +31,7 @@ Split large 300+ line DTO and mapper files into focused domain-specific files to
 | `modules/backend/dal/.../KrithiDtoMappers.kt` | New file |
 
 Ref: application_documentation/10-implementations/TRACK-073-shared-dtos-dal-mappers.md
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

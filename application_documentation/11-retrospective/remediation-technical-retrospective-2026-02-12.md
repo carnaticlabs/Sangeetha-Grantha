@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Final |
 | **Version** | 1.0.1 |
-| **Last Updated** | 2026-02-19 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangita Grantha Architect |
+| **Document Type** | Evidence record |
 
 # Technical Retrospective: Multi-Source Import Remediation
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../01-requirements/features/README.md).
 
 ## 1. Executive Summary
 This retrospective analyzes the specific technical and process hurdles encountered during the final remediation of the Multi-Source Import pipeline (Feb 12, 2026). While the pipeline is now functional, several "leaky abstractions" in the architecture and development environment caused significant delays.
@@ -55,3 +61,7 @@ Batches frequently stalled at 50% progress during CSV imports.
 
 ---
 *Retrospective conducted by Sangita Grantha Architect.*
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-09-05 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Evidence record |
 
 # Curator Review UI & Section Issue Tracking
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../01-requirements/features/README.md).
 
 ## Purpose
 
@@ -42,3 +48,7 @@ Provide a curator review interface for managing unmatched PDF extractions and tr
 | `types.ts` | CURATOR_REVIEW enum value |
 
 Ref: application_documentation/10-implementations/track-080-curator-review-ui.md
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

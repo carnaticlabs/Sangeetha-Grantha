@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.2.0 |
-| **Last Updated** | 2026-06-24 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Design reference |
 
 # 🤖 AI & Vibe Coding References
+
+---
+
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [implemented AI capabilities](./integration-summary.md) for implemented behavior and current operating steps.
 
 
 ---
@@ -142,3 +148,7 @@ make test-frontend  # Run frontend tests
 ---
 
 For the complete documentation index, see [README.md](../README.md).
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

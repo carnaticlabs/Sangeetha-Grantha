@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Archived |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Archive |
 
 # Bulk Import Implementation - Critical Design & Code Review
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../../01-requirements/features/README.md).
 
 
 ---
@@ -1247,3 +1253,7 @@ The following original findings are **still accurate and important**:
 - [csv-import-strategy.md](../../01-requirements/features/bulk-import/01-strategy/csv-import-strategy.md) - Original strategy
 - [technical-implementation-guide.md](../../01-requirements/features/bulk-import/02-implementation/technical-implementation-guide.md) - Clarified requirements (Section 1.1)
 - [TRACK-001](../../../conductor/tracks/TRACK-001-bulk-import-krithis.md) - Implementation tracking
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

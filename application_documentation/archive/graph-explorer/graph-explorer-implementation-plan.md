@@ -2,8 +2,9 @@
 |:---|:---|
 | **Status** | Archived |
 | **Version** | 0.1.0 |
-| **Last Updated** | 2026-02-03 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | System |
+| **Document Type** | Archive |
 
 ---
 
@@ -24,6 +25,11 @@ related_docs:
 ---
 
 # Graph Explorer Implementation Plan
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../../01-requirements/features/README.md).
 ## PostgreSQL + Cytoscape.js Approach
 
 ## Executive Summary
@@ -1100,3 +1106,7 @@ const cy = cytoscape({
 2. Create implementation tickets
 3. Begin Phase 1 implementation
 4. Regular progress reviews
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

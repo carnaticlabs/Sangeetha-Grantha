@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-09-06 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Evidence record |
 
 # Section-Count Mismatch Remediation (TRACK-133)
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../01-requirements/features/README.md).
 
 Close the residual Trinity-import section-count mismatches (29 krithis, 108 variant rows, all “fewer than canon”) and leave a durable worker parser so a later re-extract cannot reintroduce the last glue.
 
@@ -86,3 +92,7 @@ Also in this track: uncapped `/re-extract` by source URL, `POST /v1/admin/import
 ## Boundary
 
 The worker does not write canonical tables. Re-extract / reingest goes through Kotlin. Do not put a new corpus data-fix in Flyway — TRACK-139 retired that vehicle.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

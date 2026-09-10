@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-03-10 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Evidence record |
 
 # Archive Rust CLI — Replace with Python db-migrate + Makefile
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../01-requirements/features/README.md).
 
 ## Purpose
 
@@ -27,3 +33,7 @@ Replace Rust `sangita-cli` with Python `db-migrate` for migrations and a Makefil
 | `.claude/commands/*.md` | Updated to use `make` targets |
 
 Ref: application_documentation/10-implementations/track-078-rust-cli-archive.md
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

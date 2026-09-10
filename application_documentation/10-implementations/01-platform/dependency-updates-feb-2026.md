@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Evidence record |
 
 # Dependency Updates (Feb 2026) Implementation Summary
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../../01-requirements/features/README.md).
 
 ## Overview
 This document summarizes the changes applied during the February 2026 dependency update cycle (TRACK-038). The goal was to bring the stack to the latest stable versions, prioritizing security fixes and major platform upgrades.
@@ -33,3 +39,7 @@ This document summarizes the changes applied during the February 2026 dependency
 - **Backend**: `./gradlew test` (compilation verified).
 - **Frontend**: `bun run build` (successful).
 - **Rust**: `cargo build` (successful).
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

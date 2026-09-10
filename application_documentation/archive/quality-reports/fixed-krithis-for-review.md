@@ -1,4 +1,17 @@
+| Metadata | Value |
+|:---|:---|
+| **Status** | Archived |
+| **Version** | 1.0.0 |
+| **Last Updated** | 2026-09-10 |
+| **Author** | Sangeetha Grantha Team |
+| **Document Type** | Archive |
+
 # Fixed Krithis — Section-Issues Cleanup (for review)
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../../01-requirements/features/README.md).
 
 Generated 2026-07-16. Automated fix of the Curator "Section Issues" queue via the
 Latin-as-template section split (all writes audit-logged as `UPDATE_LYRIC_VARIANT_SECTIONS`).
@@ -522,3 +535,7 @@ language variants were fixed; `secs` = canonical section count now enforced on e
 | 507 | Tyagaraja | vinavE O manasA | kn,ml,sa,ta,te | 5 | 3 | `78eda9c2-9ed0-403d-ab7e-953b713519d8` |
 | 508 | Tyagaraja | virAja turaga | kn,ml,sa,ta,te | 5 | 3 | `28935d89-dbfb-4d3b-8ce5-094c94136ab5` |
 | 509 | Tyagaraja | vishNu vAhanuDu | kn,ml,sa,ta,te | 5 | 5 | `04ab08e7-0967-4a18-a070-0778232fb3dc` |
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

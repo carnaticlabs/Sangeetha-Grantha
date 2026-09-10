@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Design reference |
 
 # Google Gemini Selection Rationale
+
+---
+
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [implemented AI capabilities](./integration-summary.md) for implemented behavior and current operating steps.
 
 
 > **Related**: [ADR-006](../02-architecture/decisions/ADR-006-gemini-integration.md)
@@ -80,3 +86,7 @@ This rationale informs multiple implementation tracks (transliteration, scraping
   - Ensure the TRACK file’s **Progress Log** is updated as the Gemini capability moves from evaluation → POC → production.
 
 Conductor thus captures **how** and **where** Gemini is used operationally, while this document captures **why** it was chosen.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

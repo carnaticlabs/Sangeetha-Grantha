@@ -2,11 +2,17 @@
 |:---|:---|
 | **Status** | In progress |
 | **Version** | 0.1.0 |
-| **Last Updated** | 2026-09-05 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | TRACK-138 coordinator |
+| **Document Type** | Evidence record |
 | **Track** | [TRACK-138](../../conductor/tracks/TRACK-138-rasika-mobile-app.md) |
 
 # TRACK-138 Rasika mobile MVP — implementation evidence
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../01-requirements/features/README.md).
 
 Living report for Node C onward. Not a claim that the MVP is complete.
 
@@ -119,3 +125,7 @@ Live gaps: only one published composition, so combined filters/paging/zero-resul
 - CI: `mobile-jvm`, `mobile-android` (`setup-android` + `assembleDebug`), `mobile-ios` (`verify-ios.sh` on macos-15)
 
 Ref: application_documentation/05-frontend/mobile/track-138-visual-design.md
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)
