@@ -7,10 +7,11 @@ plugins {
 }
 
 kotlin {
-    androidLibrary {
+    android {
         namespace = "com.sangita.grantha.shared.presentation"
         compileSdk = 37
         minSdk = 24
+        withHostTest {}
         compilerOptions {
             jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
         }
@@ -20,7 +21,7 @@ kotlin {
     jvm()
 
     // iosX64 (Intel simulator) dropped: Compose Multiplatform 1.11+ no longer
-    // publishes x64 iOS artifacts. The pure-Kotlin :domain module still targets it.
+    // publishes x64 iOS artifacts.
     iosArm64()
     iosSimulatorArm64()
 
@@ -30,46 +31,33 @@ kotlin {
     // (the flag now only emits a redundancy warning — zero-warnings target).
 
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                api(project(":modules:shared:domain"))
-                api(project(":modules:shared:mobile-data"))
+        commonMain.dependencies {
+            api(project(":modules:shared:domain"))
+            api(project(":modules:shared:mobile-data"))
 
-                implementation(libs.compose.runtime)
-                implementation(libs.compose.foundation)
-                implementation(libs.compose.material3)
-                implementation(libs.compose.material.icons.extended)
-                implementation(libs.compose.ui)
-                implementation(libs.compose.components.resources)
-                implementation(libs.compose.ui.backhandler)
-                implementation(libs.androidx.lifecycle.runtime.compose)
-                implementation(libs.androidx.navigationevent.compose)
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.foundation)
+            implementation(libs.compose.material3)
+            implementation(libs.compose.material.icons.extended)
+            implementation(libs.compose.ui)
+            implementation(libs.compose.components.resources)
+            implementation(libs.compose.ui.backhandler)
+            implementation(libs.androidx.lifecycle.runtime.compose)
+            implementation(libs.androidx.navigationevent.compose)
 
-                implementation(libs.kotlinx.coroutines.core)
-                implementation(libs.kotlinx.datetime)
-                implementation(libs.kotlinx.serialization.json)
-            }
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.datetime)
+            implementation(libs.kotlinx.serialization.json)
         }
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
-                implementation(libs.kotlinx.coroutines.test)
-            }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
         }
-
-        val androidMain by getting {
-            dependencies {
-                implementation(libs.ktor.client.okhttp)
-                implementation(libs.androidx.activity.compose)
-                implementation(libs.androidx.core.ktx)
-            }
+        androidMain.dependencies {
+            implementation(libs.ktor.client.okhttp)
+            implementation(libs.androidx.activity.compose)
+            implementation(libs.androidx.core.ktx)
         }
-
-        val jvmMain by getting
-        val jvmTest by getting
-
-        val iosArm64Test by getting
-        val iosSimulatorArm64Test by getting
     }
 
     targets.withType(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget::class.java)
