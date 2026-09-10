@@ -1,7 +1,7 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.6.0 |
+| **Version** | 1.7.0 |
 | **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Current guide |
@@ -25,7 +25,7 @@
 | Tool | Version | Notes |
 |------|---------|-------|
 | Java | `temurin-25` | Temurin distribution, JVM toolchain |
-| Bun | `1.4.0` | Frontend package manager & runtime |
+| Bun | `1.4.2` | Frontend package manager & runtime |
 | Python | `3.14` (mise); `>=3.14` (worker) | Extraction/enrichment and indexing; migrations run through Flyway |
 | Docker Compose | `latest` | Container orchestration |
 
@@ -39,7 +39,7 @@
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| Kotlin | `2.4.10` | Language version |
+| Kotlin | `2.4.20` | Language version |
 | Ktor | `3.5.2` | HTTP server & client framework |
 | Exposed | `1.5.0` | SQL ORM (DSL-based) |
 | Koin | `4.2.2` | Dependency injection |
@@ -49,7 +49,7 @@
 | Library | Version | Purpose |
 |---------|---------|---------|
 | Coroutines | `1.11.0` | Async programming |
-| DateTime | `0.7.1` | Cross-platform date/time (0.8 deferred — TRACK-018 history) |
+| DateTime | `0.8.0` | Cross-platform date/time (TRACK-142; Instant already on `kotlin.time`) |
 | Serialization JSON | `1.11.0` | JSON serialization |
 
 ### Database & Infrastructure
@@ -58,19 +58,17 @@
 |---------|---------|---------|
 | PostgreSQL Driver | `42.7.13` | JDBC driver (CVE-2026-54291 fix) |
 | HikariCP | `7.1.0` | Connection pooling |
-| Logback | `1.5.38` | Logging framework (1.6 deferred) |
-| Logstash Encoder | `8.0` | JSON log formatting |
+| Logback | `1.6.3` | Logging framework |
+| Logstash Encoder | `9.0` | JSON log formatting |
 | Commons CSV | `1.14.1` | CSV parsing |
-| Jsoup | `1.23.2` | HTML parsing |
-| Caffeine | `3.2.4` | In-memory caching |
 | dotenv-kotlin | `6.5.1` | Environment variable loading |
 
 ### Security & Auth
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| JWT (Auth0) | `4.6.0` | JWT token handling |
-| Google Auth | `1.51.0` | OAuth2 (future SSO) |
+| JWT (Auth0) | `4.6.1` | JWT token handling |
+| Google Auth | `1.52.0` | OAuth2 (future SSO) |
 | password4j | `1.8.4` | argon2id password hashing (TRACK-114) |
 
 ### Build & Packaging
@@ -98,7 +96,7 @@
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| React | `19.2.8` | UI framework |
+| React | `19.3.0` | UI framework |
 | TypeScript | `6.0.x` | Type-safe JavaScript (TypeScript 7 deferred — no programmatic API until 7.1) |
 | Vite | `8.2.2` | Build tool & dev server (Rolldown bundler) |
 
@@ -114,15 +112,14 @@
 |---------|---------|---------|
 | React Router | `7.18.3` | Client-side routing |
 | TanStack Query | `5.102.8` | Data fetching & caching |
-| Google GenAI | `1.34.0` | AI integration (JS 2.x deferred) |
 
 ### Development & Testing
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| ESLint | `10.9.1` | Code linting (via `bun run`; needs Bun runtime). `eslint-plugin-react-hooks` pinned **7.0.1** — 7.1.1's `react-hooks/immutability` is a large UI refactor, deferred. |
-| Vitest | `4.1.11` | Unit testing (Vitest 5 deferred — still RC) |
-| Playwright | `1.62.1` | E2E testing |
+| ESLint | `10.10.0` | Code linting (via `bun run`; needs Bun runtime). `eslint-plugin-react-hooks` pinned **7.0.1** — 7.1.1's `react-hooks/immutability` still errors on BulkImport/CuratorReview (TRACK-135 loading-loop). |
+| Vitest | `5.0.0` | Unit testing |
+| Playwright | `1.63.0` | E2E testing |
 
 ---
 
@@ -142,9 +139,9 @@
 | indic-transliteration | `2.3.82` | Script conversion (Devanagari ↔ Tamil/Telugu/etc.) |
 | Pydantic | `2.13.5` | Schema validation |
 | Pydantic Settings | `2.15.0` | Environment-based config validation |
-| psycopg | `3.3.4` | PostgreSQL driver (async-capable) |
-| google-genai | `>=2.0.0` (resolved `2.20.0`) | Unified Gemini SDK; 2.0 breaking changes are Interactions-API-only — the worker's generate_content/batches surface is unaffected (TRACK-124) |
-| RapidFuzz | `3.14.5` | Fast fuzzy matching |
+| psycopg | `3.3.5` | PostgreSQL driver (async-capable) |
+| google-genai | `>=2.0.0` (resolved `2.22.0`) | Unified Gemini SDK; 2.0 breaking changes are Interactions-API-only — the worker's generate_content/batches surface is unaffected (TRACK-124) |
+| RapidFuzz | `3.14.6` | Fast fuzzy matching |
 | HTTPX | `0.28.1` | Async HTTP client |
 | BeautifulSoup4 | `4.15.0` | HTML parsing |
 | structlog | `26.1.0` | Structured JSON logging |
@@ -155,14 +152,14 @@
 | Library | Version | Purpose |
 |---------|---------|---------|
 | pytest | `9.1.1` | Test framework |
-| Ruff | `0.16.5` | Linter & formatter |
+| Ruff | `0.16.6` | Linter & formatter |
 | mypy | `2.3.1` | Static type checker |
 
 ### Migration Tool
 
 | Component | Version | Notes |
 |---------|---------|---------|
-| Flyway Community | `12.11.0` | Single migration engine ([ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)). Make/dev/CI via `flyway/flyway:12.11.0-alpine`; Kotlin Testcontainers via the Flyway JVM API. Pinned in `gradle/libs.versions.toml` (`flyway`) and `compose.yaml`. Flyway 13 deferred. |
+| Flyway Community | `13.5.0` | Single migration engine ([ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)). Make/dev/CI via `flyway/flyway:13.5.0-alpine`; Kotlin Testcontainers via the Flyway JVM API. Pinned in `gradle/libs.versions.toml` (`flyway`) and `compose.yaml`. |
 
 Migrations are standardized on **Flyway Community** ([ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)). The previous Python tool (`tools/db-migrate`, psycopg `>=3.1`) is superseded and archived (`archive/tools/db-migrate/`, TRACK-110).
 
@@ -183,10 +180,11 @@ Shared integration-test infrastructure (`IntegrationTestBase`, `SangitaPostgres`
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| Kotlin | `2.4.10` | Shared with backend |
+| Kotlin | `2.4.20` | Shared with backend |
 | Compose Multiplatform | `1.12.0` | Cross-platform UI (material3 `1.9.0` own train; icons-extended frozen `1.7.3`; iosX64 dropped by CMP 1.11+; **compileSdk 37** required by AndroidX Compose 1.12) |
 | JetBrains Lifecycle (KMP) | `2.11.0` | `lifecycle-runtime-compose` / `lifecycle-viewmodel-compose` companion to CMP 1.12 (TRACK-138) |
-| Android Gradle Plugin | `9.3.2` | Android build (Gradle wrapper `9.7.1`) |
+| JetBrains Navigation Event (KMP) | `1.1.0` | `navigationevent-compose` companion to CMP 1.12; `NavigationEventHandler` replaces deprecated Compose `BackHandler` (TRACK-142) |
+| Android Gradle Plugin | `9.4.0` | Android build (Gradle wrapper `9.7.1`) |
 | Ktor Client | `3.5.2` | HTTP client |
 
 ---
@@ -197,8 +195,8 @@ Shared integration-test infrastructure (`IntegrationTestBase`, `SangitaPostgres`
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| AWS SDK | `2.54.7` | S3 storage (future) |
-| Google Auth | `1.51.0` | SSO integration (future) |
+| AWS SDK | `2.54.15` | S3 storage (future) |
+| Google Auth | `1.52.0` | SSO integration (future) |
 
 ---
 
@@ -214,6 +212,7 @@ Shared integration-test infrastructure (`IntegrationTestBase`, `SangitaPostgres`
 
 | Date | Change |
 |------|--------|
+| 2026-09-10 | TRACK-142: Kotlin 2.4.10→2.4.20, React 19.2.8→19.3.0, AGP 9.3.2→9.4.0, Flyway 12.11.0→13.5.0, Logback 1.5.38→1.6.3 + encoder 9.0, datetime 0.7.1→0.8.0, Vitest 4.1.11→5.0.0, jsdom 26→30, jest-dom 6→7, Bun 1.4.0→1.4.2, plus JVM/frontend/Python patch lines. Removed unused frontend `@google/genai` (LLM stays server-side). Rasika `BackHandler` → `NavigationEventHandler` (`navigationevent-compose` 1.1.0). Retired unused Kotlin lyric scrape path (`KrithiStructureParser`, Jsoup, Caffeine). TypeScript 7 / CMP 1.13-alpha / serialization 1.12-RC / Gradle 9.8-rc deferred. |
 | 2026-09-09 | TRACK-140: recorded AndroidX Test core/runner `1.7.0` and ext-junit `1.3.0` for Rasika instrumentation. |
 | 2026-09-05 | TRACK-138: recorded JetBrains Lifecycle KMP `2.11.0` (CMP 1.12 companion) for Rasika mobile. |
 | 2026-08-29 | Bun 1.3.7→1.4.0 (mise pin, CI `oven-sh/setup-bun` + fallback installer, monorepo-orchestration skill). Frontend `bun install` + typecheck + build green on 1.4.0. |

@@ -5,14 +5,16 @@ plugins {
 }
 
 kotlin {
-    androidLibrary {
+    android {
         namespace = "com.sangita.grantha.shared.domain"
         compileSdk = 37
         minSdk = 24
+        withHostTest {}
     }
     jvm()
 
-    iosX64()
+    // iosX64 (Intel simulator) dropped: Compose Multiplatform 1.11+ no longer
+    // publishes x64 iOS artifacts, and ARM CI/dev hosts cannot run that target.
     iosArm64()
     iosSimulatorArm64()
 
@@ -22,56 +24,25 @@ kotlin {
     // (the flag now only emits a redundancy warning — zero-warnings target).
 
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(libs.kotlinx.datetime)
-                implementation(libs.kotlinx.coroutines.core)
-                implementation(libs.kotlinx.serialization.json)
-                implementation(libs.bundles.ktor.client)
-            }
+        commonMain.dependencies {
+            implementation(libs.kotlinx.datetime)
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.bundles.ktor.client)
         }
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
-                implementation(libs.kotlinx.coroutines.test)
-            }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
         }
-
-        val jvmMain by getting {
-            dependencies {
-                implementation(libs.kotlinx.datetime)
-            }
+        jvmMain.dependencies {
+            implementation(libs.kotlinx.datetime)
         }
-        val jvmTest by getting
-
-        val androidMain by getting {
-            dependencies {
-                implementation(libs.ktor.client.okhttp)
-            }
+        androidMain.dependencies {
+            implementation(libs.ktor.client.okhttp)
         }
-
-        val iosX64Main by getting {
-            dependencies {
-                implementation(libs.ktor.client.darwin)
-                implementation(libs.kotlinx.datetime)
-            }
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
         }
-        val iosArm64Main by getting {
-            dependencies {
-                implementation(libs.ktor.client.darwin)
-                implementation(libs.kotlinx.datetime)
-            }
-        }
-        val iosSimulatorArm64Main by getting {
-            dependencies {
-                implementation(libs.ktor.client.darwin)
-                implementation(libs.kotlinx.datetime)
-            }
-        }
-
-        val iosX64Test by getting
-        val iosArm64Test by getting
-        val iosSimulatorArm64Test by getting
     }
 
     targets.withType(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget::class.java)

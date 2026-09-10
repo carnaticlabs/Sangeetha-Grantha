@@ -56,8 +56,6 @@ dependencies {
     implementation(libs.kotlinx.datetime)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.commons.csv)
-    implementation(libs.jsoup)
-    implementation(libs.caffeine)
     implementation(libs.password4j)
 
     testImplementation(kotlin("test"))

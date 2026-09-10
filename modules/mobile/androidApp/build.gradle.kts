@@ -78,9 +78,11 @@ val syncPresentationComposeResources = tasks.register<Sync>("syncPresentationCom
 }
 
 android {
-    sourceSets.getByName("main").assets.srcDir(
-        layout.buildDirectory.dir("generated/composeResourcesAssets").get().asFile,
-    )
+    sourceSets.named("main") {
+        assets.directories.add(
+            layout.buildDirectory.dir("generated/composeResourcesAssets").get().asFile.absolutePath,
+        )
+    }
 }
 
 tasks.matching { it.name.startsWith("merge") && it.name.endsWith("Assets") }

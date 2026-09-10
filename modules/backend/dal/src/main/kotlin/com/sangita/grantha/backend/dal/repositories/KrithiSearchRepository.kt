@@ -406,7 +406,7 @@ class KrithiSearchRepository {
                     LEFT JOIN ragas r ON k.primary_raga_id = r.id
                     LEFT JOIN talas t ON k.tala_id = t.id
             """.trimIndent())
-            args += TextColumnType() to (if (vectorBranch) toVectorLiteral(queryVector!!) else null)
+            args += TextColumnType() to queryVector?.let(::toVectorLiteral)
             args += TextColumnType() to rawQuery
             if (vectorBranch) {
                 append("\n                    WHERE e.profile_id = ?")

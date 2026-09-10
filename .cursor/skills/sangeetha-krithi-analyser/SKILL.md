@@ -120,10 +120,9 @@ Keep the high-level architecture in mind when debugging:
     - `structure_parser.py`: detects section headers and builds a structured representation.
     - `schema.py`: defines the `CanonicalExtraction` and related schema.
   - Kotlin backend (`modules/backend/api/`):
-    - `.../services/scraping/SectionHeaderDetector.kt`
-    - `.../services/scraping/KrithiStructureParser.kt`
     - `.../services/LyricVariantPersistenceService.kt`
     - `.../services/StructuralVotingProcessor.kt`
+    - `.../services/scraping/StructuralVotingEngine.kt`
   - Flow:
     - `CanonicalExtraction` (Python) → section & variant data.
     - Kotlin services match to existing krithis, persist variants and sections, and reconcile conflicts.

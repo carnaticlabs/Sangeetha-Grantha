@@ -1,7 +1,7 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.29.0 |
+| **Version** | 1.30.0 |
 | **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
 
@@ -145,6 +145,7 @@
 | [TRACK-139](./tracks/TRACK-139-retire-corpus-data-fix-migrations.md) | Retire Corpus Data-Fix Migrations | In Progress — V58–V62 retired; five krithis reingested |
 | [TRACK-140](./tracks/TRACK-140-rasika-discovery-experience.md) | Rasika — Discovery and Reading Experience | In progress — Plan accepted |
 | [TRACK-141](./tracks/TRACK-141-documentation-facelift.md) | Documentation Facelift and Feature Reconciliation | Done |
+| [TRACK-142](./tracks/TRACK-142-library-upgrades-sep-2026.md) | Library Upgrades — September 2026 (Batch 1–3d, incl. GA majors) | In Progress |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)

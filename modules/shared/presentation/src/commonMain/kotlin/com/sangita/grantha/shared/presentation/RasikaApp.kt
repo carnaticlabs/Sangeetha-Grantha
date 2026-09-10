@@ -19,9 +19,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.backhandler.BackHandler
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationEventHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import com.sangita.grantha.shared.presentation.browse.BrowsePresenter
 import com.sangita.grantha.shared.presentation.browse.BrowseScreen
 import com.sangita.grantha.shared.presentation.components.RasikaPrimaryButton
@@ -49,7 +50,6 @@ import com.sangita.grantha.shared.presentation.theme.RasikaTheme
 import com.sangita.grantha.shared.presentation.theme.RasikaTokens
 import com.sangita.grantha.shared.presentation.theme.rememberReduceMotion
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun RasikaApp(container: MobileAppContainer) {
     val navigator = remember { RasikaNavigator() }
@@ -89,10 +89,16 @@ fun RasikaApp(container: MobileAppContainer) {
 
     RasikaTheme(appearance = prefs.appearance, textSize = prefs.textSize) {
         val reduceMotion = rememberReduceMotion()
-        BackHandler(enabled = navigator.stackSnapshot().size > 1) {
-            navigator.back()
-            sync()
-        }
+        val backEventState = rememberNavigationEventState(currentInfo = NavigationEventInfo.None)
+        NavigationEventHandler(
+            state = backEventState,
+            isForwardEnabled = false,
+            isBackEnabled = navigator.stackSnapshot().size > 1,
+            onBackCompleted = {
+                navigator.back()
+                sync()
+            },
+        )
         Scaffold(
             containerColor = MaterialTheme.colorScheme.background,
             bottomBar = {

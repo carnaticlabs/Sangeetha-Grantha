@@ -11,7 +11,7 @@ This skill ensures the Sangita Grantha ingestion pipeline remains robust, "truth
 
 To prevent logic divergence across the Kotlin backend and Python extraction service:
 
-- **Centralize Heuristics**: Domain-specific heuristics (regex for section detection, name normalization rules) should be centralized. If a rule is updated in Kotlin, it MUST be mirrored in the Python `structure_parser.py` or vice-versa.
+- **Centralize Heuristics**: Section-header detection lives only in Python `structure_parser.py` (Intelligence in Python, Ingestion in Kotlin). Do not reintroduce a Kotlin lyric splitter. Name-normalization and persistence rules stay in Kotlin.
 - **Contract Parity**: Ensure the `CanonicalExtraction` schema in Python exactly matches the `CanonicalExtractionDto` in Kotlin.
 - **Transliteration Awareness**: Normalization must handle the specific transliteration schemes of Indian Classical Music (IAST, Harvard-Kyoto, Velthuis).
 

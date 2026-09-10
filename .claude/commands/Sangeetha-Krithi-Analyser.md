@@ -169,8 +169,6 @@ CanonicalExtraction
 |:---|:---|
 | Python section parser | `tools/krithi-extract-enrich-worker/src/structure_parser.py` |
 | Python schema | `tools/krithi-extract-enrich-worker/src/schema.py` |
-| Kotlin section detector | `modules/backend/api/.../services/scraping/SectionHeaderDetector.kt` |
-| Kotlin structure parser | `modules/backend/api/.../services/scraping/KrithiStructureParser.kt` |
 | Variant persistence | `modules/backend/api/.../services/LyricVariantPersistenceService.kt` |
 | Structural voting | `modules/backend/api/.../services/StructuralVotingProcessor.kt` |
 
