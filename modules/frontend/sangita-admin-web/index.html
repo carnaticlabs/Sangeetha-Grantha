@@ -12,6 +12,22 @@
     rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
     rel="stylesheet" />
+  <script>
+    // Pre-paint theme stamp: mirrors src/theme.ts so the first frame is already
+    // in the curator's chosen theme instead of flashing cream then flipping.
+    (function () {
+      try {
+        var stored = window.localStorage.getItem('sangita-theme');
+        var preference = stored === 'light' || stored === 'dark' ? stored : 'system';
+        var resolved = preference === 'system'
+          ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+          : preference;
+        document.documentElement.setAttribute('data-theme', resolved);
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
 </head>
 
 <body>
