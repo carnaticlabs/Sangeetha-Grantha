@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Design reference |
 
 # Krithi Bulk Import from CSV - Comprehensive Strategy & Design
+
+---
+
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [current ingestion guide](./../02-implementation/technical-implementation-guide.md) for implemented behavior and current operating steps.
 
 
 ---
@@ -960,3 +966,7 @@ The implementation can begin immediately with Phase 1 (CSV parsing), building in
 - [Krithi Import Orchestration](../archive/krithi-import-orchestration-comprehensive-analysis-claude.md)
 - [Database Schema](../../../../04-database/schema.md)
 - Existing Import Infrastructure: `ImportService`, `WebScrapingService`, `ImportRepository`
+
+---
+
+[Documentation home](./../../../../README.md) · [Feature status](./../../README.md)

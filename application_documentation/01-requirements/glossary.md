@@ -1,14 +1,17 @@
-| Metadata         | Value                  |
-| :--------------- | :--------------------- |
-| **Status**       | Active                 |
-| **Version**      | 1.1.0                  |
-| **Last Updated** | 2026-02-08             |
-| **Author**       | Sangeetha Grantha Team |
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-09-10 |
+| **Author** | Sangeetha Grantha Team |
+| **Document Type** | Current guide |
 
 # Sangita Grantha Glossary
 
+---
 
-# Glossary
+
+## Glossary
 
 **Admin Console**  
 Role-based web application used by editors, reviewers, and administrators
@@ -121,3 +124,7 @@ rhythmic subdivision (default: 1).
 **Eduppu**  
 Starting offset in beats for a composition or section. Used in notation
 variants to indicate where the composition begins within the tala cycle.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./features/README.md)

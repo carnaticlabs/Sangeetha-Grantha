@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Design reference |
 
 # GCP Implementation Strategy: Serverless & Scalable
+
+---
+
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [current feature map](./README.md) for implemented behavior and current operating steps.
 
 
 ---
@@ -144,3 +150,7 @@ graph TD
 2.  **IaC (Terraform)**: Script the environment creation (VPC, Cloud SQL, AlloyDB, etc.).
 3.  **Deploy Pipeline**: Connect GitHub Actions to **Google Artifact Registry** and **Cloud Run**.
 4.  **Database Migration**: Use **Database Migration Service (DMS)** to move local/existing Postgres to Cloud SQL with minimal downtime.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./README.md)

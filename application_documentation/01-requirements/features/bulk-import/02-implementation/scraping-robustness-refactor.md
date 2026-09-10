@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Evidence record |
 
 # Scraping Robustness and Refactor Implementation (TRACK-032)
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current ingestion guide](./technical-implementation-guide.md).
 
 ## 1. Purpose
 Enhance `WebScrapingService` robustness by introducing architectural improvements such as caching, rate limiting, and structured text extraction, to support reliable multi-language lyric extraction and reduce Gemini API errors.
@@ -34,3 +40,7 @@ This document serves as the `Ref` for the commit.
 - [x] Refactor scraping logic into dedicated components.
 - [x] Implement caching and rate limiting.
 - [x] Update `WebScrapingService` to utilize new infrastructure.
+
+---
+
+[Documentation home](./../../../../README.md) · [Feature status](./../../README.md)

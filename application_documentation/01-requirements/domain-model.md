@@ -1,14 +1,17 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.3.0 |
-| **Last Updated** | 2026-09-05 |
+| **Version** | 1.4.0 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Current guide |
 
 # Sangita Grantha Domain Model Overview
 
+---
 
-# 1. Purpose
+
+## 1. Purpose
 
 This document outlines the **canonical shared domain model** for
 Sangita Grantha. It connects the product requirements (root PRD) to the
@@ -24,7 +27,7 @@ across all surfaces.
 
 ---
 
-# 2. Core Entities
+## 2. Core Entities
 
 | Entity              | Description                                         | Key Fields                                                                                                     | Related Entities                               |
 |---------------------|-----------------------------------------------------|----------------------------------------------------------------------------------------------------------------|------------------------------------------------|
@@ -59,34 +62,33 @@ Notes:
   and Swarajathi compositions (swara/jathi notation).
 - `Tag`/`KrithiTag` and `Sampradaya` provide thematic and lineage
   classification.
-- `musicalForm` field on `Krithi` supports KRITHI, VARNAM, SWARAJATHI.
+- `musicalForm` on `Krithi` is `KRITHI`, `VARNAM`, `SWARAJATHI`, or **`UNESTABLISHED`**. Unestablished is not a fourth musical form for directories/facets; V1 public catalogue excludes those rows, V2 includes published unclassified compositions without a form badge.
 
 ---
 
-# 3. Shared Enums
+## 3. Shared Enums
 
-Database enums are mirrored in KMM enums; values and semantics must
-stay aligned.
+Database enums are mirrored in KMP DTOs; values and semantics must stay aligned.
 
-| Enum (DB)          | Enum (KMM)          | Values                                           | Usage                          |
+| Enum (DB)          | Enum (KMP)          | Values                                           | Usage                          |
 |--------------------|---------------------|--------------------------------------------------|--------------------------------|
 | `workflow_state_enum` | `WorkflowStateDto` | `draft`, `in_review`, `published`, `archived`    | Editorial lifecycle of Krithis |
 | `language_code_enum`  | `LanguageCodeDto` | `sa`, `ta`, `te`, `kn`, `ml`, `hi`, `en`         | Composition & variant languages|
 | `script_code_enum`    | `ScriptCodeDto`   | `devanagari`, `tamil`, `telugu`, `kannada`, `malayalam`, `latin` | Scripts for lyrics/translit   |
 | `raga_section_enum`   | `RagaSectionDto`  | `pallavi`, `anupallavi`, `charanam`, `other`     | Optional raga–section mapping  |
 | `import_status_enum`  | `ImportStatusDto` | `pending`, `in_review`, `mapped`, `rejected`, `discarded` | Import review lifecycle     |
-| `musical_form_enum`     | `MusicalFormDto`   | `KRITHI`, `VARNAM`, `SWARAJATHI`                 | Musical form classification     |
+| `musical_form_enum`     | `MusicalFormDto`   | `KRITHI`, `VARNAM`, `SWARAJATHI`, `UNESTABLISHED` | Form classification; UNESTABLISHED is unknown, not a form choice |
 
 Mapping rules:
 
-- DB values are lowercase; KMM enums are uppercase equivalents
+- DB values are lowercase; KMP enums are uppercase equivalents
   (e.g. `draft` → `DRAFT`).
 - Serialization uses `kotlinx.serialization` with string values matching
   the DB enums.
 
 ---
 
-# 4. Relationships
+## 4. Relationships
 
 High-level relationships between core entities:
 
@@ -163,7 +165,7 @@ These relationships should be reflected consistently in:
 
 ---
 
-# 5. Alignment Notes
+## 5. Alignment Notes
 
 - The **database schema** is defined in migrations under
   `database/migrations/` and documented in
@@ -194,7 +196,7 @@ Process:
 
 ---
 
-# 6. Musicological Correctness Rules (Lakshana)
+## 6. Musicological Correctness Rules (Lakshana)
 
 These rules encode the musical-domain correctness (*lakshana*) that **all**
 surfaces — data entry, extraction/enrichment, validation, and generated
@@ -205,9 +207,7 @@ incorrect raga scale or tala anga is a data-quality defect, not a cosmetic one.
 
 ## 6.1 Musical Forms
 
-`musical_form_enum` distinguishes `KRITHI`, `VARNAM`, and `SWARAJATHI`; each
-has different structural requirements, so validation must not treat one
-form's sections as another's.
+`musical_form_enum` distinguishes `KRITHI`, `VARNAM`, `SWARAJATHI`, and **`UNESTABLISHED`**. The first three have different structural requirements; validation must not treat one form's sections as another's. `UNESTABLISHED` means the classification is not known — it is not a fourth form in directories, and a specific form facet must not match it.
 
 - **Krithi**: Pallavi → Anupallavi (optional) → one or more Charanams. May
   also carry Chittaswaram, Swara-sahitya, or Madhyamakala sahitya. A
@@ -250,7 +250,7 @@ form's sections as another's.
 
 ---
 
-# 7. Open Questions
+## 7. Open Questions
 
 - **Section Granularity**: Do we need line-level metadata (e.g. for
   mapping specific sahitya phrases to ragas in ragamalika), or are
@@ -266,3 +266,17 @@ form's sections as another's.
 
 These should be resolved before significantly expanding the public API
 surface or ingesting very large, diverse data sets.
+## 7. Current platform relationships
+
+The composition remains the central entity, with `krithi_ragas` preserving ordered membership and lyric variants preserving language/script/source identity. `UNESTABLISHED` is an explicit unknown classification; V1 public reads exclude it and V2 includes it when published.
+
+- [Raga identity](../04-database/raga-identity.md): mela-qualified match keys, aliases, nomenclature links, and curator resolution.
+- [Versioned canon](../04-database/versioned-canon.md): source documents, extraction runs, append-only composition/section revisions, and current-state projection.
+- [Search index](../09-ai/embeddings.md): derived overview/passage documents and profile-bound vectors; the index is not the authoritative lyric source.
+- [Public API](../03-api/api-contract.md): allowlisted reader DTOs and source-variant ownership.
+
+The [schema guide](../04-database/schema.md) and actual Flyway migrations define persistence; API DTOs need not mirror every internal table.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./features/README.md)

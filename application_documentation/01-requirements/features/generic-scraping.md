@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Design reference |
 
 # Intelligent Web Scraping and Domain Mapping
+
+---
+
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [current feature map](./README.md) for implemented behavior and current operating steps.
 
 
 ---
@@ -59,3 +65,7 @@ This service powers the **Import Workflow**. When an administrator provides a UR
 1.  The system scrapes and structures the data.
 2.  The resulting JSON is presented in the review UI.
 3.  Upon approval, the `sections` are persisted as distinct entities in the database, preserving the structural integrity of the composition from the start.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./README.md)

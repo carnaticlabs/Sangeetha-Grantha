@@ -1,25 +1,29 @@
-| Metadata         | Value                  |
-| :--------------- | :--------------------- |
-| **Status**       | Active                 |
-| **Version**      | 1.1.0                  |
-| **Last Updated** | 2026-02-08             |
-| **Author**       | Sangeetha Grantha Team |
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 1.0.0 |
+| **Last Updated** | 2026-09-10 |
+| **Author** | Sangeetha Grantha Team |
+| **Document Type** | Navigation |
 
-# 01 Requirements
-
+# Product and domain requirements
 
 ---
 
+Read the main PRD for product scope and the client PRDs for the two experiences. The [feature map](./features/README.md) separates implemented behavior from later work; the [domain model](./domain-model.md) preserves musical correctness.
 
-## Contents
+## In this section
 
-- [admin-web/](./admin-web/) - Admin web application PRD
-- [domain-model.md](./domain-model.md) - Carnatic music domain model
-- [features/](./features/) - Feature specifications and implementation plans
-- [glossary.md](./glossary.md) - Musical and technical terminology
-- [krithi-data-sourcing/](./krithi-data-sourcing/README.md) - Multi-format data sourcing & quality strategy
-  - [Quality Strategy](./krithi-data-sourcing/quality-strategy.md) - Comprehensive strategy for multi-source ingestion, authority hierarchy, and quality framework
-  - [Implementation Checklist](./krithi-data-sourcing/implementation-checklist.md) - Phase-by-phase task breakdown with acceptance criteria
-- [mobile/](./mobile/) - Mobile application PRD
-- [product-requirements-document.md](./product-requirements-document.md) - Primary PRD
-- [tech-debt/](./tech-debt/) - Technical debt tracking
+- [Admin Web](./admin-web/README.md)
+- [Sangita Grantha Domain Model Overview](./domain-model.md)
+- [Feature map](./features/README.md)
+- [Sangita Grantha Glossary](./glossary.md)
+- [Krithi Data Sourcing & Quality — Document Index](./krithi-data-sourcing/README.md)
+- [Mobile requirements](./mobile/README.md)
+- [Musicology Reviews](./musicology-reviews/README.md)
+- [Sangeetha Grantha — product requirements](./product-requirements-document.md)
+- [Tech Debt](./tech-debt/README.md)
+
+---
+
+[Section index](./../README.md) · [Documentation home](./../README.md) · [Feature status](./features/README.md)

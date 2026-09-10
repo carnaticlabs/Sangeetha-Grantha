@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Design reference |
 
 # Bulk Import UI/UX Plan
+
+---
+
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [current ingestion guide](./02-implementation/technical-implementation-guide.md) for implemented behavior and current operating steps.
 
 
 ## 1. Overview
@@ -131,3 +137,7 @@ To implement this, the Frontend Design System needs:
 - **Phase 2 (Control)**: Pause/Resume/Retry integration, Error Drill-down.
 - **Phase 3 (Resolution)**: Entity Resolution UI, Confidence Score indicators.
 - **Phase 4 (Workflow)**: Full Review Queue, Bulk Approvals.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../../README.md) · [Feature status](./../README.md)

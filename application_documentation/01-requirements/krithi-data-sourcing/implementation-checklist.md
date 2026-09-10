@@ -2,12 +2,18 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.1 |
-| **Last Updated** | 2026-02-19 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Design reference |
 | **Parent Document** | [quality-strategy.md](./quality-strategy.md) |
 | **Related Tracks** | TRACK-039, TRACK-040, TRACK-041 |
 
 # Implementation Checklist — Krithi Data Sourcing & Quality Strategy
+
+---
+
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [current ingestion guide](./../features/bulk-import/02-implementation/technical-implementation-guide.md) for implemented behavior and current operating steps.
 
 This checklist provides a detailed, actionable breakdown of every task required to implement the strategy defined in the parent document. Tasks are organised by phase and sprint, with dependencies, acceptance criteria, and the responsible codebase area clearly identified.
 
@@ -664,3 +670,7 @@ Aligned with the sprint allocation above, these milestones map to the 90-day del
 | **Window 2** | 21–45 | Full Dikshitar batch (484) in staging, structural voting MVP, review UI shows source evidence | Cross-source voting for 50 Krithis with 2+ sources |
 | **Window 3** | 46–70 | Swathi Thirunal ingestion, enrichment phases gated, quality scoring upgraded | 400 Swathi Thirunal + multi-script Dikshitar variants |
 | **Window 4** | 71–90 | Dikshitar remediation pilot complete, KPIs measured, K8s production deployment, runbook published | Quality score improvement, zero section drift, production-ready |
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../features/README.md)

@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Evidence record |
 
 # TextBlocker Parsing Fix Implementation
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current ingestion guide](./technical-implementation-guide.md).
 
 ## 1. Purpose
 Fix issues in `TextBlocker` regex logic where section headers with suffixes (e.g., `(madhyama kAla sAhityam)`) or inline headers (e.g., `P cakkani...`) were not being correctly identified, causing headers to leak into lyric content or sections to be missed entirely.
@@ -29,3 +35,7 @@ This document serves as the `Ref` for the commit.
 - [x] Identify regex flaws.
 - [x] Implement robust header detection.
 - [x] Verify against "curve ball" URLs.
+
+---
+
+[Documentation home](./../../../../README.md) · [Feature status](./../../README.md)

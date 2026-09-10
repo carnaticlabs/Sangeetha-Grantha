@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Design reference |
 
 # Database Layer Optimization & Modernization
+
+---
+
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [current feature map](./README.md) for implemented behavior and current operating steps.
 
 
 > **Implementation Date**: 2025-01-27
@@ -154,3 +160,7 @@ KrithisTable.updateReturning(where = { ... }) { ... }
 - [Exposed RC-4 Features Testing](../../06-backend/exposed-rc4-features-testing.md)
 - [Query Optimization Evaluation](../../06-backend/query-optimization-evaluation.md)
 - [Backend System Design](../../02-architecture/backend-system-design.md)
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./README.md)
