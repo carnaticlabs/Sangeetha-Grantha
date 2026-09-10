@@ -1,12 +1,17 @@
 | Metadata | Value |
 |:---|:---|
-| Status | Findings 1–4, 6–13 remediated; finding 5 (evaluator) deferred to a separate plan |
-| Version | 1.1.0 |
-| Last Updated | 2026-09-08 |
-| Author | Codex (review); remediation status appended by Cursor agent |
-| Scope | TRACK-108 working-tree implementation against HEAD 02899d0 |
+| **Status** | Active |
+| **Version** | 1.0.0 |
+| **Last Updated** | 2026-09-10 |
+| **Author** | Sangeetha Grantha Team |
+| **Document Type** | Evidence record |
 
 # TRACK-108 validation and functional opportunities
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../01-requirements/features/README.md).
 
 ## Remediation status (2026-09-08, same day)
 
@@ -200,3 +205,7 @@ The best immediate product increment is **similar compositions plus a useful rem
 5. Update track acceptance records, schema/API documentation and reproducible infrastructure pins; then add the first functional increments above.
 
 Ref: application_documentation/10-implementations/track-108-semantic-search-gemini-embedding-2.md
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

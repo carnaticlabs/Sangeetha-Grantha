@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-02-13 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangita Grantha Architect |
+| **Document Type** | Evidence record |
 
 # TRACK-064: Unified Extraction Engine Migration — Implementation Summary
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../01-requirements/features/README.md).
 
 ## Purpose
 
@@ -132,3 +138,7 @@ Covers Phase 0 (E2E Harness), Phase 1 (HTML Vertical Slice), and Phase 2 (Heuris
 ```text
 Ref: application_documentation/10-implementations/track-064-unified-extraction-engine-implementation.md
 ```
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Archived |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-02-03 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Archive |
 
 # React Admin Web Specifications
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../01-requirements/features/README.md).
 
 
 **Status:** Draft  
@@ -221,3 +227,7 @@ export function useKrithi(id: string) {
 - ✅ **Use React Query** for all data fetching
 - ✅ **Follow existing component patterns** in `src/components`
 - ✅ **Keep DTOs in sync** with `modules/shared/domain`
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

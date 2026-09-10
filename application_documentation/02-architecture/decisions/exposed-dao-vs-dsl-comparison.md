@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Decision record |
 
 # Exposed ORM: DAO vs DSL Approach - Comprehensive Comparison
+
+---
+
+> [!NOTE]
+> Decision record: preserve the original rationale and check its decision/supersession status. Current runtime guidance is in [system architecture](./../backend-system-design.md) and [Flyway migrations](./../../04-database/migrations.md).
 
 
 ---
@@ -598,3 +604,7 @@ Our codebase can benefit from a **hybrid approach**:
 ### Key Takeaway
 
 The DSL approach is powerful and flexible, but requires **careful implementation** to avoid inefficient patterns. The DELETE+INSERT anti-pattern is common but can be avoided with proper diff logic. For our use case, improving the DSL implementation is the most pragmatic solution that maintains our current architecture while fixing the performance issue.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

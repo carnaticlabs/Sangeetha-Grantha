@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Accepted |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-03-10 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Decision record |
 
 # ADR-011: PostgreSQL 18 Upgrade with UUID v7 Adoption
+
+---
+
+> [!NOTE]
+> Decision record: preserve the original rationale and check its decision/supersession status. Current runtime guidance is in [system architecture](./../backend-system-design.md) and [Flyway migrations](./../../04-database/migrations.md).
 
 ## Context
 
@@ -83,3 +89,7 @@ object ComposersTable : Table("composers") {
 - TRACK-072: PostgreSQL 18 Upgrade
 - [Database Schema](../../04-database/schema.md)
 - [Current Versions](../../00-meta/current-versions.md)
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

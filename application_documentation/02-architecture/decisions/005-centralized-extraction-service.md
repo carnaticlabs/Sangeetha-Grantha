@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Proposed |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-12 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangita Grantha Architect |
+| **Document Type** | Decision record |
 
 # Architectural Proposal: Centralized Extraction Service (Python UEE)
+
+---
+
+> [!NOTE]
+> Decision record: preserve the original rationale and check its decision/supersession status. Current runtime guidance is in [system architecture](./../backend-system-design.md) and [Flyway migrations](./../../04-database/migrations.md).
 
 ## 1. Context & Motivation
 The [Technical Retrospective (2026-02-12)](../../11-retrospective/remediation-technical-retrospective-2026-02-12.md) identified that the "Heuristic Split" between Kotlin and Python is the root cause of ingestion failures. Specifically:
@@ -61,3 +67,7 @@ Kotlin remains the owner of the **Decision UI**:
 
 ## 6. Conclusion
 Centralizing the "Intelligence" of the pipeline in Python transforms the Kotlin backend into a durable "System of Record" that is decoupled from the volatility of web scraping and document parsing.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

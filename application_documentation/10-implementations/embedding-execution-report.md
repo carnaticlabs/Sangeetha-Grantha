@@ -1,4 +1,17 @@
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 1.0.0 |
+| **Last Updated** | 2026-09-10 |
+| **Author** | Sangeetha Grantha Team |
+| **Document Type** | Evidence record |
+
 # Gemini Embedding 2 Catalogue Execution Report
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [embedding and search operations](./../09-ai/embeddings.md).
 
 **Execution Timestamp:** 2026-09-08 06:48:40 UTC  
 **Model:** `gemini-embedding-2` (768-D Matryoshka Representation Learning)  
@@ -56,3 +69,7 @@ Persisted to `/Users/seshadri/project/sangeetha-grantha/tools/krithi-extract-enr
 1. **Incremental Updates:** Re-running this script after lyric edits or imports re-embeds only documents whose content hash changed and retires documents whose source text is gone. It is not triggered automatically; schedule it or run it after imports.
 2. **Ktor API Integration:** Endpoints `POST /v1/search/hybrid` and `POST /v1/search/semantic` are live and querying this dataset.
 3. **Frontend Search:** The admin console (`/krithis`) provides instant toggling between Lexical, Hybrid (RRF), and Semantic modes.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

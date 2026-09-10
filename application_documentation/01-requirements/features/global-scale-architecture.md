@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Design reference |
 
 # Global Scale Architecture Proposal: Sangeetha Grantha
+
+---
+
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [current feature map](./README.md) for implemented behavior and current operating steps.
 
 
 ---
@@ -141,3 +147,7 @@ You cannot scale what you cannot see.
 
 ## 6. Conclusion
 Sangeetha Grantha is effectively a "Read-Heavy Knowledge Base". By acknowledging this and moving aggressively to an **Edge-Cached, Read-Replica backed architecture**, the system can scale to millions of users with relatively modest infrastructure costs. The complexity lies not in data volume, but in maintaining low-latency access globally.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./README.md)

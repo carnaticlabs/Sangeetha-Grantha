@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Design reference |
 
 # Performance Testing Guide
+
+---
+
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [current quality checks](./../README.md) for implemented behavior and current operating steps.
 
 This document describes the performance testing strategy, tools, and procedures for Sangita Grantha.
 
@@ -512,3 +518,7 @@ metrics.forEach(metric => {
 - [E2E Testing](./e2e-testing.md)
 - [Monitoring](../../08-operations/monitoring.md)
 - [Troubleshooting](../../00-onboarding/troubleshooting.md)
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

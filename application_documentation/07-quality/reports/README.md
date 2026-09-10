@@ -1,39 +1,29 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Navigation |
 
-# Quality Reports
+# Historical quality reports
 
 ---
 
-## Contents
+These are dated reviews and observations, retained for context. Use [current quality gates](../README.md) and [post-import verification](../qa/test-plan.md) for present checks; report counts and findings here are not live deployment assertions.
 
-### Testing
-- [steel-thread.md](./steel-thread.md) - End-to-end smoke test validation
-- [usability-test.md](./usability-test.md) - UI/UX usability testing results
+## In this section
 
-### Sourcing & Quality
-- [sourcing-strategy-2026.md](./sourcing-strategy-2026.md) - Krithi data sourcing & quality progress report (Feb 2026)
+- [Frontend Pages Code Quality Analysis Report](./frontend-pages-code-review.md)
+- [Frontend Pages Refactoring Checklist](./frontend-pages-refactor-checklist.md)
+- [Kotlin Codebase Quality Review Report](./kotlin-code-review.md)
+- [Kotlin Codebase Refactoring Checklist](./kotlin-refactor-checklist.md)
+- [Comprehensive Code Quality Evaluation Report: KrithiEditor.tsx](./krithi-editor-code-review.md)
+- [KrithiEditor.tsx Refactoring Checklist](./krithi-editor-refactor-checklist.md)
+- [Krithi Data Sourcing & Quality — Progress Report](./sourcing-strategy-2026.md)
+- [Steel Thread Testing & Usability Report](./steel-thread.md)
+- [Usability Test Report - Admin Dashboard](./usability-test.md)
 
-### Code Reviews
-- [kotlin-code-review.md](./kotlin-code-review.md) - Backend Kotlin code review
-- [kotlin-refactor-checklist.md](./kotlin-refactor-checklist.md) - Backend refactoring tasks
-- [krithi-editor-code-review.md](./krithi-editor-code-review.md) - Krithi Editor component review
-- [krithi-editor-refactor-checklist.md](./krithi-editor-refactor-checklist.md) - Krithi Editor improvements
-- [frontend-pages-code-review.md](./frontend-pages-code-review.md) - Frontend pages review
-- [frontend-pages-refactor-checklist.md](./frontend-pages-refactor-checklist.md) - Frontend refactoring tasks
+---
 
-## E2E Testing
-
-Frontend E2E tests are documented in:
-- [frontend-e2e-scaffolding-implementation.md](../frontend-e2e-scaffolding-implementation.md)
-- Conductor Track: [TRACK-035](../../../conductor/tracks/TRACK-035-frontend-e2e-testing.md)
-
-### Running E2E Tests
-```bash
-cd modules/frontend/sangita-admin-web
-bun run test:e2e
-```
+[Section index](./../README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

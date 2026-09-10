@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Archived |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-02-03 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Archive |
 
 # Koog Evaluation for Import Pipeline - Detailed Analysis
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current ingestion guide](./../02-implementation/technical-implementation-guide.md).
 
 
 ---
@@ -632,3 +638,7 @@ Koog offers compelling features for complex import workflows, but **may not be n
 - [Koog Technical Integration Proposal](./koog-technical-integration-proposal.md)
 - [Krithi Bulk Import Capability Analysis](./krithi-bulk-import-capability-analysis-goose.md)
 - [Intelligent Content Ingestion](../../intelligent-content-ingestion.md)
+
+---
+
+[Documentation home](./../../../../README.md) · [Feature status](./../../README.md)

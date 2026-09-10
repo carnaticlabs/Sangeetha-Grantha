@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Archived |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-02-03 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Archive |
 
 # Graph Explorer Requirement (Original Neo4j Proposal)
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../../01-requirements/features/README.md).
 
 
 ---
@@ -205,3 +211,7 @@ Keep code aligned with existing patterns:
 5. Add small seed/dev helper notes (how to test with sample IDs)
 
 Now implement all changes with working code.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

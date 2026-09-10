@@ -1,19 +1,27 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Version** | 1.3.0 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Navigation |
 
-# 03 API
+# API guides
 
 ---
 
-## Contents
+Use [API contract](./api-contract.md) for mounted routes and [examples](./api-examples.md) for requests. [Search](./search.md) explains lexical/hybrid/semantic behavior. OpenAPI contains some later-release V2 operations that are not yet mounted.
 
-- [api-contract.md](./api-contract.md) - Canonical API specification
-- [api-examples.md](./api-examples.md) - cURL examples for all endpoints
-- [auth-otp.md](./auth-otp.md) - Authentication and OTP flow
-- [integration-spec.md](./integration-spec.md) - Client integration patterns
-- [openapi-sync.md](./openapi-sync.md) - OpenAPI specification sync validation
-- [ui-to-api-mapping.md](./ui-to-api-mapping.md) - UI component to API mapping
+## In this section
+
+- [API contract](./api-contract.md)
+- [API request examples](./api-examples.md)
+- [Auth & OTP – Canonical](./auth-otp.md)
+- [Client integration guide](./integration-spec.md)
+- [OpenAPI and implementation synchronization](./openapi-sync.md)
+- [Catalogue search](./search.md)
+- [UI-to-API map](./ui-to-api-mapping.md)
+
+---
+
+[Section index](./../README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

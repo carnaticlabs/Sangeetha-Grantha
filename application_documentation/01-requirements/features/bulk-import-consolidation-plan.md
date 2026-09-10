@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Design reference |
 
 # Bulk Import Documentation Consolidation Plan
+
+---
+
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [current feature map](./README.md) for implemented behavior and current operating steps.
 
 
 ---
@@ -159,3 +165,7 @@ features/
 3. Archive original files
 4. Update main features README.md to reference new structure
 5. Identify first feature for implementation (recommend: Feature 1 - CSV Manifest Ingestion)
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./README.md)

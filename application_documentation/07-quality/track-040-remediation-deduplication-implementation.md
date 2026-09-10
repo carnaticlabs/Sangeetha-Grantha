@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-02-12 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangita Grantha Architect |
+| **Document Type** | Evidence record |
 
 # Implementation Summary: Data Remediation & Deduplication Hardening (TRACK-040, TRACK-041, TRACK-061)
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current quality checks](./README.md).
 
 ## Purpose
 This changeset hardens the deduplication logic to handle transliteration variances (e.g., `sh` vs `s`) and typos in source data. It also introduces services for identifying and merging duplicate Krithis and cleaning metadata artifacts from imported text.
@@ -33,3 +39,7 @@ This changeset hardens the deduplication logic to handle transliteration varianc
 
 ## Commit Reference
 Ref: application_documentation/07-quality/track-040-remediation-deduplication-implementation.md
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

@@ -25,15 +25,18 @@ This is a *new feature*, not maintenance — it gets its own track and its own r
 
 ## Architecture / Approach
 
-```text
-krithi sections / lyrics ──(offline backfill, batchable)──> gemini-embedding-001 (768-dim)
-                                                                   │
-                                                   krithi_embedding table (pgvector)
-                                                   (krithi_id, section_id, vector, model_version, dims)
-                                                                   │
-                                                       HNSW index (cosine)
-                                                                   │
-   query text ──embed──> ANN search ──> ranked similar krithis ──> /v1/search/semantic endpoint ──> Admin UI
+```mermaid
+flowchart TB
+  LYR[Krithi sections / lyrics]
+  EMB[Gemini Embedding 2<br/>768-d MRL]
+  TBL[(pgvector HNSW)]
+  Q[Query text]
+  ANN[ANN + RRF hybrid]
+  EP["POST /v1/search/*"]
+  UI[Curator Console]
+  LYR --> EMB --> TBL
+  Q --> EMB
+  TBL --> ANN --> EP --> UI
 ```
 
 Design choices:

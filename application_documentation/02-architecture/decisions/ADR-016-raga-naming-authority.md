@@ -2,13 +2,19 @@
 |:---|:---|
 | **Status** | Accepted |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-07-19 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Decision record |
 | **Deciders** | Sangeetha Grantha Team (Seshadri) |
 | **Implemented by** | [TRACK-132](../../../conductor/tracks/TRACK-132-raga-deduplication-normalizer-fix.md) |
 | **Extended by** | [ADR-017](./ADR-017-raga-reference-entity-identity-resolution.md) — entity/alias identity model & controlled resolution (the architecture realising this ADR's §5 and long-term direction) |
 
 # ADR-016: Raga Naming Authority & Canonical Reference Data
+
+---
+
+> [!NOTE]
+> Decision record: preserve the original rationale and check its decision/supersession status. Current runtime guidance is in [system architecture](./../backend-system-design.md) and [Flyway migrations](./../../04-database/migrations.md).
 
 ## Context
 
@@ -84,7 +90,7 @@ correct and leaving ~975 ragas with no authority at all.
 Store the display name in the canonical convention **and** a deterministic diacritic-free
 `match_key` with a UNIQUE constraint:
 
-```
+```text
 name      = 'Yadukula Kāmbhoji'   -- canonical convention, displayed
 match_key = 'yadukulakambhoji'    -- UNIQUE, never displayed
 ```
@@ -156,3 +162,7 @@ this decision is pointed at.
 - [ADR-013](./ADR-013-db-migration-with-flyway.md) — Flyway-only migration policy
 - [ADR-014](./ADR-014-versioned-canon.md) — versioned canon & provenance
 - [Domain Model §6](../../01-requirements/domain-model.md#6-musicological-correctness-rules-lakshana) — musicological correctness rules
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

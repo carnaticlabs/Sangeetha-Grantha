@@ -1,18 +1,23 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Version** | 1.3.0 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Navigation |
 
-# 05 Frontend
-
+# Client applications
 
 ---
 
+The Curator Console and Rasika serve different audiences and API contracts. Read the relevant client guide before reusing DTOs or assuming identical search, caching, and persistence behavior.
 
-## Contents
+## In this section
 
-- [admin-web/](./admin-web/)
-- [mobile/](./mobile/)
-- [ui-libraries.md](./ui-libraries.md)
+- [Admin Web](./admin-web/README.md)
+- [Rasika mobile implementation](./mobile/README.md)
+- [Frontend UI Libraries](./ui-libraries.md)
+
+---
+
+[Section index](./../README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

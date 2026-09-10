@@ -1,617 +1,146 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.2.0 |
-| **Last Updated** | 2026-09-09 |
+| **Version** | 1.4.0 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Current guide |
 
-# Sangita Grantha API Contract
-
-
-# 1. Overview
-
-The **Sangita Grantha API** exposes REST endpoints under `/v1` for
-public, read-only access to the Carnatic Krithi catalog, and `/v1/admin`
-for authenticated editorial and curation workflows.
-
-This document captures the canonical contract:
-
-- Authentication and transport assumptions.
-- Read models (search and detail views).
-- Admin mutations (Krithi/variant/tag/import workflows).
-- Error model, pagination, and filtering.
-
-Screen-level usage for admin and mobile apps is documented in
-`integration-spec.md` and `ui-to-api-mapping.md`.
+# API contract
 
 ---
 
-# 2. Authentication & Transport
+This guide describes the routes mounted by the current backend. New public clients should use the catalogue contracts; editorial clients use the authenticated admin API. Read [examples](./api-examples.md) for requests and [UI integration](./integration-spec.md) for client behavior.
 
-## 2.1 Base URL
+The executable route map is [Routing.kt](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/plugins/Routing.kt). [Shared DTOs](../../modules/shared/domain/src/commonMain/kotlin/com/sangita/grantha/shared/domain/model) define serialized fields. The [OpenAPI document](../../openapi/sangita-grantha.openapi.yaml) also contains planned operations; schema presence alone does not prove that an endpoint is mounted. [OpenAPI synchronization](./openapi-sync.md) records that distinction.
 
-- Development: `http://localhost:8080`
-- Production: `https://api.sangitagrantha.org` (placeholder)
+## Choose a contract
 
-## 2.2 Authentication
+| Prefix | Purpose | Access and visibility |
+|:---|:---|:---|
+| `/v1/catalogue` | First public catalogue contract | Anonymous; published compositions with established musical forms |
+| `/v2/catalogue` | Rasika catalogue and discovery | Anonymous; published compositions, including `UNESTABLISHED` |
+| `/v1/krithis` | Legacy search/detail/notation | Optional admin identity affects visibility; do not substitute these DTOs for catalogue DTOs |
+| `/v1/search` | Hybrid and semantic retrieval | Optional admin auth; anonymous/non-admin results are published-only |
+| `/v1/admin` | Catalogue editing, import, sourcing, curation, users and roles | JWT plus `grp_sangita_admin` for the main admin route group |
+| `/v1/auth` | Token issuance and refresh | See authentication below |
 
-### Public (Read-Only) Endpoints
+The development base URL is `http://localhost:8080`. A production hostname is a deployment decision, not a provisioned service promised by this repository.
 
-- Public read endpoints do **not** require authentication.
-- These include:
-  - `GET /v1/krithis/search`
-  - `GET /v1/krithis/{id}`
-  - Reference lists (if exposed publicly) such as
-    - `GET /v1/composers`
-    - `GET /v1/ragas`
-    - `GET /v1/talas`
-    - `GET /v1/deities`
-    - `GET /v1/temples`
+## Public catalogue
 
-### Admin Authentication (v1)
+These operations are mounted under **both** `/v1/catalogue` and `/v2/catalogue`:
 
-- Admins authenticate via username/password (or external IdP in future):
-  - `POST /v1/admin/login`
-- Returns a JWT access token and optional refresh token with role claims.
-- Admin requests include header:
+| Method and suffix | Result |
+|:---|:---|
+| `GET /krithis` | Paged composition summaries |
+| `GET /krithis/{id}` | Reader metadata and available variant references |
+| `GET /krithis/{id}/lyrics/{variantId}` | One stored lyric variant, its sections and source reference |
+| `GET /ragas` | Paged raga directory with published-composition counts |
+| `GET /ragas/{id}` | Raga identity, aliases, available scale/lineage metadata |
+| `GET /composers` | Paged composer directory with published-composition counts |
+| `GET /composers/{id}` | Composer metadata and aliases |
+
+V2 additionally mounts **`GET /v2/catalogue/discovery`**. It accepts no query parameters. V2 directory endpoints for talas, deities, temples, languages, and musical forms are planned and are not mounted yet.
+
+### Query parameters and pagination
+
+| Parameter | Accepted by | Contract |
+|:---|:---|:---|
+| `query` | Composition and directory lists | Optional; trimmed; at most 200 Unicode code points |
+| `composerId` | Composition list | Optional UUID |
+| `ragaId` | Composition list | Optional UUID |
+| `page` | Lists | Zero-based; default `0`; integer ≥ 0 |
+| `pageSize` | Lists | Default `30`; integer 1–100 |
+
+Unsupported or repeated parameters return `400`. Detail and lyric routes accept no query parameters. Use `query`, not `q`; use `pageSize`, not `size`. Legacy/admin pagination has its own request contract.
+
+A valid empty catalogue result is:
+
+```json
+{
+  "items": [],
+  "total": 0,
+  "page": 0,
+  "pageSize": 30
+}
+```
+
+### Reader and source semantics
+
+A composition detail response lists available variants and a nullable `defaultVariantId`. Fetch a chosen variant using its own ID and the composition ID; the server verifies that relationship. A published composition may legitimately have incomplete or unavailable lyrics.
+
+Catalogue DTOs allowlist public metadata. They omit editorial notes, author identifiers, and workflow state. Language, script, transliteration scheme, and source reference are separate concepts. Preserve stored section labels and ordered raga associations. `UNESTABLISHED` communicates that classification has not been established; clients must not invent a form.
+
+Successful catalogue responses set `Cache-Control: no-store`. Missing, unpublished, and unavailable compositions use the same `404` boundary. Catalogue errors use their own small envelope:
+
+```json
+{
+  "code": "VALIDATION_ERROR",
+  "message": "page must be an integer >= 0"
+}
+```
+
+The catalogue error enum also defines `NOT_FOUND` and `UNAVAILABLE`. Do not assume every API family uses this envelope: some auth failures return plain text and other routes use shared error handling.
+
+Sources: [query parser](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/catalogue/CatalogueParameters.kt), [catalogue DTOs](../../modules/shared/domain/src/commonMain/kotlin/com/sangita/grantha/shared/domain/model/catalogue/CatalogueDtos.kt), [V2 routes](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/CatalogueV2Routes.kt).
+
+## Hybrid and semantic search
+
+`POST /v1/search/hybrid` and `POST /v1/search/semantic` accept JSON:
+
+```json
+{
+  "query": "compositions about Ganesha",
+  "limit": 20
+}
+```
+
+Optional `composerId` and `ragaId` fields filter by UUID. The response contains `query`, `totalMatches`, and `items`. Each item identifies a composition and a matched overview or passage, with `similarityScore` and optional lexical/RRF scores. `totalMatches` is the returned item count, not a paginated catalogue total.
+
+With no active embedding profile, hybrid search uses lexical retrieval and semantic search returns an empty list. An incompatible active model/dimension profile is an availability error; the service refuses to mix vector spaces. See [search behavior and operations](./search.md).
+
+## Authentication and authorization
+
+The current console uses **`POST /v1/auth/token`**, submitting `adminToken` and either `email` or `userId` for an existing user. The response contains `token` and `expiresInSeconds`. Role claims come from stored assignments. Client-supplied roles do not grant access.
+
+Authenticated calls carry:
 
 ```http
-  Authorization: Bearer <accessToken>
+Authorization: Bearer <token>
+Content-Type: application/json
 ```
 
-- Tokens include claims:
-  - `userId`: UUID
-  - `email`: string
-  - `roles[]`: array of role codes (e.g. `admin`, `editor`, `reviewer`).
+`POST /v1/auth/refresh` requires a valid JWT and reloads role assignments before issuing a replacement. Main admin routes require `grp_sangita_admin`. The dashboard statistics route is an explicit optional-auth exception in the routing configuration.
 
-### Security
+`make bootstrap-admin` provisions an account with an argon2id password hash. This does **not** add an interactive password-login endpoint. `/v1/admin/login` is not mounted; OAuth/OTP remains deferred. Use the [authentication reference](../00-meta/quick-reference-auth.md) for setup.
 
-- All production endpoints require **HTTPS**.
-- JWT access tokens expire after a configured time (e.g. 1 hour); refresh
-  strategy can be added later.
+## Editorial operations
 
-## 2.3 Transport
+The following route families are mounted in the authenticated admin group. Request fields and detailed validation live in the linked routes and shared request DTOs; each family has its own list/filter semantics.
 
-- Content-Type: `application/json` for request/response bodies.
-- Accept: `application/json` for responses.
+| Family | Core operations | Implementation |
+|:---|:---|:---|
+| `/v1/admin/krithis` | Search, create, detail/update, sections, variants, tags read, transliterate, validate | [AdminKrithiRoutes](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/AdminKrithiRoutes.kt) |
+| `/v1/admin/variants` | Update variant; save its lyric sections | [AdminKrithiRoutes](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/AdminKrithiRoutes.kt) |
+| Notation routes | Notation variants and rows | [AdminNotationRoutes](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/AdminNotationRoutes.kt) |
+| `/v1/admin/imports` | List/create imports, scrape, review, bulk review, reingest, validation | [ImportRoutes](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/ImportRoutes.kt) |
+| `/v1/admin/bulk-import` | Upload; batches, jobs, tasks, events; batch controls and export | [BulkImportRoutes](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/BulkImportRoutes.kt) |
+| `/v1/admin/sourcing` | Sources, extractions, evidence, voting, variants, quality | [SourcingRoutes](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/SourcingRoutes.kt) |
+| `/v1/admin/curator` | Statistics, section issues, raga-resolution queue | [CuratorRoutes](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/CuratorRoutes.kt) |
+| `/v1/admin/quality` | Structural audits, remediation preview/execute, extraction processing | [RemediationRoutes](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/RemediationRoutes.kt) |
+| Reference entities | Composer/raga/tala/deity/temple/tag administration | [ReferenceDataRoutes](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/ReferenceDataRoutes.kt) |
+| Users and roles | Account and role administration | [UserManagementRoutes](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/UserManagementRoutes.kt) |
+| Audit | Audit queries | [AuditRoutes](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/AuditRoutes.kt) |
 
----
+Admin import review is `POST /v1/admin/imports/{id}/review`; reingestion is `POST /v1/admin/imports/{id}/reingest`. Older `/imports/krithis/{id}/map` and `/reject` sketches are not the mounted contract.
 
-# 3. Public Query Endpoints (Read Models)
+Some sourcing quality coverage/audit endpoints return placeholder structures. An HTTP success from those routes is not proof of a completed quality scan; use the implemented quality audit routes and diagnostic checks described in [Quality](../07-quality/README.md).
 
-## 3.1 Krithi Search
+## Contract changes
 
-### `GET /v1/krithis/search`
-
-Search and browse Krithis.
-
-**Request Query Parameters**:
-
-- `q`: optional free-text query (title, incipit, lyrics substring)
-- `composerId`: optional UUID
-- `ragaId`: optional UUID
-- `talaId`: optional UUID
-- `deityId`: optional UUID
-- `templeId`: optional UUID
-- `tag`: optional tag slug (e.g. `navaratri`, `bhakti`)
-- `language`: optional language code (e.g. `sa`, `ta`, `te`, `kn`, `ml`, `hi`, `en`)
-- `page`: page number (default: 1, min: 1)
-- `size`: page size (default: 25, max: 100)
-
-**Behaviour**:
-
-- Only returns Krithis with `workflow_state = 'published'`.
-- If `q` is provided:
-  - Searches `title_normalized`, `incipit_normalized`, and lyrics substring
-    via trigram index on `krithi_lyric_variants.lyrics`.
-- Filtering is applied conjunctively (all provided filters must match).
-
-**Response** (`200 OK`):
-
-```json
-{
-  "items": [
-    {
-      "id": "uuid",
-      "title": "Vatapi Ganapatim",
-      "incipit": "Vātāpi gaṇapatim bhajeham",
-      "titleNormalized": "vatapi ganapatim",
-      "incipitNormalized": "vatapi ganapatim bhajeham",
-      "composerId": "uuid",
-      "primaryRagaId": "uuid",
-      "talaId": "uuid",
-      "deityId": "uuid",
-      "templeId": "uuid",
-      "primaryLanguage": "sa",
-      "musicalForm": "KRITHI",
-      "isRagamalika": false,
-      "workflowState": "PUBLISHED",
-      "createdAt": "2025-01-01T00:00:00Z",
-      "updatedAt": "2025-01-02T00:00:00Z"
-    }
-  ],
-  "page": 1,
-  "size": 25,
-  "total": 123
-}
-```
-
-(Response body aligns with `KrithiDto` and `KrithiSearchResult`.)
+Update route behavior, shared DTOs, affected clients, OpenAPI, examples, and integration tests together. Verify visibility with anonymous and admin requests; validate variant ownership; exercise invalid parameters and empty results. Preserve V1 decoding compatibility when V2 introduces new public values. Use the [OpenAPI checklist](./openapi-sync.md) to keep implemented and planned operations distinct.
 
 ---
 
-## 3.2 Krithi Detail
-
-### `GET /v1/krithis/{id}`
-
-Fetch full details for a single Krithi.
-
-Path params:
-- `id`: UUID of Krithi.
-
-**Response** (`200 OK`):
-
-```json
-{
-  "krithi": { /* KrithiDto */ },
-  "composer": { /* ComposerDto */ },
-  "primaryRaga": { /* RagaDto or null */ },
-  "tala": { /* TalaDto or null */ },
-  "deity": { /* DeityDto or null */ },
-  "temple": { /* TempleDto or null */ },
-  "ragas": [ /* KrithiRagaDto[] with RagaDto embedded or referenced */ ],
-  "lyricVariants": [ /* KrithiLyricVariantDto[] */ ],
-  "sections": [ /* KrithiSectionDto[] + optional KrithiLyricSectionDto by variant */ ],
-  "notationVariants": [ /* KrithiNotationVariantDto[] - only for VARNAM/SWARAJATHI */ ],
-  "tags": [ /* TagDto[] */ ]
-}
-```
-
-**Error Cases**:
-- `404 Not Found` with `code = "not_found"` if `id` does not exist or is not `published`.
-
----
-
-## 3.3 Reference Data (optional public)
-
-Depending on product decisions, some reference endpoints may be public:
-
-- `GET /v1/composers`
-- `GET /v1/ragas`
-- `GET /v1/talas`
-- `GET /v1/deities`
-- `GET /v1/temples`
-- `GET /v1/tags`
-
-Each returns a paginated list of the corresponding `*Dto` objects.
-
----
-
-# 4. Admin Query Endpoints
-
-All endpoints under `/v1/admin/**` require admin JWT and role checks.
-
-## 4.1 Admin Krithi Browsing
-
-### `GET /v1/admin/krithis`
-
-Admin-facing list of Krithis with extended filters.
-
-Query parameters:
-- Same as public `/v1/krithis/search` plus:
-  - `workflowState`: filter by `draft`, `in_review`, `published`, `archived`.
-  - `hasImports`: optional boolean (Krithis linked to `imported_krithis`).
-
-Response: same pagination shape as public search, but can include
-non-published Krithis.
-
-### `GET /v1/admin/krithis/{id}`
-
-Same data as public detail endpoint, but includes non-published Krithis
-and editorial metadata.
-
----
-
-## 4.2 Import Review
-
-### `GET /v1/admin/imports/krithis`
-
-List imported Krithis for review.
-
-Query parameters:
-- `status`: `pending | in_review | mapped | rejected | discarded` (string)
-- `sourceId`: optional import source UUID
-- `q`: optional free-text (raw title/composer/lyrics)
-- `page`, `size`: pagination
-
-Response:
-
-```json
-{
-  "items": [
-    {
-      "id": "uuid",
-      "importSourceId": "uuid",
-      "sourceKey": "https://karnatik.com/song.php?id=123",
-      "rawTitle": "Vatapi Ganapatim",
-      "rawComposer": "Dikshitar",
-      "rawRaga": "Hamsadhvani",
-      "rawTala": "Adi",
-      "rawLanguage": "Sanskrit",
-      "importStatus": "PENDING",
-      "mappedKrithiId": null,
-      "reviewerUserId": null,
-      "reviewerNotes": null,
-      "reviewedAt": null,
-      "createdAt": "2025-01-01T00:00:00Z"
-    }
-  ],
-  "page": 1,
-  "size": 25,
-  "total": 42
-}
-```
-
-### `GET /v1/admin/imports/krithis/{id}`
-
-Returns full `ImportedKrithiDto` plus any parsed payload and
-links to candidate canonical entities.
-
----
-
-# 5. Admin Mutation Endpoints (v1 Scope)
-
-These are **editorial** mutations; there are no participant/user-facing
-mutations in v1 of Sangita Grantha.
-
-## 5.1 Auth
-
-### `POST /v1/admin/login`
-
-- Request:
-
-```json
-  {
-    "email": "editor@example.org",
-    "password": "string"
-  }
-```
-
-- Response (`200 OK`):
-
-```json
-  {
-    "accessToken": "jwt",
-    "expiresInSeconds": 3600,
-    "user": {
-      "id": "uuid",
-      "email": "editor@example.org",
-      "fullName": "Editor Name",
-      "roles": ["editor"]
-    }
-  }
-```
-
----
-
-## 5.2 Krithi & Variant Management
-
-### `POST /v1/admin/krithis`
-
-Create a new Krithi.
-
-- Request body aligns with `KrithiDto` minus generated fields:
-
-```json
-  {
-    "title": "string",
-    "incipit": "string?",
-    "composerId": "uuid",
-    "primaryRagaId": "uuid?",
-    "talaId": "uuid?",
-    "deityId": "uuid?",
-    "templeId": "uuid?",
-    "primaryLanguage": "SA",
-    "musicalForm": "KRITHI",
-    "isRagamalika": false,
-    "sahityaSummary": "string?",
-    "notes": "string?"
-  }
-```
-
-- Response (`201 Created`): `KrithiDto`.
-
-- Rules:
-  - Default `workflowState = DRAFT`.
-  - All creates must write an `audit_log` entry.
-
-
-### `PUT /v1/admin/krithis/{id}`
-
-Update an existing Krithi (idempotent, full update or patch semantics,
-to be defined in implementation).
-
-### `POST /v1/admin/krithis/{id}/variants`
-
-Create a new lyric variant for a Krithi.
-
-- Request: subset of `KrithiLyricVariantDto` without IDs or audit fields.
-- Response: created `KrithiLyricVariantDto`.
-
-### `PUT /v1/admin/variants/{variantId}`
-
-Update lyric variant (language/script cannot be changed after creation
-in v1; text, sampradaya, labels, and primary flag can be changed).
-
-### `POST /v1/admin/krithis/{id}/sections`
-
-Define structural sections (pallavi, anupallavi, charanams, etc.) for a
-Krithi.
-
-### `POST /v1/admin/variants/{variantId}/sections`
-
-Attach section text for a given lyric variant using
-`krithi_lyric_sections`.
-
-All these endpoints follow the patterns:
-- Role checks (`editor`/`reviewer`/`admin`).
-- Validation.
-- Transaction via `DatabaseFactory.dbQuery {}`.
-- Audit logging.
-
----
-
-## 5.2.1 Notation Management (Varnams & Swarajathis)
-
-Notation endpoints are only applicable for compositions with `musicalForm` of `VARNAM` or `SWARAJATHI`.
-
-### `GET /v1/admin/krithis/{id}/notation`
-
-Retrieve all notation variants for a Krithi.
-
-- Response: Array of `KrithiNotationVariantDto` objects, each containing:
-  - `id`, `krithiId`, `notationType` (SWARA | JATHI)
-  - `talaId`, `kalai`, `eduppuOffsetBeats`
-  - `variantLabel`, `sourceReference`, `isPrimary`
-  - `notationRows`: Array of `KrithiNotationRowDto` objects
-
-### `POST /v1/admin/krithis/{id}/notation`
-
-Create a new notation variant.
-
-- Request:
-
-```json
-  {
-    "notationType": "SWARA",
-    "talaId": "uuid?",
-    "kalai": 1,
-    "eduppuOffsetBeats": 0,
-    "variantLabel": "string?",
-    "sourceReference": "string?",
-    "isPrimary": false,
-    "notationRows": [
-      {
-        "sectionId": "uuid",
-        "orderIndex": 0,
-        "swaraText": "S R G M P D N S",
-        "sahityaText": "string?",
-        "talaMarkers": "string?"
-      }
-    ]
-  }
-```
-
-- Response: Created `KrithiNotationVariantDto` with all rows.
-
-### `PUT /v1/admin/notation/{variantId}`
-
-Update a notation variant (metadata only; rows updated separately).
-
-### `POST /v1/admin/notation/{variantId}/rows`
-
-Add or update notation rows for a variant.
-
-- Request: Array of `KrithiNotationRowDto` objects.
-
-### `DELETE /v1/admin/notation/{variantId}`
-
-Delete a notation variant and all its rows.
-
----
-
-## 5.3 Tags
-
-### `POST /v1/admin/tags`
-
-Create new tag.
-
-### `PUT /v1/admin/tags/{id}`
-
-Update tag metadata.
-
-### `POST /v1/admin/krithis/{id}/tags`
-
-Assign tags to a Krithi.
-
-- Request:
-
-```json
-  {
-    "tagIds": ["uuid", "uuid"]
-  }
-```
-
-### `DELETE /v1/admin/krithis/{id}/tags/{tagId}`
-
-Unassign a single tag from a Krithi.
-
----
-
-## 5.4 Import Status Updates
-
-### `POST /v1/admin/imports/krithis/{id}/map`
-
-Map an `ImportedKrithi` to a canonical `Krithi`.
-
-- Request:
-
-```json
-  {
-    "krithiId": "uuid",
-    "notes": "Mapped to existing Vatapi Ganapatim record"
-  }
-```
-
-- Behaviour:
-  - Sets `mapped_krithi_id`.
-  - Moves `import_status` to `MAPPED`.
-  - Writes audit log.
-
-### `POST /v1/admin/imports/krithis/{id}/reject`
-
-Reject an imported entry.
-
-- Sets `import_status = REJECTED` with reviewer notes.
-
----
-
-## 5.5 AI & Import Operations
-
-### `POST /v1/admin/imports/scrape`
-
-Scrape metadata and content from a supported external URL (e.g., shivkumar.org).
-
-- Request: `ScrapeRequest`
-```json
-  { "url": "http://shivkumar.org/musical/..." }
-```
-- Response: `ImportedKrithiDto` (Created status `PENDING`).
-
-### `GET /v1/admin/imports`
-
-List imported records with optional filtering.
-
-- Query Params:
-  - `status`: `PENDING`, `IMPORTED`, `REJECTED`
-
-### `POST /v1/admin/krithis/{id}/transliterate`
-
-AI-powered transliteration of lyrics or notation.
-
-- Request: `TransliterationRequest`
-```json
-  {
-    "content": "raw text...",
-    "targetScript": "latn",
-    "sourceScript": "deva"
-  }
-```
-- Response: `TransliterationResponse`
-```json
-  {
-    "transliterated": "transliterated text...",
-    "targetScript": "latn"
-  }
-```
-
----
-
-# 6. Error Model
-
-## 6.1 Error Response Format
-
-```json
-{
-  "code": "string",
-  "message": "human readable summary",
-  "fields": {
-    "fieldName": "issue description"
-  },
-  "timestamp": "2025-12-21T10:30:00Z",
-  "requestId": "optional-request-id"
-}
-```
-
-## 6.2 Error Codes and HTTP Status Codes
-
-| HTTP Status | Error Code         | Description                             |
-|-------------|--------------------|-----------------------------------------|
-| 400         | `validation_error` | Validation errors on input              |
-| 401         | `unauthorized`     | Missing/invalid admin token             |
-| 403         | `forbidden`        | Lacking required role                   |
-| 404         | `not_found`        | Resource not found                      |
-| 409         | `conflict`         | Uniqueness or state conflict            |
-| 429         | `throttled`        | Rate limit exceeded (if applicable)     |
-| 500         | `internal_error`   | Unexpected server error                 |
-
----
-
-# 7. Pagination & Filtering
-
-## 7.1 Pagination
-
-Standard pagination for list endpoints:
-
-```json
-{
-  "items": [...],
-  "page": 1,
-  "size": 25,
-  "total": 123
-}
-```
-
-Query parameters:
-- `page`: default 1
-- `size`: default 25, max 100 for public, higher for admin where safe.
-
-## 7.2 Filtering
-
-Typical filters:
-- Krithis: `q`, `composerId`, `ragaId`, `talaId`, `deityId`, `templeId`,
-  `tag`, `language`, `workflowState` (admin only).
-- Imports: `status`, `sourceId`, `q`.
-
----
-
-# 8. Authentication & Authorization Summary
-
-- Public read endpoints: no authentication, only published Krithis.
-- Admin endpoints:
-  - `POST /v1/admin/login` to obtain JWT.
-  - JWT required for all `/v1/admin/**` requests.
-  - Role-based checks enforced at route or service boundaries.
-
----
-
-# 9. Change Management
-
-- Any change to this contract must be reflected in:
-  - KMM shared DTOs (`modules/shared/domain`).
-  - Backend route handlers and services.
-  - Admin web and mobile integration specs.
-- Backward incompatible changes require versioning (`/v2/...`).
-
----
-
-# 10. Implementation Status
-
-This contract describes **intended v1 endpoints**. Actual implementation
-status for Sangita Grantha will be tracked via:
-
-- Backend route and service tests.
-- Admin web UI integration.
-- Migration notes in `database/migrations/`.
-
-Unset endpoints MUST return `501 Not Implemented` with
-`code = "not_implemented"` until they are complete.
-## TRACK-140 V2 discovery contract
-
-[TRACK-140](../../conductor/tracks/TRACK-140-rasika-discovery-experience.md) adds `/v2/catalogue` for the new Rasika client. The OpenAPI definitions and both payload fixtures in `shared/domain/model/catalogue/fixtures/` freeze the wire boundary before implementation. V1 retains known musical-form values and excludes UNESTABLISHED records from public lists/counts/details/lyrics; it never substitutes KRITHI. V2 includes published unclassified compositions in unfiltered results, with no form badge or specific-form match. New clients do not fall back silently to V1.
-
-V2 includes discovery; krithi, raga and composer lists/details; stored lyrics; tala/deity/temple directories/details; and language/form directories. Exact raga/composer/tala/deity/temple UUID filters plus language/form combine with AND. Queries submit explicitly; repeated scalar/unknown parameters are rejected. References and source information are allowlisted, with absent section binding and reading-level completeness remaining unknown. Public responses use `Cache-Control: no-store`.
-
-The future release C admin boundary is `/v1/admin/catalogue-features`: list/create, detail/update, publish/unpublish and atomic ordering. It uses the existing ADMIN role, expected revisions, bounded text/record counts and transactional audit. Contracts describe intended behaviour; passing integration/runtime evidence is recorded separately in the track.
-
-Example V2 read: `GET /v2/catalogue/krithis?query=fixture&page=0&pageSize=30&musicalForm=VARNAM`. A valid unmatched filter returns an empty page. Invalid UUIDs or unknown form names return 400; unavailable/wrong-owner readings return the same public 404. The unestablished discovery fixture is synthetic and is not a live catalogue claim.
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

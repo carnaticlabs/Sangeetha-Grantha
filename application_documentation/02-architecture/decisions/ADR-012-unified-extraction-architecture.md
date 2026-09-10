@@ -1,11 +1,17 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Accepted |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-03-10 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Decision record |
 
 # ADR-012: Unified Extraction Architecture — Python as Single Source of Truth
+
+---
+
+> [!NOTE]
+> Decision record: preserve the original rationale and check its decision/supersession status. Current runtime guidance is in [system architecture](./../backend-system-design.md) and [Flyway migrations](./../../04-database/migrations.md).
 
 ## Context
 
@@ -45,41 +51,42 @@ The Python extraction worker is promoted from a "tool" to a first-class architec
 
 ### Architecture Flow
 
-```text
-Source (Web/PDF/OCR)
-    ↓
-Python Extraction Worker
-    ├── Scraping (BeautifulSoup, requests)
-    ├── Section Detection (structure_parser.py)
-    ├── Transliteration
-    └── Gemini AI Enrichment
-    ↓
-Structured JSON Output
-    ↓
-Kotlin Backend (Ktor)
-    ├── Validate schema
-    ├── Persist to PostgreSQL
-    └── Write audit log
-    ↓
-Curator UI (React)
-    ├── Human review
-    ├── Editorial corrections
-    └── Status workflow (DRAFT → PUBLISHED)
+```mermaid
+flowchart TB
+  SRC[Source<br/>Web / PDF / OCR]
+  subgraph worker["Python extraction worker"]
+    direction TB
+    SC[Scraping]
+    SEC[Section detection]
+    TR[Transliteration]
+    GEM[Gemini enrichment]
+  end
+  JSON[Structured JSON]
+  subgraph ktor["Ktor backend"]
+    direction TB
+    VAL[Validate schema]
+    PG[(PostgreSQL)]
+    AUD[Audit log]
+  end
+  UI[Curator Console]
+  SRC --> worker --> JSON --> ktor --> UI
 ```
 
 ### Key Python Modules
 
-```text
-tools/krithi-extract-enrich-worker/
-├── src/
-│   ├── structure_parser.py     # Section detection (single source of truth)
-│   ├── scraper.py              # Web source extraction
-│   ├── transliterator.py       # Script transliteration
-│   ├── gemini_enricher.py      # AI-powered enrichment
-│   └── pipeline.py             # Orchestration
-├── tests/
-└── requirements.txt
+```mermaid
+flowchart TB
+  subgraph worker["tools/krithi-extract-enrich-worker"]
+    direction TB
+    SP[structure parser]
+    SC[scraper]
+    TR[transliterator]
+    GE[gemini enricher]
+    PL[pipeline]
+  end
 ```
+
+Package layout is under `tools/krithi-extract-enrich-worker/` (uv / `src/` — see the worker skill). `requirements.txt` in older notes is superseded by `pyproject.toml`.
 
 ### Data Remediation
 
@@ -109,3 +116,7 @@ Migration 38 (`38__section-structure-remediation.sql`) corrected all 473 krithis
 - TRACK-065: Python Extraction Module Promotion
 - TRACK-083: Data Quality Audit & Remediation
 - [Backend System Design](../backend-system-design.md)
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

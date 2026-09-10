@@ -1,652 +1,89 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.2.0 |
-| **Last Updated** | 2026-09-09 |
+| **Version** | 1.3.0 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Current guide |
 
-# API Examples (cURL)
-
-This document provides practical cURL examples for all Sangita Grantha API endpoints.
-
----
-
-## Setup
-
-### Base URL
-
-```bash
-# Local development
-export BASE_URL="http://localhost:8080"
-
-# Production
-export BASE_URL="https://api.sangitagrantha.org"
-```
-
-### Authentication Setup
-
-```bash
-# Get admin user ID (replace with actual query or known ID)
-export ADMIN_USER_ID="$(psql -h localhost -U sangita -d sangita_grantha -t -c \
-  "SELECT id FROM users WHERE email = 'admin@sangitagrantha.org'" | tr -d ' ')"
-
-# Get JWT token
-export JWT=$(curl -s -X POST "$BASE_URL/auth/token" \
-  -H "Content-Type: application/json" \
-  -d "{\"adminToken\": \"dev-admin-token\", \"userId\": \"$ADMIN_USER_ID\"}" \
-  | jq -r '.token')
-
-echo "JWT: ${JWT:0:50}..."
-```
+# API request examples
 
 ---
 
-## 1. Health Check
+These examples target the local backend at `http://localhost:8080`. They show mounted routes and valid request shapes; responses depend on the current database. Use IDs returned by your catalogue rather than copying an ID from an old report.
 
-### Basic Health
+## Health and public catalogue
 
 ```bash
-curl -s "$BASE_URL/health" | jq
+curl --fail http://localhost:8080/health
+curl --fail 'http://localhost:8080/v2/catalogue/krithis?page=0&pageSize=5'
+curl --fail --get http://localhost:8080/v2/catalogue/krithis \
+  --data-urlencode 'query=vatapi' \
+  --data-urlencode 'page=0' \
+  --data-urlencode 'pageSize=30'
+curl --fail http://localhost:8080/v2/catalogue/discovery
+curl --fail 'http://localhost:8080/v2/catalogue/ragas?query=kalyani'
+curl --fail 'http://localhost:8080/v2/catalogue/composers?query=tyagaraja'
 ```
 
-**Response:**
-```json
-{
-  "status": "ok",
-  "database": "connected"
-}
+Catalogue pagination is zero-based. Parameters are `query` and `pageSize`, not `q` and `size`. An empty `items` array can be valid on a fresh or unpublished corpus.
+
+## Read one stored variant
+
+Replace the placeholders with a composition ID and one of the variant IDs from its detail response:
+
+```http
+GET /v2/catalogue/krithis/{id}
+GET /v2/catalogue/krithis/{id}/lyrics/{variantId}
 ```
+
+The first response lists variants and a nullable default. The second returns one stored reading with language/script/source metadata and sections or unsegmented text where available. Both IDs must belong together. Do not add query parameters to detail/lyrics routes.
+
+## Exercise validation and version boundaries
+
+```bash
+curl -i 'http://localhost:8080/v2/catalogue/krithis?page=-1'
+curl -i 'http://localhost:8080/v2/catalogue/krithis?q=vatapi'
+curl -i 'http://localhost:8080/v2/catalogue/krithis?page=0&page=1'
+```
+
+Each should return `400` under the catalogue parser. The same core route suffixes exist under `/v1/catalogue`, but V1 excludes `UNESTABLISHED`. V2 includes those compositions when published. Successful catalogue responses carry `Cache-Control: no-store`.
+
+## Search by meaning
+
+```bash
+curl --fail http://localhost:8080/v1/search/hybrid \
+  -H 'Content-Type: application/json' \
+  -d '{"query":"compositions about Ganesha","limit":10}'
+```
+
+Use `/semantic` for vector-only retrieval. Add `composerId` or `ragaId` UUID fields to constrain results. With no active profile, hybrid falls back to lexical and semantic returns an empty list. See [search operations](./search.md).
+
+## Token exchange and an authenticated read
+
+The following development example assumes the matching default token and a provisioned user:
+
+```bash
+curl --fail http://localhost:8080/v1/auth/token \
+  -H 'Content-Type: application/json' \
+  -d '{"adminToken":"dev-admin-token","email":"admin@sangitagrantha.org"}'
+```
+
+Use the returned `token` in the header for an admin read:
+
+```http
+GET /v1/admin/krithis/search
+Authorization: Bearer <token>
+```
+
+Refresh through `POST /v1/auth/refresh` with a valid Bearer JWT. Role claims are loaded from storage. Do not request roles in the token-exchange body; see [authentication](../00-meta/quick-reference-auth.md).
+
+## Mutations
+
+Use the exact request DTO for the chosen operation. The [API contract](./api-contract.md) links each mounted route family to its implementation. Import review is `POST /v1/admin/imports/{id}/review`, and targeted reingestion is `POST /v1/admin/imports/{id}/reingest`. These change data; inspect the intended record and payload before executing them.
+
+[UI integration](./integration-spec.md) · [OpenAPI status](./openapi-sync.md) · [Post-import verification](../07-quality/qa/test-plan.md)
 
 ---
 
-## 2. Public Endpoints
-
-### 2.1 Search Krithis
-
-**Basic Search:**
-```bash
-curl -s "$BASE_URL/v1/krithis/search" | jq
-```
-
-**Search with Query:**
-```bash
-curl -s "$BASE_URL/v1/krithis/search?q=vatapi" | jq
-```
-
-**Search with Filters:**
-```bash
-# By composer
-curl -s "$BASE_URL/v1/krithis/search?composerId=<uuid>" | jq
-
-# By raga
-curl -s "$BASE_URL/v1/krithis/search?ragaId=<uuid>" | jq
-
-# Combined filters
-curl -s "$BASE_URL/v1/krithis/search?q=endaro&composerId=<uuid>&ragaId=<uuid>" | jq
-
-# With pagination
-curl -s "$BASE_URL/v1/krithis/search?page=2&size=10" | jq
-```
-
-**Response:**
-```json
-{
-  "items": [
-    {
-      "id": "550e8400-e29b-41d4-a716-446655440000",
-      "title": "Vatapi Ganapatim",
-      "incipit": "Vātāpi gaṇapatim bhajeham",
-      "composerId": "...",
-      "primaryRagaId": "...",
-      "talaId": "...",
-      "musicalForm": "KRITHI",
-      "workflowState": "PUBLISHED"
-    }
-  ],
-  "page": 1,
-  "size": 25,
-  "total": 123
-}
-```
-
-### 2.2 Get Krithi Detail
-
-```bash
-curl -s "$BASE_URL/v1/krithis/<krithi-uuid>" | jq
-```
-
-**Response:**
-```json
-{
-  "krithi": {
-    "id": "...",
-    "title": "Vatapi Ganapatim",
-    "incipit": "Vātāpi gaṇapatim bhajeham",
-    "composerId": "...",
-    "primaryRagaId": "...",
-    "talaId": "...",
-    "deityId": "...",
-    "templeId": null,
-    "primaryLanguage": "sa",
-    "musicalForm": "KRITHI",
-    "isRagamalika": false,
-    "workflowState": "PUBLISHED"
-  },
-  "composer": { "id": "...", "name": "Muthuswami Dikshitar" },
-  "primaryRaga": { "id": "...", "name": "Hamsadhvani" },
-  "tala": { "id": "...", "name": "Adi" },
-  "deity": { "id": "...", "name": "Ganesha" },
-  "lyricVariants": [...],
-  "sections": [...],
-  "tags": [...]
-}
-```
-
-### 2.3 Reference Data
-
-**Composers:**
-```bash
-curl -s "$BASE_URL/v1/composers" | jq
-```
-
-**Ragas:**
-```bash
-curl -s "$BASE_URL/v1/ragas" | jq
-
-# With melakarta filter
-curl -s "$BASE_URL/v1/ragas?melakarta=true" | jq
-```
-
-**Talas:**
-```bash
-curl -s "$BASE_URL/v1/talas" | jq
-```
-
-**Deities:**
-```bash
-curl -s "$BASE_URL/v1/deities" | jq
-```
-
-**Temples:**
-```bash
-curl -s "$BASE_URL/v1/temples" | jq
-```
-
-**Tags:**
-```bash
-curl -s "$BASE_URL/v1/tags" | jq
-```
-
----
-
-## 3. Admin Endpoints
-
-> **Note:** All admin endpoints require the `Authorization: Bearer $JWT` header.
-
-### 3.1 Authentication
-
-**Login:**
-```bash
-curl -s -X POST "$BASE_URL/auth/token" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "adminToken": "dev-admin-token",
-    "userId": "<admin-user-uuid>"
-  }' | jq
-```
-
-**Response:**
-```json
-{
-  "token": "eyJhbGciOiJIUzI1NiIs...",
-  "expiresInSeconds": 86400,
-  "user": {
-    "id": "...",
-    "email": "admin@sangitagrantha.org",
-    "roles": ["admin"]
-  }
-}
-```
-
-### 3.2 Admin Krithi Management
-
-**List All Krithis (Admin):**
-```bash
-curl -s "$BASE_URL/v1/admin/krithis" \
-  -H "Authorization: Bearer $JWT" | jq
-```
-
-**Filter by Workflow State:**
-```bash
-curl -s "$BASE_URL/v1/admin/krithis?workflowState=draft" \
-  -H "Authorization: Bearer $JWT" | jq
-```
-
-**Create Krithi:**
-```bash
-curl -s -X POST "$BASE_URL/v1/admin/krithis" \
-  -H "Authorization: Bearer $JWT" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "title": "New Test Krithi",
-    "incipit": "Test incipit text",
-    "composerId": "<composer-uuid>",
-    "primaryRagaId": "<raga-uuid>",
-    "talaId": "<tala-uuid>",
-    "primaryLanguage": "sa",
-    "musicalForm": "KRITHI",
-    "isRagamalika": false
-  }' | jq
-```
-
-**Update Krithi:**
-```bash
-curl -s -X PUT "$BASE_URL/v1/admin/krithis/<krithi-uuid>" \
-  -H "Authorization: Bearer $JWT" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "title": "Updated Krithi Title",
-    "workflowState": "in_review"
-  }' | jq
-```
-
-**Delete Krithi:**
-```bash
-curl -s -X DELETE "$BASE_URL/v1/admin/krithis/<krithi-uuid>" \
-  -H "Authorization: Bearer $JWT" | jq
-```
-
-### 3.3 Lyric Variants
-
-**Add Lyric Variant:**
-```bash
-curl -s -X POST "$BASE_URL/v1/admin/krithis/<krithi-uuid>/variants" \
-  -H "Authorization: Bearer $JWT" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "language": "ta",
-    "script": "tamil",
-    "variantLabel": "Tamil Traditional",
-    "sourceReference": "SSP Vol. 1"
-  }' | jq
-```
-
-**Update Variant:**
-```bash
-curl -s -X PUT "$BASE_URL/v1/admin/variants/<variant-uuid>" \
-  -H "Authorization: Bearer $JWT" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "variantLabel": "Updated Label",
-    "sourceReference": "New Source"
-  }' | jq
-```
-
-### 3.4 Sections
-
-**Define Sections:**
-```bash
-curl -s -X POST "$BASE_URL/v1/admin/krithis/<krithi-uuid>/sections" \
-  -H "Authorization: Bearer $JWT" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "sections": [
-      { "sectionType": "PALLAVI", "orderIndex": 0 },
-      { "sectionType": "ANUPALLAVI", "orderIndex": 1 },
-      { "sectionType": "CHARANAM", "orderIndex": 2 }
-    ]
-  }' | jq
-```
-
-**Add Section Text to Variant:**
-```bash
-curl -s -X POST "$BASE_URL/v1/admin/variants/<variant-uuid>/sections" \
-  -H "Authorization: Bearer $JWT" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "sections": [
-      {
-        "sectionId": "<section-uuid>",
-        "lyricText": "Pallavi lyrics here...",
-        "lyricTextNormalized": "pallavi lyrics here"
-      }
-    ]
-  }' | jq
-```
-
-### 3.5 Tags
-
-**Assign Tags:**
-```bash
-curl -s -X POST "$BASE_URL/v1/admin/krithis/<krithi-uuid>/tags" \
-  -H "Authorization: Bearer $JWT" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "tagIds": ["<tag-uuid-1>", "<tag-uuid-2>"]
-  }' | jq
-```
-
-**Remove Tag:**
-```bash
-curl -s -X DELETE "$BASE_URL/v1/admin/krithis/<krithi-uuid>/tags/<tag-uuid>" \
-  -H "Authorization: Bearer $JWT" | jq
-```
-
-### 3.6 Reference Data Management
-
-**Create Composer:**
-```bash
-curl -s -X POST "$BASE_URL/v1/admin/composers" \
-  -H "Authorization: Bearer $JWT" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "New Composer Name",
-    "birthYear": 1750,
-    "deathYear": 1820,
-    "place": "Thanjavur",
-    "notes": "Brief biographical notes"
-  }' | jq
-```
-
-**Create Raga:**
-```bash
-curl -s -X POST "$BASE_URL/v1/admin/ragas" \
-  -H "Authorization: Bearer $JWT" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "New Raga Name",
-    "melakartaNumber": null,
-    "parentRagaId": "<parent-raga-uuid>",
-    "arohanam": "S R2 G3 M1 P D2 N3 S",
-    "avarohanam": "S N3 D2 P M1 G3 R2 S"
-  }' | jq
-```
-
-**Create Tala:**
-```bash
-curl -s -X POST "$BASE_URL/v1/admin/talas" \
-  -H "Authorization: Bearer $JWT" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "New Tala Name",
-    "angaStructure": "4+2+2",
-    "beatCount": 8
-  }' | jq
-```
-
----
-
-## 4. Import Pipeline
-
-### 4.1 List Imports
-
-```bash
-# All pending imports
-curl -s "$BASE_URL/v1/admin/imports/krithis?status=pending" \
-  -H "Authorization: Bearer $JWT" | jq
-
-# By source
-curl -s "$BASE_URL/v1/admin/imports/krithis?sourceId=<source-uuid>" \
-  -H "Authorization: Bearer $JWT" | jq
-```
-
-### 4.2 Get Import Detail
-
-```bash
-curl -s "$BASE_URL/v1/admin/imports/krithis/<import-uuid>" \
-  -H "Authorization: Bearer $JWT" | jq
-```
-
-### 4.3 Upload CSV
-
-```bash
-curl -s -X POST "$BASE_URL/v1/admin/imports/upload" \
-  -H "Authorization: Bearer $JWT" \
-  -F "file=@/path/to/krithis.csv" \
-  -F "sourceId=<source-uuid>" | jq
-```
-
-### 4.4 Map Import to Krithi
-
-```bash
-curl -s -X POST "$BASE_URL/v1/admin/imports/krithis/<import-uuid>/map" \
-  -H "Authorization: Bearer $JWT" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "krithiId": "<existing-krithi-uuid>",
-    "notes": "Mapped to existing Vatapi Ganapatim record"
-  }' | jq
-```
-
-### 4.5 Reject Import
-
-```bash
-curl -s -X POST "$BASE_URL/v1/admin/imports/krithis/<import-uuid>/reject" \
-  -H "Authorization: Bearer $JWT" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "notes": "Duplicate entry - already exists in catalog"
-  }' | jq
-```
-
----
-
-## 5. Notation (Varnams/Swarajathis)
-
-### 5.1 Get Notation Variants
-
-```bash
-curl -s "$BASE_URL/v1/admin/krithis/<krithi-uuid>/notation" \
-  -H "Authorization: Bearer $JWT" | jq
-```
-
-### 5.2 Create Notation Variant
-
-```bash
-curl -s -X POST "$BASE_URL/v1/admin/krithis/<krithi-uuid>/notation" \
-  -H "Authorization: Bearer $JWT" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "notationType": "SWARA",
-    "talaId": "<tala-uuid>",
-    "kalai": 1,
-    "eduppuOffsetBeats": 0,
-    "variantLabel": "Lalgudi Bani",
-    "sourceReference": "SSP Notation Book",
-    "isPrimary": true,
-    "notationRows": [
-      {
-        "sectionId": "<section-uuid>",
-        "orderIndex": 0,
-        "swaraText": "S R G M | P D N S ||",
-        "sahityaText": "Va ta pi ga na pa tim",
-        "talaMarkers": "| ||"
-      }
-    ]
-  }' | jq
-```
-
-### 5.3 Update Notation
-
-```bash
-curl -s -X PUT "$BASE_URL/v1/admin/notation/<notation-uuid>" \
-  -H "Authorization: Bearer $JWT" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "variantLabel": "Updated Label",
-    "isPrimary": false
-  }' | jq
-```
-
-### 5.4 Delete Notation
-
-```bash
-curl -s -X DELETE "$BASE_URL/v1/admin/notation/<notation-uuid>" \
-  -H "Authorization: Bearer $JWT" | jq
-```
-
----
-
-## 6. Audit Logs
-
-```bash
-# Get recent audit logs
-curl -s "$BASE_URL/v1/audit/logs" \
-  -H "Authorization: Bearer $JWT" | jq
-
-# Filter by entity
-curl -s "$BASE_URL/v1/audit/logs?entityType=krithi" \
-  -H "Authorization: Bearer $JWT" | jq
-
-# Filter by action
-curl -s "$BASE_URL/v1/audit/logs?action=CREATE" \
-  -H "Authorization: Bearer $JWT" | jq
-```
-
-**Response:**
-```json
-[
-  {
-    "id": "...",
-    "actorId": "...",
-    "action": "CREATE",
-    "entityType": "krithi",
-    "entityId": "...",
-    "oldValue": null,
-    "newValue": { "title": "..." },
-    "createdAt": "2026-01-29T10:30:00Z"
-  }
-]
-```
-
----
-
-## 7. Error Handling
-
-### Common Error Responses
-
-**400 Bad Request:**
-```json
-{
-  "code": "validation_error",
-  "message": "Validation failed",
-  "fields": {
-    "title": "Title is required",
-    "composerId": "Invalid UUID format"
-  },
-  "timestamp": "2026-01-29T10:30:00Z"
-}
-```
-
-**401 Unauthorized:**
-```json
-{
-  "code": "unauthorized",
-  "message": "Invalid or expired token",
-  "timestamp": "2026-01-29T10:30:00Z"
-}
-```
-
-**404 Not Found:**
-```json
-{
-  "code": "not_found",
-  "message": "Krithi not found",
-  "timestamp": "2026-01-29T10:30:00Z"
-}
-```
-
-**409 Conflict:**
-```json
-{
-  "code": "conflict",
-  "message": "Composer with this name already exists",
-  "timestamp": "2026-01-29T10:30:00Z"
-}
-```
-
----
-
-## 8. Shell Script Helpers
-
-### Complete CRUD Test Script
-
-```bash
-#!/bin/bash
-# test-api.sh - Complete API test script
-
-set -e
-BASE_URL="${BASE_URL:-http://localhost:8080}"
-
-echo "=== Sangita Grantha API Test ==="
-
-# Health check
-echo -n "Health check: "
-curl -sf "$BASE_URL/health" | jq -r '.status'
-
-# Get JWT (assumes admin user exists)
-echo "Getting JWT..."
-ADMIN_USER_ID=$(psql -h localhost -U sangita -d sangita_grantha -t -c \
-  "SELECT id FROM users WHERE email = 'admin@sangitagrantha.org'" | tr -d ' ')
-JWT=$(curl -sf -X POST "$BASE_URL/auth/token" \
-  -H "Content-Type: application/json" \
-  -d "{\"adminToken\": \"dev-admin-token\", \"userId\": \"$ADMIN_USER_ID\"}" \
-  | jq -r '.token')
-echo "JWT obtained: ${JWT:0:20}..."
-
-# Search test
-echo -n "Search test: "
-SEARCH_COUNT=$(curl -sf "$BASE_URL/v1/krithis/search" | jq '.total')
-echo "$SEARCH_COUNT krithis found"
-
-# Get first composer
-COMPOSER_ID=$(curl -sf "$BASE_URL/v1/composers" | jq -r '.[0].id')
-echo "Using composer: $COMPOSER_ID"
-
-# Create test krithi
-echo "Creating test krithi..."
-KRITHI_ID=$(curl -sf -X POST "$BASE_URL/v1/admin/krithis" \
-  -H "Authorization: Bearer $JWT" \
-  -H "Content-Type: application/json" \
-  -d "{
-    \"title\": \"API Test Krithi $(date +%s)\",
-    \"composerId\": \"$COMPOSER_ID\",
-    \"musicalForm\": \"KRITHI\",
-    \"primaryLanguage\": \"sa\"
-  }" | jq -r '.id')
-echo "Created krithi: $KRITHI_ID"
-
-# Update krithi
-echo "Updating krithi..."
-curl -sf -X PUT "$BASE_URL/v1/admin/krithis/$KRITHI_ID" \
-  -H "Authorization: Bearer $JWT" \
-  -H "Content-Type: application/json" \
-  -d '{"title": "Updated API Test Krithi"}' > /dev/null
-echo "Updated"
-
-# Delete krithi
-echo "Deleting krithi..."
-curl -sf -X DELETE "$BASE_URL/v1/admin/krithis/$KRITHI_ID" \
-  -H "Authorization: Bearer $JWT" > /dev/null
-echo "Deleted"
-
-echo "=== All tests passed ==="
-```
-
----
-
-## Related Documents
-
-- [API Contract](./api-contract.md)
-- [OpenAPI Sync](./openapi-sync.md)
-- [Integration Spec](./integration-spec.md)
-- [Troubleshooting](../00-onboarding/troubleshooting.md)
-## TRACK-140 V2 discovery contract
-
-[TRACK-140](../../conductor/tracks/TRACK-140-rasika-discovery-experience.md) adds `/v2/catalogue` for the new Rasika client. The OpenAPI definitions and both payload fixtures in `shared/domain/model/catalogue/fixtures/` freeze the wire boundary before implementation. V1 retains known musical-form values and excludes UNESTABLISHED records from public lists/counts/details/lyrics; it never substitutes KRITHI. V2 includes published unclassified compositions in unfiltered results, with no form badge or specific-form match. New clients do not fall back silently to V1.
-
-V2 includes discovery; krithi, raga and composer lists/details; stored lyrics; tala/deity/temple directories/details; and language/form directories. Exact raga/composer/tala/deity/temple UUID filters plus language/form combine with AND. Queries submit explicitly; repeated scalar/unknown parameters are rejected. References and source information are allowlisted, with absent section binding and reading-level completeness remaining unknown. Public responses use `Cache-Control: no-store`.
-
-The future release C admin boundary is `/v1/admin/catalogue-features`: list/create, detail/update, publish/unpublish and atomic ordering. It uses the existing ADMIN role, expected revisions, bounded text/record counts and transactional audit. Contracts describe intended behaviour; passing integration/runtime evidence is recorded separately in the track.
-
-Example V2 read: `GET /v2/catalogue/krithis?query=fixture&page=0&pageSize=30&musicalForm=VARNAM`. A valid unmatched filter returns an empty page. Invalid UUIDs or unknown form names return 400; unavailable/wrong-owner readings return the same public 404. The unestablished discovery fixture is synthetic and is not a live catalogue claim.
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-03-17 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Evidence record |
 
 # Lyric Persistence Fix & Backfill
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../01-requirements/features/README.md).
 
 ## Purpose
 
@@ -44,3 +50,7 @@ A classic integration seam failure: `ExtractionResultProcessor` stores `Canonica
 - 23 Dikshitar krithis from guru-guha.blogspot.com have only OTHER sections due to non-standard HTML (tracked in TRACK-097)
 
 Ref: application_documentation/10-implementations/track-094-lyric-persistence-fix-backfill.md
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

@@ -2,13 +2,19 @@
 |:---|:---|
 | **Status** | Draft |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Design reference |
 | **Related Tracks** | TRACK-041 |
 | **Parent** | [Krithi Data Sourcing & Quality](./README.md) |
 | **Companion** | [Bulk Import UI/UX Plan](../features/bulk-import/ui-ux-plan.md) |
 
 # Sourcing & Extraction Monitoring — UI/UX Plan
+
+---
+
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [current ingestion guide](./../features/bulk-import/02-implementation/technical-implementation-guide.md) for implemented behavior and current operating steps.
 
 ## 1. Overview
 
@@ -686,3 +692,7 @@ Implementation is aligned with the backend phases defined in the [Implementation
 | Product Requirements Document | [../product-requirements-document.md](../product-requirements-document.md) |
 | Database Schema | [../../04-database/schema.md](../../04-database/schema.md) |
 | TRACK-041 | [../../../conductor/tracks/TRACK-041-enhanced-sourcing-logic.md](../../../conductor/tracks/TRACK-041-enhanced-sourcing-logic.md) |
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../features/README.md)

@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Evidence record |
 
 # API Coverage Report
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current quality checks](./README.md).
 
 
 ---
@@ -110,3 +116,7 @@ The following endpoints exist in the Backend but are not currently utilized by t
     - `POST /v1/admin/variants/{id}/sections`
 2.  **Fix Notation API Paths**: Ensure consistency. Recommended: Update Frontend `client.ts` to remove the extra `/admin` prefix for notation routes to match Backend's `/v1/` structure, OR update Backend `AdminNotationRoutes.kt` to nest under `/admin`.
     - *Correction*: Backend defines notation routes under `/v1/`, but logically they are admin actions. The Frontend matches the "Admin" intent. Updating Backend to `route("/v1/admin")` in `AdminNotationRoutes.kt` is likely the cleaner semantic fix.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

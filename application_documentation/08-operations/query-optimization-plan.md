@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Design reference |
 
 # Bulk Import Query Optimization Plan
+
+---
+
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [current operations guides](./README.md) for implemented behavior and current operating steps.
 
 ## 1. Analysis of Current State
 A review of the application logs (`sangita_logs.txt`) reveals a high frequency of database queries originating from the background worker service (`BulkImportWorkerService`).
@@ -87,3 +93,7 @@ ON import_task_run (job_id, status, created_at);
 After implementation, we will monitor `sangita_logs.txt` to verify:
 1.  **Idle Silence:** Logs should show very few queries when no batch is active.
 2.  **Burst Performance:** Throughput during imports should remain high or improve due to batch claiming.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

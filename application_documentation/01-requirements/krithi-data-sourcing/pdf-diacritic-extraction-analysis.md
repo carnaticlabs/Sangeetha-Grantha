@@ -2,13 +2,19 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 3.2.1 |
-| **Last Updated** | 2026-02-19 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Design reference |
 | **Related Tracks** | TRACK-041, TRACK-053, TRACK-054–TRACK-058 (proposed) |
 | **Scope** | PDF extraction quality — garbled diacritic handling, metadata recovery, section detection, Devanagari font decoding |
 | **Sources Under Analysis** | [guruguha.org mdeng.pdf](https://guruguha.org/wp-content/uploads/2022/03/mdeng.pdf) (English/IAST) and [guruguha.org mdskt.pdf](https://guruguha.org/wp-content/uploads/2025/01/mdskt.pdf) (Sanskrit/Devanagari) — 484 Dikshitar Krithis each |
 
 # PDF Diacritic Extraction Analysis — Garbled Encoding Recovery for Raga, Tala, and Section Metadata
+
+---
+
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [current ingestion guide](./../features/bulk-import/02-implementation/technical-implementation-guide.md) for implemented behavior and current operating steps.
 
 ## 1. Executive Summary
 
@@ -1616,3 +1622,7 @@ This approach ensures that a Devanagari extracted title (e.g., `अखिला�
 4.  Match score = 1.0 (Exact Match).
 
 This validates the pipeline for cross-script enrichment without requiring a heavy-weight Transliteration Library in the Kotlin backend.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../features/README.md)

@@ -2,12 +2,18 @@
 |:---|:---|
 | **Status** | Draft — scope and architecture recommendation |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-09-05 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Codex, for Seshadri |
+| **Document Type** | Evidence record |
 | **Related track** | [TRACK-108: Semantic Search](../../conductor/tracks/TRACK-108-semantic-search.md) |
 | **Evidence basis** | Working-tree code and documentation; official provider documentation accessed 2026-09-05 |
 
 # Track 108 — Conversational Carnatic Music Discovery
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [embedding and search operations](./../09-ai/embeddings.md).
 
 ---
 
@@ -387,3 +393,7 @@ Before implementing, revise Track 108's Intent/Spec/Plan to remove stale depende
 | Autonomous editing / audio recognition | Separate later scope | Requires additional authority, data and evaluation |
 
 The acceptance decision should settle these defaults and the evaluation targets. The most consequential product choice is whether source-grounded conversation is part of the first enthusiast release. Given the stated objective, this analysis recommends that it is.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

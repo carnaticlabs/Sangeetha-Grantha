@@ -1,13 +1,16 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.5.3 |
-| **Last Updated** | 2026-09-09 |
+| **Version** | 1.6.0 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Current guide |
 
 # Current Technology Versions
 
-> **Single source of truth** for all dependency versions across the project.
+---
+
+> **Documentation reference** for repository-pinned and lockfile-resolved dependency versions. Source manifests and lockfiles are authoritative; this is not a claim about the latest upstream releases.
 >
 > All documentation should reference this file instead of hardcoding version numbers.
 >
@@ -23,7 +26,7 @@
 |------|---------|-------|
 | Java | `temurin-25` | Temurin distribution, JVM toolchain |
 | Bun | `1.4.0` | Frontend package manager & runtime |
-| Python | `3.11+` | Migration tool & extraction worker (runtime: 3.14) |
+| Python | `3.14` (mise); `>=3.14` (worker) | Extraction/enrichment and indexing; migrations run through Flyway |
 | Docker Compose | `latest` | Container orchestration |
 
 ---
@@ -242,3 +245,7 @@ For current versions, see [Current Versions](./current-versions.md).
 1. Update the source file (`gradle/libs.versions.toml`, `package.json`, or `.mise.toml`)
 2. Update this file to match
 3. Commit both the source file and the updated `current-versions.md`
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

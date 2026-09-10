@@ -2,11 +2,14 @@
 |:---|:---|
 | **Status** | Advisory — informs modelling; ragamalika not yet re-extracted |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-07-18 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | `carnatic-musicologist` review (for Seshadri) |
+| **Document Type** | Musicology review |
 | **Backs** | `database/migrations/V47__demerge_ragamalika_visvanatham_from_natabharanam.sql` |
 
 # Musicological Review — *viSva nAthaM bhajEhaM* (Sri Visvanatham)
+
+---
 
 Muthuswami Dikshitar. Reviews how this composition should be modelled after migration V47 separated
 the ragamalika lyric variants that had been incorrectly merged into the Natabhranam krithi during
@@ -114,3 +117,7 @@ Primary raga assignment: When the new ragamalika krithi row is created, confirm 
 Cosmetic
 Raga name normalization: Ensure the raga entries in the database use consistent transliteration: "Sankarabharanam" (not "Shankarabharanam"), "Bhupala" (not "Bhoopalam"), "Devakriya" (not "Deva Kriya" with a space). Check that each of the 14 ragas has a corresponding row in the ragas table before creating krithi_ragas entries.
 The V47 migration is the correct first step. After it runs and re-extraction produces the ragamalika as a new krithi, the ingestion pipeline should create the row with the structure described above: 3 sections, 34 krithi_ragas rows with viloma notes, is_ragamalika = true, and musical_form = 'KRITHI'.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../features/README.md)

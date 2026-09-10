@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.28.0 |
-| **Last Updated** | 2026-09-09 |
+| **Version** | 1.29.0 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
 
 # Conductor Tracks Registry
@@ -111,7 +111,7 @@
 | [TRACK-105](./tracks/TRACK-105-working-tree-reconciliation.md) | Working Tree Reconciliation & Safe Landing | Completed |
 | [TRACK-106](./tracks/TRACK-106-registry-doc-resync.md) | Conductor Registry & Documentation Re-Sync | Completed |
 | [TRACK-107](./tracks/TRACK-107-ai-platform-lifecycle-uplift.md) | AI Platform Lifecycle Uplift (SDK + Model + Structured Output + Batch) | Completed |
-| [TRACK-108](./tracks/TRACK-108-semantic-search.md) | Semantic Search (Embeddings + pgvector) | Not Started |
+| [TRACK-108](./tracks/TRACK-108-semantic-search.md) | Semantic Search (Embeddings + pgvector) | Completed |
 | [TRACK-109](./tracks/TRACK-109-production-readiness-roadmap.md) | Production Readiness Roadmap (Epic) | Not Started |
 | [TRACK-110](./tracks/TRACK-110-testcontainers-flyway-cutover.md) | Testcontainers Substrate + Flyway Cutover | Completed |
 | [TRACK-111](./tracks/TRACK-111-dal-suite-ci-activation.md) | DAL Test Suite + CI Activation | Completed |
@@ -144,6 +144,7 @@
 | [TRACK-138](./tracks/TRACK-138-rasika-mobile-app.md) | Rasika Mobile App — Search, Browse and Read | Plan accepted — Node C |
 | [TRACK-139](./tracks/TRACK-139-retire-corpus-data-fix-migrations.md) | Retire Corpus Data-Fix Migrations | In Progress — V58–V62 retired; five krithis reingested |
 | [TRACK-140](./tracks/TRACK-140-rasika-discovery-experience.md) | Rasika — Discovery and Reading Experience | In progress — Plan accepted |
+| [TRACK-141](./tracks/TRACK-141-documentation-facelift.md) | Documentation Facelift and Feature Reconciliation | Done |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)

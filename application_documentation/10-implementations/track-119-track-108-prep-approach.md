@@ -2,11 +2,17 @@
 |:---|:---|
 | **Status** | Draft — for review |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-07-14 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Prep analysis (Claude, for Seshadri) |
+| **Document Type** | Evidence record |
 | **Covers** | [TRACK-119](../../conductor/tracks/TRACK-119-oauth-otp-auth.md) (OAuth/OTP auth) · [TRACK-108](../../conductor/tracks/TRACK-108-semantic-search.md) (Semantic search) |
 
 # Prep & Approach — TRACK-119 (Interactive Auth) and TRACK-108 (Semantic Search)
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../01-requirements/features/README.md).
 
 This document is the pre-implementation analysis for the two "Ready" tracks. It validates
 readiness against the conductor registry and the live codebase/database, records what already
@@ -325,3 +331,7 @@ then cut over — never mixing versions in one ranking, per the track's risk not
 | P6 | Backfill timing | Pipeline + slice now; full run after TRACK-117 re-import |
 
 Ref: application_documentation/north-star-evaluation.md
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

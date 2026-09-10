@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Design reference |
 
 # Cross-Platform Development Environment Standardisation
+
+---
+
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [current feature map](./README.md) for implemented behavior and current operating steps.
 
 
 > **Target**: Consistent, reproducible development environments across macOS, Linux, and Windows  
@@ -316,11 +322,11 @@ bun = "1.3.0"            # Frontend package manager
 ```
 
 **Usage**:
-# Install mise (one-time, per developer)
+## Install mise (one-time, per developer)
 curl https://mise.run | sh  # macOS/Linux
-# Windows: Use winget or download from https://mise.jdx.dev/
+## Windows: Use winget or download from https://mise.jdx.dev/
 
-# In project directory
+## In project directory
 ```text
 mise install              # Installs all tools from .mise.toml
 mise activate            # Activates tools in current shell
@@ -354,23 +360,23 @@ config/
 - Used by both backend (Ktor) and frontend (Vite)
 
 **Key Variables**:
-# Frontend
+## Frontend
 VITE_API_BASE_URL=http://localhost:8080
 
-# Backend
+## Backend
 API_HOST=0.0.0.0
 API_PORT=8080
 ADMIN_TOKEN=dev-admin-token
 
-# Database (Docker Compose defaults)
+## Database (Docker Compose defaults)
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=sangita_grantha
 DB_USER=postgres
 DB_PASSWORD=postgres
 
-# Optional: Gemini AI
-# SG_GEMINI_API_KEY=your-api-key-here
+## Optional: Gemini AI
+## SG_GEMINI_API_KEY=your-api-key-here
 ```text
 
 ### 4.1.3 Bootstrap Scripts
@@ -753,21 +759,21 @@ winget install jdx.mise
 ```
 
 **Step 3: Run Bootstrap**
-# Unix/Linux/macOS
+## Unix/Linux/macOS
 ./tools/bootstrap
 
-# Windows
+## Windows
 ```text
 powershell -ExecutionPolicy Bypass -File .\tools\bootstrap.ps1
 ```
 
 **Step 4: Verify Setup**
-# Check toolchain versions
+## Check toolchain versions
 java -version    # Should show Java 25
 rustc --version  # Should show rustc 1.92.0
 bun --version    # Should show 1.3.0
 
-# Check database
+## Check database
 ```text
 docker ps        # Should show sangita_postgres container running
 cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db health
@@ -776,13 +782,13 @@ cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db health
 ### 9.2 Daily Development Workflow
 
 **Start Development Stack**:
-# Option 1: Via mise (recommended - ensures correct tool versions)
+## Option 1: Via mise (recommended - ensures correct tool versions)
 mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- dev --start-db
 
-# Option 2: Direct (requires tools to be installed manually)
+## Option 2: Direct (requires tools to be installed manually)
 cargo run --manifest-path tools/sangita-cli/Cargo.toml -- dev --start-db
 
-# Option 3: Manual (for debugging)
+## Option 3: Manual (for debugging)
 ```text
 docker compose up -d postgres
 ./gradlew :modules:backend:api:run
@@ -790,16 +796,16 @@ cd modules/frontend/sangita-admin-web && bun run dev
 ```
 
 **Reset Database**:
-# Via mise (recommended)
+## Via mise (recommended)
 mise exec -- cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db reset --mode docker
 
-# Or direct
+## Or direct
 ```text
 cargo run --manifest-path tools/sangita-cli/Cargo.toml -- db reset --mode docker
 ```
 
 **Update Toolchain**:
-# Update .mise.toml with new versions
+## Update .mise.toml with new versions
 ```text
 mise install    # Installs updated versions
 ```
@@ -880,3 +886,7 @@ After running bootstrap, verify:
 **Last Updated**: 2026-01-14  
 **Document Version**: 1.0  
 **Next Review**: 2026-04-14 (quarterly review)
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./README.md)

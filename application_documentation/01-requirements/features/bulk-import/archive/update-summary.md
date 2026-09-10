@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Archived |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-02-03 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Archive |
 
 # Update Summary: Guru-Guha Blogspot Source Correction
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current ingestion guide](./../02-implementation/technical-implementation-guide.md).
 
 
 ---
@@ -102,3 +108,7 @@ implicitComposer = "Muthuswami Dikshitar"
 - Test regex patterns against actual HTML
 - Update entity resolution to handle "Dikshitar" → "Muthuswami Dikshitar" mapping
 - Consider this source as Medium priority (after karnatik.com, similar to other blogspot sources)
+
+---
+
+[Documentation home](./../../../../README.md) · [Feature status](./../../README.md)

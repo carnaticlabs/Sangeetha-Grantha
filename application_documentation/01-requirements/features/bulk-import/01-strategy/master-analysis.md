@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Design reference |
 
 # Bulk Import Master Analysis
+
+---
+
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [current ingestion guide](./../02-implementation/technical-implementation-guide.md) for implemented behavior and current operating steps.
 
 
 ---
@@ -1058,3 +1064,7 @@ The import pipeline will be a significant engineering effort but is essential fo
 - [Domain Model](../../../domain-model.md)
 - [Database Schema](../../../../04-database/schema.md)
 - [Import Pipeline Migration](../../../../../database/migrations/V04__import-pipeline.sql)
+
+---
+
+[Documentation home](./../../../../README.md) · [Feature status](./../../README.md)

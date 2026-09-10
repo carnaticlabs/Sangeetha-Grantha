@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Evidence record |
 
 # Sangita Grantha Documentation Audit Report
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../01-requirements/features/README.md).
 
 ## Executive Summary
 
@@ -404,3 +410,7 @@ project/
 - [Retention Plan](./retention-plan.md)
 - [TRACK-028: Documentation Quality Improvements](../../conductor/tracks/TRACK-028-documentation-quality-improvements.md)
 - Source files: `gradle/libs.versions.toml`, `package.json`, `.mise.toml`
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

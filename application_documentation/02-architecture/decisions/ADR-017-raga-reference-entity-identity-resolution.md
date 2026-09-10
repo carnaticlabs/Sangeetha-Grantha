@@ -1,14 +1,20 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Accepted |
-| **Version** | 1.4.0 |
-| **Last Updated** | 2026-08-30 |
+| **Version** | 1.4.1 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Decision record |
 | **Deciders** | Sangeetha Grantha Team (Seshadri) |
 | **Extends** | [ADR-016](./ADR-016-raga-naming-authority.md) — raga naming authority (the bootstrap this ADR builds identity on top of) |
 | **Implemented by** | [TRACK-136](../../../conductor/tracks/TRACK-136-raga-identity-alias-resolution.md) (Phases 1–3); [TRACK-132](../../../conductor/tracks/TRACK-132-raga-deduplication-normalizer-fix.md) is Phase 0 (remediation); [TRACK-137](../../../conductor/tracks/TRACK-137-orphan-twin-raga-cleanup.md) cleans residual orphan twins |
 
 # ADR-017: Raga Reference Entity Identity & Resolution
+
+---
+
+> [!NOTE]
+> Decision record: preserve the original rationale and check its decision/supersession status. Current runtime guidance is in [system architecture](./../backend-system-design.md) and [Flyway migrations](./../../04-database/migrations.md).
 
 ## Context
 
@@ -64,7 +70,7 @@ Split *identity* from *surface form*.
 - **`raga_aliases`** (new) holds every *other* known surface form of that identity — one row per
   alias, each carrying its own `match_key` and **provenance**:
 
-  ```
+  ```text
   raga_aliases(
     id            uuid pk,
     raga_id       uuid  -> ragas(id) on delete cascade,
@@ -130,13 +136,18 @@ gate in CI.
 The import's `normalize → match → else create` **is** the twin-minting bug. Replace it with lookup +
 review-queue, so an unknown raga is a *reviewable event*, not an auto-mutation:
 
-```
-incoming raga name
-  → raga_match_key(name)                      -- a bare name has no mela; matched on match_key
-  → lookup across ragas ∪ raga_aliases identity keys
-      ├─ exactly one hit → resolve to raga_id (done)
-      ├─ multiple hits   → AMBIGUOUS (a homonym set, e.g. the two Kalāvatis). DO NOT pick. Enqueue.
-      └─ no hit          → UNKNOWN. DO NOT insert. Enqueue to the raga-resolution review queue.
+```mermaid
+flowchart TB
+  NAME[Incoming raga name]
+  KEY["raga_match_key(name)"]
+  LOOK[Lookup ragas ∪ aliases]
+  subgraph outcomes["Resolution"]
+    direction TB
+    HIT[exactly one hit → raga_id]
+    AMB[multiple hits → AMBIGUOUS enqueue]
+    UNK[no hit → UNKNOWN enqueue]
+  end
+  NAME --> KEY --> LOOK --> outcomes
 ```
 
 A curator then resolves each queue item one of three ways:
@@ -249,3 +260,7 @@ half-step already; generalising the pattern is worthwhile but is not a raga deci
 - [TRACK-132](../../../conductor/tracks/TRACK-132-raga-deduplication-normalizer-fix.md) — Phase 0 remediation; §0h holds the 2026-08-29 expert clarifications
 - [raga-clarifications-musician-draft.md](../../../conductor/tracks/evidence/raga-clarifications-musician-draft.md) — expert query sheet (source of the A2/A3/B/C nomenclature provenance)
 - [Domain Model §6](../../01-requirements/domain-model.md#6-musicological-correctness-rules-lakshana) — musicological correctness rules (lakshana), incl. janya-subset rule
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Archived |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-02-03 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Archive |
 
 # Krithi Data Import and Orchestration - Comprehensive Analysis
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current ingestion guide](./../02-implementation/technical-implementation-guide.md).
 
 
 ---
@@ -1223,7 +1229,7 @@ with DAG(
 
 ### Appendix C: Deity Name Normalization Examples
 
-# Sample deity normalization dictionary
+## Sample deity normalization dictionary
 DEITY_SYNONYMS = {
     'vishnu': ['perumal', 'narayana', 'hari', 'govinda', 'madhava', 'venkateshwara'],
     'rama': ['raghuvira', 'raghunatha', 'dasarathi', 'kodanda rama', 'sitapati'],
@@ -1247,7 +1253,7 @@ def normalize_deity_name(name):
 
 ### Appendix D: Fuzzy Matching Configuration
 
-# Sample de-duplication configuration
+## Sample de-duplication configuration
 DEDUP_CONFIG = {
     'exact_match_threshold': 1.0,  # 100% match
     'high_confidence_threshold': 0.92,  # Auto-merge
@@ -1290,3 +1296,7 @@ DEDUP_CONFIG = {
 **Document End**
 
 *This analysis is based on general knowledge of Carnatic music data sources, typical data engineering challenges, and orchestration platform capabilities. Specific website structures and Koog.ai features should be validated through direct examination and vendor consultation.*
+
+---
+
+[Documentation home](./../../../../README.md) · [Feature status](./../../README.md)

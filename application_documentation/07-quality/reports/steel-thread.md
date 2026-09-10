@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Evidence record |
 
 # Steel Thread Testing & Usability Report
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current quality checks](./../README.md).
 
 This document summarizes the results of steel thread testing for Sangita Grantha, including feature verification and usability observations.
 
@@ -303,3 +309,7 @@ curl http://localhost:8080/v1/krithis/search
 - [Steel Thread Runbook](../../08-operations/runbooks/steel-thread-runbook.md)
 - [Test Plan](../qa/test-plan.md)
 - [API Contract](../../03-api/api-contract.md)
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

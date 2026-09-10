@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.3.0 |
-| **Last Updated** | 2026-09-05 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Evidence record |
 
 # Trinity Krithi Bulk Import
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../01-requirements/features/README.md).
 
 ## Purpose
 
@@ -53,3 +59,7 @@ Kotlin-side HTML scraping produced corrupted lyrics (Devanagari pronunciation gu
 Section-count mismatches left by the Trinity import are closed in [TRACK-133](./track-133-section-mismatch-remediation.md) (108 → 0 rows; durable pallavi-echo parser 2026-09-05).
 
 Ref: application_documentation/10-implementations/track-093-trinity-krithi-bulk-import.md
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

@@ -1,114 +1,67 @@
-| Metadata         | Value                  |
-| :--------------- | :--------------------- |
-| **Status**       | Active                 |
-| **Version**      | 1.5.0                  |
-| **Last Updated** | 2026-09-05             |
-| **Author**       | Sangeetha Grantha Team |
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 2.1.0 |
+| **Last Updated** | 2026-09-10 |
+| **Author** | Sangeetha Grantha Team |
+| **Document Type** | Navigation |
 
-# Sangita Grantha Documentation Index
-
-This documentation tree is the **spec-driven source of truth** for Sangita Grantha.
-
-The **primary PRD** lives at the repo root:
-[Sangita Grantha PRD](01-requirements/product-requirements-document.md)
-
-Historical / inherited drafts from earlier projects, and any future archival docs for Sangita Grantha, live under `./archive/`.
+# Sangeetha Grantha documentation
 
 ---
 
-- **[00 Onboarding](./00-onboarding/README.md)**
-  - [Getting Started](./00-onboarding/getting-started.md)
-  - [IDE Setup](./00-onboarding/ide-setup.md)
-  - [Troubleshooting](./00-onboarding/troubleshooting.md)
+Use this library to understand the product, run it locally, curate source material, or change the implementation. The [root README](../README.md) gives a product overview; this page organizes the deeper guides by reader task.
 
-- **[01 Requirements](./01-requirements/README.md)**
-  - [Product Requirements](./01-requirements/product-requirements-document.md)
-  - [Domain Model](./01-requirements/domain-model.md)
-  - [Glossary](./01-requirements/glossary.md)
-  - [Admin Web PRD](./01-requirements/admin-web/prd.md)
-  - [Mobile App PRD](./01-requirements/mobile/prd.md)
-  - [Features](./01-requirements/features/README.md)
-    - [Commit Guardrails & Workflow Enforcement](./01-requirements/features/commit-guardrails-workflow.md) ✅ *Implemented*
-    - [Bulk Import](./01-requirements/features/bulk-import/README.md)
-    - [Intelligent Content Ingestion](./01-requirements/features/intelligent-content-ingestion.md)
-    - [Advanced Krithi Notation & Transliteration](./01-requirements/features/advanced-krithi-notation-transliteration.md)
-  - [Krithi Data Sourcing & Quality](./01-requirements/krithi-data-sourcing/README.md) *(New — Feb 2026)*
-    - [Quality Strategy](./01-requirements/krithi-data-sourcing/quality-strategy.md)
-    - [Implementation Checklist](./01-requirements/krithi-data-sourcing/implementation-checklist.md)
-  - [Tech Debt](./01-requirements/tech-debt/README.md)
+## Start with your task
 
-- **[02 Architecture](./02-architecture/README.md)**
-  - [System Design](./02-architecture/backend-system-design.md)
-  - [Tech Stack](./02-architecture/tech-stack.md)
-  - [Target Scale Architecture](./02-architecture/scale-target-architecture.md)
-  - [Decisions (ADRs)](./02-architecture/decisions/adr-index.md)
-  - [Diagrams](./02-architecture/diagrams/README.md)
-    - [C4 Model](./02-architecture/diagrams/c4-model.md)
-    - [ERD](./02-architecture/diagrams/erd.md)
-    - [Flows](./02-architecture/diagrams/flows.md)
+| You want to… | Read |
+|:---|:---|
+| Understand what is built and what remains open | [Feature map](./01-requirements/features/README.md), [main PRD](./01-requirements/product-requirements-document.md) |
+| Start the application | [Getting started](./00-onboarding/getting-started.md), [troubleshooting](./00-onboarding/troubleshooting.md) |
+| Use or improve Rasika | [Mobile PRD](./01-requirements/mobile/prd.md), [mobile implementation](./05-frontend/mobile/README.md) |
+| Curate compositions and imports | [Curator Console](./05-frontend/admin-web/ui-specs.md), [admin PRD](./01-requirements/admin-web/prd.md) |
+| Understand semantic search | [Search modes and API](./03-api/search.md) |
+| Build or refresh embeddings | [Embedding pipeline](./09-ai/embeddings.md) |
+| Integrate a client | [API contract](./03-api/api-contract.md), [examples](./03-api/api-examples.md) |
+| Trace extraction to accepted text | [Ingestion guide](./01-requirements/features/bulk-import/02-implementation/technical-implementation-guide.md), [versioned canon](./04-database/versioned-canon.md) |
+| Resolve raga identity | [Raga identity](./04-database/raga-identity.md), [domain rules](./01-requirements/domain-model.md) |
+| Verify a change or import | [Quality gates](./07-quality/README.md), [post-import checks](./07-quality/qa/test-plan.md) |
+| Operate the system | [Configuration](./08-operations/config.md), [runbooks](./08-operations/runbooks/README.md), [deployment readiness](./08-operations/deployment.md) |
+| Find any retained document | [Complete document catalog](./00-meta/document-catalog.md) |
 
-- **[03 API](./03-api/README.md)**
-  - [Contract](./03-api/api-contract.md)
-  - [Examples (cURL)](./03-api/api-examples.md)
-  - [Integration Spec](./03-api/integration-spec.md)
-  - [OpenAPI Sync](./03-api/openapi-sync.md)
+## Browse by area
 
-- **[04 Database](./04-database/README.md)**
-  - [Schema Overview](./04-database/schema.md)
-  - [Migrations](./04-database/migrations.md)
-  - [Audit Log](./04-database/audit-log.md)
-  - [Schema Validation](./04-database/schema-validation.md)
+| Area | What it contains |
+|:---|:---|
+| [00 · Onboarding](./00-onboarding/README.md) | Setup, IDEs, local diagnostics |
+| [00 · Documentation and versions](./00-meta/README.md) | Version reference, standards, lifecycle, audit history |
+| [01 · Requirements](./01-requirements/README.md) | Product/client PRDs, musicological model, feature requirements |
+| [02 · Architecture](./02-architecture/README.md) | Runtime responsibilities, diagrams, decisions, future scaling proposals |
+| [03 · API](./03-api/README.md) | Mounted contracts, examples, client integration and search |
+| [04 · Database](./04-database/README.md) | Schema, Flyway, raga identity, versioned canon and audit |
+| [05 · Frontend](./05-frontend/README.md) | Curator Console and Rasika implementation/design |
+| [06 · Backend](./06-backend/README.md) | Service conventions, mutation/security requirements and technical history |
+| [07 · Quality](./07-quality/README.md) | Checks, integration tests, browser/native journeys and dated reports |
+| [08 · Operations](./08-operations/README.md) | Configuration, monitoring, deployment boundaries and runbooks |
+| [09 · AI](./09-ai/README.md) | Extraction/enrichment, embeddings, evaluation and agentic delivery references |
+| [10 · Implementation evidence](./10-implementations/README.md) | Track-specific results, observed tests, known limitations |
+| [11 · Retrospectives](./11-retrospective/README.md) | Source/import investigations and lessons |
+| [Archive](./archive/README.md) | Superseded designs and retained historical material |
 
-- **[05 Frontend](./05-frontend/README.md)**
-  - [Admin Web specs](./05-frontend/admin-web/ui-specs.md)
-  - [Mobile specs](./05-frontend/mobile/ui-specs.md)
-  - [UI Libraries](./05-frontend/ui-libraries.md)
+## Which document is authoritative?
 
-- **[06 Backend](./06-backend/README.md)**
-  - [Mutation Handlers](./06-backend/mutation-handlers.md)
-  - [Security](./06-backend/security-requirements.md)
-  - [Steel Thread Implementation](./06-backend/steel-thread-implementation.md)
+- **Current guides and PRDs** explain present behavior, scope, and requirements. The [feature map](./01-requirements/features/README.md) calls out incomplete and planned surfaces.
+- **Source code, DTOs, migrations, and manifests** establish implemented routes, storage, and dependency values. The [API guide](./03-api/api-contract.md) explicitly distinguishes planned OpenAPI entries from mounted endpoints.
+- **ADRs** retain the rationale and lifecycle of architectural decisions. A superseded decision is historical, not an alternative operating instruction.
+- **Conductor tracks** own work status and acceptance. [The registry](../conductor/tracks.md) is the starting point for work in flight.
+- **Reports and retrospectives** record dated observations. Their test totals, corpus counts, source observations, and old commands are not live release claims.
 
-- **[07 Quality](./07-quality/README.md)**
-  - [Integration Tests Approach](./07-quality/integration-tests-approach.md) *(Implemented — Testcontainers + Flyway + CI)*
-  - [Testing Guides & Checklists](./07-quality/qa/README.md)
-    - [Test Plan](./07-quality/qa/test-plan.md)
-    - [E2E Testing](./07-quality/qa/e2e-testing.md)
-    - [Performance Testing](./07-quality/qa/performance-testing.md)
-  - [Steel Thread Report](./07-quality/reports/steel-thread.md)
-  - [Data Quality & Remediation](./07-quality/remediation-implementation-plan-2026-02.md) *(Feb 2026)*
-  - [Sourcing Strategy Progress](./07-quality/reports/sourcing-strategy-2026.md)
-  - [Structural Audit Results](./07-quality/results/krithi-structural-audit-2026-02.md)
+The September refresh preserves historical evidence and links it back to the current guides. See the [refresh report](./00-meta/documentation-refresh-2026-09.md) for scope and verification.
 
-- **[08 Operations](./08-operations/README.md)**
-  - [Deployment](./08-operations/deployment.md)
-  - [Monitoring](./08-operations/monitoring.md)
-  - [Configuration](./08-operations/config.md)
-  - [CLI Docs Command](./08-operations/cli-docs-command.md)
-  - [Agent Workflows](./08-operations/agent-workflows.md)
-  - [Query Optimization Plan](./08-operations/query-optimization-plan.md)
-  - [Runbooks](./08-operations/runbooks/README.md)
-    - [Steel Thread Runbook](./08-operations/runbooks/steel-thread-runbook.md)
-    - [Database Runbook](./08-operations/runbooks/database-runbook.md)
-    - [Incident Response](./08-operations/runbooks/incident-response.md)
+## Maintain the library
 
-- **[09 AI](./09-ai/README.md)**
-  - [AI Integration](./09-ai/integration-summary.md)
-  - [Knowledge Base](./09-ai/gemini-knowledge-base.md)
+Use descriptive titles, one primary heading, linked source references, explicit planned/implemented boundaries, and dated evidence. Centralize versions in [Current Versions](./00-meta/current-versions.md). Follow [standards](./00-meta/standards.md) and [retention](./00-meta/retention-plan.md), then run `make check-docs`.
 
-- **Project Health** *(top-level analysis docs)*
-  - [State of Nation (June 2026)](./sangeetha-grantha-state-of-nation-july-2026.md)
-  - [Uplift Tasks](./sangeetha-grantha-uplift-tasks.md)
-  - [Pending Implementation Register](./pending_implementation.md)
+---
 
-- **[Meta](./00-meta/README.md)** (`00-meta/`)
-  - [Current Versions](./00-meta/current-versions.md)
-  - [Standards](./00-meta/standards.md)
-  - [Retention Plan](./00-meta/retention-plan.md)
-  - [Track Closure Report](./00-meta/track-closure-report-2026-02-02.md)
-
-- **[10 Implementations](./10-implementations/README.md)**
-  - [Platform Standardization](./10-implementations/01-platform/environment-variable-standardization.md)
-  - [Dependency Updates (Feb 2026)](./10-implementations/01-platform/dependency-updates-feb-2026.md)
-  - [Dikshitar Krithi Import Pipeline (TRACK-071)](./10-implementations/track-071-dikshitar-import-pipeline.md)
-  - [Section-Count Mismatch Remediation (TRACK-133)](./10-implementations/track-133-section-mismatch-remediation.md)
+[Section index](./../README.md) · [Feature status](./01-requirements/features/README.md)

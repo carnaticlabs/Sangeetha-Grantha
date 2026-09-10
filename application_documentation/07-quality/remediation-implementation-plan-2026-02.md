@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Evidence record |
 
 # Comprehensive Remediation & Sourcing Logic Plan (Feb 2026)
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current quality checks](./README.md).
 
 This document outlines the specific checklist and logic for correcting the data quality issues identified in the [Structural Consistency Audit](./results/krithi-structural-audit-2026-02.md).
 
@@ -56,3 +62,7 @@ This document outlines the specific checklist and logic for correcting the data 
 - [ ] No Krithi has variants with mismatching section counts (exception: ragamalikas with partial script availability).
 - [ ] All Dikshitar Krithis correctly preserve `MADHYAMA_KALA` as a distinct section.
 - [ ] Duplicate English variants with word-division notes are merged or archived.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Archived |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-02-03 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Archive |
 
 # Bulk Import Documentation Consolidation Summary
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current ingestion guide](./../02-implementation/technical-implementation-guide.md).
 
 
 ---
@@ -120,3 +126,7 @@ bulk-import/
 - [Master Index](../README.md)
 - [Consolidation Plan](../../bulk-import-consolidation-plan.md) (in parent features folder)
 - [Technical Analysis: Python vs Existing Capabilities](./CONSOLIDATION-SUMMARY-goose.md) - **See this for technology choice rationale**
+
+---
+
+[Documentation home](./../../../../README.md) · [Feature status](./../../README.md)

@@ -2,13 +2,19 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Design reference |
 
 # Schema & API Alignment (Sangita Grantha)
 
+---
 
-# Schema & API Alignment
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [current feature map](./../01-requirements/features/README.md) for implemented behavior and current operating steps.
+
+
+## Schema & API Alignment
 
 This document summarizes how the **database schema** and **public/admin
 APIs** align for Sangita Grantha.
@@ -83,3 +89,7 @@ APIs (admin):
 
 This file should be updated whenever the schema or API surface change
 in non-trivial ways.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

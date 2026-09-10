@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Evidence record |
 
 # Multi-Language Lyric Extraction and Scraping Robustness – Implementation Summary
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current ingestion guide](./technical-implementation-guide.md).
 
 **Conductor:** [TRACK-032](../../../../../conductor/tracks/TRACK-032-multi-language-lyric-extraction-analysis.md) – Multi-Language Lyric Extraction from Web Sources
 
@@ -65,3 +71,7 @@ Ref: application_documentation/01-requirements/features/bulk-import/02-implement
 ```
 
 **Suggested commit scope (atomic):** All files listed in §3 above for TRACK-032 (WebScrapingService, ImportService, GeminiApiClient, conductor TRACK-032 + tracks.md).
+
+---
+
+[Documentation home](./../../../../README.md) · [Feature status](./../../README.md)

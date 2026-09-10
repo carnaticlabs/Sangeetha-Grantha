@@ -1,43 +1,28 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.3.0 |
-| **Last Updated** | 2026-09-09 |
+| **Version** | 1.5.0 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Navigation |
 
-# 09 Ai
-
-
----
-
-## Contents
-
-- [gemini-knowledge-base.md](./gemini-knowledge-base.md)
-- [gemini-selection-rationale.md](./gemini-selection-rationale.md)
-- [integration-opportunities.md](./integration-opportunities.md)
-- [integration-summary.md](./integration-summary.md)
-- [vibe-coding-references.md](./vibe-coding-references.md)
-- [Track 138 agentic build guide and kickoff prompt](./track-138-agentic-build-guide.md)
-- [Track 140 dependency graph, execution loop and resume guide](./track-140-agentic-build-guide.md)
+# AI, embeddings, and assisted delivery
 
 ---
 
-## Conductor & AI Change Tracking
+Start with [implemented AI/extraction capabilities](./integration-summary.md), [embedding operations](./embeddings.md), and [search behavior](../03-api/search.md). Opportunities and agentic build guides have their own planned/accepted scope.
 
-All changes to the codebase **must** be tracked via Conductor:
+## In this section
 
-- **Register a Track**
-  - Add a row to `conductor/tracks.md` with a new `Track ID`, name, and status.
-  - Example: `TRACK-002 | Gemini Transliteration Hardening | Planned`.
-- **Create a Track Detail File**
-  - Create `conductor/tracks/TRACK-XXX-some-slug.md` modelled on `TRACK-001-bulk-import-krithis.md`.
-  - Include at minimum: **Goal, Context, Architecture Overview, Implementation Plan (Phases), Progress Log, Technical Details**.
-- **Keep Docs & Tracks in Sync**
-  - When updating any document in `09-ai/` (this folder), reference the relevant `TRACK-XXX` in the doc’s change notes or progress sections.
-  - When implementing AI features described here, update the corresponding TRACK file’s **Progress Log** as part of the change.
+- [Embedding pipeline and index operations](./embeddings.md)
+- [Project Knowledge Base](./gemini-knowledge-base.md)
+- [Google Gemini Selection Rationale](./gemini-selection-rationale.md)
+- [AI roadmap and evaluation criteria](./integration-opportunities.md)
+- [AI and extraction capabilities](./integration-summary.md)
+- [Track 138: Agentic build guide](./track-138-agentic-build-guide.md)
+- [TRACK-140: dependency graph and execution loop](./track-140-agentic-build-guide.md)
+- [🤖 AI & Vibe Coding References](./vibe-coding-references.md)
 
-For overall Conductor guidance, see:
+---
 
-- `conductor/index.md`
-- `conductor/product-guidelines.md`
-- `conductor/workflow.md`
+[Section index](./../README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

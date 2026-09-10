@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Design reference |
 
 # Web Source Detailed Analysis for Krithi Import
+
+---
+
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [current ingestion guide](./../02-implementation/technical-implementation-guide.md) for implemented behavior and current operating steps.
 
 
 ---
@@ -726,3 +732,7 @@ The web sources vary significantly in structure and quality. A **tiered approach
 - [Krithi Bulk Import Capability Analysis](../archive/krithi-bulk-import-capability-analysis-goose.md)
 - [Generic Scraping Feature](../../generic-scraping.md)
 - [Intelligent Content Ingestion](../../intelligent-content-ingestion.md)
+
+---
+
+[Documentation home](./../../../../README.md) · [Feature status](./../../README.md)

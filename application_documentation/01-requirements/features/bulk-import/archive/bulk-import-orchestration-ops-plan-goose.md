@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Archived |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-02-03 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Archive |
 
 # Bulk Import Orchestration & Ops Plan
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current ingestion guide](./../02-implementation/technical-implementation-guide.md).
 
 
 ---
@@ -377,3 +383,7 @@ embeddedServer(Netty, host = env.host, port = env.port) {
    - Build initial dashboard (batch list + detail)
 4. **Testing**: Unit tests for services, integration tests for full workflow
 5. **Documentation**: Update API contract and architecture docs
+
+---
+
+[Documentation home](./../../../../README.md) · [Feature status](./../../README.md)

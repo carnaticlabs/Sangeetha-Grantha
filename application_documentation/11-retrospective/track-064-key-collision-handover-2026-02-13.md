@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.3.0 |
-| **Last Updated** | 2026-02-13 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Codex |
+| **Document Type** | Evidence record |
 
 # TRACK-064 Key-Collision Milestone Handover (2026-02-13)
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../01-requirements/features/README.md).
 
 ## Purpose
 This handover captures the milestone reached in the current session:
@@ -210,3 +216,7 @@ cargo run --manifest-path /Users/seshadri/project/sangeetha-grantha/tools/sangit
 - `tools/sangita-cli/src/commands/test.rs`
 - `tools/sangita-cli/README.md`
 - `application_documentation/11-retrospective/track-064-key-collision-handover-2026-02-13.md`
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

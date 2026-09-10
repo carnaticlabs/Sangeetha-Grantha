@@ -2,13 +2,19 @@
 |:---|:---|
 | **Status** | Proposed — partially implemented (template repair + Tamil trailer strip shipped; adapter Part B open) |
 | **Version** | 0.2.0 |
-| **Last Updated** | 2026-07-17 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Decision record |
 | **Deciders** | Sangeetha Grantha Team (Seshadri) |
 | **Relates to** | [ADR-012 Unified Extraction Architecture](./ADR-012-unified-extraction-architecture.md) |
 | **Evidence** | [section-issues-cleanup-findings.md](../../07-quality/results/section-issues-cleanup/section-issues-cleanup-findings.md), `.triage-cache/triage_report3.json` |
 
 # ADR-015: Structure-Aware Extraction Adapter for the Govindan Blog Family
+
+---
+
+> [!NOTE]
+> Decision record: preserve the original rationale and check its decision/supersession status. Current runtime guidance is in [system architecture](./../backend-system-design.md) and [Flyway migrations](./../../04-database/migrations.md).
 
 ## Context
 
@@ -149,3 +155,7 @@ follow-up template repair safe.
    the remaining cleanup the Govindan adapter (Part B) should own, alongside script-aware `<sup>` footnote
    stripping. Build behind the domain gate with the golden-fixture suite.
 4. Update `adr-index.md` and re-run the batch triage to record the queue movement (done through Pass 3).
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

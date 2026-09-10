@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Design reference |
 
 # Feature: Graph Explorer
+
+---
+
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [current feature map](./README.md) for implemented behavior and current operating steps.
 
 
 ---
@@ -226,3 +232,7 @@ interface GraphResponse {
 - [ADR-005: Graph Database Strategy](../../02-architecture/decisions/ADR-005-graph-database-evaluation.md) - Technical architecture decision
 - [Database Schema](../../04-database/schema.md) - Entity relationship definitions
 - [Domain Model](../domain-model.md) - Entity type definitions and relationships
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./README.md)

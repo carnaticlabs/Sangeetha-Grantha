@@ -2,12 +2,18 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Decision record |
 
 ---
 
 # ADR-009: Bulk Import Orchestration Architecture
+
+---
+
+> [!NOTE]
+> Decision record: preserve the original rationale and check its decision/supersession status. Current runtime guidance is in [system architecture](./../backend-system-design.md) and [Flyway migrations](./../../04-database/migrations.md).
 
 ## Context
 Bulk import ingests large volumes of krithis from CSV manifests and web sources. The workflow involves multi-stage tasks (manifest ingest → scrape → entity resolution → review), with retries, rate limiting, and batch-level progress tracking.
@@ -29,3 +35,7 @@ Adopt a **worker-based orchestration model** with explicit job/task tables and a
 ## Follow-up
 - Add metrics for worker throughput and queue depth.
 - Continue decomposing worker responsibilities to maintain clarity.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

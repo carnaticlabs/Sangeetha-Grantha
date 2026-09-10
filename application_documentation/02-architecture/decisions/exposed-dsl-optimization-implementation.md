@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Decision record |
 
 # Exposed DSL Optimization: Fixing DELETE+INSERT Anti-Pattern
+
+---
+
+> [!NOTE]
+> Decision record: preserve the original rationale and check its decision/supersession status. Current runtime guidance is in [system architecture](./../backend-system-design.md) and [Flyway migrations](./../../04-database/migrations.md).
 
 
 ---
@@ -327,3 +333,7 @@ All identified DELETE+INSERT patterns have been successfully optimized. The impl
 - ✅ Provide templates for future optimizations
 
 The codebase now uses efficient UPDATE/INSERT/DELETE operations that only process what actually changed, resulting in significant performance improvements and better data integrity.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

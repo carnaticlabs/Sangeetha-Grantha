@@ -2,8 +2,9 @@
 |:---|:---|
 | **Status** | Archived |
 | **Version** | 0.1.0 |
-| **Last Updated** | 2026-02-03 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | System |
+| **Document Type** | Archive |
 
 ---
 
@@ -23,6 +24,11 @@ related_docs:
 ---
 
 # Neo4j Graph Database Implementation - Critical Evaluation
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../../01-requirements/features/README.md).
 
 **Note:** This evaluation led to the decision to use PostgreSQL + Cytoscape.js instead of Neo4j. For the complete feature requirements and approved implementation strategy, see [Graph Explorer Feature Requirements](../../01-requirements/features/graph-explorer.md).
 
@@ -663,3 +669,7 @@ This approach provides:
 2. Decide on implementation approach
 3. If PostgreSQL approach chosen, create implementation plan
 4. If Neo4j approach chosen, create detailed sync strategy
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

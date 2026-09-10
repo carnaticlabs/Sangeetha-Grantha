@@ -1,11 +1,17 @@
-| Metadata         | Value                  |
-| :--------------- | :--------------------- |
-| **Status**       | Active                 |
-| **Version**      | 1.4.0                  |
-| **Last Updated** | 2026-06-12             |
-| **Author**       | Sangeetha Grantha Team |
+| Metadata | Value |
+|:---|:---|
+| **Status** | Active |
+| **Version** | 1.4.0 |
+| **Last Updated** | 2026-09-10 |
+| **Author** | Sangeetha Grantha Team |
+| **Document Type** | Decision record |
 
 # Decisions
+
+---
+
+> [!NOTE]
+> Decision record: preserve the original rationale and check its decision/supersession status. Current runtime guidance is in [system architecture](./../backend-system-design.md) and [Flyway migrations](./../../04-database/migrations.md).
 
 
 ---
@@ -31,3 +37,7 @@
 - [datetime-standardization.md](./datetime-standardization.md) - Datetime standardization
 - [exposed-dao-vs-dsl-comparison.md](./exposed-dao-vs-dsl-comparison.md) - Exposed DAO vs DSL comparison
 - [exposed-dsl-optimization-implementation.md](./exposed-dsl-optimization-implementation.md) - DSL optimization implementation
+
+---
+
+[Section index](./../README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

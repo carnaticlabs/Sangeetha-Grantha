@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-02-28 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Evidence record |
 
 # Dikshitar Krithi Import Pipeline (TRACK-071)
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../01-requirements/features/README.md).
 
 ---
 
@@ -166,3 +172,7 @@ See [Frontend UI Specs — KrithiList](../05-frontend/admin-web/ui-specs.md#81-k
 - [Database Schema Overview](../04-database/schema.md)
 - [Frontend UI Specs](../05-frontend/admin-web/ui-specs.md)
 - [Krithi Data Sourcing Quality Strategy](../01-requirements/krithi-data-sourcing/quality-strategy.md)
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

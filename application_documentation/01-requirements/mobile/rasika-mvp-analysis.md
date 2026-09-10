@@ -1,9 +1,10 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Intent and Spec accepted — concrete Plan awaiting acceptance |
-| **Version** | 1.3.0 |
-| **Last Updated** | 2026-09-05 |
+| **Version** | 1.3.1 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Codex, for Seshadri |
+| **Document Type** | Current guide |
 | **Track** | [TRACK-138](../../../conductor/tracks/TRACK-138-rasika-mobile-app.md) |
 
 # Rasika Mobile App — Minimal Working Release
@@ -99,19 +100,29 @@ Defer conversational/semantic search, generated translations, voice, playback, r
 ### Navigation
 
 ```mermaid
-flowchart TD
-    S[Search tab] --> K[Kriti reader]
-    B[Browse tab] --> R[Raga directory]
+flowchart TB
+    subgraph tabs["Tabs (TRACK-138 names)"]
+        direction TB
+        S[Search]
+        B[Browse]
+        F[Favourites]
+        P[Preferences]
+    end
+    subgraph reader["Reader"]
+        direction TB
+        K[Kriti reader]
+        V[Script / source picker]
+    end
+    S --> K
+    B --> R[Raga directory]
     B --> C[Composer directory]
-    R --> RD[Raga details and associated Kritis]
-    C --> CD[Composer details and associated Kritis]
+    R --> RD[Raga details]
+    C --> CD[Composer details]
     RD --> K
     CD --> K
-    F[Favourites tab] --> K
-    K --> RD
-    K --> CD
-    K --> V[Available script and source variant picker]
-    S --> P[Preferences]
+    F --> K
+    K --> V
+    S --> P
 ```
 
 Pass entity IDs through navigation. Preserve the query, selected filters, pagination position and scroll offset when returning from a reader. Bottom tabs preserve their own useful state. Use the platform back gesture rather than building a custom navigation metaphor.
@@ -342,3 +353,7 @@ The first useful demonstration should be one real Kriti search → reader → av
 | Minimum supported iOS version | Set during dependency/device compatibility check; not inferred from installed Xcode |
 
 Intent, these recommendations and the track's Spec were accepted on September 5. The next workflow decision is acceptance of the concrete Draft implementation Plan in Track 138. Device signing, production hosting and store distribution can be resolved when their concrete deliverables are ready. They need not delay the initial simulator/emulator work after the required scope gates are satisfied.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../features/README.md)

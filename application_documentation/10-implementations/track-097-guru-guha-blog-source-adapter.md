@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Completed |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-03-17 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Evidence record |
 
 # Guru Guha Blog Source Adapter
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../01-requirements/features/README.md).
 
 ## Purpose
 
@@ -56,3 +62,7 @@ Fix the guru-guha.blogspot.com extraction pipeline end-to-end so that all 26+ kr
 - Re-extraction pipeline fully functional with proper retry semantics
 
 Ref: application_documentation/10-implementations/track-097-guru-guha-blog-source-adapter.md
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

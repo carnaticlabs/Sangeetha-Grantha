@@ -1,16 +1,21 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Navigation |
 
-# Admin Web
-
+# Curator Console requirements
 
 ---
 
+The [admin PRD](./prd.md) defines curation and ingestion outcomes. For current screen routes and operating steps, use the [console guide](../../05-frontend/admin-web/ui-specs.md).
 
-## Contents
+## In this section
 
-- [prd.md](./prd.md)
+- [Curator Console — product requirements](./prd.md)
+
+---
+
+[Section index](./../README.md) · [Documentation home](./../../README.md) · [Feature status](./../features/README.md)

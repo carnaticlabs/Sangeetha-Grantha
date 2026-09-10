@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Archived |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Archive |
 
 # CSV Bulk Import Strategy Review (Codex)
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../../01-requirements/features/README.md).
 
 ## Executive Summary
 This report consolidates findings from `application_documentation/07-quality/bulk-import-implementation-review-claude.md` and `application_documentation/07-quality/csv-import-strategy-implementation-review-goose.md` with a focused pass over the current backend implementation. The architecture (unified dispatcher, staged workers, event logging) is solid, but there are several critical correctness and security risks plus strategic gaps around quality scoring, review workflow depth, and performance at scale.
@@ -52,3 +58,7 @@ This report consolidates findings from `application_documentation/07-quality/bul
 ## Change Summary (secondary)
 - The dispatcher/worker architecture, batch/job/task model, and event logging align well with the strategy’s staged pipeline.
 - CSV parsing, scraping, resolution, and auto-approval are integrated into a single worker service, but quality tiering and batch-scale review tooling remain incomplete.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

@@ -1,124 +1,75 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Current guide |
 
-# Quick Reference: Admin Authentication
+# Admin authentication
 
-## Overview
+---
 
-Sangita Grantha uses **JWT-based authentication** for admin endpoints. The previous static bearer token approach has been superseded by a proper authentication flow.
+The Curator Console currently authenticates by exchanging an admin token and an existing user identity for a JWT. Password hashing and account provisioning are implemented, but interactive password/OAuth/OTP login is separate deferred work.
 
-Users must now obtain a JWT by providing an **Admin Token** (acting as a master credential) along with their **User ID** or **Email**. This JWT must then be included in the `Authorization` header for all protected requests.
+## Provision the account
 
-## Admin Authentication Flow
+Run `make bootstrap-admin` with `ADMIN_EMAIL` and `ADMIN_PASSWORD` available in the command's environment. The helper creates or updates the user, stores an argon2id hash, and assigns the seeded `grp_sangita_admin` role. Reference migrations do not create a usable admin account by themselves.
 
-### 1. Obtain a JWT
+Use the intended local database settings from [configuration](../08-operations/config.md). The account password is not the `ADMIN_TOKEN` used by the current console login.
 
-To get a token, send a `POST` request to `/v1/auth/token`.
+## Obtain a JWT
 
-**Request Body:**
+Send `POST /v1/auth/token` with the configured admin token and either an existing email or user ID. This illustrative request uses the development default token:
+
 ```json
 {
   "adminToken": "dev-admin-token",
-  "email": "admin@sangitagrantha.org",
-  "roles": ["ADMIN"]
-}
-```
-*Note: You can also use `userId` instead of `email`.*
-
-**Response:**
-```json
-{
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "expiresInSeconds": 86400
+  "email": "admin@sangitagrantha.org"
 }
 ```
 
-### 2. Use the JWT
+The response fields are `token` and `expiresInSeconds`. Roles are loaded from stored assignments. Do not send a role list to request privileges.
 
-Include the received token in the `Authorization` header as a Bearer token:
+The Login page at `/login` accepts the admin token and email. The [frontend client](../../modules/frontend/sangita-admin-web/src/api/client.ts) stores and sends the resulting JWT. The API also accepts `userId` as an alternative to email.
 
-`Authorization: Bearer <your-jwt-token>`
+## Use and refresh the token
 
----
+Protected requests carry:
 
-Authentication is configured via environment variables. See [Configuration Documentation](../08-operations/config.md) for details on where to set these.
+```http
+Authorization: Bearer <token>
+```
 
-| Variable | Description | Default (Dev) |
+`POST /v1/auth/refresh` requires a valid JWT and reloads the user's role assignments. Main admin routes require `grp_sangita_admin`; authentication alone is insufficient. Dashboard statistics are an explicit optional-auth exception in [Routing.kt](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/plugins/Routing.kt).
+
+## Configuration
+
+| Variable | Purpose | Development loader behavior |
 |:---|:---|:---|
-| `ADMIN_TOKEN` | Master credential for obtaining JWTs | `dev-admin-token` |
-| `JWT_SECRET` | Secret key for signing JWTs | Defaults to `ADMIN_TOKEN` |
-| `TOKEN_TTL_SECONDS` | Token lifespan in seconds | `86400` (24h) |
-| `JWT_ISSUER` | JWT Issuer claim | `sangita-grantha` |
-| `JWT_AUDIENCE` | JWT Audience claim | `sangita-users` |
+| `ADMIN_TOKEN` | Token-exchange credential | Defaults to `dev-admin-token` |
+| `JWT_SECRET` | JWT signing key | Falls back to the admin token |
+| `TOKEN_TTL_SECONDS` | Access-token lifetime | Defaults to 86400 seconds |
+| `JWT_ISSUER` | Token issuer | `sangita-grantha` |
+| `JWT_AUDIENCE` | Token audience | `sangita-users` |
+
+These defaults describe local behavior, not production credentials. See [deployment readiness](../08-operations/deployment.md) for the remaining deployment work.
+
+## Diagnose failures
+
+| Symptom | Check |
+|:---|:---|
+| Token exchange returns 401 | Submitted admin token matches the backend configuration |
+| Token exchange returns 404 | User exists; run provisioning against the intended database |
+| Token exchange returns 400 | Either email or user ID is supplied and valid |
+| Protected call returns 401 | JWT is present, valid, and unexpired |
+| Protected call returns 403 | Stored role assignment permits the operation; refresh after a role change |
+| Browser calls the wrong server | `VITE_API_BASE_URL` and `API_PROXY_TARGET` |
+
+Do not reset a database to repair a missing user. Provision the account or correct its identity/role. The mounted route is `/v1/auth/token`, not `/v1/admin/login`.
+
+[AuthRoutes](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/AuthRoutes.kt) · [API contract](../03-api/api-contract.md) · [ADR-004](../02-architecture/decisions/ADR-004-authentication-strategy.md)
 
 ---
 
-## Tooling & UI
-
-### Login Page
-The Admin Web application now features a dedicated login page at `/login`.
-1. Enter the **Admin Token** (master secret).
-2. Enter your **Email** or **User ID**.
-3. Upon success, the JWT is stored in `localStorage` and used for all subsequent API calls.
-
-### API Client
-The frontend API client (`modules/frontend/sangita-admin-web/src/api/client.ts`) handles the `Authorization` header automatically once logged in.
-
-### cURL Example
-
-```bash
-# 1. Get Token
-TOKEN=$(curl -s -X POST \
-  -H "Content-Type: application/json" \
-  -d '{"adminToken": "dev-admin-token", "email": "admin@sangitagrantha.org"}' \
-  http://localhost:8080/v1/auth/token | jq -r .token)
-
-# 2. Use Token
-curl -H "Authorization: Bearer $TOKEN" \
-  http://localhost:8080/v1/admin/dashboard/stats
-```
-
----
-
-## Common Endpoints
-
-### Public / Auth Endpoints (No JWT Required)
-
-- `GET /health` - Health check
-- `POST /v1/auth/token` - Exchange credentials for JWT
-- `GET /v1/krithis/search` - Search Krithis
-- `GET /v1/krithis/{id}` - Get Krithi details
-
-### Admin Endpoints (JWT Required)
-
-- `POST /v1/auth/refresh` - Refresh an existing JWT
-- `GET /v1/audit/logs` - View audit logs
-- `GET /v1/admin/krithis` - List all Krithis (including drafts)
-- `POST /v1/admin/krithis` - Create Krithi
-- `PUT /v1/admin/krithis/{id}` - Update Krithi
-- `GET /v1/admin/dashboard/stats` - Dashboard statistics
-
----
-
-## Troubleshooting
-
-### 401 Unauthorized
-- **Login Endpoint**: Verify the `adminToken` matches the server configuration.
-- **Admin Endpoints**: Ensure the JWT is present in the `Authorization: Bearer <token>` header and has not expired.
-- **Backend Logs**: Check for "Invalid admin token" or "Missing JWT" messages.
-
-### 404 User Not Found
-- Ensure the `email` or `userId` provided during login exists in the `users` table.
-- For local dev, ensure `database/seed_data/01_reference_data.sql` has been run (`cargo run -- db reset`).
-
----
-
-## Documentation Links
-
-- [Security Requirements](../06-backend/security-requirements.md)
-- [API Contract](../03-api/api-contract.md)
-- [Backend Architecture](../02-architecture/backend-system-design.md)
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

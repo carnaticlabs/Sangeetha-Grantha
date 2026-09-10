@@ -2,10 +2,13 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Current guide |
 
 # Documentation Retention and Archiving Plan
+
+---
 
 
 ## Overview
@@ -53,7 +56,7 @@ Create a `README.md` in the archive directory explaining:
 - Brief summary of contents
 
 Example:
-# [Feature Name] Archive
+## [Feature Name] Archive
 
 
 ## Overview
@@ -162,3 +165,7 @@ The main documentation index (`application_documentation/README.md`) references 
 - [Documentation Standards](./standards.md)
 - [Documentation Index](../README.md)
 - [ADR-001: Spec-Driven Documentation](../02-architecture/decisions/ADR-001-spec-driven-docs.md)
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

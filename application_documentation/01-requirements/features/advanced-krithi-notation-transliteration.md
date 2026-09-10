@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Design reference |
 
 # Advanced Krithi Notation & AI Transliteration
+
+---
+
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [current feature map](./README.md) for implemented behavior and current operating steps.
 
 
 ---
@@ -104,3 +110,7 @@ Integrated directly into the editor is an AI-powered tool for script conversion.
 - **Audio Alignment**: Linking audio timestamps to specific notation rows.
 - **Tala Visualizer**: Rendering graphical tala beat counts based on markers.
 - **Batch Transliteration**: Processing entire library for missing scripts.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./README.md)

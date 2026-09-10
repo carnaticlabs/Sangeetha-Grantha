@@ -2,11 +2,14 @@
 |:---|:---|
 | **Status** | Open — remediation partially applied |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-07-18 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Navigation |
 | **Relates to** | [ADR-015](../../../02-architecture/decisions/ADR-015-govindan-extraction-adapter.md) |
 
 # Section-Issues Cleanup
+
+---
 
 Working set for the Curator **Section Issues** queue — lyric variants whose section structure does
 not match their krithi's English/Latin template. These files were previously loose in the repository
@@ -44,3 +47,7 @@ uv run python scripts/section_triage_batch.py \
 
 Scripts are dry-run by default; `--apply` writes. All writes go through the audit-logged
 variant-sections / krithi-sections APIs — never raw SQL.
+
+---
+
+[Section index](./../README.md) · [Documentation home](./../../../README.md) · [Feature status](./../../../01-requirements/features/README.md)

@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Design reference |
 
 # Project Knowledge Base
+
+---
+
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [implemented AI capabilities](./integration-summary.md) for implemented behavior and current operating steps.
 
 
 ---
@@ -92,3 +98,7 @@ See also:
 - `conductor/index.md`
 - `conductor/tracks.md`
 - `application_documentation/09-ai/integration-summary.md` (for the AI roadmap and tracked phases)
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.1 |
-| **Last Updated** | 2026-02-19 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangita Grantha Architect |
+| **Document Type** | Evidence record |
 
 # Implementation Summary: PDF Extraction Hardening (TRACK-054, TRACK-055, TRACK-059, TRACK-060)
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current quality checks](./README.md).
 
 ## Purpose
 This changeset hardens the Python-based PDF extraction service to handle complex academic encodings, garbled diacritics (Utopia fonts), Sanskrit Velthuis encoding, and Devanagari font segmentation. It ensures high-fidelity text extraction from authoritative PDF sources like `guruguha.org`.
@@ -32,3 +38,7 @@ This changeset hardens the Python-based PDF extraction service to handle complex
 
 ## Commit Reference
 Ref: application_documentation/07-quality/track-054-pdf-extraction-hardening-implementation.md
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

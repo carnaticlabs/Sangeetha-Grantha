@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Archived |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-02-03 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Archive |
 
 # Krithi Bulk Import Capability & Koog Integration Analysis
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current ingestion guide](./../02-implementation/technical-implementation-guide.md).
 
 
 ---
@@ -158,3 +164,7 @@ Use Python scripts for scraping (BeautifulSoup) and Airflow for scheduling.
 3.  **Reference Data:** Write a script to scrape TempleNet and populate `temples` table.
 4.  **Pipeline:** Build the `ImportService` to orchestrate: Scrape -> Extract (Gemini) -> Resolve -> Save.
 5.  **UI:** Build the "Import Review" screen in the Admin Web.
+
+---
+
+[Documentation home](./../../../../README.md) · [Feature status](./../../README.md)

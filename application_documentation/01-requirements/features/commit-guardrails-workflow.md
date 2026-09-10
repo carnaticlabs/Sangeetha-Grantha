@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Design reference |
 
 # Commit Guardrails and Workflow Enforcement System
+
+---
+
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [current feature map](./README.md) for implemented behavior and current operating steps.
 
 
 ---
@@ -265,3 +271,7 @@ No special configuration required beyond running `cargo run -- commit install-ho
 
 - [Standards Documentation](../../00-meta/standards.md) - Development standards and guidelines
 - [Tech Stack Documentation](../../02-architecture/tech-stack.md) - Technology stack overview
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./README.md)

@@ -16,7 +16,7 @@ Tool-specific entrypoints that build on CLAUDE.md:
 - **DB access:** always inside `DatabaseFactory.dbQuery { }`; never leak Exposed entities — return `@Serializable` DTOs.
 - **Audit:** every mutation writes to `AUDIT_LOG`.
 - **Commits:** include a `Ref: application_documentation/...` line. Branch names: `track-<nnn>-<slug>` or `<type>/<slug>` — not `cursor/` unless asked (`.cursor/rules/git-conventions.mdc`).
-- **Stack versions:** see [Current Versions](../application_documentation/00-meta/current-versions.md) (PostgreSQL 18, Kotlin/Ktor/Exposed, React 19 + TypeScript 5.9). Don't hardcode versions here.
+- **Stack versions:** see [Current Versions](../application_documentation/00-meta/current-versions.md). Don't hardcode versions here.
 
 ---
 

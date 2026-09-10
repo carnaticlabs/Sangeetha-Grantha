@@ -1,14 +1,20 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Largely executed — 8 of 10 tracks completed |
-| **Version** | 1.2.0 — Updated to reflect completion status as of Jul 2026 |
-| **Last Updated** | 2026-07-12 |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Prepared from decision checklist (Seshadri's responses) |
+| **Document Type** | Design reference |
 | **Decisions source** | [north-star-production-readiness-decision.md](./north-star-production-readiness-decision.md) (D1–D18, all answered) |
 | **Analysis source** | [north-star-evaluation.md](./north-star-evaluation.md), [07-quality/integration-tests-approach.md](./07-quality/integration-tests-approach.md), [ADR-013](./02-architecture/decisions/ADR-013-db-migration-with-flyway.md) |
 | **Epic** | [TRACK-109 Production Readiness Roadmap](../conductor/tracks/TRACK-109-production-readiness-roadmap.md) |
 
 # North-Star Production Readiness — Implementation Plan
+
+---
+
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [current feature map](./01-requirements/features/README.md) for implemented behavior and current operating steps.
 
 > This converts the 18 answered decisions into **nine new conductor tracks** plus the bookkeeping to existing tracks. Each track section below is written to be lifted directly into a `conductor/tracks/TRACK-XXX-*.md` file. Hand this back with "create the tracks" and I'll generate the files and update the registry.
 >
@@ -336,3 +342,7 @@ LATER / PARALLEL ─────────────────────
 ## Next step
 
 Reply **"create the tracks"** and I'll generate `conductor/tracks/TRACK-110…118-*.md` from these sections, update `conductor/tracks.md`, apply the existing-track status changes (pause TRACK-093 + TRACK-096, reactivate TRACK-035, supersede TRACK-014), scaffold the ADR-014 stub for TRACK-116, and run the registry-sync check (`conductor/check-registry-sync.py`). Nothing is committed until you ask.
+
+---
+
+[Section index](./README.md) · [Documentation home](./README.md) · [Feature status](./01-requirements/features/README.md)

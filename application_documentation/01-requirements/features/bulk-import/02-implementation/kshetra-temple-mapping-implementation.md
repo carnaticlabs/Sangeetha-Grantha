@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Evidence record |
 
 # Kshetra & Temple Mapping – Implementation Summary
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current ingestion guide](./technical-implementation-guide.md).
 
 **Conductor:** [TRACK-029](../../../../../conductor/tracks/TRACK-029-bulk-import-kshetra-mapping.md) – Bulk Import - Kshetra & Deity Mapping
 
@@ -93,3 +99,7 @@ Ref: application_documentation/01-requirements/features/bulk-import/02-implement
 ```
 
 **Suggested commit scope (atomic):** All files listed in §3 (database migration 21, DAL temple cache + TempleRepository, API config/DI/services/models, tests, frontend pages/types/index). Exclude `config/development.env`.
+
+---
+
+[Documentation home](./../../../../README.md) · [Feature status](./../../README.md)

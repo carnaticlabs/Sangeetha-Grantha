@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Design reference |
 
 # Feature Request: Intelligent Content Ingestion & Musicological Validation Suite
+
+---
+
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [current feature map](./README.md) for implemented behavior and current operating steps.
 
 
 ---
@@ -94,3 +100,7 @@ This feature request outlines the integration of **Google Gemini AI** and **Goog
 * **Data Extraction Accuracy:** >85% correctly mapped fields from scraped sources.
 * **Operational Efficiency:** >80% reduction in manual data entry time per kriti.
 * **Cost Efficiency:** Maintain processing costs at approximately ~$3-5 per 1,000 kritis.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./README.md)

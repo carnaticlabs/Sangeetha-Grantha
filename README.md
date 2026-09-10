@@ -1,254 +1,124 @@
-# Sangeetha Grantha
-
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.4.0 |
-| **Last Updated** | 2026-07-12 |
+| **Version** | 2.1.0 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
 
----
+# Sangeetha Grantha
 
-*A Digital Compendium of Carnatic Classical Music*
-
----
-
-## Overview
-
-**Sangeetha Grantha** is an open, authoritative, multi-platform digital compendium of **Carnatic classical music compositions (Krithis)**.
-
-The project unifies scattered, semi-structured sources into a **single, searchable, multilingual, and musicologically correct system**, with strong editorial governance and production-grade engineering.
-
-It is designed to become the **system of record** for Carnatic Krithis — supporting composers, ragas, talas, sahitya, sampradaya, temples, and themes in a structured and extensible manner.
+*A living catalogue of Carnatic compositions, with the sources behind the music.*
 
 ---
 
-## Key Objectives
+Sangeetha Grantha brings composition metadata, multilingual lyrics, musical structure, and source evidence into one editorially managed catalogue. It helps listeners find a composition, students read a particular rendition of its text, and curators establish what the catalogue can responsibly publish.
 
-- Consolidate Carnatic Krithi data from multiple legacy sources
-- Enable fast, accurate search across:
-  - Krithi name / opening line
-  - Lyrics (substring search)
-  - Composer
-  - Raga(s), including **Ragamalika**
-  - Tala
-  - Deity
-  - Temple / Kshetram
-- Preserve **musicological correctness**:
-  - Pallavi / Anupallavi / multiple Charanams
-  - Sampradaya (pathantaram / bani)
-  - Primary language of composition
-- Provide a clean **editorial workflow** for curation and review
-- Deliver a modern, scalable, cloud-ready platform
+The project has two working applications: **Rasika**, a shared Kotlin app for Android and iOS, and the **Curator Console**, a React application for catalogue editing and ingestion. They share a Kotlin API and PostgreSQL database.
 
----
+[Set up locally](./application_documentation/00-onboarding/getting-started.md) · [Browse the documentation](./application_documentation/README.md) · [See feature status](./application_documentation/01-requirements/features/README.md)
 
-## System Architecture
+## Discover and read with Rasika
 
-### Clients
+- **Home** puts search first, followed by available discovery content or a selection from the collection.
+- **Explore** searches compositions, ragas, and composers. Apply exact raga and composer filters, browse further pages, and open entity pages to discover related works.
+- **The reader** presents a stored lyric variant with its script, source reference, and section labels. Switching variants preserves the previous text until the replacement loads. Ordered raga associations preserve Ragamalika structure.
+- **Library** stores bookmarks on the device. **Settings** offers System, Light, and Dark appearance.
+- Large-text layouts and reduced-motion behavior are implemented. Native journey tests exist; device execution and TalkBack/VoiceOver proof remain release gates.
 
-- **Mobile App**: Android & iOS using **Kotlin Multiplatform (KMM)**
-- **Admin Web Console**: React + TypeScript + Tailwind CSS
+Rasika currently reads `/v2/catalogue`. It includes published compositions whose musical form is not yet established, without displaying a guessed form badge. Broader metadata directories, collections, recents, and later editorial Home features remain planned. See the [Rasika experience](./application_documentation/05-frontend/mobile/rasika-discovery-experience.md) and [release evidence](./application_documentation/10-implementations/track-140-rasika-discovery.md).
 
-### Backend
+## Build and curate the catalogue
 
-- **API**: Kotlin + Ktor (REST)
-- **Database**: PostgreSQL 18+
-- **Migrations**: **Flyway Community** (ADR-013), run via `make migrate` / `make db-reset`
+The Curator Console supports composition editing, section and lyric variants, notation, reference data, import review, and an audit history. Its sourcing workspace brings source registration, extraction monitoring, evidence, structural verification, and quality summaries together.
 
-### Infrastructure
+Search offers three modes: lexical matching for familiar titles and phrases, semantic retrieval for meaning, and hybrid retrieval combining both. Semantic and hybrid search use a separately populated embedding index; a fresh database does not contain indexed compositions.
 
-- AWS or Google Cloud
-- CI/CD via GitHub Actions
-- Centralized logging and audit trails
+The ingestion pipeline accepts source manifests and extraction requests, processes supported HTML/PDF sources in Python, and passes canonical extraction payloads to Kotlin for matching and persistence. Ambiguous raga identities go to curator resolution. Accepted changes can retain section-level provenance through the versioned canon.
 
----
+Start with the [curator guide](./application_documentation/05-frontend/admin-web/ui-specs.md), [ingestion guide](./application_documentation/01-requirements/features/bulk-import/02-implementation/technical-implementation-guide.md), or [search guide](./application_documentation/03-api/search.md).
 
-## Core Features
+## How the parts fit together
 
-### Public (Read-only)
-
-- Browse and search Krithis
-- Structured lyrics:
-  - Pallavi / Anupallavi / Charanams
-  - Original script
-  - Transliteration
-  - Optional meaning
-- Ragamalika support (ordered ragas)
-- Multilingual sahitya
-- Sampradaya-aware variants
-
-### Admin (Restricted)
-
-- CRUD for:
-  - Krithis
-  - Composers
-  - Ragas
-  - Talas
-  - Deities
-  - Temples (with multilingual names & aliases)
-  - Tags / themes
-  - Sampradaya
-- Editorial workflow:
-  - `DRAFT -> IN_REVIEW -> PUBLISHED -> ARCHIVED`
-- Data ingestion & normalization pipeline
-- Full audit trail for all mutations
-
----
-
-## Data Model
-
-For the authoritative schema definition and detailed relationship models, see:
-- **[Schema Overview](./application_documentation/04-database/schema.md)**
-
----
-
-## Tech Stack
-
-For a complete and specific list of versions and dependencies, see **[Current Versions](./application_documentation/00-meta/current-versions.md)**.
-
-### Core Technologies
-
-| Layer | Technology |
-|-------|------------|
-| **Mobile** | Kotlin Multiplatform (KMM) + Compose Multiplatform |
-| **Backend** | Kotlin + Ktor + Exposed |
-| **Database** | PostgreSQL 18+ |
-| **Migrations** | Flyway Community 12.11.0 (ADR-013), via Makefile |
-| **Extraction** | Python worker (`tools/krithi-extract-enrich-worker`) |
-| **Admin Web** | React 19 + TypeScript 6.0 + Tailwind 4.3 + Vite 8.2 (Rolldown) |
-| **Build** | Gradle (Backend/Mobile), Bun (Frontend) |
-| **Orchestration** | Docker Compose (`compose.yaml`) |
-| **Toolchain** | Managed via [mise](https://mise.jdx.dev/) |
-
----
-
-## Repository Structure
-
-```text
-├── modules/
-│   ├── shared/                          # Shared domain models & UI (KMM)
-│   │   ├── domain/                      # @Serializable DTOs
-│   │   └── presentation/               # Shared UI components
-│   ├── backend/
-│   │   ├── api/                         # Ktor REST APIs
-│   │   ├── dal/                         # Data access layer (Exposed)
-│   │   └── test-support/                # Shared test infrastructure (Testcontainers)
-│   └── frontend/
-│       └── sangita-admin-web/           # Admin web (React + TS)
-├── database/
-│   ├── migrations/                      # SQL migration files
-│   ├── seed_data/                       # Seed SQL files
-│   ├── audits/                          # Data audit queries
-│   └── for_import/                      # Import data & scripts
-├── tools/
-│   └── krithi-extract-enrich-worker/    # Python extraction pipeline
-├── openapi/                             # OpenAPI specifications
-├── application_documentation/           # PRDs, ERDs, architecture docs
-├── conductor/                           # Project tracking (tracks & phases)
-├── config/                              # Environment configuration
-├── archive/                             # Archived tools & historical docs
-│   └── tools/                           # db-migrate, sangita-cli, bootstrap, one-off scripts
-└── gradle/libs.versions.toml            # Centralized dependency management
+```mermaid
+flowchart LR
+    R[Rasika Android / iOS] --> C[Public catalogue V2]
+    A[Curator Console] --> E[Editorial and sourcing API]
+    A --> S[Lexical / hybrid / semantic search]
+    C --> D[(PostgreSQL + pgvector)]
+    E --> D
+    S --> D
+    E --> Q[Extraction queue]
+    Q --> W[Python extraction worker]
+    W --> P[Canonical extraction payload]
+    P --> K[Kotlin matching and persistence]
+    K --> D
+    B[Embedding indexing scripts] --> D
 ```
 
----
+Public catalogue DTOs expose a deliberate subset of editorial data. The catalogue V1 contract excludes `UNESTABLISHED`; V2 supports it. Successful catalogue reads use `Cache-Control: no-store`. Admin mutations require authorization and audit logging. Flyway owns schema evolution; source corrections belong in extraction, reingestion, and curation workflows.
 
-## Getting Started
+| Area | Location | Responsibility |
+|:---|:---|:---|
+| Shared domain | [modules/shared/domain](./modules/shared/domain) | Serializable API contracts and domain types |
+| Rasika | [presentation](./modules/shared/presentation), [mobile-data](./modules/shared/mobile-data), [native hosts](./modules/mobile) | Shared UI, V2 client, local storage, Android/iOS integration |
+| Backend | [modules/backend](./modules/backend) | Ktor services, Exposed repositories, test infrastructure |
+| Curator Console | [sangita-admin-web](./modules/frontend/sangita-admin-web) | React, TypeScript, Vite, Tailwind, TanStack Query |
+| Database | [database/migrations](./database/migrations) | Versioned schema and repeatable reference seeds |
+| Extraction | [worker](./tools/krithi-extract-enrich-worker/README.md) | Parsing, enrichment, extraction queue, embedding tools |
+| Delivery | [Makefile](./Makefile), [Compose](./compose.yaml), [CI](./.github/workflows/ci.yml) | Local services, builds, and verification |
 
-> For complete setup instructions, see [Getting Started](./application_documentation/00-onboarding/getting-started.md).
+Pinned and resolved dependencies are listed in [Current Versions](./application_documentation/00-meta/current-versions.md).
 
-**Prerequisites**:
-- [mise](https://mise.jdx.dev/) (toolchain version manager)
-- Docker Desktop (macOS/Windows) or Docker Engine (Linux)
+## Run locally
 
-**Development workflow (via Makefile)**:
+Install mise and Docker, then follow the [setup guide](./application_documentation/00-onboarding/getting-started.md) to prepare the local environment files before starting:
+
 ```bash
-# Start full dev stack (DB + Backend + Frontend + Extraction)
+mise trust
+mise install
 make dev
-
-# Stop dev stack
-make dev-down
-
-# Database operations
-make db              # Start database only
-make db-reset        # Drop + create + migrate
-make seed            # Seed reference data
-make migrate         # Run pending migrations
-
-# Testing
-make test            # Backend tests (unit + integration via Testcontainers)
-make test-frontend   # Frontend tests (55 Vitest component tests)
-make steel-thread    # E2E steel thread test
-
-# Cleanup
-make clean           # Remove all containers and volumes
 ```
 
-**Manual frontend development**:
-```bash
-cd modules/frontend/sangita-admin-web
-bun install
-bun run dev          # Dev server on port 5001
-```
+`make dev` builds and runs the database, Flyway migration service, backend, admin web, and extraction worker in the foreground. Open the [Curator Console](http://localhost:5001); the API is at [localhost:8080](http://localhost:8080). Rasika hosts are built separately.
 
-For detailed setup, usage guides, and troubleshooting, see:
-- **[Getting Started](./application_documentation/00-onboarding/getting-started.md)** — Complete setup guide
-- **[Migration Approach (ADR-013)](./application_documentation/02-architecture/decisions/ADR-013-db-migration-with-flyway.md)** — Flyway-based migrations
+A new database contains schema and reference data. Import or load development sample compositions before expecting catalogue results. Admin provisioning and console token login are separate steps; see [authentication](./application_documentation/00-meta/quick-reference-auth.md).
 
----
+| Task | Command |
+|:---|:---|
+| Stop the development stack | `make dev-down` |
+| Start only PostgreSQL | `make db` |
+| Apply pending schema and reference migrations | `make migrate` |
+| Inspect migration history | `make migrate-status` |
+| Add optional development sample content | `make seed-dev` |
+| Provision the admin account | `make bootstrap-admin` |
+| Backend tests, including database-backed tests | `make test` |
+| Backend integration tests | `make test-integration` |
+| Admin web unit tests | `make test-frontend` |
+| Shared mobile JVM tests | `make test-mobile` |
+| Android debug build / iOS simulator build | `make mobile-android` / `make mobile-ios` |
+| Check documentation links | `make check-docs` |
 
-## Default Ports
+`make db-reset` deletes and recreates the local database. `make clean` removes Compose volumes. Neither is required for routine startup or documentation work.
 
-| Service | Port |
-|---------|------|
-| Database (PostgreSQL) | 5432 |
-| Backend API | 8080 |
-| Frontend Dev Server | 5001 |
+## Project status and next steps
 
----
+Implemented capabilities include the public catalogue, Rasika browsing and reading, the curator and sourcing workflows, hybrid/semantic search, raga aliases and controlled resolution, versioned canon, and Flyway/Testcontainers infrastructure. “Implemented” describes repository behavior; it does not certify production deployment or native-device acceptance.
 
-## Documentation
+Open work includes Rasika's native release gate and later discovery releases, payload convergence, the remaining corpus-reingestion closure, interactive OAuth/OTP authentication, and production rollout. The [feature map](./application_documentation/01-requirements/features/README.md) explains the boundaries; [Conductor](./conductor/tracks.md) records execution status.
 
-- **Product Requirements**: [Sangita Grantha PRD](./application_documentation/01-requirements/product-requirements-document.md)
-- **API Spec**: [API Contract](./application_documentation/03-api/api-contract.md)
-- **Database Schema**: [Schema Overview](./application_documentation/04-database/schema.md)
-- **Architecture**: [Backend System Design](./application_documentation/02-architecture/backend-system-design.md)
-- **Current Versions**: [Tech Versions](./application_documentation/00-meta/current-versions.md)
+## Find your next document
 
----
+| You want to… | Start here |
+|:---|:---|
+| Understand the product and musicological rules | [Product requirements](./application_documentation/01-requirements/product-requirements-document.md), [domain model](./application_documentation/01-requirements/domain-model.md) |
+| Integrate a client | [API contract](./application_documentation/03-api/api-contract.md), [request examples](./application_documentation/03-api/api-examples.md) |
+| Understand storage and provenance | [Schema](./application_documentation/04-database/schema.md), [versioned canon](./application_documentation/04-database/versioned-canon.md) |
+| Make a change | [Onboarding](./application_documentation/00-onboarding/README.md), [architecture](./application_documentation/02-architecture/README.md), [testing](./application_documentation/07-quality/README.md) |
+| Operate or diagnose the stack | [Operations](./application_documentation/08-operations/README.md) |
+| Work with an AI coding assistant | [Repository rules](./CLAUDE.md), [agent workflow guide](./application_documentation/08-operations/agent-workflows.md) |
 
-## AI & Vibe Coding Usage
+## Sources and stewardship
 
-This repository is designed to work seamlessly with AI coding assistants.
+The catalogue draws on Carnatic scholarship and sources including karnatik.com, shivkumar.org, and composer-focused archives. Source attribution, distinct textual variants, and careful editorial review are central to preserving that knowledge.
 
-For comprehensive references and coding patterns, see: **[AI & Vibe Coding References](./application_documentation/09-ai/vibe-coding-references.md)**
-
----
-
-## Roadmap
-
-- Done: Core schema & ingestion pipeline
-- Done: Admin editorial workflow
-- Done: AI Transliteration & Web Scraping
-- Done: PostgreSQL 18 upgrade
-- Done: Flyway migration adoption (ADR-013) & Python extraction tooling
-- Done: Testcontainers + CI activation (backend, DAL, worker, frontend)
-- Done: Playwright E2E nightly (3 money paths)
-- Done: Versioned canon & provenance graph (ADR-014)
-- Done: Frontend component tests (55 Vitest tests)
-- Done: Major dependency upgrades (Kotlin 2.4, TS 6, Vite 8, Testcontainers 2.x)
-- Done: argon2id password hashing & repo hygiene
-- In Progress: Mobile app development
-- In Progress: Advanced lyric search & ranking
-- Planned: Semantic search (pgvector + FTS)
-- Planned: Media management (audio/notation)
-- Planned: Public read-only web experience
-
----
-
-## Credits & Inspiration
-
-This project draws inspiration from decades of Carnatic scholarship and legacy sources such as karnatik.com, shivkumar.org, and various composer-centric archives.
-
-**Sangeetha Grantha** exists to preserve, structure, and respectfully modernize this knowledge for future generations.
+For document construction, indexing commands, profile activation, and coverage checks, read [Embedding pipeline and index operations](./application_documentation/09-ai/embeddings.md).

@@ -2,13 +2,19 @@
 |:---|:---|
 | **Status** | Actioned (see resolution notes) |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-07-12 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Principal Data & AI Engineering review (for Seshadri) |
+| **Document Type** | Design reference |
 | **Baseline reviewed** | `current-versions.md` v1.1.0 (2026-03-10) |
 | **Review window** | 2026-03-10 → 2026-06-06 (~3 months) |
-| **Resolution** | F1–F3 addressed by TRACK-107 (AI platform lifecycle uplift) and TRACK-124 (google-genai 2.x migration). F7 addressed by TRACKs 120–124 (4 dependency upgrade batches). F4–F6 remain actionable opportunities. |
+| **Resolution** | F1–F3 addressed by TRACK-107 and TRACK-124. F7 by TRACKs 120–124. **F6 semantic search shipped as TRACK-108** (2026-09). F4–F5 remain opportunities. |
 
 # Sangeetha Grantha — State of the Nation, Mid-2026
+
+---
+
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [current feature map](./01-requirements/features/README.md) for implemented behavior and current operating steps.
 
 > A dependency and AI-ecosystem review after a ~3 month gap. The goal is a short list of changes that are **practical, relevant, and worth your time** — and an equally explicit list of changes that are **noise you should ignore**. Findings are severity-rated. Nothing here is recommended on novelty alone.
 
@@ -264,3 +270,7 @@ Gemma 4:
 - [Google releases Gemma 4 under Apache 2.0 — VentureBeat](https://venturebeat.com/technology/google-releases-gemma-4-under-apache-2-0-and-that-license-change-may-matter)
 - [Gemma 4 available on Google Cloud — Google Cloud Blog](https://cloud.google.com/blog/products/ai-machine-learning/gemma-4-available-on-google-cloud)
 - [Gemma 4 12B: The Developer Guide — Google Developers Blog](https://developers.googleblog.com/gemma-4-12b-the-developer-guide/)
+
+---
+
+[Section index](./README.md) · [Documentation home](./README.md) · [Feature status](./01-requirements/features/README.md)
