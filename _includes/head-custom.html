@@ -1,0 +1,59 @@
+<!-- Mermaid rendering for GitHub Pages.
+
+     github.com renders ```mermaid fences natively. GitHub Pages does not: its
+     Jekyll build hands the fence to kramdown, which emits a plain
+     <pre><code class="language-mermaid"> block, so diagrams that read correctly
+     in the repository render as raw source on the published site.
+
+     This overrides jekyll-theme-primer's head-custom.html to render those blocks
+     client-side. It degrades safely — if the module fails to load, the import
+     throws before any DOM is touched and the original code blocks are left
+     exactly as the theme produced them. -->
+
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11.6.0/dist/mermaid.esm.min.mjs';
+
+  const blocks = document.querySelectorAll('pre > code.language-mermaid');
+  if (blocks.length) {
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'neutral',
+      securityLevel: 'strict'
+    });
+
+    // Render one diagram at a time. A single malformed diagram must not blank
+    // the others on the page, so each failure is contained and falls back to
+    // the original source block.
+    for (const [i, code] of blocks.entries()) {
+      const pre = code.parentElement;
+      // textContent, not innerHTML: kramdown escapes ">" and "&" inside the
+      // block, and mermaid needs the decoded source.
+      const source = code.textContent;
+      try {
+        const { svg } = await mermaid.render(`mermaid-diagram-${i}`, source);
+        const host = document.createElement('div');
+        host.className = 'mermaid';
+        host.innerHTML = svg;
+        pre.replaceWith(host);
+      } catch (err) {
+        // Leave the <pre> in place: readable source beats an empty box.
+        console.error(`mermaid: diagram ${i} failed to render, showing source`, err);
+        // mermaid.render can leave an orphaned measurement node behind.
+        document.getElementById(`dmermaid-diagram-${i}`)?.remove();
+      }
+    }
+  }
+</script>
+
+<style>
+  /* Center diagrams and let wide ones scroll rather than overflow the column. */
+  .mermaid {
+    overflow-x: auto;
+    text-align: center;
+    margin: 1em 0;
+  }
+  .mermaid svg {
+    max-width: 100%;
+    height: auto;
+  }
+</style>
