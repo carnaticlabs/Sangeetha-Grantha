@@ -10,9 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,7 +25,7 @@ import com.sangita.grantha.shared.presentation.theme.RasikaTokens
 /**
  * Result / list row (visual-design §5). A nāsika-topped glyph tile, the Fraunces title
  * with a right-aligned rāga label, a composer · tāla · language sub-line, an optional
- * matched-sahitya snippet, and a saffron heart when the krithi is saved.
+ * matched-sahitya snippet, and a heart that saves or removes the bookmark.
  */
 @Composable
 fun KrithiCard(
@@ -89,12 +86,10 @@ fun KrithiCard(
                     )
                 }
             }
-            if (onToggleFavourite != null && favourited) {
-                Icon(
-                    Icons.Filled.Favorite,
-                    contentDescription = RasikaCopy.REMOVE_FAVOURITE,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(16.dp).padding(top = 2.dp),
+            if (onToggleFavourite != null) {
+                RasikaFavouriteButton(
+                    favourited = favourited,
+                    onClick = onToggleFavourite,
                 )
             }
         }
