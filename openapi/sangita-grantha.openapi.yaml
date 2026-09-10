@@ -5,7 +5,7 @@ info:
     Sangita Grantha is an authoritative, multilingual digital compendium
     of Carnatic classical music compositions (Krithis).
     This API serves both public read-only clients and authenticated admin workflows.
-  version: 1.3.0
+  version: 1.4.0
   contact:
     name: Sangita Grantha Maintainers
 servers:
@@ -27,6 +27,752 @@ tags:
   - name: Notation
 
 paths:
+  "/v2/catalogue/krithis":
+    "get":
+      "tags":
+        - "Catalogue"
+      "summary": "Search published kritis"
+      "description": "Public published-only summaries. Query length is capped at 200 Unicode code points. Filters combine with AND. Raga filter matches any ordered junction membership. Page default 0, pageSize default 30, max 100. Unknown parameters and malformed UUIDs return 400. `%` and `_` in query are literals, not SQL wildcards. Stable order is normalized title then UUID. Analytics headers are optional metadata and never credentials.\n V2 includes published UNESTABLISHED records in unfiltered searches; specific form facets never match unknown. All seven facets combine with AND. Repeated scalar parameters return 400."
+      "security": []
+      "parameters":
+        -
+          "$ref": "#/components/parameters/CatalogueQuery"
+        -
+          "name": "composerId"
+          "in": "query"
+          "schema":
+            "type": "string"
+            "format": "uuid"
+        -
+          "name": "ragaId"
+          "in": "query"
+          "schema":
+            "type": "string"
+            "format": "uuid"
+        -
+          "$ref": "#/components/parameters/CataloguePage"
+        -
+          "$ref": "#/components/parameters/CataloguePageSize"
+        -
+          "$ref": "#/components/parameters/RasikaSessionHeader"
+        -
+          "$ref": "#/components/parameters/RasikaInteractionHeader"
+        -
+          "name": "talaId"
+          "in": "query"
+          "required": false
+          "schema":
+            "type": "string"
+            "format": "uuid"
+        -
+          "name": "deityId"
+          "in": "query"
+          "required": false
+          "schema":
+            "type": "string"
+            "format": "uuid"
+        -
+          "name": "templeId"
+          "in": "query"
+          "required": false
+          "schema":
+            "type": "string"
+            "format": "uuid"
+        -
+          "name": "language"
+          "in": "query"
+          "required": false
+          "schema":
+            "$ref": "#/components/schemas/CatalogueLanguageCode"
+        -
+          "name": "musicalForm"
+          "in": "query"
+          "required": false
+          "schema":
+            "type": "string"
+            "enum":
+              - "KRITHI"
+              - "VARNAM"
+              - "SWARAJATHI"
+      "responses":
+        "200":
+          "description": "Paged published kriti summaries"
+          "headers":
+            "Cache-Control":
+              "schema":
+                "type": "string"
+                "example": "no-store"
+          "content":
+            "application/json":
+              "schema":
+                "$ref": "#/components/schemas/CatalogueKrithiPageV2"
+        "400":
+          "$ref": "#/components/responses/CatalogueValidationError"
+  "/v2/catalogue/krithis/{id}":
+    "get":
+      "tags":
+        - "Catalogue"
+      "summary": "Public kriti reader metadata"
+      "security": []
+      "parameters":
+        -
+          "name": "id"
+          "in": "path"
+          "required": true
+          "schema":
+            "type": "string"
+            "format": "uuid"
+        -
+          "$ref": "#/components/parameters/RasikaSessionHeader"
+        -
+          "$ref": "#/components/parameters/RasikaInteractionHeader"
+      "responses":
+        "200":
+          "description": "Published reader metadata and variant inventory"
+          "headers":
+            "Cache-Control":
+              "schema":
+                "type": "string"
+                "example": "no-store"
+          "content":
+            "application/json":
+              "schema":
+                "$ref": "#/components/schemas/CatalogueKrithiReaderV2"
+        "400":
+          "$ref": "#/components/responses/CatalogueValidationError"
+        "404":
+          "$ref": "#/components/responses/CatalogueNotFound"
+  "/v2/catalogue/krithis/{id}/lyrics/{variantId}":
+    "get":
+      "tags":
+        - "Catalogue"
+      "summary": "One stored lyric variant"
+      "description": "Variant must belong to the composition. Missing, unpublished, and wrong-owner requests share the public 404 shape. When structured sections are absent but unsegmented text is stored, unsegmentedText is returned without inventing section boundaries.\n"
+      "security": []
+      "parameters":
+        -
+          "name": "id"
+          "in": "path"
+          "required": true
+          "schema":
+            "type": "string"
+            "format": "uuid"
+        -
+          "name": "variantId"
+          "in": "path"
+          "required": true
+          "schema":
+            "type": "string"
+            "format": "uuid"
+        -
+          "$ref": "#/components/parameters/RasikaSessionHeader"
+        -
+          "$ref": "#/components/parameters/RasikaInteractionHeader"
+      "responses":
+        "200":
+          "description": "Stored lyric reading"
+          "headers":
+            "Cache-Control":
+              "schema":
+                "type": "string"
+                "example": "no-store"
+          "content":
+            "application/json":
+              "schema":
+                "$ref": "#/components/schemas/CatalogueLyricsV2"
+        "400":
+          "$ref": "#/components/responses/CatalogueValidationError"
+        "404":
+          "$ref": "#/components/responses/CatalogueNotFound"
+  "/v2/catalogue/ragas":
+    "get":
+      "tags":
+        - "Catalogue"
+      "summary": "Searchable raga directory"
+      "security": []
+      "parameters":
+        -
+          "$ref": "#/components/parameters/CatalogueQuery"
+        -
+          "$ref": "#/components/parameters/CataloguePage"
+        -
+          "$ref": "#/components/parameters/CataloguePageSize"
+        -
+          "$ref": "#/components/parameters/RasikaSessionHeader"
+        -
+          "$ref": "#/components/parameters/RasikaInteractionHeader"
+      "responses":
+        "200":
+          "description": "Paged ragas with published composition counts"
+          "headers":
+            "Cache-Control":
+              "schema":
+                "type": "string"
+                "example": "no-store"
+          "content":
+            "application/json":
+              "schema":
+                "$ref": "#/components/schemas/CatalogueRagaPage"
+        "400":
+          "$ref": "#/components/responses/CatalogueValidationError"
+  "/v2/catalogue/ragas/{id}":
+    "get":
+      "tags":
+        - "Catalogue"
+      "summary": "Public raga reference"
+      "security": []
+      "parameters":
+        -
+          "name": "id"
+          "in": "path"
+          "required": true
+          "schema":
+            "type": "string"
+            "format": "uuid"
+        -
+          "$ref": "#/components/parameters/RasikaSessionHeader"
+        -
+          "$ref": "#/components/parameters/RasikaInteractionHeader"
+      "responses":
+        "200":
+          "description": "Stored raga reference data"
+          "content":
+            "application/json":
+              "schema":
+                "$ref": "#/components/schemas/CatalogueRagaDetailV2"
+        "400":
+          "$ref": "#/components/responses/CatalogueValidationError"
+        "404":
+          "$ref": "#/components/responses/CatalogueNotFound"
+  "/v2/catalogue/composers":
+    "get":
+      "tags":
+        - "Catalogue"
+      "summary": "Searchable composer directory"
+      "security": []
+      "parameters":
+        -
+          "$ref": "#/components/parameters/CatalogueQuery"
+        -
+          "$ref": "#/components/parameters/CataloguePage"
+        -
+          "$ref": "#/components/parameters/CataloguePageSize"
+        -
+          "$ref": "#/components/parameters/RasikaSessionHeader"
+        -
+          "$ref": "#/components/parameters/RasikaInteractionHeader"
+      "responses":
+        "200":
+          "description": "Paged composers with published composition counts"
+          "content":
+            "application/json":
+              "schema":
+                "$ref": "#/components/schemas/CatalogueComposerPage"
+        "400":
+          "$ref": "#/components/responses/CatalogueValidationError"
+  "/v2/catalogue/composers/{id}":
+    "get":
+      "tags":
+        - "Catalogue"
+      "summary": "Public composer profile"
+      "security": []
+      "parameters":
+        -
+          "name": "id"
+          "in": "path"
+          "required": true
+          "schema":
+            "type": "string"
+            "format": "uuid"
+        -
+          "$ref": "#/components/parameters/RasikaSessionHeader"
+        -
+          "$ref": "#/components/parameters/RasikaInteractionHeader"
+      "responses":
+        "200":
+          "description": "Stored composer profile"
+          "content":
+            "application/json":
+              "schema":
+                "$ref": "#/components/schemas/CatalogueComposerDetail"
+        "400":
+          "$ref": "#/components/responses/CatalogueValidationError"
+        "404":
+          "$ref": "#/components/responses/CatalogueNotFound"
+  "/v2/catalogue/discovery":
+    "get":
+      "tags":
+        - "Catalogue"
+      "security": []
+      "description": "Published-only V2 contract. Unknown or repeated query parameters are rejected. No silent V1 fallback."
+      "parameters": []
+      "responses":
+        "200":
+          "description": "Allowlisted public response. Cache-Control: no-store."
+          "headers":
+            "Cache-Control":
+              "schema":
+                "type": "string"
+                "enum":
+                  - "no-store"
+          "content":
+            "application/json":
+              "schema":
+                "$ref": "#/components/schemas/CatalogueDiscovery"
+        "400":
+          "$ref": "#/components/responses/CatalogueValidationError"
+  "/v2/catalogue/talas":
+    "get":
+      "tags":
+        - "Catalogue"
+      "security": []
+      "description": "Published-only V2 contract. Unknown or repeated query parameters are rejected. No silent V1 fallback."
+      "parameters":
+        -
+          "$ref": "#/components/parameters/CatalogueQuery"
+        -
+          "$ref": "#/components/parameters/CataloguePage"
+        -
+          "$ref": "#/components/parameters/CataloguePageSize"
+      "responses":
+        "200":
+          "description": "Allowlisted public response. Cache-Control: no-store."
+          "headers":
+            "Cache-Control":
+              "schema":
+                "type": "string"
+                "enum":
+                  - "no-store"
+          "content":
+            "application/json":
+              "schema":
+                "$ref": "#/components/schemas/CatalogueMetadataPage"
+        "400":
+          "$ref": "#/components/responses/CatalogueValidationError"
+  "/v2/catalogue/talas/{id}":
+    "get":
+      "tags":
+        - "Catalogue"
+      "security": []
+      "description": "Published-only V2 contract. Unknown or repeated query parameters are rejected. No silent V1 fallback."
+      "parameters":
+        -
+          "name": "id"
+          "in": "path"
+          "required": true
+          "schema":
+            "type": "string"
+            "format": "uuid"
+      "responses":
+        "200":
+          "description": "Allowlisted public response. Cache-Control: no-store."
+          "headers":
+            "Cache-Control":
+              "schema":
+                "type": "string"
+                "enum":
+                  - "no-store"
+          "content":
+            "application/json":
+              "schema":
+                "$ref": "#/components/schemas/CatalogueMetadataDetail"
+        "400":
+          "$ref": "#/components/responses/CatalogueValidationError"
+        "404":
+          "$ref": "#/components/responses/CatalogueNotFound"
+  "/v2/catalogue/deities":
+    "get":
+      "tags":
+        - "Catalogue"
+      "security": []
+      "description": "Published-only V2 contract. Unknown or repeated query parameters are rejected. No silent V1 fallback."
+      "parameters":
+        -
+          "$ref": "#/components/parameters/CatalogueQuery"
+        -
+          "$ref": "#/components/parameters/CataloguePage"
+        -
+          "$ref": "#/components/parameters/CataloguePageSize"
+      "responses":
+        "200":
+          "description": "Allowlisted public response. Cache-Control: no-store."
+          "headers":
+            "Cache-Control":
+              "schema":
+                "type": "string"
+                "enum":
+                  - "no-store"
+          "content":
+            "application/json":
+              "schema":
+                "$ref": "#/components/schemas/CatalogueMetadataPage"
+        "400":
+          "$ref": "#/components/responses/CatalogueValidationError"
+  "/v2/catalogue/deities/{id}":
+    "get":
+      "tags":
+        - "Catalogue"
+      "security": []
+      "description": "Published-only V2 contract. Unknown or repeated query parameters are rejected. No silent V1 fallback."
+      "parameters":
+        -
+          "name": "id"
+          "in": "path"
+          "required": true
+          "schema":
+            "type": "string"
+            "format": "uuid"
+      "responses":
+        "200":
+          "description": "Allowlisted public response. Cache-Control: no-store."
+          "headers":
+            "Cache-Control":
+              "schema":
+                "type": "string"
+                "enum":
+                  - "no-store"
+          "content":
+            "application/json":
+              "schema":
+                "$ref": "#/components/schemas/CatalogueMetadataDetail"
+        "400":
+          "$ref": "#/components/responses/CatalogueValidationError"
+        "404":
+          "$ref": "#/components/responses/CatalogueNotFound"
+  "/v2/catalogue/temples":
+    "get":
+      "tags":
+        - "Catalogue"
+      "security": []
+      "description": "Published-only V2 contract. Unknown or repeated query parameters are rejected. No silent V1 fallback."
+      "parameters":
+        -
+          "$ref": "#/components/parameters/CatalogueQuery"
+        -
+          "$ref": "#/components/parameters/CataloguePage"
+        -
+          "$ref": "#/components/parameters/CataloguePageSize"
+      "responses":
+        "200":
+          "description": "Allowlisted public response. Cache-Control: no-store."
+          "headers":
+            "Cache-Control":
+              "schema":
+                "type": "string"
+                "enum":
+                  - "no-store"
+          "content":
+            "application/json":
+              "schema":
+                "$ref": "#/components/schemas/CatalogueMetadataPage"
+        "400":
+          "$ref": "#/components/responses/CatalogueValidationError"
+  "/v2/catalogue/temples/{id}":
+    "get":
+      "tags":
+        - "Catalogue"
+      "security": []
+      "description": "Published-only V2 contract. Unknown or repeated query parameters are rejected. No silent V1 fallback."
+      "parameters":
+        -
+          "name": "id"
+          "in": "path"
+          "required": true
+          "schema":
+            "type": "string"
+            "format": "uuid"
+      "responses":
+        "200":
+          "description": "Allowlisted public response. Cache-Control: no-store."
+          "headers":
+            "Cache-Control":
+              "schema":
+                "type": "string"
+                "enum":
+                  - "no-store"
+          "content":
+            "application/json":
+              "schema":
+                "$ref": "#/components/schemas/CatalogueMetadataDetail"
+        "400":
+          "$ref": "#/components/responses/CatalogueValidationError"
+        "404":
+          "$ref": "#/components/responses/CatalogueNotFound"
+  "/v2/catalogue/languages":
+    "get":
+      "tags":
+        - "Catalogue"
+      "security": []
+      "description": "Published-only V2 contract. Unknown or repeated query parameters are rejected. No silent V1 fallback."
+      "parameters":
+        -
+          "$ref": "#/components/parameters/CatalogueQuery"
+        -
+          "$ref": "#/components/parameters/CataloguePage"
+        -
+          "$ref": "#/components/parameters/CataloguePageSize"
+      "responses":
+        "200":
+          "description": "Allowlisted public response. Cache-Control: no-store."
+          "headers":
+            "Cache-Control":
+              "schema":
+                "type": "string"
+                "enum":
+                  - "no-store"
+          "content":
+            "application/json":
+              "schema":
+                "$ref": "#/components/schemas/CatalogueMetadataPage"
+        "400":
+          "$ref": "#/components/responses/CatalogueValidationError"
+  "/v2/catalogue/musical-forms":
+    "get":
+      "tags":
+        - "Catalogue"
+      "security": []
+      "description": "Published-only V2 contract. Unknown or repeated query parameters are rejected. No silent V1 fallback."
+      "parameters":
+        -
+          "$ref": "#/components/parameters/CatalogueQuery"
+        -
+          "$ref": "#/components/parameters/CataloguePage"
+        -
+          "$ref": "#/components/parameters/CataloguePageSize"
+      "responses":
+        "200":
+          "description": "Allowlisted public response. Cache-Control: no-store."
+          "headers":
+            "Cache-Control":
+              "schema":
+                "type": "string"
+                "enum":
+                  - "no-store"
+          "content":
+            "application/json":
+              "schema":
+                "$ref": "#/components/schemas/CatalogueMetadataPage"
+        "400":
+          "$ref": "#/components/responses/CatalogueValidationError"
+  "/v1/admin/catalogue-features":
+    "get":
+      "tags":
+        - "Admin"
+      "summary": "Manage Rasika Home features (existing ADMIN role)"
+      "parameters": []
+      "responses":
+        "200":
+          "description": "Authorized result"
+          "content":
+            "application/json":
+              "schema":
+                "$ref": "#/components/schemas/CatalogueFeatureList"
+        "400":
+          "description": "Invalid fields or bounds"
+        "401":
+          "description": "Authentication required"
+        "403":
+          "description": "Admin role required"
+        "404":
+          "description": "Feature not found"
+        "409":
+          "description": "Stale revision, collection changed or feature limit reached"
+    "post":
+      "tags":
+        - "Admin"
+      "summary": "Manage Rasika Home features (existing ADMIN role)"
+      "parameters": []
+      "requestBody":
+        "required": true
+        "content":
+          "application/json":
+            "schema":
+              "$ref": "#/components/schemas/CatalogueFeatureCreate"
+      "responses":
+        "200":
+          "description": "Authorized result"
+          "content":
+            "application/json":
+              "schema":
+                "$ref": "#/components/schemas/CatalogueFeature"
+        "400":
+          "description": "Invalid fields or bounds"
+        "401":
+          "description": "Authentication required"
+        "403":
+          "description": "Admin role required"
+        "404":
+          "description": "Feature not found"
+        "409":
+          "description": "Stale revision, collection changed or feature limit reached"
+  "/v1/admin/catalogue-features/order":
+    "put":
+      "tags":
+        - "Admin"
+      "summary": "Manage Rasika Home features (existing ADMIN role)"
+      "parameters": []
+      "requestBody":
+        "required": true
+        "content":
+          "application/json":
+            "schema":
+              "$ref": "#/components/schemas/CatalogueFeatureOrder"
+      "responses":
+        "200":
+          "description": "Authorized result"
+          "content":
+            "application/json":
+              "schema":
+                "$ref": "#/components/schemas/CatalogueFeatureList"
+        "400":
+          "description": "Invalid fields or bounds"
+        "401":
+          "description": "Authentication required"
+        "403":
+          "description": "Admin role required"
+        "404":
+          "description": "Feature not found"
+        "409":
+          "description": "Stale revision, collection changed or feature limit reached"
+  "/v1/admin/catalogue-features/{id}":
+    "get":
+      "tags":
+        - "Admin"
+      "summary": "Manage Rasika Home features (existing ADMIN role)"
+      "parameters":
+        -
+          "name": "id"
+          "in": "path"
+          "required": true
+          "schema":
+            "type": "string"
+            "format": "uuid"
+      "responses":
+        "200":
+          "description": "Authorized result"
+          "content":
+            "application/json":
+              "schema":
+                "$ref": "#/components/schemas/CatalogueFeature"
+        "400":
+          "description": "Invalid fields or bounds"
+        "401":
+          "description": "Authentication required"
+        "403":
+          "description": "Admin role required"
+        "404":
+          "description": "Feature not found"
+        "409":
+          "description": "Stale revision, collection changed or feature limit reached"
+    "put":
+      "tags":
+        - "Admin"
+      "summary": "Manage Rasika Home features (existing ADMIN role)"
+      "parameters":
+        -
+          "name": "id"
+          "in": "path"
+          "required": true
+          "schema":
+            "type": "string"
+            "format": "uuid"
+      "requestBody":
+        "required": true
+        "content":
+          "application/json":
+            "schema":
+              "$ref": "#/components/schemas/CatalogueFeatureUpdate"
+      "responses":
+        "200":
+          "description": "Authorized result"
+          "content":
+            "application/json":
+              "schema":
+                "$ref": "#/components/schemas/CatalogueFeature"
+        "400":
+          "description": "Invalid fields or bounds"
+        "401":
+          "description": "Authentication required"
+        "403":
+          "description": "Admin role required"
+        "404":
+          "description": "Feature not found"
+        "409":
+          "description": "Stale revision, collection changed or feature limit reached"
+  "/v1/admin/catalogue-features/{id}/publish":
+    "post":
+      "tags":
+        - "Admin"
+      "summary": "Manage Rasika Home features (existing ADMIN role)"
+      "parameters":
+        -
+          "name": "id"
+          "in": "path"
+          "required": true
+          "schema":
+            "type": "string"
+            "format": "uuid"
+      "requestBody":
+        "required": true
+        "content":
+          "application/json":
+            "schema":
+              "$ref": "#/components/schemas/CatalogueFeatureRevision"
+      "responses":
+        "200":
+          "description": "Authorized result"
+          "content":
+            "application/json":
+              "schema":
+                "$ref": "#/components/schemas/CatalogueFeature"
+        "400":
+          "description": "Invalid fields or bounds"
+        "401":
+          "description": "Authentication required"
+        "403":
+          "description": "Admin role required"
+        "404":
+          "description": "Feature not found"
+        "409":
+          "description": "Stale revision, collection changed or feature limit reached"
+  "/v1/admin/catalogue-features/{id}/unpublish":
+    "post":
+      "tags":
+        - "Admin"
+      "summary": "Manage Rasika Home features (existing ADMIN role)"
+      "parameters":
+        -
+          "name": "id"
+          "in": "path"
+          "required": true
+          "schema":
+            "type": "string"
+            "format": "uuid"
+      "requestBody":
+        "required": true
+        "content":
+          "application/json":
+            "schema":
+              "$ref": "#/components/schemas/CatalogueFeatureRevision"
+      "responses":
+        "200":
+          "description": "Authorized result"
+          "content":
+            "application/json":
+              "schema":
+                "$ref": "#/components/schemas/CatalogueFeature"
+        "400":
+          "description": "Invalid fields or bounds"
+        "401":
+          "description": "Authentication required"
+        "403":
+          "description": "Admin role required"
+        "404":
+          "description": "Feature not found"
+        "409":
+          "description": "Stale revision, collection changed or feature limit reached"
+
+
 
   /health:
     get:
@@ -798,8 +1544,8 @@ components:
 
     MusicalForm:
       type: string
-      enum: [KRITHI, VARNAM, SWARAJATHI]
-      description: Musical form classification
+      enum: [KRITHI, VARNAM, SWARAJATHI, UNESTABLISHED]
+      description: Explicit musical form classification or UNESTABLISHED
 
     KrithiStatus:
       type: string
@@ -1102,7 +1848,7 @@ components:
           allOf:
             - $ref: "#/components/schemas/CatalogueTalaRef"
           nullable: true
-        musicalForm: { $ref: "#/components/schemas/MusicalForm" }
+        musicalForm: { $ref: "#/components/schemas/CatalogueV1MusicalForm" }
         isRagamalika: { type: boolean }
 
     CatalogueKrithiPage:
@@ -1143,7 +1889,7 @@ components:
           allOf:
             - $ref: "#/components/schemas/CatalogueTalaRef"
           nullable: true
-        musicalForm: { $ref: "#/components/schemas/MusicalForm" }
+        musicalForm: { $ref: "#/components/schemas/CatalogueV1MusicalForm" }
         originalLanguage: { $ref: "#/components/schemas/CatalogueLanguageCode" }
         isRagamalika: { type: boolean }
         defaultVariantId: { type: string, format: uuid, nullable: true }
@@ -1193,6 +1939,7 @@ components:
         publishedCompositionCount: { type: integer, format: int64 }
         melakartaNumber: { type: integer, nullable: true }
         parentRagaName: { type: string, nullable: true }
+        parentMelakartaNumber: { type: integer, nullable: true }
 
     CatalogueRagaPage:
       type: object
@@ -1267,3 +2014,481 @@ components:
         birthYear: { type: integer, nullable: true }
         deathYear: { type: integer, nullable: true }
         place: { type: string, nullable: true }
+
+    "CatalogueRagaRefV2":
+      "type": "object"
+      "required":
+        - "id"
+        - "name"
+        - "orderIndex"
+      "properties":
+        "id":
+          "type": "string"
+          "format": "uuid"
+        "name":
+          "type": "string"
+        "orderIndex":
+          "type": "integer"
+        "section":
+          "type": "string"
+          "nullable": true
+        "sectionId":
+          "type": "string"
+          "format": "uuid"
+          "nullable": true
+          "description": "Explicit lyric-section relationship only; never inferred from order or section type."
+    "CatalogueKrithiSummaryV2":
+      "type": "object"
+      "required":
+        - "id"
+        - "title"
+        - "composer"
+        - "ragas"
+        - "musicalForm"
+        - "isRagamalika"
+      "properties":
+        "id":
+          "type": "string"
+          "format": "uuid"
+        "title":
+          "type": "string"
+        "incipit":
+          "type": "string"
+          "nullable": true
+        "composer":
+          "$ref": "#/components/schemas/CatalogueComposerRef"
+        "ragas":
+          "type": "array"
+          "items":
+            "$ref": "#/components/schemas/CatalogueRagaRefV2"
+        "tala":
+          "allOf":
+            -
+              "$ref": "#/components/schemas/CatalogueTalaRef"
+          "nullable": true
+        "musicalForm":
+          "$ref": "#/components/schemas/CatalogueMusicalFormV2"
+        "isRagamalika":
+          "type": "boolean"
+    "CatalogueKrithiReaderV2":
+      "type": "object"
+      "required":
+        - "id"
+        - "title"
+        - "composer"
+        - "ragas"
+        - "musicalForm"
+        - "originalLanguage"
+        - "isRagamalika"
+        - "variants"
+        - "completeness"
+      "properties":
+        "id":
+          "type": "string"
+          "format": "uuid"
+        "title":
+          "type": "string"
+        "incipit":
+          "type": "string"
+          "nullable": true
+        "composer":
+          "$ref": "#/components/schemas/CatalogueComposerRef"
+        "ragas":
+          "type": "array"
+          "items":
+            "$ref": "#/components/schemas/CatalogueRagaRefV2"
+        "tala":
+          "allOf":
+            -
+              "$ref": "#/components/schemas/CatalogueTalaRef"
+          "nullable": true
+        "musicalForm":
+          "$ref": "#/components/schemas/CatalogueMusicalFormV2"
+        "originalLanguage":
+          "$ref": "#/components/schemas/CatalogueLanguageCode"
+        "isRagamalika":
+          "type": "boolean"
+        "defaultVariantId":
+          "type": "string"
+          "format": "uuid"
+          "nullable": true
+        "variants":
+          "type": "array"
+          "items":
+            "$ref": "#/components/schemas/CatalogueVariantRef"
+        "completeness":
+          "type": "string"
+          "enum":
+            - "UNKNOWN"
+            - "PARTIAL"
+            - "COMPLETE"
+        "deity":
+          "allOf":
+            -
+              "$ref": "#/components/schemas/CatalogueReference"
+          "nullable": true
+        "temple":
+          "allOf":
+            -
+              "$ref": "#/components/schemas/CatalogueReference"
+          "nullable": true
+    "CatalogueKrithiPageV2":
+      "type": "object"
+      "required":
+        - "items"
+        - "total"
+        - "page"
+        - "pageSize"
+      "properties":
+        "items":
+          "type": "array"
+          "items":
+            "$ref": "#/components/schemas/CatalogueKrithiSummaryV2"
+        "total":
+          "type": "integer"
+          "format": "int64"
+        "page":
+          "type": "integer"
+        "pageSize":
+          "type": "integer"
+    "CatalogueLyricsV2":
+      "type": "object"
+      "required":
+        - "variantId"
+        - "krithiId"
+        - "language"
+        - "script"
+        - "isPrimary"
+        - "sections"
+      "properties":
+        "variantId":
+          "type": "string"
+          "format": "uuid"
+        "krithiId":
+          "type": "string"
+          "format": "uuid"
+        "language":
+          "$ref": "#/components/schemas/CatalogueLanguageCode"
+        "script":
+          "$ref": "#/components/schemas/CatalogueScriptCode"
+        "transliterationScheme":
+          "type": "string"
+          "nullable": true
+        "isPrimary":
+          "type": "boolean"
+        "label":
+          "type": "string"
+          "nullable": true
+        "sourceReference":
+          "type": "string"
+          "nullable": true
+        "unsegmentedText":
+          "type": "string"
+          "nullable": true
+        "sections":
+          "type": "array"
+          "items":
+            "$ref": "#/components/schemas/CatalogueLyricSection"
+        "completeness":
+          "type": "string"
+          "enum":
+            - "UNKNOWN"
+            - "PARTIAL"
+            - "COMPLETE"
+          "default": "UNKNOWN"
+          "description": "Selected-reading evidence only."
+    "CatalogueRagaDetailV2":
+      "type": "object"
+      "required":
+        - "id"
+        - "name"
+        - "aliases"
+        - "publishedCompositionCount"
+        - "nomenclatureLinks"
+      "properties":
+        "id":
+          "type": "string"
+          "format": "uuid"
+        "name":
+          "type": "string"
+        "aliases":
+          "type": "array"
+          "items":
+            "type": "string"
+        "publishedCompositionCount":
+          "type": "integer"
+          "format": "int64"
+        "melakartaNumber":
+          "type": "integer"
+          "nullable": true
+        "parentRagaId":
+          "type": "string"
+          "format": "uuid"
+          "nullable": true
+        "parentRagaName":
+          "type": "string"
+          "nullable": true
+        "arohanam":
+          "type": "string"
+          "nullable": true
+        "avarohanam":
+          "type": "string"
+          "nullable": true
+        "nomenclatureLinks":
+          "type": "array"
+          "items":
+            "$ref": "#/components/schemas/CatalogueNomenclatureLink"
+        "parentMelakartaNumber":
+          "type": "integer"
+          "nullable": true
+          "description": "Number recorded on the parent raga, never the child's number."
+    "CatalogueMusicalFormV2":
+      "type": "string"
+      "enum":
+        - "KRITHI"
+        - "VARNAM"
+        - "SWARAJATHI"
+        - "UNESTABLISHED"
+      "description": "UNESTABLISHED is unknown classification, not a fourth musical form."
+    "CatalogueReference":
+      "type": "object"
+      "required":
+        - "id"
+        - "name"
+      "properties":
+        "id":
+          "type": "string"
+          "format": "uuid"
+        "name":
+          "type": "string"
+    "CatalogueDiscoveryFeature":
+      "type": "object"
+      "required":
+        - "selection"
+        - "heading"
+        - "summary"
+        - "krithi"
+      "properties":
+        "selection":
+          "type": "string"
+          "enum":
+            - "CATALOGUE_ORDER"
+            - "EDITORIAL"
+        "heading":
+          "type": "string"
+          "maxLength": 80
+        "summary":
+          "type": "string"
+          "maxLength": 240
+        "krithi":
+          "$ref": "#/components/schemas/CatalogueKrithiSummaryV2"
+    "CatalogueDiscovery":
+      "type": "object"
+      "required":
+        - "feature"
+        - "editorialRevision"
+      "properties":
+        "feature":
+          "allOf":
+            -
+              "$ref": "#/components/schemas/CatalogueDiscoveryFeature"
+          "nullable": true
+        "editorialRevision":
+          "type": "string"
+          "nullable": true
+    "CatalogueMetadataSummary":
+      "type": "object"
+      "required":
+        - "id"
+        - "name"
+        - "publishedCompositionCount"
+      "properties":
+        "id":
+          "type": "string"
+        "name":
+          "type": "string"
+        "publishedCompositionCount":
+          "type": "integer"
+          "format": "int64"
+    "CatalogueMetadataDetail":
+      "type": "object"
+      "required":
+        - "id"
+        - "name"
+        - "publishedCompositionCount"
+        - "aliases"
+      "properties":
+        "id":
+          "type": "string"
+        "name":
+          "type": "string"
+        "publishedCompositionCount":
+          "type": "integer"
+          "format": "int64"
+        "aliases":
+          "type": "array"
+          "items":
+            "type": "string"
+        "beatCount":
+          "type": "integer"
+          "nullable": true
+        "angaStructure":
+          "type": "string"
+          "nullable": true
+        "city":
+          "type": "string"
+          "nullable": true
+        "state":
+          "type": "string"
+          "nullable": true
+        "country":
+          "type": "string"
+          "nullable": true
+        "deity":
+          "allOf":
+            -
+              "$ref": "#/components/schemas/CatalogueReference"
+          "nullable": true
+    "CatalogueMetadataPage":
+      "type": "object"
+      "required":
+        - "items"
+        - "total"
+        - "page"
+        - "pageSize"
+      "properties":
+        "items":
+          "type": "array"
+          "items":
+            "$ref": "#/components/schemas/CatalogueMetadataSummary"
+        "total":
+          "type": "integer"
+          "format": "int64"
+        "page":
+          "type": "integer"
+        "pageSize":
+          "type": "integer"
+    "CatalogueFeatureState":
+      "type": "string"
+      "enum":
+        - "DRAFT"
+        - "PUBLISHED"
+    "CatalogueFeature":
+      "type": "object"
+      "required":
+        - "id"
+        - "targetKrithiId"
+        - "heading"
+        - "summary"
+        - "state"
+        - "revision"
+        - "orderIndex"
+      "properties":
+        "id":
+          "type": "string"
+          "format": "uuid"
+        "targetKrithiId":
+          "type": "string"
+          "format": "uuid"
+        "heading":
+          "type": "string"
+          "minLength": 1
+          "maxLength": 80
+        "summary":
+          "type": "string"
+          "minLength": 1
+          "maxLength": 240
+        "state":
+          "$ref": "#/components/schemas/CatalogueFeatureState"
+        "revision":
+          "type": "integer"
+          "format": "int64"
+          "minimum": 1
+        "orderIndex":
+          "type": "integer"
+          "minimum": 0
+    "CatalogueFeatureCreate":
+      "type": "object"
+      "required":
+        - "targetKrithiId"
+        - "heading"
+        - "summary"
+      "properties":
+        "targetKrithiId":
+          "type": "string"
+          "format": "uuid"
+        "heading":
+          "type": "string"
+          "minLength": 1
+          "maxLength": 80
+        "summary":
+          "type": "string"
+          "minLength": 1
+          "maxLength": 240
+    "CatalogueFeatureUpdate":
+      "type": "object"
+      "required":
+        - "targetKrithiId"
+        - "heading"
+        - "summary"
+        - "expectedRevision"
+      "properties":
+        "targetKrithiId":
+          "type": "string"
+          "format": "uuid"
+        "heading":
+          "type": "string"
+          "minLength": 1
+          "maxLength": 80
+        "summary":
+          "type": "string"
+          "minLength": 1
+          "maxLength": 240
+        "expectedRevision":
+          "type": "integer"
+          "format": "int64"
+          "minimum": 1
+    "CatalogueFeatureRevision":
+      "type": "object"
+      "required":
+        - "expectedRevision"
+      "properties":
+        "expectedRevision":
+          "type": "integer"
+          "format": "int64"
+          "minimum": 1
+    "CatalogueFeatureOrder":
+      "type": "object"
+      "required":
+        - "items"
+      "properties":
+        "items":
+          "type": "array"
+          "maxItems": 50
+          "items":
+            "type": "object"
+            "required":
+              - "id"
+              - "expectedRevision"
+            "properties":
+              "id":
+                "type": "string"
+                "format": "uuid"
+              "expectedRevision":
+                "type": "integer"
+                "format": "int64"
+                "minimum": 1
+    "CatalogueFeatureList":
+      "type": "object"
+      "required":
+        - "items"
+      "properties":
+        "items":
+          "type": "array"
+          "maxItems": 50
+          "items":
+            "$ref": "#/components/schemas/CatalogueFeature"
+
+    CatalogueV1MusicalForm:
+      type: string
+      enum: [KRITHI, VARNAM, SWARAJATHI]

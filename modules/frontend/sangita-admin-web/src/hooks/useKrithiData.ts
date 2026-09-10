@@ -151,7 +151,7 @@ export const useKrithiData = (
                     incipit: payload.incipit || null,
                     composerId: payload.composerId,
                     primaryLanguage: payload.primaryLanguage,
-                    musicalForm: payload.musicalForm || 'KRITHI',
+                    musicalForm: payload.musicalForm || 'UNESTABLISHED',
                     talaId: payload.talaId || null,
                     primaryRagaId: payload.ragaIds?.[0] || null, // Create endpoint usually takes primary
                     deityId: payload.deityId || null,

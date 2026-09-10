@@ -45,7 +45,7 @@ fun Route.catalogueRoutes(catalogueService: CatalogueService) {
     }
 }
 
-private suspend inline fun <reified T : Any> ApplicationCall.respondCatalogue(result: CatalogueResult<T>) {
+internal suspend inline fun <reified T : Any> ApplicationCall.respondCatalogue(result: CatalogueResult<T>) {
     when (result) {
         is CatalogueResult.Ok -> {
             captureCatalogueResultCount(result.value)

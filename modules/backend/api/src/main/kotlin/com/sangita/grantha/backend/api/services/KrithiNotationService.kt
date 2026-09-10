@@ -14,6 +14,7 @@ import com.sangita.grantha.shared.domain.model.KrithiSectionDto
 import com.sangita.grantha.shared.domain.model.KrithiNotationVariantWithRowsDto
 import com.sangita.grantha.shared.domain.model.KrithiNotationRowDto
 import com.sangita.grantha.shared.domain.model.KrithiNotationVariantDto
+import com.sangita.grantha.shared.domain.model.MusicalFormDto
 import com.sangita.grantha.shared.domain.model.WorkflowStateDto
 import kotlin.uuid.Uuid
 
@@ -175,7 +176,11 @@ class KrithiNotationService(private val dal: SangitaDal) {
         includeUnpublished: Boolean,
     ): KrithiNotationResponseDto? {
         val krithi = dal.krithis.findById(krithiId) ?: return null
-        if (!includeUnpublished && krithi.workflowState != WorkflowStateDto.PUBLISHED) {
+        if (!includeUnpublished && (
+                krithi.workflowState != WorkflowStateDto.PUBLISHED ||
+                    krithi.musicalForm == MusicalFormDto.UNESTABLISHED
+                )
+        ) {
             return null
         }
 

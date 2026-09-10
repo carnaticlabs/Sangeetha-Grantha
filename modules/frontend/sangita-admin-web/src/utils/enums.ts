@@ -70,6 +70,7 @@ export const SCRIPT_CODE_OPTIONS = [
 // Musical Form Mapping
 export const MUSICAL_FORM_LABELS: Record<string, string> = {
   'KRITHI': 'Krithi',
+  'UNESTABLISHED': 'Not established',
   'VARNAM': 'Varnam',
   'SWARAJATHI': 'Swarajathi',
 };

@@ -37,6 +37,20 @@ class CanonicalExtractionGoldenFixtureTest {
     }
 
     @Test
+    fun `omitted form stays unestablished while explicit classification is preserved`() {
+        val document = kotlinx.serialization.json.Json.parseToJsonElement(goldenFixtureText())
+            as kotlinx.serialization.json.JsonObject
+        val absent = kotlinx.serialization.json.JsonObject(document - "musicalForm")
+        assertEquals(CanonicalMusicalForm.UNESTABLISHED,
+            strictJson.decodeFromString<CanonicalExtractionDto>(absent.toString()).musicalForm)
+        CanonicalMusicalForm.entries.forEach { form ->
+            val explicit = kotlinx.serialization.json.JsonObject(document +
+                ("musicalForm" to kotlinx.serialization.json.JsonPrimitive(form.name)))
+            assertEquals(form, strictJson.decodeFromString<CanonicalExtractionDto>(explicit.toString()).musicalForm)
+        }
+    }
+
+    @Test
     fun `golden fixture decodes strictly into CanonicalExtractionDto`() {
         val dto = strictJson.decodeFromString<CanonicalExtractionDto>(goldenFixtureText())
 

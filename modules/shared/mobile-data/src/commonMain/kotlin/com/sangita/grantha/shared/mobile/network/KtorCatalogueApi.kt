@@ -3,6 +3,7 @@ package com.sangita.grantha.shared.mobile.network
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerDetailDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerSummaryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueContract
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueDiscoveryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueErrorDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueKrithiReaderDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueKrithiSummaryDto
@@ -10,6 +11,7 @@ import com.sangita.grantha.shared.domain.model.catalogue.CatalogueLyricsDto
 import com.sangita.grantha.shared.domain.model.catalogue.CataloguePagedResponse
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueRagaDetailDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueRagaSummaryDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueV2Contract
 import com.sangita.grantha.shared.mobile.usage.InteractionContext
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -26,6 +28,9 @@ import kotlin.uuid.Uuid
 class KtorCatalogueApi(
     private val client: HttpClient,
 ) : CatalogueApi {
+    override suspend fun getDiscovery(interaction: InteractionContext): CatalogueDiscoveryDto =
+        get(CatalogueV2Contract.DISCOVERY_PATH, interaction)
+
     override suspend fun searchKrithis(
         query: String?,
         composerId: Uuid?,
@@ -34,7 +39,7 @@ class KtorCatalogueApi(
         pageSize: Int,
         interaction: InteractionContext,
     ): CataloguePagedResponse<CatalogueKrithiSummaryDto> =
-        get(CatalogueContract.KRITHIS_PATH, interaction) {
+        get(CatalogueV2Contract.KRITHIS_PATH, interaction) {
             optionalQuery("query", query)
             optionalUuid("composerId", composerId)
             optionalUuid("ragaId", ragaId)
@@ -43,14 +48,14 @@ class KtorCatalogueApi(
         }
 
     override suspend fun getKrithi(id: Uuid, interaction: InteractionContext): CatalogueKrithiReaderDto =
-        get("${CatalogueContract.KRITHIS_PATH}/$id", interaction)
+        get("${CatalogueV2Contract.KRITHIS_PATH}/$id", interaction)
 
     override suspend fun getLyrics(
         krithiId: Uuid,
         variantId: Uuid,
         interaction: InteractionContext,
     ): CatalogueLyricsDto =
-        get("${CatalogueContract.KRITHIS_PATH}/$krithiId/lyrics/$variantId", interaction)
+        get("${CatalogueV2Contract.KRITHIS_PATH}/$krithiId/lyrics/$variantId", interaction)
 
     override suspend fun searchRagas(
         query: String?,
@@ -58,14 +63,14 @@ class KtorCatalogueApi(
         pageSize: Int,
         interaction: InteractionContext,
     ): CataloguePagedResponse<CatalogueRagaSummaryDto> =
-        get(CatalogueContract.RAGAS_PATH, interaction) {
+        get(CatalogueV2Contract.RAGAS_PATH, interaction) {
             optionalQuery("query", query)
             parameter("page", page)
             parameter("pageSize", pageSize)
         }
 
     override suspend fun getRaga(id: Uuid, interaction: InteractionContext): CatalogueRagaDetailDto =
-        get("${CatalogueContract.RAGAS_PATH}/$id", interaction)
+        get("${CatalogueV2Contract.RAGAS_PATH}/$id", interaction)
 
     override suspend fun searchComposers(
         query: String?,
@@ -73,14 +78,14 @@ class KtorCatalogueApi(
         pageSize: Int,
         interaction: InteractionContext,
     ): CataloguePagedResponse<CatalogueComposerSummaryDto> =
-        get(CatalogueContract.COMPOSERS_PATH, interaction) {
+        get(CatalogueV2Contract.COMPOSERS_PATH, interaction) {
             optionalQuery("query", query)
             parameter("page", page)
             parameter("pageSize", pageSize)
         }
 
     override suspend fun getComposer(id: Uuid, interaction: InteractionContext): CatalogueComposerDetailDto =
-        get("${CatalogueContract.COMPOSERS_PATH}/$id", interaction)
+        get("${CatalogueV2Contract.COMPOSERS_PATH}/$id", interaction)
 
     private suspend inline fun <reified T> get(
         path: String,

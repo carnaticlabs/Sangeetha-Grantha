@@ -340,7 +340,7 @@ class PdfExtractionStrategy(_TextPipelineStrategy):
                 title=metadata.title,
                 alternate_title=alternate_title,
                 composer=metadata.composer or composer_hint or infer_composer_from_url(task.source_url) or "Unknown",
-                musical_form=MusicalForm.KRITHI,
+                musical_form=MusicalForm.UNESTABLISHED,
                 ragas=ragas,
                 tala=tala_name,
                 sections=canonical_sections,
@@ -436,7 +436,7 @@ class PdfExtractionStrategy(_TextPipelineStrategy):
                 or task.request_payload.get("composerHint")
                 or infer_composer_from_url(task.source_url)
                 or "Unknown",
-                musical_form=MusicalForm.KRITHI,
+                musical_form=MusicalForm.UNESTABLISHED,
                 ragas=[CanonicalRaga(name=metadata.raga or "Unknown")],
                 tala=metadata.tala or "Unknown",
                 sections=canonical_sections,
@@ -522,7 +522,7 @@ class HtmlExtractionStrategy(_TextPipelineStrategy):
             or task.request_payload.get("composerHint")
             or infer_composer_from_url(task.source_url)
             or "Unknown",
-            musical_form=MusicalForm.KRITHI,
+            musical_form=MusicalForm.UNESTABLISHED,
             ragas=ragas,
             tala=tala_name,
             sections=canonical_sections,

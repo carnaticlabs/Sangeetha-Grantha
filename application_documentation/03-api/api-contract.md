@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-09-09 |
 | **Author** | Sangeetha Grantha Team |
 
 # Sangita Grantha API Contract
@@ -606,3 +606,12 @@ status for Sangita Grantha will be tracked via:
 
 Unset endpoints MUST return `501 Not Implemented` with
 `code = "not_implemented"` until they are complete.
+## TRACK-140 V2 discovery contract
+
+[TRACK-140](../../conductor/tracks/TRACK-140-rasika-discovery-experience.md) adds `/v2/catalogue` for the new Rasika client. The OpenAPI definitions and both payload fixtures in `shared/domain/model/catalogue/fixtures/` freeze the wire boundary before implementation. V1 retains known musical-form values and excludes UNESTABLISHED records from public lists/counts/details/lyrics; it never substitutes KRITHI. V2 includes published unclassified compositions in unfiltered results, with no form badge or specific-form match. New clients do not fall back silently to V1.
+
+V2 includes discovery; krithi, raga and composer lists/details; stored lyrics; tala/deity/temple directories/details; and language/form directories. Exact raga/composer/tala/deity/temple UUID filters plus language/form combine with AND. Queries submit explicitly; repeated scalar/unknown parameters are rejected. References and source information are allowlisted, with absent section binding and reading-level completeness remaining unknown. Public responses use `Cache-Control: no-store`.
+
+The future release C admin boundary is `/v1/admin/catalogue-features`: list/create, detail/update, publish/unpublish and atomic ordering. It uses the existing ADMIN role, expected revisions, bounded text/record counts and transactional audit. Contracts describe intended behaviour; passing integration/runtime evidence is recorded separately in the track.
+
+Example V2 read: `GET /v2/catalogue/krithis?query=fixture&page=0&pageSize=30&musicalForm=VARNAM`. A valid unmatched filter returns an empty page. Invalid UUIDs or unknown form names return 400; unavailable/wrong-owner readings return the same public 404. The unestablished discovery fixture is synthetic and is not a live catalogue claim.

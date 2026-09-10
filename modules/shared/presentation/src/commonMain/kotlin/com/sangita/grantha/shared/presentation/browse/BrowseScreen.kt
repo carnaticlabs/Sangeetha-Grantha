@@ -27,6 +27,7 @@ import com.sangita.grantha.shared.presentation.components.RasikaPressable
 import com.sangita.grantha.shared.presentation.components.RasikaPrimaryButton
 import com.sangita.grantha.shared.presentation.components.RasikaScreenHeader
 import com.sangita.grantha.shared.presentation.components.RasikaSearchField
+import com.sangita.grantha.shared.presentation.explore.ragaRelationshipCaption
 import com.sangita.grantha.shared.presentation.theme.RasikaTheme
 import com.sangita.grantha.shared.presentation.theme.RasikaTokens
 import kotlin.uuid.Uuid
@@ -35,9 +36,12 @@ import kotlin.uuid.Uuid
 fun BrowseScreen(
     presenter: BrowsePresenter,
     onOpenKrithi: (Uuid) -> Unit,
+    onOpenRaga: (Uuid) -> Unit,
+    onOpenComposer: (Uuid) -> Unit,
     isFavourite: (Uuid) -> Boolean,
     onToggleFavourite: (Uuid, String) -> Unit,
     modifier: Modifier = Modifier,
+    onBack: (() -> Unit)? = null,
 ) {
     val state by presenter.state.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) {
@@ -54,10 +58,12 @@ fun BrowseScreen(
     Column(modifier.fillMaxSize()) {
         RasikaScreenHeader(
             title = contextTitle,
-            onBack = if (showingAssociated) {
-                { presenter.onDirectory(state.directory) }
-            } else {
-                null
+            onBack = when {
+                showingAssociated -> {
+                    { presenter.onDirectory(state.directory) }
+                }
+                onBack != null -> onBack
+                else -> null
             },
         )
         Column(Modifier.fillMaxSize().padding(horizontal = RasikaTokens.screen)) {
@@ -109,16 +115,23 @@ fun BrowseScreen(
                         items(state.ragas, key = { it.id.toString() }) { raga ->
                             DirectoryRow(
                                 title = raga.name,
-                                meta = ragaMeta(raga.melakartaNumber, raga.parentRagaName, raga.publishedCompositionCount),
-                                onClick = { presenter.openRaga(raga.id) },
+                                meta = directoryMeta(
+                                    ragaRelationshipCaption(
+                                        raga.melakartaNumber,
+                                        raga.parentRagaName,
+                                        raga.parentMelakartaNumber,
+                                    ),
+                                    raga.publishedCompositionCount,
+                                ),
+                                onClick = { onOpenRaga(raga.id) },
                             )
                         }
                     } else if (state.directory == BrowseDirectory.Composers && state.selectedComposerId == null) {
                         items(state.composers, key = { it.id.toString() }) { composer ->
                             DirectoryRow(
                                 title = composer.name,
-                                meta = "${composer.publishedCompositionCount} ${RasikaCopy.COMPOSITIONS}",
-                                onClick = { presenter.openComposer(composer.id) },
+                                meta = RasikaCopy.inThisLibrary(composer.publishedCompositionCount),
+                                onClick = { onOpenComposer(composer.id) },
                             )
                         }
                     } else {
@@ -137,14 +150,10 @@ fun BrowseScreen(
     }
 }
 
-private fun ragaMeta(melakarta: Int?, parent: String?, count: Long): String = buildString {
-    melakarta?.let { append("Melakarta $it") }
-    parent?.let {
-        if (isNotEmpty()) append(" · ")
-        append(it)
-    }
+private fun directoryMeta(relationship: String?, count: Long): String = buildString {
+    if (!relationship.isNullOrBlank()) append(relationship)
     if (isNotEmpty()) append(" · ")
-    append("$count ${RasikaCopy.COMPOSITIONS}")
+    append(RasikaCopy.inThisLibrary(count))
 }
 
 @Composable

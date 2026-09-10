@@ -2,6 +2,7 @@ package com.sangita.grantha.shared.mobile.repository
 
 import com.sangita.grantha.shared.mobile.storage.BookmarkRecord
 import com.sangita.grantha.shared.mobile.storage.BookmarkStore
+import com.sangita.grantha.shared.mobile.storage.LocalWriteResult
 import kotlin.uuid.Uuid
 
 class FavouritesRepository(
@@ -12,7 +13,7 @@ class FavouritesRepository(
 
     fun isFavourite(krithiId: Uuid): Boolean = store.list().any { it.krithiId == krithiId }
 
-    fun save(krithiId: Uuid, label: String) {
+    fun save(krithiId: Uuid, label: String): LocalWriteResult =
         store.upsert(
             BookmarkRecord(
                 krithiId = krithiId,
@@ -20,9 +21,6 @@ class FavouritesRepository(
                 createdAtEpochMs = clockMs(),
             ),
         )
-    }
 
-    fun remove(krithiId: Uuid) {
-        store.remove(krithiId)
-    }
+    fun remove(krithiId: Uuid): LocalWriteResult = store.remove(krithiId)
 }

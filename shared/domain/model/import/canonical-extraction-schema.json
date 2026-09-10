@@ -19,8 +19,9 @@
     },
     "musicalForm": {
       "type": "string",
-      "enum": ["KRITHI", "VARNAM", "SWARAJATHI"],
-      "description": "Musical form classification"
+      "enum": ["KRITHI", "VARNAM", "SWARAJATHI", "UNESTABLISHED"],
+      "default": "UNESTABLISHED",
+      "description": "Explicit musical form classification, or UNESTABLISHED when no classification was supplied"
     },
     "ragas": {
       "type": "array",

@@ -1,0 +1,19 @@
+{
+  "feature": {
+    "selection": "CATALOGUE_ORDER",
+    "heading": "From the collection",
+    "summary": "Explore a composition in this library.",
+    "krithi": {
+      "id": "00000000-0000-0000-0000-000000000001",
+      "title": "Synthetic contract example",
+      "composer": {
+        "id": "00000000-0000-0000-0000-000000000002",
+        "name": "Fixture composer"
+      },
+      "ragas": [],
+      "musicalForm": "UNESTABLISHED",
+      "isRagamalika": false
+    }
+  },
+  "editorialRevision": null
+}

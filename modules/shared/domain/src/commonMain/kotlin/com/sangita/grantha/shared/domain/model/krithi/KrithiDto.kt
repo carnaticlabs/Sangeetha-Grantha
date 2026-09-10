@@ -23,7 +23,7 @@ data class KrithiDto(
     val deityId: Uuid? = null,
     @Serializable(with = UuidSerializer::class)
     val templeId: Uuid? = null,
-    val musicalForm: MusicalFormDto = MusicalFormDto.KRITHI,
+    val musicalForm: MusicalFormDto = MusicalFormDto.UNESTABLISHED,
     val primaryLanguage: LanguageCodeDto,
     val isRagamalika: Boolean = false,
     val workflowState: WorkflowStateDto,

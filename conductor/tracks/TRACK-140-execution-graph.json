@@ -1,0 +1,179 @@
+{
+  "schemaVersion": 1,
+  "graphVersion": "1.0.0",
+  "track": "conductor/tracks/TRACK-140-rasika-discovery-experience.md",
+  "executionGuide": "application_documentation/09-ai/track-140-agentic-build-guide.md",
+  "requiresAccepted": [
+    "Intent",
+    "Spec",
+    "Plan"
+  ],
+  "stateSource": "track Plan / Execution ledger",
+  "completionNode": "Z01",
+  "nodes": [
+    {
+      "id": "P01",
+      "title": "Readiness and baselines",
+      "dependsOn": [],
+      "lane": "coordinator"
+    },
+    {
+      "id": "C01",
+      "title": "Contract freeze",
+      "dependsOn": [
+        "P01"
+      ],
+      "lane": "contracts"
+    },
+    {
+      "id": "S01",
+      "title": "Form state and producers",
+      "dependsOn": [
+        "C01"
+      ],
+      "lane": "domain-ingestion"
+    },
+    {
+      "id": "B01",
+      "title": "V1 boundary and V2 core API",
+      "dependsOn": [
+        "S01"
+      ],
+      "lane": "backend"
+    },
+    {
+      "id": "D01",
+      "title": "Mobile client and safe storage",
+      "dependsOn": [
+        "S01"
+      ],
+      "lane": "mobile-data"
+    },
+    {
+      "id": "U01",
+      "title": "Shell, Home and appearance",
+      "dependsOn": [
+        "D01"
+      ],
+      "lane": "app-shell"
+    },
+    {
+      "id": "U02",
+      "title": "Explore and entity pages",
+      "dependsOn": [
+        "U01"
+      ],
+      "lane": "discovery-ui"
+    },
+    {
+      "id": "U03",
+      "title": "Source-faithful reader",
+      "dependsOn": [
+        "U01"
+      ],
+      "lane": "reader-ui"
+    },
+    {
+      "id": "N01",
+      "title": "Native test harness",
+      "dependsOn": [
+        "P01"
+      ],
+      "lane": "native-verification"
+    },
+    {
+      "id": "GA",
+      "title": "Release A integration gate",
+      "dependsOn": [
+        "B01",
+        "U02",
+        "U03",
+        "N01"
+      ],
+      "lane": "coordinator-reviewer"
+    },
+    {
+      "id": "B02",
+      "title": "Metadata API and facets",
+      "dependsOn": [
+        "GA"
+      ],
+      "lane": "backend"
+    },
+    {
+      "id": "U04",
+      "title": "Metadata exploration",
+      "dependsOn": [
+        "GA"
+      ],
+      "lane": "metadata-ui"
+    },
+    {
+      "id": "GB",
+      "title": "Release B integration gate",
+      "dependsOn": [
+        "B02",
+        "U04"
+      ],
+      "lane": "coordinator-reviewer"
+    },
+    {
+      "id": "D02",
+      "title": "Collections and recents",
+      "dependsOn": [
+        "GB"
+      ],
+      "lane": "library"
+    },
+    {
+      "id": "B03",
+      "title": "Editorial backend",
+      "dependsOn": [
+        "GB"
+      ],
+      "lane": "backend"
+    },
+    {
+      "id": "W01",
+      "title": "Curator feature console",
+      "dependsOn": [
+        "GB"
+      ],
+      "lane": "curator-web"
+    },
+    {
+      "id": "U05",
+      "title": "Home and Library integration",
+      "dependsOn": [
+        "D02",
+        "B03"
+      ],
+      "lane": "mobile-integration"
+    },
+    {
+      "id": "GC",
+      "title": "Release C integration gate",
+      "dependsOn": [
+        "W01",
+        "U05"
+      ],
+      "lane": "coordinator-reviewer"
+    },
+    {
+      "id": "Q01",
+      "title": "Final regression and review",
+      "dependsOn": [
+        "GC"
+      ],
+      "lane": "reviewer-coordinator"
+    },
+    {
+      "id": "Z01",
+      "title": "Evidence and handover",
+      "dependsOn": [
+        "Q01"
+      ],
+      "lane": "coordinator"
+    }
+  ]
+}

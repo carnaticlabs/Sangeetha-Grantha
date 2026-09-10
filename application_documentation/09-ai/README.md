@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.2.0 |
-| **Last Updated** | 2026-09-05 |
+| **Version** | 1.3.0 |
+| **Last Updated** | 2026-09-09 |
 | **Author** | Sangeetha Grantha Team |
 
 # 09 Ai
@@ -18,6 +18,7 @@
 - [integration-summary.md](./integration-summary.md)
 - [vibe-coding-references.md](./vibe-coding-references.md)
 - [Track 138 agentic build guide and kickoff prompt](./track-138-agentic-build-guide.md)
+- [Track 140 dependency graph, execution loop and resume guide](./track-140-agentic-build-guide.md)
 
 ---
 

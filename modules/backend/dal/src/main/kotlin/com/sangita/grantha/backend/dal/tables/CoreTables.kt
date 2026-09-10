@@ -141,6 +141,7 @@ object KrithisTable : UUIDTable("krithis") {
     val deityId = javaUUID("deity_id").nullable()
     val templeId = javaUUID("temple_id").nullable()
     val musicalForm = pgEnum<MusicalForm>("musical_form", MusicalForm.DB_TYPE)
+        .default(MusicalForm.UNESTABLISHED)
     val primaryLanguage = pgEnum<LanguageCode>("primary_language", LanguageCode.DB_TYPE)
     val isRagamalika = bool("is_ragamalika").default(false)
     val workflowState = pgEnum<WorkflowState>("workflow_state", WorkflowState.DB_TYPE)

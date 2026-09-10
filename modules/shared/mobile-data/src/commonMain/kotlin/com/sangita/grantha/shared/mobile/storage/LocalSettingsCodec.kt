@@ -53,13 +53,13 @@ interface KeyValueStore {
 
 interface BookmarkStore {
     fun list(): List<BookmarkRecord>
-    fun upsert(record: BookmarkRecord)
-    fun remove(krithiId: Uuid)
+    fun upsert(record: BookmarkRecord): LocalWriteResult
+    fun remove(krithiId: Uuid): LocalWriteResult
 }
 
 interface PreferencesStore {
     fun read(): PreferencesRecord
-    fun write(record: PreferencesRecord)
+    fun write(record: PreferencesRecord): LocalWriteResult
 }
 
 class InMemoryKeyValueStore(
@@ -85,14 +85,25 @@ object LocalSettingsCodec {
             document.copy(schemaVersion = SCHEMA_VERSION),
         )
 
-    fun decode(raw: String?): LocalSettingsDocument {
-        if (raw.isNullOrBlank()) return LocalSettingsDocument()
-        return runCatching {
+    fun decode(raw: String?): LocalSettingsDocument =
+        when (val loaded = load(raw)) {
+            is LocalDocumentLoad.Ok -> loaded.document
+            is LocalDocumentLoad.Corrupt, is LocalDocumentLoad.UnsupportedVersion -> LocalSettingsDocument()
+        }
+
+    fun load(raw: String?): LocalDocumentLoad {
+        if (raw.isNullOrBlank()) return LocalDocumentLoad.Ok(LocalSettingsDocument())
+        val parsed = runCatching {
             com.sangita.grantha.shared.mobile.network.catalogueJson.decodeFromString(
                 LocalSettingsDocument.serializer(),
                 raw,
             )
-        }.getOrDefault(LocalSettingsDocument())
+        }
+        val document = parsed.getOrNull() ?: return LocalDocumentLoad.Corrupt(raw)
+        if (document.schemaVersion > SCHEMA_VERSION) {
+            return LocalDocumentLoad.UnsupportedVersion(raw, document.schemaVersion)
+        }
+        return LocalDocumentLoad.Ok(document)
     }
 
     fun clipLabel(label: String): String {
@@ -105,41 +116,40 @@ object LocalSettingsCodec {
 class CodecBackedBookmarkStore(
     private val store: KeyValueStore,
     private val key: String = LocalSettingsCodec.SETTINGS_KEY,
+    private val documents: LocalDocumentStore = LocalDocumentStore(store, key),
 ) : BookmarkStore {
-    override fun list(): List<BookmarkRecord> = document().bookmarks.sortedByDescending { it.createdAtEpochMs }
+    override fun list(): List<BookmarkRecord> =
+        when (val loaded = documents.load()) {
+            is LocalDocumentLoad.Ok -> loaded.document.bookmarks.sortedByDescending { it.createdAtEpochMs }
+            is LocalDocumentLoad.Corrupt, is LocalDocumentLoad.UnsupportedVersion -> emptyList()
+        }
 
-    override fun upsert(record: BookmarkRecord) {
+    override fun upsert(record: BookmarkRecord): LocalWriteResult {
         val clipped = record.copy(label = LocalSettingsCodec.clipLabel(record.label))
-        val current = document()
-        val next = current.copy(
-            bookmarks = current.bookmarks.filterNot { it.krithiId == clipped.krithiId } + clipped,
-        )
-        write(next)
+        return documents.mutate { current ->
+            current.copy(bookmarks = current.bookmarks.filterNot { it.krithiId == clipped.krithiId } + clipped)
+        }
     }
 
-    override fun remove(krithiId: Uuid) {
-        val current = document()
-        write(current.copy(bookmarks = current.bookmarks.filterNot { it.krithiId == krithiId }))
-    }
-
-    private fun document(): LocalSettingsDocument = LocalSettingsCodec.decode(store.read(key))
-
-    private fun write(document: LocalSettingsDocument) {
-        store.write(key, LocalSettingsCodec.encode(document))
-    }
+    override fun remove(krithiId: Uuid): LocalWriteResult =
+        documents.mutate { current ->
+            current.copy(bookmarks = current.bookmarks.filterNot { it.krithiId == krithiId })
+        }
 }
 
 class CodecBackedPreferencesStore(
     private val store: KeyValueStore,
     private val key: String = LocalSettingsCodec.SETTINGS_KEY,
+    private val documents: LocalDocumentStore = LocalDocumentStore(store, key),
 ) : PreferencesStore {
-    override fun read(): PreferencesRecord = LocalSettingsCodec.decode(store.read(key)).preferences
+    override fun read(): PreferencesRecord =
+        when (val loaded = documents.load()) {
+            is LocalDocumentLoad.Ok -> loaded.document.preferences
+            is LocalDocumentLoad.Corrupt, is LocalDocumentLoad.UnsupportedVersion -> PreferencesRecord()
+        }
 
-    override fun write(record: PreferencesRecord) {
-        val current = LocalSettingsCodec.decode(store.read(key))
-        store.write(
-            key,
-            LocalSettingsCodec.encode(current.copy(preferences = record.copy(schemaVersion = LocalSettingsCodec.SCHEMA_VERSION))),
-        )
-    }
+    override fun write(record: PreferencesRecord): LocalWriteResult =
+        documents.mutate { current ->
+            current.copy(preferences = record.copy(schemaVersion = LocalSettingsCodec.SCHEMA_VERSION))
+        }
 }

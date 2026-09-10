@@ -1,14 +1,18 @@
 package com.sangita.grantha.backend.dal.repositories
 
 import com.sangita.grantha.backend.dal.DatabaseFactory
+import com.sangita.grantha.backend.dal.enums.MusicalForm
 import com.sangita.grantha.backend.dal.enums.WorkflowState
 import com.sangita.grantha.backend.dal.models.CatalogueLike
 import com.sangita.grantha.backend.dal.models.CatalogueReadingDefaults
+import com.sangita.grantha.backend.dal.models.CatalogueV2DtoMappers
+import com.sangita.grantha.backend.dal.models.CatalogueVisibility
 import com.sangita.grantha.backend.dal.models.toDto
 import com.sangita.grantha.backend.dal.support.toJavaUuid
 import com.sangita.grantha.backend.dal.support.toKotlinUuid
 import com.sangita.grantha.backend.dal.tables.ComposerAliasesTable
 import com.sangita.grantha.backend.dal.tables.ComposersTable
+import com.sangita.grantha.backend.dal.tables.DeitiesTable
 import com.sangita.grantha.backend.dal.tables.KrithiLyricSectionsTable
 import com.sangita.grantha.backend.dal.tables.KrithiLyricVariantsTable
 import com.sangita.grantha.backend.dal.tables.KrithiRagasTable
@@ -18,11 +22,13 @@ import com.sangita.grantha.backend.dal.tables.RagaAliasesTable
 import com.sangita.grantha.backend.dal.tables.RagaRelationsTable
 import com.sangita.grantha.backend.dal.tables.RagasTable
 import com.sangita.grantha.backend.dal.tables.TalasTable
+import com.sangita.grantha.backend.dal.tables.TemplesTable
 import com.sangita.grantha.shared.domain.model.RagaSectionDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerDetailDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerRefDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerSummaryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueCompletenessDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueDiscoveryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueKrithiReaderDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueKrithiSummaryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueLyricSectionDto
@@ -32,6 +38,7 @@ import com.sangita.grantha.shared.domain.model.catalogue.CataloguePagedResponse
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueRagaDetailDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueRagaRefDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueRagaSummaryDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueReferenceDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueTalaRefDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueVariantRefDto
 import java.util.UUID
@@ -46,6 +53,7 @@ import org.jetbrains.exposed.v1.core.inSubQuery
 import org.jetbrains.exposed.v1.core.like
 import org.jetbrains.exposed.v1.core.LikePattern
 import org.jetbrains.exposed.v1.core.lowerCase
+import org.jetbrains.exposed.v1.core.neq
 import org.jetbrains.exposed.v1.core.or
 import org.jetbrains.exposed.v1.jdbc.select
 import org.jetbrains.exposed.v1.jdbc.selectAll
@@ -62,8 +70,9 @@ class CatalogueRepository {
         ragaId: UUID?,
         page: Int,
         pageSize: Int,
+        visibility: CatalogueVisibility = CatalogueVisibility.V1,
     ): CataloguePagedResponse<CatalogueKrithiSummaryDto> = DatabaseFactory.dbQuery {
-        val condition = krithiFilter(query, composerId, ragaId)
+        val condition = krithiFilter(query, composerId, ragaId, visibility)
         val total = KrithisTable.select(KrithisTable.id).where { condition }.count()
         val offset = page.toLong() * pageSize.toLong()
         val ids = KrithisTable
@@ -81,13 +90,14 @@ class CatalogueRepository {
         )
     }
 
-    suspend fun findPublishedReader(id: Uuid): CatalogueKrithiReaderDto? = DatabaseFactory.dbQuery {
+    suspend fun findPublishedReader(
+        id: Uuid,
+        visibility: CatalogueVisibility = CatalogueVisibility.V1,
+    ): CatalogueKrithiReaderDto? = DatabaseFactory.dbQuery {
         val javaId = id.toJavaUuid()
         val row = KrithisTable
             .selectAll()
-            .where {
-                (KrithisTable.id eq javaId) and (KrithisTable.workflowState eq WorkflowState.PUBLISHED)
-            }
+            .where { (KrithisTable.id eq javaId) and publishedComposition(visibility) }
             .singleOrNull()
             ?: return@dbQuery null
         val summaries = hydrateSummaries(listOf(javaId))
@@ -106,16 +116,20 @@ class CatalogueRepository {
             defaultVariantId = CatalogueReadingDefaults.selectDefaultVariantId(variants),
             variants = variants,
             completeness = CatalogueCompletenessDto.UNKNOWN,
+            deity = deityReference(row[KrithisTable.deityId]),
+            temple = templeReference(row[KrithisTable.templeId]),
         )
     }
 
-    suspend fun findPublishedLyrics(krithiId: Uuid, variantId: Uuid): CatalogueLyricsDto? = DatabaseFactory.dbQuery {
+    suspend fun findPublishedLyrics(
+        krithiId: Uuid,
+        variantId: Uuid,
+        visibility: CatalogueVisibility = CatalogueVisibility.V1,
+    ): CatalogueLyricsDto? = DatabaseFactory.dbQuery {
         val javaKrithiId = krithiId.toJavaUuid()
         val published = KrithisTable
             .select(KrithisTable.id)
-            .where {
-                (KrithisTable.id eq javaKrithiId) and (KrithisTable.workflowState eq WorkflowState.PUBLISHED)
-            }
+            .where { (KrithisTable.id eq javaKrithiId) and publishedComposition(visibility) }
             .count() > 0
         if (!published) return@dbQuery null
 
@@ -167,6 +181,7 @@ class CatalogueRepository {
         query: String?,
         page: Int,
         pageSize: Int,
+        visibility: CatalogueVisibility = CatalogueVisibility.V1,
     ): CataloguePagedResponse<CatalogueRagaSummaryDto> = DatabaseFactory.dbQuery {
         val condition = ragaFilter(query)
         val total = RagasTable.select(RagasTable.id).where { condition }.count()
@@ -179,19 +194,23 @@ class CatalogueRepository {
             .offset(offset)
             .toList()
         val ids = rows.map { it[RagasTable.id].value }
-        val counts = publishedCountsByRaga(ids)
-        val parents = parentNames(rows.mapNotNull { it[RagasTable.parentRagaId] })
+        val counts = publishedCountsByRaga(ids, visibility)
+        val parentIds = rows.mapNotNull { it[RagasTable.parentRagaId] }
+        val parents = parentNames(parentIds)
+        val parentMelas = parentMelakartaNumbers(parentIds)
         val matching = matchingRagaAliases(ids, query)
         CataloguePagedResponse(
             items = rows.map { row ->
                 val id = row[RagasTable.id].value
+                val parentId = row[RagasTable.parentRagaId]
                 CatalogueRagaSummaryDto(
                     id = id.toKotlinUuid(),
                     name = row[RagasTable.name],
                     matchingAliases = matching[id].orEmpty(),
                     publishedCompositionCount = counts[id] ?: 0L,
                     melakartaNumber = row[RagasTable.melakartaNumber],
-                    parentRagaName = row[RagasTable.parentRagaId]?.let { parents[it] },
+                    parentRagaName = parentId?.let { parents[it] },
+                    parentMelakartaNumber = parentId?.let { parentMelas[it] },
                 )
             },
             total = total,
@@ -200,7 +219,10 @@ class CatalogueRepository {
         )
     }
 
-    suspend fun findRaga(id: Uuid): CatalogueRagaDetailDto? = DatabaseFactory.dbQuery {
+    suspend fun findRaga(
+        id: Uuid,
+        visibility: CatalogueVisibility = CatalogueVisibility.V1,
+    ): CatalogueRagaDetailDto? = DatabaseFactory.dbQuery {
         val javaId = id.toJavaUuid()
         val row = RagasTable.selectAll().where { RagasTable.id eq javaId }.singleOrNull()
             ?: return@dbQuery null
@@ -211,17 +233,19 @@ class CatalogueRepository {
             .map { it[RagaAliasesTable.alias] }
         val parentId = row[RagasTable.parentRagaId]
         val parentName = parentId?.let { parentNames(listOf(it))[it] }
+        val parentMelakartaNumber = parentId?.let { parentMelakartaNumbers(listOf(it))[it] }
         CatalogueRagaDetailDto(
             id = javaId.toKotlinUuid(),
             name = row[RagasTable.name],
             aliases = aliases,
-            publishedCompositionCount = publishedCountsByRaga(listOf(javaId))[javaId] ?: 0L,
+            publishedCompositionCount = publishedCountsByRaga(listOf(javaId), visibility)[javaId] ?: 0L,
             melakartaNumber = row[RagasTable.melakartaNumber],
             parentRagaId = parentId?.toKotlinUuid(),
             parentRagaName = parentName,
             arohanam = row[RagasTable.arohanam],
             avarohanam = row[RagasTable.avarohanam],
             nomenclatureLinks = nomenclatureLinks(javaId, parentId, parentName),
+            parentMelakartaNumber = parentMelakartaNumber,
         )
     }
 
@@ -229,6 +253,7 @@ class CatalogueRepository {
         query: String?,
         page: Int,
         pageSize: Int,
+        visibility: CatalogueVisibility = CatalogueVisibility.V1,
     ): CataloguePagedResponse<CatalogueComposerSummaryDto> = DatabaseFactory.dbQuery {
         val condition = composerFilter(query)
         val total = ComposersTable.select(ComposersTable.id).where { condition }.count()
@@ -241,7 +266,7 @@ class CatalogueRepository {
             .offset(offset)
             .toList()
         val ids = rows.map { it[ComposersTable.id].value }
-        val counts = publishedCountsByComposer(ids)
+        val counts = publishedCountsByComposer(ids, visibility)
         val matching = matchingComposerAliases(ids, query)
         CataloguePagedResponse(
             items = rows.map { row ->
@@ -259,7 +284,10 @@ class CatalogueRepository {
         )
     }
 
-    suspend fun findComposer(id: Uuid): CatalogueComposerDetailDto? = DatabaseFactory.dbQuery {
+    suspend fun findComposer(
+        id: Uuid,
+        visibility: CatalogueVisibility = CatalogueVisibility.V1,
+    ): CatalogueComposerDetailDto? = DatabaseFactory.dbQuery {
         val javaId = id.toJavaUuid()
         val row = ComposersTable.selectAll().where { ComposersTable.id eq javaId }.singleOrNull()
             ?: return@dbQuery null
@@ -272,15 +300,44 @@ class CatalogueRepository {
             id = javaId.toKotlinUuid(),
             name = row[ComposersTable.name],
             aliases = aliases,
-            publishedCompositionCount = publishedCountsByComposer(listOf(javaId))[javaId] ?: 0L,
+            publishedCompositionCount = publishedCountsByComposer(listOf(javaId), visibility)[javaId] ?: 0L,
             birthYear = row[ComposersTable.birthYear],
             deathYear = row[ComposersTable.deathYear],
             place = row[ComposersTable.place],
         )
     }
 
-    private fun krithiFilter(query: String?, composerId: UUID?, ragaId: UUID?): Op<Boolean> {
-        var condition: Op<Boolean> = KrithisTable.workflowState eq WorkflowState.PUBLISHED
+    suspend fun findDiscovery(
+        visibility: CatalogueVisibility = CatalogueVisibility.V2,
+    ): CatalogueDiscoveryDto = DatabaseFactory.dbQuery {
+        val firstId = KrithisTable
+            .select(KrithisTable.id)
+            .where { publishedComposition(visibility) }
+            .orderBy(KrithisTable.titleNormalized to SortOrder.ASC, KrithisTable.id to SortOrder.ASC)
+            .limit(1)
+            .map { it[KrithisTable.id].value }
+            .singleOrNull()
+        val feature = firstId?.let { hydrateSummaries(listOf(it)).singleOrNull() }
+            ?.let(CatalogueV2DtoMappers::catalogueOrderFeature)
+        CatalogueDiscoveryDto(feature = feature, editorialRevision = null)
+    }
+
+    private fun publishedComposition(visibility: CatalogueVisibility): Op<Boolean> {
+        val published = KrithisTable.workflowState eq WorkflowState.PUBLISHED
+        return if (visibility == CatalogueVisibility.V1) {
+            published and (KrithisTable.musicalForm neq MusicalForm.UNESTABLISHED)
+        } else {
+            published
+        }
+    }
+
+    private fun krithiFilter(
+        query: String?,
+        composerId: UUID?,
+        ragaId: UUID?,
+        visibility: CatalogueVisibility,
+    ): Op<Boolean> {
+        var condition: Op<Boolean> = publishedComposition(visibility)
         query?.trim()?.takeIf { it.isNotEmpty() }?.let { raw ->
             val pattern = literalContains(raw)
             val composerByName = ComposersTable
@@ -418,15 +475,17 @@ class CatalogueRepository {
                 )
             }
 
-    private fun publishedCountsByRaga(ragaIds: List<UUID>): Map<UUID, Long> {
+    private fun publishedCountsByRaga(
+        ragaIds: List<UUID>,
+        visibility: CatalogueVisibility,
+    ): Map<UUID, Long> {
         if (ragaIds.isEmpty()) return emptyMap()
         val counts = mutableMapOf<UUID, MutableSet<UUID>>()
         KrithiRagasTable
             .join(KrithisTable, JoinType.INNER, KrithiRagasTable.krithiId, KrithisTable.id)
             .select(KrithiRagasTable.ragaId, KrithisTable.id)
             .where {
-                (KrithiRagasTable.ragaId inList ragaIds) and
-                    (KrithisTable.workflowState eq WorkflowState.PUBLISHED)
+                (KrithiRagasTable.ragaId inList ragaIds) and publishedComposition(visibility)
             }
             .forEach { row ->
                 counts.getOrPut(row[KrithiRagasTable.ragaId]) { mutableSetOf() }
@@ -435,20 +494,52 @@ class CatalogueRepository {
         return counts.mapValues { it.value.size.toLong() }
     }
 
-    private fun publishedCountsByComposer(composerIds: List<UUID>): Map<UUID, Long> {
+    private fun publishedCountsByComposer(
+        composerIds: List<UUID>,
+        visibility: CatalogueVisibility,
+    ): Map<UUID, Long> {
         if (composerIds.isEmpty()) return emptyMap()
         val counts = mutableMapOf<UUID, Long>()
         KrithisTable
             .select(KrithisTable.composerId, KrithisTable.id)
             .where {
-                (KrithisTable.composerId inList composerIds) and
-                    (KrithisTable.workflowState eq WorkflowState.PUBLISHED)
+                (KrithisTable.composerId inList composerIds) and publishedComposition(visibility)
             }
             .forEach { row ->
                 val composerId = row[KrithisTable.composerId]
                 counts[composerId] = (counts[composerId] ?: 0L) + 1L
             }
         return counts
+    }
+
+    private fun parentMelakartaNumbers(parentIds: List<UUID>): Map<UUID, Int> {
+        if (parentIds.isEmpty()) return emptyMap()
+        return RagasTable
+            .select(RagasTable.id, RagasTable.melakartaNumber)
+            .where { RagasTable.id inList parentIds }
+            .mapNotNull { row ->
+                val number = row[RagasTable.melakartaNumber] ?: return@mapNotNull null
+                row[RagasTable.id].value to number
+            }
+            .toMap()
+    }
+
+    private fun deityReference(id: UUID?): CatalogueReferenceDto? {
+        if (id == null) return null
+        return DeitiesTable
+            .select(DeitiesTable.id, DeitiesTable.name)
+            .where { DeitiesTable.id eq id }
+            .singleOrNull()
+            ?.let { CatalogueReferenceDto(it[DeitiesTable.id].value.toKotlinUuid(), it[DeitiesTable.name]) }
+    }
+
+    private fun templeReference(id: UUID?): CatalogueReferenceDto? {
+        if (id == null) return null
+        return TemplesTable
+            .select(TemplesTable.id, TemplesTable.name)
+            .where { TemplesTable.id eq id }
+            .singleOrNull()
+            ?.let { CatalogueReferenceDto(it[TemplesTable.id].value.toKotlinUuid(), it[TemplesTable.name]) }
     }
 
     private fun parentNames(parentIds: List<UUID>): Map<UUID, String> {

@@ -3,7 +3,7 @@ import { FormInput, FormSelect, FormCheckbox, FormTextarea, ReferenceField } fro
 import { SectionHeader, ReferenceSelectionModal } from '../common';
 import { KrithiDetail, MusicalForm, Composer, Raga, Tala, Deity, Temple } from '../../types';
 import { TabProps } from '../../types/krithi-editor.types';
-import { LANGUAGE_CODE_OPTIONS } from '../../utils/enums';
+import { LANGUAGE_CODE_OPTIONS, formatMusicalForm } from '../../utils/enums';
 
 export const MetadataTab: React.FC<TabProps> = ({ krithi, onChange, referenceData, readOnly }) => {
     const { composers, ragas, talas, deities, temples } = referenceData;
@@ -15,7 +15,7 @@ export const MetadataTab: React.FC<TabProps> = ({ krithi, onChange, referenceDat
     }>({ type: null, isOpen: false });
 
     // Enums
-    const musicalFormOptions = Object.values(MusicalForm).map(f => ({ value: f, label: f }));
+    const musicalFormOptions = Object.values(MusicalForm).map(f => ({ value: f, label: formatMusicalForm(f) }));
     const languageOptions = LANGUAGE_CODE_OPTIONS.map(l => ({ value: l.value, label: l.label }));
     const statusOptions = [
         { value: 'DRAFT', label: 'Draft' },
@@ -163,7 +163,7 @@ export const MetadataTab: React.FC<TabProps> = ({ krithi, onChange, referenceDat
                                 <FormSelect
                                     label="Musical Form"
                                     name="musicalForm"
-                                    value={krithi.musicalForm || MusicalForm.KRITHI}
+                                    value={krithi.musicalForm || MusicalForm.UNESTABLISHED}
                                     options={musicalFormOptions}
                                     onChange={(e) => onChange('musicalForm', e.target.value as MusicalForm)}
                                     disabled={readOnly}

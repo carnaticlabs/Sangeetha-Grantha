@@ -1,6 +1,7 @@
 package com.sangita.grantha.backend.api.plugins
 
 import com.sangita.grantha.backend.api.routes.catalogueRoutes
+import com.sangita.grantha.backend.api.routes.catalogueV2Routes
 import com.sangita.grantha.backend.api.routes.adminDashboardRoutes
 import com.sangita.grantha.backend.api.routes.adminKrithiRoutes
 import com.sangita.grantha.backend.api.routes.adminNotationRoutes
@@ -79,6 +80,7 @@ fun Application.configureRouting() {
         healthRoutes()
         authRoutes(env, jwtConfig, userManagementService)
         catalogueRoutes(catalogueService)
+        catalogueV2Routes(catalogueService)
         publicKrithiRoutes(krithiService, referenceDataService, notationService)
         semanticSearchRoutes(hybridSearchService)
 

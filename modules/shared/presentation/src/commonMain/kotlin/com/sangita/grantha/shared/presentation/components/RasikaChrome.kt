@@ -12,9 +12,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -24,10 +22,10 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
@@ -52,6 +50,7 @@ import com.sangita.grantha.shared.presentation.navigation.RasikaTab
 import com.sangita.grantha.shared.presentation.theme.RasikaMotion
 import com.sangita.grantha.shared.presentation.theme.RasikaTheme
 import com.sangita.grantha.shared.presentation.theme.RasikaTokens
+import com.sangita.grantha.shared.presentation.theme.rememberReduceMotion
 
 /** Thin gold rule used inside cards and between rows. */
 @Composable
@@ -105,7 +104,11 @@ fun RasikaScreenHeader(
                         color = MaterialTheme.colorScheme.error,
                     )
                 }
-                Text(title, style = MaterialTheme.typography.titleLarge)
+                Text(
+                    title,
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.fillMaxWidth(),
+                )
                 if (!subtitle.isNullOrBlank()) {
                     Text(
                         subtitle,
@@ -325,9 +328,10 @@ fun RasikaPressable(
 ) {
     val interaction = remember { MutableInteractionSource() }
     val pressed by interaction.collectIsPressedAsState()
+    val reduceMotion = rememberReduceMotion()
     val scale by animateFloatAsState(
         targetValue = if (pressed) 0.98f else 1f,
-        animationSpec = tween(RasikaMotion.cardPressMs),
+        animationSpec = tween(if (reduceMotion) 0 else RasikaMotion.cardPressMs),
         label = "rasikaCardPress",
     )
     Surface(
@@ -348,8 +352,7 @@ fun RasikaPressable(
 }
 
 /**
- * Bottom navigation — three tabs on a teal plinth with a scalloped cream top edge, per
- * R7 and visual-design §5. Preferences is not a tab; it sits behind the header gear.
+ * Bottom navigation — Home, Explore, Library and Settings on a teal plinth.
  */
 @Composable
 fun RasikaTabBar(
@@ -363,7 +366,8 @@ fun RasikaTabBar(
             Modifier
                 .fillMaxWidth()
                 .background(RasikaTokens.teal)
-                .height(64.dp),
+                .heightIn(min = 64.dp)
+                .padding(vertical = RasikaTokens.xxs),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             RasikaTabSpec.entries.forEach { spec ->
@@ -372,7 +376,7 @@ fun RasikaTabBar(
                 Column(
                     modifier = Modifier
                         .weight(1f)
-                        .fillMaxHeight()
+                        .heightIn(min = 64.dp)
                         .clickable { onSelect(spec.tab) }
                         .semantics { contentDescription = spec.label },
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -384,6 +388,7 @@ fun RasikaTabBar(
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
                         color = tint,
+                        maxLines = 2,
                         modifier = Modifier.padding(top = RasikaTokens.xxs),
                     )
                 }
@@ -397,7 +402,8 @@ private enum class RasikaTabSpec(
     val label: String,
     val icon: androidx.compose.ui.graphics.vector.ImageVector,
 ) {
-    Search(RasikaTab.Search, RasikaCopy.TAB_SEARCH, Icons.Outlined.Search),
-    Browse(RasikaTab.Browse, RasikaCopy.TAB_BROWSE, Icons.AutoMirrored.Outlined.MenuBook),
-    Favourites(RasikaTab.Favourites, RasikaCopy.TAB_FAVOURITES, Icons.Outlined.FavoriteBorder),
+    Home(RasikaTab.Home, RasikaCopy.TAB_HOME, Icons.Outlined.Home),
+    Explore(RasikaTab.Explore, RasikaCopy.TAB_EXPLORE, Icons.Outlined.Search),
+    Library(RasikaTab.Library, RasikaCopy.TAB_LIBRARY, Icons.Outlined.FavoriteBorder),
+    Settings(RasikaTab.Settings, RasikaCopy.TAB_SETTINGS, Icons.Outlined.Settings),
 }

@@ -24,7 +24,7 @@ data class CanonicalExtractionDto(
     val composer: String,
 
     /** Musical form classification */
-    val musicalForm: CanonicalMusicalForm = CanonicalMusicalForm.KRITHI,
+    val musicalForm: CanonicalMusicalForm = CanonicalMusicalForm.UNESTABLISHED,
 
     /** Raga(s) — ordered list; multiple entries for Ragamalika compositions */
     val ragas: List<CanonicalRagaDto>,
@@ -184,7 +184,7 @@ data class CanonicalMetadataEnrichmentDto(
 
 @Serializable
 enum class CanonicalMusicalForm {
-    KRITHI, VARNAM, SWARAJATHI
+    KRITHI, VARNAM, SWARAJATHI, UNESTABLISHED
 }
 
 @Serializable

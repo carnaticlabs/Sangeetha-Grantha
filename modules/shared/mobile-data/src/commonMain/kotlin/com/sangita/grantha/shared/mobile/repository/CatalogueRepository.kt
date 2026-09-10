@@ -3,6 +3,7 @@ package com.sangita.grantha.shared.mobile.repository
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerDetailDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerSummaryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueContract
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueDiscoveryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueKrithiReaderDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueKrithiSummaryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueLyricsDto
@@ -16,6 +17,9 @@ import kotlin.uuid.Uuid
 class CatalogueRepository(
     private val api: CatalogueApi,
 ) {
+    suspend fun getDiscovery(interaction: InteractionContext): CatalogueDiscoveryDto =
+        api.getDiscovery(interaction)
+
     suspend fun searchKrithis(
         query: String? = null,
         composerId: Uuid? = null,

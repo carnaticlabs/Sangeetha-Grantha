@@ -5,6 +5,7 @@ import com.sangita.grantha.backend.api.services.IReferenceDataService
 import com.sangita.grantha.backend.api.services.KrithiNotationService
 import com.sangita.grantha.backend.api.support.computeEtag
 import com.sangita.grantha.shared.domain.model.KrithiSearchRequest
+import com.sangita.grantha.shared.domain.model.MusicalFormDto
 import com.sangita.grantha.shared.domain.model.WorkflowStateDto
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.HttpHeaders
@@ -44,17 +45,26 @@ fun Route.publicKrithiRoutes(
                 } else {
                     true
                 }
-                call.respond(krithiService.search(request, publishedOnly = publishedOnly))
+                val excludeUnestablished = !call.hasAdminRole()
+                call.respond(
+                    krithiService.search(
+                        request,
+                        publishedOnly = publishedOnly,
+                        excludeUnestablished = excludeUnestablished,
+                    ),
+                )
             }
 
             get("/krithis/{id}") {
                 val id = parseUuidParam(call.parameters["id"], "krithiId")
                     ?: return@get call.respondText("Missing krithi ID", status = HttpStatusCode.BadRequest)
                 val krithi = krithiService.getKrithi(id)
-                if (krithi == null || (
-                    krithi.workflowState != WorkflowStateDto.PUBLISHED && !call.hasAdminRole()
-                    )
-                ) {
+                val hiddenFromPublic = krithi == null ||
+                    krithi.workflowState != WorkflowStateDto.PUBLISHED ||
+                    krithi.musicalForm == MusicalFormDto.UNESTABLISHED
+                if (hiddenFromPublic && !call.hasAdminRole()) {
+                    call.respondText("Not found", status = HttpStatusCode.NotFound)
+                } else if (krithi == null) {
                     call.respondText("Not found", status = HttpStatusCode.NotFound)
                 } else {
                     call.response.headers.append(HttpHeaders.CacheControl, "no-store")

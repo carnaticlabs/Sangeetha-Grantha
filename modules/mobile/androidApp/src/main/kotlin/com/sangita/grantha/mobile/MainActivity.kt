@@ -3,6 +3,7 @@ package com.sangita.grantha.mobile
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import com.sangita.grantha.shared.mobile.harness.RasikaUiTestHarness
 import com.sangita.grantha.shared.mobile.platform.AndroidKeyValueStore
 import com.sangita.grantha.shared.mobile.platform.androidLiveCatalogue
 import com.sangita.grantha.shared.mobile.repository.FavouritesRepository
@@ -23,9 +24,17 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val kv = AndroidKeyValueStore(applicationContext)
+
+        // TRACK-140 R18. Only an instrumentation launch can put these extras on the
+        // intent, so a normally launched app always takes the live client below.
+        val useFixtures = intent?.getBooleanExtra(RasikaUiTestHarness.FIXTURES_FLAG, false) == true
+        if (intent?.getBooleanExtra(RasikaUiTestHarness.RESET_STATE_FLAG, false) == true) {
+            RasikaUiTestHarness.resetLocalState(kv)
+        }
+
         val container = MobileAppContainer(
             // Live Ktor client. For offline UI review, inject CatalogueRepository(FixtureCatalogueApi()).
-            catalogue = androidLiveCatalogue(),
+            catalogue = if (useFixtures) RasikaUiTestHarness.fixtureCatalogue() else androidLiveCatalogue(),
             favourites = FavouritesRepository(CodecBackedBookmarkStore(kv)),
             preferences = PreferencesRepository(CodecBackedPreferencesStore(kv)),
             session = MobileSession(),

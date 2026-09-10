@@ -11,7 +11,7 @@ data class KrithiCreateRequest(
     val title: String,
     val incipit: String? = null,
     val composerId: String,
-    val musicalForm: MusicalFormDto = MusicalFormDto.KRITHI,
+    val musicalForm: MusicalFormDto = MusicalFormDto.UNESTABLISHED,
     val primaryLanguage: LanguageCodeDto,
     val talaId: String? = null,
     val primaryRagaId: String? = null,

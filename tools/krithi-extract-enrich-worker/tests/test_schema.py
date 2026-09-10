@@ -32,7 +32,7 @@ def test_minimal_extraction() -> None:
     )
     assert extraction.title == "Sri Nathadi"
     assert extraction.composer == "Muthuswami Dikshitar"
-    assert extraction.musical_form == MusicalForm.KRITHI
+    assert extraction.musical_form == MusicalForm.UNESTABLISHED
     assert len(extraction.ragas) == 1
     assert extraction.source_tier == 1
 
@@ -201,3 +201,20 @@ def test_identity_candidates_and_metadata_enrichment_serialization() -> None:
     assert payload["identityCandidates"]["composers"][0]["entityId"] == "composer-1"
     assert payload["metadataEnrichment"]["provider"] == "google-genai"
     assert payload["metadataEnrichment"]["fieldsUpdated"] == ["composer", "raga"]
+
+
+def test_all_explicit_forms_survive_round_trip() -> None:
+    """Unknown defaults do not overwrite explicit source classifications."""
+    for form in MusicalForm:
+        extraction = CanonicalExtraction(
+            title="Synthetic fixture",
+            composer="Fixture",
+            musical_form=form,
+            ragas=[CanonicalRaga(name="Fixture raga")],
+            tala="",
+            source_url="https://example.invalid/fixture",
+            source_name="Fixture",
+            source_tier=1,
+            extraction_method=ExtractionMethod.HTML_JSOUP,
+        )
+        assert CanonicalExtraction.model_validate(extraction.to_json_dict()).musical_form == form

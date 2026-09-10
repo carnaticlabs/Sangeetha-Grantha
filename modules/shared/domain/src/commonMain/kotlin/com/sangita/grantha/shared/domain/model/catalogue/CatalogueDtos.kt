@@ -76,6 +76,8 @@ data class CatalogueRagaRefDto(
     val name: String,
     val orderIndex: Int,
     val section: RagaSectionDto? = null,
+    @Serializable(with = UuidSerializer::class)
+    val sectionId: Uuid? = null,
 )
 
 @Serializable
@@ -87,7 +89,7 @@ data class CatalogueKrithiSummaryDto(
     val composer: CatalogueComposerRefDto,
     val ragas: List<CatalogueRagaRefDto>,
     val tala: CatalogueTalaRefDto? = null,
-    val musicalForm: MusicalFormDto = MusicalFormDto.KRITHI,
+    val musicalForm: MusicalFormDto = MusicalFormDto.UNESTABLISHED,
     val isRagamalika: Boolean = false,
 )
 
@@ -112,13 +114,15 @@ data class CatalogueKrithiReaderDto(
     val composer: CatalogueComposerRefDto,
     val ragas: List<CatalogueRagaRefDto>,
     val tala: CatalogueTalaRefDto? = null,
-    val musicalForm: MusicalFormDto = MusicalFormDto.KRITHI,
+    val musicalForm: MusicalFormDto = MusicalFormDto.UNESTABLISHED,
     val originalLanguage: LanguageCodeDto,
     val isRagamalika: Boolean = false,
     @Serializable(with = UuidSerializer::class)
     val defaultVariantId: Uuid? = null,
     val variants: List<CatalogueVariantRefDto> = emptyList(),
     val completeness: CatalogueCompletenessDto = CatalogueCompletenessDto.UNKNOWN,
+    val deity: CatalogueReferenceDto? = null,
+    val temple: CatalogueReferenceDto? = null,
 )
 
 @Serializable
@@ -145,6 +149,7 @@ data class CatalogueLyricsDto(
     val sourceReference: String? = null,
     val unsegmentedText: String? = null,
     val sections: List<CatalogueLyricSectionDto> = emptyList(),
+    val completeness: CatalogueCompletenessDto = CatalogueCompletenessDto.UNKNOWN,
 )
 
 @Serializable
@@ -164,6 +169,7 @@ data class CatalogueRagaSummaryDto(
     val publishedCompositionCount: Long,
     val melakartaNumber: Int? = null,
     val parentRagaName: String? = null,
+    val parentMelakartaNumber: Int? = null,
 )
 
 @Serializable
@@ -180,6 +186,7 @@ data class CatalogueRagaDetailDto(
     val arohanam: String? = null,
     val avarohanam: String? = null,
     val nomenclatureLinks: List<CatalogueNomenclatureLinkDto> = emptyList(),
+    val parentMelakartaNumber: Int? = null,
 )
 
 @Serializable
