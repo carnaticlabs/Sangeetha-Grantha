@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Decision record |
 
 # Decision: Standardization on `kotlin.time.Instant`
+
+---
+
+> [!NOTE]
+> Decision record: preserve the original rationale and check its decision/supersession status. Current runtime guidance is in [system architecture](./../backend-system-design.md) and [Flyway migrations](./../../04-database/migrations.md).
 
 ## Context
 Kotlin 2.0+ (specifically 2.3.0) and `kotlinx-datetime` 0.7.0+ have introduced a major shift in date-time handling. The representation of "an instantaneous point on the timeline" has moved from the external `kotlinx-datetime` library to the Kotlin Standard Library.
@@ -54,3 +60,7 @@ In `kotlinx-datetime` 0.7.0, `Instant` becomes a typealias to `kotlin.time.Insta
 
 ## Implementation
 This migration should be tracked as **TRACK-019**.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

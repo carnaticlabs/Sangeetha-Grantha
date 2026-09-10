@@ -2,15 +2,18 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.7.0 |
-| **Last Updated** | 2026-08-29 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Decision record |
 
 ---
 
 # Architectural Decision Records Index
 
+---
 
-# ADR Index
+
+## ADR Index
 
 | ID | Title | Status | Date | Link |
 |----|-------|--------|------|------|
@@ -37,3 +40,7 @@
 1. Create a new markdown file in this directory with sequential ID (e.g., `ADR-002-some-decision.md`).
 2. Include sections for Context, Decision, Consequences, and Follow-up.
 3. Update this index with the ID, title, status, date, and link.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

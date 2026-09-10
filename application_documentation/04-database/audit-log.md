@@ -1,139 +1,38 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Current guide |
 
-# Audit Log Specification (Sangita Grantha)
-
-
-# 1. Purpose
-
-`audit_log` provides a tamper-evident record of editorial and
-administrative actions taken on the Sangita Grantha catalog. It is used
-for provenance tracking, internal review, and operational debugging.
-
-All **mutations** to Krithis, lyric variants, notation variants, tags, reference data, and
-import mappings must record an audit entry.
+# Audit events and content history
 
 ---
 
-# 2. Table Definition (Excerpt)
+Every application mutation must create an `audit_log` event. Audit records identify the affected entity, action, actor where available, time, and available diff/metadata. They support operational and editorial investigation.
 
-The canonical definition is in `01__baseline-schema-and-types.sql`.
+## Audit versus canon revisions
 
-```sql
-CREATE TABLE IF NOT EXISTS audit_log (
-  id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  actor_user_id  UUID,
-  actor_ip       INET,
-  action         TEXT NOT NULL,
-  entity_table   TEXT NOT NULL,
-  entity_id      UUID,
-  changed_at     TIMESTAMPTZ NOT NULL DEFAULT timezone('UTC', now()),
-  diff           JSONB,
-  metadata       JSONB DEFAULT '{}'::jsonb
-);
+| Question | Use |
+|:---|:---|
+| Who performed an operation and on which entity? | Audit event |
+| What section text was accepted at a particular time? | Canon revision and section snapshots |
+| Which document/extraction produced a section? | Revision provenance and source-document/extraction joins |
+| Which sources contributed to this composition overall? | Source evidence |
 
-CREATE INDEX IF NOT EXISTS idx_audit_entity_time
-  ON audit_log(entity_table, entity_id, changed_at DESC);
+An audit event is not automatically a complete replayable snapshot. The [versioned canon](./versioned-canon.md) deliberately stores historical content separately.
 
-CREATE INDEX IF NOT EXISTS idx_audit_actor
-  ON audit_log(actor_user_id, changed_at DESC);
-```
+## Write and read paths
 
-- `actor_user_id`: admin user performing the action (nullable for system
-  tasks).
-- `action`: logical label such as `CREATE_KRITHI`, `UPDATE_VARIANT`,
-  `PUBLISH_KRITHI`, `IMPORT_MAP`, etc.
-- `entity_table`: logical or physical table name (e.g. `krithis`,
-  `krithi_lyric_variants`).
-- `entity_id`: primary key of the entity affected.
-- `diff`: JSONB blob describing before/after state or request payload.
-- `metadata`: JSONB for extra context (e.g. `{"source":"admin_web", "requestId":"..."}`).
+Kotlin mutation paths use audit services/repositories alongside controlled persistence. Embedding-index scripts use shared audited write helpers for profile/index changes. Actorless automation should retain its script/run context rather than impersonating a curator.
+
+The console exposes audit context through editorial views. [AuditRoutes](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/AuditRoutes.kt) and [AuditLogRepository](../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/repositories/AuditLogRepository.kt) define query behavior. Do not infer a public history API from an admin audit screen.
+
+## Verify
+
+For a representative mutation, confirm entity identity, action, actor/script attribution, timestamp and relevant metadata agree with the accepted result. For content changes, additionally inspect revision text/source attribution and current API output. See [post-import verification](../07-quality/qa/test-plan.md).
 
 ---
 
-# 3. Event Categories
-
-Suggested `action` prefixes:
-
-| Category     | Examples                                  |
-|--------------|-------------------------------------------|
-| `KRITHI_*`   | `KRITHI_CREATE`, `KRITHI_UPDATE`, `KRITHI_PUBLISH`, `KRITHI_ARCHIVE` |
-| `LYRICS_*`   | `LYRICS_VARIANT_CREATE`, `LYRICS_VARIANT_UPDATE`, `LYRICS_SECTIONS_UPDATE` |
-| `NOTATION_*` | `NOTATION_VARIANT_CREATE`, `NOTATION_VARIANT_UPDATE`, `NOTATION_VARIANT_DELETE`, `NOTATION_ROWS_UPDATE` |
-| `TAG_*`      | `TAG_CREATE`, `TAG_UPDATE`, `KRITHI_TAG_ASSIGN`, `KRITHI_TAG_REMOVE` |
-| `IMPORT_*`   | `IMPORT_MAP`, `IMPORT_REJECT`             |
-| `REFDATA_*`  | `COMPOSER_CREATE`, `RAGA_UPDATE`, etc.    |
-| `AUTH_*`     | `ADMIN_LOGIN_SUCCESS`, `ADMIN_LOGIN_FAILURE` |
-
-The exact taxonomy can evolve; the important invariant is that
-categories remain **machine-filterable**.
-
----
-
-# 4. Recording Guidelines
-
-- Every `/v1/admin/**` mutation must:
-  - Identify the actor (`actor_user_id`).
-  - Choose a clear `action` string.
-  - Set `entity_table` and `entity_id` where applicable.
-  - Populate `diff` with:
-
-```json
-    {
-      "before": { /* optional */ },
-      "after": { /* optional */ },
-      "request": { /* original request body (optional) */ }
-    }
-```
-
-### Notation Mutations
-
-Notation mutations (for Varnams/Swarajathis) should use:
-- `entity_table`: `krithi_notation_variants` or `krithi_notation_rows`
-- `action`: `NOTATION_VARIANT_CREATE`, `NOTATION_VARIANT_UPDATE`, `NOTATION_VARIANT_DELETE`, `NOTATION_ROWS_UPDATE`
-- `diff`: Include notation variant metadata and row changes
-
-Example for notation variant creation:
-```json
-{
-  "action": "NOTATION_VARIANT_CREATE",
-  "entity_table": "krithi_notation_variants",
-  "entity_id": "<variant_uuid>",
-  "diff": {
-    "krithi_id": "<krithi_uuid>",
-    "notation_type": "SWARA",
-    "tala_id": "<tala_uuid>",
-    "kalai": 1,
-    "variant_label": "Lalgudi bani",
-    "row_count": 42
-  }
-}
-```
-
-- System scripts or background jobs should use `actor_user_id = null`
-  and an appropriate `action` (e.g. `REFDATA_SEED`).
-
-- Frontend should **not** write directly to `audit_log`; only backend
-  services should.
-
----
-
-# 5. Access Patterns
-
-- Short-term:
-  - Exposed via internal tools or SQL for debugging.
-- Future (optional):
-  - `/v1/admin/audit/logs` endpoint with filters on `entity_table`,
-    `entity_id`, `actor_user_id`, `action`, and time ranges.
-
----
-
-# 6. Retention
-
-- Retain audit logs for the life of the project (subject to infra
-  constraints).
-- Consider partitioning by time if the table becomes very large.
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

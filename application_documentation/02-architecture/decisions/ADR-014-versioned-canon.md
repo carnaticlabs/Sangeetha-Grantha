@@ -2,13 +2,19 @@
 |:---|:---|
 | **Status** | Accepted |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-09-06 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Decision record |
 | **Deciders** | Sangeetha Grantha Team (Seshadri) |
 | **Spike** | [TRACK-116](../../../conductor/tracks/TRACK-116-versioned-canon-spike.md) (this ADR is its deliverable) |
 | **Implemented by** | [TRACK-117](../../../conductor/tracks/TRACK-117-versioned-canon-implementation.md) |
 
 # ADR-014: Versioned Canon & Provenance Graph (N5)
+
+---
+
+> [!NOTE]
+> Decision record: preserve the original rationale and check its decision/supersession status. Current runtime guidance is in [system architecture](./../backend-system-design.md) and [Flyway migrations](./../../04-database/migrations.md).
 
 ## Context
 
@@ -308,3 +314,7 @@ Corrections of composition structure belong on the path this ADR already names a
 - [TRACK-116 (spike)](../../../conductor/tracks/TRACK-116-versioned-canon-spike.md) · [TRACK-117 (implementation)](../../../conductor/tracks/TRACK-117-versioned-canon-implementation.md)
 - [ADR-011 — PostgreSQL 18 & UUID v7](./ADR-011-postgresql-18-uuid-v7.md) · [ADR-012 — Unified Extraction](./ADR-012-unified-extraction-architecture.md) · [ADR-013 — Flyway](./ADR-013-db-migration-with-flyway.md)
 - [Integration Tests Approach](../../07-quality/integration-tests-approach.md) · [Implementation Plan](../../north-star-production-readiness-implementation-plan.md)
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

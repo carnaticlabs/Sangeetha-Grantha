@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Design reference |
 
 # Target Scale Architecture (Multi-Region) — Roadmap-Focused
+
+---
+
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [current feature map](./../01-requirements/features/README.md) for implemented behavior and current operating steps.
 
 
 ---
@@ -241,3 +247,7 @@ The following focuses on the previously listed priority roadmap, with concrete a
 3. **Async import/AI pipelines**
 4. **JWT + SSO for admin**
 5. **Multi-region read replicas**
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

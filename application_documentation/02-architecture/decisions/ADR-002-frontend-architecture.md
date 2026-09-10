@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Decision record |
 
 # ADR-002: Frontend Architecture Decision - React vs Kotlin/JS
+
+---
+
+> [!NOTE]
+> Decision record: preserve the original rationale and check its decision/supersession status. Current runtime guidance is in [system architecture](./../backend-system-design.md) and [Flyway migrations](./../../04-database/migrations.md).
 
 
 ## Context
@@ -130,3 +136,7 @@ modules/frontend/sangita-admin-web/
 - [Admin Web UI Specs](../../05-frontend/admin-web/ui-specs.md)
 - [Tech Stack](../tech-stack.md)
 - [Frontend Architecture Decision](../../02-architecture/decisions/ADR-002-frontend-architecture.md)
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

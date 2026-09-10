@@ -2,11 +2,17 @@
 |:---|:---|
 | **Status** | Superseded by [ADR-013](./ADR-013-db-migration-with-flyway.md) |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-03-10 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Decision record |
 | **Supersedes** | [ADR-003](./ADR-003-database-migrations.md) |
 
 # ADR-010: Migration Tool Course Correction — Rust CLI to Python db-migrate + Makefile
+
+---
+
+> [!NOTE]
+> Decision record: preserve the original rationale and check its decision/supersession status. Current runtime guidance is in [system architecture](./../backend-system-design.md) and [Flyway migrations](./../../04-database/migrations.md).
 
 ## Context
 
@@ -116,3 +122,7 @@ The migration count grew from 7 (at ADR-003 time) to 38, covering:
 - [Tech Stack](../tech-stack.md)
 - [ADR-003 (Superseded)](./ADR-003-database-migrations.md)
 - TRACK-078: Archive Rust CLI
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

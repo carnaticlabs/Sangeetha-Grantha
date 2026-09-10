@@ -1,164 +1,90 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 3.4.0 |
-| **Last Updated** | 2026-09-06 |
+| **Version** | 3.5.0 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Current guide |
 
-# Database Migrations (Sangita Grantha)
-
-- [Config](../08-operations/config.md)
-- [ADR-013 — Migrations with Flyway](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)
-
-# Database Migrations
-
-Sangita Grantha uses **Flyway Community Edition** (`12.11.0`) as its single migration engine, orchestrated via **Makefile** commands (`make migrate` / `make db-reset`) — see [ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md) for the decision and rationale. Flyway replaces the Python `db-migrate` tool (ADR-010 era) and the Kotlin test-side `MigrationRunner`, which had diverged into two incompatible implementations. One engine now serves dev, prod, Kotlin Testcontainers suites, Python worker tests, and CI, with a single `flyway_schema_history` tracking table.
-
-> The cutover (TRACK-110) renamed every `NN__description.sql` to `VNN__description.sql`, removed the unused `-- migrate:up/down` markers (Flyway runs the whole file; Community has no undo), and moved reference seed data into `R__` repeatable migrations.
+# Flyway migrations and reference data
 
 ---
 
-## 1. Conventions
+**Flyway Community is the only migration engine.** Make/Compose uses the Flyway container; Kotlin integration tests use its JVM API. Both apply the same SQL directory. [ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md) supersedes the retired Rust CLI and custom Python/Kotlin runners.
 
-### File naming
+## 1. File conventions
 
-All migrations live in `database/migrations/` (the single Flyway `locations` path):
+- `V<version>__description.sql` — ordered versioned migrations. Applied files are immutable; subsequent changes need a new version.
+- `R__seed_<order>_<description>.sql` — repeatable reference seeds. Flyway reapplies a repeatable when its checksum changes; the numeric description prefix encodes seed dependency order.
 
-- **Versioned** — `VNN__description.sql` (e.g. `V01__baseline-schema-and-types.sql`). Applied once, in version order, recorded in `flyway_schema_history` with a checksum. Never edited after being applied.
-- **Repeatable** — `R__seed_<NN>_<name>.sql` (e.g. `R__seed_01_reference.sql`). Re-applied automatically whenever the file's checksum changes, **after** all versioned migrations. Flyway orders repeatables alphabetically by description, so the numeric infix (`01`, `02`, …) encodes FK dependency order.
+Files live in [database/migrations](../../database/migrations). Flyway executes the whole file; old `migrate:up`/`migrate:down` marker conventions are not used. SQL examples in ADRs are design sketches unless linked to an actual migration.
 
-There are no `-- migrate:up` / `-- migrate:down` markers. Flyway executes the entire file; Flyway Community has no `undo`, so down-sections are not used (see Rollback, §5).
+## 2. Current schema landmarks
 
-### Migration structure
+At this documentation review, the directory contains `V01`–`V60` and six repeatable reference seeds. Inspect the directory before assigning a new number.
 
-```sql
-SET search_path TO public;
+| Migration | Responsibility |
+|:---|:---|
+| V01–V06 | Core enums, reference/composition tables, sections, tags, notation and initial import schema |
+| V23–V27 | Source authority, evidence, structural voting, extraction integration |
+| V37 | PostgreSQL UUIDv7 defaults |
+| [V44](../../database/migrations/V44__versioned_canon.sql) | `source_documents`, `krithi_revisions`, `krithi_section_revisions` and provenance |
+| V50–V57 | Raga cleanup, match keys, aliases, identity/resolution and standing checks |
+| [V58](../../database/migrations/V58__semantic_search_pgvector.sql) | pgvector search documents, profiles and embeddings |
+| [V59](../../database/migrations/V59__musical_form_unestablished.sql) | `UNESTABLISHED` musical-form enum value |
+| [V60](../../database/migrations/V60__musical_form_default_unestablished.sql) | Default unclassified form for new compositions |
 
--- Migration SQL here. Prefer IF NOT EXISTS / ON CONFLICT for idempotence.
-CREATE TABLE IF NOT EXISTS new_table (...);
-```
-
----
-
-## 2. Migration files
-
-57 versioned migrations (`V01`–`V57`) plus 6 repeatable seed migrations. Foundational set:
-
-| File | Purpose | Key Entities |
-|------|---------|--------------|
-| [`V01__baseline-schema-and-types.sql`](../../database/migrations/V01__baseline-schema-and-types.sql) | Extensions, enum types, foundational tables | `roles`, `audit_log`, enums (workflow_state, language_code, script_code, raga_section, import_status, musical_form) |
-| [`V02__domain-tables.sql`](../../database/migrations/V02__domain-tables.sql) | Primary domain tables | `users`, `composers`, `ragas`, `talas`, `deities`, `temples`, `krithis`, `krithi_ragas`, `krithi_lyric_variants` |
-| [`V03__constraints-and-indexes.sql`](../../database/migrations/V03__constraints-and-indexes.sql) | Constraints, indexes, search optimization | Search/trigram indexes, foreign-key constraints |
-| [`V04__import-pipeline.sql`](../../database/migrations/V04__import-pipeline.sql) | Data ingestion tables | `import_sources`, `imported_krithis` |
-| [`V05__sections-tags-sampradaya-temple-names.sql`](../../database/migrations/V05__sections-tags-sampradaya-temple-names.sql) | Sections, tags, sampradaya, temple names | `krithi_sections`, `krithi_lyric_sections`, `tags`, `krithi_tags`, `sampradayas`, `temple_names` |
-| [`V06__notation-tables.sql`](../../database/migrations/V06__notation-tables.sql) | Notation support for Varnams/Swarajathis | `krithi_notation_variants`, `krithi_notation_rows` |
-| `V37__pg18_uuidv7_defaults.sql` | Switch UUID PK defaults to `uuidv7()` (PG18, [ADR-011](../02-architecture/decisions/ADR-011-postgresql-18-uuid-v7.md)) | all UUID-keyed tables |
-| `V44__versioned_canon.sql` | Versioned canon tables ([ADR-014](../02-architecture/decisions/ADR-014-versioned-canon.md)) | `canon_revisions`, `canon_revision_sections`, provenance graph |
-| `V45__remove_stale_anupallavi_brhannayaki.sql` | Data cleanup — stale anupallavi section | |
-| `V46__delete_incomplete_devanagari_amba_nilayatakshi.sql` | Data cleanup — incomplete Devanagari import | |
-| `V47__demerge_ragamalika_visvanatham_from_natabharanam.sql` | Ragamalika demerge — separate ragamalika krithi from natabhranam raga | |
-
-> [!IMPORTANT]
-> **Corpus rows are not a Flyway concern.** Versioned `V__` files carry schema. Repeatable `R__` files carry **reference** data (ragas, aliases, import-source authority). Composition content (`krithis`, `krithi_sections`, `krithi_lyric_*`, `krithi_ragas`, `krithi_revisions`) is produced by the parser → import → curator path ([ADR-012](../02-architecture/decisions/ADR-012-unified-extraction-architecture.md), [ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md), [ADR-014](../02-architecture/decisions/ADR-014-versioned-canon.md)). TRACK-139 retired the TRACK-133 data-fix files `V58`–`V62`; structure for those krithis is restored by re-extract + reingest. The durable parsers live in the worker ([track-133-section-mismatch-remediation.md](../10-implementations/track-133-section-mismatch-remediation.md), TRACK-139 two-line pallavi and dasāvatāra sequence).
->
-> A new `V__` that runs `INSERT`/`UPDATE`/`DELETE` against those corpus tables is denied by `.claude/hooks/protect-migrations.py` and `make agent-evals` unless it includes `-- corpus-data-fix: allow`. Pre-TRACK-139 files `V38` / `V45`–`V47` remain as historical corpus cleanup (grandfathered; not a template). The next versioned file is **`V58`** (schema or reference only).
-
-### Repeatable seed migrations (reference data)
-
-| File | Seeds |
-|------|-------|
-| `R__seed_01_reference.sql` | roles, base composers / ragas / talas / deities, the unmatched-PDF import source |
-| `R__seed_02_composer_aliases.sql` | composer name aliases (FK → composers) |
-| `R__seed_03_import_sources_authority.sql` | import-source authority tiers & metadata |
-| `R__seed_04_raga_reference.sql` | comprehensive raga reference (~972 ragas) |
-| `R__seed_05_merge_duplicate_ragas.sql` | TRACK-132 duplicate-raga merge keepers |
-| `R__seed_06_merge_loser_aliases.sql` | TRACK-132/137 merge-loser alias rows |
-
-### Enum types
-
-Defined in `V01__baseline-schema-and-types.sql`:
-
-- `workflow_state_enum`: `draft`, `in_review`, `published`, `archived`
-- `language_code_enum`: `sa`, `ta`, `te`, `kn`, `ml`, `hi`, `en`
-- `script_code_enum`: `devanagari`, `tamil`, `telugu`, `kannada`, `malayalam`, `latin`
-- `raga_section_enum`: `pallavi`, `anupallavi`, `charanam`, `other`
-- `import_status_enum`: `pending`, `in_review`, `mapped`, `rejected`, `discarded`
-- `musical_form_enum`: `KRITHI`, `VARNAM`, `SWARAJATHI` *(added in `V02`)*
-
----
+Earlier TRACK-133 corpus-fix files also used numbers V58–V62 and were retired in TRACK-139. They are different files from the current V58–V60 schema migrations. Identify history by full filename/description/checksum before making any recovery decision.
 
 ## 3. Migration workflow
 
-### Makefile commands
-
-The Makefile drives the `flyway/flyway:12.11.0-alpine` image (the compose `migrate` service):
-
 ```bash
-make migrate         # flyway migrate — applies pending V__ + re-applies changed R__
-make migrate-status  # flyway info
-make db-reset        # drop → create the database, then flyway migrate (schema + reference data)
-make seed-dev        # dev-only sample content (database/seed_data/02_sample_data.sql)
-make bootstrap-admin # provision/update the admin user (argon2id); needs ADMIN_EMAIL / ADMIN_PASSWORD
+make db
+make migrate-status
+make migrate
 ```
 
-`make db-reset` applies reference data automatically (via the `R__` repeatables) — it no longer needs a separate seed step. Dev sample data and the admin user are deliberately *not* migrations (see §4).
+`make migrate` targets the local Compose `migrate` service with its configured connection. It applies pending versioned migrations and changed repeatables. Assigning a worker-style `DATABASE_URL` to the shell does not redirect that service to a different database.
 
-### Creating a new migration
+For a new schema change, inspect the highest version, create the next `V__` file, and verify both a clean migration and an upgrade from a representative prior state in an isolated database. Run appropriate integration checks and update affected schema/domain/API documentation. Do not use a developer's populated database as a disposable test fixture.
 
-1. Create `database/migrations/V<next>__description.sql` (next sequential version, e.g. `V58__...`).
-2. Write idempotent SQL (`IF NOT EXISTS`, `ON CONFLICT`); no `-- migrate:down` section.
-3. Test: `make db-reset` (full from-scratch apply) and `make migrate` (incremental).
-4. Update this file and `domain-model.md` / schema docs if entities change.
+For reference-data changes, update the relevant repeatable and verify that it remains safe to reapply. Corpus content corrections use parser/extraction/reingestion/curator workflows and retain revision attribution. Older grandfathered corpus cleanup migrations are historical exceptions, not templates for new work.
 
-For reference-data changes, edit the relevant `R__seed_*.sql` instead — Flyway re-applies it on the next `migrate` because its checksum changed.
+## 4. Seed-data tiers
 
-### Best practices
+| Data | Location / mechanism | Purpose |
+|:---|:---|:---|
+| Reference data | `R__seed_01` through `R__seed_06` | Roles, reference entities, aliases, source authority and raga reconciliation |
+| Environment account | `make bootstrap-admin` | Admin identity, argon2id password hash and role assignment |
+| Development samples | `make seed-dev` | Optional local sample compositions |
+| Test fixtures | Test-support builders and per-layer fixtures | Deterministic test data |
+| Canonical corpus | Import/reingest/curator service paths | Source-backed composition content and history |
 
-- ✅ Idempotent DDL/DML (`IF NOT EXISTS`, `ON CONFLICT … DO NOTHING`).
-- ✅ Add indexes after the table exists (same or later migration).
-- ❌ **Never edit a versioned migration after it has been applied** — Flyway's checksum validation (`flyway validate`, a CI gate) rejects it. Write a new `V__` instead.
-- ❌ **Never put corpus-data corrections in a `V__` file** — use parser / re-import / curator review (TRACK-139).
-- ❌ **Never bypass the Makefile / Flyway** — no Liquibase, ad-hoc SQL executors, or custom runners ([ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)).
-
-### Ordering
-
-Versioned migrations apply in version order; repeatables apply afterwards in description (alphabetical) order. Dependency highlights: `V01` (enums/roles) → `V02` (domain tables) → `V03/04/05/06` (constraints, import, sections, notation). Repeatable seeds depend on the schema and on each other in `R__seed_01 → 02 → 03 → 04 → 05 → 06` order.
-
----
-
-## 4. Seed-data tiers (ADR-013, D15)
-
-| Tier | Where | Applied by |
-|------|-------|-----------|
-| **Reference data** (ragas, composers, aliases, import-source authority, roles) | `database/migrations/R__seed_*.sql` | `flyway migrate` (checksummed, idempotent, environment-consistent) |
-| **Environment data** (admin user + credentials) | `tools/BootstrapAdmin.kt` | `make bootstrap-admin` — argon2id hash via `PasswordHasher` (TRACK-114); never in SQL |
-| **Dev sample data** | `database/seed_data/02_sample_data.sql` | `make seed-dev` only — never a migration, never CI |
-| **Test fixtures** | Kotlin builders (`TestFixtures.kt`) | test code — never SQL dumps |
-
----
+`make db-reset` drops and recreates the local database, then applies Flyway schema and reference data. It does not restore the corpus or automatically provision the environment's admin. It is destructive and is unnecessary for routine pending migrations.
 
 ## 5. Rollback & history tracking
 
-- Flyway records every applied migration in **`flyway_schema_history`** (version, description, checksum, success).
-- Flyway Community has **no `undo`**. The local rollback story is `make db-reset` (drop → create → re-apply). Data reversibility is the domain of versioned canon (north-star N5, [ADR-014](../02-architecture/decisions/ADR-014-versioned-canon.md)).
-- **Existing long-lived databases** (migrated by the retired tooling) are adopted with `flyway baseline -baselineVersion=47`, then migrated normally. Rehearse the baseline against a Testcontainers instance restored from a dump **before** touching any real database (ADR-013 Migration Plan §6).
-- **Retiring a corpus data-fix `V__` (TRACK-139):** delete the file (the protect-migrations hook allows delete of corpus-only / allowlisted data-fix scripts). Flyway Community `repair` realigns checksums and failed rows; it does **not** remove history rows for missing versions. After delete, `flyway info` may still report those versions as *Future* and warn that the schema version is newer than the latest available file. Align history with:
+Flyway records description, version, checksum, and application state in `flyway_schema_history`. Community does not provide undo migrations. Prefer a compatible forward fix or an independently rehearsed restore; a local database reset is only appropriate for disposable data.
 
-  ```sql
-  DELETE FROM flyway_schema_history WHERE version IN ('58', '59', /* … */);
-  ```
+For a database from a retired migration tool or the retired corpus-fix sequence:
 
-  That statement is Flyway metadata, not corpus DML. Then `make migrate-status` should show latest versioned = `V57` (until the next schema `V58`). Fresh `make db-reset` databases never had the deleted files and need no repair.
+1. Preserve a backup and inspect its schema/history without modifying it.
+2. Compare full migration identities with the current SQL directory.
+3. Rehearse the exact adoption/reconciliation on an isolated restored database.
+4. Validate schema, reference data, revisions, and public reads before applying the reviewed procedure to the real target.
 
-### Dump restore (`raga_match_key` search_path)
+Do not copy old examples that baseline at a fixed version or delete history rows by version number alone. In particular, deleting rows 58/59/60 today may remove legitimate semantic-search and musical-form schema history. The TRACK-139 report describes a specific historical retirement, not a general-purpose Flyway repair command.
 
-`raga_aliases.match_key` is `GENERATED ALWAYS AS (raga_match_key(alias))`, and `raga_match_key()` calls unqualified `strip_diacritics()`. `pg_restore` uses an empty `search_path`, so a one-shot `--exit-on-error` restore fails. Workaround: schema-only restore → `ALTER FUNCTION public.raga_match_key(text) SET search_path = public` → data-only restore with `--disable-triggers`. Pinning `search_path` (or schema-qualifying the call) in a later schema migration is follow-up hygiene, not a corpus data-fix.
+For old dumps, generated `raga_match_key` expressions may depend on function search-path resolution. Investigate the restore error against the actual schema and rehearse any function/schema adjustment on the isolated restore. Do not disable triggers or edit migration history as a routine first response.
+
+See [database runbook](../08-operations/runbooks/database-runbook.md) and [TRACK-139 evidence](../10-implementations/track-139-retire-corpus-data-fix-migrations.md).
+
+## 6. Engine and validation
+
+Compose sets the migration location, naming validation, and disables automatic baseline-on-migrate. The migration version is pinned in [Current Versions](../00-meta/current-versions.md), [Compose](../../compose.yaml), and the [Gradle catalog](../../gradle/libs.versions.toml).
+
+CI checks a from-scratch migrate/validate and standing raga rules. Testcontainers applies the same versioned/repeatable set for database tests. Review [integration testing](../07-quality/integration-tests-approach.md) for test isolation and [schema](./schema.md) for data relationships.
 
 ---
 
-## 6. Engine details
-
-- Image: `flyway/flyway:12.11.0-alpine`; JVM API (`org.flywaydb:flyway-core` + `flyway-database-postgresql`) for the Kotlin Testcontainers suite (TRACK-110 Sub-part B).
-- Single `locations`: `filesystem:/flyway/sql` → `database/migrations/` (both `V__` and `R__`).
-- `validateMigrationNaming` on; `baselineOnMigrate` off.
-- Version pinned in `gradle/libs.versions.toml` (`flyway`), `compose.yaml`, and [current-versions.md](../00-meta/current-versions.md).
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

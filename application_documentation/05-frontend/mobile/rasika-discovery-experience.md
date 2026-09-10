@@ -2,8 +2,9 @@
 |:---|:---|
 | **Status** | Spec accepted — supporting Draft Plan |
 | **Version** | 1.2.0 |
-| **Last Updated** | 2026-09-09 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Current guide |
 
 # Rasika: a living library of Carnatic music
 
@@ -145,3 +146,7 @@ Usage should distinguish home/directory opens from committed searches and reader
 ## Intent decision and next gate
 
 The **Home → Explore → Reader → Library** direction and shared temple-library identity are accepted. The accepted detailed Spec on TRACK-140 resolves scope more precisely: initial curated features are composition invitations; long-form learning/thematic articles and sharing await later contracts. It specifies three native appearance choices, exact metadata facets, bounded local collections/opt-in recents, and source/identity fidelity. The implementation Plan is now Draft, with a dependency graph, three release gates and a resumable build/test/review/repair loop. Plan acceptance is the next gate.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

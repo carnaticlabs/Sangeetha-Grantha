@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Decision record |
 
 # ADR-005: Graph Database Strategy (PostgreSQL vs Neo4j)
+
+---
+
+> [!NOTE]
+> Decision record: preserve the original rationale and check its decision/supersession status. Current runtime guidance is in [system architecture](./../backend-system-design.md) and [Flyway migrations](./../../04-database/migrations.md).
 
 
 > **Deciders**: Platform Team, Backend Team
@@ -107,3 +113,7 @@ We will use **Recursive Common Table Expressions (WITH RECURSIVE)** to perform t
 -   [Feature Requirements](../../01-requirements/features/graph-explorer.md)
 -   [Domain Model](../../01-requirements/domain-model.md)
 -   [Database Schema](../../04-database/schema.md)
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

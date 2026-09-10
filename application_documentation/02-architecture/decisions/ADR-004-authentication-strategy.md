@@ -2,12 +2,18 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.3.0 |
-| **Last Updated** | 2026-07-18 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Decision record |
 
 ---
 
 # ADR-004: Authentication Strategy - JWT with Role-Based Access Control
+
+---
+
+> [!NOTE]
+> Decision record: preserve the original rationale and check its decision/supersession status. Current runtime guidance is in [system architecture](./../backend-system-design.md) and [Flyway migrations](./../../04-database/migrations.md).
 
 > ## Addendum (v1.2, 2026-06-13) — Password hashing & future direction
 >
@@ -320,3 +326,7 @@ class AuthorizationService(private val dal: SangitaDal) {
 - [Tech Stack](../tech-stack.md) - JWT library (Auth0 JWT 4.5.0) included
 - [Database Schema](../../04-database/schema.md) - Roles and role_assignments tables
 - [Mutation Handlers](../../06-backend/mutation-handlers.md) - Audit logging requirements
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

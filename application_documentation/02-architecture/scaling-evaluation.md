@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Design reference |
 
 # Sangeetha Grantha: Architecture Evaluation & Scaling Strategy
+
+---
+
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [current feature map](./../01-requirements/features/README.md) for implemented behavior and current operating steps.
 
 
 ---
@@ -561,3 +567,7 @@ With these enhancements, the system can scale from **thousands to millions of us
 **Estimated Timeline**: 6-12 months for full scaling implementation  
 **Estimated Cost**: $1,250-7,500/month depending on scale  
 **Expected Capacity**: 1M+ concurrent users with proper implementation
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

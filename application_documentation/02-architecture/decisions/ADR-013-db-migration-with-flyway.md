@@ -2,13 +2,19 @@
 |:---|:---|
 | **Status** | Accepted |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-06-12 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Decision record |
 | **Supersedes** | [ADR-010](./ADR-010-migration-tool-course-correction.md) |
 | **Reverses** | The "Flyway is explicitly NOT used" position of [ADR-003](./ADR-003-database-migrations.md) |
 | **Analysis** | [Integration Tests Approach §5](../../07-quality/integration-tests-approach.md) |
 
 # ADR-013: Database Migrations with Flyway — Standardizing the Migration Engine
+
+---
+
+> [!NOTE]
+> Decision record: preserve the original rationale and check its decision/supersession status. Current runtime guidance is in [system architecture](./../backend-system-design.md) and [Flyway migrations](./../../04-database/migrations.md).
 
 ## Context
 
@@ -100,3 +106,7 @@ Adopt **Flyway Community Edition** as the **single migration engine** for all en
 - [ADR-010 (Superseded)](./ADR-010-migration-tool-course-correction.md) — Python db-migrate + Makefile
 - [ADR-003 (Superseded by ADR-010)](./ADR-003-database-migrations.md) — original Rust choice and Flyway rejection
 - [Flyway Community documentation](https://documentation.red-gate.com/flyway)
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

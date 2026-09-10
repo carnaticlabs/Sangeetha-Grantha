@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Superseded by [ADR-010](./ADR-010-migration-tool-course-correction.md) |
 | **Version** | 1.2.0 |
-| **Last Updated** | 2026-03-10 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Decision record |
 
 # ADR-003: Database Migration Tool Choice - Rust vs Flyway
+
+---
+
+> [!NOTE]
+> Decision record: preserve the original rationale and check its decision/supersession status. Current runtime guidance is in [system architecture](./../backend-system-design.md) and [Flyway migrations](./../../04-database/migrations.md).
 
 
 ## Context
@@ -94,19 +100,19 @@ SET search_path TO public;
 
 ### CLI Commands
 
-# Run migrations
+## Run migrations
 cargo run -- db migrate
 
-# Reset database (drop → create → migrate → seed)
+## Reset database (drop → create → migrate → seed)
 cargo run -- db reset
 
-# Initialize database (create → migrate → seed)
+## Initialize database (create → migrate → seed)
 cargo run -- db init
 
-# Check database health
+## Check database health
 cargo run -- db health
 
-# Start/Stop PostgreSQL instance (local)
+## Start/Stop PostgreSQL instance (local)
 ```text
 cargo run -- db start
 cargo run -- db stop
@@ -175,3 +181,7 @@ cargo run -- db stop
 - [Sangita CLI README](../../../archive/tools/sangita-cli/README.md)
 - [Tech Stack](../tech-stack.md)
 - [Database Schema](../../04-database/schema.md)
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

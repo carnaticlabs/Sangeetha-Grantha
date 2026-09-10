@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Design reference |
 
 # Mobile UI Specification (KMP)
+
+---
+
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [current Rasika guide](./README.md) for implemented behavior and current operating steps.
 
 
 ## 1. Scope
@@ -71,3 +77,7 @@ This document specifies the UI/UX implementation for the Sangita Grantha mobile 
 - **DTOs**: Directly consume `modules/shared/domain` objects.
 - **Error Handling**: Unified `NetworkError` component for offline/server issues.
 - **Offline Mode**: Cache `KrithiDto` in local DB for Favorites/History.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)

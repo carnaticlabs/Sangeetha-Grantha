@@ -1,11 +1,14 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Last Updated** | 2026-09-08 |
 | **Version** | 2.0.0 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | TRACK-138 Rasika mobile |
+| **Document Type** | Current guide |
 
 # Rasika visual design
+
+---
 
 Source of truth for the Rasika visual identity across **both** surfaces — the Compose mobile app and the React admin web console. The canonical token values are the ones shipped in
 [`RasikaTheme.kt`](../../../modules/shared/presentation/src/commonMain/kotlin/com/sangita/grantha/shared/presentation/theme/RasikaTheme.kt)
@@ -173,3 +176,7 @@ No looping animation, no parallax, no staggered list entrance. Honour reduced-mo
 ## Out of scope for this document
 
 Hero carousels, discovery feeds, notation rendering, and custom webfonts. Those belong to the older [mobile UI specification](./ui-specs.md), not the Rasika MVP.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../../README.md) · [Feature status](./../../01-requirements/features/README.md)
