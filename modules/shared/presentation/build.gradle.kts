@@ -43,6 +43,7 @@ kotlin {
                 implementation(libs.compose.components.resources)
                 implementation(libs.compose.ui.backhandler)
                 implementation(libs.androidx.lifecycle.runtime.compose)
+                implementation(libs.androidx.navigationevent.compose)
 
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.kotlinx.datetime)

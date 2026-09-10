@@ -31,7 +31,7 @@ CANONICAL_SCHEMA = REPO_ROOT / "shared" / "domain" / "model" / "import" / "canon
 
 # Match the versions pinned in compose.yaml / gradle/libs.versions.toml
 POSTGRES_IMAGE = "pgvector/pgvector:pg18"
-FLYWAY_IMAGE = "flyway/flyway:12.11.0-alpine"
+FLYWAY_IMAGE = "flyway/flyway:13.5.0-alpine"
 
 
 def _docker_available() -> bool:
