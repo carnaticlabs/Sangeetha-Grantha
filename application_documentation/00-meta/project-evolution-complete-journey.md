@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 4.0.0 |
-| **Last Updated** | 2026-07-12 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Evidence record |
 
 # Sangeetha Grantha: Complete Engineering Evolution
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../01-requirements/features/README.md).
 
 
 ## From Vision to Production-Ready Platform
@@ -771,10 +777,10 @@ make steel-thread
 - Coverage spans health routes, OTP auth, admin sangita lifecycle, pagination, participant rosters/payments
 
 **Test Execution:**
-# Seed test data
+## Seed test data
 ./gradlew :modules:backend:api:seedTestData
 
-# Run integration tests
+## Run integration tests
 ```text
 ./gradlew :modules:backend:api:test
 ```
@@ -1626,3 +1632,7 @@ The project stands as a testament to **domain-driven design**, **systematic opti
 **Document Status**: Current
 **Last Updated**: 2026-03-10
 **Next Review**: 2026-06-10 (quarterly review)
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

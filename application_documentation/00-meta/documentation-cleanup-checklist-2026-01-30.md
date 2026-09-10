@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Evidence record |
 
 # Documentation Cleanup Checklist (2026-01-30)
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../01-requirements/features/README.md).
 
 ---
 
@@ -85,3 +91,7 @@ Definitive actionable checklist derived from:
 - [Current Versions (Auto-Generated)](./current-versions.md)
 - [Documentation Standards](./standards.md)
 - [sangita-cli README](../../archive/tools/sangita-cli/README.md)
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

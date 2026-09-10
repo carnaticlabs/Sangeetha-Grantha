@@ -2,10 +2,16 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Evidence record |
 
 # Documentation and Diagram Updates – January 2026
+
+---
+
+> [!NOTE]
+> Historical evidence: results, counts, commands, and observations below belong to the original work described here. The editorial update date is not a new test or corpus verification. For present behavior, use [current feature map](./../01-requirements/features/README.md).
 
 **Related:** [TRACK-028](../../conductor/tracks/TRACK-028-documentation-quality-improvements.md), [TRACK-030](../../conductor/tracks/TRACK-030-documentation-cleanup-2026-01.md)
 
@@ -82,3 +88,7 @@ Ref: application_documentation/00-meta/documentation-and-diagram-updates-2026-01
 ```
 
 **Suggested commit scope (atomic):** All files in §3.1 and §3.2 (and optionally TRACK-028, TRACK-030 if not yet in registry). Exclude code and config.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)

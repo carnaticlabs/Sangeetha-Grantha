@@ -1,11 +1,14 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-02-08 |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
+| **Document Type** | Current guide |
 
 # Documentation Standards
+
+---
 
 
 ## General Principles
@@ -37,19 +40,23 @@ Example:
 
 Documentation is organized in `application_documentation/` with the following structure:
 
-```text
-application_documentation/
-├── 00-meta/              # Meta-documentation (standards, retention plans)
-├── 01-requirements/      # PRDs, domain models, feature specs
-├── 02-architecture/      # System design, tech stack, ADRs
-├── 03-api/              # API contracts, integration specs
-├── 04-database/         # Schema, migrations, audit logs
-├── 05-frontend/         # UI specs for admin web and mobile
-├── 06-backend/          # Backend-specific docs (mutation handlers, security)
-├── 07-quality/          # Test plans, coverage reports
-├── 08-operations/       # Runbooks, configuration guides
-├── 09-ai/               # AI integration docs, knowledge base
-└── 10-implementations/  # Implementation-specific details and platform guides
+```mermaid
+flowchart TB
+  subgraph docs["application_documentation"]
+    direction TB
+    M00[00-meta]
+    M01[01-requirements]
+    M02[02-architecture]
+    M03[03-api]
+    M04[04-database]
+    M05[05-frontend]
+    M06[06-backend]
+    M07[07-quality]
+    M08[08-operations]
+    M09[09-ai]
+    M10[10-implementations]
+    M11[11-retrospective]
+  end
 ```
 
 ## Content Standards
@@ -173,3 +180,18 @@ Before marking documentation as "Current":
 - [Product Requirements Document](../01-requirements/product-requirements-document.md)
 - [Tech Stack](../02-architecture/tech-stack.md)
 - [Backend Architecture](../02-architecture/backend-system-design.md)
+## Current guides, plans, and evidence
+
+- Lead with the reader's task and describe current behavior before internal implementation detail.
+- Put implemented/planned/placeholder boundaries beside the feature they qualify. A schema or DTO is not proof of a mounted route.
+- Keep the main, admin, and mobile PRDs aligned with [the feature map](../01-requirements/features/README.md). Migrations are Flyway; reference [Current Versions](./current-versions.md) instead of copying pins.
+- Maintain one top-level title, descriptive section headings, language-tagged balanced code fences, and relative source links.
+- Preserve dated reports, ADR rationale, and research as evidence. The last editorial-update date is not a new test or live-data verification date.
+- Use [the document catalog](./document-catalog.md) to find every retained page. Add current guides to the relevant section index.
+- Run `make check-docs`; separately check bare relative links, changed heading anchors, and code/diagram formatting because the existing gate does not cover them.
+
+Every numbered area is indexed from [the documentation home](../README.md), including onboarding, metadata, implementations, and retrospectives. Historical evidence may remain at its stable cited path with explicit reading context; obsolete operating instructions should be replaced by links to the current guide or moved under the archive with redirects where needed.
+
+---
+
+[Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)
