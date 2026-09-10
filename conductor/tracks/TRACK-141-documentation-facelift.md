@@ -1,7 +1,7 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | In Progress |
-| **Version** | 1.0.0 |
+| **Status** | Completed |
+| **Version** | 1.1.0 |
 | **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
 
@@ -37,4 +37,22 @@ Make the documentation useful to readers of the current product: explain what wo
 
 ## Validation and closure
 
-In progress. The final documentation report will record the completed checks. No code, database content, dependency, or runtime changes are part of this track.
+Closed 2026-09-10. No code, database content, dependency, or runtime changes are part of this track; the change set is Markdown only.
+
+**Delivered**
+
+- 292 Markdown files revised across the documentation tree, root entry points, agent instruction files, and module READMEs.
+- Six new guides for feature areas that previously existed only inside dated implementation reports: [search](./../../application_documentation/03-api/search.md), [versioned canon](./../../application_documentation/04-database/versioned-canon.md), [raga identity](./../../application_documentation/04-database/raga-identity.md), [embeddings](./../../application_documentation/09-ai/embeddings.md), the [document catalog](./../../application_documentation/00-meta/document-catalog.md), and the [extraction worker README](./../../tools/krithi-extract-enrich-worker/README.md).
+- Lifecycle labelling (`Document Type`) applied so dated evidence is no longer mistakable for a current release claim.
+- Scope and verification recorded in the [September refresh report](./../../application_documentation/00-meta/documentation-refresh-2026-09.md).
+
+**Verification**
+
+| Check | Command | Result |
+|:---|:---|:---|
+| Relative link integrity | `make check-docs` | Pass — every relative Markdown link resolves |
+| Agent configuration | `make agent-evals` | Pass — `CLAUDE.md` and `.agents/AGENTS.md` were touched |
+
+Backend, frontend, and integration suites were not re-run: the change set contains no non-Markdown paths, so they are unaffected by this track.
+
+No documentation file was deleted. The net line reduction is condensation of prose that restated source detail into links to the executable source of truth.

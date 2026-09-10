@@ -1,7 +1,7 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.28.1 |
+| **Version** | 1.29.0 |
 | **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
 
@@ -144,6 +144,7 @@
 | [TRACK-138](./tracks/TRACK-138-rasika-mobile-app.md) | Rasika Mobile App — Search, Browse and Read | Plan accepted — Node C |
 | [TRACK-139](./tracks/TRACK-139-retire-corpus-data-fix-migrations.md) | Retire Corpus Data-Fix Migrations | In Progress — V58–V62 retired; five krithis reingested |
 | [TRACK-140](./tracks/TRACK-140-rasika-discovery-experience.md) | Rasika — Discovery and Reading Experience | In progress — Plan accepted |
+| [TRACK-141](./tracks/TRACK-141-documentation-facelift.md) | Documentation Facelift and Feature Reconciliation | Done |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)
