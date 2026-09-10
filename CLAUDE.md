@@ -68,16 +68,34 @@ Run the matching check **before** reporting a task complete, and paste the comma
 ## Architecture
 
 ### Module Structure
-```
-modules/
-├── shared/
-│   ├── domain/          # KMP domain models (@Serializable DTOs)
-│   └── presentation/    # Shared UI components
-├── backend/
-│   ├── api/             # Ktor routes (main class: AppKt)
-│   └── dal/             # Data access layer (Exposed ORM)
-└── frontend/
-    └── sangita-admin-web/  # React admin console
+
+```mermaid
+flowchart TB
+  subgraph repo["modules"]
+    direction TB
+
+    subgraph shared["shared"]
+      direction TB
+      DOM["domain — @Serializable DTOs"]
+      PRES["presentation — Rasika Compose UI"]
+      MDATA["mobile-data — V2 client, storage, fixtures"]
+    end
+
+    subgraph mobile["mobile"]
+      direction TB
+      AND[androidApp]
+      IOS[iosApp]
+    end
+
+    subgraph backend["backend"]
+      direction TB
+      API["api — Ktor AppKt"]
+      DAL["dal — Exposed"]
+      TS[test-support]
+    end
+
+    WEB["frontend/sangita-admin-web"]
+  end
 ```
 
 ### Key Patterns

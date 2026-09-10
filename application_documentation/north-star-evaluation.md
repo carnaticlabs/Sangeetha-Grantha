@@ -1,13 +1,19 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-06-11 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Critical architecture review (for Seshadri) |
+| **Document Type** | Design reference |
 | **Companion docs** | `sangeetha-grantha-state-of-nation-july-2026.md`, `sangeetha-grantha-uplift-tasks.md`, `02-architecture/backend-system-design.md` |
 | **Scope** | Critical evaluation of the current codebase + a north-star reference architecture for a system of this class, with a gap analysis and sequenced path |
 
 # Sangeetha Grantha — North-Star Evaluation
+
+---
+
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [current feature map](./01-requirements/features/README.md) for implemented behavior and current operating steps.
 
 > **The question this answers:** if you were building a *digital scholarly corpus with AI-assisted ingestion and human curation* today, from scratch, with no legacy — what would it look like, and how far is Sangeetha Grantha from that? The companion State-of-Nation doc covers dependency/AI-ecosystem drift; this doc deliberately goes one level up to **architecture, engineering practice, and product shape**. Findings are evidence-based (file paths cited) and severity-rated. The verdict is not "rewrite" — the bones are good — it is "harden the trust boundary, close the verification gap, and converge the data model toward a provenance-first canonical record."
 
@@ -98,33 +104,40 @@ The application class: **a provenance-first scholarly corpus platform** — AI-a
 
 ### 3.2 The target architecture
 
-```text
-                       ┌─────────────────────────────────────────────┐
-                       │                 PUBLIC SURFACE              │
-                       │  Read-only API (cached, rate-limited)       │
-                       │  Consumer web (SSR, SEO, search)            │
-                       │  Bulk exports (JSON-LD / TEI dumps)         │
-                       └──────────────────┬──────────────────────────┘
-                                          │ reads canon only
-┌───────────────┐   ┌─────────────────────▼─────────────────────────┐
-│  INGESTION    │   │              CORE (modular monolith)          │
-│  Python worker│──▶│  Staging zone   → Review/curation → Canon     │
-│  (extraction, │   │  (immutable     (queue, scoring,  (versioned, │
-│  enrichment,  │   │   payloads,      auto-approve)     provenance- │
-│  embeddings)  │   │   schema-true)                     linked)     │
-│  Batch-mode   │   │  AUDIT + EVENT LOG (append-only, replayable)  │
-│  LLM calls    │   └─────────────────────┬─────────────────────────┘
-└───────┬───────┘                         │
-        │  evals gate every model change  │
-┌───────▼───────┐   ┌─────────────────────▼─────────────────────────┐
-│  EVAL HARNESS │   │  PostgreSQL 18: relational + pgvector + FTS   │
-│  golden sets, │   │  (one database, one backup story, PITR)       │
-│  regression   │   └───────────────────────────────────────────────┘
-│  on transliteration, sections, ragas                              │
-└───────────────────────────────────────────────────────────────────┘
-        All of it behind: CI/CD (build+test+migrate-check on every PR),
-        IaC-provisioned single deploy target, secrets manager, tracing.
+```mermaid
+flowchart TB
+  subgraph public["Public surface"]
+    direction TB
+    API[Read-only API]
+    WEB[Consumer web — later]
+    EXP[Bulk exports — later]
+  end
+  subgraph ingest["Ingestion"]
+    PY[Python worker<br/>extraction, enrichment, embeddings]
+  end
+  subgraph core["Core modular monolith"]
+    direction TB
+    STG[Staging]
+    REV[Review / curation]
+    CAN[Versioned canon]
+    AUD[(Audit + event log)]
+  end
+  subgraph data["PostgreSQL 18"]
+    direction TB
+    REL[Relational canon]
+    VEC[pgvector HNSW]
+    FTS[FTS]
+  end
+  EVAL[Eval harness]
+  PY --> STG
+  STG --> REV --> CAN
+  CAN --> REL
+  PY --> VEC
+  public --> CAN
+  EVAL --> PY
 ```
+
+Hybrid + semantic search (TRACK-108) now implements the “search as a data feature” row: one Postgres, pgvector + lexical fusion. Consumer web and bulk exports remain later.
 
 ### 3.3 North-star characteristics, by layer
 
@@ -210,3 +223,7 @@ This deliberately interleaves with the open uplift tasks (U1–U5) rather than c
 ## 6. Closing Assessment
 
 The honest one-liner: **Sangeetha Grantha has a north-star-quality data model and documentation culture attached to prototype-grade security, verification, and operations.** That is the *good* failure mode — the inverse (hardened pipelines around a muddled domain model) is far more expensive to fix. Every gap identified here is closable in-place, in sequence, without a rewrite, and the two highest-leverage moves are also the cheapest: hash the passwords this week, and stand up CI so the tests you already wrote start protecting you. After that, versioned canon + provenance is the investment that most differentiates this system in its class — it is the difference between a database of krithis and a *scholarly record* of them.
+
+---
+
+[Section index](./README.md) · [Documentation home](./README.md) · [Feature status](./01-requirements/features/README.md)

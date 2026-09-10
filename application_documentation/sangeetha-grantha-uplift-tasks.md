@@ -2,12 +2,21 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-06-06 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Principal Data & AI Engineering review (for Seshadri) |
+| **Document Type** | Design reference |
 | **Companion doc** | `sangeetha-grantha-state-of-nation-july-2026.md` |
 | **Scope** | Re-prioritised task list factoring open Conductor tracks against the uplift findings. **Gemma 4 deliberately excluded** per your call. |
 
 # Sangeetha Grantha — Uplift Task List
+
+---
+
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [current feature map](./01-requirements/features/README.md) for implemented behavior and current operating steps.
+
+> [!NOTE]
+> **U7 (semantic search) is done** — TRACK-108, Gemini Embedding 2 + pgvector, Curator Console hybrid mode. This June 2026 sequencing document is otherwise historical.
 
 > This takes the findings from the State-of-Nation review (F1–F8) and collides them with what's actually open in Conductor. The priority order in the companion doc assumed a clean slate; it isn't one. Once you factor in the in-flight Trinity import and the payload-convergence cleanup, the ordering tightens — because the AI breakage sits **directly underneath** the content work you've already started. The headline: **you cannot safely resume the Trinity import until the AI layer is fixed**, so that moves to the front regardless of how "infrastructural" it felt in the abstract.
 
@@ -194,3 +203,7 @@ Fix the AI keystone (U1–U3) and clear the convergence/warning debt (U6) **befo
 - Companion: `application_documentation/sangeetha-grantha-state-of-nation-july-2026.md` (findings F1–F8)
 - Code: `tools/krithi-extract-enrich-worker/src/config.py:33-34`, `src/gemini_enricher.py:59-62,111`, `pyproject.toml:27`
 - Tracks: `conductor/tracks.md`; TRACK-093, TRACK-096, TRACK-099, TRACK-065, TRACK-035, TRACK-014
+
+---
+
+[Section index](./README.md) · [Documentation home](./README.md) · [Feature status](./01-requirements/features/README.md)

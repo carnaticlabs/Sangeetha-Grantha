@@ -2,12 +2,18 @@
 |:---|:---|
 | **Status** | Awaiting decisions |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-06-13 |
+| **Last Updated** | 2026-09-10 |
 | **Author** | Seshadri (decisions) · prepared from north-star + integration-tests analysis |
+| **Document Type** | Design reference |
 | **Source docs** | [north-star-evaluation.md](./north-star-evaluation.md), [07-quality/integration-tests-approach.md](./07-quality/integration-tests-approach.md), [ADR-013](./02-architecture/decisions/ADR-013-db-migration-with-flyway.md) |
 | **Feeds into** | Detailed implementation plan + conductor tracks (TRACK-110+) under [TRACK-109 epic](../conductor/tracks/TRACK-109-production-readiness-roadmap.md) |
 
 # North-Star Production Readiness — Decision Checklist
+
+---
+
+> [!NOTE]
+> Design/reference material: this page may include proposals or earlier implementation assumptions. Use [current feature map](./01-requirements/features/README.md) for implemented behavior and current operating steps.
 
 > **How to use this file:** each decision has a **`▶ My decision:`** line — write your answer there (accept the recommendation, pick an option letter, or write your own). Use the **`Notes:`** line for caveats or conditions. When done, hand this back and I'll generate the implementation plan and track files from your answers.
 >
@@ -240,3 +246,7 @@ Agree with the recommendation. Separate small track.
 3. **D2** — Flyway rename in the next checkpoint freeze window.
 4. **D1** — decide versioned-canon timing against TRACK-093's pause point (highest-stakes; don't rush, but don't let the import outrun it).
 5. Stand up **TRACK-110** (substrate + Flyway), then **D7/D8** CI activation as TRACK-111 lands.
+
+---
+
+[Section index](./README.md) · [Documentation home](./README.md) · [Feature status](./01-requirements/features/README.md)
