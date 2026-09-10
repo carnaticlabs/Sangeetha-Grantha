@@ -36,7 +36,7 @@ graph TD
     GCLB --> CDN[Cloud CDN]
     
     subgraph "Edge / Static"
-        CDN --> GCS[Cloud Storage (Static Assets)]
+        CDN --> GCS["Cloud Storage (Static Assets)"]
     end
 
     subgraph "Compute (Serverless)"
@@ -46,7 +46,7 @@ graph TD
     end
 
     subgraph "Data & State"
-        CloudRun_API --> |Auth/Fast Read| Redis[Memorystore (Redis)]
+        CloudRun_API --> |Auth/Fast Read| Redis["Memorystore (Redis)"]
         CloudRun_API --> |Transactional| CloudSQL_Primary[Cloud SQL: PostgreSQL]
         
         CloudSQL_Primary -.-> |Rep| CloudSQL_Read[Cloud SQL: Read Replicas]
@@ -54,7 +54,7 @@ graph TD
     end
     
     subgraph "GCP Managed AI"
-        CloudRun_Jobs --> Gemini[Vertex AI (Gemini Models)]
+        CloudRun_Jobs --> Gemini["Vertex AI (Gemini Models)"]
     end
 ```
 
