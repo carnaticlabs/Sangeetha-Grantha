@@ -262,6 +262,12 @@
 			path = RasikaR18JourneyTests.swift;
 			sourceTree = "<group>";
 		};
+		A200000000000000000000B1 /* RasikaR18ExtendedJourneyTests.swift */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = RasikaR18ExtendedJourneyTests.swift;
+			sourceTree = "<group>";
+		};
 		A20000000000000000000002 /* RasikaAppUITests.xctest */ = {
 			isa = PBXFileReference;
 			explicitFileType = wrapper.cfbundle;
@@ -274,6 +280,7 @@
 			children = (
 				A20000000000000000000001 /* RasikaJourneyTests.swift */,
 				A200000000000000000000A1 /* RasikaR18JourneyTests.swift */,
+				A200000000000000000000B1 /* RasikaR18ExtendedJourneyTests.swift */,
 			);
 			path = RasikaAppUITests;
 			sourceTree = "<group>";
@@ -284,6 +291,7 @@
 			files = (
 				A20000000000000000000005 /* RasikaJourneyTests.swift in Sources */,
 				A200000000000000000000A2 /* RasikaR18JourneyTests.swift in Sources */,
+				A200000000000000000000B2 /* RasikaR18ExtendedJourneyTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -294,6 +302,10 @@
 		A200000000000000000000A2 /* RasikaR18JourneyTests.swift in Sources */ = {
 			isa = PBXBuildFile;
 			fileRef = A200000000000000000000A1 /* RasikaR18JourneyTests.swift */;
+		};
+		A200000000000000000000B2 /* RasikaR18ExtendedJourneyTests.swift in Sources */ = {
+			isa = PBXBuildFile;
+			fileRef = A200000000000000000000B1 /* RasikaR18ExtendedJourneyTests.swift */;
 		};
 		A20000000000000000000006 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;

@@ -14,9 +14,10 @@ import com.sangita.grantha.shared.mobile.storage.LocalSettingsCodec
  * flags that a UI test — and only a UI test — sets.
  *
  * The fixture catalogue is the same [FixtureCatalogueApi] the shared presenter tests use,
- * so a journey and its unit-test counterpart assert against identical records. Fixture
- * records are synthetic contract examples, never live catalogue evidence, and the Spec
- * requires them to be labelled as such wherever they appear in proof.
+ * with paging extras enabled so Explore can cross a page boundary. Presenter tests keep
+ * the two-record corpus unless they opt in. Fixture records are synthetic contract
+ * examples, never live catalogue evidence, and the Spec requires them to be labelled as
+ * such wherever they appear in proof.
  *
  * Neither flag has any effect on a normally launched app: the hosts read them from the
  * launch intent (Android) or the process arguments (iOS), which a user cannot set.
@@ -33,7 +34,8 @@ object RasikaUiTestHarness {
     const val RESET_STATE_ARGUMENT: String = "-$RESET_STATE_FLAG"
 
     /** A catalogue backed by the shared fixtures, with no network dependency. */
-    fun fixtureCatalogue(): CatalogueRepository = CatalogueRepository(FixtureCatalogueApi())
+    fun fixtureCatalogue(): CatalogueRepository =
+        CatalogueRepository(FixtureCatalogueApi(includePagingPages = true))
 
     /**
      * Remove every locally persisted Rasika document. Only the single settings key is

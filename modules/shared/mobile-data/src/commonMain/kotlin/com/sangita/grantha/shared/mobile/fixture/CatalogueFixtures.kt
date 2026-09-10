@@ -174,13 +174,37 @@ object CatalogueFixtures {
         CatalogueComposerSummaryDto(dikshitarId, "Muttusvami Dikshitar", publishedCompositionCount = 1),
         CatalogueComposerSummaryDto(tyagarajaId, "Tyagaraja", publishedCompositionCount = 1),
     )
+
+    /** Extra published rows so native Explore can cross a page boundary (page size 30). */
+    const val PAGING_EXTRA_COUNT: Int = 31
+
+    fun pagingTitle(n: Int): String = "Paging Fixture " + n.toString().padStart(2, '0')
+
+    fun pagingId(n: Int): Uuid =
+        Uuid.parse("aa000000-0000-4000-8000-" + n.toString().padStart(12, '0'))
+
+    val pagingLastTitle: String = pagingTitle(PAGING_EXTRA_COUNT)
+
+    val pagingSummaries: List<CatalogueKrithiSummaryDto> = (1..PAGING_EXTRA_COUNT).map { n ->
+        CatalogueKrithiSummaryDto(
+            id = pagingId(n),
+            title = pagingTitle(n),
+            incipit = pagingTitle(n),
+            composer = dikshitar,
+            ragas = listOf(hamsadhvani),
+            tala = adiTala,
+            musicalForm = MusicalFormDto.KRITHI,
+        )
+    }
 }
 
 /**
  * Contract fixtures for JVM presenter/client tests and explicit offline UI review.
  * Production Android/iOS hosts use [com.sangita.grantha.shared.mobile.network.KtorCatalogueApi].
  */
-class FixtureCatalogueApi : CatalogueApi {
+class FixtureCatalogueApi(
+    private val includePagingPages: Boolean = false,
+) : CatalogueApi {
     override suspend fun getDiscovery(interaction: InteractionContext) =
         CatalogueDiscoveryDto(
             feature = CatalogueDiscoveryFeatureDto(
@@ -199,8 +223,13 @@ class FixtureCatalogueApi : CatalogueApi {
         pageSize: Int,
         interaction: InteractionContext,
     ): CataloguePagedResponse<CatalogueKrithiSummaryDto> {
+        val corpus = if (includePagingPages) {
+            CatalogueFixtures.summaries + CatalogueFixtures.pagingSummaries
+        } else {
+            CatalogueFixtures.summaries
+        }
         val needle = query?.trim()?.lowercase().orEmpty()
-        val filtered = CatalogueFixtures.summaries.filter { summary ->
+        val filtered = corpus.filter { summary ->
             val matchesQuery = needle.isEmpty() ||
                 summary.title.lowercase().contains(needle) ||
                 (summary.incipit?.lowercase()?.contains(needle) == true)
