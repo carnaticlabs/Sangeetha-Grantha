@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | In Progress |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-09-10 |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-09-20 |
 | **Author** | Sangeetha Grantha Team |
 
 # Track: Library Upgrades — September 2026
@@ -10,7 +10,7 @@
 **Status:** In Progress
 **Owner:** Sangeetha Grantha Team
 **Created:** 2026-09-10
-**Updated:** 2026-09-10
+**Updated:** 2026-09-20
 
 ## Goal
 
@@ -136,12 +136,15 @@ None for this slice.
 - [x] Sync version docs
 - [x] Migrate Rasika `BackHandler` → `NavigationEventHandler`
 - [x] Verify compile/tests
+- [x] Batch 4 (20 Sep): remaining stables — AGP 9.4.1, Ktor 3.6.0, AWS SDK 2.55.1, Flyway 13.7.0, Vite 8.3.0 / Vitest 5.0.1, frontend patch line, worker psycopg/google-genai/ruff
 
 ## Deferred (not this session)
 - TypeScript 7.0.2 / 7.1-dev (no stable programmatic API for typescript-eslint)
 - kotlinx-serialization `1.12.0-RC`
 - CMP `1.13.0-alpha01` / material3 alpha
 - Gradle `9.8.0-rc-1` (wrapper stays 9.7.1 current)
+- jsdom `30.1.0` (Vitest 5.0.1 jsdom worker crash; stay 30.0.1)
+- eslint-plugin-react-hooks `7.1.1` (TRACK-135 immutability false positives)
 
 ## Progress Log
 - **2026-09-10**: Track created from Maven/npm/PyPI audit. Intent/Spec/Plan accepted via refresh request.
@@ -149,4 +152,4 @@ None for this slice.
 - **2026-09-10**: Validated frontend `@google/genai` is unused; LLM already routes via backend `GeminiApiClient` and the Python worker. Dropped Batch 3d genai bump. Removed the package, importmap, and Vite `define` of `GEMINI_API_KEY` so the key cannot land in the browser bundle.
 - **2026-09-10**: Replaced deprecated Compose `BackHandler` in `RasikaApp.kt` with `NavigationEventHandler` (`org.jetbrains.androidx.navigationevent:navigationevent-compose:1.1.0`, CMP 1.12 companion). Proof: presentation JVM/Android/metadata compile (no BackHandler deprecation warning); `make test` 291; `make test-integration` 148; `make test-mobile` 57; Vitest 66; worker unit 386 + integration 22 (Flyway `13.5.0-alpine`); `vite build` green. `make check-docs` still reports TRACK-142 until that file is git-tracked.
 - **2026-09-10**: Cleared AGP 9.4 / Gradle 9.6 configuration-warning flood: `androidLibrary` → `android` + `withHostTest {}`; `by getting` → named source-set `dependencies {}`; drop Jetifier; drop domain `iosX64`; `kotlin.native.ignoreDisabledTargets=true`; assets `directories`; KrithiSearchRepository `!!`. Parser-test constructor deprecation and Compose `createEmptyComposeRule` v2 left (behavior-sensitive).
-- **2026-09-10**: Retired unused Kotlin lyric-scrape path. Python `structure_parser.py` is canonical. Removed `KrithiStructureParser`, `SectionHeaderDetector`, `HtmlTextExtractor`, `ScrapeJsonSanitizer`, `ScrapeCache`, unused `TempleScrapingService`/`GeocodingService`, and Jsoup/Caffeine catalog entries. Kept `StructuralVotingEngine` (live ingestion).
+- **2026-09-20**: Batch 4 — AGP `9.4.1`, Ktor `3.6.0` (replaced deprecated `receiveNullable` with `receive<T?>()`), AWS SDK `2.55.1`, Flyway `13.7.0` (catalog + `compose.yaml` + CI + worker `FLYWAY_IMAGE`), Vite `8.3.0`, Vitest `5.0.1`, React Router `7.18.4`, TanStack Query `5.103.1`, ESLint `10.11.0`, autoprefixer `10.6.1`, `@types/node` `26.6.2`, worker psycopg `3.3.6` / google-genai `2.24.0` / ruff `0.16.8`. jsdom **30.1.0 held** — Vitest 5.0.1 jsdom workers crash with `addEventListener` EventTarget brand check; stay on `30.0.1`. Still deferred: TypeScript 7, CMP 1.13-alpha, serialization 1.12-RC, Gradle 9.8-rc, eslint-plugin-react-hooks 7.1.1.

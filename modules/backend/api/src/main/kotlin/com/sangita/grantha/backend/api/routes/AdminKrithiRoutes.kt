@@ -16,7 +16,6 @@ import com.sangita.grantha.shared.domain.model.ValidationResult
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.request.receive
-import io.ktor.server.request.receiveNullable
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.Route
@@ -89,7 +88,7 @@ fun Route.adminKrithiRoutes(
         post("/{id}/validate") {
             val id = parseUuidParam(call.parameters["id"], "krithiId")
                 ?: return@post call.respondText("Missing krithi ID", status = HttpStatusCode.BadRequest)
-            val request = call.receiveNullable<ValidateKrithiRequest>() ?: ValidateKrithiRequest()
+            val request = call.receive<ValidateKrithiRequest?>() ?: ValidateKrithiRequest()
 
             val krithi = krithiService.getKrithi(id)
                 ?: return@post call.respondText("Krithi not found", status = HttpStatusCode.NotFound)

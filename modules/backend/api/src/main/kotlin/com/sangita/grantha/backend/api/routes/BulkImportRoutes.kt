@@ -26,7 +26,7 @@ import java.net.URI
 import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.uuid.Uuid
-import io.ktor.utils.io.readRemaining
+import io.ktor.utils.io.readBuffer
 import io.ktor.utils.io.core.readBytes
 import org.apache.commons.csv.CSVFormat
 import java.nio.charset.StandardCharsets
@@ -74,7 +74,7 @@ fun Route.bulkImportRoutes(service: BulkImportOrchestrationService, importServic
                             return@forEachPart
                         }
 
-                        val fileBytes = part.provider().readRemaining().readByteArray()
+                        val fileBytes = part.provider().readBuffer().readByteArray()
 
                         // Enforce maximum file size to prevent OOM and abuse
                         if (fileBytes.size > MAX_MANIFEST_SIZE_BYTES) {
