@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 3.5.0 |
-| **Last Updated** | 2026-09-10 |
+| **Version** | 3.5.1 |
+| **Last Updated** | 2026-09-20 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Current guide |
 
@@ -34,7 +34,7 @@ At this documentation review, the directory contains `V01`–`V60` and six repea
 | [V59](../../database/migrations/V59__musical_form_unestablished.sql) | `UNESTABLISHED` musical-form enum value |
 | [V60](../../database/migrations/V60__musical_form_default_unestablished.sql) | Default unclassified form for new compositions |
 
-Earlier TRACK-133 corpus-fix files also used numbers V58–V62 and were retired in TRACK-139. They are different files from the current V58–V60 schema migrations. Identify history by full filename/description/checksum before making any recovery decision.
+Earlier TRACK-133 corpus-fix files also used numbers V58–V62 and were retired in TRACK-139. They are different files from the current V58–V60 schema migrations. Identify history by full filename/description/checksum before making any recovery decision. TRACK-139 later retired `V46__delete_incomplete_devanagari_amba_nilayatakshi.sql` the same way (file delete plus the matching history row keyed on version *and* description).
 
 ## 3. Migration workflow
 

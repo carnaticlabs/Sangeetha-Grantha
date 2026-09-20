@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-09-10 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-09-20 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Evidence record |
 
@@ -21,7 +21,7 @@ Working log: [TRACK-139](../../conductor/tracks/TRACK-139-retire-corpus-data-fix
 - **Ingest:** `ImportService.reingestMappedKrithi` writes `is_ragamalika` and ordered `krithi_ragas`. Do not gate payload raga names through `NameNormalizationService.normalizeRaga` — that helper strips honorific `sri` and would drop raga Sri.
 - **Reference data:** `R__seed_06` aliases `nATa`/`gauLa`/`kEdAra`/`saurAshTra` → keepers (ITRANS fold does not reach them).
 - **Retired:** `V58`–`V62` deleted. Long-lived DBs: Flyway Community `repair` does not drop missing history rows; delete those `flyway_schema_history` versions so latest available is V57. Next schema file is **V58**.
-- **Kept:** `V38`, `V45`–`V47` (evaluated, not parser-superseded as a batch).
+- **Kept:** `V38`, `V45`, `V47` (evaluated, not parser-superseded as a batch). `V46` retired 2026-09-20 after `amba nIlAyatAkshi` Devanagari reached 3 stored sections.
 - **Guardrail:** `.claude/hooks/protect-migrations.py` + `make agent-evals` deny new corpus DML in `V__` unless `-- corpus-data-fix: allow`. Grandfather cutoff is V57.
 
 ## Recovery dump

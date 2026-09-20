@@ -2,7 +2,7 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.1.0 |
-| **Last Updated** | 2026-09-10 |
+| **Last Updated** | 2026-09-20 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Current guide |
 
@@ -29,7 +29,7 @@ Use [Conductor](../conductor/tracks.md) for task/node status and the [feature ma
 | Rasika release acceptance | Native runtime journeys and manual TalkBack/VoiceOver proof | [TRACK-140](../conductor/tracks/TRACK-140-rasika-discovery-experience.md) |
 | Later discovery | Additional metadata directories, collections/recents, broader editorial Home features | [Mobile PRD](./01-requirements/mobile/prd.md) |
 | Payload convergence | Legacy payload compatibility remains | [TRACK-096](../conductor/tracks/TRACK-096-payload-format-convergence.md) |
-| Corpus reingestion closure | Remaining verification/closure for retired data-fix migration work | [TRACK-139](../conductor/tracks/TRACK-139-retire-corpus-data-fix-migrations.md) |
+| Corpus reingestion closure | V58–V62 and V46 retired; V38/V45/V47 remain as historical one-offs | [TRACK-139](../conductor/tracks/TRACK-139-retire-corpus-data-fix-migrations.md) |
 | Interactive authentication | OAuth/OTP and finer persona roles | [TRACK-119](../conductor/tracks/TRACK-119-oauth-otp-auth.md) |
 | Incomplete console surfaces | User/role UI placeholders and some sourcing quality responses | [Admin guide](./05-frontend/admin-web/ui-specs.md) |
 | Production delivery | Environment-specific deployment, rollback/restore proof, store submission | [Deployment readiness](./08-operations/deployment.md) |
