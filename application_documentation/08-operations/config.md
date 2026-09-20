@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.3.0 |
-| **Last Updated** | 2026-09-10 |
+| **Version** | 1.3.1 |
+| **Last Updated** | 2026-09-20 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Current guide |
 
@@ -40,6 +40,7 @@ Sources: [API loader](../../modules/backend/api/src/main/kotlin/com/sangita/gran
 | `TOKEN_TTL_SECONDS` | Access-token lifetime; loader default 86400 |
 | `CORS_ALLOWED_ORIGINS` | Accepted browser origins |
 | `STORAGE_UPLOAD_DIR`, `STORAGE_PUBLIC_URL` | Upload storage and public URL settings |
+| `CATALOGUE_USAGE_DIR` | Dedicated catalogue-usage JSONL directory (default `build/track-138/usage`); 10 MiB / 7 day / 100 MiB operational retention |
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD` | Account provisioning command inputs |
 
 The stock Compose services use database host `db`. Host processes use `localhost`. `DATABASE_URL` is the worker connection variable; it is not a replacement for the backend's `DB_*` variables. Likewise, setting a host `DATABASE_URL` does not redirect the Makefile's hardcoded Compose migration service to a remote database.

@@ -26,14 +26,18 @@ private fun launchArguments(): List<String> =
 
 fun MainViewController(): UIViewController {
     val arguments = launchArguments()
+    val useOffline = RasikaUiTestHarness.OFFLINE_ARGUMENT in arguments
     val useFixtures = RasikaUiTestHarness.FIXTURES_ARGUMENT in arguments
     val kv = IosKeyValueStore()
     if (RasikaUiTestHarness.RESET_STATE_ARGUMENT in arguments) {
         RasikaUiTestHarness.resetLocalState(kv)
     }
     val container = MobileAppContainer(
-        // Live Ktor client. For offline UI review, inject CatalogueRepository(FixtureCatalogueApi()).
-        catalogue = if (useFixtures) RasikaUiTestHarness.fixtureCatalogue() else iosLiveCatalogue(),
+        catalogue = when {
+            useOffline -> RasikaUiTestHarness.unavailableCatalogue()
+            useFixtures -> RasikaUiTestHarness.fixtureCatalogue()
+            else -> iosLiveCatalogue()
+        },
         favourites = FavouritesRepository(CodecBackedBookmarkStore(kv)),
         preferences = PreferencesRepository(CodecBackedPreferencesStore(kv)),
         session = MobileSession(),

@@ -336,3 +336,49 @@ class FixtureCatalogueApi(
         return filter { name(it).lowercase().contains(needle) }
     }
 }
+
+/**
+ * TRACK-138 R11: a catalogue that never reaches the network. Native journeys use this
+ * to prove connection-failure copy and that local favourites survive the outage.
+ * This is not an OS airplane-mode toggle; it is the same product-visible failure.
+ */
+class UnavailableCatalogueApi : CatalogueApi {
+    private fun fail(): Nothing = throw CatalogueFailure.Unavailable()
+
+    override suspend fun getDiscovery(interaction: InteractionContext) = fail()
+
+    override suspend fun searchKrithis(
+        query: String?,
+        composerId: Uuid?,
+        ragaId: Uuid?,
+        page: Int,
+        pageSize: Int,
+        interaction: InteractionContext,
+    ) = fail()
+
+    override suspend fun getKrithi(id: Uuid, interaction: InteractionContext) = fail()
+
+    override suspend fun getLyrics(
+        krithiId: Uuid,
+        variantId: Uuid,
+        interaction: InteractionContext,
+    ) = fail()
+
+    override suspend fun searchRagas(
+        query: String?,
+        page: Int,
+        pageSize: Int,
+        interaction: InteractionContext,
+    ) = fail()
+
+    override suspend fun getRaga(id: Uuid, interaction: InteractionContext) = fail()
+
+    override suspend fun searchComposers(
+        query: String?,
+        page: Int,
+        pageSize: Int,
+        interaction: InteractionContext,
+    ) = fail()
+
+    override suspend fun getComposer(id: Uuid, interaction: InteractionContext) = fail()
+}

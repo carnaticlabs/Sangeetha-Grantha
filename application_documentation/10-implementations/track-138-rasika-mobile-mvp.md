@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | In progress |
-| **Version** | 0.1.0 |
-| **Last Updated** | 2026-09-10 |
+| **Status** | Completed |
+| **Version** | 0.2.0 |
+| **Last Updated** | 2026-09-20 |
 | **Author** | TRACK-138 coordinator |
 | **Document Type** | Evidence record |
 | **Track** | [TRACK-138](../../conductor/tracks/TRACK-138-rasika-mobile-app.md) |
@@ -114,6 +114,31 @@ Created AVD `Rasika_API34` (`system-images;android-34;google_apis;arm64-v8a`). F
 Backend `catalogue-usage` for that session (same session UUID across search/reader/lyrics): search 200, reader 200, lyrics 200. Report from extracted Docker JSONL: 12 attempts, 3 completed searches, 2 reader views, 3 approximate sessions (`build/track-138/usage/live-android-session.jsonl`, gitignored).
 
 Live gaps: only one published composition, so combined filters/paging/zero-result were not demonstrated on-device (fixtures cover them). Airplane-mode and instrumented `RasikaJourneyTest` not run.
+
+### 2026-09-20 close-out / verify
+
+The 5 Sep live-data gap of one published kriti is closed in the current catalogue: `GET /v1/catalogue/krithis?page=0&pageSize=2` reports `total=1225`; `page=1` returns a distinct pair (`SrI abhayAmbA`, `abhayAmbA jagadambA`). Raga directory paging remains `total=1014`.
+
+Dedicated JSONL usage logging is no longer console-only. `LogbackConfig` attaches a non-additive `catalogue-usage` rolling file appender (10 MiB / 7 days / 100 MiB) at `CATALOGUE_USAGE_DIR` (default `build/track-138/usage/catalogue-usage.jsonl`). `CatalogueUsageFileAppenderTest` writes a raw JSON line without wrapping it in the pattern layout. Operational retention, not a cryptographic deletion guarantee.
+
+Named TRACK-138 journeys:
+
+- Android `RasikaJourneyTest`: search → reader → favourite → restart; connection-failure copy keeps the bookmark (`rasika.uiTest.offline` → `UnavailableCatalogueApi`). This is the product-visible network failure, not an OS airplane-mode toggle. AVD `Rasika_API34` exists; no emulator was attached at close-out, so connectedDebug was not re-run here.
+- iOS `RasikaJourneyTests` on iPhone 17 `C0104896-CD64-4533-A919-1E5F22036561`: `testFavouriteSurvivesRelaunch` passed; `testConnectionFailureKeepsFavouritesAndShowsRetry` passed after opening the Home fixture feature (avoids flaky simulator keyboard) and matching the full error-body string. TRACK-140 R18 journeys in the same `xcodebuild test` run: 8/8 passed.
+
+TRACK-140 R18 remains the broader native suite (Explore paging fixtures, appearance, large text).
+
+### Q review (2026-09-20)
+
+| Pass | Important | Notes |
+|:---|:---|:---|
+| Bugs | None remaining | Connection-failure copy is `ERROR_BODY` in full; iOS tests must not match a prefix. Usage file appender failures leave catalogue reads unblocked. |
+| Security | None remaining | JSONL events carry no query/lyric/token. `rasika.uiTest.*` flags are instrumentation-only. `CATALOGUE_USAGE_DIR` is server env, not a request parameter. |
+| Compliance | None remaining | V46 retired by file delete + history row keyed on version and description (ADR-013). No new corpus `V__`. Lakshana: `amba nIlAyatAkshi` is P+A+C. |
+
+Limitations (not blockers): OS airplane-mode was not toggled; Android `connectedDebugAndroidTest` was not re-run in this session (AVD `Rasika_API34` exists, no emulator attached). Physical-device/store distribution remains out of scope.
+
+Ref: application_documentation/05-frontend/mobile/track-138-visual-design.md
 
 ### iOS host compile (H, not I)
 

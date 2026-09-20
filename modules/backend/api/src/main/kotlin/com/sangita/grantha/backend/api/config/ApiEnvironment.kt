@@ -42,7 +42,13 @@ data class ApiEnvironment(
     ),
     val frontendPort: Int = 5173,
     val backendPort: Int = 8080,
-)
+    /** Dedicated catalogue-usage JSONL directory. Operational retention, not a deletion guarantee. */
+    val catalogueUsageDirectory: String = DEFAULT_CATALOGUE_USAGE_DIRECTORY,
+) {
+    companion object {
+        const val DEFAULT_CATALOGUE_USAGE_DIRECTORY: String = "build/track-138/usage"
+    }
+}
 
 enum class Environment {
     DEV, TEST, PROD
@@ -163,7 +169,11 @@ object ApiEnvironmentLoader {
             storage = storageConfig,
             corsAllowedOrigins = corsAllowedOrigins,
             frontendPort = frontendPort,
-            backendPort = port
+            backendPort = port,
+            catalogueUsageDirectory = get(
+                "CATALOGUE_USAGE_DIR",
+                ApiEnvironment.DEFAULT_CATALOGUE_USAGE_DIRECTORY,
+            )!!,
         )
     }
 

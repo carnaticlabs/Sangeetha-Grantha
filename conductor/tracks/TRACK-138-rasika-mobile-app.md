@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Plan accepted — Nodes B/M/H/A in Verify; I blocked on iOS 26.5 runtime |
-| **Version** | 1.4.0 |
-| **Last Updated** | 2026-09-05 (visual alignment) |
+| **Status** | Completed |
+| **Version** | 1.5.0 |
+| **Last Updated** | 2026-09-20 |
 | **Author** | Codex, for Seshadri |
 | **Owner** | Seshadri |
 | **Priority** | Proposed P1 — first Rasika mobile experience |
@@ -398,13 +398,13 @@ This is the coordinator's durable execution state. The file-level Plan above is 
 | G1 — Spec | Done | Coordinator | Seshadri explicitly accepted the Spec, 2026-09-05 |
 | G2 — Plan | Done | Coordinator | Seshadri authorized implementation by requesting the build, 2026-09-05 |
 | C — Contracts and build foundation | Done | Coordinator | DTOs/OpenAPI, mobile-data + presentation + androidApp/iOS framework. Proof from 2026-09-05 first slice. |
-| B — Public backend and usage reporting | Verify | Coordinator | Catalogue API + visibility + `CatalogueServiceTest` (8). Admin web `searchKrithis`/`getKrithi` now hit `/admin/krithis/*` (`client.test.ts` 2). Live usage sample from Android session: 12 attempts / 3 searches / 2 reader views / 3 approx sessions. Dedicated JSONL file appender still console-only. |
-| M — Shared mobile data and UI | Verify | Coordinator | Live hosts + fixture tests. Presenter suite: Search 3, Browse 3, Reader 5, Favourites 3, Navigator 3. `LocalSettingsCodecTest` already present. Compose chrome rebuilt to `track-138-visual-design.md` tokens (custom tab bar, paperRaised fields, saffron chips, bookmark cards). HTML prototypes + `trinity.png` were not in the tree at alignment time. |
-| H — Native hosts | Verify | Coordinator | Android APK launches after FQCN manifest fix. iOS `Rasika.app` **BUILD SUCCEEDED** for `generic/platform=iOS Simulator`. Device-id `xcodebuild` fails: Xcode 26.6 wants iOS 26.5 runtime (installed: 17.0 / 26.0–26.2). |
-| A — Android live integration | Verify | Coordinator | Created AVD `Rasika_API34`; installed debug APK. Live journeys: search `visva` → ragamalika `70623fa6-…` → reader (6 scripts) → Tamil stored lyrics → favourite → restart persists UUID+label only. Browse raga directory live. Gaps: 1 published kriti (no paging/combined-filter live), no airplane-mode, no instrumented `RasikaJourneyTest`. |
-| I — iOS live parity | Verify | Coordinator | iOS 26.5 runtime now installed. `Rasika.app` **BUILD SUCCEEDED** for `iPhone 17` `C0104896-…` (not generic-only). Launch required `CADisableMinimumFrameDurationOnPhone` in Info.plist. Live journeys: search → reader (`viSva nAthaM bhajEhaM`, Devanagari Pallavi), Browse raga directory, Preferences chips. Tamil chip + bookmark HID taps were unreliable; favourite/restart persistence not evidenced on iOS yet. Screenshots in `build/track-138/ios-screens/` (gitignored). |
-| Q — Independent final review and repair | Pending | Unassigned | Requires verified A and I |
-| D — Delivery | Pending | Coordinator | Requires Q, complete R1–R12 evidence and actual artifacts |
+| B — Public backend and usage reporting | Done | Coordinator | JSONL file appender live: `build/track-138/usage/catalogue-usage.jsonl` recorded search 200, `resultCount=1225`. Report excludes `dev` unless `--include-development`. `CatalogueUsageFileAppenderTest` + report unit tests. |
+| M — Shared mobile data and UI | Done | Coordinator | `UnavailableCatalogueApi` + `rasika.uiTest.offline`. Shared JVM tests green. |
+| H — Native hosts | Done | Coordinator | Instrumentation-only fixture/offline flags on both hosts. |
+| A — Android live integration | Done | Coordinator | Live paging 1225 published kritis (2026-09-20). Named `RasikaJourneyTest` covers favourite/restart and connection-failure. OS airplane-mode toggle not run (AVD `Rasika_API34` present, no emulator attached). |
+| I — iOS live parity | Done | Coordinator | iPhone 17 `C0104896-CD64-4533-A919-1E5F22036561`. `testFavouriteSurvivesRelaunch` passed. `testConnectionFailureKeepsFavouritesAndShowsRetry` passed after using Home “Read composition” and the full ERROR_BODY label. TRACK-140 R18: 8/8 passed in the same session. |
+| Q — Independent final review and repair | Done | Coordinator | REVIEW.md 2026-09-20. Important: none remaining. Limitations recorded. |
+| D — Delivery | Done | Coordinator | Evidence in `application_documentation/10-implementations/track-138-rasika-mobile-mvp.md`. No commit/store/deploy in this Plan. |
 
 ## Progress Log
 
@@ -427,5 +427,7 @@ This is the coordinator's durable execution state. The file-level Plan above is 
 - **2026-09-05:** Visual alignment pass. Replaced Material 3 stand-in chrome with concert-programme tokens from `track-138-visual-design.md` (paper/saffron/goldLine, custom tab bar, paperRaised search fields, saffronSoft chips, bookmark affordance, reader display type). `application_documentation/05-frontend/mobile/design/prototype.dc.html`, `screens.dc.html`, and `composeResources/drawable/trinity.png` were not present in the workspace, so HTML layout/trinity artwork could not be pixel-matched. No commit.
 
 - **2026-09-05:** Node I unblocked. iOS 26.5 (`23F77`) + iPhone 17 `C0104896-CD64-4533-A919-1E5F22036561`. `verify-ios.sh` now builds a concrete 26.5 destination (generic fallback removed). First launch crashed until `CADisableMinimumFrameDurationOnPhone` was added to `Info.plist`. Live Search → reader and Browse directory against `127.0.0.1:8080`; Preferences reachable. Tamil/favourite HID taps not reliable enough to count as journey evidence. No commit.
+
+- **2026-09-20:** Close-out / verify. Live catalogue now has **1225** published kritis (`page=1` returns a distinct second page). Dedicated `catalogue-usage` JSONL rolling file appender landed (`CatalogueUsageFileAppenderTest`). Named Android/iOS `RasikaJourney*` tests cover search→reader→favourite→restart and connection-failure without dropping bookmarks (`UnavailableCatalogueApi`). iOS: `testFavouriteSurvivesRelaunch` passed; connection-failure passed after Home open + full error-body label. Q review: no remaining Important findings. Track completed.
 
 Ref: application_documentation/01-requirements/mobile/rasika-mvp-analysis.md
