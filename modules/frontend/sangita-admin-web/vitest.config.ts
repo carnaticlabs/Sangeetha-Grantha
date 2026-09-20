@@ -1,6 +1,5 @@
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
-import path from 'path';
 
 // Standalone test config (avoids merging with the function-based vite.config.ts).
 // `defineConfig` must come from 'vitest/config' so the `test` field is typed.
@@ -12,7 +11,7 @@ export default defineConfig({
     plugins: [react()] as any,
     resolve: {
         alias: {
-            '@': path.resolve(__dirname, '.'),
+            '@': import.meta.dirname,
         },
     },
     test: {

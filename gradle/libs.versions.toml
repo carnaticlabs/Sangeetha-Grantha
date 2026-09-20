@@ -1,13 +1,13 @@
 [versions]
 kotlin = "2.4.20"
-agp = "9.4.0"
+agp = "9.4.1"
 # CMP 1.12.x requires Kotlin language/API >= 2.2; paired with Kotlin 2.4.20 (TRACK-142)
 compose = "1.12.0"
 # material3 ships on its own release train since the CMP component split (1.9.0 still latest stable)
 composeMaterial3 = "1.9.0"
 # material-icons-extended is frozen upstream at 1.7.3 (migrate to Material Symbols eventually)
 composeMaterialIcons = "1.7.3"
-ktor = "3.5.2"
+ktor = "3.6.0"
 kotlinxCoroutinesCore = "1.11.0"
 kotlinxDatetime = "0.8.0"
 kotlinxSerializationJson = "1.11.0"
@@ -32,7 +32,7 @@ commonsCsv = "1.14.1"
 koin = "4.2.2"
 micrometer = "1.17.1"
 shadow = "9.6.1"
-awsSdk = "2.54.15"
+awsSdk = "2.55.1"
 googleAuth = "1.52.0"
 dotenvKotlin = "6.5.1"
 
@@ -40,7 +40,7 @@ mockk = "1.14.11"
 password4j = "1.8.4"
 
 # Migrations + integration-test substrate (ADR-013 / TRACK-110). JUnit comes via kotlin-test-junit5.
-flyway = "13.5.0"
+flyway = "13.7.0"
 testcontainers = "2.0.5"
 
 [plugins]
@@ -83,7 +83,7 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 
-# --- Ktor Client (3.3.3) ---
+# --- Ktor Client (3.6.0) ---
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
@@ -92,7 +92,7 @@ ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negoti
 ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 
-# --- Ktor Server (3.3.3) ---
+# --- Ktor Server (3.6.0) ---
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
 ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
 ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
