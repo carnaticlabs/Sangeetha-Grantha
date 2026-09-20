@@ -27,14 +27,18 @@ class MainActivity : ComponentActivity() {
 
         // TRACK-140 R18. Only an instrumentation launch can put these extras on the
         // intent, so a normally launched app always takes the live client below.
+        val useOffline = intent?.getBooleanExtra(RasikaUiTestHarness.OFFLINE_FLAG, false) == true
         val useFixtures = intent?.getBooleanExtra(RasikaUiTestHarness.FIXTURES_FLAG, false) == true
         if (intent?.getBooleanExtra(RasikaUiTestHarness.RESET_STATE_FLAG, false) == true) {
             RasikaUiTestHarness.resetLocalState(kv)
         }
 
         val container = MobileAppContainer(
-            // Live Ktor client. For offline UI review, inject CatalogueRepository(FixtureCatalogueApi()).
-            catalogue = if (useFixtures) RasikaUiTestHarness.fixtureCatalogue() else androidLiveCatalogue(),
+            catalogue = when {
+                useOffline -> RasikaUiTestHarness.unavailableCatalogue()
+                useFixtures -> RasikaUiTestHarness.fixtureCatalogue()
+                else -> androidLiveCatalogue()
+            },
             favourites = FavouritesRepository(CodecBackedBookmarkStore(kv)),
             preferences = PreferencesRepository(CodecBackedPreferencesStore(kv)),
             session = MobileSession(),

@@ -14,7 +14,7 @@ from collections import Counter
 from typing import Any
 
 
-def load_events(raw_lines: list[str]) -> list[dict[str, Any]]:
+def load_events(raw_lines: list[str], *, include_development: bool = True) -> list[dict[str, Any]]:
     seen: set[str] = set()
     events: list[dict[str, Any]] = []
     for line in raw_lines:
@@ -27,6 +27,9 @@ def load_events(raw_lines: list[str]) -> list[dict[str, Any]]:
             continue
         event_id = payload.get("eventId")
         if not event_id or event_id in seen:
+            continue
+        environment = str(payload.get("environment") or "").lower()
+        if not include_development and environment in {"dev", "development", "test"}:
             continue
         seen.add(event_id)
         events.append(payload)
@@ -65,13 +68,22 @@ def main(argv: list[str] | None = None) -> int:
         "--input",
         help="JSONL file of catalogue usage events (default: stdin)",
     )
+    parser.add_argument(
+        "--include-development",
+        action="store_true",
+        help="Include events tagged environment=dev/development/test (excluded by default)",
+    )
     args = parser.parse_args(argv)
     if args.input:
         with open(args.input, encoding="utf-8") as handle:
             lines = handle.readlines()
     else:
         lines = sys.stdin.readlines()
-    json.dump(report(load_events(lines)), sys.stdout, indent=2)
+    json.dump(
+        report(load_events(lines, include_development=args.include_development)),
+        sys.stdout,
+        indent=2,
+    )
     sys.stdout.write("\n")
     return 0
 

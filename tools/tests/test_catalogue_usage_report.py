@@ -46,6 +46,16 @@ class CatalogueUsageReportTest(unittest.TestCase):
         self.assertEqual(2, summary["approximateSessions"])
         self.assertTrue(summary["sessionsAreNotUniquePeople"])
 
+    def test_excludes_development_events_unless_requested(self) -> None:
+        lines = [
+            json.dumps({**event("prod", "search", result=2), "environment": "prod"}),
+            json.dumps({**event("dev", "search", result=0), "environment": "dev"}),
+        ]
+        excluded = report(load_events(lines, include_development=False))
+        self.assertEqual(1, excluded["attempts"])
+        included = report(load_events(lines, include_development=True))
+        self.assertEqual(2, included["attempts"])
+
 
 if __name__ == "__main__":
     unittest.main()

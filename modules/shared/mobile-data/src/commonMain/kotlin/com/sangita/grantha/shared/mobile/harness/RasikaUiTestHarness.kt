@@ -1,6 +1,7 @@
 package com.sangita.grantha.shared.mobile.harness
 
 import com.sangita.grantha.shared.mobile.fixture.FixtureCatalogueApi
+import com.sangita.grantha.shared.mobile.fixture.UnavailableCatalogueApi
 import com.sangita.grantha.shared.mobile.repository.CatalogueRepository
 import com.sangita.grantha.shared.mobile.storage.KeyValueStore
 import com.sangita.grantha.shared.mobile.storage.LocalSettingsCodec
@@ -10,7 +11,7 @@ import com.sangita.grantha.shared.mobile.storage.LocalSettingsCodec
  *
  * Journeys must prove navigation, persistence and appearance behaviour, none of which
  * a live catalogue makes reproducible: the corpus changes, the network can fail, and a
- * device carries state from the previous run. Both hosts therefore accept two launch
+ * device carries state from the previous run. Both hosts therefore accept launch
  * flags that a UI test — and only a UI test — sets.
  *
  * The fixture catalogue is the same [FixtureCatalogueApi] the shared presenter tests use,
@@ -29,13 +30,21 @@ object RasikaUiTestHarness {
     /** Clear bookmarks and preferences before the first frame, for a fresh-install journey. */
     const val RESET_STATE_FLAG: String = "rasika.uiTest.resetState"
 
+    /** Every catalogue call fails as if the device had no network. */
+    const val OFFLINE_FLAG: String = "rasika.uiTest.offline"
+
     /** iOS passes flags as process arguments; these are the argument spellings. */
     const val FIXTURES_ARGUMENT: String = "-$FIXTURES_FLAG"
     const val RESET_STATE_ARGUMENT: String = "-$RESET_STATE_FLAG"
+    const val OFFLINE_ARGUMENT: String = "-$OFFLINE_FLAG"
 
     /** A catalogue backed by the shared fixtures, with no network dependency. */
     fun fixtureCatalogue(): CatalogueRepository =
         CatalogueRepository(FixtureCatalogueApi(includePagingPages = true))
+
+    /** A catalogue that always fails with [com.sangita.grantha.shared.mobile.network.CatalogueFailure.Unavailable]. */
+    fun unavailableCatalogue(): CatalogueRepository =
+        CatalogueRepository(UnavailableCatalogueApi())
 
     /**
      * Remove every locally persisted Rasika document. Only the single settings key is

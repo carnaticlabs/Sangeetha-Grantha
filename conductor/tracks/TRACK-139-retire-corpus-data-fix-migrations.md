@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | In Progress |
-| **Version** | 0.3.0 |
-| **Last Updated** | 2026-09-06 |
+| **Status** | Completed |
+| **Version** | 0.4.0 |
+| **Last Updated** | 2026-09-20 |
 | **Author** | Sangeetha Grantha Team |
 | **Priority** | P2 — architectural hygiene; removes a recurring wrong-vehicle pattern |
 | **Decision** | [ADR-012](../../application_documentation/02-architecture/decisions/ADR-012-unified-extraction-architecture.md) (Python extracts / Kotlin ingests / Curator reviews) · [ADR-013](../../application_documentation/02-architecture/decisions/ADR-013-db-migration-with-flyway.md) (Flyway is schema + reference data, **not** corpus data) · [ADR-014](../../application_documentation/02-architecture/decisions/ADR-014-versioned-canon.md) (versioned canon / provenance) |
@@ -12,10 +12,10 @@
 # TRACK-139: Retire Corpus Data-Fix Migrations — Parser/Import Ownership of Corpus Correctness
 
 **ID:** TRACK-139
-**Status:** In Progress
+**Status:** Completed
 **Owner:** Sangeetha Grantha Team
 **Created:** 2026-09-06
-**Updated:** 2026-09-06
+**Updated:** 2026-09-20
 
 ## Goal
 
@@ -199,8 +199,9 @@ Corpus-data corrections are being delivered as Flyway `V__` migrations. This (a)
 - [x] Intent / Spec / Plan accepted
 - [x] Phase 1–2: parser/reingest ownership + delete V58–V62 + Flyway history aligned to V57
 - [x] Live re-extract + reingest of the five krithis (6 / 6 / 7 / P+A+C=3 / ragamalika-10)
-- [x] Phase 3 evaluate V38/V45/V46/V47 (keep; see below)
+- [x] Phase 3 evaluate V38/V45/V46/V47 (keep V38/V45/V47; retire V46)
 - [x] Phase 4 guardrail
+- [x] Optional: confirm `amba nIlAyatAkshi` Devanagari is complete, retire V46
 
 ## Phase 3 evaluation (2026-09-06)
 
@@ -208,7 +209,7 @@ Corpus-data corrections are being delivered as Flyway `V__` migrations. This (a)
 |:---|:---|:---|
 | V38 | **KEEP** | Corpus-wide historical cleanup. Parser already demotes MKS / merges dual-format for *new* imports; `make db-reset` never replays this corpus. Deleting it does not re-import the whole catalogue (non-goal). |
 | V45 | **KEEP** (curator form rule) | `bRhannAyaki vara dAyaki` Pallavi + Samashti Charanam. One UUID delete; not reproduced by a general parser rule. Convert to a curator correction if the parser re-introduces Anupallavi on re-import. |
-| V46 | **KEEP for now** | Temporary unblock for `amba nIlAyatAkshi` Devanagari variant. Parser has the unlabeled-leading-block fix; re-import when the stack is up, then this file can retire like V58. |
+| V46 | **RETIRED 2026-09-20** | Live `amba nIlAyatAkshi` (`0dd869d5-…`) is Pallavi+Anupallavi+Charanam with six scripts including Devanagari at 3 lyric sections. Incomplete variant `4281b4e2-…` is gone. Deleted `V46__delete_incomplete_devanagari_amba_nilayatakshi.sql` and the matching `flyway_schema_history` row (`version=46` AND that description). `make migrate-status` reports schema version 60 with no missing V46. |
 | V47 | **KEEP** | Identity demerge of two Dikshitar works sharing a title. Matcher/title-collision, not structure_parser. SQL already applied; deleting would not prevent a future bad merge. |
 
 ## Progress Log
@@ -217,3 +218,4 @@ Corpus-data corrections are being delivered as Flyway `V__` migrations. This (a)
 - **2026-09-06**: Intent/Spec/Plan accepted. Parser: hyphen-wrap two-line pallavi; Dashavatara raga sequence on RAGA_SEGMENT. Kotlin reingest writes `is_ragamalika` + `krithi_ragas`. R__seed_06 aliases for nATa/gauLa/kEdAra/saurAshTra. Deleted V58–V62; live history aligned to V57; `make agent-evals` green. Phase 3 keep V38/V45/V46/V47.
 - **2026-09-06**: Live re-extract + reingest of the five TRACK-133 URLs. Junction tables populated. `NameNormalizationService.normalizeRaga` must not gate ragamalika names — it strips honorific `sri` and would drop raga Sri. Dual-URL krithis: last reingest wins; the 6-section Balahamsa / Saveri payloads were applied last so canon is 6/6. The sibling Huseni / Sankarabharanam URLs still parse to 14 and 10 nonempty sections (matcher collision, not empty phantoms).
 - **2026-09-06**: Wrote `storage/backups/sangita_grantha_20260906_post_track139.dump` from live `sangita_grantha` (V57 + reingested five krithis). `post_v56` / `post_v57` left immutable. Restore still needs the `raga_match_key` `search_path` workaround in [migrations.md §5](../../application_documentation/04-database/migrations.md#5-rollback--history-tracking).
+- **2026-09-20**: Optional V46 close-out. `amba nIlAyatAkshi` Devanagari is 3/3; retired V46 by file delete + history-row delete keyed on version *and* description. V38/V45/V47 remain. Track completed.
