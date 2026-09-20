@@ -186,7 +186,9 @@ jobs:
           distribution: temurin
           java-version: '25'
       - uses: gradle/actions/setup-gradle@v6
-      - uses: android-actions/setup-android@v3
+      - uses: android-actions/setup-android@v4
+        with:
+          packages: platform-tools
       - name: Assemble debug APK
         run: ./gradlew :modules:mobile:androidApp:assembleDebug :modules:mobile:androidApp:assembleDebugAndroidTest --console=plain
 
