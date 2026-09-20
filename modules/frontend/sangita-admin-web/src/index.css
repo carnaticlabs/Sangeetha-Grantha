@@ -134,67 +134,257 @@ body {
 }
 
 /* ============================================================
-   Dark theme (provisional, from RasikaTokens dark set). Tailwind v4
-   utilities reference these vars, so redefining them re-skins the app.
-   Follows prefers-color-scheme, matching mobile's SYSTEM default.
+   Dark theme (from RasikaTokens dark set). Tailwind v4 utilities
+   reference these vars, so redefining them re-skins the app.
+
+   Keyed off [data-theme] rather than a media query: the pre-paint script
+   in index.html resolves the stored preference (light | dark | system)
+   to a concrete value and stamps it on <html>, so "system" still tracks
+   prefers-color-scheme while an explicit choice can override it.
    ============================================================ */
-@media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: dark;
-    --ink: #f3ebe0;
-    --muted: #b6a598;
-    --accent: #e08a4c;
-    --surface: #231c18;
-    --shadow: 0 18px 44px rgba(0, 0, 0, 0.5);
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ink: #f3ebe0;
+  --muted: #b6a598;
+  --accent: #e08a4c;
+  --surface: #231c18;
+  --shadow: 0 18px 44px rgba(0, 0, 0, 0.5);
 
-    --color-ink: #f3ebe0;
-    --color-ink-50: #1e1712;
-    --color-ink-100: #251d17;
-    --color-ink-200: #34291f;
-    --color-ink-300: #6a5647;
-    --color-ink-400: #8f7b6c;
-    --color-ink-500: #b6a598;
-    --color-ink-600: #cbbdb0;
-    --color-ink-700: #ddd2c6;
-    --color-ink-800: #ebe2d7;
-    --color-ink-900: #f3ebe0;
+  --color-ink: #f3ebe0;
+  --color-ink-50: #1e1712;
+  --color-ink-100: #251d17;
+  --color-ink-200: #34291f;
+  --color-ink-300: #6a5647;
+  --color-ink-400: #8f7b6c;
+  --color-ink-500: #b6a598;
+  --color-ink-600: #cbbdb0;
+  --color-ink-700: #ddd2c6;
+  --color-ink-800: #ebe2d7;
+  --color-ink-900: #f3ebe0;
 
-    --color-slate-50: #1e1712;
-    --color-slate-100: #251d17;
-    --color-slate-200: #34291f;
-    --color-slate-300: #4a3a2d;
-    --color-gray-50: #1e1712;
-    --color-gray-100: #251d17;
-    --color-gray-200: #34291f;
-    --color-gray-300: #4a3a2d;
+  --color-slate-50: #1e1712;
+  --color-slate-100: #251d17;
+  --color-slate-200: #34291f;
+  --color-slate-300: #4a3a2d;
+  --color-gray-50: #1e1712;
+  --color-gray-100: #251d17;
+  --color-gray-200: #34291f;
+  --color-gray-300: #4a3a2d;
 
-    --color-primary: #e08a4c;
-    --color-primary-dark: #e8a06a;
-    --color-primary-light: #3a2418;
-    --color-primary-50: #3a2418;
-    --color-primary-100: #472d1e;
-    --color-primary-600: #e8a06a;
-    --color-primary-700: #eeb488;
-    --color-primary-800: #f2c6a3;
+  --color-primary: #e08a4c;
+  --color-primary-dark: #e8a06a;
+  --color-primary-light: #3a2418;
+  --color-primary-50: #3a2418;
+  --color-primary-100: #472d1e;
+  --color-primary-600: #e8a06a;
+  --color-primary-700: #eeb488;
+  --color-primary-800: #f2c6a3;
 
-    --color-accent: #7fb3c3;
-    --color-accent-soft: rgba(127, 179, 195, 0.14);
-    --color-teal: #7fb3c3;
-    --color-teal-light: #6fa2b2;
+  --color-accent: #7fb3c3;
+  --color-accent-soft: rgba(127, 179, 195, 0.14);
+  --color-teal: #7fb3c3;
+  --color-teal-light: #6fa2b2;
 
-    --color-saffron: #e08a4c;
-    --color-saffron-deep: #e8a06a;
-    --color-gold: #8a7340;
-    --color-cream: #161210;
-    --color-cream-deep: #231c18;
+  --color-saffron: #e08a4c;
+  --color-saffron-deep: #e8a06a;
+  --color-gold: #8a7340;
+  --color-cream: #161210;
+  --color-cream-deep: #231c18;
 
-    --color-surface: #231c18;
-    --color-surface-light: #231c18;
-    --color-border: rgba(224, 138, 76, 0.22);
-    --color-border-light: rgba(224, 138, 76, 0.22);
-  }
+  --color-surface: #231c18;
+  --color-surface-light: #231c18;
+  --color-border: rgba(224, 138, 76, 0.22);
+  --color-border-light: rgba(224, 138, 76, 0.22);
 
-  body {
-    background: #161210;
-  }
+  /* -- Neutral ramps continue inverted so text-slate-700 etc. stay legible -- */
+  --color-slate-400: #8f7b6c;
+  --color-slate-500: #b6a598;
+  --color-slate-600: #cbbdb0;
+  --color-slate-700: #ddd2c6;
+  --color-slate-800: #ebe2d7;
+  --color-slate-900: #f3ebe0;
+  --color-gray-400: #8f7b6c;
+  --color-gray-500: #b6a598;
+  --color-gray-600: #cbbdb0;
+  --color-gray-700: #ddd2c6;
+  --color-gray-800: #ebe2d7;
+  --color-gray-900: #f3ebe0;
+
+  /*
+   * `bg-white` is used ~160 times as the panel/table/input ground. Tailwind v4
+   * compiles it to var(--color-white), so flipping the token turns every one of
+   * those surfaces dark instead of leaving cream text on a white row.
+   * `text-white`/`border-white` are re-pinned to cream below so labels sitting on
+   * saturated buttons stay light.
+   */
+  --color-white: #231c18;
+
+  /* -- Status scales: tints (50-300) go dark, text shades (600-900) go light -- */
+  /* red */
+  --color-red-50: oklch(0.21 0.035 27);
+  --color-red-100: oklch(0.26 0.055 27);
+  --color-red-200: oklch(0.34 0.075 27);
+  --color-red-300: oklch(0.44 0.095 27);
+  --color-red-600: oklch(0.74 0.13 27);
+  --color-red-700: oklch(0.82 0.1 27);
+  --color-red-800: oklch(0.88 0.07 27);
+  --color-red-900: oklch(0.93 0.045 27);
+
+  /* rose */
+  --color-rose-50: oklch(0.21 0.035 16);
+  --color-rose-100: oklch(0.26 0.055 16);
+  --color-rose-200: oklch(0.34 0.075 16);
+  --color-rose-300: oklch(0.44 0.095 16);
+  --color-rose-600: oklch(0.74 0.13 16);
+  --color-rose-700: oklch(0.82 0.1 16);
+  --color-rose-800: oklch(0.88 0.07 16);
+  --color-rose-900: oklch(0.93 0.045 16);
+
+  /* orange */
+  --color-orange-50: oklch(0.21 0.035 55);
+  --color-orange-100: oklch(0.26 0.055 55);
+  --color-orange-200: oklch(0.34 0.075 55);
+  --color-orange-300: oklch(0.44 0.095 55);
+  --color-orange-600: oklch(0.74 0.13 55);
+  --color-orange-700: oklch(0.82 0.1 55);
+  --color-orange-800: oklch(0.88 0.07 55);
+  --color-orange-900: oklch(0.93 0.045 55);
+
+  /* amber */
+  --color-amber-50: oklch(0.21 0.035 70);
+  --color-amber-100: oklch(0.26 0.055 70);
+  --color-amber-200: oklch(0.34 0.075 70);
+  --color-amber-300: oklch(0.44 0.095 70);
+  --color-amber-600: oklch(0.74 0.13 70);
+  --color-amber-700: oklch(0.82 0.1 70);
+  --color-amber-800: oklch(0.88 0.07 70);
+  --color-amber-900: oklch(0.93 0.045 70);
+
+  /* yellow */
+  --color-yellow-50: oklch(0.21 0.035 86);
+  --color-yellow-100: oklch(0.26 0.055 86);
+  --color-yellow-200: oklch(0.34 0.075 86);
+  --color-yellow-300: oklch(0.44 0.095 86);
+  --color-yellow-600: oklch(0.74 0.13 86);
+  --color-yellow-700: oklch(0.82 0.1 86);
+  --color-yellow-800: oklch(0.88 0.07 86);
+  --color-yellow-900: oklch(0.93 0.045 86);
+
+  /* green */
+  --color-green-50: oklch(0.21 0.035 150);
+  --color-green-100: oklch(0.26 0.055 150);
+  --color-green-200: oklch(0.34 0.075 150);
+  --color-green-300: oklch(0.44 0.095 150);
+  --color-green-600: oklch(0.74 0.13 150);
+  --color-green-700: oklch(0.82 0.1 150);
+  --color-green-800: oklch(0.88 0.07 150);
+  --color-green-900: oklch(0.93 0.045 150);
+
+  /* emerald */
+  --color-emerald-50: oklch(0.21 0.035 163);
+  --color-emerald-100: oklch(0.26 0.055 163);
+  --color-emerald-200: oklch(0.34 0.075 163);
+  --color-emerald-300: oklch(0.44 0.095 163);
+  --color-emerald-600: oklch(0.74 0.13 163);
+  --color-emerald-700: oklch(0.82 0.1 163);
+  --color-emerald-800: oklch(0.88 0.07 163);
+  --color-emerald-900: oklch(0.93 0.045 163);
+
+  /* teal */
+  --color-teal-50: oklch(0.21 0.035 183);
+  --color-teal-100: oklch(0.26 0.055 183);
+  --color-teal-200: oklch(0.34 0.075 183);
+  --color-teal-300: oklch(0.44 0.095 183);
+  --color-teal-600: oklch(0.74 0.13 183);
+  --color-teal-700: oklch(0.82 0.1 183);
+  --color-teal-800: oklch(0.88 0.07 183);
+  --color-teal-900: oklch(0.93 0.045 183);
+
+  /* cyan */
+  --color-cyan-50: oklch(0.21 0.035 212);
+  --color-cyan-100: oklch(0.26 0.055 212);
+  --color-cyan-200: oklch(0.34 0.075 212);
+  --color-cyan-300: oklch(0.44 0.095 212);
+  --color-cyan-600: oklch(0.74 0.13 212);
+  --color-cyan-700: oklch(0.82 0.1 212);
+  --color-cyan-800: oklch(0.88 0.07 212);
+  --color-cyan-900: oklch(0.93 0.045 212);
+
+  /* sky */
+  --color-sky-50: oklch(0.21 0.035 237);
+  --color-sky-100: oklch(0.26 0.055 237);
+  --color-sky-200: oklch(0.34 0.075 237);
+  --color-sky-300: oklch(0.44 0.095 237);
+  --color-sky-600: oklch(0.74 0.13 237);
+  --color-sky-700: oklch(0.82 0.1 237);
+  --color-sky-800: oklch(0.88 0.07 237);
+  --color-sky-900: oklch(0.93 0.045 237);
+
+  /* blue */
+  --color-blue-50: oklch(0.21 0.035 259);
+  --color-blue-100: oklch(0.26 0.055 259);
+  --color-blue-200: oklch(0.34 0.075 259);
+  --color-blue-300: oklch(0.44 0.095 259);
+  --color-blue-600: oklch(0.74 0.13 259);
+  --color-blue-700: oklch(0.82 0.1 259);
+  --color-blue-800: oklch(0.88 0.07 259);
+  --color-blue-900: oklch(0.93 0.045 259);
+
+  /* indigo */
+  --color-indigo-50: oklch(0.21 0.035 277);
+  --color-indigo-100: oklch(0.26 0.055 277);
+  --color-indigo-200: oklch(0.34 0.075 277);
+  --color-indigo-300: oklch(0.44 0.095 277);
+  --color-indigo-600: oklch(0.74 0.13 277);
+  --color-indigo-700: oklch(0.82 0.1 277);
+  --color-indigo-800: oklch(0.88 0.07 277);
+  --color-indigo-900: oklch(0.93 0.045 277);
+
+  /* violet */
+  --color-violet-50: oklch(0.21 0.035 294);
+  --color-violet-100: oklch(0.26 0.055 294);
+  --color-violet-200: oklch(0.34 0.075 294);
+  --color-violet-300: oklch(0.44 0.095 294);
+  --color-violet-600: oklch(0.74 0.13 294);
+  --color-violet-700: oklch(0.82 0.1 294);
+  --color-violet-800: oklch(0.88 0.07 294);
+  --color-violet-900: oklch(0.93 0.045 294);
+
+  /* purple */
+  --color-purple-50: oklch(0.21 0.035 304);
+  --color-purple-100: oklch(0.26 0.055 304);
+  --color-purple-200: oklch(0.34 0.075 304);
+  --color-purple-300: oklch(0.44 0.095 304);
+  --color-purple-600: oklch(0.74 0.13 304);
+  --color-purple-700: oklch(0.82 0.1 304);
+  --color-purple-800: oklch(0.88 0.07 304);
+  --color-purple-900: oklch(0.93 0.045 304);
+
+  /* pink */
+  --color-pink-50: oklch(0.21 0.035 354);
+  --color-pink-100: oklch(0.26 0.055 354);
+  --color-pink-200: oklch(0.34 0.075 354);
+  --color-pink-300: oklch(0.44 0.095 354);
+  --color-pink-600: oklch(0.74 0.13 354);
+  --color-pink-700: oklch(0.82 0.1 354);
+  --color-pink-800: oklch(0.88 0.07 354);
+  --color-pink-900: oklch(0.93 0.045 354);
+}
+
+[data-theme="dark"] body {
+  background: #161210;
+}
+
+/*
+ * Unlayered, so these beat the Tailwind utility layer: white is a *surface*
+ * token in dark mode (above), but as a foreground it must stay light.
+ */
+[data-theme="dark"] .text-white {
+  color: var(--color-on-dark, #fff6e8);
+}
+[data-theme="dark"] .border-white {
+  border-color: var(--color-on-dark, #fff6e8);
+}
+[data-theme="dark"] .ring-white {
+  --tw-ring-color: var(--color-on-dark, #fff6e8);
 }

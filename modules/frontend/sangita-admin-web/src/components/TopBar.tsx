@@ -1,5 +1,7 @@
 import React from 'react';
 
+import ThemeToggle from './ThemeToggle';
+
 const TopBar: React.FC = () => {
   return (
     <header className="h-16 bg-cream-deep border-b border-border-light flex items-center justify-between px-6 md:px-8 sticky top-0 z-10">
@@ -19,6 +21,8 @@ const TopBar: React.FC = () => {
 
       {/* Right: Environment & Actions */}
       <div className="flex items-center gap-4">
+        <ThemeToggle />
+
         {/* Environment Badge */}
         <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-light border border-border-light">
           <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse"></div>

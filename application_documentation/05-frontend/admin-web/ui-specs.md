@@ -1,7 +1,7 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 2.2.0 |
+| **Version** | 2.3.0 |
 | **Last Updated** | 2026-09-10 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Current guide |
@@ -75,6 +75,14 @@ Sources and Processing consolidates source registration and extraction monitorin
 The quality workspace is implemented, but several sourcing coverage/audit endpoints still return placeholder structures. An empty coverage chart is not proof that a scan ran cleanly. Use [quality verification](../../07-quality/README.md) and the dedicated remediation/audit routes when investigating structural integrity.
 
 Raga-resolution actions include attaching an alias, confirming a new identity, and disambiguating a queue item. Read the [raga identity guide](../../04-database/raga-identity.md) before interpreting similarity as equivalence.
+
+## Choose a theme
+
+The top bar carries a Light / Dark / System control. The choice persists per browser in `localStorage` under `sangita-theme` and defaults to System, which follows the operating system's `prefers-color-scheme` and re-resolves live when the OS flips.
+
+The resolved value — always a concrete `light` or `dark` — is stamped on `<html data-theme>`, first by a pre-paint script in [index.html](../../../modules/frontend/sangita-admin-web/index.html) so the initial frame is already correct, then by [useTheme.tsx](../../../modules/frontend/sangita-admin-web/src/hooks/useTheme.tsx) for the rest of the session. Every dark value is a CSS custom property redefined under `:root[data-theme="dark"]` in [index.css](../../../modules/frontend/sangita-admin-web/src/index.css); Tailwind v4 utilities compile to `var(--color-*)`, so the token block re-skins the console without per-component dark variants. The palette derives from `RasikaTokens`, documented in [the mobile visual design note](../mobile/track-138-visual-design.md).
+
+Two consequences are worth knowing when adding UI. `--color-white` is a *surface* token in dark mode, so `bg-white` panels darken automatically; `text-white`, `border-white` and `ring-white` are re-pinned to cream by unlayered rules so foregrounds on saturated buttons stay light. Tailwind's stock `slate`/`gray` ramps and the status hues (`red`, `amber`, `emerald`, `blue`, and others) are inverted in the same block — tints darken, text shades lighten — so status chips stay legible without page-level overrides.
 
 ## Implementation boundaries
 
