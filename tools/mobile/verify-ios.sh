@@ -76,14 +76,16 @@ fi
 
 echo "Using destination: $DEST"
 
-SIGNING=()
+# macOS Bash 3.2 + `set -u` treats an empty array as unbound (`SIGNING[@]`).
+# Keep the extra flag as a string so a local simulator build can still sign.
+SIGNING_FLAG=""
 if [[ "$DEST" == generic/* ]] || [[ "${GITHUB_ACTIONS:-}" == "true" ]]; then
   # Hosted runners have no developer identity; simulator Debug does not need one.
-  SIGNING+=(CODE_SIGNING_ALLOWED=NO)
+  SIGNING_FLAG="CODE_SIGNING_ALLOWED=NO"
 fi
 
 xcodebuild -project "$PROJECT" -scheme "$SCHEME" -configuration Debug \
   -destination "$DEST" \
   -derivedDataPath "${RASIKA_IOS_DERIVED_DATA:-$ROOT/build/track-140/ios-derived}" \
-  ${SIGNING[@]+"${SIGNING[@]}"} \
+  ${SIGNING_FLAG} \
   build
