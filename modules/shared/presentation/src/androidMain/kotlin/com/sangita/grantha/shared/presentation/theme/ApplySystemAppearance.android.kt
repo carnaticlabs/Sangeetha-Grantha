@@ -24,8 +24,15 @@ actual fun ApplySystemAppearance(appearance: AppearancePreference, dark: Boolean
         if (Build.VERSION.SDK_INT < 35) {
             @Suppress("DEPRECATION")
             window.statusBarColor = background.toArgb()
+            // API 24–25 cannot flip navigation-button contrast
+            // (LIGHT_NAVIGATION_BAR is API 26+). Keep a dark bar so
+            // the default light Back/Home/Overview glyphs stay legible.
             @Suppress("DEPRECATION")
-            window.navigationBarColor = background.toArgb()
+            window.navigationBarColor = if (Build.VERSION.SDK_INT < 26) {
+                RasikaTokens.paperDark.toArgb()
+            } else {
+                background.toArgb()
+            }
         }
     }
 }
