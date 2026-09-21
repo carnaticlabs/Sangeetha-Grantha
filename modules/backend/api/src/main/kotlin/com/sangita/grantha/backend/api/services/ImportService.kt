@@ -116,6 +116,17 @@ class ImportServiceImpl(
         "ragamalika", "raga malika",
     )
 
+    private val canonicalPayloadJson = Json { ignoreUnknownKeys = true }
+
+    private fun decodeCanonicalPayload(raw: String?): CanonicalExtractionDto? {
+        if (raw.isNullOrBlank()) return null
+        return try {
+            canonicalPayloadJson.decodeFromString<CanonicalExtractionDto>(raw)
+        } catch (_: Exception) {
+            null
+        }
+    }
+
     /** Canonical extraction method → source_documents.source_format (ADR-014). */
     private fun canonicalMethodToFormat(method: CanonicalExtractionMethod): String = when (method) {
         CanonicalExtractionMethod.PDF_PYMUPDF, CanonicalExtractionMethod.PDF_OCR -> "PDF"
@@ -305,21 +316,19 @@ class ImportServiceImpl(
 
                 val overrides = request.overrides
                 
-                // Extract values, prioritizing overrides, then raw data, then scraped payload
-                val metadata = importData.parsedPayload?.let { 
-                    try { 
-                        Json.decodeFromString<ScrapedKrithiMetadata>(it) 
-                    } catch (e: Exception) { 
-                        null 
-                    } 
-                }
+                // Extract values, prioritizing overrides, then raw data, then the canonical payload
+                val extraction = decodeCanonicalPayload(importData.parsedPayload)
 
-                val effectiveComposer = overrides?.composer ?: importData.rawComposer ?: metadata?.composer
-                val effectiveRaga = overrides?.raga ?: importData.rawRaga ?: metadata?.raga
-                val effectiveTala = overrides?.tala ?: importData.rawTala ?: metadata?.tala
-                val effectiveTitle = overrides?.title ?: importData.rawTitle ?: metadata?.title ?: "Untitled"
-                val effectiveLanguage = overrides?.language ?: importData.rawLanguage ?: metadata?.language
-                val effectiveLyrics = (overrides?.lyrics ?: importData.rawLyrics ?: metadata?.lyrics)?.replace("\\n", "\n")
+                val effectiveComposer = overrides?.composer ?: importData.rawComposer
+                    ?: extraction?.composer?.takeIf { it.isNotBlank() }
+                val effectiveRaga = overrides?.raga ?: importData.rawRaga
+                    ?: extraction?.ragas?.minByOrNull { it.order }?.name
+                val effectiveTala = overrides?.tala ?: importData.rawTala
+                    ?: extraction?.tala?.takeIf { it.isNotBlank() }
+                val effectiveTitle = overrides?.title ?: importData.rawTitle ?: extraction?.title ?: "Untitled"
+                val effectiveLanguage = overrides?.language ?: importData.rawLanguage
+                    ?: extraction?.lyricVariants?.firstOrNull()?.language
+                val effectiveLyrics = (overrides?.lyrics ?: importData.rawLyrics)?.replace("\\n", "\n")
                 
                 // Deity/Temple are handled below
                 val sourceKey = importData.sourceKey
@@ -360,9 +369,6 @@ class ImportServiceImpl(
                     ).id.toJavaUuid()
                 }
 
-                val effectiveDeity = overrides?.deity ?: importData.rawDeity
-                val effectiveTemple = overrides?.temple ?: importData.rawTemple
-
                 // Resolve/Create Deity and Temple
                 var deityId: UUID? = null
                 var templeId: UUID? = null
@@ -392,64 +398,24 @@ class ImportServiceImpl(
                     }
                 }
 
-                // 2. Fallback to Auto-Creation based on Scraped Metadata or Cache
-                if ((deityId == null || templeId == null) && importData.parsedPayload != null) {
-                    try {
-                        val metadata = Json.decodeFromString<ScrapedKrithiMetadata>(importData.parsedPayload!!)
-                        
-                        // Check confidence via TempleSourceCache if URL is present (The Source of Truth)
-                        var canAutoCreate = false
-                        var cachedDetails: com.sangita.grantha.backend.dal.repositories.TempleSourceCacheDto? = null
-                        
-                        if (!metadata.templeUrl.isNullOrBlank()) {
-                            cachedDetails = dal.templeSourceCache.findByUrl(metadata.templeUrl)
-                            if (cachedDetails != null) {
-                                canAutoCreate = cachedDetails.error == null && environment.templeAutoCreateConfidence <= 1.0
-                            }
-                        } else if (metadata.templeDetails != null) {
-                             canAutoCreate = true 
-                        }
-
-                        if (canAutoCreate) {
-                            val details = metadata.templeDetails
-
-                            if (details != null) {
-                                // Deity
-                                if (deityId == null && !details.deity.isNullOrBlank()) {
-                                    val existingDeity = dal.deities.findByName(details.deity)
-                                    deityId = existingDeity?.id?.toJavaUuid() ?: dal.deities.create(
-                                        name = details.deity,
-                                        description = "Imported from ${metadata.templeUrl ?: "scrape"}"
-                                    ).id.toJavaUuid()
-                                }
-
-                                // Temple
-                                if (templeId == null && !details.name.isBlank()) {
-                                    val existingTemple = dal.temples.findByName(details.name) ?:
-                                        dal.temples.findByNameNormalized(normalize(details.name))
-                                    
-                                    if (existingTemple != null) {
-                                        templeId = existingTemple.id.toJavaUuid()
-                                    } else {
-                                        // Use cached geocoding if available, else parsed details
-                                        val lat = cachedDetails?.latitude ?: details.latitude
-                                        val lon = cachedDetails?.longitude ?: details.longitude
-                                        val loc = cachedDetails?.city ?: details.location
-                                        
-                                        templeId = dal.temples.create(
-                                            name = details.name,
-                                            city = loc,
-                                            primaryDeityId = deityId,
-                                            latitude = lat,
-                                            longitude = lon,
-                                            notes = details.description
-                                        ).id.toJavaUuid()
-                                    }
-                                }
-                            }
-                        }
-                    } catch (e: Exception) {
-                        println("Error processing scraped metadata for deity/temple: ${e.message}")
+                // 2. Fallback to names recorded on the canonical extraction payload
+                if ((deityId == null || templeId == null) && extraction != null) {
+                    val extractedDeity = extraction.deity
+                    val extractedTemple = extraction.temple
+                    if (deityId == null && !extractedDeity.isNullOrBlank()) {
+                        val existingDeity = dal.deities.findByName(extractedDeity)
+                        deityId = existingDeity?.id?.toJavaUuid() ?: dal.deities.create(
+                            name = extractedDeity,
+                        ).id.toJavaUuid()
+                    }
+                    if (templeId == null && !extractedTemple.isNullOrBlank()) {
+                        val existingTemple = dal.temples.findByName(extractedTemple)
+                            ?: dal.temples.findByNameNormalized(normalize(extractedTemple))
+                        templeId = existingTemple?.id?.toJavaUuid() ?: dal.temples.create(
+                            name = extractedTemple,
+                            city = extraction.templeLocation,
+                            primaryDeityId = deityId,
+                        ).id.toJavaUuid()
                     }
                 }
                 

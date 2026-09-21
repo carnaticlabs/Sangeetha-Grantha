@@ -288,7 +288,6 @@ fun Route.importRoutes(
             val payloadFormat = when {
                 importDto.parsedPayload == null -> "none"
                 importDto.parsedPayload!!.contains("sourceUrl") -> "CanonicalExtractionDto"
-                importDto.parsedPayload!!.contains("\"title\"") -> "ScrapedKrithiMetadata"
                 else -> "unknown"
             }
 

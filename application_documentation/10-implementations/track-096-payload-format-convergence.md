@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-09-10 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-09-20 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Evidence record |
 
@@ -42,10 +42,11 @@ The gap: `LyricVariantPersistenceService` was never updated to read `CanonicalEx
 - Deprecated `IWebScraper` interface
 - Updated `ImportRoutesTest` to remove mock `IWebScraper` usage
 
-### Phase 4: Cleanup (Future)
-- Remove `IWebScraper`, `WebScrapingServiceImpl`, `DeterministicWebScraper`
-- Migrate `StructuralVotingEngine` from `ScrapedSectionDto` to `CanonicalSectionDto`
-- Remove legacy fallback paths once no legacy payloads remain in DB
+### Phase 4: Cleanup
+- Removed `IWebScraper`, `WebScrapingServiceImpl`, `DeterministicWebScraper`
+- Migrated `StructuralVotingEngine` from `ScrapedSectionDto` to its own `VotedSection`
+- Removed `LegacyDtos.kt` (`ScrapedKrithiMetadata` and related types) after confirming zero legacy `parsed_payload` rows
+- `LyricVariantPersistenceService` reads `CanonicalExtractionDto` only; a leftover legacy payload logs and persists no lyrics
 
 ## Decision Record
 

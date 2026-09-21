@@ -197,11 +197,12 @@ class LyricVariantPersistenceServiceTest : IntegrationTestBase() {
     }
 
     /**
-     * Verify that the legacy ScrapedKrithiMetadata format still works (backward compatibility).
+     * TRACK-096: leftover ScrapedKrithiMetadata payloads must not persist lyrics.
+     * Approval still succeeds from raw_* columns so a stray legacy row cannot
+     * silently create a composition with invented structure.
      */
-    @Suppress("DEPRECATION")
     @Test
-    fun `legacy scraped metadata payload persists lyrics on approval`() = runTest {
+    fun `legacy scraped metadata payload does not persist lyrics`() = runTest {
         val sourceUrl = "http://example.com/test-legacy-format"
 
         val submitted = importService.submitImports(
@@ -209,41 +210,22 @@ class LyricVariantPersistenceServiceTest : IntegrationTestBase() {
         )
         val importId = submitted.first().id
 
-        // Manually set parsed_payload with ScrapedKrithiMetadata format (legacy)
-        val legacyPayload = Json.encodeToString(
-            ScrapedKrithiMetadata(
-                title = "Entaro Mahanubhavulu",
-                composer = "Tyagaraja",
-                raga = "Sri",
-                tala = "Adi",
-                language = "TE",
-                lyrics = "Pallavi\nentaro mahanubhavulu\n\nCharanam\ntyagaraja yogavaibhava",
-                sections = listOf(
-                    ScrapedSectionDto(
-                        type = com.sangita.grantha.shared.domain.model.RagaSectionDto.PALLAVI,
-                        text = "entaro mahanubhavulu"
-                    ),
-                    ScrapedSectionDto(
-                        type = com.sangita.grantha.shared.domain.model.RagaSectionDto.CHARANAM,
-                        text = "tyagaraja yogavaibhava"
-                    ),
-                ),
-            )
-        )
+        val legacyPayload = """
+            {"title":"Entaro Mahanubhavulu","composer":"Tyagaraja","raga":"Sri","tala":"Adi",
+             "language":"TE","lyrics":"Pallavi\nentaro mahanubhavulu","scrapedAt":"2024-01-01T00:00:00Z"}
+        """.trimIndent()
 
-        // Enrich the import manually via raw SQL (bypass extraction queue)
         DatabaseFactory.dbQuery {
             val escapedPayload = legacyPayload.replace("'", "''")
             exec(
-                "UPDATE imported_krithis SET parsed_payload = '$escapedPayload'::jsonb, import_status = 'in_review' WHERE id = '$importId'"
+                "UPDATE imported_krithis SET parsed_payload = '$escapedPayload'::jsonb, import_status = 'in_review', raw_title = 'Entaro Mahanubhavulu', raw_composer = 'Tyagaraja', raw_raga = 'Sri', raw_tala = 'Adi' WHERE id = '$importId'"
             )
         }
 
-        // Approve
         importService.reviewImport(
             importId,
-            ImportReviewRequest(status = ImportStatusDto.APPROVED, reviewerNotes = "Legacy format test")
-            , reviewerUserId = null
+            ImportReviewRequest(status = ImportStatusDto.APPROVED, reviewerNotes = "Legacy format must not persist lyrics"),
+            reviewerUserId = null,
         )
 
         val approved = dal.imports.findById(importId)
@@ -252,7 +234,7 @@ class LyricVariantPersistenceServiceTest : IntegrationTestBase() {
         assertNotNull(mappedId)
 
         val variants = dal.krithiLyrics.getLyricVariants(mappedId)
-        assertTrue(variants.isNotEmpty(), "Legacy format should still persist at least one lyric variant")
+        assertTrue(variants.isEmpty(), "Legacy ScrapedKrithiMetadata payloads must no longer persist lyrics")
     }
 
     /**
