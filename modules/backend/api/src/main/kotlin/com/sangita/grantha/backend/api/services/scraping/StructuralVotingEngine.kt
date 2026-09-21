@@ -5,9 +5,8 @@ import com.sangita.grantha.shared.domain.model.RagaSectionDto
 /**
  * Picks the best structural skeleton among competing source proposals.
  *
- * TRACK-096: migrated off the legacy `ScrapedSectionDto` — voting is a purely
- * structural decision, so it carries the domain section type ([RagaSectionDto])
- * plus its optional label directly. No dependency on the deprecated scraper DTOs.
+ * TRACK-096: voting is a purely structural decision. It carries the domain
+ * section type ([RagaSectionDto]) plus its optional label directly.
  */
 class StructuralVotingEngine {
 

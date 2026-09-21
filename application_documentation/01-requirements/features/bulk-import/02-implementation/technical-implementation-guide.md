@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.2.0 |
-| **Last Updated** | 2026-09-10 |
+| **Version** | 1.2.1 |
+| **Last Updated** | 2026-09-20 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Current guide |
 
@@ -57,7 +57,7 @@ For a local PDF, the path must be readable by the worker process. Compose mounts
 
 ## Canonical payload and musical fidelity
 
-Canonical extraction carries composition metadata, ordered ragas, sections, language/script variants, and source context. Python and Kotlin must agree on field names, enums, nullability, and nesting. New producers use canonical payloads; older `ScrapedKrithiMetadata` compatibility remains in the backend until TRACK-096 convergence is complete.
+Canonical extraction carries composition metadata, ordered ragas, sections, language/script variants, and source context. Python and Kotlin must agree on field names, enums, nullability, and nesting. `parsed_payload` is `CanonicalExtractionDto` only; the former `ScrapedKrithiMetadata` compatibility path was removed in TRACK-096.
 
 Parser behavior includes source-specific Indic-script handling, diacritic normalization, section-label cleanup, per-script variations, and repairs for repeated Pallavi/compound labels. Preserve source distinctions while normalizing presentation noise. Never discard a section or invent an Anupallavi simply to force a common template.
 

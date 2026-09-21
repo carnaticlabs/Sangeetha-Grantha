@@ -1,10 +1,12 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Ready — unblocked, cleanup pending |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-07-19 |
+| **Status** | Completed |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-09-20 |
 | **Author** | Sangeetha Grantha Team |
 
+> **2026-09-20 — cleanup.** Re-checked live `imported_krithis.parsed_payload`: **canonical | 1238**, zero legacy rows. Deleted `LegacyDtos.kt` (`ScrapedKrithiMetadata` and related types), the dual-format fallback in `LyricVariantPersistenceService`, and `ImportService` decoding of the old shape. Approval of a leftover legacy payload now creates the krithi from `raw_*` columns and persists no lyrics from that JSON.
+>
 > **2026-07-19 — unblocked.** This track was paused waiting for the legacy payloads to drain from
 > the corpus. The TRACK-093 re-import has done that: **all 1,238 `imported_krithis.parsed_payload`
 > rows are canonical (`CanonicalExtractionDto`), with zero legacy `ScrapedKrithiMetadata`.**
@@ -76,15 +78,13 @@ The import pipeline has two competing payload formats that evolved independently
       `VotedSection(type: RagaSectionDto, label)`. Landed on the domain `RagaSectionDto` enum rather
       than `CanonicalSectionType` deliberately: voting scores on the richer technical-section set
       (MUKTAYI/ETTUGADA/VILOMA/…) that `CanonicalSectionType` collapses to `OTHER`.
-      `StructuralVotingProcessor` builds `VotedSection` straight from canonical extractions; the
-      legacy `LyricVariantPersistenceService` fallback maps its `ScrapedSectionDto` at the call site.
-      No active code path outside the deprecated fallback references the scraper section DTO now.
-- [ ] Remove `ScrapedKrithiMetadata` fallback path from `LyricVariantPersistenceService` once no
-      legacy payloads remain in DB — **blocked on the TRACK-093 re-import** (the cutover that leaves
-      only canonical payloads). Until then the fallback + `ImportService` deity/temple parsing of
-      legacy payloads must stay.
-- [ ] Remove `ScrapedKrithiMetadata` and related DTOs (after the re-import).
-- [ ] Remove dual-format detection code (after the re-import).
+      `StructuralVotingProcessor` builds `VotedSection` straight from canonical extractions.
+      No active code path references the scraper section DTO now.
+- [x] Remove `ScrapedKrithiMetadata` fallback path from `LyricVariantPersistenceService` —
+      verified zero legacy `parsed_payload` rows (canonical | 1238) immediately before deletion.
+- [x] Remove `ScrapedKrithiMetadata` and related DTOs (`LegacyDtos.kt`).
+- [x] Remove dual-format detection code. A leftover legacy payload logs an error and
+      does not persist lyrics; approval still succeeds from `raw_*` columns.
 
 # Decision Record
 
