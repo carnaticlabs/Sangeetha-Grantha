@@ -332,6 +332,7 @@ fun RasikaTheme(
         LocalRasikaExtendedColors provides extended,
         LocalLyricScale provides scale,
     ) {
+        ApplySystemAppearance(appearance = appearance, dark = dark)
         MaterialTheme(
             colorScheme = if (dark) DarkScheme else LightScheme,
             typography = rasikaTypography(fraunces, workSans, scale),
