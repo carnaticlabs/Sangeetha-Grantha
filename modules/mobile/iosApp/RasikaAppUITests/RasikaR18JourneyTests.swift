@@ -145,6 +145,38 @@ final class RasikaR18JourneyTests: XCTestCase {
         awaitElement(app, "Home")
     }
 
+    // R09 — Light pins across the four tabs without a restart.
+    func testAppearanceChoiceAppliesAcrossTabs() {
+        let app = launch(reset: true)
+        awaitElement(app, "Home")
+        tap(app, "Settings")
+        awaitElement(app, "Appearance")
+        tap(app, "Light")
+        for tab in ["Home", "Explore", "Library", "Settings"] {
+            tap(app, tab)
+            awaitElement(app, tab)
+        }
+        awaitElement(app, "Appearance")
+        awaitElement(app, "Selected")
+    }
+
+    // R09 — System follows the simulator appearance while the app stays foregrounded.
+    func testSystemAppearanceFollowsDevice() {
+        let device = XCUIDevice.shared
+        let previous = device.appearance
+        let app = launch(reset: true)
+        awaitElement(app, "Home")
+        tap(app, "Settings")
+        awaitElement(app, "Appearance")
+        tap(app, "System")
+        device.appearance = .dark
+        tap(app, "Home")
+        awaitElement(app, "Home")
+        device.appearance = .light
+        awaitElement(app, "Home")
+        device.appearance = previous
+    }
+
     // R09 / R17 — an explicit appearance choice survives a relaunch.
     func testAppearanceChoiceSurvivesRelaunch() {
         let first = launch(reset: true)

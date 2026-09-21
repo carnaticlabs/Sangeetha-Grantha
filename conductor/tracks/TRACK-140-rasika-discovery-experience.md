@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | In progress — Plan accepted |
-| **Version** | 1.7.1 |
-| **Last Updated** | 2026-09-10 |
+| **Version** | 1.9.0 |
+| **Last Updated** | 2026-09-21 |
 | **Author** | Sangeetha Grantha Team |
 
 # Track: Rasika — Discovery and Reading Experience
@@ -460,10 +460,10 @@ Implementation is authorized. States below reflect observed work; planning check
 | S01 | DONE | Cursor / 1 | V1/V5/V6: unit, frontend, worker proofs; user DB not migrated. See implementation evidence. |
 | B01 | DONE | Cursor / 1 | V1/V2: unit + Testcontainers; V1 excludes UNESTABLISHED; V2 discovery/search include it. |
 | D01 | DONE | Cursor / 1 | V3: V2-only client, discovery, serialized storage races/corruption. |
-| U01 | RUNNING | Cursor / 1 | Four-tab Home shell and appearance radios; V3 pass. Native appearance/preview still open. |
+| U01 | DONE | Cursor / 2 | Native system-bar pinning + V3 `PreferencesPresenterTest`. iOS appearance journeys PASS. Android device matrix remains N01. R01 system Back now follows Compose `current`/`selectedTab`. |
 | U02 | DONE | Cursor / 1 | V3: Explore categories, draft/apply filters, paging, entity pages, parent-mela captions. `make test-mobile` PASS. |
 | U03 | DONE | Cursor / 1 | V3: atomic variant swap, M1 section binding, M2–M4 labels, wrapping header. `make test-mobile` PASS. |
-| N01 | RUNNING | Cursor / 3 | Journey script + Android/iOS test targets; extended R18 journeys written (paging, bookmark, script, large-text, reduced-motion). Device runtime not executed. TalkBack/VoiceOver remain manual. |
+| N01 | RUNNING | Cursor / 4 | iOS journeys PASS (19 tests, iPhone 17 / iOS 26.5). `verify-ios.sh` SIGNING unbound-variable repaired. Android AVD `Rasika_API34` failed to stay up (host memory pressure). TalkBack/VoiceOver remain manual. |
 | GA | PENDING | — | Depends on B01, U02, U03, N01 |
 | B02 | PENDING | — | Depends on GA |
 | U04 | PENDING | — | Depends on GA |
@@ -478,6 +478,10 @@ Implementation is authorized. States below reflect observed work; planning check
 
 
 ## Progress Log
+
+- **2026-09-21 — R01 system Back + launcher icons:** `isBackEnabled` now reads Compose `current`/`selectedTab` so Android `KEYCODE_BACK` pops the in-app stack instead of finishing the activity. Added `RasikaSystemBackJourneyTest`. Wired Android `@mipmap/ic_launcher` and iOS AppIcon asset catalog. `lintVital*` depends on the Compose-resource asset sync.
+
+- **2026-09-20 — U01 native appearance + N01 iOS journeys:** Applied in-app appearance to Android status/nav bars and iOS `overrideUserInterfaceStyle`. Added `PreferencesPresenterTest` for persist/rollback. iOS UI tests on iPhone 17 / iOS 26.5 (`C0104896-CD64-4533-A919-1E5F22036561`) passed 19/19 including System/Light/Dark, tab coverage, relaunch persistence, and device-appearance follow. Android emulator `Rasika_API34` could not stay booted (host memory pressure). TalkBack/VoiceOver remain manual. GA still waits on Android runtime proof.
 
 - **2026-09-10 — R18 residuals:** Added a 31-row paging fixture for native Explore Load more; bookmark and Latin/Devanagari script journeys; large-text and reduced-motion launches via device settings. TalkBack/VoiceOver stay a manual pass; labelled-control checks were expanded.
 

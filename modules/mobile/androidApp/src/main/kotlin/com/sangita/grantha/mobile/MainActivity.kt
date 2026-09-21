@@ -3,6 +3,7 @@ package com.sangita.grantha.mobile
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import com.sangita.grantha.shared.mobile.harness.RasikaUiTestHarness
 import com.sangita.grantha.shared.mobile.platform.AndroidKeyValueStore
 import com.sangita.grantha.shared.mobile.platform.androidLiveCatalogue
@@ -22,6 +23,7 @@ class MainActivity : ComponentActivity() {
     private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         val kv = AndroidKeyValueStore(applicationContext)
 

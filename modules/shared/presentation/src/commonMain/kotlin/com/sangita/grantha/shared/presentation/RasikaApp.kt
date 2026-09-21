@@ -89,11 +89,17 @@ fun RasikaApp(container: MobileAppContainer) {
 
     RasikaTheme(appearance = prefs.appearance, textSize = prefs.textSize) {
         val reduceMotion = rememberReduceMotion()
+        // Read current/selectedTab so this handler recomposes when a destination is
+        // pushed. stackSnapshot() itself is not Compose state, which left
+        // isBackEnabled stuck at false (tab root) and let KEYCODE_BACK finish the activity.
+        val canNavigateBack = remember(current, selectedTab) {
+            navigator.stackSnapshot().size > 1
+        }
         val backEventState = rememberNavigationEventState(currentInfo = NavigationEventInfo.None)
         NavigationEventHandler(
             state = backEventState,
             isForwardEnabled = false,
-            isBackEnabled = navigator.stackSnapshot().size > 1,
+            isBackEnabled = canNavigateBack,
             onBackCompleted = {
                 navigator.back()
                 sync()

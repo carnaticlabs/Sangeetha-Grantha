@@ -79,14 +79,21 @@ val syncPresentationComposeResources = tasks.register<Sync>("syncPresentationCom
 
 android {
     sourceSets.named("main") {
-        assets.directories.add(
-            layout.buildDirectory.dir("generated/composeResourcesAssets").get().asFile.absolutePath,
+        // Prefer files(...).builtBy so AGP/Lint consumers (merge*Assets, lintVital*) declare
+        // an explicit dependency on the Sync — a bare absolute path only worked for merge*Assets.
+        assets.srcDir(
+            files(layout.buildDirectory.dir("generated/composeResourcesAssets"))
+                .builtBy(syncPresentationComposeResources),
         )
     }
 }
 
-tasks.matching { it.name.startsWith("merge") && it.name.endsWith("Assets") }
-    .configureEach { dependsOn(syncPresentationComposeResources) }
+tasks.matching { task ->
+    val n = task.name
+    (n.startsWith("merge") && n.endsWith("Assets")) ||
+        n.contains("LintVitalReportModel") ||
+        n.startsWith("lintVital")
+}.configureEach { dependsOn(syncPresentationComposeResources) }
 
 dependencies {
     implementation(project(":modules:shared:presentation"))

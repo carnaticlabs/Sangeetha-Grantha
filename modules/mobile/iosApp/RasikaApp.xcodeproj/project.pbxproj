@@ -61,6 +61,7 @@
 			children = (
 				A10000000000000000000007 /* RasikaApp.swift */,
 				A10000000000000000000008 /* Info.plist */,
+				A10000000000000000000009 /* Assets.xcassets */,
 			);
 			path = RasikaApp;
 			sourceTree = "<group>";
@@ -85,6 +86,16 @@
 			lastKnownFileType = text.plist.xml;
 			path = Info.plist;
 			sourceTree = "<group>";
+		};
+		A10000000000000000000009 /* Assets.xcassets */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = folder.assetcatalog;
+			path = Assets.xcassets;
+			sourceTree = "<group>";
+		};
+		A10000000000000000000017 /* Assets.xcassets in Resources */ = {
+			isa = PBXBuildFile;
+			fileRef = A10000000000000000000009 /* Assets.xcassets */;
 		};
 		A1000000000000000000000A /* Debug.xcconfig */ = {
 			isa = PBXFileReference;
@@ -128,6 +139,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A10000000000000000000017 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -175,6 +187,7 @@
 				CODE_SIGNING_ALLOWED = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/../../../modules/shared/presentation/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)";
 				INFOPLIST_FILE = RasikaApp/Info.plist;
@@ -191,6 +204,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = A1000000000000000000000B /* Release.xcconfig */;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGNING_ALLOWED = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;

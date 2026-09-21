@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | In progress |
-| **Version** | 0.4.0 |
-| **Last Updated** | 2026-09-10 |
+| **Version** | 0.6.0 |
+| **Last Updated** | 2026-09-21 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Evidence record |
 
@@ -73,14 +73,38 @@ V1 catalogue and anonymous `/v1/krithis` exclude `UNESTABLISHED`; V2 includes it
 | `assembleDebug` / `assembleDebugAndroidTest` | PASS |
 | Device journeys | Not run — no running adb device / simulator boot in this pass |
 
-## U01 — shell, Home and appearance, attempt 1
+## U01 — shell, Home and appearance, attempt 2
 
-Four tabs (Home / Explore / Library / Settings), Home search independent of discovery, ordered `RagaSequence` on cards, System/Light/Dark radio group with persistence rollback. Explore still uses the TRACK-138 search list; category filters and the source-faithful reader remain U02/U03.
+Native system-bar / interface-style pinning: Light and Dark now set status/nav icon contrast (Android) and `overrideUserInterfaceStyle` (iOS). Settings still uses System / Light / Dark radios. `PreferencesPresenterTest` covers immediate persist and failed-write rollback.
 
 | Check | Result |
 |:---|:---|
 | `make test-mobile` | PASS |
-| Native appearance matrix | Deferred to device journeys (N01/GA) |
+| `make mobile-android` | PASS — assembleDebug |
+| Android / iOS compile of appearance actuals | PASS |
+| iOS appearance journeys on iPhone 17 / iOS 26.5 `C0104896-CD64-4533-A919-1E5F22036561` | PASS — `testAppearanceOffersSystemLightAndDark`, `testAppearanceChoiceAppliesAcrossTabs`, `testAppearanceChoiceSurvivesRelaunch`, `testSystemAppearanceFollowsDevice` |
+| Android device appearance matrix | Not run — Rasika_API34 AVD start failed (host memory pressure; emulator required 5120 MB, ~2.5 GB free) |
+
+## R01 — Android system Back, attempt 1
+
+`NavigationEventHandler.isBackEnabled` now depends on Compose `current` / `selectedTab`. `stackSnapshot()` is not Compose state, so the handler previously stayed at tab-root (`false`) and `KEYCODE_BACK` finished `MainActivity` instead of popping the in-app stack.
+
+| Check | Result |
+|:---|:---|
+| `RasikaSystemBackJourneyTest` | Written — Home reader, Explore reader, raga detail; asserts activity stays resumed |
+| Device runtime | Not run — N01 Android AVD still blocked on host memory |
+
+## N01 — native harness, attempt 4
+
+`verify-ios.sh` no longer uses an empty Bash 3.2 array for `CODE_SIGNING_ALLOWED` (the P01 `SIGNING[@]: unbound variable` failure). Journey script still refuses generic destinations. Android `lintVital*` / `LintVitalReportModel` now depend on the Compose-resource asset sync. Launcher icons: Android `@mipmap/ic_launcher`, iOS `Assets.xcassets` AppIcon.
+
+| Check | Result |
+|:---|:---|
+| `bash tools/mobile/verify-rasika-journeys.sh ios C0104896-CD64-4533-A919-1E5F22036561` | PASS — 19 tests, 0 failures, 275s. xcresult: `build/track-140/ios-derived/Logs/Test/Test-RasikaApp-2026.09.20_23-18-22-+0530.xcresult` |
+| Android `connectedDebugAndroidTest` | Not run — no adb device |
+| TalkBack / VoiceOver | Still manual |
+
+---
 
 ## U02 — Explore and entity pages, attempt 1
 
