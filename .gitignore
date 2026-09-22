@@ -126,3 +126,4 @@ ds-bundle/
 # Disposable krithi section-triage cache (downloaded source HTML + reports)
 .triage-cache/
 /tools/krithi-extract-enrich-worker/reports/*
+/output/*
