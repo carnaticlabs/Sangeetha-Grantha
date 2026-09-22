@@ -49,14 +49,17 @@ class ExplorePresenterTest {
         presenter.applyCommittedQuery("Endaro")
         advanceUntilIdle()
         assertEquals(ExploreCategory.Krithis, presenter.state.value.category)
+        assertEquals(KrithiSearchMode.Hybrid, presenter.state.value.mode)
         assertTrue(presenter.state.value.appliedFacets.isEmpty)
         assertEquals("Endaro", presenter.state.value.committedQuery)
-        assertEquals(CatalogueFixtures.endaroId, presenter.state.value.items.single().id)
+        assertEquals(CatalogueFixtures.endaroId, presenter.state.value.discoveryItems.single().krithiId)
+        assertTrue(presenter.state.value.items.isEmpty())
     }
 
     @Test
     fun removingChipCommitsImmediately() = runTest {
         val presenter = presenter()
+        presenter.selectMode(KrithiSearchMode.Lexical)
         presenter.draftComposer(CatalogueFixtures.tyagarajaId, "Tyagaraja")
         presenter.applyFilters()
         advanceUntilIdle()
@@ -93,6 +96,7 @@ class ExplorePresenterTest {
             session = MobileSession(clockMs = { 0L }),
             scope = this,
         )
+        presenter.selectMode(KrithiSearchMode.Lexical)
         presenter.submit()
         advanceUntilIdle()
         assertEquals(1, presenter.state.value.items.size)

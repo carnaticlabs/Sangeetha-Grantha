@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-09-10 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-09-22 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Current guide |
 
@@ -20,9 +20,9 @@ Sangeetha Grantha has two complementary search experiences. Rasika uses the publ
 | Hybrid | A phrase or topic that benefits from both exact and related matches | Combines lexical and vector result ranks using reciprocal rank fusion |
 | Semantic | Meaning, related concepts, thematic discovery | Retrieves from the active vector index |
 
-The admin list defaults to Hybrid, but an empty query uses ordinary browsing. Raga and composer filters apply to discovery requests. The language filter belongs to the lexical experience. A relevance score is a ranking signal, not a probability that the musicological interpretation is correct.
+The admin list defaults to Hybrid, but an empty query uses ordinary browsing. Raga and composer filters apply to the console's discovery requests. The language filter belongs to the lexical experience. A relevance score is a ranking signal, not a probability that the musicological interpretation is correct.
 
-Rasika's Explore is not a conversational assistant and does not currently call these vector-search routes. See the [catalogue contract](./api-contract.md).
+Rasika Explore is not a conversational assistant. On Krithis it calls `POST /v1/search/hybrid` and `POST /v1/search/semantic` as well as the catalogue. The initial mode is Hybrid. Each discovery post sends the trimmed query, null `composerId` and `ragaId`, and `limit` 30 (the server default of 20 is not the Rasika cap). Hybrid and Semantic are not paged. The header is "Top matches" and does not treat `totalMatches` as a library count. A blank query is still posted, and an empty server list is shown; Rasika does not replace it with catalogue browse. Applied raga and composer filters stay on the Lexical catalogue GET only. Ragas and Composers stay `GET /v2/catalogue/ragas` and `GET /v2/catalogue/composers`. Lexical Krithis stays `GET /v2/catalogue/krithis`. See the [catalogue contract](./api-contract.md).
 
 ## API behavior
 

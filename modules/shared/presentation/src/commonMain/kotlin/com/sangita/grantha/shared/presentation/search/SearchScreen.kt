@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sangita.grantha.shared.presentation.RasikaCopy
+import com.sangita.grantha.shared.presentation.components.DiscoveryKrithiCard
 import com.sangita.grantha.shared.presentation.components.KrithiCard
 import com.sangita.grantha.shared.presentation.components.LoadState
 import com.sangita.grantha.shared.presentation.components.LoadStateContent
@@ -107,6 +108,19 @@ fun SearchScreen(
                     }
                     state.appliedFacets.composerLabel?.let { label ->
                         RasikaFilterChip(label = label, onClear = presenter::removeAppliedComposer)
+                    }
+                }
+                FlowRow(
+                    modifier = Modifier.padding(top = RasikaTokens.xs),
+                    horizontalArrangement = Arrangement.spacedBy(RasikaTokens.xs),
+                    verticalArrangement = Arrangement.spacedBy(RasikaTokens.xs),
+                ) {
+                    KrithiSearchMode.entries.forEach { mode ->
+                        RasikaChip(
+                            selected = state.mode == mode,
+                            onClick = { presenter.selectMode(mode) },
+                            label = mode.label(),
+                        )
                     }
                 }
             }
@@ -229,32 +243,52 @@ private fun ResultList(
         verticalArrangement = Arrangement.spacedBy(RasikaTokens.sm),
     ) {
         item(key = "count") {
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
+            if (state.discoveryResults) {
                 Text(
-                    RasikaCopy.resultCount(state.total.toInt()),
+                    RasikaCopy.TOP_MATCHES,
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.error,
+                    color = RasikaTheme.colors.inkMuted,
                 )
-                Text(
-                    RasikaCopy.TITLE_ORDER,
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.secondary,
-                )
+            } else {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        RasikaCopy.resultCount(state.total.toInt()),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                    Text(
+                        RasikaCopy.TITLE_ORDER,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.secondary,
+                    )
+                }
             }
         }
         when (state.category) {
-            ExploreCategory.Krithis -> items(state.items, key = { it.id.toString() }) { summary ->
-                KrithiCard(
-                    summary = summary,
-                    onClick = { onOpenKrithi(summary.id) },
-                    favourited = isFavourite(summary.id),
-                    snippet = summary.incipit,
-                    onToggleFavourite = { onToggleFavourite(summary.id, summary.title) },
-                )
+            ExploreCategory.Krithis -> if (state.discoveryResults) {
+                items(state.discoveryItems, key = { it.krithiId.toString() }) { item ->
+                    DiscoveryKrithiCard(
+                        item = item,
+                        mode = state.mode,
+                        onClick = { onOpenKrithi(item.krithiId) },
+                        favourited = isFavourite(item.krithiId),
+                        onToggleFavourite = { onToggleFavourite(item.krithiId, item.title) },
+                    )
+                }
+            } else {
+                items(state.items, key = { it.id.toString() }) { summary ->
+                    KrithiCard(
+                        summary = summary,
+                        onClick = { onOpenKrithi(summary.id) },
+                        favourited = isFavourite(summary.id),
+                        snippet = summary.incipit,
+                        onToggleFavourite = { onToggleFavourite(summary.id, summary.title) },
+                    )
+                }
             }
             ExploreCategory.Ragas -> items(state.ragaItems, key = { it.id.toString() }) { raga ->
                 DirectoryRow(
@@ -278,21 +312,23 @@ private fun ResultList(
                 )
             }
         }
-        item(key = "paging") {
-            when (val next = state.nextPageLoad) {
-                is LoadState.Error -> {
-                    Text(next.message, color = RasikaTheme.colors.inkMuted)
-                    if (next.retryable) {
-                        RasikaPrimaryButton(
-                            label = RasikaCopy.RETRY,
-                            onClick = presenter::retry,
-                            modifier = Modifier.padding(top = RasikaTokens.xs),
-                        )
+        if (!state.discoveryResults) {
+            item(key = "paging") {
+                when (val next = state.nextPageLoad) {
+                    is LoadState.Error -> {
+                        Text(next.message, color = RasikaTheme.colors.inkMuted)
+                        if (next.retryable) {
+                            RasikaPrimaryButton(
+                                label = RasikaCopy.RETRY,
+                                onClick = presenter::retry,
+                                modifier = Modifier.padding(top = RasikaTokens.xs),
+                            )
+                        }
                     }
-                }
-                LoadState.Loading -> Text(RasikaCopy.LOADING, color = RasikaTheme.colors.inkMuted)
-                else -> if (state.hasMore) {
-                    RasikaPrimaryButton(label = RasikaCopy.LOAD_MORE, onClick = presenter::loadNextPage)
+                    LoadState.Loading -> Text(RasikaCopy.LOADING, color = RasikaTheme.colors.inkMuted)
+                    else -> if (state.hasMore) {
+                        RasikaPrimaryButton(label = RasikaCopy.LOAD_MORE, onClick = presenter::loadNextPage)
+                    }
                 }
             }
         }
@@ -329,8 +365,11 @@ private fun DirectoryRow(title: String, meta: String, onClick: () -> Unit) {
     }
 }
 
+private val SearchUiState.discoveryResults: Boolean
+    get() = category == ExploreCategory.Krithis && mode != KrithiSearchMode.Lexical
+
 private fun currentCount(state: SearchUiState): Int = when (state.category) {
-    ExploreCategory.Krithis -> state.items.size
+    ExploreCategory.Krithis -> if (state.discoveryResults) state.discoveryItems.size else state.items.size
     ExploreCategory.Ragas -> state.ragaItems.size
     ExploreCategory.Composers -> state.composerItems.size
 }
@@ -339,6 +378,12 @@ private fun ExploreCategory.label(): String = when (this) {
     ExploreCategory.Krithis -> RasikaCopy.CATEGORY_KRITHIS
     ExploreCategory.Ragas -> RasikaCopy.BROWSE_RAGAS
     ExploreCategory.Composers -> RasikaCopy.BROWSE_COMPOSERS
+}
+
+private fun KrithiSearchMode.label(): String = when (this) {
+    KrithiSearchMode.Lexical -> RasikaCopy.MODE_LEXICAL
+    KrithiSearchMode.Hybrid -> RasikaCopy.MODE_HYBRID
+    KrithiSearchMode.Semantic -> RasikaCopy.MODE_SEMANTIC
 }
 
 private fun directoryMeta(relationship: String?, count: Long): String = buildString {

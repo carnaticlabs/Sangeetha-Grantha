@@ -109,6 +109,7 @@ final class RasikaR18ExtendedJourneyTests: XCTestCase {
         let app = launch(reset: true)
         awaitElement(app, "Home")
         tap(app, "Explore")
+        tap(app, "Lexical")
         tap(app, "Search")
         scrollUntil(app, "Load more")
         tap(app, "Load more")

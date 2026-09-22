@@ -103,6 +103,7 @@ class RasikaR18ExtendedJourneyTest {
     fun exploreEmptySearchLoadsTheNextPage() {
         launchFresh().use {
             openExplore()
+            compose.onAllNodes(hasText("Lexical")).onFirst().performClick()
             compose.onAllNodes(hasText("Search", substring = true)).onFirst().performClick()
             awaitText("in this library")
             compose.onNode(hasScrollAction()).performScrollToNode(hasText("Load more"))

@@ -1,5 +1,7 @@
 package com.sangita.grantha.shared.mobile.repository
 
+import com.sangita.grantha.shared.domain.model.SemanticSearchRequest
+import com.sangita.grantha.shared.domain.model.SemanticSearchResponse
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerDetailDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerSummaryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueContract
@@ -60,4 +62,14 @@ class CatalogueRepository(
 
     suspend fun getComposer(id: Uuid, interaction: InteractionContext): CatalogueComposerDetailDto =
         api.getComposer(id, interaction)
+
+    suspend fun searchHybrid(
+        request: SemanticSearchRequest,
+        interaction: InteractionContext,
+    ): SemanticSearchResponse = api.searchHybrid(request, interaction)
+
+    suspend fun searchSemantic(
+        request: SemanticSearchRequest,
+        interaction: InteractionContext,
+    ): SemanticSearchResponse = api.searchSemantic(request, interaction)
 }

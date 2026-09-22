@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.31.0 |
-| **Last Updated** | 2026-09-20 |
+| **Version** | 1.32.0 |
+| **Last Updated** | 2026-09-22 |
 | **Author** | Sangeetha Grantha Team |
 
 # Conductor Tracks Registry
@@ -146,6 +146,7 @@
 | [TRACK-140](./tracks/TRACK-140-rasika-discovery-experience.md) | Rasika — Discovery and Reading Experience | In progress — Plan accepted |
 | [TRACK-141](./tracks/TRACK-141-documentation-facelift.md) | Documentation Facelift and Feature Reconciliation | Done |
 | [TRACK-142](./tracks/TRACK-142-library-upgrades-sep-2026.md) | Library Upgrades — September 2026 (Batch 1–3d, incl. GA majors) | Done |
+| [TRACK-143](./tracks/TRACK-143-rasika-semantic-search.md) | Rasika Semantic Search | In Progress |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)

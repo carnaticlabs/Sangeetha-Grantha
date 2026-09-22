@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.2.0 |
-| **Last Updated** | 2026-09-10 |
+| **Version** | 1.3.0 |
+| **Last Updated** | 2026-09-22 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Current guide |
 
@@ -15,7 +15,7 @@ This map connects implemented user journeys to route families. It is not a subst
 | Surface / journey | API family | Notes |
 |:---|:---|:---|
 | Rasika Home | `/v2/catalogue/discovery` | Search entry remains independent of discovery success |
-| Rasika Explore compositions | `/v2/catalogue/krithis` | Query, composer/raga UUID filters, zero-based paging |
+| Rasika Explore compositions | `/v2/catalogue/krithis`; `POST /v1/search/hybrid`; `POST /v1/search/semantic` | Krithis Lexical: query, composer/raga UUID filters, zero-based paging. Hybrid and Semantic: trimmed query, null filter ids, limit 30, no paging. Initial mode Hybrid. Raga and Composer tabs stay catalogue GETs. |
 | Rasika raga/composer directories | `/v2/catalogue/ragas`, `/composers` | Directory query/paging; detail by ID |
 | Rasika reader | `/v2/catalogue/krithis/{id}` and `/lyrics/{variantId}` | Metadata followed by one stored variant |
 | Rasika Library/Settings | Local repositories/store | No public account or sync endpoint |

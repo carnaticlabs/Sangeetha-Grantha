@@ -20,6 +20,7 @@ class ExplorePagingPresenterTest {
             session = MobileSession(clockMs = { 0L }),
             scope = this,
         )
+        presenter.selectMode(KrithiSearchMode.Lexical)
         presenter.submit()
         advanceUntilIdle()
         assertEquals(SearchPresenter.PAGE_SIZE, presenter.state.value.items.size)

@@ -98,7 +98,7 @@ fun KrithiCard(
 
 /** 36×40 nāsika-crowned tile carrying the title's first glyph. */
 @Composable
-private fun GlyphTile(glyph: String) {
+internal fun GlyphTile(glyph: String) {
     val colors = RasikaTheme.colors
     Box(
         modifier = Modifier

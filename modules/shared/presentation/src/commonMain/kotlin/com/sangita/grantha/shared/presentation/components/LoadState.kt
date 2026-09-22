@@ -13,6 +13,8 @@ sealed class LoadState {
 fun CatalogueFailure.userMessage(): String = when (this) {
     is CatalogueFailure.NotFound -> RasikaCopy.UNAVAILABLE
     is CatalogueFailure.Validation -> message ?: RasikaCopy.ERROR_TITLE
-    is CatalogueFailure.Timeout, is CatalogueFailure.Unavailable -> RasikaCopy.OFFLINE_BODY
+    is CatalogueFailure.Timeout -> RasikaCopy.OFFLINE_BODY
+    is CatalogueFailure.Unavailable ->
+        serverMessage?.takeIf { it.isNotBlank() } ?: RasikaCopy.OFFLINE_BODY
     is CatalogueFailure.Cancelled -> RasikaCopy.ERROR_TITLE
 }

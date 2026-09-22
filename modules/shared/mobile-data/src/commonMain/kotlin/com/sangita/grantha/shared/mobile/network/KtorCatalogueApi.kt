@@ -1,5 +1,7 @@
 package com.sangita.grantha.shared.mobile.network
 
+import com.sangita.grantha.shared.domain.model.SemanticSearchRequest
+import com.sangita.grantha.shared.domain.model.SemanticSearchResponse
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerDetailDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerSummaryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueContract
@@ -19,9 +21,13 @@ import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.isSuccess
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.uuid.Uuid
 
@@ -87,6 +93,47 @@ class KtorCatalogueApi(
     override suspend fun getComposer(id: Uuid, interaction: InteractionContext): CatalogueComposerDetailDto =
         get("${CatalogueV2Contract.COMPOSERS_PATH}/$id", interaction)
 
+    override suspend fun searchHybrid(
+        request: SemanticSearchRequest,
+        interaction: InteractionContext,
+    ): SemanticSearchResponse = postDiscovery(HYBRID_PATH, request, interaction)
+
+    override suspend fun searchSemantic(
+        request: SemanticSearchRequest,
+        interaction: InteractionContext,
+    ): SemanticSearchResponse = postDiscovery(SEMANTIC_PATH, request, interaction)
+
+    private suspend inline fun <reified T> postDiscovery(
+        path: String,
+        body: SemanticSearchRequest,
+        interaction: InteractionContext,
+    ): T {
+        val response = try {
+            client.post(path) {
+                header(CatalogueContract.SESSION_HEADER, interaction.sessionId.toString())
+                header(CatalogueContract.INTERACTION_HEADER, interaction.interactionId.toString())
+                setBody(body)
+            }
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (timeout: HttpRequestTimeoutException) {
+            throw CatalogueFailure.Timeout(cause = timeout)
+        } catch (cause: Exception) {
+            throw CatalogueFailure.Unavailable(cause = cause)
+        }
+        if (response.status.isSuccess()) {
+            return response.body()
+        }
+        throw CatalogueFailure.Unavailable(serverMessage = statusMessage(response))
+    }
+
+    private suspend fun statusMessage(response: HttpResponse): String? {
+        val payload = runCatching { response.body<JsonObject>() }.getOrNull() ?: return null
+        val primitive = payload["message"] as? JsonPrimitive ?: return null
+        if (!primitive.isString) return null
+        return primitive.content.takeIf { it.isNotBlank() }
+    }
+
     private suspend inline fun <reified T> get(
         path: String,
         interaction: InteractionContext,
@@ -130,5 +177,10 @@ class KtorCatalogueApi(
 
     private fun io.ktor.client.request.HttpRequestBuilder.optionalUuid(name: String, value: Uuid?) {
         if (value != null) parameter(name, value.toString())
+    }
+
+    private companion object {
+        const val HYBRID_PATH: String = "/v1/search/hybrid"
+        const val SEMANTIC_PATH: String = "/v1/search/semantic"
     }
 }
