@@ -10,7 +10,7 @@
 
 ---
 
-Sangeetha Grantha has two complementary search experiences. Rasika uses the public catalogue's predictable query/filter/paging contract. The Curator Console also offers hybrid and semantic retrieval over indexed composition overviews and lyric passages.
+Sangeetha Grantha has two complementary search experiences. Rasika combines hybrid discovery with the public catalogue's predictable query/filter/paging contract. The Curator Console also offers hybrid and semantic retrieval over indexed composition overviews and lyric passages.
 
 ## Choose the search mode
 
@@ -22,7 +22,7 @@ Sangeetha Grantha has two complementary search experiences. Rasika uses the publ
 
 The admin list defaults to Hybrid, but an empty query uses ordinary browsing. Raga and composer filters apply to the console's discovery requests. The language filter belongs to the lexical experience. A relevance score is a ranking signal, not a probability that the musicological interpretation is correct.
 
-Rasika Explore is not a conversational assistant. On Krithis it calls `POST /v1/search/hybrid` and `POST /v1/search/semantic` as well as the catalogue. The initial mode is Hybrid. Each discovery post sends the trimmed query, null `composerId` and `ragaId`, and `limit` 30 (the server default of 20 is not the Rasika cap). Hybrid and Semantic are not paged. The header is "Top matches" and does not treat `totalMatches` as a library count. A blank query is still posted, and an empty server list is shown; Rasika does not replace it with catalogue browse. Applied raga and composer filters stay on the Lexical catalogue GET only. Ragas and Composers stay `GET /v2/catalogue/ragas` and `GET /v2/catalogue/composers`. Lexical Krithis stays `GET /v2/catalogue/krithis`. See the [catalogue contract](./api-contract.md).
+Rasika Explore is not a conversational assistant. On Krithis it calls `POST /v1/search/hybrid` and `POST /v1/search/semantic` as well as the catalogue. The initial mode is Hybrid, presented as the everyday search with the hint “Search titles, lyrics and meaning together.” An optional **Search options** disclosure offers **All matches** (Hybrid), **Related meanings** (Semantic), and **Titles & lyrics** (Lexical); no mode choice is required before searching. Each discovery post sends the trimmed query, null `composerId` and `ragaId`, and `limit` 30 (the server default of 20 is not the Rasika cap). Hybrid and Semantic are not paged. The header is "Top matches" and does not treat `totalMatches` as a library count. A blank query is still posted, and an empty server list is shown; Rasika does not replace it with catalogue browse. Applied raga and composer filters stay on the Lexical catalogue GET only. Their controls and chips appear only in Titles & lyrics; discovery explains that any saved filters apply only there. Ragas and Composers stay `GET /v2/catalogue/ragas` and `GET /v2/catalogue/composers`. Lexical Krithis stays `GET /v2/catalogue/krithis`. See the [catalogue contract](./api-contract.md).
 
 ## API behavior
 

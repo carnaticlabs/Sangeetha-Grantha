@@ -1,5 +1,7 @@
 package com.sangita.grantha.shared.presentation.search
 
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -12,11 +14,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sangita.grantha.shared.presentation.RasikaCopy
 import com.sangita.grantha.shared.presentation.components.DiscoveryKrithiCard
@@ -84,7 +91,7 @@ fun SearchScreen(
                     )
                 }
             }
-            if (state.hasUnappliedFilters) {
+            if (state.category == ExploreCategory.Krithis && state.mode == KrithiSearchMode.Lexical && state.hasUnappliedFilters) {
                 Text(
                     RasikaCopy.FILTERS_PENDING,
                     style = MaterialTheme.typography.labelMedium,
@@ -93,35 +100,31 @@ fun SearchScreen(
                 )
             }
             if (state.category == ExploreCategory.Krithis) {
-                Row(
-                    Modifier.padding(top = RasikaTokens.sm),
-                    horizontalArrangement = Arrangement.spacedBy(RasikaTokens.xs),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    RasikaChip(
-                        selected = !state.appliedFacets.isEmpty,
-                        onClick = presenter::openFilters,
-                        label = RasikaCopy.FILTERS,
-                    )
-                    state.appliedFacets.ragaLabel?.let { label ->
-                        RasikaFilterChip(label = label, onClear = presenter::removeAppliedRaga)
-                    }
-                    state.appliedFacets.composerLabel?.let { label ->
-                        RasikaFilterChip(label = label, onClear = presenter::removeAppliedComposer)
-                    }
-                }
-                FlowRow(
-                    modifier = Modifier.padding(top = RasikaTokens.xs),
-                    horizontalArrangement = Arrangement.spacedBy(RasikaTokens.xs),
-                    verticalArrangement = Arrangement.spacedBy(RasikaTokens.xs),
-                ) {
-                    KrithiSearchMode.entries.forEach { mode ->
+                SearchOptions(state, presenter)
+                if (state.mode == KrithiSearchMode.Lexical) {
+                    FlowRow(
+                        modifier = Modifier.padding(top = RasikaTokens.xs),
+                        horizontalArrangement = Arrangement.spacedBy(RasikaTokens.xs),
+                        verticalArrangement = Arrangement.spacedBy(RasikaTokens.xs),
+                    ) {
                         RasikaChip(
-                            selected = state.mode == mode,
-                            onClick = { presenter.selectMode(mode) },
-                            label = mode.label(),
+                            selected = !state.appliedFacets.isEmpty,
+                            onClick = presenter::openFilters,
+                            label = RasikaCopy.FILTERS,
                         )
+                        state.appliedFacets.ragaLabel?.let { label ->
+                            RasikaFilterChip(label = label, onClear = presenter::removeAppliedRaga)
+                        }
+                        state.appliedFacets.composerLabel?.let { label ->
+                            RasikaFilterChip(label = label, onClear = presenter::removeAppliedComposer)
+                        }
                     }
+                } else if (!state.appliedFacets.isEmpty) {
+                    Text(
+                        RasikaCopy.DISCOVERY_SAVED_FILTERS,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = RasikaTheme.colors.inkMuted,
+                    )
                 }
             }
             when (val load = state.load) {
@@ -159,6 +162,55 @@ fun SearchScreen(
             }
         }
     }
+}
+
+@Composable
+private fun SearchOptions(state: SearchUiState, presenter: SearchPresenter) {
+    Row(
+        Modifier.fillMaxWidth().padding(top = RasikaTokens.xs),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            state.mode.hint(),
+            style = MaterialTheme.typography.bodySmall,
+            color = RasikaTheme.colors.inkMuted,
+            modifier = Modifier.weight(1f),
+        )
+        TextButton(
+            onClick = presenter::toggleSearchOptions,
+            modifier = Modifier.semantics {
+                stateDescription = if (state.searchOptionsExpanded) "Expanded" else "Collapsed"
+            },
+        ) {
+            Text(if (state.searchOptionsExpanded) RasikaCopy.HIDE_SEARCH_OPTIONS else RasikaCopy.SEARCH_OPTIONS)
+        }
+    }
+    if (state.searchOptionsExpanded) {
+        Column(Modifier.fillMaxWidth().selectableGroup()) {
+            listOf(KrithiSearchMode.Hybrid, KrithiSearchMode.Semantic, KrithiSearchMode.Lexical).forEach { mode ->
+                Row(
+                    modifier = Modifier.fillMaxWidth().selectable(
+                        selected = state.mode == mode,
+                        role = Role.RadioButton,
+                        onClick = { presenter.selectMode(mode) },
+                    ).padding(vertical = RasikaTokens.xs),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    RadioButton(selected = state.mode == mode, onClick = null)
+                    Column(Modifier.weight(1f).padding(start = RasikaTokens.sm)) {
+                        Text(mode.label(), style = MaterialTheme.typography.labelLarge)
+                        Text(mode.hint(), style = MaterialTheme.typography.bodySmall, color = RasikaTheme.colors.inkMuted)
+                    }
+                }
+            }
+        }
+    }
+}
+
+private fun KrithiSearchMode.hint(): String = when (this) {
+    KrithiSearchMode.Hybrid -> RasikaCopy.SEARCH_HYBRID_HINT
+    KrithiSearchMode.Semantic -> RasikaCopy.SEARCH_SEMANTIC_HINT
+    KrithiSearchMode.Lexical -> RasikaCopy.SEARCH_LEXICAL_HINT
 }
 
 @OptIn(ExperimentalLayoutApi::class)

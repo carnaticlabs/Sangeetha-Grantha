@@ -108,27 +108,37 @@ class KtorCatalogueApi(
         body: SemanticSearchRequest,
         interaction: InteractionContext,
     ): T {
-        val response = try {
-            client.post(path) {
+        return try {
+            val response = client.post(path) {
                 header(CatalogueContract.SESSION_HEADER, interaction.sessionId.toString())
                 header(CatalogueContract.INTERACTION_HEADER, interaction.interactionId.toString())
                 setBody(body)
+            }
+            if (response.status.isSuccess()) {
+                response.body<T>()
+            } else {
+                throw CatalogueFailure.Unavailable(serverMessage = statusMessage(response))
             }
         } catch (cancelled: CancellationException) {
             throw cancelled
         } catch (timeout: HttpRequestTimeoutException) {
             throw CatalogueFailure.Timeout(cause = timeout)
+        } catch (failure: CatalogueFailure) {
+            throw failure
         } catch (cause: Exception) {
+            // Reading/decoding the body can fail after the HTTP request succeeds.
             throw CatalogueFailure.Unavailable(cause = cause)
         }
-        if (response.status.isSuccess()) {
-            return response.body()
-        }
-        throw CatalogueFailure.Unavailable(serverMessage = statusMessage(response))
     }
 
     private suspend fun statusMessage(response: HttpResponse): String? {
-        val payload = runCatching { response.body<JsonObject>() }.getOrNull() ?: return null
+        val payload = try {
+            response.body<JsonObject>()
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (_: Exception) {
+            return null
+        }
         val primitive = payload["message"] as? JsonPrimitive ?: return null
         if (!primitive.isString) return null
         return primitive.content.takeIf { it.isNotBlank() }

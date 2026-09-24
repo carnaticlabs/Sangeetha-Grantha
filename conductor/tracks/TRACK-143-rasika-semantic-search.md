@@ -233,3 +233,40 @@ No backend route change, no Flyway, no V58 edit, no `AUDIT_LOG`, no re-embedding
 - **2026-09-22**: Spec accepted by Seshadri. Plan written and marked Accepted because the same instruction authorized proceeding ("Go with the plan").
 - **2026-09-22**: Implemented the Plan. `openDirectory(Ragas|Composers)` stays a catalogue GET so home directory shortcuts keep working; Krithis and `applyCommittedQuery` follow the current mode. Shared JVM tests passed (`mobile-data` 23, `presentation` 49, 0 failures). No commit.
 - **2026-09-22**: Native journeys passed. Android `connectedDebugAndroidTest` on `Rasika_API34` (`emulator-5554`): 24 tests, 0 failures, including `exploreEmptySearchLoadsTheNextPage` after selecting Lexical. iOS `xcodebuild test` on iPhone 17 `C0104896-CD64-4533-A919-1E5F22036561`: 19 tests, 0 failures.
+
+## UX validation follow-up — 2026-09-22
+
+The user's follow-up request authorizes validation and reimagining the hybrid search UI without a required mode-button selection. This supersedes the original always-visible mode-chip design and the presentation of inactive discovery filters; API routing, ranks, cap, and filter semantics remain unchanged.
+
+- Hybrid is the default everyday search, described as “Search titles, lyrics and meaning together.” No mode selection is required before submitting.
+- An optional, collapsed **Search options** disclosure offers **All matches** (Hybrid), **Related meanings** (Semantic), and **Titles & lyrics** (Lexical). Each has a plain-language explanation and an accessible radio selection. Choosing an option closes the disclosure and reruns an already committed query.
+- Filters and active filter chips appear only in Titles & lyrics. When saved facets exist in discovery, a short message explains that they apply only to Titles & lyrics. The existing filter sheet and catalogue-only request wiring are retained.
+- Options disclosure state is hoisted in `SearchUiState`. Opening/closing it does not issue a request.
+- Validation covers the shared client/presenter tests and native search-options/paging journeys. Results are recorded below once checks finish.
+
+### Follow-up validation results
+
+- Shared tests: `./gradlew :modules:shared:mobile-data:jvmTest :modules:shared:presentation:jvmTest --console=plain` — **BUILD SUCCESSFUL**; mobile-data 23 tests, presentation 50 tests, zero failures/errors.
+- Android (`emulator-5554`): `exploreSearchesHybridWithoutChoosingAModeAndOffersRefinements` and `exploreEmptySearchLoadsTheNextPage` — passed in separate targeted instrumentation runs. Covers automatic Hybrid, Semantic refinement, Lexical results/filter visibility, return to Hybrid, and catalogue paging.
+- iOS (iPhone 17 `C0104896-CD64-4533-A919-1E5F22036561`): `testExploreEmptySearchLoadsTheNextPage` — **TEST SUCCEEDED**. Initial run exposed a test-helper issue: it stopped scrolling once Load more existed, even when not hittable. The helper now waits for visibility before tapping; the paging assertion is retained.
+- Anonymous live smoke test: `POST /v1/search/hybrid` with query “Dikshithar Kamalamba Navavarna Krithis” and limit 30 returned HTTP 200, 30 unique compositions, with Kamalamba compositions among the leading matches. This verifies local retrieval, not corpus completeness or relevance for all queries.
+- Required development stack restart completed using `make dev-down` / `make dev`; backend `/health` returned OK and the frontend returned HTTP 200.
+- `git diff --check` passed. No commit created.
+
+### Bottom navigation follow-up
+
+The user flagged cropped labels in the native screenshots. Retain icon-and-text navigation for discoverability. The custom tab bar now reserves navigation-bar insets, extends its teal background behind the system area, and uses a 72 dp minimum item height with vertical padding so labels can grow with text scaling. This fixes the edge-to-edge overlap rather than hiding the labels.
+
+Bottom-bar validation: presentation JVM tests and Android debug build passed (`BUILD SUCCESSFUL`). Android screenshots show all four labels fully visible at 100% and 150% system text size; original text scale restored. Development restart verified with backend OK and frontend HTTP 200. iOS was not rerun for this inset-only follow-up.
+
+
+## Critical validation — 2026-09-24
+
+Reviewed commit `973e78a` together with the current search-options and bottom-navigation follow-ups against the accepted Spec and its UX amendment.
+
+- **Bugs — fixed:** discovery response decoding was outside the client's exception boundary. An HTTP 200 body missing required fields raised `JsonConvertException` rather than `CatalogueFailure`, escaping the presenter's retryable error handling. A new MockEngine regression failed before the fix and passed afterward. Both discovery posts now wrap body decoding, preserve server error messages, and rethrow cancellation (including during error-body decoding).
+- **Bugs — validation strengthened:** added an in-flight, cancellation-resistant Hybrid response test so late results cannot replace Semantic results; also covered committed-query preservation, no discovery paging, retry recovery, and client cancellation. The original immediate-submit test did not exercise a started older request.
+- **Security:** verified the actual mobile client has no auth plugin/default bearer and both POST tests assert no Authorization header. Existing server queries enforce published/visible scope for anonymous callers. No new server auth behavior or auth test was introduced.
+- **Compliance:** verified shared DTO reuse, explicit limit 30, null discovery facets, no catalogue fallback, distinct discovery rows, quiet rank formatting, and anonymous OpenAPI overrides. No backend, schema, indexing, or Curator changes.
+- **Validation:** shared JVM suites passed: mobile-data 25 tests, presentation 53 tests, zero failures/errors. Android debug assembly and iOS simulator Kotlin compilation passed (`BUILD SUCCESSFUL`). Android's Hybrid → Semantic → Lexical → Hybrid search-options journey and empty Lexical paging journey passed on `emulator-5554` in separate runs (one test each). Documentation links passed (`doc links OK`), as did `git diff --check`. Required `make dev-down` / `make dev` restart completed; backend `/health` returned `OK` and frontend HTTP 200.
+- **Limits:** iOS device UI tests were not rerun. Fixture journeys validate client behavior, not retrieval relevance. “Best in class” retrieval quality would require a judged multilingual query set and measured ranking/latency; that is not established by one live query or this client port. The pre-existing local-device endpoint configuration edits are separate from this review's fix.

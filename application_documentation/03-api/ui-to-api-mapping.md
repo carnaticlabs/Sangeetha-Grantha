@@ -38,3 +38,5 @@ Backend user/role routes do not mean the placeholder browser pages are complete.
 ---
 
 [Section index](./README.md) · [Documentation home](./../README.md) · [Feature status](./../01-requirements/features/README.md)
+
+TRACK-143 Explore UX: Hybrid runs by default without a mode choice. The optional Search options disclosure labels Hybrid as All matches, Semantic as Related meanings, and Lexical as Titles & lyrics. Filter controls appear only in Titles & lyrics; discovery requests still omit filter ids.

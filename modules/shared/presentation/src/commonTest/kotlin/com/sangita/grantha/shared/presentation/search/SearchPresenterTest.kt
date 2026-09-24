@@ -13,6 +13,7 @@ import com.sangita.grantha.shared.presentation.components.LoadState
 import com.sangita.grantha.shared.presentation.explore.ExploreCategory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -22,6 +23,88 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SearchPresenterTest {
+    @Test
+    fun lateHybridResponseCannotReplaceSemanticResults() = runTest {
+        val pending = kotlinx.coroutines.CompletableDeferred<SemanticSearchResponse>()
+        val api = object : CatalogueApi by FixtureCatalogueApi() {
+            override suspend fun searchHybrid(
+                request: SemanticSearchRequest,
+                interaction: InteractionContext,
+            ): SemanticSearchResponse = kotlinx.coroutines.withContext(kotlinx.coroutines.NonCancellable) {
+                pending.await()
+            }
+        }
+        val presenter = presenter(api)
+        presenter.onQueryChange("Vatapi")
+        presenter.submit()
+        runCurrent()
+        assertEquals(LoadState.Loading, presenter.state.value.load)
+        presenter.selectMode(KrithiSearchMode.Semantic)
+        runCurrent()
+        val semanticState = presenter.state.value
+        assertEquals(CatalogueFixtures.vatapiId, semanticState.discoveryItems.single().krithiId)
+        pending.complete(SemanticSearchResponse("Vatapi", 0, emptyList()))
+        advanceUntilIdle()
+        assertEquals(semanticState, presenter.state.value)
+    }
+
+    @Test
+    fun discoveryNeverLoadsAnotherPageAndModeChangeUsesCommittedQuery() = runTest {
+        val api = RecordingCatalogueApi()
+        val presenter = presenter(api)
+        presenter.onQueryChange("  Vatapi  ")
+        presenter.submit()
+        advanceUntilIdle()
+        presenter.loadNextPage()
+        presenter.onQueryChange("Endaro")
+        presenter.selectMode(KrithiSearchMode.Semantic)
+        advanceUntilIdle()
+        presenter.loadNextPage()
+        advanceUntilIdle()
+        assertEquals("Vatapi", api.hybridRequests.single().query)
+        assertEquals("Vatapi", api.semanticRequests.single().query)
+        assertEquals("Endaro", presenter.state.value.query)
+        assertEquals(0, api.lexicalCalls)
+    }
+
+    @Test
+    fun retryRecoversDiscoveryWithoutCatalogueFallback() = runTest {
+        var attempts = 0
+        val fixture = FixtureCatalogueApi()
+        val api = object : CatalogueApi by fixture {
+            override suspend fun searchHybrid(
+                request: SemanticSearchRequest,
+                interaction: InteractionContext,
+            ): SemanticSearchResponse {
+                if (++attempts == 1) throw CatalogueFailure.Unavailable(serverMessage = "Try again")
+                return fixture.searchHybrid(request, interaction)
+            }
+        }
+        val presenter = presenter(api)
+        presenter.applyCommittedQuery("Vatapi")
+        advanceUntilIdle()
+        assertTrue(presenter.state.value.load is LoadState.Error)
+        presenter.retry()
+        advanceUntilIdle()
+        assertEquals(2, attempts)
+        assertEquals(LoadState.Idle, presenter.state.value.load)
+        assertEquals(CatalogueFixtures.vatapiId, presenter.state.value.discoveryItems.single().krithiId)
+        assertTrue(presenter.state.value.items.isEmpty())
+    }
+
+    @Test
+    fun searchOptionsDoNotFetchAndSelectingCurrentModeClosesThem() = runTest {
+        val api = RecordingCatalogueApi()
+        val presenter = presenter(api)
+        presenter.toggleSearchOptions()
+        assertTrue(presenter.state.value.searchOptionsExpanded)
+        presenter.selectMode(KrithiSearchMode.Hybrid)
+        advanceUntilIdle()
+        assertEquals(false, presenter.state.value.searchOptionsExpanded)
+        assertTrue(api.hybridRequests.isEmpty())
+        assertEquals(0, api.lexicalCalls)
+    }
+
     @Test
     fun committedSearchLoadsFixtureMatches() = runTest {
         val presenter = presenter()

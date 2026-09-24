@@ -32,6 +32,7 @@ data class SearchUiState(
     val draftFacets: ExploreFacets = ExploreFacets(),
     val appliedFacets: ExploreFacets = ExploreFacets(),
     val filterSheetOpen: Boolean = false,
+    val searchOptionsExpanded: Boolean = false,
     val items: List<CatalogueKrithiSummaryDto> = emptyList(),
     val discoveryItems: List<SemanticSearchResultItem> = emptyList(),
     val ragaItems: List<CatalogueRagaSummaryDto> = emptyList(),
@@ -115,13 +116,22 @@ class SearchPresenter(
         fetch(reset = true)
     }
 
+    fun toggleSearchOptions() {
+        _state.update { it.copy(searchOptionsExpanded = !it.searchOptionsExpanded) }
+    }
+
     fun selectMode(mode: KrithiSearchMode) {
         val snapshot = _state.value
-        if (snapshot.category != ExploreCategory.Krithis || snapshot.mode == mode) return
+        if (snapshot.category != ExploreCategory.Krithis) return
+        if (snapshot.mode == mode) {
+            _state.update { it.copy(searchOptionsExpanded = false) }
+            return
+        }
         val refetch = searchCommitted
         _state.update {
             it.copy(
                 mode = mode,
+                searchOptionsExpanded = false,
                 page = 0,
                 items = emptyList(),
                 discoveryItems = emptyList(),

@@ -23,6 +23,45 @@ import kotlin.test.assertTrue
 
 class DiscoveryCatalogueClientTest {
     @Test
+    fun malformedSuccessIsAnUnavailableFailure() = runTest {
+        for (semantic in listOf(false, true)) {
+            val engine = MockEngine {
+                respond("""{"query":"Vatapi","items":[]} """, HttpStatusCode.OK,
+                    headersOf(HttpHeaders.ContentType, "application/json"))
+            }
+            val client = createMobileHttpClient(engine, MobileApiConfig.debugAndroidEmulator())
+            try {
+                val api = KtorCatalogueApi(client)
+                val failure = assertFailsWith<CatalogueFailure.Unavailable> {
+                    val request = SemanticSearchRequest("Vatapi", limit = 30)
+                    val interaction = MobileSession().beginInteraction()
+                    if (semantic) api.searchSemantic(request, interaction)
+                    else api.searchHybrid(request, interaction)
+                }
+                assertTrue(failure.cause != null)
+                assertNull(failure.serverMessage)
+            } finally {
+                client.close()
+            }
+        }
+    }
+
+    @Test
+    fun cancellationIsNotConvertedToAnOutage() = runTest {
+        val engine = MockEngine { throw kotlinx.coroutines.CancellationException("Superseded") }
+        val client = createMobileHttpClient(engine, MobileApiConfig.debugAndroidEmulator())
+        try {
+            assertFailsWith<kotlinx.coroutines.CancellationException> {
+                KtorCatalogueApi(client).searchHybrid(
+                    SemanticSearchRequest("Vatapi", limit = 30), MobileSession().beginInteraction(),
+                )
+            }
+        } finally {
+            client.close()
+        }
+    }
+
+    @Test
     fun hybridPostSendsLimitAndNoAuthorization() = runTest {
         var rawBody = ""
         val engine = MockEngine { request ->
