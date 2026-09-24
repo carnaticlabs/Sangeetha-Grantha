@@ -1,6 +1,9 @@
 package com.sangita.grantha.shared.mobile.fixture
 
 import com.sangita.grantha.shared.domain.model.LanguageCodeDto
+import com.sangita.grantha.shared.domain.model.SemanticSearchRequest
+import com.sangita.grantha.shared.domain.model.SemanticSearchResponse
+import com.sangita.grantha.shared.domain.model.SemanticSearchResultItem
 import com.sangita.grantha.shared.domain.model.MusicalFormDto
 import com.sangita.grantha.shared.domain.model.ScriptCodeDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueCompletenessDto
@@ -185,6 +188,34 @@ object CatalogueFixtures {
 
     val pagingLastTitle: String = pagingTitle(PAGING_EXTRA_COUNT)
 
+    /** Cosine similarity used by the semantic fixture rank (0.874 → 87%). */
+    const val VATAPI_SIMILARITY: Double = 0.874
+
+    /** Hybrid reciprocal-rank score rendered to four decimal places. */
+    const val VATAPI_RRF: Double = 0.0325
+
+    fun discoveryItem(summary: CatalogueKrithiSummaryDto, hybrid: Boolean): SemanticSearchResultItem {
+        val primaryRaga = summary.ragas.minByOrNull { it.orderIndex }?.name
+        return SemanticSearchResultItem(
+            krithiId = summary.id,
+            title = summary.title,
+            composerName = summary.composer.name,
+            ragaName = primaryRaga,
+            talaName = summary.tala?.name,
+            documentKind = "COMPOSITION_OVERVIEW",
+            matchedContent = summary.incipit ?: summary.title,
+            similarityScore = if (summary.id == vatapiId) VATAPI_SIMILARITY else 0.5,
+            lexicalScore = if (hybrid) 1.0 else null,
+            rrfScore = if (!hybrid) {
+                null
+            } else if (summary.id == vatapiId) {
+                VATAPI_RRF
+            } else {
+                0.0164
+            },
+        )
+    }
+
     val pagingSummaries: List<CatalogueKrithiSummaryDto> = (1..PAGING_EXTRA_COUNT).map { n ->
         CatalogueKrithiSummaryDto(
             id = pagingId(n),
@@ -320,6 +351,43 @@ class FixtureCatalogueApi(
         )
     }
 
+    override suspend fun searchHybrid(
+        request: SemanticSearchRequest,
+        interaction: InteractionContext,
+    ): SemanticSearchResponse = discovery(request, hybrid = true)
+
+    override suspend fun searchSemantic(
+        request: SemanticSearchRequest,
+        interaction: InteractionContext,
+    ): SemanticSearchResponse = discovery(request, hybrid = false)
+
+    /**
+     * Blank queries return an empty list, matching HybridSearchService. Filter ids are honored
+     * when present so a presenter that forwards catalogue facets fails the fixture.
+     */
+    private fun discovery(request: SemanticSearchRequest, hybrid: Boolean): SemanticSearchResponse {
+        val query = request.query.trim()
+        if (query.isEmpty()) {
+            return SemanticSearchResponse(query = query, totalMatches = 0, items = emptyList())
+        }
+        val corpus = if (includePagingPages) {
+            CatalogueFixtures.summaries + CatalogueFixtures.pagingSummaries
+        } else {
+            CatalogueFixtures.summaries
+        }
+        val needle = query.lowercase()
+        val filtered = corpus.filter { summary ->
+            val matchesQuery = summary.title.lowercase().contains(needle) ||
+                (summary.incipit?.lowercase()?.contains(needle) == true)
+            val matchesComposer = request.composerId == null || summary.composer.id == request.composerId
+            val matchesRaga = request.ragaId == null || summary.ragas.any { it.id == request.ragaId }
+            matchesQuery && matchesComposer && matchesRaga
+        }
+        val limited = filtered.take(request.limit.coerceAtLeast(0))
+        val items = limited.map { CatalogueFixtures.discoveryItem(it, hybrid) }
+        return SemanticSearchResponse(query = query, totalMatches = items.size, items = items)
+    }
+
     private fun <T> pageOf(
         items: List<T>,
         page: Int,
@@ -381,4 +449,14 @@ class UnavailableCatalogueApi : CatalogueApi {
     ) = fail()
 
     override suspend fun getComposer(id: Uuid, interaction: InteractionContext) = fail()
+
+    override suspend fun searchHybrid(
+        request: SemanticSearchRequest,
+        interaction: InteractionContext,
+    ) = fail()
+
+    override suspend fun searchSemantic(
+        request: SemanticSearchRequest,
+        interaction: InteractionContext,
+    ) = fail()
 }

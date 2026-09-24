@@ -100,9 +100,35 @@ class RasikaR18ExtendedJourneyTest {
     }
 
     @Test
+    fun exploreSearchesHybridWithoutChoosingAModeAndOffersRefinements() {
+        launchFresh().use {
+            openExplore()
+            compose.onNode(hasText("All matches")).assertDoesNotExist()
+            compose.onNode(hasText("Filters")).assertDoesNotExist()
+            submitSearch("Vatapi")
+            awaitText("Top matches")
+            awaitText("Vatapi Ganapatim")
+            compose.onNode(hasText("Load more")).assertDoesNotExist()
+            compose.onNode(hasText("Search options")).performClick()
+            compose.onNode(hasText("Related meanings")).performClick()
+            awaitText("87%")
+            compose.onNode(hasText("Search options")).performClick()
+            compose.onNode(hasText("Titles & lyrics")).performClick()
+            awaitText("in this library")
+            compose.onNode(hasText("Filters")).assertIsDisplayed()
+            compose.onNode(hasText("Search options")).performClick()
+            compose.onNode(hasText("All matches")).performClick()
+            awaitText("Top matches")
+            compose.onNode(hasText("Filters")).assertDoesNotExist()
+        }
+    }
+
+    @Test
     fun exploreEmptySearchLoadsTheNextPage() {
         launchFresh().use {
             openExplore()
+            compose.onAllNodes(hasText("Search options")).onFirst().performClick()
+            compose.onAllNodes(hasText("Titles & lyrics")).onFirst().performClick()
             compose.onAllNodes(hasText("Search", substring = true)).onFirst().performClick()
             awaitText("in this library")
             compose.onNode(hasScrollAction()).performScrollToNode(hasText("Load more"))

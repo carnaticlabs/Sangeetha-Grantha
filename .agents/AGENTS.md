@@ -92,6 +92,12 @@ the Makefile + Docker Compose (`make dev`, `make db-reset`, `make migrate`, `mak
 through **Flyway** per ADR-013. The historical Rust CLI (`tools/sangita-cli`) is **archived** under
 `archive/tools/sangita-cli/` — do not invoke it.
 
+Layer checks not listed in CLAUDE.md (targets live in the [Makefile](../Makefile) and [mobile README](../application_documentation/05-frontend/mobile/README.md)):
+- Mobile: `make test-mobile` (shared JVM suites); `make mobile-android` (debug APK); `make mobile-ios` (simulator host; override with `RASIKA_IOS_DESTINATION`). Native journeys need an explicit device ID: `bash tools/mobile/verify-rasika-journeys.sh android <serial>` or `… ios <udid>` (generic destinations are rejected). Logs default to `build/track-140/journeys/`; override with `RASIKA_JOURNEY_OUTPUT`.
+- Frontend, from `modules/frontend/sangita-admin-web/`: `bun run lint`, `bun run typecheck`, `bun run test:unit`, and `bun run test:e2e:money` (`E2E_SKIP_SHARED_BATCH=1`, as in nightly CI).
+- Raga: `make mint-guard` (no `INSERT INTO ragas` outside migrations); `make raga-lakshana-checks` (needs a migrated Compose database).
+- Catalogue usage: `python3 tools/catalogue-usage-report.py --input <usage.jsonl>` (stdin if `--input` is omitted). Events tagged `dev` / `development` / `test` are excluded unless `--include-development` is set. Deduplicates by `eventId`; session counts are approximate. See [operations config](../application_documentation/08-operations/config.md) (`CATALOGUE_USAGE_DIR`).
+
 ## Context Files
 - [`CLAUDE.md`](../CLAUDE.md) — canonical project rules (all assistants).
 - [`.cursorrules`](../.cursorrules) / [`.cursor/rules/`](../.cursor/rules/) — Cursor pointers at CLAUDE.md. Edit-time hooks: [`.cursor/hooks.json`](../.cursor/hooks.json) runs `.claude/hooks/*.py`.

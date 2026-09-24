@@ -1,5 +1,7 @@
 package com.sangita.grantha.shared.mobile.network
 
+import com.sangita.grantha.shared.domain.model.SemanticSearchRequest
+import com.sangita.grantha.shared.domain.model.SemanticSearchResponse
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerDetailDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerSummaryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueContract
@@ -50,4 +52,14 @@ interface CatalogueApi {
     ): CataloguePagedResponse<CatalogueComposerSummaryDto>
 
     suspend fun getComposer(id: Uuid, interaction: InteractionContext): CatalogueComposerDetailDto
+
+    suspend fun searchHybrid(
+        request: SemanticSearchRequest,
+        interaction: InteractionContext,
+    ): SemanticSearchResponse
+
+    suspend fun searchSemantic(
+        request: SemanticSearchRequest,
+        interaction: InteractionContext,
+    ): SemanticSearchResponse
 }

@@ -87,7 +87,7 @@ final class RasikaR18ExtendedJourneyTests: XCTestCase {
         timeout: TimeInterval = 20
     ) {
         let start = Date()
-        while !element(app, label).exists && Date().timeIntervalSince(start) < timeout {
+        while (!element(app, label).exists || !element(app, label).isHittable) && Date().timeIntervalSince(start) < timeout {
             app.swipeUp()
         }
         awaitElement(app, label, timeout: 2)
@@ -109,6 +109,8 @@ final class RasikaR18ExtendedJourneyTests: XCTestCase {
         let app = launch(reset: true)
         awaitElement(app, "Home")
         tap(app, "Explore")
+        tap(app, "Search options")
+        tap(app, "Titles & lyrics")
         tap(app, "Search")
         scrollUntil(app, "Load more")
         tap(app, "Load more")

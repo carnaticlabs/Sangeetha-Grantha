@@ -20,6 +20,7 @@ security:
 tags:
   - name: Health
   - name: Catalogue
+  - name: Search
   - name: Public
   - name: Admin
   - name: Ingestion
@@ -773,6 +774,82 @@ paths:
           "description": "Stale revision, collection changed or feature limit reached"
 
 
+
+  /v1/search/hybrid:
+    post:
+      tags: [Search]
+      summary: Hybrid composition search
+      description: >
+        Fuses lexical and vector ranks over indexed composition overviews and
+        lyric passages. A missing or non-admin caller is published-only. An
+        admin token can see editorial rows. Rasika does not send a token.
+        `limit` defaults to 20 and the server clamps it to 1–100. `totalMatches`
+        is the number of items returned, not a catalogue total. With no active
+        embedding profile, retrieval is lexical over search documents. A blank
+        query returns an empty list.
+      security:
+        - {}
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/RasikaSessionHeader"
+        - $ref: "#/components/parameters/RasikaInteractionHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SemanticSearchRequest"
+      responses:
+        "200":
+          description: Ranked hybrid matches
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SemanticSearchResponse"
+        "503":
+          description: Incompatible embedding profile or embedder failure
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /v1/search/semantic:
+    post:
+      tags: [Search]
+      summary: Semantic composition search
+      description: >
+        Dense similarity over the active embedding profile. A missing or
+        non-admin caller is published-only. An admin token can see editorial
+        rows. Rasika does not send a token. `limit` defaults to 20 and the
+        server clamps it to 1–100. `totalMatches` is the number of items
+        returned, not a catalogue total. With no active profile, or a blank
+        query, the result list is empty. `lexicalScore` and `rrfScore` are null
+        on this route.
+      security:
+        - {}
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/RasikaSessionHeader"
+        - $ref: "#/components/parameters/RasikaInteractionHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SemanticSearchRequest"
+      responses:
+        "200":
+          description: Ranked semantic matches
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SemanticSearchResponse"
+        "503":
+          description: Incompatible embedding profile or embedder failure
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /health:
     get:
@@ -2492,3 +2569,69 @@ components:
     CatalogueV1MusicalForm:
       type: string
       enum: [KRITHI, VARNAM, SWARAJATHI]
+
+    ErrorResponse:
+      type: object
+      required: [message]
+      properties:
+        message: { type: string }
+      description: StatusPages error body. Discovery 503 uses this shape, not CatalogueError.
+
+    SemanticSearchRequest:
+      type: object
+      required: [query]
+      properties:
+        query: { type: string }
+        composerId:
+          type: string
+          format: uuid
+          nullable: true
+        ragaId:
+          type: string
+          format: uuid
+          nullable: true
+        limit:
+          type: integer
+          default: 20
+          minimum: 1
+          maximum: 100
+          description: Server clamps to 1–100. Rasika sends 30.
+
+    SemanticSearchResponse:
+      type: object
+      required: [query, totalMatches, items]
+      properties:
+        query: { type: string }
+        totalMatches:
+          type: integer
+          description: Number of items returned, not a catalogue total.
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/SemanticSearchResultItem"
+
+    SemanticSearchResultItem:
+      type: object
+      required: [krithiId, title, composerName, documentKind, matchedContent, similarityScore]
+      properties:
+        krithiId: { type: string, format: uuid }
+        title: { type: string }
+        composerName: { type: string }
+        ragaName:
+          type: string
+          nullable: true
+          description: Primary raga name from the search join, not the ordered raga sequence.
+        talaName:
+          type: string
+          nullable: true
+        documentKind: { type: string }
+        matchedContent: { type: string }
+        similarityScore: { type: number, format: double }
+        lexicalScore:
+          type: number
+          format: double
+          nullable: true
+        rrfScore:
+          type: number
+          format: double
+          nullable: true

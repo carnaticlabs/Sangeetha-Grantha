@@ -1,5 +1,7 @@
 package com.sangita.grantha.shared.presentation.search
 
+import com.sangita.grantha.shared.domain.model.SemanticSearchRequest
+import com.sangita.grantha.shared.domain.model.SemanticSearchResultItem
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerSummaryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueContract
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueKrithiSummaryDto
@@ -20,14 +22,19 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.uuid.Uuid
 
+enum class KrithiSearchMode { Lexical, Hybrid, Semantic }
+
 data class SearchUiState(
     val query: String = "",
     val committedQuery: String = "",
     val category: ExploreCategory = ExploreCategory.Krithis,
+    val mode: KrithiSearchMode = KrithiSearchMode.Hybrid,
     val draftFacets: ExploreFacets = ExploreFacets(),
     val appliedFacets: ExploreFacets = ExploreFacets(),
     val filterSheetOpen: Boolean = false,
+    val searchOptionsExpanded: Boolean = false,
     val items: List<CatalogueKrithiSummaryDto> = emptyList(),
+    val discoveryItems: List<SemanticSearchResultItem> = emptyList(),
     val ragaItems: List<CatalogueRagaSummaryDto> = emptyList(),
     val composerItems: List<CatalogueComposerSummaryDto> = emptyList(),
     val filterRagas: List<CatalogueRagaSummaryDto> = emptyList(),
@@ -50,6 +57,7 @@ class SearchPresenter(
     val state: StateFlow<SearchUiState> = _state.asStateFlow()
     private var generation: Int = 0
     private var job: Job? = null
+    private var searchCommitted: Boolean = false
 
     fun onQueryChange(query: String) {
         _state.update { it.copy(query = query) }
@@ -106,6 +114,34 @@ class SearchPresenter(
             )
         }
         fetch(reset = true)
+    }
+
+    fun toggleSearchOptions() {
+        _state.update { it.copy(searchOptionsExpanded = !it.searchOptionsExpanded) }
+    }
+
+    fun selectMode(mode: KrithiSearchMode) {
+        val snapshot = _state.value
+        if (snapshot.category != ExploreCategory.Krithis) return
+        if (snapshot.mode == mode) {
+            _state.update { it.copy(searchOptionsExpanded = false) }
+            return
+        }
+        val refetch = searchCommitted
+        _state.update {
+            it.copy(
+                mode = mode,
+                searchOptionsExpanded = false,
+                page = 0,
+                items = emptyList(),
+                discoveryItems = emptyList(),
+                total = 0,
+                hasMore = false,
+                nextPageLoad = LoadState.Idle,
+                load = if (refetch) LoadState.Loading else it.load,
+            )
+        }
+        if (refetch) fetch(reset = true)
     }
 
     fun openFilters() {
@@ -165,6 +201,7 @@ class SearchPresenter(
 
     fun loadNextPage() {
         val snapshot = _state.value
+        if (snapshot.category == ExploreCategory.Krithis && snapshot.mode != KrithiSearchMode.Lexical) return
         if (!snapshot.hasMore || snapshot.nextPageLoad is LoadState.Loading || snapshot.load is LoadState.Loading) {
             return
         }
@@ -181,6 +218,7 @@ class SearchPresenter(
     }
 
     private fun fetch(reset: Boolean) {
+        searchCommitted = true
         val requested = ++generation
         job?.cancel()
         val snapshot = _state.value
@@ -192,6 +230,7 @@ class SearchPresenter(
                     it.copy(
                         load = LoadState.Loading,
                         items = emptyList(),
+                        discoveryItems = emptyList(),
                         ragaItems = emptyList(),
                         composerItems = emptyList(),
                         total = 0,
@@ -204,28 +243,56 @@ class SearchPresenter(
             }
             try {
                 when (snapshot.category) {
-                    ExploreCategory.Krithis -> {
-                        val response = catalogue.searchKrithis(
-                            query = snapshot.committedQuery,
-                            composerId = snapshot.appliedFacets.composerId,
-                            ragaId = snapshot.appliedFacets.ragaId,
-                            page = page,
-                            pageSize = PAGE_SIZE,
-                            interaction = interaction,
-                        )
-                        if (requested != generation) return@launch
-                        val merged = if (reset) response.items else snapshot.items + response.items
-                        val capped = merged.take(PAGE_SIZE * MAX_PAGES)
-                        val loadedPages = page + 1
-                        _state.update {
-                            it.copy(
-                                items = capped,
-                                total = response.total,
+                    ExploreCategory.Krithis -> when (snapshot.mode) {
+                        KrithiSearchMode.Lexical -> {
+                            val response = catalogue.searchKrithis(
+                                query = snapshot.committedQuery,
+                                composerId = snapshot.appliedFacets.composerId,
+                                ragaId = snapshot.appliedFacets.ragaId,
                                 page = page,
-                                hasMore = capped.size < response.total && loadedPages < MAX_PAGES,
-                                load = if (capped.isEmpty()) LoadState.Empty else LoadState.Idle,
-                                nextPageLoad = LoadState.Idle,
+                                pageSize = PAGE_SIZE,
+                                interaction = interaction,
                             )
+                            if (requested != generation) return@launch
+                            val merged = if (reset) response.items else snapshot.items + response.items
+                            val capped = merged.take(PAGE_SIZE * MAX_PAGES)
+                            val loadedPages = page + 1
+                            _state.update {
+                                it.copy(
+                                    items = capped,
+                                    discoveryItems = emptyList(),
+                                    total = response.total,
+                                    page = page,
+                                    hasMore = capped.size < response.total && loadedPages < MAX_PAGES,
+                                    load = if (capped.isEmpty()) LoadState.Empty else LoadState.Idle,
+                                    nextPageLoad = LoadState.Idle,
+                                )
+                            }
+                        }
+                        KrithiSearchMode.Hybrid, KrithiSearchMode.Semantic -> {
+                            val request = SemanticSearchRequest(
+                                query = snapshot.committedQuery,
+                                composerId = null,
+                                ragaId = null,
+                                limit = DISCOVERY_LIMIT,
+                            )
+                            val response = if (snapshot.mode == KrithiSearchMode.Hybrid) {
+                                catalogue.searchHybrid(request, interaction)
+                            } else {
+                                catalogue.searchSemantic(request, interaction)
+                            }
+                            if (requested != generation) return@launch
+                            _state.update {
+                                it.copy(
+                                    items = emptyList(),
+                                    discoveryItems = response.items,
+                                    total = 0,
+                                    page = 0,
+                                    hasMore = false,
+                                    load = if (response.items.isEmpty()) LoadState.Empty else LoadState.Idle,
+                                    nextPageLoad = LoadState.Idle,
+                                )
+                            }
                         }
                     }
                     ExploreCategory.Ragas -> {
@@ -310,5 +377,6 @@ class SearchPresenter(
     companion object {
         const val PAGE_SIZE: Int = CatalogueContract.DEFAULT_PAGE_SIZE
         const val MAX_PAGES: Int = 3
+        const val DISCOVERY_LIMIT: Int = 30
     }
 }

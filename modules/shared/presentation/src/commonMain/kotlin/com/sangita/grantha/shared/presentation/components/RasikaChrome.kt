@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -360,13 +361,15 @@ fun RasikaTabBar(
     onSelect: (RasikaTab) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier.fillMaxWidth()) {
+    // Scaffold delegates bottom insets to a custom bottom bar. Keep the system
+    // gesture/navigation area below the labels, with the same teal background.
+    Column(modifier.fillMaxWidth().background(RasikaTokens.teal).navigationBarsPadding()) {
         ScallopPlinthEdge()
         Row(
             Modifier
                 .fillMaxWidth()
                 .background(RasikaTokens.teal)
-                .heightIn(min = 64.dp)
+                .heightIn(min = 72.dp)
                 .padding(vertical = RasikaTokens.xxs),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -376,9 +379,10 @@ fun RasikaTabBar(
                 Column(
                     modifier = Modifier
                         .weight(1f)
-                        .heightIn(min = 64.dp)
+                        .heightIn(min = 72.dp)
                         .clickable { onSelect(spec.tab) }
-                        .semantics { contentDescription = spec.label },
+                        .semantics { contentDescription = spec.label }
+                        .padding(vertical = RasikaTokens.xs),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
                 ) {
