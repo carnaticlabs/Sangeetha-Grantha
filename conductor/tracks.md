@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.32.0 |
-| **Last Updated** | 2026-09-22 |
+| **Version** | 1.33.0 |
+| **Last Updated** | 2026-09-26 |
 | **Author** | Sangeetha Grantha Team |
 
 # Conductor Tracks Registry
@@ -143,10 +143,11 @@
 | [TRACK-137](./tracks/TRACK-137-orphan-twin-raga-cleanup.md) | Orphan-Twin Raga Cleanup (residual TRACK-132 duplicates) | Done |
 | [TRACK-138](./tracks/TRACK-138-rasika-mobile-app.md) | Rasika Mobile App — Search, Browse and Read | Completed |
 | [TRACK-139](./tracks/TRACK-139-retire-corpus-data-fix-migrations.md) | Retire Corpus Data-Fix Migrations | Completed |
-| [TRACK-140](./tracks/TRACK-140-rasika-discovery-experience.md) | Rasika — Discovery and Reading Experience | In progress — Plan accepted |
+| [TRACK-140](./tracks/TRACK-140-rasika-discovery-experience.md) | Rasika — Discovery and Reading Experience | Completed |
 | [TRACK-141](./tracks/TRACK-141-documentation-facelift.md) | Documentation Facelift and Feature Reconciliation | Done |
 | [TRACK-142](./tracks/TRACK-142-library-upgrades-sep-2026.md) | Library Upgrades — September 2026 (Batch 1–3d, incl. GA majors) | Done |
-| [TRACK-143](./tracks/TRACK-143-rasika-semantic-search.md) | Rasika Semantic Search | In Progress |
+| [TRACK-143](./tracks/TRACK-143-rasika-semantic-search.md) | Rasika Semantic Search | Completed |
+| [TRACK-144](./tracks/TRACK-144-rasika-field-feedback.md) | Rasika Field Feedback | Completed |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)
