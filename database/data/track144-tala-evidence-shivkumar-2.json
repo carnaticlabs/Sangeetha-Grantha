@@ -1,0 +1,62 @@
+{
+  "track": "TRACK-144",
+  "rows": [
+    {
+      "krithi_id": "0d9065ca-f1ce-4426-87f1-a02c2145ba33",
+      "title": "Maa Jaanaki",
+      "composer": "Tyagaraja",
+      "raga_id": "5154cda4-c747-49fa-be98-fa9f341764c8",
+      "raga": "Kāmbhoji",
+      "expected_tala": "Unknown",
+      "proposed_tala": "Adi",
+      "expected_pallavi": "mA jAnaki 1 cETTa paTTaga\n2 maharAjav(ai)tivi",
+      "source_name": "shivkumar.org",
+      "source_url": "https://www.shivkumar.org/music/maajanaki.htm",
+      "source_checksum": "9f382a0d40e206d67686b244c1005a34719a9bca64fe5f44fb15861741da9242",
+      "source_locator": "Notation header Talam: Deshadi, stored as Adi; raga Kambodhi (Kamboji); pallavi mA jAnaki cETTa paTTaga",
+      "raw_tala": "Deshadi",
+      "source_pallavi": "mA jAnaki cETTa paTTaga maharAjav (ai) tivi",
+      "reviewed_by": "Grok — Shivkumar notation header, raga and pallavi matched",
+      "reviewed_on": "2026-09-25",
+      "decision": "accepted"
+    },
+    {
+      "krithi_id": "5603c15e-1264-46f6-a587-b07c80af900c",
+      "title": "Vinataa Suta Vaahana",
+      "composer": "Tyagaraja",
+      "raga_id": "0f59826a-42d6-4ac9-8e2f-c9becb802fa7",
+      "raga": "Jayanthasena",
+      "expected_tala": "Unknown",
+      "proposed_tala": "Adi",
+      "expected_pallavi": "vinatA suta vAhana SrI ramaNa\nmanasAraga sEvinceda rAma",
+      "source_name": "shivkumar.org",
+      "source_url": "https://www.shivkumar.org/music/vinatasuta.htm",
+      "source_checksum": "15f3ecc3c60339ec9b6364c98b204e26a5de8fbefe64aa1f279c238d1935630e",
+      "source_locator": "Notation header Talam: Adi; raga Jayantasena; pallavi Vinataa Suta Vaahana Sri Ramanaa",
+      "raw_tala": "Adi",
+      "source_pallavi": "Vinataa Suta Vaahana Sri Ramanaa Manasaaraga Sevincheda Raamaa",
+      "reviewed_by": "Grok — Shivkumar notation header, raga and pallavi matched",
+      "reviewed_on": "2026-09-25",
+      "decision": "accepted"
+    },
+    {
+      "krithi_id": "40792364-1527-4e70-804d-00e1323c621c",
+      "title": "Ramaabhirama Ramaneeya",
+      "composer": "Tyagaraja",
+      "raga_id": "0802236d-1689-4700-b17e-c1062a343f15",
+      "raga": "Darbar",
+      "expected_tala": "Unknown",
+      "proposed_tala": "Misra Capu",
+      "expected_pallavi": "rAm(A)bhirAma ramaNIya nAma\n1 sAmaja ripu bhIma sAkEta dhAma (rA)",
+      "source_name": "shivkumar.org",
+      "source_url": "https://www.shivkumar.org/music/ramabhirama.htm",
+      "source_checksum": "10e81a8285d0f4b299a08d282f97be1aa2c0fd2389a66c14bd0f69a063c60feb",
+      "source_locator": "Notation header Talam: Misra Chapu; raga Durbar; pallavi Raamaabhi Raamaa Ramaniya Namaa",
+      "raw_tala": "Misra Chapu",
+      "source_pallavi": "Raamaabhi Raamaa Ramaniya Namaa Samajaripu Bhima Saketa Dhaamaa",
+      "reviewed_by": "Grok — Shivkumar notation header, raga and pallavi matched",
+      "reviewed_on": "2026-09-25",
+      "decision": "accepted"
+    }
+  ]
+}

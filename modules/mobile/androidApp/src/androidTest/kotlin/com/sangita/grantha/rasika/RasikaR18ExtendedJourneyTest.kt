@@ -167,7 +167,7 @@ class RasikaR18ExtendedJourneyTest {
     fun readerSwitchesToTheDevanagariSource() {
         launchFresh().use {
             openVatapiReader()
-            awaitText("Latin")
+            awaitText("English")
             compose.onAllNodes(hasText("Devanagari", substring = true)).onFirst().performClick()
             compose.waitForIdle()
             awaitText("वातापि")

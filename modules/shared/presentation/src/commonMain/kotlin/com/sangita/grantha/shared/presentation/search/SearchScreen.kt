@@ -37,6 +37,7 @@ import com.sangita.grantha.shared.presentation.components.RasikaPrimaryButton
 import com.sangita.grantha.shared.presentation.components.RasikaScreenHeader
 import com.sangita.grantha.shared.presentation.components.RasikaSearchField
 import com.sangita.grantha.shared.presentation.explore.ExploreCategory
+import com.sangita.grantha.shared.presentation.explore.groupRagas
 import com.sangita.grantha.shared.presentation.explore.ragaRelationshipCaption
 import com.sangita.grantha.shared.presentation.theme.RasikaTheme
 import com.sangita.grantha.shared.presentation.theme.RasikaTokens
@@ -58,7 +59,6 @@ fun SearchScreen(
     Column(modifier.fillMaxSize()) {
         RasikaScreenHeader(
             title = RasikaCopy.SEARCH_TITLE,
-            label = RasikaCopy.SEARCH_LABEL,
             onPreferences = onOpenPreferences,
         )
         if (state.filterSheetOpen) {
@@ -342,19 +342,73 @@ private fun ResultList(
                     )
                 }
             }
-            ExploreCategory.Ragas -> items(state.ragaItems, key = { it.id.toString() }) { raga ->
-                DirectoryRow(
-                    title = raga.name,
-                    meta = directoryMeta(
-                        ragaRelationshipCaption(
-                            raga.melakartaNumber,
-                            raga.parentRagaName,
-                            raga.parentMelakartaNumber,
-                        ),
-                        raga.publishedCompositionCount,
-                    ),
-                    onClick = { onOpenRaga(raga.id) },
-                )
+            ExploreCategory.Ragas -> {
+                val groups = groupRagas(state.ragaItems)
+                if (groups.melakartas.isNotEmpty()) {
+                    item(key = "melakarta-heading") {
+                        Text(
+                            RasikaCopy.MELAKARTA_RAGAS,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(top = RasikaTokens.sm),
+                        )
+                    }
+                    items(groups.melakartas, key = { "mela-${it.id}" }) { raga ->
+                        DirectoryRow(
+                            title = raga.name,
+                            meta = directoryMeta(
+                                ragaRelationshipCaption(
+                                    raga.melakartaNumber,
+                                    raga.parentRagaName,
+                                    raga.parentMelakartaNumber,
+                                ),
+                                raga.publishedCompositionCount,
+                            ),
+                            onClick = { onOpenRaga(raga.id) },
+                        )
+                    }
+                }
+                if (groups.janyas.isNotEmpty()) {
+                    item(key = "janya-heading") {
+                        Text(
+                            RasikaCopy.JANYA_RAGAS,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(top = RasikaTokens.sm),
+                        )
+                    }
+                    items(groups.janyas, key = { "janya-${it.id}" }) { raga ->
+                        DirectoryRow(
+                            title = raga.name,
+                            meta = directoryMeta(
+                                ragaRelationshipCaption(
+                                    raga.melakartaNumber,
+                                    raga.parentRagaName,
+                                    raga.parentMelakartaNumber,
+                                ),
+                                raga.publishedCompositionCount,
+                            ),
+                            onClick = { onOpenRaga(raga.id) },
+                        )
+                    }
+                }
+                if (groups.unclassified.isNotEmpty()) {
+                    item(key = "other-ragas-heading") {
+                        Text(
+                            RasikaCopy.OTHER_RAGAS,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(top = RasikaTokens.sm),
+                        )
+                    }
+                    items(groups.unclassified, key = { "other-${it.id}" }) { raga ->
+                        DirectoryRow(
+                            title = raga.name,
+                            meta = RasikaCopy.inThisLibrary(raga.publishedCompositionCount),
+                            onClick = { onOpenRaga(raga.id) },
+                        )
+                    }
+                }
             }
             ExploreCategory.Composers -> items(state.composerItems, key = { it.id.toString() }) { composer ->
                 DirectoryRow(

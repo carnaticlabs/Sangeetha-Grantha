@@ -44,7 +44,7 @@ _RAGA_LABEL = (
     r"r[\u00AF\u0101]?a+ga\s*[\u02D9.]?\s*[\u1E41m]?"  # ASCII/IAST/garbled
     r"|r\u0101ga[\u1E41m]?"  # Precomposed IAST
     r"|राग"  # Devanagari
-    r")"
+    r")(?!\w)"  # Do not consume the m in the following raga name (e.g. mohana).
 )
 
 _TALA_LABEL = (
@@ -52,7 +52,7 @@ _TALA_LABEL = (
     r"t[\u00AF\u0101]?a+l[.\u1E37]?\s*a\s*[\u02D9.]?\s*[\u1E41m]?"  # ASCII/IAST/garbled
     r"|t\u0101l[\u1E37]?a[\u1E41m]?"  # Precomposed IAST
     r"|ताल"  # Devanagari
-    r")"
+    r")(?!\w)"  # Do not consume the m in the following tala name (e.g. miSra).
 )
 
 
@@ -65,6 +65,8 @@ class MetadataParser:
     - Generic style: "Title\\nRaga - Tala\\nComposer"
     - Devanagari headers with corresponding field labels
     """
+
+    EXPLICIT_TALA_LABEL = re.compile(_TALA_LABEL, re.IGNORECASE)
 
     # ─── Regex patterns for field extraction ─────────────────────────────
 
@@ -105,10 +107,18 @@ class MetadataParser:
         re.IGNORECASE | re.MULTILINE,
     )
 
-    # Parenthesised tala: "rAga paraju (tALa cApu)"
+    # Parenthesised tala, also accepting a comma/semicolon where a source omitted
+    # the closing parenthesis (e.g. parAmukham: "rAga kalyANi (tALa tripuTa,").
     RAGA_TALA_PAREN = re.compile(
         _RAGA_LABEL + r"\s*(?:[:—–\-]\s*)?(.+?)"
-        r"\s*\(\s*" + _TALA_LABEL + r"\s*(?:[:—–\-]\s*)?(.+?)\s*\)",
+        r"\s*\(\s*" + _TALA_LABEL + r"\s*(?:[:—–\-]\s*)?([^\n,;)]+?)\s*[),;]",
+        re.IGNORECASE | re.MULTILINE,
+    )
+
+    # Blog prose also puts the tala label after its value: "rAga Arabhi (miSra cApu tALa)".
+    RAGA_TALA_PAREN_SUFFIX = re.compile(
+        _RAGA_LABEL + r"\s*(?:[:—–\-]\s*)?([^\n()]+?)"
+        r"\s*\(\s*([^\n();,]+?)\s+" + _TALA_LABEL + r"\s*\)",
         re.IGNORECASE | re.MULTILINE,
     )
 
@@ -237,8 +247,10 @@ class MetadataParser:
 
         # Fallback: title_hint often carries raga/tala in blog pages
         # e.g. "Syama Sastry Kriti - trilOka mAtA – rAga paraju (tALa cApu)"
-        if not raga and not tala and title_hint:
-            raga, tala = self._extract_raga_tala_descriptor_aware(title_hint)
+        if (not raga or not tala) and title_hint:
+            hint_raga, hint_tala = self._extract_raga_tala_descriptor_aware(title_hint)
+            raga = raga or hint_raga
+            tala = tala or hint_tala
 
         # Clean up extracted names
         if raga:
@@ -319,6 +331,10 @@ class MetadataParser:
 
         # Try parenthesised tala: "rAga paraju (tALa cApu)"
         match = self.RAGA_TALA_PAREN.search(text)
+        if match:
+            return match.group(1).strip(), match.group(2).strip()
+
+        match = self.RAGA_TALA_PAREN_SUFFIX.search(text)
         if match:
             return match.group(1).strip(), match.group(2).strip()
 

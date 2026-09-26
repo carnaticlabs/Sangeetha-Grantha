@@ -205,7 +205,8 @@ class SearchPresenter(
         if (!snapshot.hasMore || snapshot.nextPageLoad is LoadState.Loading || snapshot.load is LoadState.Loading) {
             return
         }
-        if (snapshot.page + 1 >= MAX_PAGES) return
+        val cap = pageCap(snapshot.category)
+        if (cap != null && snapshot.page + 1 >= cap) return
         fetch(reset = false)
     }
 
@@ -304,15 +305,13 @@ class SearchPresenter(
                         )
                         if (requested != generation) return@launch
                         val merged = if (reset) response.items else snapshot.ragaItems + response.items
-                        val capped = merged.take(PAGE_SIZE * MAX_PAGES)
-                        val loadedPages = page + 1
                         _state.update {
                             it.copy(
-                                ragaItems = capped,
+                                ragaItems = merged,
                                 total = response.total,
                                 page = page,
-                                hasMore = capped.size < response.total && loadedPages < MAX_PAGES,
-                                load = if (capped.isEmpty()) LoadState.Empty else LoadState.Idle,
+                                hasMore = merged.size < response.total && response.items.isNotEmpty(),
+                                load = if (merged.isEmpty()) LoadState.Empty else LoadState.Idle,
                                 nextPageLoad = LoadState.Idle,
                             )
                         }
@@ -377,6 +376,16 @@ class SearchPresenter(
     companion object {
         const val PAGE_SIZE: Int = CatalogueContract.DEFAULT_PAGE_SIZE
         const val MAX_PAGES: Int = 3
+
         const val DISCOVERY_LIMIT: Int = 30
+
+        /**
+         * Maximum pages loaded per explore category.
+         * Ragas are unbounded (null) so the full catalogue (1,000+ ragas) can be browsed.
+         */
+        fun pageCap(category: ExploreCategory): Int? = when (category) {
+            ExploreCategory.Ragas -> null
+            else -> MAX_PAGES
+        }
     }
 }

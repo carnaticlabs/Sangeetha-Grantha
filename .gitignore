@@ -127,3 +127,7 @@ ds-bundle/
 .triage-cache/
 /tools/krithi-extract-enrich-worker/reports/*
 /output/*
+
+# Xcode local user state
+xcuserdata/
+*.xcuserstate

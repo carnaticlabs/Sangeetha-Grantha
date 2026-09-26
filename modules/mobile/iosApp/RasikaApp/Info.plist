@@ -31,6 +31,10 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Rasika loads compositions from the Sangita Grantha server on your local network.</string>
+	<key>RasikaApiBaseUrls</key>
+	<string>$(RASIKA_API_BASE_URLS)</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>arm64</string>

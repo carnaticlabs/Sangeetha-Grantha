@@ -72,7 +72,7 @@ fun DiscoveryKrithiCard(
                 item.ragaName?.let { name ->
                     Text(
                         name,
-                        style = MaterialTheme.typography.labelMedium,
+                        style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.secondary,
                         modifier = Modifier.padding(top = 3.dp),
                     )

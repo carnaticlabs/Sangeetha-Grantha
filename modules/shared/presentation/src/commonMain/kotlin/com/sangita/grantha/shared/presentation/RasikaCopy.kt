@@ -1,6 +1,7 @@
 package com.sangita.grantha.shared.presentation
 
 import com.sangita.grantha.shared.domain.model.MusicalFormDto
+import com.sangita.grantha.shared.domain.model.ScriptCodeDto
 
 object RasikaCopy {
     const val APP_NAME = "Rasika"
@@ -43,6 +44,9 @@ object RasikaCopy {
     const val MODE_SEMANTIC = "Related meanings"
     const val RAGAMALIKA = "Ragamalika"
     const val BROWSE_RAGAS = "Ragas"
+    const val MELAKARTA_RAGAS = "Melakartas"
+    const val JANYA_RAGAS = "Janya ragas"
+    const val OTHER_RAGAS = "Other ragas"
     const val BROWSE_COMPOSERS = "Composers"
     const val BROWSE_TITLE = "Browse"
     const val BROWSE_FILTER = "Filter this directory"
@@ -129,5 +133,11 @@ object RasikaCopy {
         0 -> FAV_STORAGE_NONE
         1 -> "1 saved · identifiers and titles only, on this device"
         else -> "$n saved · identifiers and titles only, on this device"
+    }
+
+    /** Visible chip for a stored script. LATIN stays the code; the chip reads English. */
+    fun scriptChipLabel(script: ScriptCodeDto): String = when (script) {
+        ScriptCodeDto.LATIN -> "English"
+        else -> script.name.lowercase().replaceFirstChar { it.uppercase() }
     }
 }

@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | In progress — Plan accepted |
-| **Version** | 1.9.0 |
-| **Last Updated** | 2026-09-21 |
+| **Status** | Completed |
+| **Version** | 1.10.0 |
+| **Last Updated** | 2026-09-26 |
 | **Author** | Sangeetha Grantha Team |
 
 # Track: Rasika — Discovery and Reading Experience
@@ -11,7 +11,7 @@
 
 **ID:** TRACK-140
 
-**Status:** In progress — Plan accepted
+**Status:** Completed
 
 **Owner:** Seshadri
 

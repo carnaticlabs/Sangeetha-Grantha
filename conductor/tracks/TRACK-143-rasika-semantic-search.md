@@ -1,13 +1,13 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | In Progress |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-09-22 |
+| **Status** | Completed |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-09-26 |
 | **Author** | Sangeetha Grantha Team |
 
 # Track: Rasika Semantic Search
 **ID:** TRACK-143
-**Status:** In Progress
+**Status:** Completed
 **Owner:** Seshadri
 **Created:** 2026-09-22
 **Updated:** 2026-09-22

@@ -19,7 +19,7 @@ import json
 import logging
 import os
 import sys
-from typing import Any
+from typing import Any, Protocol
 
 import psycopg
 from psycopg.rows import dict_row
@@ -49,6 +49,11 @@ logging.basicConfig(
 )
 logger = logging.getLogger("embed_catalogue")
 
+
+class DocumentEmbedder(Protocol):
+    def embed_document(self, text: str, title: str | None = None) -> list[float]: ...
+
+
 DEFAULT_DB_URL = os.environ.get(
     "DATABASE_URL",
     "postgresql://postgres:postgres@localhost:5432/sangita_grantha",
@@ -60,10 +65,25 @@ def md5_hash(text: str) -> str:
     return hashlib.md5(text.encode("utf-8")).hexdigest()
 
 
+def document_needs_refresh(existing: tuple[Any, ...] | None, content_hash: str, original_content: str) -> bool:
+    """Check the document itself as well as its vector's hash.
+
+    Repair SQL can alter indexed text without updating either stored hash. Also,
+    overview source lyrics can change beyond the bounded embedding excerpt.
+    """
+    return (
+        existing is None
+        or existing[1] is None
+        or any(value != content_hash for value in existing[2:5])
+        or existing[5] != original_content
+    )
+
+
 def fetch_krithi_candidates(
     conn: psycopg.Connection,
     krithi_id: str | None = None,
     limit: int | None = None,
+    stale_only: bool = False,
 ) -> list[dict[str, Any]]:
     """Fetches candidate krithis with their composer, raga, tala, and lyric details."""
     query = """
@@ -103,6 +123,15 @@ def fetch_krithi_candidates(
         query += " AND k.id = %s"
         params.append(krithi_id)
 
+    if stale_only:
+        query += """ AND k.id IN (
+            SELECT DISTINCT sd.krithi_id
+            FROM search_documents sd
+            JOIN document_embeddings de ON de.document_id = sd.id
+            WHERE de.content_hash = 'STALE_TRACK_144_NEEDS_REBUILD'
+               OR de.content_hash <> sd.content_hash
+        )"""
+
     query += " ORDER BY k.title ASC"
 
     if limit:
@@ -137,7 +166,7 @@ def fetch_sections_for_krithi(conn: psycopg.Connection, krithi_id: str) -> list[
 
 def index_krithi(
     conn: psycopg.Connection,
-    embedder: GeminiEmbedder,
+    embedder: DocumentEmbedder,
     profile_id: str | None,
     krithi: dict[str, Any],
     dry_run: bool = False,
@@ -186,7 +215,8 @@ def index_krithi(
             # Check existing
             cur.execute(
                 """
-                SELECT sd.id, de.id, de.content_hash 
+                SELECT sd.id, de.id, de.content_hash, sd.content_hash,
+                       md5(sd.indexed_content), sd.original_content
                 FROM search_documents sd
                 LEFT JOIN document_embeddings de ON de.document_id = sd.id AND de.profile_id = %s
                 WHERE sd.krithi_id = %s AND sd.section_id IS NULL AND sd.document_kind = 'COMPOSITION_OVERVIEW'
@@ -197,7 +227,7 @@ def index_krithi(
             if existing:
                 keep_doc_ids.append(str(existing[0]))
 
-            if not existing or force or (existing and not existing[1]) or (existing and existing[2] != content_hash):
+            if force or document_needs_refresh(existing, content_hash, primary_lyrics):
                 if dry_run:
                     logger.info("[DRY-RUN] Would embed Overview for: %s (%s)", title, raga)
                 else:
@@ -270,7 +300,8 @@ def index_krithi(
         with conn.cursor() as cur:
             cur.execute(
                 """
-                SELECT sd.id, de.id, de.content_hash 
+                SELECT sd.id, de.id, de.content_hash, sd.content_hash,
+                       md5(sd.indexed_content), sd.original_content
                 FROM search_documents sd
                 LEFT JOIN document_embeddings de ON de.document_id = sd.id AND de.profile_id = %s
                 WHERE sd.krithi_id = %s 
@@ -284,7 +315,7 @@ def index_krithi(
             if existing:
                 keep_doc_ids.append(str(existing[0]))
 
-            if not existing or force or (existing and not existing[1]) or (existing and existing[2] != content_hash):
+            if force or document_needs_refresh(existing, content_hash, sec_text):
                 script_label = sec.get("script", "unknown")
                 if dry_run:
                     logger.info("[DRY-RUN] Would embed Section %s (%s) for: %s", sec_type, script_label, title)
@@ -371,6 +402,14 @@ def main():
     parser.add_argument("--limit", type=int, help="Limit number of krithis to process")
     parser.add_argument("--krithi-id", type=str, help="Process a single krithi by UUID")
     parser.add_argument("--all", action="store_true", help="Process the entire catalogue")
+    parser.add_argument(
+        "--stale-only",
+        action="store_true",
+        help=(
+            "Only process krithis with stale embeddings "
+            "(content_hash is STALE_TRACK_144_NEEDS_REBUILD or does not match the document)"
+        ),
+    )
     parser.add_argument("--dry-run", action="store_true", help="Print plan without calling embedding API or saving")
     parser.add_argument("--force", action="store_true", help="Force re-embed even if hash matches")
     parser.add_argument("--db-url", type=str, default=DEFAULT_DB_URL, help="PostgreSQL connection string")
@@ -391,7 +430,7 @@ def main():
 
     args = parser.parse_args()
 
-    if not args.limit and not args.krithi_id and not args.all and not args.dry_run:
+    if not args.limit and not args.krithi_id and not args.all and not args.dry_run and not args.stale_only:
         parser.print_help()
         sys.exit(1)
 
@@ -421,7 +460,12 @@ def main():
             project_id=args.project_id,
         )
 
-        candidates = fetch_krithi_candidates(conn, krithi_id=args.krithi_id, limit=args.limit)
+        candidates = fetch_krithi_candidates(
+            conn,
+            krithi_id=args.krithi_id,
+            limit=args.limit,
+            stale_only=args.stale_only,
+        )
         logger.info("Found %d candidate krithis to process", len(candidates))
 
         total_embedded = 0
