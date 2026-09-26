@@ -121,7 +121,7 @@ fun PreferencesScreen(
                     RasikaChip(
                         selected = state.preferredScript == script,
                         onClick = { presenter.setScript(script) },
-                        label = script.name.lowercase().replaceFirstChar { it.titlecase() },
+                        label = RasikaCopy.scriptChipLabel(script),
                     )
                 }
             }

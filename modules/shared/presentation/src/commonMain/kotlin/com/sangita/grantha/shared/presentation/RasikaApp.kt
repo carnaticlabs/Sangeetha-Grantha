@@ -71,6 +71,8 @@ fun RasikaApp(container: MobileAppContainer) {
         BrowsePresenter(container.catalogue, container.session, container.appScope)
     }
     val favouritesPresenter = remember { FavouritesPresenter(container.favourites) }
+    val favourites by favouritesPresenter.state.collectAsStateWithLifecycle()
+    val favouriteIds = favourites.bookmarks.map { it.krithiId }.toSet()
     val readerPresenter = remember {
         KrithiReaderPresenter(container.catalogue, container.preferences, container.session, container.appScope)
     }
@@ -191,7 +193,7 @@ fun RasikaApp(container: MobileAppContainer) {
                                 navigator.selectTab(RasikaTab.Settings)
                                 sync()
                             },
-                            isFavourite = favouritesPresenter::isFavourite,
+                            isFavourite = { it in favouriteIds },
                             onToggleFavourite = { id, label ->
                                 favouritesPresenter.toggle(id, label)
                                 sync()
@@ -202,7 +204,7 @@ fun RasikaApp(container: MobileAppContainer) {
                             onOpenKrithi = { open(RasikaDestination.KrithiReader(it)) },
                             onOpenRaga = { open(RasikaDestination.RagaDetail(it)) },
                             onOpenComposer = { open(RasikaDestination.ComposerDetail(it)) },
-                            isFavourite = favouritesPresenter::isFavourite,
+                            isFavourite = { it in favouriteIds },
                             onToggleFavourite = { id, label ->
                                 favouritesPresenter.toggle(id, label)
                                 sync()
@@ -221,7 +223,7 @@ fun RasikaApp(container: MobileAppContainer) {
                                 navigator.back()
                                 sync()
                             },
-                            isFavourite = favouritesPresenter::isFavourite,
+                            isFavourite = { it in favouriteIds },
                             onToggleFavourite = { id, label ->
                                 favouritesPresenter.toggle(id, label)
                                 sync()
@@ -235,7 +237,7 @@ fun RasikaApp(container: MobileAppContainer) {
                                 navigator.back()
                                 sync()
                             },
-                            isFavourite = favouritesPresenter::isFavourite,
+                            isFavourite = { it in favouriteIds },
                             onToggleFavourite = { id, label ->
                                 favouritesPresenter.toggle(id, label)
                                 sync()
@@ -243,6 +245,7 @@ fun RasikaApp(container: MobileAppContainer) {
                         )
                         RasikaDestination.Library -> FavouritesScreen(
                             presenter = favouritesPresenter,
+                            bookmarks = favourites.bookmarks,
                             onOpenKrithi = { open(RasikaDestination.KrithiReader(it)) },
                             onOpenPreferences = {
                                 navigator.selectTab(RasikaTab.Settings)
@@ -252,7 +255,7 @@ fun RasikaApp(container: MobileAppContainer) {
                         is RasikaDestination.KrithiReader -> KrithiReaderScreen(
                             krithiId = dest.krithiId,
                             presenter = readerPresenter,
-                            favourited = favouritesPresenter.isFavourite(dest.krithiId),
+                            favourited = dest.krithiId in favouriteIds,
                             onToggleFavourite = { label ->
                                 favouritesPresenter.toggle(dest.krithiId, label)
                                 sync()

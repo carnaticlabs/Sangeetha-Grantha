@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.sangita.grantha.rasika.BuildConfig
+import com.sangita.grantha.shared.mobile.config.MobileApiConfig
 import com.sangita.grantha.shared.mobile.harness.RasikaUiTestHarness
 import com.sangita.grantha.shared.mobile.platform.AndroidKeyValueStore
 import com.sangita.grantha.shared.mobile.platform.androidLiveCatalogue
@@ -39,7 +41,12 @@ class MainActivity : ComponentActivity() {
             catalogue = when {
                 useOffline -> RasikaUiTestHarness.unavailableCatalogue()
                 useFixtures -> RasikaUiTestHarness.fixtureCatalogue()
-                else -> androidLiveCatalogue()
+                else -> androidLiveCatalogue(
+                    MobileApiConfig(
+                        baseUrl = selectDebugApiBaseUrl(BuildConfig.API_BASE_URL),
+                        allowCleartext = true,
+                    ),
+                )
             },
             favourites = FavouritesRepository(CodecBackedBookmarkStore(kv)),
             preferences = PreferencesRepository(CodecBackedPreferencesStore(kv)),

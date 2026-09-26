@@ -1,6 +1,7 @@
 package com.sangita.grantha.shared.presentation
 
 import androidx.compose.ui.window.ComposeUIViewController
+import com.sangita.grantha.shared.mobile.config.MobileApiConfig
 import com.sangita.grantha.shared.mobile.harness.RasikaUiTestHarness
 import com.sangita.grantha.shared.mobile.platform.IosKeyValueStore
 import com.sangita.grantha.shared.mobile.platform.iosLiveCatalogue
@@ -36,7 +37,11 @@ fun MainViewController(): UIViewController {
         catalogue = when {
             useOffline -> RasikaUiTestHarness.unavailableCatalogue()
             useFixtures -> RasikaUiTestHarness.fixtureCatalogue()
-            else -> iosLiveCatalogue()
+            else -> {
+                val baseUrl = selectDebugApiBaseUrl()
+                if (baseUrl == null) iosLiveCatalogue()
+                else iosLiveCatalogue(MobileApiConfig(baseUrl = baseUrl, allowCleartext = true))
+            }
         },
         favourites = FavouritesRepository(CodecBackedBookmarkStore(kv)),
         preferences = PreferencesRepository(CodecBackedPreferencesStore(kv)),

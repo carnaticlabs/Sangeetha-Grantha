@@ -14,6 +14,16 @@ android {
         versionCode = 1
         versionName = "0.1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        // Emulator debug uses 10.0.2.2. A phone can list several origins,
+        // comma-separated: Wi-Fi LAN addresses, then http://127.0.0.1:8080 for USB reverse.
+        val apiBaseUrl = (findProperty("rasika.apiBaseUrl") as String?)
+            ?: "http://10.0.2.2:8080"
+        val origins = apiBaseUrl.split(',').map { it.trim() }.filter { it.isNotEmpty() }
+        val origin = Regex("""https?://[A-Za-z0-9._:-]+""")
+        require(origins.isNotEmpty() && origins.all { it.matches(origin) }) {
+            "rasika.apiBaseUrl must be comma-separated http(s) origins with no path or trailing slash"
+        }
+        buildConfigField("String", "API_BASE_URL", "\"${origins.joinToString(",")}\"")
     }
     buildTypes {
         getByName("debug") {
@@ -30,6 +40,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     packaging {
         resources {

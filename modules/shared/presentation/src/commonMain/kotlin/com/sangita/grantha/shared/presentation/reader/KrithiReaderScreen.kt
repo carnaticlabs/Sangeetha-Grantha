@@ -470,5 +470,4 @@ private fun readingIdentity(variant: CatalogueVariantRefDto): String = buildStri
     }
 }
 
-private fun scriptLabel(script: ScriptCodeDto): String =
-    script.name.lowercase().replaceFirstChar { it.uppercase() }
+private fun scriptLabel(script: ScriptCodeDto): String = RasikaCopy.scriptChipLabel(script)

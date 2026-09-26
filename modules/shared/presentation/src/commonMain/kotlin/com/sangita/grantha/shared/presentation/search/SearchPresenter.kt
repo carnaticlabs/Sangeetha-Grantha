@@ -205,7 +205,7 @@ class SearchPresenter(
         if (!snapshot.hasMore || snapshot.nextPageLoad is LoadState.Loading || snapshot.load is LoadState.Loading) {
             return
         }
-        if (snapshot.page + 1 >= MAX_PAGES) return
+        if (snapshot.page + 1 >= pageCap(snapshot.category)) return
         fetch(reset = false)
     }
 
@@ -304,14 +304,15 @@ class SearchPresenter(
                         )
                         if (requested != generation) return@launch
                         val merged = if (reset) response.items else snapshot.ragaItems + response.items
-                        val capped = merged.take(PAGE_SIZE * MAX_PAGES)
+                        val cap = PAGE_SIZE * pageCap(ExploreCategory.Ragas)
+                        val capped = merged.take(cap)
                         val loadedPages = page + 1
                         _state.update {
                             it.copy(
                                 ragaItems = capped,
                                 total = response.total,
                                 page = page,
-                                hasMore = capped.size < response.total && loadedPages < MAX_PAGES,
+                                hasMore = capped.size < response.total && loadedPages < pageCap(ExploreCategory.Ragas),
                                 load = if (capped.isEmpty()) LoadState.Empty else LoadState.Idle,
                                 nextPageLoad = LoadState.Idle,
                             )
@@ -377,6 +378,14 @@ class SearchPresenter(
     companion object {
         const val PAGE_SIZE: Int = CatalogueContract.DEFAULT_PAGE_SIZE
         const val MAX_PAGES: Int = 3
+
+        /** Raga directory pages. Three pages of 30 ended the list around Bhoopalam. */
+        const val RAGA_MAX_PAGES: Int = 12
         const val DISCOVERY_LIMIT: Int = 30
+
+        fun pageCap(category: ExploreCategory): Int = when (category) {
+            ExploreCategory.Ragas -> RAGA_MAX_PAGES
+            else -> MAX_PAGES
+        }
     }
 }

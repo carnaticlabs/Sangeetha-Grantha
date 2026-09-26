@@ -42,7 +42,7 @@ fun RagaSequence(
         shown.forEach { raga ->
             Text(
                 raga.name,
-                style = MaterialTheme.typography.labelMedium,
+                style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.secondary,
             )
         }
