@@ -1,0 +1,24 @@
+{
+  "track": "TRACK-144",
+  "rows": [
+    {
+      "krithi_id": "e73049d2-c17d-4a3a-9a18-7a895449d74b",
+      "title": "Entani Ne",
+      "composer": "Tyagaraja",
+      "raga_id": "e9ef0253-f1f6-4dd4-830a-8902e569c442",
+      "raga": "Mukhāri",
+      "expected_tala": "Unknown",
+      "proposed_tala": "Rupaka",
+      "expected_pallavi": "entani nE varNintunu SabarI bhAgyam(entani)",
+      "source_name": "shivkumar.org",
+      "source_url": "https://www.shivkumar.org/music/entanine.htm",
+      "source_checksum": "abc2ffe6ecc4818a6b8615dfbb7c7864f4ab68db1b2c7360b5232b8bc0b69f64",
+      "source_locator": "Notation page header Ragam Mukhari (22nd mela janya), Talam Rupakam, Composer Tyagaraja, Pallavi Entani Ne Varnintunu Shabari Bhaagyam; Shivkumar index entry agrees on Mukhari and Rupakam",
+      "raw_tala": "Rupakam",
+      "source_pallavi": "Entani Ne Varnintunu Shabari Bhaagyam",
+      "reviewed_by": "Grok — page and index agree; Shabari/Sabari and Bhaagyam/bhagyam are the same incipit",
+      "reviewed_on": "2026-09-25",
+      "decision": "accepted"
+    }
+  ]
+}

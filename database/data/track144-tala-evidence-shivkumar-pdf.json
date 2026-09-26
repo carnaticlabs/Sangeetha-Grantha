@@ -1,0 +1,25 @@
+{
+  "track": "TRACK-144",
+  "source_format": "PDF",
+  "rows": [
+    {
+      "krithi_id": "8788331c-a2c8-48a2-98d3-dac53ea56935",
+      "title": "nanu pAlimpa",
+      "composer": "Tyagaraja",
+      "raga_id": "aff9023b-7e3e-416b-8c04-8eeea0e46b86",
+      "raga": "Mohanam",
+      "expected_tala": "Unknown",
+      "proposed_tala": "Adi",
+      "expected_pallavi": "nanu pAlimpa naDaci vaccitivO\nnA prANa 1 nAtha",
+      "source_name": "shivkumar.org",
+      "source_url": "https://www.shivkumar.org/music/nannupAlimpa.pdf",
+      "source_checksum": "c80f7623ebd9744aa4a74d547c28387ed04f2ed0393e39c7cd8fad1defe93e68",
+      "source_locator": "PDF title Nannu PAlimpa - Mohanam - Adi (2 kalai) - Tyagaraja; HTML notation URL returns 404",
+      "raw_tala": "Adi (2 kalai)",
+      "source_pallavi": "Nannu PAlimpa",
+      "reviewed_by": "Grok — Shivkumar PDF title header, Mohanam and incipit matched",
+      "reviewed_on": "2026-09-25",
+      "decision": "accepted"
+    }
+  ]
+}
