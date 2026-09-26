@@ -92,7 +92,10 @@ def test_additional_reviewed_manifests_compile(manifest_name):
 
 
 def test_v64_migration_structure():
-    v64_path = Path(__file__).resolve().parents[3] / "database/migrations/V64__track144_catalogue_audit_and_vector_refresh_repair.sql"
+    v64_path = (
+        Path(__file__).resolve().parents[3]
+        / "database/migrations/V64__track144_catalogue_audit_and_vector_refresh_repair.sql"
+    )
     assert v64_path.exists(), "V64 migration file must exist"
     sql = v64_path.read_text()
     assert "DO $track144_v64$" in sql
@@ -108,6 +111,7 @@ def test_v64_migration_structure():
 def test_rebuild_track144_embeddings_cli():
     import subprocess
     import sys
+
     script = Path(__file__).resolve().parents[1] / "scripts/rebuild_track144_embeddings.py"
     assert script.exists()
     res = subprocess.run([sys.executable, str(script), "--help"], capture_output=True, text=True)

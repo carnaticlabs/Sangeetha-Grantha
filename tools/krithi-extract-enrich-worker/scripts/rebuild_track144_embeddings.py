@@ -27,13 +27,15 @@ sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
 from scripts.embed_catalogue import (
     DEFAULT_DB_URL,
-    STORAGE_DIMENSIONS,
     fetch_krithi_candidates,
-    find_profile,
     index_krithi,
+)
+from src.embeddings.catalogue_index import (
+    STORAGE_DIMENSIONS,
+    ensure_profile,
+    find_profile,
     validate_dimensions,
 )
-from src.embeddings.catalogue_index import ensure_profile
 from src.embeddings.gemini_embedder import GeminiEmbedder
 
 logging.basicConfig(

@@ -5,52 +5,79 @@ import re
 import time
 import unicodedata
 import urllib.request
-from bs4 import BeautifulSoup
 from difflib import SequenceMatcher
+
+from bs4 import BeautifulSoup
 
 CACHE_DIR = "output/karnatik-cache"
 os.makedirs(CACHE_DIR, exist_ok=True)
 
+
 def super_norm(s):
     if not s:
         return ""
-    s = unicodedata.normalize('NFKD', s.casefold())
-    for c in ['\u0300', '\u0301', '\u0302', '\u0303', '\u0304', '\u0306', '\u0307', '\u0308', '\u030a', '\u030b', '\u030c', '\u030d', '\u0323', '\u0324', '\u0325', '\u0327', '\u0328']:
-        s = s.replace(c, '')
-    s = s.replace('ae', 'e').replace('ai', 'e').replace('ch', 'c').replace('th', 't').replace('dh', 'd')
-    s = s.replace('bh', 'b').replace('kh', 'k').replace('gh', 'g').replace('ph', 'p').replace('sh', 's')
-    s = s.replace('ee', 'i').replace('oo', 'u').replace('aa', 'a').replace('ou', 'u')
-    res = []
+    s = unicodedata.normalize("NFKD", s.casefold())
+    for c in (
+        "\u0300",
+        "\u0301",
+        "\u0302",
+        "\u0303",
+        "\u0304",
+        "\u0306",
+        "\u0307",
+        "\u0308",
+        "\u030a",
+        "\u030b",
+        "\u030c",
+        "\u030d",
+        "\u0323",
+        "\u0324",
+        "\u0325",
+        "\u0327",
+        "\u0328",
+    ):
+        s = s.replace(c, "")
+    s = s.replace("ae", "e").replace("ai", "e").replace("ch", "c").replace("th", "t").replace("dh", "d")
+    s = s.replace("bh", "b").replace("kh", "k").replace("gh", "g").replace("ph", "p").replace("sh", "s")
+    s = s.replace("ee", "i").replace("oo", "u").replace("aa", "a").replace("ou", "u")
+    res: list[str] = []
     for char in s:
         if not char.isalnum():
             continue
         if res and res[-1] == char:
             continue
         res.append(char)
-    return ''.join(res)
+    return "".join(res)
+
 
 # Load karnatik songs index
-with open('/Users/seshadri/.gemini/antigravity/brain/7d7bedef-840e-4d89-a175-668ca3e18a9f/.system_generated/steps/95/content.md') as f:
-    soup = BeautifulSoup(f.read(), 'html.parser')
+with open(
+    "/Users/seshadri/.gemini/antigravity/brain/"
+    "7d7bedef-840e-4d89-a175-668ca3e18a9f/.system_generated/steps/95/content.md"
+) as f:
+    soup = BeautifulSoup(f.read(), "html.parser")
 
 karnatik_songs = []
-for a in soup.find_all('a', href=True):
-    href = a['href']
-    if re.match(r'^c\d+\.shtml$', href):
-        raw = a.get_text().strip()
-        parts = raw.split(' - ')
-        title = parts[0].strip()
-        raga = parts[1].strip() if len(parts) > 1 else ''
-        karnatik_songs.append({
-            'href': href,
-            'raw': raw,
-            'title': title,
-            'raga': raga,
-            'norm_title': super_norm(title),
-            'norm_raga': super_norm(raga)
-        })
+for a in soup.find_all("a", href=True):
+    href = a["href"]
+    if not isinstance(href, str) or not re.match(r"^c\d+\.shtml$", href):
+        continue
+    raw = a.get_text().strip()
+    parts = raw.split(" - ")
+    title = parts[0].strip()
+    raga = parts[1].strip() if len(parts) > 1 else ""
+    karnatik_songs.append(
+        {
+            "href": href,
+            "raw": raw,
+            "title": title,
+            "raga": raga,
+            "norm_title": super_norm(title),
+            "norm_raga": super_norm(raga),
+        }
+    )
 
-prompt_table = '''Aada Modi Galadae	Chārukesi
+prompt_table = """Aada Modi Galadae	Chārukesi
 Aanandamaananda	Bhairavi
 Abhimaanamennadu	Kunjari
 Abhimaanamu Ledemi	Andhali
@@ -317,29 +344,30 @@ virAja turaga	Bālahamsa
 vishNu vAhanuDu	SankarAbharaNaM
 Yajnaadulu	Jayamanohari
 Yochanaa Kamala	Darbar
-Yuktamu Kaadu	Sri'''
+Yuktamu Kaadu	Sri"""
 
-items = [line.split('\t') for line in prompt_table.strip().split('\n')]
+items = [line.split("\t") for line in prompt_table.strip().split("\n")]
 
 SPECIAL_OVERRIDES = {
-    'Krpaalavaala': ('c2321.shtml', 'nrpaalavaala kalaadhara - naadavarangini'),
-    'Nagu Momu Kana Leni': ('c1001.shtml', 'nagumOmu ganalEni - aabhEri'),
-    'sArvabhauma': ('c2409.shtml', 'saarvabhowma saakETa - raagapanjaramu'),
-    'Sri Narada Muni': ('c2443.shtml', 'shree naarada gururaaya - bhairavi'),
-    'SrIpaptE nI pada': ('c2448.shtml', 'shreepatE - naagaswaraavaLi'),
+    "Krpaalavaala": ("c2321.shtml", "nrpaalavaala kalaadhara - naadavarangini"),
+    "Nagu Momu Kana Leni": ("c1001.shtml", "nagumOmu ganalEni - aabhEri"),
+    "sArvabhauma": ("c2409.shtml", "saarvabhowma saakETa - raagapanjaramu"),
+    "Sri Narada Muni": ("c2443.shtml", "shree naarada gururaaya - bhairavi"),
+    "SrIpaptE nI pada": ("c2448.shtml", "shreepatE - naagaswaraavaLi"),
 }
+
 
 def get_page_content(href):
     local_path = os.path.join(CACHE_DIR, href)
     if os.path.exists(local_path):
-        with open(local_path, 'r', encoding='utf-8', errors='ignore') as f:
+        with open(local_path, encoding="utf-8", errors="ignore") as f:
             return f.read()
     url = f"https://www.karnatik.com/{href}"
-    req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'})
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
     try:
         with urllib.request.urlopen(req, timeout=10) as resp:
-            content = resp.read().decode('utf-8', errors='ignore')
-        with open(local_path, 'w', encoding='utf-8') as f:
+            content = resp.read().decode("utf-8", errors="ignore")
+        with open(local_path, "w", encoding="utf-8") as f:
             f.write(content)
         time.sleep(0.04)
         return content
@@ -347,63 +375,66 @@ def get_page_content(href):
         print(f"Error fetching {url}: {e}")
         return None
 
+
 def parse_song_page(html):
     if not html:
         return None, None
-    soup = BeautifulSoup(html, 'html.parser')
+    soup = BeautifulSoup(html, "html.parser")
     text = soup.get_text()
     raga = None
     tala = None
-    for line in text.split('\n'):
+    for line in text.split("\n"):
         line = line.strip()
         if not line:
             continue
         lower = line.lower()
-        if lower.startswith('raagam:') or lower.startswith('ragam:'):
-            raga = line.split(':', 1)[1].strip()
-        elif lower.startswith('taalam:') or lower.startswith('taaLam:'):
-            tala = line.split(':', 1)[1].strip()
+        if lower.startswith("raagam:") or lower.startswith("ragam:"):
+            raga = line.split(":", 1)[1].strip()
+        elif lower.startswith("taalam:") or lower.startswith("taaLam:"):
+            tala = line.split(":", 1)[1].strip()
     return raga, tala
+
 
 def canonical_tala(raw):
     if not raw:
         return "Unknown"
     norm = super_norm(raw)
-    if 'desadi' in norm or 'deshadi' in norm:
+    if "desadi" in norm or "deshadi" in norm:
         return "Adi (Deshadi)"
-    if 'madhyadi' in norm:
+    if "madhyadi" in norm:
         return "Adi (Madhyadi)"
-    if 'adi' in norm:
+    if "adi" in norm:
         return "Adi"
-    if 'rupaka' in norm or 'rupak' in norm or 'rupakam' in norm:
+    if "rupaka" in norm or "rupak" in norm or "rupakam" in norm:
         return "Rupaka"
-    if 'misracapu' in norm or 'misrachapu' in norm or 'mishracapu' in norm:
+    if "misracapu" in norm or "misrachapu" in norm or "mishracapu" in norm:
         return "Misra Capu"
-    if 'khandacapu' in norm or 'khandachapu' in norm:
+    if "khandacapu" in norm or "khandachapu" in norm:
         return "Khanda Capu"
-    if 'jhampa' in norm:
+    if "jhampa" in norm:
         return "Jhampa"
-    if 'triputa' in norm:
+    if "triputa" in norm:
         return "Triputa"
-    if 'ata' in norm:
+    if "ata" in norm:
         return "Ata"
-    if 'ekam' in norm:
+    if "ekam" in norm:
         return "Ekam"
     return raw
+
 
 results = []
 
 for idx, (title, cat_raga) in enumerate(items, 1):
     snt = super_norm(title)
     snr = super_norm(cat_raga)
-    
+
     if title in SPECIAL_OVERRIDES:
         href, desc = SPECIAL_OVERRIDES[title]
     else:
         candidates = []
         for ks in karnatik_songs:
-            knt = ks['norm_title']
-            knr = ks['norm_raga']
+            knt = ks["norm_title"]
+            knr = ks["norm_raga"]
             if snt == knt or snt.startswith(knt) or knt.startswith(snt):
                 t_score = 1.0
             else:
@@ -415,26 +446,28 @@ for idx, (title, cat_raga) in enumerate(items, 1):
             candidates.append((t_score * 0.7 + r_score * 0.3, t_score, r_score, ks))
         candidates.sort(key=lambda x: x[0], reverse=True)
         best = candidates[0]
-        href = best[3]['href']
-        desc = best[3]['raw']
-        
+        href = best[3]["href"]
+        desc = best[3]["raw"]
+
     html = get_page_content(href)
     raga, tala = parse_song_page(html)
     canon = canonical_tala(tala)
-    results.append({
-        'index': idx,
-        'title': title,
-        'raga': cat_raga,
-        'matched_href': href,
-        'matched_desc': desc,
-        'source_raga': raga,
-        'source_tala': tala,
-        'canonical_tala': canon
-    })
+    results.append(
+        {
+            "index": idx,
+            "title": title,
+            "raga": cat_raga,
+            "matched_href": href,
+            "matched_desc": desc,
+            "source_raga": raga,
+            "source_tala": tala,
+            "canonical_tala": canon,
+        }
+    )
     if idx % 25 == 0 or idx == len(items):
         print(f"Processed {idx}/{len(items)}: {title} -> {canon} (raw: {tala})")
 
-with open('output/resolved_tyagaraja_talas.json', 'w') as f:
+with open("output/resolved_tyagaraja_talas.json", "w") as f:
     json.dump(results, f, indent=2)
 
 print("\nDone! Results saved to output/resolved_tyagaraja_talas.json")

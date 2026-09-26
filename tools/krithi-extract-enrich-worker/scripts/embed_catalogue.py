@@ -19,7 +19,7 @@ import json
 import logging
 import os
 import sys
-from typing import Any
+from typing import Any, Protocol
 
 import psycopg
 from psycopg.rows import dict_row
@@ -48,6 +48,11 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
 )
 logger = logging.getLogger("embed_catalogue")
+
+
+class DocumentEmbedder(Protocol):
+    def embed_document(self, text: str, title: str | None = None) -> list[float]: ...
+
 
 DEFAULT_DB_URL = os.environ.get(
     "DATABASE_URL",
@@ -161,7 +166,7 @@ def fetch_sections_for_krithi(conn: psycopg.Connection, krithi_id: str) -> list[
 
 def index_krithi(
     conn: psycopg.Connection,
-    embedder: GeminiEmbedder,
+    embedder: DocumentEmbedder,
     profile_id: str | None,
     krithi: dict[str, Any],
     dry_run: bool = False,
@@ -400,7 +405,10 @@ def main():
     parser.add_argument(
         "--stale-only",
         action="store_true",
-        help="Only process krithis with stale embeddings (de.content_hash = 'STALE_TRACK_144_NEEDS_REBUILD' or hash mismatch)",
+        help=(
+            "Only process krithis with stale embeddings "
+            "(content_hash is STALE_TRACK_144_NEEDS_REBUILD or does not match the document)"
+        ),
     )
     parser.add_argument("--dry-run", action="store_true", help="Print plan without calling embedding API or saving")
     parser.add_argument("--force", action="store_true", help="Force re-embed even if hash matches")
