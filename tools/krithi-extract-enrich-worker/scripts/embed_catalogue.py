@@ -78,6 +78,7 @@ def fetch_krithi_candidates(
     conn: psycopg.Connection,
     krithi_id: str | None = None,
     limit: int | None = None,
+    stale_only: bool = False,
 ) -> list[dict[str, Any]]:
     """Fetches candidate krithis with their composer, raga, tala, and lyric details."""
     query = """
@@ -116,6 +117,15 @@ def fetch_krithi_candidates(
     if krithi_id:
         query += " AND k.id = %s"
         params.append(krithi_id)
+
+    if stale_only:
+        query += """ AND k.id IN (
+            SELECT DISTINCT sd.krithi_id
+            FROM search_documents sd
+            JOIN document_embeddings de ON de.document_id = sd.id
+            WHERE de.content_hash = 'STALE_TRACK_144_NEEDS_REBUILD'
+               OR de.content_hash <> sd.content_hash
+        )"""
 
     query += " ORDER BY k.title ASC"
 
@@ -387,6 +397,11 @@ def main():
     parser.add_argument("--limit", type=int, help="Limit number of krithis to process")
     parser.add_argument("--krithi-id", type=str, help="Process a single krithi by UUID")
     parser.add_argument("--all", action="store_true", help="Process the entire catalogue")
+    parser.add_argument(
+        "--stale-only",
+        action="store_true",
+        help="Only process krithis with stale embeddings (de.content_hash = 'STALE_TRACK_144_NEEDS_REBUILD' or hash mismatch)",
+    )
     parser.add_argument("--dry-run", action="store_true", help="Print plan without calling embedding API or saving")
     parser.add_argument("--force", action="store_true", help="Force re-embed even if hash matches")
     parser.add_argument("--db-url", type=str, default=DEFAULT_DB_URL, help="PostgreSQL connection string")
@@ -407,7 +422,7 @@ def main():
 
     args = parser.parse_args()
 
-    if not args.limit and not args.krithi_id and not args.all and not args.dry_run:
+    if not args.limit and not args.krithi_id and not args.all and not args.dry_run and not args.stale_only:
         parser.print_help()
         sys.exit(1)
 
@@ -437,7 +452,12 @@ def main():
             project_id=args.project_id,
         )
 
-        candidates = fetch_krithi_candidates(conn, krithi_id=args.krithi_id, limit=args.limit)
+        candidates = fetch_krithi_candidates(
+            conn,
+            krithi_id=args.krithi_id,
+            limit=args.limit,
+            stale_only=args.stale_only,
+        )
         logger.info("Found %d candidate krithis to process", len(candidates))
 
         total_embedded = 0

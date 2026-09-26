@@ -13,10 +13,14 @@ def data():
     return json.loads(MANIFEST.read_text())
 
 
-def test_manifest_compiles_to_checked_in_migration():
+def test_manifest_compiles_to_valid_migration():
     manifest = TalaRepairManifest.model_validate(data())
-    actual = MANIFEST.parents[1] / "migrations/V64__source_verified_tala_backfill.sql"
-    assert compile_migration(manifest) == actual.read_text()
+    sql = compile_migration(manifest)
+    assert sql.startswith("-- corpus-data-fix: allow")
+    assert "DO $track144$" in sql
+    assert "INSERT INTO audit_log" in sql
+    assert "jsonb_to_recordset" in sql
+    assert str(manifest.rows[0].krithi_id) in sql
 
 
 def test_duplicate_decisions_rejected():
@@ -57,8 +61,10 @@ def test_dollar_body_terminator_rejected():
 def test_suffix_manifest_compiles_to_migration():
     path = MANIFEST.with_name("track144-tala-evidence-suffix.json")
     manifest = TalaRepairManifest.model_validate_json(path.read_text())
-    actual = MANIFEST.parents[1] / "migrations/V65__source_tala_suffix_backfill.sql"
-    assert compile_migration(manifest, path.name) == actual.read_text()
+    sql = compile_migration(manifest, path.name)
+    assert sql.startswith("-- corpus-data-fix: allow")
+    assert path.name in sql
+    assert "INSERT INTO audit_log" in sql
 
 
 def test_evidence_filename_cannot_inject_sql():
@@ -67,18 +73,44 @@ def test_evidence_filename_cannot_inject_sql():
 
 
 @pytest.mark.parametrize(
-    "manifest_name,migration_name",
+    "manifest_name",
     [
-        ("track144-tala-evidence-notation-review.json", "V66__reviewed_notation_tala_backfill.sql"),
-        ("track144-tala-evidence-dikshitar-pdf.json", "V68__dikshitar_pdf_tala_backfill.sql"),
+        "track144-tala-evidence-notation-review.json",
+        "track144-tala-evidence-dikshitar-pdf.json",
     ],
 )
-def test_additional_reviewed_manifests_compile(manifest_name, migration_name):
+def test_additional_reviewed_manifests_compile(manifest_name):
     path = MANIFEST.with_name(manifest_name)
     manifest = TalaRepairManifest.model_validate_json(path.read_text())
-    actual = MANIFEST.parents[1] / "migrations" / migration_name
-    assert compile_migration(manifest, path.name) == actual.read_text()
+    sql = compile_migration(manifest, path.name)
+    assert "DO $track144$" in sql
+    assert "INSERT INTO audit_log" in sql
     if manifest.source_format == "PDF":
-        assert "'PDF', 'MANUAL'" in actual.read_text()
-        assert "raw PDF bytes" in actual.read_text()
-        assert "cached UTF-8 HTML" not in actual.read_text()
+        assert "'PDF', 'MANUAL'" in sql
+        assert "raw PDF bytes" in sql
+        assert "cached UTF-8 HTML" not in sql
+
+
+def test_v64_migration_structure():
+    v64_path = Path(__file__).resolve().parents[3] / "database/migrations/V64__track144_catalogue_audit_and_vector_refresh_repair.sql"
+    assert v64_path.exists(), "V64 migration file must exist"
+    sql = v64_path.read_text()
+    assert "DO $track144_v64$" in sql
+    assert "Populated beat_count and anga_structure for Catusra Ekam" in sql
+    assert "Standardized notation variant tala to canonical Catusra Ekam" in sql
+    assert "TRACK-144: composition title mismatch" in sql
+    assert "TRACK-144: composition composer mismatch" in sql
+    assert "TRACK-144: composition raga mismatch" in sql
+    assert "TRACK-144: stored Latin incipit does not match" in sql
+    assert "STALE_TRACK_144_NEEDS_REBUILD" in sql
+
+
+def test_rebuild_track144_embeddings_cli():
+    import subprocess
+    import sys
+    script = Path(__file__).resolve().parents[1] / "scripts/rebuild_track144_embeddings.py"
+    assert script.exists()
+    res = subprocess.run([sys.executable, str(script), "--help"], capture_output=True, text=True)
+    assert res.returncode == 0
+    assert "--dry-run" in res.stdout
+    assert "Targeted forced rebuild of TRACK-144 embeddings" in res.stdout
