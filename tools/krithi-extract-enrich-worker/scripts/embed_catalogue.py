@@ -60,6 +60,20 @@ def md5_hash(text: str) -> str:
     return hashlib.md5(text.encode("utf-8")).hexdigest()
 
 
+def document_needs_refresh(existing: tuple[Any, ...] | None, content_hash: str, original_content: str) -> bool:
+    """Check the document itself as well as its vector's hash.
+
+    Repair SQL can alter indexed text without updating either stored hash. Also,
+    overview source lyrics can change beyond the bounded embedding excerpt.
+    """
+    return (
+        existing is None
+        or existing[1] is None
+        or any(value != content_hash for value in existing[2:5])
+        or existing[5] != original_content
+    )
+
+
 def fetch_krithi_candidates(
     conn: psycopg.Connection,
     krithi_id: str | None = None,
@@ -186,7 +200,8 @@ def index_krithi(
             # Check existing
             cur.execute(
                 """
-                SELECT sd.id, de.id, de.content_hash 
+                SELECT sd.id, de.id, de.content_hash, sd.content_hash,
+                       md5(sd.indexed_content), sd.original_content
                 FROM search_documents sd
                 LEFT JOIN document_embeddings de ON de.document_id = sd.id AND de.profile_id = %s
                 WHERE sd.krithi_id = %s AND sd.section_id IS NULL AND sd.document_kind = 'COMPOSITION_OVERVIEW'
@@ -197,7 +212,7 @@ def index_krithi(
             if existing:
                 keep_doc_ids.append(str(existing[0]))
 
-            if not existing or force or (existing and not existing[1]) or (existing and existing[2] != content_hash):
+            if force or document_needs_refresh(existing, content_hash, primary_lyrics):
                 if dry_run:
                     logger.info("[DRY-RUN] Would embed Overview for: %s (%s)", title, raga)
                 else:
@@ -270,7 +285,8 @@ def index_krithi(
         with conn.cursor() as cur:
             cur.execute(
                 """
-                SELECT sd.id, de.id, de.content_hash 
+                SELECT sd.id, de.id, de.content_hash, sd.content_hash,
+                       md5(sd.indexed_content), sd.original_content
                 FROM search_documents sd
                 LEFT JOIN document_embeddings de ON de.document_id = sd.id AND de.profile_id = %s
                 WHERE sd.krithi_id = %s 
@@ -284,7 +300,7 @@ def index_krithi(
             if existing:
                 keep_doc_ids.append(str(existing[0]))
 
-            if not existing or force or (existing and not existing[1]) or (existing and existing[2] != content_hash):
+            if force or document_needs_refresh(existing, content_hash, sec_text):
                 script_label = sec.get("script", "unknown")
                 if dry_run:
                     logger.info("[DRY-RUN] Would embed Section %s (%s) for: %s", sec_type, script_label, title)

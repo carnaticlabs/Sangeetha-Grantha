@@ -151,3 +151,37 @@ def test_retire_documents_removes_only_documents_outside_the_desired_set(conn: p
         assert [r[0] for r in cur.fetchall()] == [keep]
         cur.execute("SELECT count(*) FROM document_embeddings")
         assert cur.fetchone()[0] == 1  # type: ignore[index]  # stale vector cascaded
+
+
+def test_indexer_repairs_document_even_when_vector_hash_still_matches(conn: psycopg.Connection) -> None:
+    from scripts.embed_catalogue import fetch_krithi_candidates, index_krithi
+
+    class RecordingEmbedder:
+        def __init__(self):
+            self.calls = 0
+
+        def embed_document(self, text, title=None):
+            self.calls += 1
+            return [1.0] + [0.0] * (STORAGE_DIMENSIONS - 1)
+
+    profile = ensure_profile(conn, "gemini-embedding-2", 768, actor="test")
+    kid = _insert_krithi(conn)
+    krithi = fetch_krithi_candidates(conn, krithi_id=kid)[0]
+    krithi["primary_lyrics"] = "A complete source lyric for the overview regression."
+    embedder = RecordingEmbedder()
+    assert index_krithi(conn, embedder, profile.id, krithi) == (1, 0)
+    assert index_krithi(conn, embedder, profile.id, krithi) == (0, 0)
+    with conn.cursor() as cur:
+        # Reproduce V61-style mutation: leave saved document/vector hashes intact.
+        cur.execute("UPDATE search_documents SET indexed_content='damaged text' WHERE krithi_id=%s", (kid,))
+    conn.commit()
+    assert index_krithi(conn, embedder, profile.id, krithi) == (1, 0)
+    with conn.cursor() as cur:
+        cur.execute(
+            """SELECT sd.content_hash=md5(sd.indexed_content), de.content_hash=sd.content_hash
+            FROM search_documents sd JOIN document_embeddings de ON de.document_id=sd.id
+            WHERE sd.krithi_id=%s""",
+            (kid,),
+        )
+        assert cur.fetchone() == (True, True)
+    assert embedder.calls == 2
