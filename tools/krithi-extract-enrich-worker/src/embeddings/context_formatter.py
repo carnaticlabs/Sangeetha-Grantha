@@ -80,7 +80,7 @@ def _format_cycle_clause(cycle_info: dict[str, Any]) -> str | None:
             avarana = attrs.get("avarana") or cycle_info.get("sequence_order")
             chakra = axis_value
             yogini = attrs.get("yogini")
-            parts = [f"Cycle: Kamalamba Navavarnam"]
+            parts = ["Cycle: Kamalamba Navavarnam"]
             if avarana:
                 parts.append(f"Avarana: {avarana}")
             if chakra:
@@ -386,7 +386,10 @@ def format_kshetra_overview(
         body_parts.append(f"Sthala Background:\n{notes.strip()}")
 
     if is_gap or not kritis:
-        body_parts.append("Attestation Note:\nNo Muthuswami Dikshitar compositions are attested for this temple in the canonical repertoire.")
+        body_parts.append(
+            "Attestation Note:\nNo Muthuswami Dikshitar compositions are attested "
+            "for this temple in the canonical repertoire."
+        )
     else:
         body_parts.append(f"Attested Compositions ({len(kritis)}):")
         for k in kritis:

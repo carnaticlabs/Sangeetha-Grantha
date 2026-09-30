@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import hashlib
 import logging
-from typing import Any
 
 import psycopg
 from psycopg.rows import dict_row
@@ -58,7 +57,6 @@ def index_cycle_overviews(
 
     for tag in cycle_tags:
         tag_id = tag["id"]
-        slug = tag["slug"]
         name = tag["display_name_en"]
         desc = tag["description_en"] or ""
 
@@ -115,7 +113,10 @@ def index_cycle_overviews(
                     INSERT INTO search_documents (
                         tag_id, document_kind, original_content, indexed_content, content_hash
                     ) VALUES (%s, 'CYCLE_OVERVIEW', %s, %s, %s)
-                    ON CONFLICT (krithi_id, temple_id, tag_id, section_id, variant_id, document_kind, source_chunk_index)
+                    ON CONFLICT (
+                        krithi_id, temple_id, tag_id, section_id,
+                        variant_id, document_kind, source_chunk_index
+                    )
                     DO UPDATE SET original_content = EXCLUDED.original_content,
                                   indexed_content = EXCLUDED.indexed_content,
                                   content_hash = EXCLUDED.content_hash,
@@ -227,7 +228,10 @@ def index_kshetra_overviews(
                     INSERT INTO search_documents (
                         temple_id, document_kind, original_content, indexed_content, content_hash
                     ) VALUES (%s, 'KSHETRA_OVERVIEW', %s, %s, %s)
-                    ON CONFLICT (krithi_id, temple_id, tag_id, section_id, variant_id, document_kind, source_chunk_index)
+                    ON CONFLICT (
+                        krithi_id, temple_id, tag_id, section_id,
+                        variant_id, document_kind, source_chunk_index
+                    )
                     DO UPDATE SET original_content = EXCLUDED.original_content,
                                   indexed_content = EXCLUDED.indexed_content,
                                   content_hash = EXCLUDED.content_hash,

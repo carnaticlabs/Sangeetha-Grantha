@@ -305,7 +305,10 @@ def index_krithi(
                             krithi_id, document_kind, language_code, script_code,
                             original_content, indexed_content, content_hash
                         ) VALUES (%s, 'COMPOSITION_OVERVIEW', %s, NULL, %s, %s, %s)
-                        ON CONFLICT (krithi_id, temple_id, tag_id, section_id, variant_id, document_kind, source_chunk_index)
+                        ON CONFLICT (
+                            krithi_id, temple_id, tag_id, section_id,
+                            variant_id, document_kind, source_chunk_index
+                        )
                         DO UPDATE SET language_code = EXCLUDED.language_code,
                                       original_content = EXCLUDED.original_content,
                                       indexed_content = EXCLUDED.indexed_content,
@@ -398,7 +401,10 @@ def index_krithi(
                             language_code, script_code,
                             original_content, indexed_content, content_hash
                         ) VALUES (%s, %s, %s, 'SECTION_PASSAGE', %s, %s, %s, %s, %s)
-                        ON CONFLICT (krithi_id, temple_id, tag_id, section_id, variant_id, document_kind, source_chunk_index)
+                        ON CONFLICT (
+                            krithi_id, temple_id, tag_id, section_id,
+                            variant_id, document_kind, source_chunk_index
+                        )
                         DO UPDATE SET language_code = EXCLUDED.language_code,
                                       script_code = EXCLUDED.script_code,
                                       original_content = EXCLUDED.original_content,
@@ -504,7 +510,15 @@ def main():
 
     args = parser.parse_args()
 
-    if not args.limit and not args.krithi_id and not args.all and not args.dry_run and not args.stale_only and not args.composer and not args.include_macro:
+    if not (
+        args.limit
+        or args.krithi_id
+        or args.all
+        or args.dry_run
+        or args.stale_only
+        or args.composer
+        or args.include_macro
+    ):
         parser.print_help()
         sys.exit(1)
 
@@ -584,7 +598,8 @@ def main():
             )
             total_embedded += cycle_stats["embedded"] + kshetra_stats["embedded"]
             logger.info(
-                "Macro Indexing Complete | Cycle Overviews: %d embedded, %d skipped | Kshetra Overviews: %d embedded, %d skipped",
+                "Macro Indexing Complete | Cycle Overviews: %d embedded, %d skipped | "
+                "Kshetra Overviews: %d embedded, %d skipped",
                 cycle_stats["embedded"],
                 cycle_stats["skipped"],
                 kshetra_stats["embedded"],

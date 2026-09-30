@@ -687,7 +687,9 @@ def main() -> None:
                     if fail:
                         krithis_failed += 1
                         failures.append(fail)
-                        logger.error("Failed embedding krithi '%s' (%s): %s", fail["title"], fail["krithi_id"], fail["error"])
+                        logger.error(
+                            "Failed embedding krithi '%s' (%s): %s", fail["title"], fail["krithi_id"], fail["error"]
+                        )
                     else:
                         total_embedded += emb
                         total_skipped += skp

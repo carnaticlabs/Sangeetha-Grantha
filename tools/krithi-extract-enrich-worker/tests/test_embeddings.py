@@ -1,5 +1,6 @@
 """Unit tests for the Gemini Embedding 2 context formatter and embedder client."""
 
+from typing import Any
 from unittest.mock import MagicMock
 
 from src.embeddings.context_formatter import (
@@ -295,9 +296,21 @@ def test_strict_60_word_header_budget():
 
 
 def test_macro_cycle_overview_formatter():
-    members = [
-        {"title": "Dhyana Kriti", "raga": "Todi", "role": "DHYANA", "axis_value": None, "vibhakti_case": None},
-        {"title": "Kamalambike", "raga": "Anandabhairavi", "role": "CORE", "axis_value": "Trailokyamohana", "vibhakti_case": "PRATHAMA"},
+    members: list[dict[str, Any]] = [
+        {
+            "title": "Dhyana Kriti",
+            "raga": "Todi",
+            "role": "DHYANA",
+            "axis_value": None,
+            "vibhakti_case": None,
+        },
+        {
+            "title": "Kamalambike",
+            "raga": "Anandabhairavi",
+            "role": "CORE",
+            "axis_value": "Trailokyamohana",
+            "vibhakti_case": "PRATHAMA",
+        },
     ]
     overview = format_cycle_overview(
         cycle_name="Kamalamba Navavarnam",
@@ -327,4 +340,3 @@ def test_macro_kshetra_overview_gap_formatter():
     assert "[Mandalam: Pandya]" in overview
     assert "[Posture: Sthanaka]" in overview
     assert "No Muthuswami Dikshitar compositions are attested for this temple" in overview
-
