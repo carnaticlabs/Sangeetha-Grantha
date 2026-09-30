@@ -149,8 +149,8 @@
 | [TRACK-143](./tracks/TRACK-143-rasika-semantic-search.md) | Rasika Semantic Search | Completed |
 | [TRACK-144](./tracks/TRACK-144-rasika-field-feedback.md) | Rasika Field Feedback | Completed |
 | [TRACK-145](./tracks/TRACK-145-dikshitar-kshetra-musicological-metadata.md) | Dikshitar Kshetra & Musicological Metadata Enrichment | Completed |
-| TRACK-146 | Syama Sastri Corpus Concordance & Musicological Classification | In Progress — Intent review |
-| TRACK-147 | Tyagaraja Corpus Concordance & Musicological Classification | In Progress — Intent review |
+| [TRACK-146](./tracks/TRACK-146-syama-sastri-musicological-classification.md) | Syama Sastri Corpus Concordance & Musicological Classification | In Progress — Intent review |
+| [TRACK-147](./tracks/TRACK-147-tyagaraja-musicological-classification.md) | Tyagaraja Corpus Concordance & Musicological Classification | In Progress — Intent review |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)
