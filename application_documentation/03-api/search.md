@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-09-22 |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-09-30 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Current guide |
 
@@ -23,6 +23,34 @@ Sangeetha Grantha has two complementary search experiences. Rasika combines hybr
 The admin list defaults to Hybrid, but an empty query uses ordinary browsing. Raga and composer filters apply to the console's discovery requests. The language filter belongs to the lexical experience. A relevance score is a ranking signal, not a probability that the musicological interpretation is correct.
 
 Rasika Explore is not a conversational assistant. On Krithis it calls `POST /v1/search/hybrid` and `POST /v1/search/semantic` as well as the catalogue. The initial mode is Hybrid, presented as the everyday search with the hint “Search titles, lyrics and meaning together.” An optional **Search options** disclosure offers **All matches** (Hybrid), **Related meanings** (Semantic), and **Titles & lyrics** (Lexical); no mode choice is required before searching. Each discovery post sends the trimmed query, null `composerId` and `ragaId`, and `limit` 30 (the server default of 20 is not the Rasika cap). Hybrid and Semantic are not paged. The header is "Top matches" and does not treat `totalMatches` as a library count. A blank query is still posted, and an empty server list is shown; Rasika does not replace it with catalogue browse. Applied raga and composer filters stay on the Lexical catalogue GET only. Their controls and chips appear only in Titles & lyrics; discovery explains that any saved filters apply only there. Ragas and Composers stay `GET /v2/catalogue/ragas` and `GET /v2/catalogue/composers`. Lexical Krithis stays `GET /v2/catalogue/krithis`. See the [catalogue contract](./api-contract.md).
+
+## Musicological retrieval capabilities (Track 145)
+
+With the deployment of **Track 145** (Flyway migrations `V66` & `V67`, repeatable seed `R__seed_09`, and Python worker `Context Formatter 2.0`), Sangeetha Grantha's semantic search substrate is deeply grounded in Indian Classical Music theory (*Lakshana*) and sacred temple geography (*Kshetra*).
+
+### What makes this search discriminative
+
+1. **Vibhakti & Enclosure Disambiguation**: In cycles like the *Kamalamba Navavaranam*, multiple hymns address the goddess in similar high-register Sanskrit. Naive vector search collapses these hymns into an undifferentiated cluster. Context Formatter 2.0 embeds grammatical cases (*aṣṭa-vibhakti*), enclosure indices (Avaranas 1–9), Sri Chakra names, and Yogini clans. A query for the 6th enclosure isolates *Kamalambikayastava* (Punnagavarali) without colliding with the 5th enclosure (*Sri Kamalambayah*, Bhairavi) or 7th enclosure (*Sri Kamalambikayam*, Sahana).
+2. **Pancha Bhuta Sthala Discrimination**: Temple lingams associated with the five cosmic elements (Agni, Akasha, Vayu, Apas, Prithvi) across different regions are discriminated by elemental metadata, preventing Tiruvannamalai (Agni) from returning Chidambaram (Akasha).
+3. **Patronymic Epithet Resolution**: Queries citing divine relationships (such as Shani as the son of Surya) isolate *Divakaratanujam* without false-matching *Suryamurte*.
+4. **Sthala Legends & Occasions**: Specific miraculous events and temple rituals (e.g., the closed temple doors opening at Keevalur) directly retrieve the associated composition (*Akshayalinga Vibho*).
+5. **Western Airs (Nottusvara Sahitya)**: Sanskritized colonial band tunes composed by Dikshitar during his time in Manali are retrievable by their original 18th/19th-century European air names (e.g., *God Save the King*, *Castalian Dew*).
+6. **Macro Cycle & Kshetra Overviews**: Generates and vectorizes synthesized overview documents for entire cycles and holy sites, including documented historical gap shrines like Kanyakumari.
+
+### Sample query phrases and expected retrieval
+
+| Category | End-user query phrase | Expected target composition / document | Discriminative key |
+|:---|:---|:---|:---|
+| **Sri Vidya / Vibhakti** | `"Kamalamba sixth enclosure sarvarakshakara nigarbha yogini shashthi"` | *Kamalambikayastava* (Punnagavarali) | Case: Shashthi; Chakra: Sarvarakshakara; Yogini: Nigarbha |
+| **Cosmic Elements** | `"Dikshitar Agni lingam fire element at Tiruvannamalai"` | *Arunachalanatham* (Saranga) | Bhuta: Agni; Mandalam: Nadu |
+| **Space Element** | `"Dikshitar Akasha lingam ether element at Chidambaram"` | *Ananda Natana Prakasam* (Kedaram) | Bhuta: Akasha; Mandalam: Chola |
+| **Patronymics** | `"Dikshitar Navagraha krithi for Shani Saturn son of the Sun"` | *Divakaratanujam* (Yadukulakambhoji) | Deva: Shani ("Son of the Sun") |
+| **Sun God** | `"Dikshitar Navagraha hymn to the Sun God Surya in Saurashtram"` | *Suryamurte* (Saurashtram) | Deva: Surya |
+| **Sthala Legend** | `"Dikshitar temple door opening at Keevalur in Shankarabharanam"` | *Akshayalinga Vibho* (Shankarabharanam) | Occasion: Keevalur temple door |
+| **Western Air** | `"Dikshitar Nottusvara composed to the tune of God Save the King"` | *Santatam Pahi Mam* (Sankarabharanam) | Tune: God Save the King |
+| **Pilgrimage Gap** | `"Muthuswami Dikshitar pilgrimage to Kanyakumari Bhagavati Amman gap temple"` | *Kanyakumari Kshetra Overview* (Macro Document) | Negative Evidence; Recorded Gap |
+| **Shrine Specific** | `"Muthuswami Dikshitar Subrahmanya kriti at Kazhugumalai shrine"` | *Subrahmanyena Rakshitoham* (Suddhadhanyasi) | Kshetra: Kazhugumalai |
+| **Coastal Murugan** | `"Dikshitar kriti praising Lord Subrahmanya at sea-shore Tiruchendur"` | *Sri Subrahmanyo Mam Rakshatu* (Todi) | Kshetra: Tiruchendur |
 
 ## API behavior
 
@@ -67,11 +95,11 @@ flowchart LR
     H --> A[Admin result cards]
 ```
 
-[Migration V58](../../database/migrations/V58__semantic_search_pgvector.sql) defines the storage contract: profiles identify model/dimensions/task type, documents identify composition/section/variant/chunk, and embeddings bind a document to a profile. Vectors are stored as `vector(768)` with a cosine HNSW index. The current tooling defaults to `gemini-embedding-2`; model availability and billing are external operational concerns.
+[Migration V58](../../database/migrations/V58__semantic_search_pgvector.sql), [Migration V66](../../database/migrations/V66__dikshitar_musicological_enrichment.sql), and [Migration V67](../../database/migrations/V67__search_document_anchor_constraints.sql) define the storage contract: profiles identify model/dimensions/task type, documents identify composition/section/variant or macro cycle/kshetra anchors, and embeddings bind a document to a profile. Vectors are stored as `vector(768)` with a cosine HNSW index. The current tooling defaults to `gemini-embedding-2` with MRL truncation to 768 dimensions; model availability and billing are external operational concerns.
 
 Indexing is a separate operation from importing. Importing a composition does not establish that its latest text has been embedded. The tools compare content hashes, retire obsolete documents, audit writes, and support profile activation after a successful run.
 
-The [embedding guide](../09-ai/embeddings.md) describes document eligibility, metadata context, direct versus locally batched execution, content hashes, profile activation, and read-only coverage queries.
+The [embedding guide](../09-ai/embeddings.md) describes document eligibility, metadata context, direct versus locally batched execution, content hashes, profile activation, and read-only coverage queries. See [TRACK-145 Implementation Summary](../10-implementations/track-145-dikshitar-kshetra-musicological-metadata.md) for the musicological enrichment architecture.
 
 ## Populate or refresh the index
 
@@ -89,17 +117,39 @@ For an authorized indexing run:
 uv run python scripts/embed_catalogue.py --limit 5
 ```
 
+For concurrent full-catalogue batch embedding:
+
+```bash
+uv run python scripts/batch_embed_catalogue.py --concurrency 8 --delay 0.05 --report-path /tmp/embedding-run.md
+```
+
+To index macro cycle and kshetra overviews:
+
+```bash
+uv run python -c "
+import psycopg2, os
+from src.embeddings.macro_indexer import index_cycle_overviews, index_kshetra_overviews
+from src.embeddings.client import GeminiEmbeddingClient
+conn = psycopg2.connect(os.environ.get('DATABASE_URL', 'postgresql://postgres:postgres@localhost:5432/sangita_grantha'))
+client = GeminiEmbeddingClient()
+print('Cycles:', index_cycle_overviews(conn, client))
+print('Kshetras:', index_kshetra_overviews(conn, client))
+conn.close()
+"
+```
+
 Use the script's `--help` for `--krithi-id`, `--all`, `--force`, `--model`, and `--activate-profile`. Keep the backend query embedder and active profile aligned. A different model needs its own profile and compatible index coverage before activation. Dimension changes require a storage migration; changing a flag cannot resize the existing column.
 
-The [batch indexing script](../../tools/krithi-extract-enrich-worker/scripts/batch_embed_catalogue.py) shares index-maintenance logic with the direct runner. See [TRACK-108 implementation](../10-implementations/track-108-semantic-search-gemini-embedding-2.md) and its [dated validation](../10-implementations/track-108-validation-2026-09-08.md) for the original rollout evidence.
+The [batch indexing script](../../tools/krithi-extract-enrich-worker/scripts/batch_embed_catalogue.py) shares index-maintenance logic with the direct runner. See [TRACK-108 implementation](../10-implementations/track-108-semantic-search-gemini-embedding-2.md) and [TRACK-145 implementation](../10-implementations/track-145-dikshitar-kshetra-musicological-metadata.md) for rollout evidence.
 
 ## Diagnose results
 
 1. Verify the composition exists and its workflow state permits the requesting audience to see it.
-2. Verify `search_documents`, `document_embeddings`, and the active profile for the intended database.
+2. Verify `search_documents`, `document_embeddings`, and the active profile for the intended database across all 4 document kinds (`COMPOSITION_OVERVIEW`, `SECTION_PASSAGE`, `CYCLE_OVERVIEW`, `KSHETRA_OVERVIEW`).
 3. Compare the indexed text/hash with current lyrics, especially after reingestion or section repairs.
 4. If the API reports unavailability, inspect embedding credentials, provider failures, and profile compatibility.
 5. Compare a known-title lexical query with the hybrid/semantic result. A thematic miss alone is not evidence of a parser failure.
+6. Verify retrieval precision using `evaluate_retrieval.py` against the 31 retrieval benchmark probes.
 
 [Operations](../08-operations/README.md) covers logs and runtime configuration; [quality checks](../07-quality/README.md) cover deterministic tests and retrieval evidence.
 

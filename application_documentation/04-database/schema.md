@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.7.0 |
-| **Last Updated** | 2026-09-10 |
+| **Version** | 1.8.0 |
+| **Last Updated** | 2026-09-26 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Current guide |
 
@@ -16,7 +16,8 @@ PostgreSQL stores the canonical catalogue, editorial state, ingestion work, sour
 
 | Table/group | Meaning |
 |:---|:---|
-| `krithis` | Composition identity, metadata, form, language, primary relationships, and workflow state |
+| `krithis` | Composition identity, metadata, form, language, primary relationships, workflow state, and lakshana (`vibhakti_case`, raga mudra, yati, manipravala) |
+| `krithi_cycle_memberships` | Ordered cycle role, axis, and discriminative attributes for a kriti |
 | `composers`, `composer_aliases` | Composer identities and alternate names |
 | `ragas`, raga identity/alias/relation tables | Canonical raga metadata, mela-qualified identity, alternate names, nomenclature links |
 | `talas`, `deities`, `temples`, `temple_names` | Rhythm and devotional/location references |
@@ -71,7 +72,7 @@ Use [versioned canon](./versioned-canon.md) for attribution and as-of semantics,
 | Table | Responsibility |
 |:---|:---|
 | `embedding_profiles` | Model, dimensions, task type and active-profile state |
-| `search_documents` | Composition/section/variant/chunk identity, original/indexed text, hashes and visibility |
+| `search_documents` | Composition, section, variant, cycle, or kshetra anchor, plus indexed text, hashes, and visibility |
 | `document_embeddings` | A document's vector under one profile, with content hash |
 
 [Migration V58](../../database/migrations/V58__semantic_search_pgvector.sql) defines `vector(768)` storage, HNSW cosine indexing, and trigram indexing. Indexing scripts populate and refresh data separately from ordinary imports. [Search](../03-api/search.md) explains profile compatibility and visibility.

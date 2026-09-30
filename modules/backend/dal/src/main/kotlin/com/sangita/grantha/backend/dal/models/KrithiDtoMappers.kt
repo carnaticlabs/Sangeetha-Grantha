@@ -7,6 +7,8 @@ import com.sangita.grantha.backend.dal.tables.KrithiNotationVariantsTable
 import com.sangita.grantha.backend.dal.tables.KrithiSectionsTable
 import com.sangita.grantha.backend.dal.tables.KrithiLyricVariantsTable
 import com.sangita.grantha.backend.dal.tables.KrithiLyricSectionsTable
+import com.sangita.grantha.backend.dal.tables.KrithiCycleMembershipsTable
+import com.sangita.grantha.shared.domain.model.KrithiCycleMembershipDto
 import com.sangita.grantha.shared.domain.model.KrithiDto
 import com.sangita.grantha.shared.domain.model.KrithiNotationRowDto
 import com.sangita.grantha.shared.domain.model.KrithiNotationVariantDto
@@ -40,6 +42,13 @@ fun ResultRow.toKrithiDto(): KrithiDto = KrithiDto(
     workflowState = this[KrithisTable.workflowState].toDto(),
     sahityaSummary = this[KrithisTable.sahityaSummary],
     notes = this[KrithisTable.notes],
+    vibhaktiCase = this[KrithisTable.vibhaktiCase]?.dbValue,
+    vibhaktiStem = this[KrithisTable.vibhaktiStem],
+    ragaMudraKind = this[KrithisTable.ragaMudraKind].dbValue,
+    ragaMudraPhrase = this[KrithisTable.ragaMudraPhrase],
+    yatiPattern = this[KrithisTable.yatiPattern].dbValue,
+    isManipravala = this[KrithisTable.isManipravala],
+    occasionNote = this[KrithisTable.occasionNote],
     createdByUserId = this[KrithisTable.createdByUserId]?.toKotlinUuid(),
     updatedByUserId = this[KrithisTable.updatedByUserId]?.toKotlinUuid(),
     createdAt = this.kotlinInstant(KrithisTable.createdAt),
@@ -112,4 +121,16 @@ fun ResultRow.toKrithiLyricSectionDto(): KrithiLyricSectionDto = KrithiLyricSect
     normalizedText = this[KrithiLyricSectionsTable.normalizedText],
     createdAt = this.kotlinInstant(KrithiLyricSectionsTable.createdAt),
     updatedAt = this.kotlinInstant(KrithiLyricSectionsTable.updatedAt)
+)
+
+@OptIn(ExperimentalUuidApi::class)
+fun ResultRow.toKrithiCycleMembershipDto(): KrithiCycleMembershipDto = KrithiCycleMembershipDto(
+    id = this[KrithiCycleMembershipsTable.id].value.toKotlinUuid(),
+    krithiId = this[KrithiCycleMembershipsTable.krithiId].toKotlinUuid(),
+    tagId = this[KrithiCycleMembershipsTable.tagId].toKotlinUuid(),
+    sequenceOrder = this[KrithiCycleMembershipsTable.sequenceOrder],
+    role = this[KrithiCycleMembershipsTable.role].dbValue,
+    axisValue = this[KrithiCycleMembershipsTable.axisValue],
+    discriminativeAttributes = this[KrithiCycleMembershipsTable.discriminativeAttributes],
+    createdAt = this.kotlinInstant(KrithiCycleMembershipsTable.createdAt),
 )

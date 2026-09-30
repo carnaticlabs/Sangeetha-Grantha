@@ -1,14 +1,22 @@
 package com.sangita.grantha.backend.dal.tables
 
 import com.sangita.grantha.backend.dal.enums.BatchStatus
+import com.sangita.grantha.backend.dal.enums.Bhuta
+import com.sangita.grantha.backend.dal.enums.CycleMemberRole
+import com.sangita.grantha.backend.dal.enums.DeityPosture
 import com.sangita.grantha.backend.dal.enums.ImportStatus
 import com.sangita.grantha.backend.dal.enums.JobType
 import com.sangita.grantha.backend.dal.enums.LanguageCode
+import com.sangita.grantha.backend.dal.enums.Mandalam
 import com.sangita.grantha.backend.dal.enums.MusicalForm
+import com.sangita.grantha.backend.dal.enums.PlaceKind
+import com.sangita.grantha.backend.dal.enums.RagaMudraKind
 import com.sangita.grantha.backend.dal.enums.RagaSection
 import com.sangita.grantha.backend.dal.enums.ScriptCode
 import com.sangita.grantha.backend.dal.enums.TaskStatus
+import com.sangita.grantha.backend.dal.enums.VibhaktiCase
 import com.sangita.grantha.backend.dal.enums.WorkflowState
+import com.sangita.grantha.backend.dal.enums.YatiPattern
 import com.sangita.grantha.backend.dal.support.jsonbText
 import com.sangita.grantha.backend.dal.support.pgEnum
 import org.jetbrains.exposed.v1.core.Table
@@ -100,6 +108,14 @@ object TemplesTable : UUIDTable("temples") {
     val latitude = double("latitude").nullable()
     val longitude = double("longitude").nullable()
     val notes = text("notes").nullable()
+    val parentTempleId = javaUUID("parent_temple_id").nullable()
+    val placeKind = pgEnum<PlaceKind>("place_kind", PlaceKind.DB_TYPE).default(PlaceKind.LOCALITY)
+    val mandalam = pgEnum<Mandalam>("mandalam", Mandalam.DB_TYPE).nullable()
+    val bhuta = pgEnum<Bhuta>("bhuta", Bhuta.DB_TYPE).nullable()
+    val sthalaVriksha = varchar("sthala_vriksha", 64).nullable()
+    val sthalaTirtha = varchar("sthala_tirtha", 64).nullable()
+    val nadiTirtha = varchar("nadi_tirtha", 64).nullable()
+    val deityPosture = pgEnum<DeityPosture>("deity_posture", DeityPosture.DB_TYPE).nullable()
     val createdAt = timestampWithTimeZone("created_at")
     val updatedAt = timestampWithTimeZone("updated_at")
 }
@@ -147,6 +163,14 @@ object KrithisTable : UUIDTable("krithis") {
     val workflowState = pgEnum<WorkflowState>("workflow_state", WorkflowState.DB_TYPE)
     val sahityaSummary = text("sahitya_summary").nullable()
     val notes = text("notes").nullable()
+    val vibhaktiCase = pgEnum<VibhaktiCase>("vibhakti_case", VibhaktiCase.DB_TYPE).nullable()
+    val vibhaktiStem = varchar("vibhakti_stem", 64).nullable()
+    val ragaMudraKind = pgEnum<RagaMudraKind>("raga_mudra_kind", RagaMudraKind.DB_TYPE)
+        .default(RagaMudraKind.NONE)
+    val ragaMudraPhrase = varchar("raga_mudra_phrase", 128).nullable()
+    val yatiPattern = pgEnum<YatiPattern>("yati_pattern", YatiPattern.DB_TYPE).default(YatiPattern.NONE)
+    val isManipravala = bool("is_manipravala").default(false)
+    val occasionNote = text("occasion_note").nullable()
     val createdByUserId = javaUUID("created_by_user_id").nullable()
     val updatedByUserId = javaUUID("updated_by_user_id").nullable()
     val createdAt = timestampWithTimeZone("created_at")
@@ -222,6 +246,16 @@ object KrithiNotationRowsTable : UUIDTable("krithi_notation_rows") {
     val talaMarkers = text("tala_markers").nullable()
     val createdAt = timestampWithTimeZone("created_at")
     val updatedAt = timestampWithTimeZone("updated_at")
+}
+
+object KrithiCycleMembershipsTable : UUIDTable("krithi_cycle_memberships") {
+    val krithiId = javaUUID("krithi_id")
+    val tagId = javaUUID("tag_id")
+    val sequenceOrder = integer("sequence_order").default(0)
+    val role = pgEnum<CycleMemberRole>("role", CycleMemberRole.DB_TYPE).default(CycleMemberRole.CORE)
+    val axisValue = varchar("axis_value", 64).nullable()
+    val discriminativeAttributes = jsonbText("discriminative_attributes").default("{}")
+    val createdAt = timestampWithTimeZone("created_at")
 }
 
 object KrithiTagsTable : Table("krithi_tags") {

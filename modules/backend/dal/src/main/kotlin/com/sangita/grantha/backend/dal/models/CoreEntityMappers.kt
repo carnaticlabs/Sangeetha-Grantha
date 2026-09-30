@@ -107,6 +107,14 @@ fun ResultRow.toTempleDto(): TempleDto = TempleDto(
     latitude = this[TemplesTable.latitude],
     longitude = this[TemplesTable.longitude],
     notes = this[TemplesTable.notes],
+    parentTempleId = this[TemplesTable.parentTempleId]?.toKotlinUuid(),
+    placeKind = this[TemplesTable.placeKind].dbValue,
+    mandalam = this[TemplesTable.mandalam]?.dbValue,
+    bhuta = this[TemplesTable.bhuta]?.dbValue,
+    sthalaVriksha = this[TemplesTable.sthalaVriksha],
+    sthalaTirtha = this[TemplesTable.sthalaTirtha],
+    nadiTirtha = this[TemplesTable.nadiTirtha],
+    deityPosture = this[TemplesTable.deityPosture]?.dbValue,
     createdAt = this.kotlinInstant(TemplesTable.createdAt),
     updatedAt = this.kotlinInstant(TemplesTable.updatedAt)
 )

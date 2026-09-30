@@ -29,6 +29,13 @@ data class KrithiDto(
     val workflowState: WorkflowStateDto,
     val sahityaSummary: String? = null,
     val notes: String? = null,
+    val vibhaktiCase: String? = null,
+    val vibhaktiStem: String? = null,
+    val ragaMudraKind: String = "NONE",
+    val ragaMudraPhrase: String? = null,
+    val yatiPattern: String = "NONE",
+    val isManipravala: Boolean = false,
+    val occasionNote: String? = null,
     @Serializable(with = UuidSerializer::class)
     val createdByUserId: Uuid? = null,
     @Serializable(with = UuidSerializer::class)
@@ -67,4 +74,19 @@ data class KrithiLyricVariantDto(
     val updatedByUserId: Uuid? = null,
     val createdAt: Instant,
     val updatedAt: Instant,
+)
+
+@Serializable
+data class KrithiCycleMembershipDto(
+    @Serializable(with = UuidSerializer::class)
+    val id: Uuid,
+    @Serializable(with = UuidSerializer::class)
+    val krithiId: Uuid,
+    @Serializable(with = UuidSerializer::class)
+    val tagId: Uuid,
+    val sequenceOrder: Int = 0,
+    val role: String,
+    val axisValue: String? = null,
+    val discriminativeAttributes: String = "{}",
+    val createdAt: Instant,
 )

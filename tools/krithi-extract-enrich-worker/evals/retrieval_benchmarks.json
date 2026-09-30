@@ -173,5 +173,82 @@
     "expected_title_contains": "vAtApi",
     "expected_raga": "Hamsadhvani",
     "notes": "Dikshitar Vatapi Ganapatim"
+  },
+  {
+    "id": "EVAL-24",
+    "category": "bhuta_element_discrimination",
+    "query": "Muthuswami Dikshitar Agni lingam fire element at Tiruvannamalai",
+    "expected_title_contains": "aruNAcala",
+    "expected_composer": "Muthuswami Dikshitar",
+    "expected_raga": "Saranga",
+    "unexpected_title_contains": "Ananda",
+    "notes": "Arunachalanatham in Saranga (Agni/Fire) vs Chidambaram (Akasha/Space)"
+  },
+  {
+    "id": "EVAL-25",
+    "category": "kamalamba_navavarana_enclosure_6",
+    "query": "Sixth enclosure Kamalamba Navavarnam Sarvarakshakara chakra Nigarbha yogini Shashthi",
+    "expected_title_contains": "kamalAmbikAyAstava",
+    "expected_composer": "Muthuswami Dikshitar",
+    "expected_raga": "Punnagavarali",
+    "unexpected_title_contains": "kamalAmbAyAH",
+    "notes": "Disambiguated 6th Avarana in Punnagavarali (Shashthi, Sarvarakshakara, Nigarbha) from 5th (Bhairavi) and 7th (Sahana)"
+  },
+  {
+    "id": "EVAL-26",
+    "category": "kamalamba_navavarana_enclosure_7",
+    "query": "Seventh enclosure Kamalamba Navavarnam Sarvarogahara chakra Rahasya yogini Saptami",
+    "expected_title_contains": "kamalAmbikAyAM",
+    "expected_composer": "Muthuswami Dikshitar",
+    "expected_raga": "Sahana",
+    "unexpected_title_contains": "kamalAmbikAyAstava",
+    "notes": "7th Avarana in Sahana (Saptami, Sarvarogahara, Rahasya)"
+  },
+  {
+    "id": "EVAL-27",
+    "category": "kamalamba_navavarana_enclosure_5",
+    "query": "Fifth enclosure Kamalamba Navavarnam Panchami vibhakti Bhairavi",
+    "expected_title_contains": "kamalAmbikAyAH paraM",
+    "expected_composer": "Muthuswami Dikshitar",
+    "expected_raga": "Bhairavi",
+    "unexpected_title_contains": "kamalAmbikAyAstava",
+    "notes": "5th Avarana in Bhairavi (Panchami)"
+  },
+  {
+    "id": "EVAL-28",
+    "category": "patronymic_graha_discrimination",
+    "query": "Dikshitar Navagraha krithi for Shani Saturn son of the Sun in Yadukulakambhoji",
+    "expected_title_contains": "divAkara",
+    "expected_composer": "Muthuswami Dikshitar",
+    "expected_raga": "Yadukulakambhoji",
+    "unexpected_title_contains": "sUryamUrtE",
+    "notes": "Divakaratanujam addressing Shani; must separate from Suryamurte"
+  },
+  {
+    "id": "EVAL-29",
+    "category": "occasion_sthala_legend",
+    "query": "Muthuswami Dikshitar temple door opening at Keevalur in Shankarabharanam",
+    "expected_title_contains": "akshaya",
+    "expected_composer": "Muthuswami Dikshitar",
+    "expected_raga": "Sankarabharanam",
+    "notes": "Akshayalinga Vibho composed for the temple doors opening"
+  },
+  {
+    "id": "EVAL-30",
+    "category": "nottusvara_tune_matching",
+    "query": "Dikshitar Nottusvara composed to the tune of God Save the King",
+    "expected_title_contains": "santataM",
+    "expected_composer": "Muthuswami Dikshitar",
+    "expected_raga": "Sankarabharanam",
+    "notes": "Santatam Pahi Mam set to British national anthem air God Save the King"
+  },
+  {
+    "id": "EVAL-31",
+    "category": "macro_gap_kshetra",
+    "query": "Muthuswami Dikshitar pilgrimage to Kanyakumari Bhagavati Amman gap temple",
+    "expected_title_contains": "Bhagavati Amman",
+    "is_macro": true,
+    "expected_document_kind": "KSHETRA_OVERVIEW",
+    "notes": "Negative evidence / documented gap shrine at Kanyakumari"
   }
 ]

@@ -225,6 +225,38 @@ def search_hybrid(
         return cur.fetchall()
 
 
+def search_macro_documents(
+    conn: psycopg.Connection,
+    query_vector: list[float],
+    top_k: int = 5,
+) -> list[dict[str, Any]]:
+    """Runs cosine similarity ANN search against macro documents (CYCLE_OVERVIEW & KSHETRA_OVERVIEW)."""
+    query = """
+        SELECT 
+            d.id,
+            COALESCE(tmp.name, tg.display_name_en, '') AS title,
+            'Muthuswami Dikshitar' AS composer,
+            '' AS raga,
+            d.document_kind,
+            d.indexed_content,
+            1 - (e.embedding <=> %s::vector(768)) AS similarity
+        FROM document_embeddings e
+        JOIN search_documents d ON e.document_id = d.id
+        JOIN embedding_profiles p ON e.profile_id = p.id
+        LEFT JOIN temples tmp ON d.temple_id = tmp.id
+        LEFT JOIN tags tg ON d.tag_id = tg.id
+        WHERE p.is_active = true 
+          AND d.is_published = true
+          AND d.document_kind IN ('CYCLE_OVERVIEW', 'KSHETRA_OVERVIEW')
+        ORDER BY e.embedding <=> %s::vector(768) ASC
+        LIMIT %s
+    """
+    vec_str = "[" + ",".join(str(v) for v in query_vector) + "]"
+    with conn.cursor(row_factory=dict_row) as cur:
+        cur.execute(query, (vec_str, vec_str, top_k))
+        return cur.fetchall()
+
+
 def evaluate_item(
     item: dict[str, Any],
     results: list[dict[str, Any]],
@@ -238,14 +270,23 @@ def evaluate_item(
                 return False, 0.0
         return True, 1.0
 
+    unexpected_title = normalize_text(item.get("unexpected_title_contains"))
+    if unexpected_title and results:
+        # Separation test: top hit must not match unexpected title
+        top_title = normalize_text(results[0].get("title"))
+        if unexpected_title in top_title:
+            return False, 0.0
+
     expected_title = normalize_text(item.get("expected_title_contains"))
     expected_composer = normalize_text(item.get("expected_composer"))
     expected_raga = normalize_text(item.get("expected_raga"))
+    expected_kind = item.get("expected_document_kind")
 
     for rank, res in enumerate(results, start=1):
         res_title = normalize_text(res.get("title"))
         res_composer = normalize_text(res.get("composer"))
         res_raga = normalize_text(res.get("raga"))
+        res_kind = res.get("document_kind")
 
         match = True
         if expected_title and expected_title not in res_title:
@@ -253,6 +294,8 @@ def evaluate_item(
         if expected_composer and expected_composer not in res_composer:
             match = False
         if expected_raga and expected_raga not in res_raga:
+            match = False
+        if expected_kind and res_kind != expected_kind:
             match = False
 
         if match:
@@ -282,7 +325,9 @@ def run_benchmark_suite(
         print(f'\nQuery [{qid}]: "{query}"')
 
         query_vec = embedder.embed_query(query)
-        if mode == "hybrid":
+        if item.get("is_macro"):
+            results = search_macro_documents(conn, query_vec, top_k=top_k)
+        elif mode == "hybrid":
             results = search_hybrid(conn, query, query_vec, top_k=top_k)
         else:
             results = search_similar(conn, query_vec, top_k=top_k)

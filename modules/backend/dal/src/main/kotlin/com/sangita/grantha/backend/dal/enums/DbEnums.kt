@@ -152,3 +152,100 @@ enum class ExtractionStatus(override val dbValue: String) : DbEnum {
         const val DB_TYPE = "extraction_status"
     }
 }
+
+enum class Mandalam(override val dbValue: String) : DbEnum {
+    CHOLA("CHOLA"),
+    PANDYA("PANDYA"),
+    TONDAI("TONDAI"),
+    NADU("NADU"),
+    CHERA("CHERA"),
+    KONGU("KONGU"),
+    UTTARA("UTTARA");
+
+    companion object {
+        const val DB_TYPE = "mandalam_enum"
+    }
+}
+
+enum class PlaceKind(override val dbValue: String) : DbEnum {
+    LOCALITY("LOCALITY"),
+    COMPLEX("COMPLEX"),
+    SANNIDHI("SANNIDHI"),
+    MANDAPAM("MANDAPAM");
+
+    companion object {
+        const val DB_TYPE = "place_kind_enum"
+    }
+}
+
+enum class Bhuta(override val dbValue: String) : DbEnum {
+    AKASHA("AKASHA"),
+    VAYU("VAYU"),
+    AGNI("AGNI"),
+    PRITHVI("PRITHVI"),
+    APPU("APPU");
+
+    companion object {
+        const val DB_TYPE = "bhuta_enum"
+    }
+}
+
+enum class DeityPosture(override val dbValue: String) : DbEnum {
+    SAYANA("SAYANA"),
+    STHANAKA("STHANAKA"),
+    ASINA("ASINA"),
+    TANDAVA("TANDAVA");
+
+    companion object {
+        const val DB_TYPE = "deity_posture_enum"
+    }
+}
+
+enum class VibhaktiCase(override val dbValue: String) : DbEnum {
+    PRATHAMA("PRATHAMA"),
+    DVITIYA("DVITIYA"),
+    TRITIYA("TRITIYA"),
+    CHATURTHI("CHATURTHI"),
+    PANCHAMI("PANCHAMI"),
+    SHASHTHI("SHASHTHI"),
+    SAPTAMI("SAPTAMI"),
+    SAMBODHANA("SAMBODHANA"),
+    SARVA_VIBHAKTI("SARVA_VIBHAKTI");
+
+    companion object {
+        const val DB_TYPE = "vibhakti_enum"
+    }
+}
+
+enum class RagaMudraKind(override val dbValue: String) : DbEnum {
+    SUDDHA("SUDDHA"),
+    SLESHA("SLESHA"),
+    NONE("NONE");
+
+    companion object {
+        const val DB_TYPE = "raga_mudra_enum"
+    }
+}
+
+enum class YatiPattern(override val dbValue: String) : DbEnum {
+    GOPUCCHA("GOPUCCHA"),
+    SROTOVAHA("SROTOVAHA"),
+    DAMARU("DAMARU"),
+    NONE("NONE");
+
+    companion object {
+        const val DB_TYPE = "yati_pattern_enum"
+    }
+}
+
+enum class CycleMemberRole(override val dbValue: String) : DbEnum {
+    CORE("CORE"),
+    DHYANA("DHYANA"),
+    MANGALAM("MANGALAM"),
+    OPTIONAL("OPTIONAL"),
+    DISPUTED_CONJECTURE("DISPUTED_CONJECTURE");
+
+    companion object {
+        const val DB_TYPE = "cycle_member_role_enum"
+    }
+}
