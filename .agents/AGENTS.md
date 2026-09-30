@@ -62,7 +62,7 @@ Layer skills — load the one matching the layer you're working in (canonical bo
 
 Cross-cutting skills:
 - `change-mapper` — change scanning and categorization.
-- `commit-policy` — commit rules, branch names, and reference requirements.
+- `commit-policy` — commit rules, branch names, reference requirements, PR lifecycle, and branch hygiene.
 - `data-quality-audit` — data integrity / quality checks.
 - `documentation-guardian` — doc header, links, and formatting rules.
 - `extraction-debugger` — diagnose the krithi extraction pipeline.
@@ -72,19 +72,19 @@ Cross-cutting skills:
 
 Cursor additionally ships `agentic-prompt-optimizer` and `sangeetha-krithi-analyser` under `.cursor/skills/` (not Claude layer skills). Cursor slash-command mirrors live in `.cursor/commands/` → `.claude/commands/`.
 
-## Workflows (`.agents/workflows/`)
-- `agentic-prompt-optimizer.md` — rewrite an informal request into a structured, tool-friendly prompt.
-- `bulk-import-testing.md` — end-to-end testing workflow for the bulk import pipeline.
-- `conductor-track-manager.md` — manage the lifecycle of Conductor tracks (create, update, close).
-- `debug-start-application.md` — start the full stack with log redirection for analysis.
-- `e2e-test-runner.md` — run frontend E2E tests (Playwright), with headed/debug/report options.
-- `generate-commit-prompt.md` — generate a commit message that satisfies commit-policy.
-- `pre-commit-validation.md` — validate staged changes against commit-policy before committing.
-- `retrospective-commit-and-push.md` — categorize uncommitted changes, create tracks/docs, commit atomically, push.
-- `scaffold-service.md` — scaffold a backend service following the clean-architecture pattern.
-- `start-application.md` — start the full stack (Database, Backend, Frontend) and redirect logs.
-- `test-troubleshooter.md` — systematically diagnose and fix test failures.
-- `verify-db-status.md` — verify the local database schema matches the migration files.
+Workflow skills (migrated from legacy workflows to `.agents/skills/`):
+- `agentic-prompt-optimizer` — rewrite an informal request into a structured, tool-friendly prompt.
+- `bulk-import-testing` — end-to-end testing workflow for the bulk import pipeline.
+- `conductor-track-manager` — manage the lifecycle of Conductor tracks (create, update, close).
+- `debug-start-application` — start the full stack with log redirection for analysis.
+- `e2e-test-runner` — run frontend E2E tests (Playwright), with headed/debug/report options.
+- `generate-commit-prompt` — generate a commit message that satisfies commit-policy.
+- `pre-commit-validation` — validate staged changes against commit-policy before committing.
+- `retrospective-commit-and-push` — categorize uncommitted changes, create tracks/docs, commit atomically, push, watch PR, merge to remote main, sync local main, and clean stale branches.
+- `scaffold-service` — scaffold a backend service following the clean-architecture pattern.
+- `start-application` — start the full stack (Database, Backend, Frontend) and redirect logs.
+- `test-troubleshooter` — systematically diagnose and fix test failures.
+- `verify-db-status` — verify the local database schema matches the Flyway migration files.
 
 ## Commands
 See [`CLAUDE.md` → Essential Commands](../CLAUDE.md#essential-commands). Slash commands live in `.claude/commands/` (Cursor mirrors under `.cursor/commands/`): `/spec-from-track` and `/plan-from-spec` write Spec/Plan on a conductor track and must not implement code until those sections are Accepted. The full stack runs via

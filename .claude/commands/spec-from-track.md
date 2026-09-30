@@ -2,7 +2,7 @@ Write a requirements and design spec from an accepted track Intent. Do not imple
 
 Track: $ARGUMENTS
 
-1. Find `conductor/tracks/TRACK-*-*.md` for the given id (or the in-progress track if omitted). Read [conductor-track-manager](../../.agents/workflows/conductor-track-manager.md).
+1. Find `conductor/tracks/TRACK-*-*.md` for the given id (or the in-progress track if omitted). Read [conductor-track-manager](../../.agents/skills/conductor-track-manager/SKILL.md).
 2. Stop unless **Intent Status is Accepted**. If it is Draft, fill or correct Intent with the user, then wait for them to set Status to Accepted. Do not invent acceptance.
 3. Load constraints:
    - `CLAUDE.md` (Flyway, `DatabaseFactory.dbQuery`, `AUDIT_LOG`, commit `Ref:`)

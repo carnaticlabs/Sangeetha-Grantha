@@ -46,6 +46,14 @@ For each Changeset (A, then B, then C...):
 ### 5. The "Leftovers"
 If files remain that don't fit any clear category or documentation, **do not commit them**. Report them to the user and ask for guidance.
 
+### 6. Downstream Delivery Lifecycle
+Once all changesets are committed atomically, follow `commit-policy` or `retrospective-commit-and-push`:
+1. **Push**: `git push -u origin HEAD`.
+2. **Watch PR**: Monitor checks via `gh pr checks --watch`.
+3. **Merge**: Merge onto remote `main` via `gh pr merge --merge --delete-branch`.
+4. **Sync Local**: `git checkout main && git pull --ff-only origin main`.
+5. **Clean Stale Branches**: Delete merged local/remote branches and pruned tracking branches.
+
 ## Example Scenario
 
 **Git Status:**

@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.1.0 |
-| **Last Updated** | 2026-09-10 |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-09-30 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Design reference |
 
@@ -13,26 +13,22 @@
 > [!NOTE]
 > Design/reference material: this page may include proposals or earlier implementation assumptions. Use [current operations guides](./README.md) for implemented behavior and current operating steps.
 
-This document describes the automated workflows available in `.agents/workflows/` for use with Claude Code and other AI assistants.
+These procedures now live as skills under `.agents/skills/`. Each skill is a markdown file that defines a step-by-step procedure for a common development task, so an assistant can follow it the same way on each run.
 
-## Overview
+## Available skills
 
-Agent workflows are structured markdown files that define step-by-step procedures for common development tasks. They serve as executable documentation that AI assistants can follow to perform complex, multi-step operations consistently.
-
-## Available Workflows
-
-| Workflow | File | Purpose |
+| Skill | File | Purpose |
 |----------|------|---------|
-| Bulk Import Testing | `bulk-import-testing.md` | End-to-end testing of bulk import functionality |
-| Conductor Track Manager | `conductor-track-manager.md` | Create and manage conductor tracks |
-| E2E Test Runner | `e2e-test-runner.md` | Run and debug Playwright E2E tests |
-| Pre-commit Validation | `pre-commit-validation.md` | Validate changes before committing |
-| Scaffold Service | `scaffold-service.md` | Generate new service boilerplate |
-| Test Troubleshooter | `test-troubleshooter.md` | Debug failing tests |
+| Bulk Import Testing | `.agents/skills/bulk-import-testing/SKILL.md` | End-to-end testing of bulk import functionality |
+| Conductor Track Manager | `.agents/skills/conductor-track-manager/SKILL.md` | Create and manage conductor tracks |
+| E2E Test Runner | `.agents/skills/e2e-test-runner/SKILL.md` | Run and debug Playwright E2E tests |
+| Pre-commit Validation | `.agents/skills/pre-commit-validation/SKILL.md` | Validate changes before committing |
+| Scaffold Service | `.agents/skills/scaffold-service/SKILL.md` | Generate new service boilerplate |
+| Test Troubleshooter | `.agents/skills/test-troubleshooter/SKILL.md` | Debug failing tests |
 
-## Workflow Structure
+## Skill structure
 
-Each workflow follows a standard structure:
+Each skill follows a standard structure:
 
 ```markdown
 ---
@@ -50,10 +46,10 @@ Instructions and commands...
 
 ## Usage
 
-Workflows can be invoked by:
-1. Referencing the workflow file path in conversation
-2. Asking the AI assistant to "follow the workflow in `.agents/workflows/<name>.md`"
-3. Using trigger phrases defined in the workflow's description
+Skills can be invoked by:
+1. Referencing the skill file path in conversation
+2. Asking the assistant to follow `.agents/skills/<name>/SKILL.md`
+3. Using trigger phrases defined in the skill's description
 
 ## Related Documentation
 

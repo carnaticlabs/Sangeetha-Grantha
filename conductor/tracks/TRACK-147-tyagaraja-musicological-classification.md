@@ -64,7 +64,7 @@ The source inventory and recorded import total disagree. Current evidence and me
 
 ### Constraints
 
-- Follow [CLAUDE.md](../../CLAUDE.md) and the [Conductor workflow](../../.agents/workflows/conductor-track-manager.md): no product implementation, imports or corpus mutation before accepted Plan.
+- Follow [CLAUDE.md](../../CLAUDE.md) and the [Conductor workflow](../../.agents/skills/conductor-track-manager/SKILL.md): no product implementation, imports or corpus mutation before accepted Plan.
 - Flyway only; never edit committed versioned migrations. Allocate schema/seed numbers at planning time. Repeatable seeds must be idempotent and preserve assignments outside their explicit provenance ownership.
 - Preserve runtime database-query, DTO and mutation-audit contracts; resolve seed/migration audit treatment in Spec.
 - Reuse the shared evidence/taxonomy contract from TRACK-146. Extend existing `BHAVA`, `PHILOSOPHY` and other categories only where the accepted design establishes a gap; formal set, thematic collection, ritual collection and dramatic work are different group types.

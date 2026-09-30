@@ -1,13 +1,13 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.2.0 |
-| **Last Updated** | 2026-08-24 |
+| **Version** | 1.3.0 |
+| **Last Updated** | 2026-09-30 |
 | **Author** | Sangeetha Grantha Team |
 
 # Commit Policy
 
-You are responsible for ensuring that all changes committed to the repository adhere to strict traceability and security guardrails.
+You are responsible for ensuring that all changes committed to the repository adhere to strict traceability, security guardrails, and full delivery lifecycle conventions.
 
 ## 0. Branch naming
 
@@ -74,15 +74,20 @@ Before suggesting `git commit`, mentally (or actually) check:
 2.  "Am I adding a `.env` file?" (If so, STOP and add it to `.gitignore` instead).
 3.  **Strictly Ignore**: No `config/*.env` or `config/local.env` file with secrets must be staged or committed. Use `git restore --staged config/development.env config/local.env` if any were accidentally added.
 
-## 3. Workflow
+## 3. End-to-End Delivery Workflow
 
-When you are ready to commit changes for the user:
-1.  **Categorize**: Group changes into logical changesets (see `change-mapper` skill).
-2.  **Create/Update Docs**: Ensure an implementation doc exists in `application_documentation/10-implementations/`.
-3.  **Create/Update Track**: Ensure a conductor track exists in `conductor/tracks/` and is registered in `conductor/tracks.md`.
-4.  **Stage**: `git add <specific files>` — never `git add .` unless verified.
-5.  **Draft Message**: Compose message with TRACK-ID, Ref, and bullet points matching the diff.
-6.  **Execute**: `git commit -m "..."` (or ask user to approve).
+Commit operations must drive changes through the entire delivery pipeline, not stopping at local commits:
+
+### Step 1: Categorize & Organize Changes
+- Group modified and untracked files into logical, atomic changesets (see `change-mapper` skill).
+- Ensure each changeset links to exactly one documentation file in `application_documentation/10-implementations/`.
+- Ensure Conductor track files (`conductor/tracks/TRACK-XXX-*.md`) and registry (`conductor/tracks.md`) are updated.
+- Never use `git add .` or `git commit -a`. Stage files with explicit paths. Leave unrelated files unstaged.
+
+### Step 2: Atomic Commits with Meaningful Messages
+- Stage files per changeset: `git add <files>`
+- Commit each changeset with the required `<TRACK-ID>: <Short Summary>` and `Ref: application_documentation/...` format.
+- Repeat sequentially for each changeset in dependency order.
 
 **Example of a Good Commit:**
 ```bash
@@ -95,3 +100,59 @@ Ref: application_documentation/10-implementations/track-080-curator-review-ui.md
 - CuratorReviewPage.tsx: two-tab UI (Pending Matches, Section Issues)
 - BulkImportTaskRepository.kt: fixed idempotency key to include jobType"
 ```
+
+### Step 3: Push Changes to Remote
+- Push the current branch and set upstream:
+  ```bash
+  git push -u origin HEAD
+  ```
+- Never force-push (`git push --force`). Never skip pre-push hooks.
+- If remote `main` has progressed, merge `origin/main` into the branch locally, run tests, and push.
+
+### Step 4: Watch the Pull Request & CI Checks
+- Reuse or create the pull request targeting `main`:
+  ```bash
+  gh pr create --base main --head $(git rev-parse --abbrev-ref HEAD) --title "<TRACK-ID>: <Summary>" --body "<Summary & Ref>"
+  ```
+- Watch CI checks until completion:
+  ```bash
+  gh pr checks --watch
+  ```
+- If checks fail, inspect failure logs (`gh run view --log-failed`), fix on the same branch, commit, push, and re-watch.
+- Never merge while checks are failing or pending.
+
+### Step 5: Merge onto Remote Main
+- When all automated checks pass:
+  ```bash
+  gh pr merge --merge --delete-branch
+  ```
+- Preserves individual logical commits on `main` and deletes the remote head branch upon merge.
+- Never use `--admin` to bypass branch protections or required reviews. If blocked, report the PR URL to the user.
+
+### Step 6: Sync Local with Remote Main
+- Once merged on remote:
+  ```bash
+  git fetch origin --prune
+  git checkout main
+  git pull --ff-only origin main
+  ```
+- Verify local `main` matches `origin/main` cleanly.
+
+### Step 7: Delete Stale Local and Remote Branches
+- Delete the merged feature branch locally:
+  ```bash
+  git branch -d <branch-name>
+  ```
+- Delete other local branches already merged into `origin/main` (excluding `main`):
+  ```bash
+  git branch --merged origin/main | grep -v -E "^\*|main" | while read -r b; do [ -n "$b" ] && git branch -d "$b"; done
+  ```
+- Delete a local branch whose upstream was pruned only when `git branch -d` accepts it (already merged). Leave unmerged branches in place:
+  ```bash
+  git branch -vv | awk '/: gone]/ {print $1}' | while read -r b; do [ -n "$b" ] && git branch -d "$b"; done
+  ```
+- Delete other remote branches already merged into `origin/main` (excluding `origin/main` and `origin/HEAD`):
+  ```bash
+  git branch -r --merged origin/main | grep -v -E "origin/main|origin/HEAD" | sed 's/origin\///' | while read -r b; do [ -n "$b" ] && git push origin --delete "$b"; done
+  ```
+- Never delete `main`. Never delete an unmerged branch.
