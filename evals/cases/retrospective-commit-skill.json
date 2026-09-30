@@ -1,0 +1,15 @@
+{
+  "id": "retrospective-commit-skill",
+  "file": ".agents/skills/retrospective-commit-and-push/SKILL.md",
+  "must_contain": [
+    "Logically organize all the changes",
+    "gh pr checks --watch",
+    "gh pr merge --merge --delete-branch",
+    "git pull --ff-only origin main",
+    "Never delete an unmerged branch"
+  ],
+  "must_not_contain": [
+    "--admin",
+    "git push --force"
+  ]
+}

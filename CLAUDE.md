@@ -161,7 +161,7 @@ Cursor loads the same skills via symlinks under [`.cursor/skills/`](.cursor/skil
 
 ### Slash Commands (`.claude/commands/`)
 
-`/dev-start`, `/db-reset`, `/test-all`, `/steel-thread`, `/new-migration`, `/spec-from-track`, `/plan-from-spec`, `/commit` (follows this repo's commit conventions), `/Sangeetha-Krithi-Analyser` (krithi section analysis). Cursor mirrors these files in [`.cursor/commands/`](.cursor/commands/).
+`/dev-start`, `/db-reset`, `/test-all`, `/steel-thread`, `/new-migration`, `/spec-from-track`, `/plan-from-spec`, `/commit` (organize logical commits, push, watch the PR, merge into `main`, sync local `main`, delete merged branches; message rules in commit-policy), `/retrospective-commit-and-push` (organize uncommitted changesets, atomic commits with Ref, push, watch PR, merge onto remote `main`, sync local `main`, delete stale branches), `/Sangeetha-Krithi-Analyser` (krithi section analysis). Cursor mirrors these files in [`.cursor/commands/`](.cursor/commands/).
 
 ### Specialist Subagents (`.claude/agents/`)
 

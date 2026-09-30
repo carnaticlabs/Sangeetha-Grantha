@@ -1,0 +1,15 @@
+{
+  "id": "commit-command-ships",
+  "file": ".claude/commands/commit.md",
+  "must_contain": [
+    "Logically",
+    "gh pr checks --watch",
+    "gh pr merge --merge --delete-branch",
+    "git pull --ff-only origin main",
+    "Never delete an unmerged branch"
+  ],
+  "must_not_contain": [
+    "--admin",
+    "git push --force"
+  ]
+}

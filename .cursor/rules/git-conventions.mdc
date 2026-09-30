@@ -1,9 +1,9 @@
 ---
-description: Git branch names and commit message format for this repo
+description: Git branch names, commit message format, and end-to-end delivery lifecycle for this repo
 alwaysApply: true
 ---
 
-# Git branches and commits
+# Git branches, commits, and PR lifecycle
 
 Do not use Cursor’s default `cursor/` branch prefix unless the user explicitly asks for it.
 
@@ -12,7 +12,7 @@ Do not use Cursor’s default `cursor/` branch prefix unless the user explicitly
 - Track work: `track-<nnn>-<kebab-slug>` (example: `track-121-frontend-toolchain`)
 - Otherwise: `<type>/<kebab-slug>` where type is `fix`, `feat`, `docs`, `chore`, or `ci` (example: `fix/ragamalika-parser-and-section-matching`)
 - Reuse the current branch when it already matches the work
-- Do not commit on `main` unless the user explicitly asks
+- Do not commit directly on `main` unless the user explicitly asks
 
 ## Commits
 
@@ -26,4 +26,34 @@ Ref: application_documentation/<path>.md
 - <bullet>
 ```
 
-Omit `TRACK-ID` only when no conductor track exists. Every commit needs exactly one `Ref:` line pointing at an existing file under `application_documentation/`.
+Omit `TRACK-ID` only when no conductor track exists. Every commit needs exactly one `Ref:` line pointing at an existing file under `application_documentation/` (prefer `application_documentation/10-implementations/`).
+
+Never stage `.env`, `config/local.env`, `config/development.env`, credentials, or secrets. Never use `git add .` or `git commit -a`.
+
+## Push & Pull Request
+
+1. Push branch: `git push -u origin HEAD` (never force-push, never skip hooks).
+2. Create or reuse PR: `gh pr create --base main --head $(git rev-parse --abbrev-ref HEAD) --title "<TRACK-ID>: <summary>" --body "..."`
+3. Watch CI checks until they finish: `gh pr checks --watch`
+4. Never merge while any check is pending or failing. Fix failures on the branch and re-watch.
+
+## Merge & Local Sync
+
+1. Merge into remote `main`: `gh pr merge --merge --delete-branch` (never use `--admin` to bypass protection).
+2. Sync local with remote `main`:
+   ```bash
+   git fetch origin --prune
+   git checkout main
+   git pull --ff-only origin main
+   ```
+
+## Stale Branch Cleanup
+
+Stale branches are those already merged into `origin/main` or whose upstream is gone (`[gone]`).
+- Never delete `main`. Never delete an unmerged branch. Use safe delete (`git branch -d`).
+- Delete merged local branch: `git branch -d <branch-name>`
+- Delete merged remote branch if not deleted by PR merge: `git push origin --delete <branch-name>`
+- Delete a local branch whose upstream is gone only when `git branch -d` accepts it. Leave unmerged branches in place:
+  ```bash
+  git branch -vv | awk '/: gone]/ {print $1}' | while read -r b; do [ -n "$b" ] && git branch -d "$b"; done
+  ```
