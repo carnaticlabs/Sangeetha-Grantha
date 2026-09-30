@@ -1,12 +1,14 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Proposed |
-| **Version** | 1.4.1 |
-| **Last Updated** | 2026-09-26 |
+| **Status** | Implemented |
+| **Version** | 1.5.0 |
+| **Last Updated** | 2026-09-30 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Feature Specification |
 
 # Feature: Dikshitar Kshetra & Musicological Metadata Enrichment
+
+> **Implementation Note:** Implemented in [TRACK-145](../../10-implementations/track-145-dikshitar-kshetra-musicological-metadata.md) via Flyway migrations `V66` & `V67`, repeatable seed `R__seed_09`, Python worker `Context Formatter 2.0`, `macro_indexer.py`, and evaluated in `evaluate_retrieval.py`.
 
 ---
 

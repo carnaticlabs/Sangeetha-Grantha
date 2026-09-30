@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 2.1.0 |
-| **Last Updated** | 2026-09-10 |
+| **Version** | 2.2.0 |
+| **Last Updated** | 2026-09-30 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Navigation |
 
@@ -20,7 +20,7 @@ Use this library to understand the product, run it locally, curate source materi
 | Start the application | [Getting started](./00-onboarding/getting-started.md), [troubleshooting](./00-onboarding/troubleshooting.md) |
 | Use or improve Rasika | [Mobile PRD](./01-requirements/mobile/prd.md), [mobile implementation](./05-frontend/mobile/README.md) |
 | Curate compositions and imports | [Curator Console](./05-frontend/admin-web/ui-specs.md), [admin PRD](./01-requirements/admin-web/prd.md) |
-| Understand semantic search | [Search modes and API](./03-api/search.md) |
+| Understand semantic & musicological search | [Search modes and API](./03-api/search.md), [Track 145 implementation](./10-implementations/track-145-dikshitar-kshetra-musicological-metadata.md) |
 | Build or refresh embeddings | [Embedding pipeline](./09-ai/embeddings.md) |
 | Integrate a client | [API contract](./03-api/api-contract.md), [examples](./03-api/api-examples.md) |
 | Trace extraction to accepted text | [Ingestion guide](./01-requirements/features/bulk-import/02-implementation/technical-implementation-guide.md), [versioned canon](./04-database/versioned-canon.md) |
