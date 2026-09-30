@@ -11,6 +11,7 @@ from __future__ import annotations
 import logging
 import os
 import random
+import threading
 import time
 from pathlib import Path
 from typing import Any
@@ -87,10 +88,14 @@ class GeminiEmbedder:
         self._project_id = project_id
         self._location = location
         self._client: genai.Client | None = None
+        self._local = threading.local()
 
     @property
     def client(self) -> genai.Client:
-        if self._client is None:
+        if self._client is not None:
+            return self._client
+        client = getattr(self._local, "client", None)
+        if client is None:
             http_opts = types.HttpOptions(timeout=30000)  # 30-second socket timeout
             if self.vertexai or (self._project_id and not self._resolved_api_key):
                 logger.info(
@@ -98,7 +103,7 @@ class GeminiEmbedder:
                     self._project_id,
                     self._location,
                 )
-                self._client = genai.Client(
+                client = genai.Client(
                     vertexai=True,
                     project=self._project_id,
                     location=self._location,
@@ -110,11 +115,12 @@ class GeminiEmbedder:
                         "No Gemini API key provided. Please set SG_GEMINI_API_KEY or "
                         "GEMINI_API_KEY environment variable."
                     )
-                self._client = genai.Client(
+                client = genai.Client(
                     api_key=self._resolved_api_key,
                     http_options=http_opts,
                 )
-        return self._client
+            self._local.client = client
+        return client
 
     def embed_document(self, text: str, title: str | None = None) -> list[float]:
         """Generates a 768-D embedding for a catalogue document chunk."""
@@ -156,6 +162,8 @@ class GeminiEmbedder:
                 if not _is_retryable(exc) or attempt == MAX_RETRIES:
                     logger.error("Embedding failed after %d attempts: %s", attempt, exc)
                     raise
+                # Reset thread-local client on retry in case transport closed
+                self._local.client = None
                 sleep_time = backoff + random.uniform(0.1, 0.5)
                 logger.warning(
                     "Transient embedding error on attempt %d/%d (%s). Retrying in %.2f seconds.",
@@ -173,4 +181,4 @@ def _is_retryable(exc: BaseException) -> bool:
     if genai_errors and isinstance(exc, genai_errors.APIError):
         return exc.code in {429, 500, 502, 503, 504}
     text = str(exc).lower()
-    return any(token in text for token in ("429", "quota", "unavailable", "timeout", "temporarily"))
+    return any(token in text for token in ("429", "quota", "unavailable", "timeout", "temporarily", "closed"))

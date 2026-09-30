@@ -10,6 +10,7 @@ from __future__ import annotations
 
 # ruff: noqa: E402, E501
 import argparse
+import concurrent.futures
 import datetime
 import hashlib
 import json
@@ -43,6 +44,10 @@ from src.embeddings.context_formatter import (
     format_section_passage,
 )
 from src.embeddings.gemini_embedder import GeminiEmbedder
+from src.embeddings.macro_indexer import (
+    index_cycle_overviews,
+    index_kshetra_overviews,
+)
 
 
 def md5_hash(text: str) -> str:
@@ -82,7 +87,11 @@ def get_db_connection() -> psycopg.Connection:
     )
 
 
-def fetch_all_krithi_ids(conn: psycopg.Connection, priority_unembedded: bool = True) -> list[dict[str, Any]]:
+def fetch_all_krithi_ids(
+    conn: psycopg.Connection,
+    priority_unembedded: bool = True,
+    composer_filter: str | None = None,
+) -> list[dict[str, Any]]:
     """Fetches all krithi IDs and metadata ordered logically."""
     query = """
         SELECT 
@@ -95,12 +104,38 @@ def fetch_all_krithi_ids(conn: psycopg.Connection, priority_unembedded: bool = T
             d.name AS deity,
             tmp.name AS kshetra,
             k.primary_language,
+            k.vibhakti_case,
+            k.vibhakti_stem,
+            k.occasion_note,
+            k.yati_pattern,
+            k.is_manipravala,
+            tmp.mandalam,
+            tmp.bhuta,
+            tmp.deity_posture,
             (
                 SELECT array_agg(t.display_name_en)
                 FROM krithi_tags kt
                 JOIN tags t ON kt.tag_id = t.id
                 WHERE kt.krithi_id = k.id
             ) AS tags,
+            (
+                SELECT json_agg(json_build_object(
+                    'slug', tg.slug,
+                    'name', tg.display_name_en,
+                    'sequence_order', kcm.sequence_order,
+                    'role', kcm.role,
+                    'axis_value', kcm.axis_value,
+                    'attrs', kcm.discriminative_attributes
+                ) ORDER BY kcm.sequence_order ASC)
+                FROM krithi_cycle_memberships kcm
+                JOIN tags tg ON kcm.tag_id = tg.id
+                WHERE kcm.krithi_id = k.id
+            ) AS cycle_memberships,
+            (
+                SELECT array_agg(DISTINCT ks.section_type)
+                FROM krithi_sections ks
+                WHERE ks.krithi_id = k.id
+            ) AS section_types,
             (
                 SELECT COUNT(de.id)
                 FROM search_documents sd
@@ -120,14 +155,20 @@ def fetch_all_krithi_ids(conn: psycopg.Connection, priority_unembedded: bool = T
         LEFT JOIN talas t ON k.tala_id = t.id
         LEFT JOIN deities d ON k.deity_id = d.id
         LEFT JOIN temples tmp ON k.temple_id = tmp.id
+        WHERE 1 = 1
     """
+    params: list[Any] = []
+    if composer_filter:
+        query += " AND c.name ILIKE %s"
+        params.append(f"%{composer_filter}%")
+
     if priority_unembedded:
         query += " ORDER BY existing_embedding_count ASC, k.title ASC"
     else:
         query += " ORDER BY k.title ASC"
 
     with conn.cursor(row_factory=dict_row) as cur:
-        cur.execute(query)
+        cur.execute(query, params)
         return cur.fetchall()
 
 
@@ -185,6 +226,26 @@ def process_single_krithi(
     skipped = 0
     keep_doc_ids: list[str] = []
 
+    # Extract primary cycle membership (prefer CORE, DHYANA, or MANGALAM)
+    cycle_memberships = krithi.get("cycle_memberships") or []
+    primary_cycle = None
+    if cycle_memberships:
+        primary_cycle = cycle_memberships[0]
+        for cm in cycle_memberships:
+            if cm.get("role") in ("CORE", "DHYANA", "MANGALAM"):
+                primary_cycle = cm
+                break
+
+    # Extract structural features from section types & attributes
+    structural_features = []
+    sec_types = krithi.get("section_types") or []
+    if "SAMASHTI_CHARANAM" in sec_types:
+        structural_features.append("Samashti Charanam")
+    if "SWARA_SAHITYA" in sec_types:
+        structural_features.append("Swara Sahitya")
+    if krithi.get("is_manipravala"):
+        structural_features.append("Manipravala")
+
     # 1. Overview Document
     if primary_lyrics and len(primary_lyrics.strip()) > 10:
         overview_text = format_composition_overview(
@@ -198,6 +259,15 @@ def process_single_krithi(
             language=krithi.get("primary_language"),
             primary_lyrics=primary_lyrics[:600],
             musical_form=musical_form,
+            vibhakti_case=krithi.get("vibhakti_case"),
+            vibhakti_stem=krithi.get("vibhakti_stem"),
+            mandalam=krithi.get("mandalam"),
+            bhuta=krithi.get("bhuta"),
+            deity_posture=krithi.get("deity_posture"),
+            cycle_info=primary_cycle,
+            occasion_note=krithi.get("occasion_note"),
+            structural_features=structural_features,
+            yati_pattern=krithi.get("yati_pattern"),
         )
         content_hash = md5_hash(overview_text)
 
@@ -227,7 +297,7 @@ def process_single_krithi(
                             krithi_id, document_kind, language_code, script_code,
                             original_content, indexed_content, content_hash
                         ) VALUES (%s, 'COMPOSITION_OVERVIEW', %s, NULL, %s, %s, %s)
-                        ON CONFLICT (krithi_id, section_id, variant_id, document_kind, source_chunk_index)
+                        ON CONFLICT (krithi_id, temple_id, tag_id, section_id, variant_id, document_kind, source_chunk_index)
                         DO UPDATE SET language_code = EXCLUDED.language_code,
                                       original_content = EXCLUDED.original_content,
                                       indexed_content = EXCLUDED.indexed_content,
@@ -279,6 +349,10 @@ def process_single_krithi(
             language=sec.get("language"),
             script=sec.get("script"),
             musical_form=musical_form,
+            vibhakti_case=krithi.get("vibhakti_case"),
+            mandalam=krithi.get("mandalam"),
+            bhuta=krithi.get("bhuta"),
+            cycle_info=primary_cycle,
         )
         content_hash = md5_hash(passage_text)
 
@@ -311,7 +385,7 @@ def process_single_krithi(
                             language_code, script_code,
                             original_content, indexed_content, content_hash
                         ) VALUES (%s, %s, %s, 'SECTION_PASSAGE', %s, %s, %s, %s, %s)
-                        ON CONFLICT (krithi_id, section_id, variant_id, document_kind, source_chunk_index)
+                        ON CONFLICT (krithi_id, temple_id, tag_id, section_id, variant_id, document_kind, source_chunk_index)
                         DO UPDATE SET language_code = EXCLUDED.language_code,
                                       script_code = EXCLUDED.script_code,
                                       original_content = EXCLUDED.original_content,
@@ -462,6 +536,8 @@ def generate_markdown_report(
 |:---|:---|
 | `search_documents` (Composition Overviews) | {summary["db_overview_count"]} |
 | `search_documents` (Section Passages) | {summary["db_passage_count"]} |
+| `search_documents` (Cycle Overviews) | {summary.get("db_cycle_count", 0)} |
+| `search_documents` (Kshetra Overviews) | {summary.get("db_kshetra_count", 0)} |
 | `document_embeddings` (Active Vectors) | **{summary["db_total_embeddings"]}** |
 | HNSW Cosine Index Status | `{summary["index_status"]}` |
 
@@ -513,6 +589,13 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Batch embed krithis using Gemini Embedding 2 and pgvector.")
     parser.add_argument("--batch-size", type=int, default=50, help="Krithis per batch (default: 50)")
     parser.add_argument("--max-krithis", type=int, default=None, help="Maximum krithis to process (default: all)")
+    parser.add_argument("--composer", type=str, default=None, help="Filter by composer name (e.g. 'Dikshitar')")
+    parser.add_argument(
+        "--include-macro",
+        action="store_true",
+        help="Generate and embed CYCLE_OVERVIEW and KSHETRA_OVERVIEW documents",
+    )
+    parser.add_argument("--concurrency", type=int, default=1, help="Number of concurrent worker threads (default: 1)")
     parser.add_argument("--delay", type=float, default=1.0, help="Seconds to sleep between batches (default: 1.0)")
     parser.add_argument("--force", action="store_true", help="Re-embed even if already embedded")
     parser.add_argument("--dry-run", action="store_true", help="Preview without making API calls or modifying DB")
@@ -542,17 +625,18 @@ def main() -> None:
         profile_id = profile.id
     embedder = GeminiEmbedder(model=DEFAULT_MODEL, dimensions=DEFAULT_DIMENSIONS)
 
-    all_krithis = fetch_all_krithi_ids(conn, priority_unembedded=not args.force)
+    all_krithis = fetch_all_krithi_ids(conn, priority_unembedded=not args.force, composer_filter=args.composer)
     total_catalogue = len(all_krithis)
 
     target_krithis = all_krithis[: args.max_krithis] if args.max_krithis else all_krithis
     total_to_process = len(target_krithis)
 
     logger.info(
-        "Beginning batch execution: %d/%d krithis (batch_size=%d, dry_run=%s)",
+        "Beginning batch execution: %d/%d krithis (batch_size=%d, concurrency=%d, dry_run=%s)",
         total_to_process,
         total_catalogue,
         args.batch_size,
+        args.concurrency,
         args.dry_run,
     )
 
@@ -567,6 +651,24 @@ def main() -> None:
     batch_size = args.batch_size
     num_batches = (total_to_process + batch_size - 1) // batch_size
 
+    def _worker_fn(item: dict[str, Any]) -> tuple[int, int, int, dict[str, Any] | None]:
+        t_conn = get_db_connection()
+        try:
+            emb, skp, ret = process_single_krithi(
+                conn=t_conn,
+                embedder=embedder,
+                profile_id=profile_id,
+                krithi=item,
+                dry_run=args.dry_run,
+                force=args.force,
+            )
+            return emb, skp, ret, None
+        except Exception as exc:
+            t_conn.rollback()
+            return 0, 0, 0, {"krithi_id": str(item["id"]), "title": item["title"], "error": str(exc)}
+        finally:
+            t_conn.close()
+
     for b_idx in range(num_batches):
         batch = target_krithis[b_idx * batch_size : (b_idx + 1) * batch_size]
         b_num = b_idx + 1
@@ -577,30 +679,43 @@ def main() -> None:
             len(batch),
         )
 
-        for k in batch:
-            try:
-                emb, skp, ret = process_single_krithi(
-                    conn=conn,
-                    embedder=embedder,
-                    profile_id=profile_id,
-                    krithi=k,
-                    dry_run=args.dry_run,
-                    force=args.force,
-                )
-                total_embedded += emb
-                total_skipped += skp
-                total_retired += ret
-                krithis_succeeded += 1
-            except Exception as e:  # noqa: BLE001 - one composition must not poison the rest of the run
-                # process_single_krithi commits per composition, so this discards only the failed one
-                conn.rollback()
-                krithis_failed += 1
-                failures.append({"krithi_id": str(k["id"]), "title": k["title"], "error": str(e)})
-                logger.error("Failed embedding krithi '%s' (%s): %s", k["title"], k["id"], e)
-                # If rate limited (429), back off
-                if "429" in str(e) or "quota" in str(e).lower():
-                    logger.warning("Quota threshold encountered. Cooling down for 30 seconds...")
-                    time.sleep(30.0)
+        if args.concurrency > 1:
+            with concurrent.futures.ThreadPoolExecutor(max_workers=args.concurrency) as executor:
+                futures = [executor.submit(_worker_fn, k) for k in batch]
+                for fut in concurrent.futures.as_completed(futures):
+                    emb, skp, ret, fail = fut.result()
+                    if fail:
+                        krithis_failed += 1
+                        failures.append(fail)
+                        logger.error("Failed embedding krithi '%s' (%s): %s", fail["title"], fail["krithi_id"], fail["error"])
+                    else:
+                        total_embedded += emb
+                        total_skipped += skp
+                        total_retired += ret
+                        krithis_succeeded += 1
+        else:
+            for k in batch:
+                try:
+                    emb, skp, ret = process_single_krithi(
+                        conn=conn,
+                        embedder=embedder,
+                        profile_id=profile_id,
+                        krithi=k,
+                        dry_run=args.dry_run,
+                        force=args.force,
+                    )
+                    total_embedded += emb
+                    total_skipped += skp
+                    total_retired += ret
+                    krithis_succeeded += 1
+                except Exception as e:  # noqa: BLE001
+                    conn.rollback()
+                    krithis_failed += 1
+                    failures.append({"krithi_id": str(k["id"]), "title": k["title"], "error": str(e)})
+                    logger.error("Failed embedding krithi '%s' (%s): %s", k["title"], k["id"], e)
+                    if "429" in str(e) or "quota" in str(e).lower():
+                        logger.warning("Quota threshold encountered. Cooling down for 30 seconds...")
+                        time.sleep(30.0)
 
         elapsed = time.time() - start_time
         processed_so_far = krithis_succeeded + krithis_failed
@@ -621,6 +736,35 @@ def main() -> None:
         if b_idx < num_batches - 1 and args.delay > 0:
             time.sleep(args.delay)
 
+    # Macro document indexing (CYCLE_OVERVIEW and KSHETRA_OVERVIEW)
+    db_cycle_count = 0
+    db_kshetra_count = 0
+    if args.include_macro and profile_id is not None:
+        logger.info("Executing macro document indexing (CYCLE_OVERVIEW & KSHETRA_OVERVIEW)...")
+        cycle_stats = index_cycle_overviews(
+            conn=conn,
+            embedder=embedder,
+            profile_id=profile_id,
+            force=args.force,
+            dry_run=args.dry_run,
+        )
+        kshetra_stats = index_kshetra_overviews(
+            conn=conn,
+            embedder=embedder,
+            profile_id=profile_id,
+            force=args.force,
+            dry_run=args.dry_run,
+        )
+        total_embedded += cycle_stats["embedded"] + kshetra_stats["embedded"]
+        total_skipped += cycle_stats["skipped"] + kshetra_stats["skipped"]
+        logger.info(
+            "Macro Indexing Complete | Cycle Overviews: %d embedded, %d skipped | Kshetra Overviews: %d embedded, %d skipped",
+            cycle_stats["embedded"],
+            cycle_stats["skipped"],
+            kshetra_stats["embedded"],
+            kshetra_stats["skipped"],
+        )
+
     total_elapsed = time.time() - start_time
     m, s = divmod(int(total_elapsed), 60)
     elapsed_formatted = f"{m}m {s}s"
@@ -634,6 +778,14 @@ def main() -> None:
         cur.execute("SELECT COUNT(*) FROM search_documents WHERE document_kind = 'SECTION_PASSAGE'")
         row = cur.fetchone()
         db_passage_count = row[0] if row else 0
+
+        cur.execute("SELECT COUNT(*) FROM search_documents WHERE document_kind = 'CYCLE_OVERVIEW'")
+        row = cur.fetchone()
+        db_cycle_count = row[0] if row else 0
+
+        cur.execute("SELECT COUNT(*) FROM search_documents WHERE document_kind = 'KSHETRA_OVERVIEW'")
+        row = cur.fetchone()
+        db_kshetra_count = row[0] if row else 0
 
         cur.execute("SELECT COUNT(*) FROM document_embeddings")
         row = cur.fetchone()
@@ -677,6 +829,8 @@ def main() -> None:
         "estimated_cost": estimated_cost,
         "db_overview_count": db_overview_count,
         "db_passage_count": db_passage_count,
+        "db_cycle_count": db_cycle_count,
+        "db_kshetra_count": db_kshetra_count,
         "db_total_embeddings": db_total_embeddings,
         "index_status": index_status,
     }

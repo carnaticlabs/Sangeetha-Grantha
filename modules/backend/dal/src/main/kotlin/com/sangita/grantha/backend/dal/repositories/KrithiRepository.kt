@@ -4,15 +4,18 @@ import com.sangita.grantha.backend.dal.DatabaseFactory
 import com.sangita.grantha.backend.dal.enums.LanguageCode
 import com.sangita.grantha.backend.dal.enums.MusicalForm
 import com.sangita.grantha.backend.dal.enums.WorkflowState
+import com.sangita.grantha.backend.dal.models.toKrithiCycleMembershipDto
 import com.sangita.grantha.backend.dal.models.toKrithiDto
 import com.sangita.grantha.backend.dal.models.toKrithiSectionDto
 import com.sangita.grantha.backend.dal.models.toTagDto
 import com.sangita.grantha.backend.dal.support.toJavaUuid
+import com.sangita.grantha.backend.dal.tables.KrithiCycleMembershipsTable
 import com.sangita.grantha.backend.dal.tables.KrithisTable
 import com.sangita.grantha.backend.dal.tables.KrithiRagasTable
 import com.sangita.grantha.backend.dal.tables.KrithiSectionsTable
 import com.sangita.grantha.backend.dal.tables.KrithiTagsTable
 import com.sangita.grantha.backend.dal.tables.TagsTable
+import com.sangita.grantha.shared.domain.model.KrithiCycleMembershipDto
 import com.sangita.grantha.shared.domain.model.KrithiDto
 import com.sangita.grantha.shared.domain.model.KrithiSectionDto
 import com.sangita.grantha.shared.domain.model.TagDto
@@ -89,6 +92,17 @@ data class KrithiUpdateParams(
  */
 class KrithiRepository {
     private val logger = LoggerFactory.getLogger(KrithiRepository::class.java)
+
+    /**
+     * Ordered cycle memberships for one kriti. Read-only; membership writes stay in the seed.
+     */
+    suspend fun listCycleMemberships(krithiId: Uuid): List<KrithiCycleMembershipDto> = DatabaseFactory.dbQuery {
+        KrithiCycleMembershipsTable
+            .selectAll()
+            .where { KrithiCycleMembershipsTable.krithiId eq krithiId.toJavaUuid() }
+            .orderBy(KrithiCycleMembershipsTable.sequenceOrder to SortOrder.ASC)
+            .map { it.toKrithiCycleMembershipDto() }
+    }
 
     /**
      * Find a krithi by ID.

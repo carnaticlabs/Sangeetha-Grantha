@@ -58,6 +58,7 @@ The documents below explain feature design or earlier implementation work. Check
 
 - [Advanced notation and transliteration](./advanced-krithi-notation-transliteration.md)
 - [Searchable deity and temple management](./searchable-deity-temple-management.md)
+- [Dikshitar kshetra & musicological metadata](./dikshitar-kshetra-musicological-enrichment.md)
 - [Content ingestion requirements](./intelligent-content-ingestion.md), [generic extraction history](./generic-scraping.md)
 - [Database optimization](./database-layer-optimization.md), [development environment](./cross-platform-development-environment-standardisation.md)
 - [Graph Explorer proposal](./graph-explorer.md), [global architecture proposal](./global-scale-architecture.md), [GCP strategy](./gcp-implementation-strategy.md)

@@ -73,6 +73,15 @@ data class TempleDto(
     val latitude: Double? = null,
     val longitude: Double? = null,
     val notes: String? = null,
+    @Serializable(with = UuidSerializer::class)
+    val parentTempleId: Uuid? = null,
+    val placeKind: String = "LOCALITY",
+    val mandalam: String? = null,
+    val bhuta: String? = null,
+    val sthalaVriksha: String? = null,
+    val sthalaTirtha: String? = null,
+    val nadiTirtha: String? = null,
+    val deityPosture: String? = null,
     val createdAt: Instant,
     val updatedAt: Instant,
 )

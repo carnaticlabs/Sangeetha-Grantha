@@ -1,6 +1,7 @@
 -- Repeatable reference seed for canonical Carnatic cycles and thematic groupings (ADR-013 / TRACK-108).
--- Seeds authoritative tags for Pancha Bhuta Sthala, Kamalamba Navavarnam, Navagraha, 
--- Tyagaraja Pancharatnam, Abhayamba Vibhakti, Nilotpalamba Vibhakti, and Syama Sastri Swarajathis.
+-- Tag catalog for the Dikshitar cycles, Tyagaraja Pancharatnam, and Syama Sastri Swarajathis.
+-- TRACK-145: Dikshitar krithi_tags links are no longer heuristic title patterns.
+-- Reviewed memberships and the purge of historical canonical_cycle rows live in R__seed_09.
 
 -- 1. Insert Tags
 INSERT INTO tags (id, category, slug, display_name_en, description_en, created_at)
@@ -65,36 +66,7 @@ ON CONFLICT (slug) DO UPDATE SET
     display_name_en = EXCLUDED.display_name_en,
     description_en = EXCLUDED.description_en;
 
--- 2. Link Pancha Bhuta Sthala Krithis
-INSERT INTO krithi_tags (krithi_id, tag_id, source, confidence)
-SELECT k.id, '01920000-0000-7000-8000-000000000001'::uuid, 'canonical_cycle', 100
-FROM krithis k
-WHERE (
-    lower(k.title) SIMILAR TO '%(cintaya m[a|A] kanda|jamb[u|U] pat[e|E]|aru[n|N][a|A]cala n[a|A]tha|ananda na[t|T]ana prak[a|A]sa)%'
-    OR lower(k.title) LIKE '%kalahasti%'
-    OR lower(k.title) LIKE '%kalahastisa%'
-    OR lower(k.title) LIKE '%kalahastI%'
-)
-AND k.composer_id = (SELECT id FROM composers WHERE lower(name) LIKE '%dikshitar%' LIMIT 1)
-ON CONFLICT (krithi_id, tag_id) DO NOTHING;
-
--- 3. Link Kamalamba Navavarnam Krithis
-INSERT INTO krithi_tags (krithi_id, tag_id, source, confidence)
-SELECT k.id, '01920000-0000-7000-8000-000000000002'::uuid, 'canonical_cycle', 100
-FROM krithis k
-WHERE lower(k.title) LIKE '%kamalamb%'
-  AND k.composer_id = (SELECT id FROM composers WHERE lower(name) LIKE '%dikshitar%' LIMIT 1)
-ON CONFLICT (krithi_id, tag_id) DO NOTHING;
-
--- 4. Link Navagraha Krithis
-INSERT INTO krithi_tags (krithi_id, tag_id, source, confidence)
-SELECT k.id, '01920000-0000-7000-8000-000000000003'::uuid, 'canonical_cycle', 100
-FROM krithis k
-WHERE lower(k.title) SIMILAR TO '%(surya murte|candram bhaja|angarakam asrayamyaham|budhamasrayami|brhaspate tara pate|sukra bhagavantam|divakara tanujam|smaramyaham sada|maha suram ketum)%'
-  AND k.composer_id = (SELECT id FROM composers WHERE lower(name) LIKE '%dikshitar%' LIMIT 1)
-ON CONFLICT (krithi_id, tag_id) DO NOTHING;
-
--- 5. Link Tyagaraja Pancharatna Krithis
+-- Tyagaraja Pancharatna Krithis (non-Dikshitar; retained)
 INSERT INTO krithi_tags (krithi_id, tag_id, source, confidence)
 SELECT k.id, '01920000-0000-7000-8000-000000000004'::uuid, 'canonical_cycle', 100
 FROM krithis k
@@ -102,23 +74,7 @@ WHERE lower(k.title) SIMILAR TO '%(jagadananda karaka|duduku gala|sadhincene|kan
   AND k.composer_id = (SELECT id FROM composers WHERE lower(name) LIKE '%tyagaraja%' LIMIT 1)
 ON CONFLICT (krithi_id, tag_id) DO NOTHING;
 
--- 6. Link Abhayamba Vibhakti Krithis
-INSERT INTO krithi_tags (krithi_id, tag_id, source, confidence)
-SELECT k.id, '01920000-0000-7000-8000-000000000005'::uuid, 'canonical_cycle', 100
-FROM krithis k
-WHERE lower(k.title) LIKE '%abhayamb%'
-  AND k.composer_id = (SELECT id FROM composers WHERE lower(name) LIKE '%dikshitar%' LIMIT 1)
-ON CONFLICT (krithi_id, tag_id) DO NOTHING;
-
--- 7. Link Nilotpalamba Vibhakti Krithis
-INSERT INTO krithi_tags (krithi_id, tag_id, source, confidence)
-SELECT k.id, '01920000-0000-7000-8000-000000000006'::uuid, 'canonical_cycle', 100
-FROM krithis k
-WHERE lower(k.title) LIKE '%nilotpal%'
-  AND k.composer_id = (SELECT id FROM composers WHERE lower(name) LIKE '%dikshitar%' LIMIT 1)
-ON CONFLICT (krithi_id, tag_id) DO NOTHING;
-
--- 8. Link Syama Sastri Swarajathi Ratnatrayam
+-- Syama Sastri Swarajathi Ratnatrayam (non-Dikshitar; retained)
 DELETE FROM krithi_tags
 WHERE tag_id = '01920000-0000-7000-8000-000000000007'::uuid;
 

@@ -42,6 +42,10 @@ from src.embeddings.context_formatter import (
     format_section_passage,
 )
 from src.embeddings.gemini_embedder import GeminiEmbedder
+from src.embeddings.macro_indexer import (
+    index_cycle_overviews,
+    index_kshetra_overviews,
+)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -84,6 +88,7 @@ def fetch_krithi_candidates(
     krithi_id: str | None = None,
     limit: int | None = None,
     stale_only: bool = False,
+    composer_filter: str | None = None,
 ) -> list[dict[str, Any]]:
     """Fetches candidate krithis with their composer, raga, tala, and lyric details."""
     query = """
@@ -97,12 +102,38 @@ def fetch_krithi_candidates(
             d.name AS deity,
             tmp.name AS kshetra,
             k.primary_language,
+            k.vibhakti_case,
+            k.vibhakti_stem,
+            k.occasion_note,
+            k.yati_pattern,
+            k.is_manipravala,
+            tmp.mandalam,
+            tmp.bhuta,
+            tmp.deity_posture,
             (
                 SELECT array_agg(t.display_name_en)
                 FROM krithi_tags kt
                 JOIN tags t ON kt.tag_id = t.id
                 WHERE kt.krithi_id = k.id
             ) AS tags,
+            (
+                SELECT json_agg(json_build_object(
+                    'slug', tg.slug,
+                    'name', tg.display_name_en,
+                    'sequence_order', kcm.sequence_order,
+                    'role', kcm.role,
+                    'axis_value', kcm.axis_value,
+                    'attrs', kcm.discriminative_attributes
+                ) ORDER BY kcm.sequence_order ASC)
+                FROM krithi_cycle_memberships kcm
+                JOIN tags tg ON kcm.tag_id = tg.id
+                WHERE kcm.krithi_id = k.id
+            ) AS cycle_memberships,
+            (
+                SELECT array_agg(DISTINCT ks.section_type)
+                FROM krithi_sections ks
+                WHERE ks.krithi_id = k.id
+            ) AS section_types,
             (
                 SELECT lv.lyrics 
                 FROM krithi_lyric_variants lv 
@@ -122,6 +153,10 @@ def fetch_krithi_candidates(
     if krithi_id:
         query += " AND k.id = %s"
         params.append(krithi_id)
+
+    if composer_filter:
+        query += " AND c.name ILIKE %s"
+        params.append(f"%{composer_filter}%")
 
     if stale_only:
         query += """ AND k.id IN (
@@ -194,6 +229,26 @@ def index_krithi(
     inserted_count = 0
     keep_doc_ids: list[str] = []
 
+    # Extract primary cycle membership (prefer CORE, DHYANA, or MANGALAM)
+    cycle_memberships = krithi.get("cycle_memberships") or []
+    primary_cycle = None
+    if cycle_memberships:
+        primary_cycle = cycle_memberships[0]
+        for cm in cycle_memberships:
+            if cm.get("role") in ("CORE", "DHYANA", "MANGALAM"):
+                primary_cycle = cm
+                break
+
+    # Extract structural features from section types & attributes
+    structural_features = []
+    sec_types = krithi.get("section_types") or []
+    if "SAMASHTI_CHARANAM" in sec_types:
+        structural_features.append("Samashti Charanam")
+    if "SWARA_SAHITYA" in sec_types:
+        structural_features.append("Swara Sahitya")
+    if krithi.get("is_manipravala"):
+        structural_features.append("Manipravala")
+
     # 1. Composition Overview Document
     # Document text must be byte-identical to batch_embed_catalogue.py so content hashes agree.
     if primary_lyrics and len(primary_lyrics.strip()) > 10:
@@ -208,6 +263,15 @@ def index_krithi(
             language=krithi.get("primary_language"),
             primary_lyrics=primary_lyrics[:600],  # bounded macro-level overview
             musical_form=musical_form,
+            vibhakti_case=krithi.get("vibhakti_case"),
+            vibhakti_stem=krithi.get("vibhakti_stem"),
+            mandalam=krithi.get("mandalam"),
+            bhuta=krithi.get("bhuta"),
+            deity_posture=krithi.get("deity_posture"),
+            cycle_info=primary_cycle,
+            occasion_note=krithi.get("occasion_note"),
+            structural_features=structural_features,
+            yati_pattern=krithi.get("yati_pattern"),
         )
         content_hash = md5_hash(overview_text)
 
@@ -241,7 +305,7 @@ def index_krithi(
                             krithi_id, document_kind, language_code, script_code,
                             original_content, indexed_content, content_hash
                         ) VALUES (%s, 'COMPOSITION_OVERVIEW', %s, NULL, %s, %s, %s)
-                        ON CONFLICT (krithi_id, section_id, variant_id, document_kind, source_chunk_index)
+                        ON CONFLICT (krithi_id, temple_id, tag_id, section_id, variant_id, document_kind, source_chunk_index)
                         DO UPDATE SET language_code = EXCLUDED.language_code,
                                       original_content = EXCLUDED.original_content,
                                       indexed_content = EXCLUDED.indexed_content,
@@ -294,6 +358,10 @@ def index_krithi(
             language=sec.get("language"),
             script=sec.get("script"),
             musical_form=musical_form,
+            vibhakti_case=krithi.get("vibhakti_case"),
+            mandalam=krithi.get("mandalam"),
+            bhuta=krithi.get("bhuta"),
+            cycle_info=primary_cycle,
         )
         content_hash = md5_hash(passage_text)
 
@@ -330,7 +398,7 @@ def index_krithi(
                             language_code, script_code,
                             original_content, indexed_content, content_hash
                         ) VALUES (%s, %s, %s, 'SECTION_PASSAGE', %s, %s, %s, %s, %s)
-                        ON CONFLICT (krithi_id, section_id, variant_id, document_kind, source_chunk_index)
+                        ON CONFLICT (krithi_id, temple_id, tag_id, section_id, variant_id, document_kind, source_chunk_index)
                         DO UPDATE SET language_code = EXCLUDED.language_code,
                                       script_code = EXCLUDED.script_code,
                                       original_content = EXCLUDED.original_content,
@@ -402,6 +470,12 @@ def main():
     parser.add_argument("--limit", type=int, help="Limit number of krithis to process")
     parser.add_argument("--krithi-id", type=str, help="Process a single krithi by UUID")
     parser.add_argument("--all", action="store_true", help="Process the entire catalogue")
+    parser.add_argument("--composer", type=str, help="Filter candidate krithis by composer name")
+    parser.add_argument(
+        "--include-macro",
+        action="store_true",
+        help="Generate and embed CYCLE_OVERVIEW and KSHETRA_OVERVIEW documents",
+    )
     parser.add_argument(
         "--stale-only",
         action="store_true",
@@ -430,7 +504,7 @@ def main():
 
     args = parser.parse_args()
 
-    if not args.limit and not args.krithi_id and not args.all and not args.dry_run and not args.stale_only:
+    if not args.limit and not args.krithi_id and not args.all and not args.dry_run and not args.stale_only and not args.composer and not args.include_macro:
         parser.print_help()
         sys.exit(1)
 
@@ -465,6 +539,7 @@ def main():
             krithi_id=args.krithi_id,
             limit=args.limit,
             stale_only=args.stale_only,
+            composer_filter=args.composer,
         )
         logger.info("Found %d candidate krithis to process", len(candidates))
 
@@ -489,6 +564,32 @@ def main():
                 continue
             total_embedded += count
             total_retired += retired
+
+        # Macro document indexing (CYCLE_OVERVIEW and KSHETRA_OVERVIEW)
+        if args.include_macro and profile_id is not None:
+            logger.info("Executing macro document indexing (CYCLE_OVERVIEW & KSHETRA_OVERVIEW)...")
+            cycle_stats = index_cycle_overviews(
+                conn=conn,
+                embedder=embedder,
+                profile_id=profile_id,
+                force=args.force,
+                dry_run=args.dry_run,
+            )
+            kshetra_stats = index_kshetra_overviews(
+                conn=conn,
+                embedder=embedder,
+                profile_id=profile_id,
+                force=args.force,
+                dry_run=args.dry_run,
+            )
+            total_embedded += cycle_stats["embedded"] + kshetra_stats["embedded"]
+            logger.info(
+                "Macro Indexing Complete | Cycle Overviews: %d embedded, %d skipped | Kshetra Overviews: %d embedded, %d skipped",
+                cycle_stats["embedded"],
+                cycle_stats["skipped"],
+                kshetra_stats["embedded"],
+                kshetra_stats["skipped"],
+            )
 
         logger.info(
             "Backfill complete. Generated %d document embeddings, retired %d obsolete documents, %d krithi(s) failed.",
