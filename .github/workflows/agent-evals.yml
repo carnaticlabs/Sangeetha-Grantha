@@ -9,7 +9,7 @@ on:
       - 'REVIEW.md'
       - '.claude/**'
       - 'evals/**'
-      - '.agents/workflows/conductor-track-manager.md'
+      - '.agents/skills/conductor-track-manager/**'
       - '.agents/skills/commit-policy/**'
   push:
     branches: [main]
@@ -18,7 +18,7 @@ on:
       - 'REVIEW.md'
       - '.claude/**'
       - 'evals/**'
-      - '.agents/workflows/conductor-track-manager.md'
+      - '.agents/skills/conductor-track-manager/**'
       - '.agents/skills/commit-policy/**'
 
 permissions:

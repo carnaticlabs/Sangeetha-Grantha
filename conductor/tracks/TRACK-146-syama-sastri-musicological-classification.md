@@ -64,7 +64,7 @@ The recorded 70/71 import difference is unresolved. Current deity, temple, form,
 
 ### Constraints
 
-- Follow [CLAUDE.md](../../CLAUDE.md) and the [Conductor workflow](../../.agents/workflows/conductor-track-manager.md): Intent → Spec → Plan acceptance; no product implementation or corpus mutation before Plan acceptance.
+- Follow [CLAUDE.md](../../CLAUDE.md) and the [Conductor workflow](../../.agents/skills/conductor-track-manager/SKILL.md): Intent → Spec → Plan acceptance; no product implementation or corpus mutation before Plan acceptance.
 - Flyway is the only migration engine. Never edit committed versioned migrations; allocate new migration/seed identifiers during the accepted Plan, not here. Repeatable updates must not overwrite independent reviewed assignments.
 - Preserve `DatabaseFactory.dbQuery`, DTO boundaries and mutation auditing for runtime paths; explicitly decide migration/seed audit treatment in Spec.
 - Respect the domain model's musical-form, ordered-raga and independent-notation contracts. Lyrics alone cannot establish eduppu, sangatis or detailed rhythmic design.

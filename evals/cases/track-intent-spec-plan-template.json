@@ -1,6 +1,6 @@
 {
   "id": "track-intent-spec-plan-template",
-  "file": ".agents/workflows/conductor-track-manager.md",
+  "file": ".agents/skills/conductor-track-manager/SKILL.md",
   "must_contain": [
     "## Intent",
     "## Spec",
