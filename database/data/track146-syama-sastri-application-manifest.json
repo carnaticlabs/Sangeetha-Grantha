@@ -1,0 +1,300 @@
+{
+  "track": "TRACK-146",
+  "snapshot_at": "2026-10-01",
+  "status": "ready",
+  "provenance_owner": "TRACK-146",
+  "changes": [
+    {
+      "claim_id": "SS-0001:form:1",
+      "subject_id": "SS-0001",
+      "canonical_id": "f5a415fd-b4ed-4394-ae0b-6f89cacb4fca",
+      "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+      "axis": "form",
+      "value": "SWARAJATHI",
+      "witness_id": "blog:a3d397a79736d97d",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-06",
+        "decision": "approve",
+        "note": "Approved canonical Swarajathi form and numbered swara-sahitya unit count attested in the fetched witness and corroborated by V. Raghavan (1977) and JMA Vol. LXXV (2002).",
+        "application": "apply"
+      }
+    },
+    {
+      "claim_id": "SS-0001:group:1",
+      "subject_id": "SS-0001",
+      "canonical_id": "f5a415fd-b4ed-4394-ae0b-6f89cacb4fca",
+      "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+      "axis": "group",
+      "value": "syama-sastri-swarajathi-ratnatrayam",
+      "witness_id": "sahapedia-raghavan-1977",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-06",
+        "decision": "approve",
+        "note": "Approved canonical Swarajathi Ratnatrayam membership corroborated by V. Raghavan (1977, PDF p.2).",
+        "application": "apply"
+      }
+    },
+    {
+      "claim_id": "SS-0001:laya:1",
+      "subject_id": "SS-0001",
+      "canonical_id": "f5a415fd-b4ed-4394-ae0b-6f89cacb4fca",
+      "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+      "axis": "laya",
+      "value": "Misra Chapu",
+      "witness_id": "ma:jma-vol75-2002",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-06",
+        "decision": "approve",
+        "note": "Approved Misra Chapu laya attribution for Swarajathi Ratnatrayam corroborated by JMA Vol. LXXV (2002, PDF p.90).",
+        "application": "apply"
+      }
+    },
+    {
+      "claim_id": "SS-0001:mudra:1",
+      "subject_id": "SS-0001",
+      "canonical_id": "f5a415fd-b4ed-4394-ae0b-6f89cacb4fca",
+      "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+      "axis": "mudra",
+      "value": "Syama Krishna",
+      "witness_id": "blog:a3d397a79736d97d",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-06",
+        "decision": "approve",
+        "note": "Approved Syama Krishna mudra directly attested in the fetched blog witness sahitya.",
+        "application": "apply"
+      }
+    },
+    {
+      "claim_id": "SS-0001:structure:1",
+      "subject_id": "SS-0001",
+      "canonical_id": "f5a415fd-b4ed-4394-ae0b-6f89cacb4fca",
+      "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+      "axis": "structure",
+      "value": "8 numbered swara-sahitya units",
+      "witness_id": "blog:a3d397a79736d97d",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-06",
+        "decision": "approve",
+        "note": "Approved canonical Swarajathi form and numbered swara-sahitya unit count attested in the fetched witness and corroborated by V. Raghavan (1977) and JMA Vol. LXXV (2002).",
+        "application": "apply"
+      }
+    },
+    {
+      "claim_id": "SS-0026:form:1",
+      "subject_id": "SS-0026",
+      "canonical_id": "7c15e1c9-5c30-4f68-8ab4-a414847e06be",
+      "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+      "axis": "form",
+      "value": "SWARAJATHI",
+      "witness_id": "blog:0bee60a87c23da5d",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-06",
+        "decision": "approve",
+        "note": "Approved canonical Swarajathi form and numbered swara-sahitya unit count attested in the fetched witness and corroborated by V. Raghavan (1977) and JMA Vol. LXXV (2002).",
+        "application": "apply"
+      }
+    },
+    {
+      "claim_id": "SS-0026:group:1",
+      "subject_id": "SS-0026",
+      "canonical_id": "7c15e1c9-5c30-4f68-8ab4-a414847e06be",
+      "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+      "axis": "group",
+      "value": "syama-sastri-swarajathi-ratnatrayam",
+      "witness_id": "sahapedia-raghavan-1977",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-06",
+        "decision": "approve",
+        "note": "Approved canonical Swarajathi Ratnatrayam membership corroborated by V. Raghavan (1977, PDF p.2).",
+        "application": "apply"
+      }
+    },
+    {
+      "claim_id": "SS-0026:laya:1",
+      "subject_id": "SS-0026",
+      "canonical_id": "7c15e1c9-5c30-4f68-8ab4-a414847e06be",
+      "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+      "axis": "laya",
+      "value": "Misra Chapu",
+      "witness_id": "ma:jma-vol75-2002",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-06",
+        "decision": "approve",
+        "note": "Approved Misra Chapu laya attribution for Swarajathi Ratnatrayam corroborated by JMA Vol. LXXV (2002, PDF p.90).",
+        "application": "apply"
+      }
+    },
+    {
+      "claim_id": "SS-0026:mudra:1",
+      "subject_id": "SS-0026",
+      "canonical_id": "7c15e1c9-5c30-4f68-8ab4-a414847e06be",
+      "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+      "axis": "mudra",
+      "value": "Syama Krishna",
+      "witness_id": "blog:0bee60a87c23da5d",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-06",
+        "decision": "approve",
+        "note": "Approved Syama Krishna mudra directly attested in the fetched blog witness sahitya.",
+        "application": "apply"
+      }
+    },
+    {
+      "claim_id": "SS-0026:structure:1",
+      "subject_id": "SS-0026",
+      "canonical_id": "7c15e1c9-5c30-4f68-8ab4-a414847e06be",
+      "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+      "axis": "structure",
+      "value": "11 numbered swara-sahitya units",
+      "witness_id": "blog:0bee60a87c23da5d",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-06",
+        "decision": "approve",
+        "note": "Approved canonical Swarajathi form and numbered swara-sahitya unit count attested in the fetched witness and corroborated by V. Raghavan (1977) and JMA Vol. LXXV (2002).",
+        "application": "apply"
+      }
+    },
+    {
+      "claim_id": "SS-0032:mudra:1",
+      "subject_id": "SS-0032",
+      "canonical_id": "d14d643b-bfc5-4e39-b2c5-d4433e5be9bf",
+      "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+      "axis": "mudra",
+      "value": "Syama Krishna",
+      "witness_id": "blog:6cbf388c1b2964ff",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-06",
+        "decision": "approve",
+        "note": "Approved Syama Krishna mudra directly attested in the fetched blog witness sahitya.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-146 closure (2026-10-15): approved, but no reviewed cycle membership carries this composition, so no seed or search path applies it. Application deferred to TRACK-148."
+      }
+    },
+    {
+      "claim_id": "SS-0034:mudra:1",
+      "subject_id": "SS-0034",
+      "canonical_id": "0c251190-3cde-4d05-b584-19930220924c",
+      "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+      "axis": "mudra",
+      "value": "Syama Krishna",
+      "witness_id": "blog:73b55249270bc4e6",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-06",
+        "decision": "approve",
+        "note": "Approved Syama Krishna mudra directly attested in the fetched blog witness sahitya.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-146 closure (2026-10-15): approved, but no reviewed cycle membership carries this composition, so no seed or search path applies it. Application deferred to TRACK-148."
+      }
+    },
+    {
+      "claim_id": "SS-0046:mudra:1",
+      "subject_id": "SS-0046",
+      "canonical_id": "688daebb-ee8b-4d91-bd14-d42b9827af0d",
+      "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+      "axis": "mudra",
+      "value": "Syama Krishna",
+      "witness_id": "blog:c75725d4acfab004",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-06",
+        "decision": "approve",
+        "note": "Approved Syama Krishna mudra directly attested in the fetched blog witness sahitya.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-146 closure (2026-10-15): approved, but no reviewed cycle membership carries this composition, so no seed or search path applies it. Application deferred to TRACK-148."
+      }
+    },
+    {
+      "claim_id": "SS-0051:mudra:1",
+      "subject_id": "SS-0051",
+      "canonical_id": "348376bb-6e07-4547-8fef-a1f781072498",
+      "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+      "axis": "mudra",
+      "value": "Syama Krishna",
+      "witness_id": "blog:fdf73d9f65c34daf",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-06",
+        "decision": "approve",
+        "note": "Approved Syama Krishna mudra directly attested in the fetched blog witness sahitya.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-146 closure (2026-10-15): approved, but no reviewed cycle membership carries this composition, so no seed or search path applies it. Application deferred to TRACK-148."
+      }
+    },
+    {
+      "claim_id": "SS-0057:form:1",
+      "subject_id": "SS-0057",
+      "canonical_id": "2974996a-7cee-433f-b523-dbecbf691f68",
+      "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+      "axis": "form",
+      "value": "SWARAJATHI",
+      "witness_id": "blog:400fa0df02786ede",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-06",
+        "decision": "approve",
+        "note": "Approved canonical Swarajathi form and numbered swara-sahitya unit count attested in the fetched witness and corroborated by V. Raghavan (1977) and JMA Vol. LXXV (2002).",
+        "application": "apply"
+      }
+    },
+    {
+      "claim_id": "SS-0057:group:1",
+      "subject_id": "SS-0057",
+      "canonical_id": "2974996a-7cee-433f-b523-dbecbf691f68",
+      "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+      "axis": "group",
+      "value": "syama-sastri-swarajathi-ratnatrayam",
+      "witness_id": "sahapedia-raghavan-1977",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-06",
+        "decision": "approve",
+        "note": "Approved canonical Swarajathi Ratnatrayam membership corroborated by V. Raghavan (1977, PDF p.2).",
+        "application": "apply"
+      }
+    },
+    {
+      "claim_id": "SS-0057:mudra:1",
+      "subject_id": "SS-0057",
+      "canonical_id": "2974996a-7cee-433f-b523-dbecbf691f68",
+      "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+      "axis": "mudra",
+      "value": "Syama Krishna",
+      "witness_id": "blog:400fa0df02786ede",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-06",
+        "decision": "approve",
+        "note": "Approved Syama Krishna mudra directly attested in the fetched blog witness sahitya.",
+        "application": "apply"
+      }
+    },
+    {
+      "claim_id": "SS-0057:structure:1",
+      "subject_id": "SS-0057",
+      "canonical_id": "2974996a-7cee-433f-b523-dbecbf691f68",
+      "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+      "axis": "structure",
+      "value": "6 numbered swara-sahitya units",
+      "witness_id": "blog:400fa0df02786ede",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-06",
+        "decision": "approve",
+        "note": "Approved canonical Swarajathi form and numbered swara-sahitya unit count attested in the fetched witness and corroborated by V. Raghavan (1977) and JMA Vol. LXXV (2002).",
+        "application": "apply"
+      }
+    }
+  ]
+}

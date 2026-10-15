@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.35.0 |
-| **Last Updated** | 2026-09-30 |
+| **Version** | 1.36.0 |
+| **Last Updated** | 2026-10-15 |
 | **Author** | Sangeetha Grantha Team |
 
 # Conductor Tracks Registry
@@ -149,8 +149,9 @@
 | [TRACK-143](./tracks/TRACK-143-rasika-semantic-search.md) | Rasika Semantic Search | Completed |
 | [TRACK-144](./tracks/TRACK-144-rasika-field-feedback.md) | Rasika Field Feedback | Completed |
 | [TRACK-145](./tracks/TRACK-145-dikshitar-kshetra-musicological-metadata.md) | Dikshitar Kshetra & Musicological Metadata Enrichment | Completed |
-| [TRACK-146](./tracks/TRACK-146-syama-sastri-musicological-classification.md) | Syama Sastri Corpus Concordance & Musicological Classification | In Progress — Intent review |
-| [TRACK-147](./tracks/TRACK-147-tyagaraja-musicological-classification.md) | Tyagaraja Corpus Concordance & Musicological Classification | In Progress — Intent review |
+| [TRACK-146](./tracks/TRACK-146-syama-sastri-musicological-classification.md) | Syama Sastri Corpus Concordance & Musicological Classification | Completed |
+| [TRACK-147](./tracks/TRACK-147-tyagaraja-musicological-classification.md) | Tyagaraja Corpus Concordance & Musicological Classification | In Progress — Classification |
+| [TRACK-148](./tracks/TRACK-148-syama-sastri-edition-consultation-adjudication.md) | Syama Sastri Edition Consultation & Musicological Adjudication | Proposed |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)

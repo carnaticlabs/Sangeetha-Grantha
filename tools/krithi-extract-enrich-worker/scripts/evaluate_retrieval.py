@@ -58,7 +58,18 @@ def load_benchmarks() -> list[dict[str, Any]]:
     if not BENCHMARK_PATH.exists():
         raise FileNotFoundError(f"Benchmark file not found at {BENCHMARK_PATH}")
     with open(BENCHMARK_PATH, encoding="utf-8") as f:
-        return json.load(f)
+        items: list[dict[str, Any]] = json.load(f)
+    return [
+        item
+        for item in items
+        if not item.get("requires_human_approval")
+        or (
+            item.get("review_state") == "reviewed"
+            and isinstance(item.get("approval"), dict)
+            and item["approval"].get("decision") == "approve"
+            and all(item["approval"].get(k) for k in ("reviewer", "accepted_at", "note"))
+        )
+    ]
 
 
 def search_similar(
@@ -235,7 +246,14 @@ def search_macro_documents(
         SELECT 
             d.id,
             COALESCE(tmp.name, tg.display_name_en, '') AS title,
-            'Muthuswami Dikshitar' AS composer,
+            COALESCE(
+                substring(d.indexed_content from '\\[Composer: ([^\\]]+)\\]'),
+                CASE
+                    WHEN tg.slug LIKE 'syama-sastri-%%' THEN 'Syama Sastri'
+                    WHEN tg.slug LIKE 'tyagaraja-%%' THEN 'Tyagaraja'
+                    ELSE 'Muthuswami Dikshitar'
+                END
+            ) AS composer,
             '' AS raga,
             d.document_kind,
             d.indexed_content,
@@ -281,6 +299,7 @@ def evaluate_item(
     expected_composer = normalize_text(item.get("expected_composer"))
     expected_raga = normalize_text(item.get("expected_raga"))
     expected_kind = item.get("expected_document_kind")
+    expected_id = item.get("expected_krithi_id")
 
     for rank, res in enumerate(results, start=1):
         res_title = normalize_text(res.get("title"))
@@ -288,7 +307,7 @@ def evaluate_item(
         res_raga = normalize_text(res.get("raga"))
         res_kind = res.get("document_kind")
 
-        match = True
+        match = not expected_id or str(res.get("id")) == str(expected_id)
         if expected_title and expected_title not in res_title:
             match = False
         if expected_composer and expected_composer not in res_composer:

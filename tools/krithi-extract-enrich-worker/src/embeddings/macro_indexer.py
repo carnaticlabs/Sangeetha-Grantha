@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
+from typing import Any
 
 import psycopg
 from psycopg.rows import dict_row
@@ -21,6 +22,32 @@ logger = logging.getLogger(__name__)
 
 def md5_hash(text: str) -> str:
     return hashlib.md5(text.encode("utf-8")).hexdigest()
+
+
+def reviewed_cycle_composer(slug: str, members: list[dict[str, Any]]) -> str | None:
+    """Derive attribution from members; newly curated groups require claim approval.
+
+    Existing Dikshitar membership behavior is preserved. Empty/mixed attribution
+    and unapproved Syama Sastri groups abstain instead of generating false macros.
+    """
+    composers = {m.get("composer_name") for m in members}
+    if len(composers) != 1 or not all(composers):
+        return None
+    if slug.startswith("syama-sastri-"):
+        if composers != {"Syama Sastri"} or not members:
+            return None
+        for member in members:
+            attrs = member.get("discriminative_attributes") or {}
+            if not isinstance(attrs, dict) or attrs.get("provenance_owner") != "TRACK-146":
+                return None
+            if attrs.get("review_state") != "reviewed" or not attrs.get("claim_id"):
+                return None
+            approval = attrs.get("approval")
+            if not isinstance(approval, dict) or approval.get("decision") != "approve":
+                return None
+            if not all(approval.get(k) for k in ("reviewer", "accepted_at", "note")):
+                return None
+    return str(next(iter(composers)))
 
 
 def index_cycle_overviews(
@@ -44,7 +71,9 @@ def index_cycle_overviews(
             'pancha-bhuta-sthala',
             'tiruvarur-panchalinga',
             'shodasa-ganapati',
-            'nottusvara-sahitya'
+            'nottusvara-sahitya',
+            'syama-sastri-swarajathi-ratnatrayam',
+            'syama-sastri-navaratnamalika'
         )
         ORDER BY display_name_en
     """
@@ -68,11 +97,13 @@ def index_cycle_overviews(
                 kcm.axis_value,
                 kcm.discriminative_attributes,
                 k.title,
+                c.name AS composer_name,
                 r.name AS raga,
                 t.name AS tala,
                 k.vibhakti_case
             FROM krithi_cycle_memberships kcm
             JOIN krithis k ON kcm.krithi_id = k.id
+            JOIN composers c ON c.id = k.composer_id
             LEFT JOIN ragas r ON k.primary_raga_id = r.id
             LEFT JOIN talas t ON k.tala_id = t.id
             WHERE kcm.tag_id = %s
@@ -82,9 +113,15 @@ def index_cycle_overviews(
             cur.execute(query_members, (tag_id,))
             members = cur.fetchall()
 
+        composer = reviewed_cycle_composer(tag["slug"], members)
+        if composer is None:
+            stats["skipped"] += 1
+            logger.warning("Skipped empty, mixed-composer or unapproved cycle %s", tag["slug"])
+            continue
+
         overview_text = format_cycle_overview(
             cycle_name=name,
-            composer="Muthuswami Dikshitar",
+            composer=composer,
             description=desc,
             members=members,
         )
@@ -152,6 +189,7 @@ def index_kshetra_overviews(
     profile_id: str,
     force: bool = False,
     dry_run: bool = False,
+    composer: str | None = None,
 ) -> dict[str, int]:
     """Generates and embeds KSHETRA_OVERVIEW documents anchored to temples.id."""
     query_temples = """
@@ -178,16 +216,30 @@ def index_kshetra_overviews(
         notes = temple["notes"] or ""
 
         # Fetch kritis for this temple
-        query_kritis = """
-            SELECT k.title, r.name AS raga, t.name AS tala, k.vibhakti_case
-            FROM krithis k
-            LEFT JOIN ragas r ON k.primary_raga_id = r.id
-            LEFT JOIN talas t ON k.tala_id = t.id
-            WHERE k.temple_id = %s
-            ORDER BY k.title ASC
-        """
+        if composer:
+            query_kritis = """
+                SELECT k.title, r.name AS raga, t.name AS tala, k.vibhakti_case
+                FROM krithis k
+                JOIN composers c ON k.composer_id = c.id
+                LEFT JOIN ragas r ON k.primary_raga_id = r.id
+                LEFT JOIN talas t ON k.tala_id = t.id
+                WHERE k.temple_id = %s AND c.name = %s
+                ORDER BY k.title ASC
+            """
+            params: tuple[Any, ...] = (temple_id, composer)
+        else:
+            query_kritis = """
+                SELECT k.title, r.name AS raga, t.name AS tala, k.vibhakti_case
+                FROM krithis k
+                LEFT JOIN ragas r ON k.primary_raga_id = r.id
+                LEFT JOIN talas t ON k.tala_id = t.id
+                WHERE k.temple_id = %s
+                ORDER BY k.title ASC
+            """
+            params = (temple_id,)
+
         with conn.cursor(row_factory=dict_row) as cur:
-            cur.execute(query_kritis, (temple_id,))
+            cur.execute(query_kritis, params)
             kritis = cur.fetchall()
 
         is_gap = "kanyakumari" in name.lower() or "kanyakumari" in city.lower() or len(kritis) == 0
@@ -202,6 +254,7 @@ def index_kshetra_overviews(
             notes=notes,
             kritis=kritis,
             is_gap=is_gap,
+            composer=composer,
         )
         content_hash = md5_hash(overview_text)
 

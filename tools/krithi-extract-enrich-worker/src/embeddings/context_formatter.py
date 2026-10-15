@@ -67,6 +67,29 @@ def _clean_text(text: str) -> str:
     return "\n".join(lines)
 
 
+# Approved membership attribute keys rendered for Syama Sastri, in priority order.
+SYAMA_AXES: tuple[tuple[str, str], ...] = (
+    ("laya", "Laya"),
+    ("structure", "Structure"),
+    ("raga_character", "Raga Character"),
+    ("bhava", "Bhava"),
+    ("mudra", "Mudra"),
+)
+
+
+def _track146_approved(attrs: dict[str, Any]) -> bool:
+    """True only for membership attributes carrying an explicit human approval (TRACK-146 contract)."""
+    approval = attrs.get("approval")
+    return bool(
+        attrs.get("provenance_owner") == "TRACK-146"
+        and attrs.get("review_state") == "reviewed"
+        and attrs.get("claim_id")
+        and isinstance(approval, dict)
+        and approval.get("decision") == "approve"
+        and all(approval.get(k) for k in ("reviewer", "accepted_at", "note"))
+    )
+
+
 def _format_cycle_clause(cycle_info: dict[str, Any]) -> str | None:
     """Formats a discriminative cycle clause matching TRACK-145 specification."""
     slug = cycle_info.get("slug") or ""
@@ -74,6 +97,17 @@ def _format_cycle_clause(cycle_info: dict[str, Any]) -> str | None:
     role = cycle_info.get("role")
     axis_value = cycle_info.get("axis_value")
     attrs = cycle_info.get("attrs") or {}
+
+    if slug.startswith("syama-sastri-"):
+        if not _track146_approved(attrs):
+            return None
+        parts = [f"Cycle: {display_name}"]
+        # Composer-specific axes ride on the same approved claim (TRACK-146 shared contract).
+        for key, label in SYAMA_AXES:
+            value = attrs.get(key)
+            if isinstance(value, str) and value.strip():
+                parts.append(f"{label}: {value.strip()}")
+        return f"[{'; '.join(parts)}]"
 
     if slug == "kamalamba-navavarnam":
         if role == "CORE":
@@ -167,7 +201,7 @@ def _lakshana_headers(
         core_parts.append(f"[Grammar: {case_name}]")
 
     # Cycle clause
-    if cycle_info:
+    if cycle_info and (not str(cycle_info.get("slug", "")).startswith("syama-sastri-") or composer == "Syama Sastri"):
         clause = _format_cycle_clause(cycle_info)
         if clause:
             core_parts.append(clause)
@@ -192,7 +226,10 @@ def _lakshana_headers(
         valid_tags = [
             t.strip()
             for t in tags
-            if t and t.strip() and (not cycle_slug or cycle_slug.lower() not in t.lower().replace(" ", "-"))
+            if t
+            and t.strip()
+            and (not cycle_slug or cycle_slug.lower() not in t.lower().replace(" ", "-"))
+            and not any(name in t.casefold() for name in ("ratnatrayam", "navaratnamalika"))
         ]
         if valid_tags:
             secondary_parts.append(f"[Thematic Group / Tags: {', '.join(valid_tags[:3])}]")
@@ -354,6 +391,12 @@ def format_cycle_overview(
             attrs.append(f"Axis: {axis}")
         if case:
             attrs.append(f"Case: {case.capitalize()}")
+        disc_attrs = m.get("discriminative_attributes") or m.get("attrs") or {}
+        if isinstance(disc_attrs, dict) and _track146_approved(disc_attrs):
+            for k, label in SYAMA_AXES:
+                val = disc_attrs.get(k)
+                if isinstance(val, str) and val.strip():
+                    attrs.append(f"{label}: {val.strip()}")
         attr_str = f" [{'; '.join(attrs)}]" if attrs else ""
         body_parts.append(f"{seq}. {t} ({r}){attr_str}")
 
@@ -370,6 +413,7 @@ def format_kshetra_overview(
     notes: str | None = None,
     kritis: list[dict[str, Any]] | None = None,
     is_gap: bool = False,
+    composer: str | None = None,
 ) -> str:
     """Formats a macro KSHETRA_OVERVIEW document representing a shrine and its musical corpus."""
     header_parts = [f"[Kshetra: {temple_name.strip()} ({city.strip()})]"]
@@ -386,8 +430,9 @@ def format_kshetra_overview(
         body_parts.append(f"Sthala Background:\n{notes.strip()}")
 
     if is_gap or not kritis:
+        composer_name = composer.strip() if composer else "Muthuswami Dikshitar"
         body_parts.append(
-            "Attestation Note:\nNo Muthuswami Dikshitar compositions are attested "
+            f"Attestation Note:\nNo {composer_name} compositions are attested "
             "for this temple in the canonical repertoire."
         )
     else:

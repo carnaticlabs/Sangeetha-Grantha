@@ -74,14 +74,7 @@ WHERE lower(k.title) SIMILAR TO '%(jagadananda karaka|duduku gala|sadhincene|kan
   AND k.composer_id = (SELECT id FROM composers WHERE lower(name) LIKE '%tyagaraja%' LIMIT 1)
 ON CONFLICT (krithi_id, tag_id) DO NOTHING;
 
--- Syama Sastri Swarajathi Ratnatrayam (non-Dikshitar; retained)
-DELETE FROM krithi_tags
-WHERE tag_id = '01920000-0000-7000-8000-000000000007'::uuid;
-
-INSERT INTO krithi_tags (krithi_id, tag_id, source, confidence)
-SELECT k.id, '01920000-0000-7000-8000-000000000007'::uuid, 'canonical_cycle', 100
-FROM krithis k
-JOIN composers c ON k.composer_id = c.id
-WHERE (lower(c.name) LIKE '%syama%' OR lower(c.name) LIKE '%sastri%')
-  AND lower(k.title) SIMILAR TO '%(kamakshi anudinamu|rave hima giri|kamakshi ni pada)%'
-ON CONFLICT (krithi_id, tag_id) DO NOTHING;
+-- TRACK-146: Syama Sastri membership is curated through the approved master.
+-- Do not delete or reconstruct links by surname/title heuristics here. Existing
+-- links remain until provenance-scoped, individually approved reconciliation.
+-- Ref: application_documentation/01-requirements/features/musicological-classification-contract.md
