@@ -1,0 +1,4059 @@
+{
+  "snapshot_at": "2026-10-01",
+  "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+  "records": [
+    {
+      "id": "009e42fb-28d9-47af-a0f9-7ebda3f0985e",
+      "title": "himAcala tanaya",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Anandabhairavi",
+      "tala": "Adi",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "7ea0b1b8-f6da-4865-b4de-9afc59870315",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "385bf62e-56bb-41f5-b8f3-6193f5364758",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "1ff70899-df21-470d-a511-b311f7f64503",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "38c65309-751d-46c4-9e9f-4390e2abea19",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "b535e0cb-b1d6-49bf-a6af-23bbff8d0807",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "1951638c-76d5-47c4-84de-bcbd686942ba",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/05/syama-sastry-kriti-himachala-tanaya.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "023acc0c-047f-4288-9c2f-6d6e2380cb1a",
+      "title": "nannu brOva rAdA",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Jana Ranjani",
+      "tala": "Triputa",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "5a8edccf-a1a6-4b32-9531-6ed231715ba8",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "983c85a2-b5f0-47da-b510-cbfc6fab232c",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "8eab44d2-d06e-49dc-bc14-8ef86b1a6ac7",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "d8e2338a-53c0-48d5-8208-4f633edd0235",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "a55c27a9-6489-4658-aba8-ed9e404fe4c2",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "c3c1c87a-978e-45e6-83a4-102ec165b8bd",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/06/syama-sastry-kriti-nannu-brova-rada.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "0349441a-61cc-4c46-94b9-6cb56b3f3acd",
+      "title": "kAmAkshI nAtO",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Begada",
+      "tala": "Adi",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "b62cf8b9-4a4f-48d0-a4f0-57212e406a3c",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "66ca733d-0510-454e-9f55-abe121dec7dd",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "5ece7140-753e-4fd0-8fb7-62dfaa2aa05f",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        }
+      ],
+      "evidence": [
+        {
+          "id": "37134e83-b7fb-4f68-98f6-cffb763afb57",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/06/syama-sastry-kriti-kamakshi-nato-rage.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "076a2e58-ee7a-4eee-816a-6a233f89cab1",
+      "title": "bRhannAyakI",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Madhyamāvathi",
+      "tala": "Tisra Mathyam",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "8b473483-eb48-4226-8ecf-5736ca08df72",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "5f669ee4-b89e-4331-8f9b-dd94547b483d",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "41c2f2db-7b3f-4080-adee-281c9694891f",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "db38154f-2360-4317-aed0-7dbfbe1ef914",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "d5f8af26-2282-42b1-b17d-4df474b44905",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "4b341a88-e80a-4c51-a1e0-e02a7e67522d",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/05/syama-sastry-kriti-brhannayaki-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "09ecef79-a7c2-4ced-a175-89c9add1d967",
+      "title": "pArvati ninu",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "kalgaDa",
+      "tala": "Adi",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "f4c9bbd5-eea9-497d-83c2-6da11147bca2",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "4bdee3b8-0f22-4054-9578-625948c59922",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "196651a9-2c46-4467-8b12-4bbd98e485a1",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "475d6d92-d339-4a92-a767-5eb5ff0eabe1",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "c56d03c7-4279-4ce1-a2f0-e9918357864b",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "0b0108d3-7f43-47f8-a28f-b98f69df4cd6",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/05/syama-sastry-kriti-paravti-ninu-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "0a249616-6df6-4a39-8581-2f1cc94fb707",
+      "title": "kanaka Saila",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Punnagavarali",
+      "tala": "Adi",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "3872d7e6-c2d2-47a4-b892-a4a859c66961",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "ebce45d0-ee4e-409e-97e1-fb687d135f04",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "86f57920-481e-4ad4-b861-7213c08cd32f",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "7ef99a0f-4415-4064-8c25-53c16f084eb6",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "0b842ed5-589f-40fb-baf8-83a81bd7f871",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "6f6ec853-b4a4-448c-a32a-fb6dffc51272",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/04/syama-sastry-kriti-kanaka-saila-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "0c251190-3cde-4d05-b584-19930220924c",
+      "title": "mAyammAyani",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Āhiri",
+      "tala": "Adi",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "60c0a094-01b3-414d-95fa-7d106ff09ca3",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "7699a77f-67a3-4000-99dc-8811aa245805",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "d884d0d0-5450-4b69-909b-fde5954595d7",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "9aab103e-b736-4f94-8098-9ac88ff391f5",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "b7b8c3a0-0fe0-4fe1-aa4a-9742cc7d5e83",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "bc3cb05a-413d-484c-8724-8e34ecc1140f",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/03/syama-sastry-kriti-mayammayani-ahiri.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "12e1933d-4b44-4a1a-a733-5801978d7cf1",
+      "title": "janani nata jana",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Sāveri",
+      "tala": "Adi",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "7dd8ae05-3eea-4e9f-9712-19e1c57474b1",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "6cae9946-50ea-4597-9c1e-fce7baa026d9",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "b4a2c0c7-c1aa-4e69-a1c3-63817e255b94",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "decb5845-d712-4f74-a29a-49b41bb4d9bc",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "f6168265-6ec9-4690-b5ec-c42fa6e910d4",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "44660eaf-3315-444c-909c-a9b66efb24f7",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/04/syama-sastry-kriti-janani-nata-jana.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "196813dd-c01e-4258-98a2-b193aefe016e",
+      "title": "brOva samayamidE",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Punnagavarali",
+      "tala": "Adi",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "8dcf3040-2d8c-4284-bd42-739e997aa5f0",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "04b86dca-2d67-4718-b91a-8d651c5418d2",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "979e16ec-585c-467a-8b89-611acc8801fc",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "5075c6b4-dff2-4a39-99ea-1367c8862295",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "15647f8c-e864-4bf3-8cf4-999e94910279",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "6533f266-aa95-423a-ae66-5678745d3b0d",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/04/syama-sastry-kriti-brova-samayamide.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "1c7e43c2-e2b7-4b22-bdf3-7bf3e590e4a9",
+      "title": "mIna lOcanA",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Dhanyāsi",
+      "tala": "Capu",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "60aa4f46-1aeb-42d6-9202-fe4905a7c502",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "9da5086c-a557-4c26-a674-b2981d03f3d3",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "bb42f7c9-cf01-4606-8c70-ebb954617b89",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "d4fd2a37-e905-4d62-873b-5b2ceb98dbc4",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "3f2cc1d5-14f7-42ed-9f0d-2331ebd3c77f",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "4d40d595-ca4c-459a-b368-bc0d086b13fc",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/04/syama-sastry-kriti-meena-lochana-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "1d25d7cd-1137-4463-b585-b5eb606fc573",
+      "title": "brOvavammA tAmasamElE",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Mānji",
+      "tala": "Capu",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "39c82827-d52d-4eca-ae98-e46aff9ac4e4",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "b897f828-1649-41d6-9a69-fc90a0e6b0ce",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "2b020aaf-1c70-4519-87a2-c3251d843ca7",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "68f6951b-c13a-47fe-975c-83ab80a9fb47",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "628073fc-47bf-4704-8cc6-3917e3393d50",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "879f00a2-348b-475f-bd96-e213c38a3d62",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/05/syama-sastry-kriti-brovavamma.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "1e500a38-d798-45da-b1ca-bb35f4e23188",
+      "title": "daya jUDa",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Jaganmohini",
+      "tala": "Capu",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "505c444e-b719-4e9a-9791-c0a5409ecb4a",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "2857c74f-c44d-461e-8daa-9014b2f871d0",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "d72f7ed5-77e5-4286-be27-2d195690d5d2",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "90693b1d-bdd0-4278-885b-01fcb3d53922",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "ed719c7e-fcc0-4492-a7b4-adb6e723de56",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "8aa254e9-6673-4928-8c0f-8aaf2c0c0f4c",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/04/syama-sastry-kriti-daya-juda-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "1f85b5bf-ff9e-4b16-a15c-5c85ea938e1d",
+      "title": "sAmi ninnE",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Begada",
+      "tala": "Adi",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "935706c7-6751-4f8e-b8a0-4ab5aa16efa7",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "66992e8a-a610-41f7-9c14-e96290a9586e",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "67286cf3-8c13-4eac-88a9-d9bcca7715cb",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "0f1b787f-d495-4ab8-a1c3-384383ad3429",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "647c81b4-6a96-4dbe-a74a-444cbf7138de",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "1f7e59e2-e95b-406e-96c7-b28869cea933",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/06/syama-sastry-kriti-sami-ninne-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "22000049-4fee-45ee-979b-d44ba0090cf1",
+      "title": "karuNA nidhi ilalO",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Hanumatodi",
+      "tala": "Adi",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "c511fdb8-63b1-4bd5-8073-a8089a545245",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "69d9f1a0-d2ea-47f9-8767-6920c5d9cacb",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "eca24e23-fc04-466d-8047-0106cdfd5e13",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "933108c1-867a-4507-88f9-e8d214f5a654",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        }
+      ],
+      "evidence": [
+        {
+          "id": "634924c7-0685-4d4e-bb0f-efeae03c1239",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/03/syama-krishna-vaibhavam-syama-sastry_26.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "23d89356-781c-4392-9341-b44b5b93027c",
+      "title": "nA manavini",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "saurAshTraM",
+      "tala": "Catusra Ata",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "bcf7ee8a-8cfd-40d1-bd17-09a516524896",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "f5102e23-e38c-489f-a973-4948b3af458a",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "1fec2d70-b24e-4aa9-bea3-b1b877bc3df0",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 3
+        },
+        {
+          "id": "d11dc3f7-854b-47fc-ad93-f4da5c937a68",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 4
+        }
+      ],
+      "evidence": [
+        {
+          "id": "3649c3cb-6cd7-4b18-9cb1-6199e9f05cda",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/05/syama-sastry-kriti-naa-manavini-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "268280f4-431d-4439-ba5e-aaa39506d8d9",
+      "title": "karuNa jUDa",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Sri",
+      "tala": "Capu",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "0847226c-b027-4293-9d7f-07fbe9df71b7",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "cb76f84f-dad1-4da7-bee5-cfca072a2b0b",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "2bec573e-304e-4628-8ace-b7228c18d0b4",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "7244f9d7-683a-45ea-9981-5233a812baa3",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "c0392cfa-af22-4975-999a-4ae1096abf4c",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "cd7a7558-ce16-4e80-b56f-f2bff295d860",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/06/syama-sastry-kriti-karuna-juda-sri.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "2746f6fd-456c-40dd-8db8-00651ea7c3fc",
+      "title": "Sankari Sankari",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Mechakalyāni",
+      "tala": "Ata",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "8a6388a9-ca7a-4dd6-8da7-c8e6649e108a",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "0cc927e9-1f2b-4cf1-b081-2d34f86926a0",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "b8673449-ed6d-4909-843b-35ca81e9947b",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        }
+      ],
+      "evidence": [
+        {
+          "id": "6b0349b1-e4c8-4dfd-8e9a-1affa4c3295a",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/07/syama-sastry-kriti-sankari-sankari-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "2974996a-7cee-433f-b523-dbecbf691f68",
+      "title": "rAvE hima giri kumAri",
+      "primary_language": "en",
+      "musical_form": "SWARAJATHI",
+      "is_ragamalika": false,
+      "raga": "Hanumatodi",
+      "tala": "Adi",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "35d41b87-8403-4589-b0f4-731dec0cbb6a",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "a2ca7ac5-49ee-4ec4-9cec-028361c4de35",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 2
+        },
+        {
+          "id": "1b40c770-459e-4395-9770-ed3f07846b65",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 3
+        },
+        {
+          "id": "7d13e02a-b6c9-4bc2-93d7-dc801c0c7c3b",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 4
+        },
+        {
+          "id": "14131737-435c-4d7b-814e-1d35ba7cda41",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 5
+        },
+        {
+          "id": "0e918c87-c246-4ab8-8747-9098b20e5479",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 6
+        },
+        {
+          "id": "0a1d8828-a985-4da8-b211-73127ed6cfde",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 7
+        }
+      ],
+      "evidence": [
+        {
+          "id": "d72c1478-daff-4b50-bd9b-02364c3d48d4",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/03/syama-sastry-kriti-rave-hima-giri.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "3463c9df-013d-4604-8235-b6765e64c267",
+      "title": "Emani migula",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Hanumatodi",
+      "tala": "Adi",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "f20afaca-48aa-4f08-8b4f-2ee70ac080c1",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "7c5b4cdd-ee06-4007-a5e6-5df6c2c8fdd2",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "eb88aa67-5853-4ae9-a84e-f6ac395660ff",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "f2263ede-1f3f-4a3f-9e3a-2c25f04c9292",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "9e2aeba1-5015-427a-a16b-ad715abf33fd",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "a1f43909-abae-46d8-a753-86e9b5e1a257",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/03/syama-krishna-vaibhavam-syama-sastry.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "348376bb-6e07-4547-8fef-a1f781072498",
+      "title": "pAlincu kAmAkshi",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Madhyamāvathi",
+      "tala": "Adi",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "f349b619-3917-4a8e-abaf-b647e696c9d6",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "c072ff39-fda3-4609-aa90-d58a5e540ba1",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "d4cecbc3-2249-43ec-a4b1-241cb1cd605b",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "3fdc7661-728f-49bb-963d-759262448eb9",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "bc766610-de17-45a2-887c-273c89d2b1ed",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        },
+        {
+          "id": "a2a2836d-b9da-4dbf-b156-f83cc764dad2",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 6
+        }
+      ],
+      "evidence": [
+        {
+          "id": "fac94327-b61b-45d3-9abb-690278cdf0cf",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/06/syama-sastry-kriti-palinchu-kamakshi.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "3c33a293-cd5e-40f4-9a55-8409f88a7790",
+      "title": "birAna varAlicci",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Mechakalyāni",
+      "tala": "Rupaka",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "330cb463-073c-41ca-9631-fceb8a987a51",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "ca671dbb-dd3a-4870-8543-1a82f2e454b4",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "8e891cb0-f89e-4caa-93ab-5ca355690b6e",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "ee26306e-ae17-49eb-809b-bfd417d0953c",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "78f2ca81-353e-4353-8778-aef59be7aca3",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "066ba916-5c9a-451d-8aec-330bf417fc46",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/06/syama-sastry-kriti-birana-varalicchi.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "3c9f2aea-abcb-4b67-8fd6-a91ffe9b151a",
+      "title": "dayA nidhE",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Begada",
+      "tala": "Adi",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "2b6952d9-86f9-4a8a-a191-a4de60e0752a",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "7cdef821-e187-4bb4-b5ac-aa6273937b24",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "1d993e34-fdbe-46a4-8c0d-af3ebbb1a2af",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "4ae10048-6a7c-4e10-9b87-3faa77a7e230",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 4
+        }
+      ],
+      "evidence": [
+        {
+          "id": "0f1e3d85-718c-473b-a827-d15ab3b3d60c",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/06/syama-sastry-kriti-daya-nidhe-begada.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "41149426-0c2f-43ef-9c83-7e839a7001ef",
+      "title": "kAmAkshi bangAru",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Varāli",
+      "tala": "Capu",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "cdb18bf6-aada-42da-a777-92e4772696fa",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "b6d05bee-1854-4c59-a074-c0b6696e189a",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "46f5b1cb-65d9-46c2-84d1-6e942f6164a8",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "afa9417c-d75d-4d4b-ba55-125556242c1f",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "f1a0a878-8d6b-46bb-b460-f55795743a8d",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        },
+        {
+          "id": "83900b01-91bf-4471-a9f6-3ceeff4175de",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 6
+        }
+      ],
+      "evidence": [
+        {
+          "id": "64a49075-d13f-418c-beb6-a72a7d656513",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/06/syama-sastry-kriti-kamakshi-bangaru.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "47778a06-c335-453f-aac9-adc936c0c26d",
+      "title": "kAmAkshi karuNA",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "paraju",
+      "tala": "Triputa",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "f451710b-fdea-4aed-9f6c-cbe0d6ce0b26",
+          "type": "OTHER",
+          "label": "Unknown",
+          "order": 1
+        }
+      ],
+      "evidence": [
+        {
+          "id": "3d638171-1336-42be-b036-e08bffc76f81",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/04/syama-sastry-kriti-kamakshi-karuna-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "4be09c30-9cad-4a43-b9bc-fcb894ea94a8",
+      "title": "trilOka mAtA",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "paraju",
+      "tala": "Capu",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "63e8cf0b-3e6d-4c4c-a044-809b6efcbae3",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "bff78dc5-bd1f-4597-b77c-6902da45913d",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "27ba0507-f25a-4c55-8142-4a4450dbce5d",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "5500d2d9-2425-4e57-8705-86c31071b166",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "2c9e11e3-810c-4357-8c67-000dce87d91f",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "994089d2-6330-4f5e-9044-dde27f847eb4",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/04/syama-sastry-kriti-tri-loka-mata-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "4f7f103e-22d8-4d31-9b25-8da5ac36a83e",
+      "title": "parAkEla",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "kEdAra gauLa",
+      "tala": "Adi",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "dfae469c-88d6-47d9-a920-243104eeb714",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "ef484195-0469-4622-b493-1d4000631c94",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "7d84ba7d-d57c-4758-84d0-e884bea1d121",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        }
+      ],
+      "evidence": [
+        {
+          "id": "09a9ea81-28e0-459d-989d-1524119df5d3",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/06/syama-sastry-kriti-paraakela-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "521af0a6-8117-46ab-a1c1-91248282106e",
+      "title": "pAlayASu mAM",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Ārabhi",
+      "tala": "Triputa",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "2fc8740e-c0e5-450e-9509-7cd95fb5f3c0",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "577d155a-0a08-40ec-b29e-c4bc2e9225ea",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "2ccc9dac-e2dd-4f64-b87e-d092c68628f0",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "8a88c36d-7bed-4d12-9ed4-c106e1db1975",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        }
+      ],
+      "evidence": [
+        {
+          "id": "37066a31-e8e3-49cf-8f5b-6d24b92d3b4a",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/06/syama-sastry-kriti-paalayaasu-mam-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "573c5703-4b15-4d51-9be0-baebc82c3dcc",
+      "title": "nIlAyatAkshi",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "paraju",
+      "tala": "Triputa",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "9c087327-375b-4aa9-b568-9cabc2a2283e",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "e7bfc196-b7a1-442f-8034-186161b3616f",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "5e7def4b-41de-4470-a590-ec70daf32cf3",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "ebf91e47-5c13-4ee8-a00c-5131b86facd9",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "faedc507-71e2-4fea-9d49-7ec644e9a42e",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "5177b39e-ca67-4f77-9b6d-b600ba1f7f4d",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/04/syama-sastry-kriti-nilayatakshi-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "60aa1036-9063-41b0-bdf6-dd049d2fc620",
+      "title": "dEvI mIna nEtrI",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "SankarAbharaNaM",
+      "tala": "Adi",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "75395c93-0c05-4f36-b461-47a2408d3d9f",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "ea44e7c6-c1c2-4b4f-bf7c-36032b74bdb4",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "03c5e8cc-5246-47ca-aca6-08bfa6424fab",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "4a40409b-56c7-454f-92ac-f09caa90ef89",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "df52ff89-c330-4f47-9db7-5f1471cad9e4",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "2f62b57c-5a0d-4e4c-9329-3c6bf2f4a26b",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/06/syama-sastry-kriti-devi-meena-netri.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "63b6c905-8a50-433f-8310-20a60158fd9e",
+      "title": "nannu brOvu",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Lalitā",
+      "tala": "Capu",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "5039075b-92c0-4efe-b955-2bcb43ee7bd5",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "eb1fc531-8de6-45f1-bf09-7fb8b09229d9",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "299277ec-b1f9-46a1-8824-c08e4f9403dc",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "57b76328-5dee-408e-95fe-aa077a23d782",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "c2628573-c6d8-42ae-99d3-b34cf397633d",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        },
+        {
+          "id": "08b6abce-73c5-41ae-b989-e96543a44c51",
+          "type": "CHARANAM",
+          "label": "Charanam 4",
+          "order": 6
+        }
+      ],
+      "evidence": [
+        {
+          "id": "d90248f2-c22e-4839-960d-7c6df7af281d",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/04/syama-sastry-kriti-nannu-brovu-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "648b68d8-298b-4ae9-b35b-616600d73e90",
+      "title": "talli ninnu",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Mechakalyāni",
+      "tala": "Misra Capu",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "21bc0e42-eb26-4e84-bd4d-12e89655d50e",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "12ec97e2-713d-4041-bca3-e9ce64b5b483",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "0cc30c1e-776d-4425-b3fd-23b79fdd874c",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "3b6238b1-e1e3-4db9-84d2-ebe3dd330243",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "8c363d2d-b65d-4da9-af2f-4a8fba237dd4",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "b65dc322-4e6b-4b4f-b848-1f7f7494fab4",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/07/syama-sastry-kriti-talli-ninnu-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "66e23087-a16d-4a00-b27b-4320cb53c4b9",
+      "title": "ninnu vinAga",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Poorvi Kalyāni",
+      "tala": "Capu",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "8e00a808-8dde-4b16-b10c-bd85a3a2d2d5",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "af16a7a4-cfba-4864-9435-8d38a72aa1b5",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "df668962-ce8d-41c5-8be5-ba9e1e425fb6",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "99db57ec-d0c4-4534-9600-afd06e34b847",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "c5d4eef8-a08f-408e-a60d-c215f3061494",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "d6ff9889-d17c-4e64-882a-10148e14b666",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/06/syama-sastry-kriti-ninnu-vinaga-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "670f6134-6de3-4a01-8619-c8da56a47f3a",
+      "title": "akhilANDESvarI",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Karnātaka Kāpi",
+      "tala": "Adi",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "1bdca0c8-9688-4dcc-972a-ae119212137c",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "a2f04ec2-2449-46ec-bc38-928104fbf8fb",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "633b61f7-7ba9-49dc-8523-d111b9cf48dd",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "9d4bb83f-d185-46d2-ad20-5cc4fec1235e",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "18ea06c1-0b51-4ffd-9b86-0c13aeda65c5",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "a37da09f-1232-439b-b457-39195ad76998",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/06/syama-sastry-kriti-akhilandesvari-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "688daebb-ee8b-4d91-bd14-d42b9827af0d",
+      "title": "O jagadambA",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Anandabhairavi",
+      "tala": "Adi",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "4964d8c8-af4f-4aa8-ac5a-dce06d696985",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "10af9f3a-38a6-490d-8372-d4abc699b52a",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "49053cd9-7ee2-4527-9a69-c9814cb3432e",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "ed7cc8ad-1ef3-42d9-8d14-0e3cedfe09ef",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "102ea02e-bc4c-4e23-8fac-62148d2dca0c",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        },
+        {
+          "id": "50edd685-2962-4961-bc14-879ad524aefc",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 6
+        }
+      ],
+      "evidence": [
+        {
+          "id": "aa811a31-3b3c-4daa-bb37-8c6cd9c0cc07",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/05/syama-sastry-kriti-o-jagadamba-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "68d196a0-9c34-41db-8b15-e91800f2cd79",
+      "title": "himAdri sutE",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Mechakalyāni",
+      "tala": "Rupaka",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "58a1c9c9-b13c-4b04-b20e-a1c2079d35b1",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "ef730e77-2796-475a-9aaf-2d5cb9a96fe7",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "5a3dc4cf-7ee6-443f-9875-1c3785b2b2b3",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "23b8eb10-b00e-480a-8bb4-cb50767a5cf5",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "677181ec-9da4-431c-9044-9f1c4e49eeb5",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "81f03a99-5697-4786-a93f-0cc886f67731",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/07/syama-sastry-kriti-himadri-sute-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "68fd82df-a2ae-4601-950b-f5c00bbaf4cd",
+      "title": "kAmAkshi lOka sAkshiNI",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Madhyamāvathi",
+      "tala": "Triputa",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "6219541d-e3bc-4d3e-84fb-19427833ea06",
+          "type": "OTHER",
+          "label": "Unknown",
+          "order": 1
+        }
+      ],
+      "evidence": [
+        {
+          "id": "cb757778-91ad-4a84-bc49-2d86d48af098",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/05/syama-sastry-kriti-kamakshi-loka.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "69f8d57f-83c4-4e55-aa3a-a993cc0fae98",
+      "title": "ninnu vinA mari",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Reethigowla",
+      "tala": "Rupaka",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "dcdf80ed-d8e6-403c-a88a-8480e8fecc68",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "d2d7c33b-f3bf-4eab-8241-4e032ac99e7d",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "a975fe9a-4bba-4adb-b9bd-0f8696433f75",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "328c6bc4-8569-4901-9ef9-3eacb51c2aba",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "bf527ea7-200c-48de-9175-4206cbfee7a2",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "9533fd61-2643-436a-8540-27298ffa8a65",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/06/syama-sastry-kriti-ninnu-vina-mari.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "6a46cdb8-b92e-4c64-b30a-0e73daebb045",
+      "title": "ninnE nammiti",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "kEdAra gauLa",
+      "tala": "Adi",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "50bc245b-12b9-4628-93f5-684a88129b93",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "076f7c0e-df16-4c26-85e1-3b6ec45fcb64",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "626e009c-24c0-4d58-95b9-95450bc129cb",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        }
+      ],
+      "evidence": [
+        {
+          "id": "ee5157f7-50d2-45d1-bf51-974aad0b8714",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/06/syama-sastry-kriti-ninne-nammiti-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "6a60e471-6471-4e6b-a5c0-7db15a139109",
+      "title": "ninnE namminAnu",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Hanumatodi",
+      "tala": "Capu",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "54ed59ff-9d04-4526-a574-8123b98b35ab",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "a2a9ad95-2e2b-426e-ac16-f8db266c439b",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "13b5537c-9aab-40ec-a7f6-2bfd990bc7b0",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "47814e5c-6412-4c41-a5e8-6d2d60128389",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "538ba14c-909f-4da4-a46f-6a2a76d6ae77",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        },
+        {
+          "id": "7102abb5-e515-4067-83b6-679baa638219",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 6
+        }
+      ],
+      "evidence": [
+        {
+          "id": "34495e1b-1178-491f-9a6e-b1e07ba2640f",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/03/syama-sastry-kriti-ninne-namminanu-todi.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "6b81b280-71fa-46cf-8dfd-261dca578466",
+      "title": "parAmukham",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Mechakalyāni",
+      "tala": "Triputa",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "40105969-2ee1-4c94-aef1-348b4028a87e",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "4bec75a0-f972-46f6-afa1-c82c1472047d",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "fd2fed02-01da-466e-90e1-1887f6d62fa7",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "08a190ec-c4a4-4cba-92d1-1b5ce776167f",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "6fa64061-2bf5-476c-9430-6225f3735952",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "01a0d60e-f7e2-76ac-b600-ee1a6d32a85a",
+          "url": "https://syamakrishnavaibhavam.blogspot.com/2011/07/syama-sastry-kriti-paraamukham-raga.html",
+          "fields": [
+            "tala"
+          ],
+          "checksum": "67bec861964302b2f9e2df45ba29b3085ebe9f5c06c555081f89c2ff0fd9b7e9"
+        },
+        {
+          "id": "918b869e-8a67-4f09-9274-1b7cbc12db7c",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/07/syama-sastry-kriti-paraamukham-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "6b888365-7a66-46f6-9164-42123e9115f1",
+      "title": "pura hara jAyE",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "gauLipantu",
+      "tala": "Capu",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "ebd0dcf3-ae8c-4172-9666-27822f38e63d",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "f3aa432d-4cdc-46d8-87ab-739ada738c67",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "f47813c1-7bea-49a9-9ea1-c480f82e6422",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "68bd1360-6ffe-459e-b5be-f5bdab688878",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "9cb150f3-af6b-4236-a8ca-3ab3b5b02a90",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "f50c887e-4094-4326-83ff-e7ddd4988b19",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/04/syama-sastry-kriti-pura-hara-jaaye-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "6c0c797e-04e2-4645-bfac-374144dc39f3",
+      "title": "rAvE parvata rAja",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Mechakalyāni",
+      "tala": "Jhampa",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "8745f9b7-5204-48d9-b6e3-79e25461f926",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "6e2a27c0-54dd-40f0-b4f1-84c1c0669faa",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "f3cbf5e0-170d-4db0-a0a2-57af714363ce",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "c1f20a95-cf9e-4067-8c44-de75d6503f74",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        }
+      ],
+      "evidence": [
+        {
+          "id": "ab987423-2578-438a-a75a-7382ca52fcc0",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/07/syama-sastry-kriti-raave-parvata-raja.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "6ee2d1cb-2231-4dd9-a107-abda8b323e82",
+      "title": "dEvI nannu",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Mechakalyāni",
+      "tala": "Jhampa",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "970fb95f-5b54-4049-9085-a8d38e9d18eb",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "a295bdc7-85d0-408b-adc5-18e45fe00d0c",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "a1702bf8-46ea-4cd2-98ec-734e64c8014a",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "b3df840d-18a1-4508-aaeb-19e991cd03a7",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "7c7e854b-0191-4dc8-b728-e49b178148b8",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "bd813292-fe22-435c-87fa-abe81f2348c7",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/07/syama-sastry-kriti-devi-nannu-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "739e4b50-f918-48df-b4f8-d1ac1f59c565",
+      "title": "nanu brOva rAdA",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "gauLipantu",
+      "tala": "Capu",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "0e7c4233-8fdd-4e63-a27c-50e39856c8c7",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "68db3c53-23e6-4c5f-847d-4695ef1becfb",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "93a1ff05-f878-474c-9654-b4acc9a480c2",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "d83d3fa3-f857-4918-8c1c-1f8e25c68813",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "2173f070-67b1-4636-8e2e-53fc971c7cc0",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "7872cc03-feb2-4c74-8881-a822a9a303a9",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/04/syama-sastry-kriti-nanu-brova-rada-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "74f46a92-2be6-4376-813b-e9b2f70113af",
+      "title": "dEvI brOva",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Chintāmani",
+      "tala": "Adi",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "fc6b5cff-eb4d-44e6-9046-d30d184f1cc9",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "3f02ba82-693b-40f4-8cec-b7f133576a0b",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 2
+        },
+        {
+          "id": "61d9a8f7-08c1-476b-a4ae-244539e0b1e7",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 3
+        },
+        {
+          "id": "da3411a4-12cf-4142-9fb7-4a2af7536082",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 4
+        }
+      ],
+      "evidence": [
+        {
+          "id": "b704845a-6860-4234-9129-032671872fb6",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/06/syama-sastry-kriti-devi-brova-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "7c15e1c9-5c30-4f68-8ab4-a414847e06be",
+      "title": "kAmAkshi nI pada",
+      "primary_language": "en",
+      "musical_form": "SWARAJATHI",
+      "is_ragamalika": false,
+      "raga": "Yadukula Kāmbhoji",
+      "tala": "Capu",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "70469761-0c41-4f4e-a0d1-1d66f59a6ec8",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "c7063d1d-fd65-4cde-bca6-dc8b53b654b5",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 2
+        },
+        {
+          "id": "b5ff7b90-ed41-46b5-8ba5-e09e17233e59",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 3
+        },
+        {
+          "id": "c1183ba1-65fa-4ce8-a0f9-743f0afb33f7",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 4
+        },
+        {
+          "id": "bfae7d8c-81ee-4464-9599-42a618721611",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 5
+        },
+        {
+          "id": "10fe89e5-9a37-4e0e-9033-f91d2b28101e",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 6
+        },
+        {
+          "id": "14807667-569e-440a-9b95-7bc1f0e68185",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 7
+        },
+        {
+          "id": "88d38edb-953f-4ffb-976a-8a489cb27bfe",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 8
+        },
+        {
+          "id": "c8b0d17b-ee83-4e02-b5f5-2542f94f2b60",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 9
+        },
+        {
+          "id": "16485acc-7109-4a0d-8d14-98cba275b954",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 10
+        },
+        {
+          "id": "be6ce4f3-5e8b-45c1-b2e4-386bb36b906c",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 11
+        },
+        {
+          "id": "59494e28-7a78-4a39-83fb-222d0ae204ec",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 12
+        }
+      ],
+      "evidence": [
+        {
+          "id": "35c22f6d-4282-4196-9aef-8f0696e7eff7",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/06/syama-sastry-kriti-kamakshi-ni-pada.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "7d87f95d-9afa-48f4-ab06-f4becc750342",
+      "title": "santatam ennai",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "paraju",
+      "tala": "Adi",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "f2425af4-408c-4238-b9ff-88f8ccc5d8b7",
+          "type": "OTHER",
+          "label": "Unknown",
+          "order": 1
+        }
+      ],
+      "evidence": [
+        {
+          "id": "4c5482d3-96e3-406e-aadd-f90b3a930bac",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/04/syama-sastry-kriti-santatam-ennai.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "8eb018ff-052c-4a6f-8d79-feca4b3820f5",
+      "title": "nIvE gatiyani",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Mechakalyāni",
+      "tala": "Tisra Mathyam",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "4f3691fc-9045-4365-a889-796724d90814",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "d799e7d4-e3d7-418f-93d6-30a2063e44d8",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "f4f954f3-79a2-4ae9-bbde-4a2520f00ba3",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        }
+      ],
+      "evidence": [
+        {
+          "id": "fd38222b-c4f3-4567-ac8b-d53412454c89",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/07/syama-sastry-kriti-nive-gatiyani-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "9d727a40-2221-41f2-a470-99b94bef3aa3",
+      "title": "pAlimpavammA",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Mukhāri",
+      "tala": "Adi",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "74394978-c095-4087-b451-47b6bb0426ce",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "de335adb-6994-4379-b212-5e17d7839be1",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "3938831f-2901-4916-a492-913c0d8fa21d",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "ee34ab21-ea0f-482e-8852-99e93c727a9b",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        }
+      ],
+      "evidence": [
+        {
+          "id": "fe582248-5631-4ddf-a68d-01e472fc06cc",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/05/syama-sastry-kriti-palimpavamma-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "9e9ea14b-2e34-4fe8-a6cf-afcfb84dc2f3",
+      "title": "brOvavammA",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Neelāmbari",
+      "tala": "Capu",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "0ad1b7c9-6a55-4e32-8589-49258cf6a3e0",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "d797620e-ee0b-40fe-a272-f685df7d7cf5",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "4aa12c81-db85-4f6c-bf5b-e111e7e02acf",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        }
+      ],
+      "evidence": [
+        {
+          "id": "f3996d9d-1d8f-4a49-969a-0248f753ffa3",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/06/syama-sastry-kriti-brovavamma-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "9fbf271d-70da-4391-bbbe-288ad73d52b1",
+      "title": "Sankari SaMkuru",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Sāveri",
+      "tala": "Adi",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "d331e44e-7787-4c07-94a5-f23e2b9d4a16",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "9e145e1a-c0c6-4e16-80d4-5095ffed1cdd",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "e1c6311f-f1ef-4113-a21a-028859fd0570",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "831f3489-0642-4de4-97fc-843a5babb062",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "63a5b6b8-f92e-4f8f-b231-2c4ada7b60dd",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "5357aedd-78e7-4156-b01f-e890d2a8f9c8",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/04/syama-sastry-kriti-sankari-samkuru-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "a2cd4e72-8fbc-4352-ba9f-ffcb306e2a69",
+      "title": "ennEramum un pAda",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Punnagavarali",
+      "tala": "Triputa",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "fb85d1d7-8d50-4d95-9dc6-386020ed95a7",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "eeef79e1-814c-47c5-96b1-c3d4599697d0",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "64572262-2561-4000-a854-a1c7996764bc",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "46d7fc38-73e5-4573-8e50-b596b9219a74",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "94c4c6a6-2eab-4e30-9ed4-573cd00856da",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        },
+        {
+          "id": "8b4dc2d3-2a79-4d98-abb9-9d83a902e7d9",
+          "type": "CHARANAM",
+          "label": "Charanam 4",
+          "order": 6
+        }
+      ],
+      "evidence": [
+        {
+          "id": "bdd854e6-fac1-4ef1-ada5-39ac45246030",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/04/syama-sastry-kriti-enneramum-un-pada.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "a6082c81-0e7e-4b7d-9e0f-568698b1f2cb",
+      "title": "taruNamidammA",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "gauLipantu",
+      "tala": "Adi",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "524feacc-7e5c-4d97-8125-c6836ae4e546",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "d7de9e54-91c0-4516-956c-c66c7ac83957",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "7a89b493-2a91-462f-bca4-db04a9142c09",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "1d78a5e4-4226-45a2-bc35-3e299220f9a3",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "38906b89-de00-4aa0-829e-3c8f6cc4106e",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "92157b9c-b748-4d7c-9bdd-02a5f4dff70f",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/04/syama-sastry-kriti-tarunam-idamma-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "a7f08d79-c261-48f9-a1dc-0b4b83085c90",
+      "title": "mAyammA nannu",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "nATa kuranji",
+      "tala": "Adi",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "f3fb2105-82dd-4c0a-8f74-424389a17215",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "18396519-5f08-4483-9aae-3b283f12bea3",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "84e9cafb-7afe-48f3-a643-b1b30bebd53e",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "8e3671f2-8c6a-477b-8bb3-8176b3ce102a",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 4
+        }
+      ],
+      "evidence": [
+        {
+          "id": "81b4d2c1-947d-4ba8-8042-7be5035ceefe",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/06/syama-sastry-kriti-mayamma-nannu-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "b1f06cf0-96ed-4b99-9f90-9de28a029b7d",
+      "title": "sarOja daLa nEtri",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "SankarAbharaNaM",
+      "tala": "Adi",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "aca84e05-3464-4dbd-ae6e-0bd5a5eecbb9",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "bdca4c95-465c-4dcc-9f2d-7b48276f3943",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "91ec9631-baec-4d1d-b2e2-cda1638fce6a",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "f0b056ea-274d-4d5a-b9e6-58ac58306e43",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "201a7469-e265-4c9b-91c0-00967cedebee",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "db6e7c00-5c7b-4559-832e-c18b53789423",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/06/syama-sastry-kriti-saroja-dala-netri.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "b3c61e5e-d1b4-442b-beee-e4be010b87bf",
+      "title": "pAhi SrI giri rAja",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Anandabhairavi",
+      "tala": "Rupaka",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "8dd24422-a8ab-407e-b3fe-b34d593a7cd2",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "dd91b9dc-507a-466f-ba5f-5eb84b5d8ee0",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "f99e931f-e5ed-46f7-90ce-31868c7020bc",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "f0e52a53-22ca-4c35-9281-992bd91580f7",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "1dc37060-7142-4711-83d5-9838a3c07fa2",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "22adb5b3-9873-409a-80e8-b1344564c33f",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/05/syama-sastry-kriti-pahi-sri-giri-raja.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "b79a0ba6-693f-44eb-af57-f996f688214a",
+      "title": "A dinamuninci",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Anandabhairavi",
+      "tala": "Triputa",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "079e1768-48f3-46b7-8ebc-03d55063a2c4",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "aaef3b9c-6c30-4c40-9881-a3b47f1490f4",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "5b2bc58b-d9c6-4b0f-bb3c-e6edd6f33454",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        }
+      ],
+      "evidence": [
+        {
+          "id": "e4e5d6fa-1a1f-4033-ac2f-4f9e214ec38c",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/05/syama-sastry-kriti-dinamuninchi-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "beea22de-739d-4f20-84df-16e17f41df53",
+      "title": "SrIpati Mukha",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Sāveri",
+      "tala": "Adi",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "0c6e8db5-39ab-47d0-a94d-6e7f2121a9b5",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "85a99910-f224-40ee-ad55-e380563c89b7",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "465ae78b-ad32-4588-bc6c-79f60b4c35a1",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "21d0c112-51cd-4f32-a351-c0353ff84a09",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "44023d18-4b49-431c-8aec-79e03b68a0e1",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "d137f61f-d771-4bd2-9979-25894e2f83f3",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/04/syama-sastry-kriti-sripati-mukha-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "bf85c52d-b996-4d44-8382-a050cd452c5d",
+      "title": "mahilO ambA",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Anandabhairavi",
+      "tala": "Adi",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "94915aeb-3932-43a9-8ed1-6e1e4efa8b2e",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "496c9644-7d76-4d4d-ae35-c005898d6af4",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "ff225676-2c26-4abb-8f99-f441b15df248",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "7c0f8233-9552-4d6c-8c88-fdea18970c11",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "1f6252a3-d73b-45f0-89d7-736aba60eb8a",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "3b87c54b-22ae-4f7c-a4c4-f4a683cc3b19",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/05/syama-sastry-kriti-mahilo-amba-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "c205a192-f29e-47de-b652-3fdc395f3bee",
+      "title": "durusugA",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Sāveri",
+      "tala": "Adi",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "3b6d83a3-8438-48b4-8eab-2e1f1b7875a9",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "b8e54db3-44a8-43e5-86db-c31115fd9b02",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "5395a238-4698-4556-a6a1-9e61b95d0d8e",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "193299a4-35ed-4a59-8b6e-55427e3c1ac2",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "31c7b951-08be-4384-a6d8-b54a27fa1569",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "4127c35c-239a-49bd-a119-2282f3d56e6a",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/04/syama-sastry-kriti-durusuga-raga-saveri.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "cf983d2a-154e-4903-9670-6ea1a1172149",
+      "title": "karuNa jUDavammA",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Varāli",
+      "tala": "Capu",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "0b43adbe-4610-45f7-8f19-e81b14dad35d",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "58a67c2a-b2d3-4730-a656-8975cd2953d6",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "ec75f3ad-596d-4758-aa1e-3646f70dea6f",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "037f09ba-8f35-4f25-8692-2e29d96f6179",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "1d47cfed-de7f-41b8-9e6b-2c4f27cefb8d",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        },
+        {
+          "id": "9aa8f9f2-6847-4075-b367-c40947621b15",
+          "type": "CHARANAM",
+          "label": "Charanam 4",
+          "order": 6
+        }
+      ],
+      "evidence": [
+        {
+          "id": "418100c8-ce19-4bea-9c33-81e5a2163be6",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/06/syama-sastry-kriti-karuna-judavamma.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        },
+        {
+          "id": "a0aea564-4307-409b-bcc2-a61fd184fb8f",
+          "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/11/thyagaraja-kriti-karuna-judavamma-raga.html",
+          "fields": [
+            "title",
+            "raga",
+            "tala",
+            "composer",
+            "sections",
+            "lyrics_en",
+            "lyrics_sa",
+            "lyrics_ta",
+            "lyrics_te",
+            "lyrics_kn",
+            "lyrics_ml"
+          ],
+          "checksum": "d71bcf8e08d52b2d9ebf51588053b4822aaed41a5707b3d15035fb7b197bb247"
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "d14d643b-bfc5-4e39-b2c5-d4433e5be9bf",
+      "title": "mari vErE gati",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Anandabhairavi",
+      "tala": "Capu",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "4f772035-99e8-40e4-903f-ba692b9b1632",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "3b61e390-6b36-4147-898a-26821f94c846",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "9e20ac8c-9e23-46fa-b264-8947af732a09",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "d014f50d-0f21-48a3-986a-775ac9d7e210",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "1a1562ab-4869-4eff-bdd1-83942d1593e9",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        },
+        {
+          "id": "5d33aadf-f8ca-468f-8c6f-42ee22b6bd6b",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 6
+        }
+      ],
+      "evidence": [
+        {
+          "id": "cc009c96-18d7-48c0-b612-b8d35585ac9c",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/05/syama-sastry-kriti-mari-vere-gati-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "d292a5d8-8b3b-480b-bd16-d514d970f56c",
+      "title": "dEvI nI pada",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Kāmbhoji",
+      "tala": "Adi",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "415abc0f-ec64-469d-827c-111f7c820b81",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "47866878-a97d-4f41-b551-ca8faa8d3ec3",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "4a7b691a-aa1d-4217-a73e-3f82e8ba54de",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "6d2950b3-e299-407c-900d-4d6f9b02834e",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "fc8522f9-ace0-484d-bf0e-de49829ffd1a",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "97a2b605-1ef5-419b-9de1-11a8e9516d2f",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/06/syama-sastry-kriti-devi-ni-pada-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "d6199fcc-bf2d-4535-b033-f1f1368e7a37",
+      "title": "pArvati janani",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Bhairavi",
+      "tala": "Khanda Mathya",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "151ba859-881f-4f83-8709-edc8b4f53d93",
+          "type": "OTHER",
+          "label": "Unknown",
+          "order": 1
+        }
+      ],
+      "evidence": [
+        {
+          "id": "5bd0b464-0e5a-4dc2-923f-ef78497c7b25",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/05/syama-sastry-kriti-parvati-janani-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "da4c5a52-d827-47da-bc1e-7a42c33c4893",
+      "title": "ennEramum un nAma",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Poorvi Kalyāni",
+      "tala": "Capu",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "be0a90bf-3350-496d-a731-b500a2f7bc93",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "c8216268-d41b-434b-a6c8-8f8eb198820e",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "4e993f7a-45f8-4542-b546-f1560661eb53",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "ceab955e-fa00-42f1-ac37-41f9b4017ad4",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        }
+      ],
+      "evidence": [
+        {
+          "id": "29c78a61-48fd-4b97-8594-667b31a843eb",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/06/syama-sastry-kriti-enneramum-un-nama.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "ec19dd1e-c0b1-444b-8a49-d61dc3915dca",
+      "title": "sArasAkshi",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Sāveri",
+      "tala": "Triputa",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "50726d9a-9fe5-4c4b-bc10-da1d6222e8c1",
+          "type": "OTHER",
+          "label": "Unknown",
+          "order": 1
+        }
+      ],
+      "evidence": [
+        {
+          "id": "748b5e8d-596f-4fcd-8d78-d28621af60b9",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/04/syama-sastry-kriti-saarasaakshi-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "ed01af31-6aed-4f81-8d25-27acc81f7100",
+      "title": "sariyevarammA",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Bhairavi",
+      "tala": "Khanda Jhampa",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "ef2b205e-8a4b-4e37-ad25-41db687f8df0",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "a64bda3f-202c-4ce5-9b5d-930c4ad789b6",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "0ffe01be-0aab-4e19-85c6-a9d102631457",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "03820a64-c375-48f3-9f0b-61a58f2a3b63",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "913ff2ce-89a4-46a2-85cd-3f2eef9cf72d",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        },
+        {
+          "id": "69bd5a34-3460-4271-9158-5b6b16315ec1",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 6
+        }
+      ],
+      "evidence": [
+        {
+          "id": "02e1725e-bf01-4128-ad1c-179f0a70d56b",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/05/syama-sastry-kriti-sariyevaramma-raga_24.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "f5a415fd-b4ed-4394-ae0b-6f89cacb4fca",
+      "title": "(ambA) kAmAkshi anudinamu",
+      "primary_language": "en",
+      "musical_form": "SWARAJATHI",
+      "is_ragamalika": false,
+      "raga": "Bhairavi",
+      "tala": "Capu",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "b3a8c5d5-d7a9-4b65-8e58-eb154575dbd3",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "b2e9b017-bf68-4c53-ab2f-ed7864692a7b",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 2
+        },
+        {
+          "id": "36080e28-f143-4272-a64a-0baad0ccf95a",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 3
+        },
+        {
+          "id": "8f9e9e6e-2225-4709-a861-9664cf35804f",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 4
+        },
+        {
+          "id": "77c5d2bb-3e37-412f-8c5b-b96407330296",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 5
+        },
+        {
+          "id": "d94aaa4d-8b5d-40cd-a193-09093abf83b4",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 6
+        },
+        {
+          "id": "0a6721b5-9853-4df6-b1c4-6f7600705bdb",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 7
+        },
+        {
+          "id": "ad05993f-021c-49d2-b2a0-b2d9b401514b",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 8
+        },
+        {
+          "id": "c00e08c8-3c3a-4166-b158-2368ca29404a",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 9
+        }
+      ],
+      "evidence": [
+        {
+          "id": "3d174905-137b-441a-9415-ca009f887633",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/05/syama-sastry-kriti-kamakshi-anudinamu.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "f70f0e00-f4a9-47a4-90a8-bd9c301928bc",
+      "title": "SrI kAmAkshI",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Mechakalyāni",
+      "tala": "Adi",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "9631cadc-8f02-46f7-8428-f48d4d543a8b",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "d7898d55-d381-49c9-aae5-6f4ad8c8f5e2",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "df99c7f2-0b17-4129-8506-0cb2716a5323",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "8f97fdc2-8c91-4bf3-9e96-337502904ac9",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "6e0e8cd9-9aef-4f01-8df3-6bf9d6d12af7",
+          "type": "SWARA_SAHITYA",
+          "label": "Swara Sahitya",
+          "order": 5
+        }
+      ],
+      "evidence": [
+        {
+          "id": "a62b8ea1-89ec-43d8-a5b0-088536f52ad6",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/07/syama-sastry-kriti-sri-kamakshi-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    },
+    {
+      "id": "fa0be9c6-5177-4718-9016-de912c11c54f",
+      "title": "pAhi mAM",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "is_ragamalika": false,
+      "raga": "Nāṭṭai",
+      "tala": "Rupaka",
+      "deity_id": null,
+      "temple_id": null,
+      "sections": [
+        {
+          "id": "e76ed580-a5a6-4ab1-ac0c-13f3fbd3f7e9",
+          "type": "PALLAVI",
+          "label": "Pallavi",
+          "order": 1
+        },
+        {
+          "id": "de202880-72a5-4e12-b152-e1a95b55adc4",
+          "type": "ANUPALLAVI",
+          "label": "Anupallavi",
+          "order": 2
+        },
+        {
+          "id": "571b7db4-2cc6-48fd-be44-7ff50204b293",
+          "type": "CHARANAM",
+          "label": "Charanam",
+          "order": 3
+        },
+        {
+          "id": "6bd4e977-4188-4a88-88a2-8f9ff174b770",
+          "type": "CHARANAM",
+          "label": "Charanam 2",
+          "order": 4
+        },
+        {
+          "id": "256da729-70ca-4a7a-a020-e3ff5b9c9ed0",
+          "type": "CHARANAM",
+          "label": "Charanam 3",
+          "order": 5
+        },
+        {
+          "id": "b8f6e1bf-37d2-45c6-aa8f-ebec0c864e50",
+          "type": "CHARANAM",
+          "label": "Charanam 4",
+          "order": 6
+        }
+      ],
+      "evidence": [
+        {
+          "id": "12faaac2-03f0-41b8-b809-0c5c28e92749",
+          "url": "http://syamakrishnavaibhavam.blogspot.com/2011/06/syama-sastry-kriti-paahi-mam-nata-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": null
+        }
+      ],
+      "raga_rows": "1",
+      "lyric_variants": "6",
+      "notation_variants": "0"
+    }
+  ],
+  "legacy_group_links": [
+    {
+      "krithi_id": "f5a415fd-b4ed-4394-ae0b-6f89cacb4fca",
+      "slug": "syama-sastri-swarajathi-ratnatrayam",
+      "source": "canonical_cycle"
+    },
+    {
+      "krithi_id": "7c15e1c9-5c30-4f68-8ab4-a414847e06be",
+      "slug": "syama-sastri-swarajathi-ratnatrayam",
+      "source": "canonical_cycle"
+    },
+    {
+      "krithi_id": "2974996a-7cee-433f-b523-dbecbf691f68",
+      "slug": "syama-sastri-swarajathi-ratnatrayam",
+      "source": "canonical_cycle"
+    }
+  ]
+}
