@@ -10,7 +10,7 @@ import hashlib
 import json
 from collections import Counter
 from pathlib import Path
-from typing import Literal, Self
+from typing import Literal, Self, TypedDict
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -202,6 +202,14 @@ class Composition(Record):
         return self
 
 
+class ApplicationManifest(TypedDict):
+    track: str
+    snapshot_at: str
+    status: Literal["ready", "awaiting_claim_approval"]
+    provenance_owner: str
+    changes: list[dict[str, object]]
+
+
 class ClassificationMaster(Record):
     schema_version: Literal["1.1"]
     track: str
@@ -287,9 +295,9 @@ class ClassificationMaster(Record):
             if (row.title, row.raw_raga, row.url) != (original["Krithi"], original["Raga"], original["Hyperlink"]):
                 raise ValueError("source-row values differ from artifact")
 
-    def application_manifest(self) -> dict[str, object]:
+    def application_manifest(self) -> ApplicationManifest:
         subjects = {x.id: x for x in self.compositions}
-        changes = [
+        changes: list[dict[str, object]] = [
             {
                 "claim_id": c.id,
                 "subject_id": c.subject_id,

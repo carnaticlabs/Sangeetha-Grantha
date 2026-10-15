@@ -1,5 +1,7 @@
 """TRACK-146: Syama Sastri header axes render only from approved claims."""
 
+from typing import Any
+
 from src.embeddings.context_formatter import MAX_HEADER_WORDS, _lakshana_headers
 
 APPROVED = {
@@ -13,7 +15,7 @@ APPROVED = {
 }
 
 
-def cycle(attrs: dict) -> dict:
+def cycle(attrs: dict[str, Any]) -> dict[str, Any]:
     return {
         "slug": "syama-sastri-swarajathi-ratnatrayam",
         "display_name": "Swarajathi Ratnatrayam",
@@ -22,7 +24,7 @@ def cycle(attrs: dict) -> dict:
     }
 
 
-def header(attrs: dict, composer: str = "Syama Sastri") -> str:
+def header(attrs: dict[str, Any], composer: str = "Syama Sastri") -> str:
     return " ".join(
         _lakshana_headers("Kamakshi anudinamu", composer, raga="Bhairavi", tala="Capu", cycle_info=cycle(attrs))
     )
@@ -54,7 +56,7 @@ def test_other_composer_never_gets_syama_axes() -> None:
 def test_composition_overview_renders_axes_only_from_approved_membership() -> None:
     from src.embeddings.context_formatter import format_composition_overview
 
-    def first_line(attrs: dict, composer: str = "Syama Sastri") -> str:
+    def first_line(attrs: dict[str, Any], composer: str = "Syama Sastri") -> str:
         return format_composition_overview(
             title="Kamakshi anudinamu",
             composer=composer,
