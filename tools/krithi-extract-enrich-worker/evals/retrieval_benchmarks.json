@@ -250,5 +250,212 @@
     "is_macro": true,
     "expected_document_kind": "KSHETRA_OVERVIEW",
     "notes": "Negative evidence / documented gap shrine at Kanyakumari"
+  },
+  {
+    "id": "SS-146-01",
+    "category": "ratnatrayam_gem_1_bhairavi",
+    "query": "Syama Sastri Swarajathi Ratnatrayam first gem in Bhairavi Misra Chapu Kamakshi Anudinamu",
+    "expected_krithi_id": "f5a415fd-b4ed-4394-ae0b-6f89cacb4fca",
+    "expected_title_contains": "kAmAkshi",
+    "expected_composer": "Syama Sastri",
+    "expected_raga": "Bhairavi",
+    "requires_human_approval": true,
+    "review_state": "reviewed",
+    "approval": {
+      "decision": "approve",
+      "reviewer": "Seshadri",
+      "accepted_at": "2026-10-06",
+      "note": "Approved expected identity for Swarajathi Ratnatrayam Gem 1 in Bhairavi (Kamakshi Anudinamu)."
+    },
+    "notes": "Swarajathi Ratnatrayam in Bhairavi (Misra Chapu, 8 numbered swara-sahitya units). Corroborated by V. Raghavan (1977, PDF p.2) and JMA Vol. LXXV (2002, PDF p.90)."
+  },
+  {
+    "id": "SS-146-02",
+    "category": "ratnatrayam_gem_2_todi",
+    "query": "Syama Sastri Swarajathi in Todi Adi tala Rave Himagiri Kumari 6 charanams",
+    "expected_krithi_id": "2974996a-7cee-433f-b523-dbecbf691f68",
+    "expected_title_contains": "hima giri",
+    "expected_composer": "Syama Sastri",
+    "expected_raga": "Hanumatodi",
+    "requires_human_approval": true,
+    "review_state": "reviewed",
+    "approval": {
+      "decision": "approve",
+      "reviewer": "Seshadri",
+      "accepted_at": "2026-10-06",
+      "note": "Approved expected identity for Swarajathi Ratnatrayam Gem 2 in Todi (Rave Himagiri Kumari)."
+    },
+    "notes": "Swarajathi Ratnatrayam in Todi (Adi, 6 numbered swara-sahitya units). Corroborated by V. Raghavan (1977, PDF p.2)."
+  },
+  {
+    "id": "SS-146-03",
+    "category": "ratnatrayam_gem_3_yadukulakambhoji",
+    "query": "Syama Sastri Swarajathi in Yadukulakambhoji Misra Chapu Kamakshi Ni Padayugamu 11 charanams",
+    "expected_krithi_id": "7c15e1c9-5c30-4f68-8ab4-a414847e06be",
+    "expected_title_contains": "nI pada",
+    "expected_composer": "Syama Sastri",
+    "expected_raga": "Yadukula Kāmbhoji",
+    "requires_human_approval": true,
+    "review_state": "reviewed",
+    "approval": {
+      "decision": "approve",
+      "reviewer": "Seshadri",
+      "accepted_at": "2026-10-06",
+      "note": "Approved expected identity for Swarajathi Ratnatrayam Gem 3 in Yadukulakambhoji (Kamakshi Ni Pada)."
+    },
+    "notes": "Swarajathi Ratnatrayam in Yadukulakambhoji (Misra Chapu, 11 numbered swara-sahitya units). Corroborated by V. Raghavan (1977, PDF p.2) and JMA Vol. LXXV (2002, PDF p.90)."
+  },
+  {
+    "id": "SS-146-04",
+    "category": "viloma_chapu_anandabhairavi",
+    "query": "Syama Sastri Anandabhairavi Viloma Chapu 4+3 Swarasahitya Marivere Gati Madurai Meenakshi",
+    "expected_krithi_id": "d14d643b-bfc5-4e39-b2c5-d4433e5be9bf",
+    "expected_title_contains": "mari vErE gati",
+    "expected_composer": "Syama Sastri",
+    "expected_raga": "Anandabhairavi",
+    "requires_human_approval": true,
+    "review_state": "reviewed",
+    "approval": {
+      "decision": "approve",
+      "reviewer": "Seshadri",
+      "accepted_at": "2026-10-06",
+      "note": "Approved expected identity for Marivere Gati (Viloma Chapu 4+3 and Swarasahitya in Anandabhairavi)."
+    },
+    "notes": "Viloma Chapu (4+3 reverse pattern) with Swarasahitya in Anandabhairavi on Madurai Meenakshi."
+  },
+  {
+    "id": "SS-146-05",
+    "category": "viloma_chapu_benchmark",
+    "query": "Syama Sastri Viloma Chapu reverse 4+3 beat pattern in Poorvikalyani Ninnuvina Marigalada",
+    "expected_krithi_id": "66e23087-a16d-4a00-b27b-4320cb53c4b9",
+    "expected_title_contains": "ninnu vinA",
+    "expected_composer": "Syama Sastri",
+    "expected_raga": "Poorvi Kalyāni",
+    "requires_human_approval": true,
+    "review_state": "reviewed",
+    "approval": {
+      "decision": "approve",
+      "reviewer": "Seshadri",
+      "accepted_at": "2026-10-06",
+      "note": "Approved expected identity for Ninnuvina Marigalada (Viloma Chapu 4+3 in Poorvikalyani)."
+    },
+    "notes": "Viloma Chapu benchmark in Poorvikalyani (reverse 4+3 rhythm)."
+  },
+  {
+    "id": "SS-146-06",
+    "category": "raga_invention_chintamani",
+    "query": "Syama Sastri own invented raga Chintamani Devi Brova Samayamide anagata eduppu",
+    "expected_krithi_id": "74f46a92-2be6-4376-813b-e9b2f70113af",
+    "expected_title_contains": "dEvI brOva",
+    "expected_composer": "Syama Sastri",
+    "expected_raga": "Chintāmani",
+    "requires_human_approval": true,
+    "review_state": "reviewed",
+    "approval": {
+      "decision": "approve",
+      "reviewer": "Seshadri",
+      "accepted_at": "2026-10-06",
+      "note": "Approved expected identity for Devi Brova Samayamide (Chintamani raga invention with anagata eduppu)."
+    },
+    "notes": "Syama Sastri ekaika-raga composition in Chintamani (Bobbili Kesavayya contest; JMA Vol. XV 1944 PDF p.28, JMA Vol. LXXV 2002 PDF p.46)."
+  },
+  {
+    "id": "SS-146-07",
+    "category": "apatya_bhava_ahiri",
+    "query": "Syama Sastri Ahiri krithi Apatya Bhava child-mother devotion Mayamma Madurai Meenakshi",
+    "expected_krithi_id": "0c251190-3cde-4d05-b584-19930220924c",
+    "expected_title_contains": "mAyammA",
+    "expected_composer": "Syama Sastri",
+    "expected_raga": "Āhiri",
+    "requires_human_approval": true,
+    "review_state": "reviewed",
+    "approval": {
+      "decision": "approve",
+      "reviewer": "Seshadri",
+      "accepted_at": "2026-10-06",
+      "note": "Approved expected identity for Mayamma (Ahiri, Apatya Bhava child-mother devotion)."
+    },
+    "notes": "Ahiri masterpiece in Apatya Bhava (child pleading with mother); Meenakshi Navaratnamalika candidate."
+  },
+  {
+    "id": "SS-146-08",
+    "category": "anandabhairavi_swarasahitya",
+    "query": "Syama Sastri Anandabhairavi sovereign krithi celebrated Swarasahitya O Jagadamba",
+    "expected_krithi_id": "688daebb-ee8b-4d91-bd14-d42b9827af0d",
+    "expected_title_contains": "O jagadamba",
+    "expected_composer": "Syama Sastri",
+    "expected_raga": "Anandabhairavi",
+    "requires_human_approval": true,
+    "review_state": "reviewed",
+    "approval": {
+      "decision": "approve",
+      "reviewer": "Seshadri",
+      "accepted_at": "2026-10-06",
+      "note": "Approved expected identity for O Jagadamba (Anandabhairavi sovereignty with Swarasahitya)."
+    },
+    "notes": "Anandabhairavi krithi with celebrated Swarasahitya."
+  },
+  {
+    "id": "SS-146-09",
+    "category": "swarasahitya_dharmasamvardhani",
+    "query": "Syama Sastri Saveri krithi Swarasahitya Durusukuga Tiruvaiyaru Dharmasamvardhani",
+    "expected_krithi_id": "c205a192-f29e-47de-b652-3fdc395f3bee",
+    "expected_title_contains": "durusugA",
+    "expected_composer": "Syama Sastri",
+    "expected_raga": "Sāveri",
+    "requires_human_approval": true,
+    "review_state": "reviewed",
+    "approval": {
+      "decision": "approve",
+      "reviewer": "Seshadri",
+      "accepted_at": "2026-10-06",
+      "note": "Approved expected identity for Durusukuga (Saveri with Swarasahitya addressing Dharmasamvardhani)."
+    },
+    "notes": "Saveri krithi with Swarasahitya addressing Dharmasamvardhani of Tiruvaiyaru."
+  },
+  {
+    "id": "SS-146-10",
+    "category": "khanda_jhampa_laya",
+    "query": "Syama Sastri rare Khanda Jhampa tala 8 aksharas Swarasahitya Bhairavi Sari Evaramma",
+    "expected_krithi_id": "ed01af31-6aed-4f81-8d25-27acc81f7100",
+    "expected_title_contains": "sariyevarammA",
+    "expected_composer": "Syama Sastri",
+    "expected_raga": "Bhairavi",
+    "requires_human_approval": true,
+    "review_state": "reviewed",
+    "approval": {
+      "decision": "approve",
+      "reviewer": "Seshadri",
+      "accepted_at": "2026-10-06",
+      "note": "Approved expected identity for Sari Evaramma (Khanda Jhampa 5+1+2 = 8 aksharas and Swarasahitya in Bhairavi)."
+    },
+    "notes": "Laya masterpiece in Khanda Jhampa (5+1+2 = 8 aksharas) with Swarasahitya in Bhairavi."
+  },
+  {
+    "id": "SS-146-11",
+    "category": "track146_macro_ratnatrayam",
+    "query": "Swarajathi Ratnatrayam Syama Sastri three swarajathis overview",
+    "is_macro": true,
+    "expected_document_kind": "CYCLE_OVERVIEW",
+    "expected_composer": "Syama Sastri",
+    "requires_human_approval": true,
+    "review_state": "reviewed",
+    "approval": {
+      "decision": "approve",
+      "reviewer": "Seshadri",
+      "accepted_at": "2026-10-06",
+      "note": "Approved macro probe for Swarajathi Ratnatrayam (CYCLE_OVERVIEW)."
+    },
+    "notes": "Reviewed Ratnatrayam membership required. Documented in V. Raghavan (1977) and JMA Vol. LXXV (2002)."
+  },
+  {
+    "id": "SS-146-12",
+    "category": "track146_macro_navaratnamalika",
+    "query": "Madurai Meenakshi Navaratnamalika Syama Sastri overview, sources disagree on the nine",
+    "is_macro": true,
+    "expected_document_kind": "CYCLE_OVERVIEW",
+    "requires_human_approval": true,
+    "review_state": "unresolved",
+    "notes": "Meenakshi Navaratnamalika cycle; sources disagree on complete nine-member set."
   }
 ]
