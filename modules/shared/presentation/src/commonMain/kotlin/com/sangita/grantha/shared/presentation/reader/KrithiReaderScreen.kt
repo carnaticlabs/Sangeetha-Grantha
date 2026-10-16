@@ -43,6 +43,8 @@ import com.sangita.grantha.shared.domain.model.catalogue.CatalogueKrithiReaderDt
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueLyricSectionDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueVariantRefDto
 import com.sangita.grantha.shared.presentation.RasikaCopy
+import com.sangita.grantha.shared.presentation.collections.CollectionCopy
+import com.sangita.grantha.shared.presentation.collections.CycleContextSection
 import com.sangita.grantha.shared.presentation.components.LoadState
 import com.sangita.grantha.shared.presentation.components.LoadStateContent
 import com.sangita.grantha.shared.presentation.components.RagaSequence
@@ -66,6 +68,8 @@ fun KrithiReaderScreen(
     onToggleFavourite: (label: String) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    onOpenCollection: (String) -> Unit = {},
+    onOpenNeighbour: (Uuid) -> Unit = {},
 ) {
     val state by presenter.state.collectAsStateWithLifecycle()
     LaunchedEffect(krithiId) { presenter.open(krithiId) }
@@ -94,6 +98,13 @@ fun KrithiReaderScreen(
                 RasikaCopy.musicalFormLabel(reader.musicalForm)?.let { form ->
                     Text(form, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.secondary)
                 }
+                reader.cycleContext?.collections?.forEach { ref ->
+                    RasikaChip(
+                        selected = false,
+                        onClick = { tab = ReaderTab.Details },
+                        label = "Part of ${CollectionCopy.chipLabel(ref)}",
+                    )
+                }
             }
         }
         ReaderTabStrip(tab = tab, onSelect = { tab = it })
@@ -108,7 +119,7 @@ fun KrithiReaderScreen(
             val reader = state.reader ?: return@LoadStateContent
             when (tab) {
                 ReaderTab.Lyrics -> LyricsPane(state, presenter, reader)
-                ReaderTab.Details -> DetailsPane(reader, state)
+                ReaderTab.Details -> DetailsPane(reader, state, onOpenCollection, onOpenNeighbour)
             }
         }
     }
@@ -360,7 +371,12 @@ private fun LyricSection(
 }
 
 @Composable
-private fun DetailsPane(reader: CatalogueKrithiReaderDto, state: ReaderUiState) {
+private fun DetailsPane(
+    reader: CatalogueKrithiReaderDto,
+    state: ReaderUiState,
+    onOpenCollection: (String) -> Unit,
+    onOpenNeighbour: (Uuid) -> Unit,
+) {
     Column(
         Modifier
             .fillMaxSize()
@@ -379,6 +395,11 @@ private fun DetailsPane(reader: CatalogueKrithiReaderDto, state: ReaderUiState) 
         )
         presenterSelectedSource(state)?.let { source ->
             DetailRow("SOURCE", source, null)
+        }
+        reader.cycleContext?.let { context ->
+            context.vibhaktiCase?.let { DetailRow(CollectionCopy.VIBHAKTI_KEY, CollectionCopy.vibhakti(it), null) }
+            context.occasionNote?.takeIf { it.isNotBlank() }?.let { DetailRow(CollectionCopy.OCCASION_KEY, it, null) }
+            CycleContextSection(context.collections, onOpenCollection, onOpenNeighbour)
         }
 
         if (reader.isRagamalika && reader.ragas.isNotEmpty()) {
