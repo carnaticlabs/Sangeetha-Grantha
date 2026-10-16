@@ -123,6 +123,7 @@ data class CatalogueKrithiReaderDto(
     val completeness: CatalogueCompletenessDto = CatalogueCompletenessDto.UNKNOWN,
     val deity: CatalogueReferenceDto? = null,
     val temple: CatalogueReferenceDto? = null,
+    val cycleContext: CatalogueCycleContextDto? = null,
 )
 
 @Serializable
