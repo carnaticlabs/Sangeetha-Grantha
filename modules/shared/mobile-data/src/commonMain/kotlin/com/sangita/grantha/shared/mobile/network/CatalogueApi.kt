@@ -2,6 +2,8 @@ package com.sangita.grantha.shared.mobile.network
 
 import com.sangita.grantha.shared.domain.model.SemanticSearchRequest
 import com.sangita.grantha.shared.domain.model.SemanticSearchResponse
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueCollectionDetailDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueCollectionListDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerDetailDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerSummaryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueContract
@@ -62,4 +64,11 @@ interface CatalogueApi {
         request: SemanticSearchRequest,
         interaction: InteractionContext,
     ): SemanticSearchResponse
+
+    /** Reviewed cycle collections (TRACK-150). Fakes that predate collections report them unavailable. */
+    suspend fun listCollections(interaction: InteractionContext): CatalogueCollectionListDto =
+        throw CatalogueFailure.Unavailable("Collections are not available.")
+
+    suspend fun getCollection(slug: String, interaction: InteractionContext): CatalogueCollectionDetailDto =
+        throw CatalogueFailure.Unavailable("Collections are not available.")
 }
