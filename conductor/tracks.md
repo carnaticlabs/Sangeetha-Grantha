@@ -153,6 +153,7 @@
 | [TRACK-147](./tracks/TRACK-147-tyagaraja-musicological-classification.md) | Tyagaraja Corpus Concordance & Musicological Classification | Completed |
 | [TRACK-148](./tracks/TRACK-148-syama-sastri-edition-consultation-adjudication.md) | Syama Sastri Edition Consultation & Musicological Adjudication | Proposed |
 | [TRACK-149](./tracks/TRACK-149-tyagaraja-edition-consultation-collision-split.md) | Tyagaraja Edition Consultation & Collision Canon Split | Proposed |
+| [TRACK-150](./tracks/TRACK-150-rasika-collections-and-lakshana-reader.md) | Rasika Collections & Reader Cycle Context | Completed |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)

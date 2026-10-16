@@ -322,6 +322,58 @@ paths:
                 "$ref": "#/components/schemas/CatalogueDiscovery"
         "400":
           "$ref": "#/components/responses/CatalogueValidationError"
+  "/v2/catalogue/collections":
+    "get":
+      "tags":
+        - "Catalogue"
+      "summary": "Reviewed cycle collections"
+      "description": "Published-only V2. Lists collections whose memberships were written by a reviewed seed and whose kritis are published. Unknown query parameters are rejected."
+      "security": []
+      "parameters":
+        -
+          "$ref": "#/components/parameters/RasikaSessionHeader"
+        -
+          "$ref": "#/components/parameters/RasikaInteractionHeader"
+      "responses":
+        "200":
+          "description": "Collections ordered by composer then name. Cache-Control: no-store."
+          "content":
+            "application/json":
+              "schema":
+                "$ref": "#/components/schemas/CatalogueCollectionList"
+        "400":
+          "$ref": "#/components/responses/CatalogueValidationError"
+  "/v2/catalogue/collections/{slug}":
+    "get":
+      "tags":
+        - "Catalogue"
+      "summary": "One reviewed cycle collection with ordered members"
+      "description": "Members sort by role (dhyana, core, optional, mangalam, disputed), sequence, title. Disputed members carry the label `disputed`."
+      "security": []
+      "parameters":
+        -
+          "name": "slug"
+          "in": "path"
+          "required": true
+          "schema":
+            "type": "string"
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+            "maxLength": 80
+        -
+          "$ref": "#/components/parameters/RasikaSessionHeader"
+        -
+          "$ref": "#/components/parameters/RasikaInteractionHeader"
+      "responses":
+        "200":
+          "description": "Collection detail. Cache-Control: no-store."
+          "content":
+            "application/json":
+              "schema":
+                "$ref": "#/components/schemas/CatalogueCollectionDetail"
+        "400":
+          "$ref": "#/components/responses/CatalogueValidationError"
+        "404":
+          "$ref": "#/components/responses/CatalogueNotFound"
   "/v2/catalogue/talas":
     "get":
       "tags":
@@ -2209,6 +2261,203 @@ components:
             -
               "$ref": "#/components/schemas/CatalogueReference"
           "nullable": true
+        "cycleContext":
+          "allOf":
+            -
+              "$ref": "#/components/schemas/CatalogueCycleContext"
+          "nullable": true
+          "description": "V2 only. Omitted when the kriti has no reviewed cycle context."
+    "CatalogueOrderBasis":
+      "type": "string"
+      "enum":
+        - "SOURCE"
+        - "PERFORMANCE_CONVENTION"
+        - "UNSPECIFIED"
+      "description": "SOURCE: position attested by the cycle structure. PERFORMANCE_CONVENTION: later concert order. UNSPECIFIED: clients must not show ordinals."
+    "CatalogueCollectionRole":
+      "type": "string"
+      "enum":
+        - "DHYANA"
+        - "CORE"
+        - "OPTIONAL"
+        - "MANGALAM"
+        - "DISPUTED_CONJECTURE"
+    "CatalogueCollectionNeighbour":
+      "type": "object"
+      "required":
+        - "krithiId"
+        - "title"
+      "properties":
+        "krithiId":
+          "type": "string"
+          "format": "uuid"
+        "title":
+          "type": "string"
+        "ragaName":
+          "type": "string"
+          "nullable": true
+    "CatalogueCollectionRef":
+      "type": "object"
+      "required":
+        - "collectionId"
+        - "slug"
+        - "name"
+        - "role"
+        - "sequenceOrder"
+        - "coreCount"
+      "properties":
+        "collectionId":
+          "type": "string"
+          "format": "uuid"
+        "slug":
+          "type": "string"
+        "name":
+          "type": "string"
+        "role":
+          "$ref": "#/components/schemas/CatalogueCollectionRole"
+        "sequenceOrder":
+          "type": "integer"
+        "position":
+          "type": "integer"
+          "nullable": true
+          "description": "1-based rank among CORE members; null for other roles."
+        "coreCount":
+          "type": "integer"
+        "axisValue":
+          "type": "string"
+          "nullable": true
+        "orderBasis":
+          "$ref": "#/components/schemas/CatalogueOrderBasis"
+        "orderConvention":
+          "type": "string"
+          "nullable": true
+        "attributes":
+          "type": "object"
+          "additionalProperties":
+            "type": "string"
+        "previous":
+          "allOf":
+            -
+              "$ref": "#/components/schemas/CatalogueCollectionNeighbour"
+          "nullable": true
+        "next":
+          "allOf":
+            -
+              "$ref": "#/components/schemas/CatalogueCollectionNeighbour"
+          "nullable": true
+    "CatalogueCycleContext":
+      "type": "object"
+      "properties":
+        "collections":
+          "type": "array"
+          "items":
+            "$ref": "#/components/schemas/CatalogueCollectionRef"
+        "vibhaktiCase":
+          "type": "string"
+          "nullable": true
+        "occasionNote":
+          "type": "string"
+          "nullable": true
+    "CatalogueCollectionSummary":
+      "type": "object"
+      "required":
+        - "id"
+        - "slug"
+        - "name"
+        - "memberCount"
+      "properties":
+        "id":
+          "type": "string"
+          "format": "uuid"
+        "slug":
+          "type": "string"
+        "name":
+          "type": "string"
+        "composer":
+          "allOf":
+            -
+              "$ref": "#/components/schemas/CatalogueComposerRef"
+          "nullable": true
+        "memberCount":
+          "type": "integer"
+        "orderBasis":
+          "$ref": "#/components/schemas/CatalogueOrderBasis"
+        "hasOverview":
+          "type": "boolean"
+    "CatalogueCollectionList":
+      "type": "object"
+      "required":
+        - "items"
+      "properties":
+        "items":
+          "type": "array"
+          "items":
+            "$ref": "#/components/schemas/CatalogueCollectionSummary"
+    "CatalogueCollectionMember":
+      "type": "object"
+      "required":
+        - "krithi"
+        - "role"
+        - "sequenceOrder"
+      "properties":
+        "krithi":
+          "$ref": "#/components/schemas/CatalogueKrithiSummaryV2"
+        "role":
+          "$ref": "#/components/schemas/CatalogueCollectionRole"
+        "sequenceOrder":
+          "type": "integer"
+        "position":
+          "type": "integer"
+          "nullable": true
+        "axisValue":
+          "type": "string"
+          "nullable": true
+        "label":
+          "type": "string"
+          "nullable": true
+          "description": "`disputed` for DISPUTED_CONJECTURE members."
+        "attributes":
+          "type": "object"
+          "additionalProperties":
+            "type": "string"
+    "CatalogueCollectionDetail":
+      "type": "object"
+      "required":
+        - "id"
+        - "slug"
+        - "name"
+        - "coreCount"
+        - "members"
+      "properties":
+        "id":
+          "type": "string"
+          "format": "uuid"
+        "slug":
+          "type": "string"
+        "name":
+          "type": "string"
+        "composer":
+          "allOf":
+            -
+              "$ref": "#/components/schemas/CatalogueComposerRef"
+          "nullable": true
+        "overview":
+          "type": "string"
+          "nullable": true
+        "orderBasis":
+          "$ref": "#/components/schemas/CatalogueOrderBasis"
+        "orderConvention":
+          "type": "string"
+          "nullable": true
+        "isComplete":
+          "type": "boolean"
+          "description": "False for open sets such as Shodasa Ganapati and Nottusvara."
+        "coreCount":
+          "type": "integer"
+        "members":
+          "type": "array"
+          "items":
+            "$ref": "#/components/schemas/CatalogueCollectionMember"
     "CatalogueKrithiPageV2":
       "type": "object"
       "required":

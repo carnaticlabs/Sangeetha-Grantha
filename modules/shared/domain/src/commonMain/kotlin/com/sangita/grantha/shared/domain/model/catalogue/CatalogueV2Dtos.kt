@@ -11,6 +11,7 @@ object CatalogueV2Contract {
     const val RAGAS_PATH = "$ROOT/ragas"
     const val COMPOSERS_PATH = "$ROOT/composers"
     const val DISCOVERY_PATH = "$ROOT/discovery"
+    const val COLLECTIONS_PATH = "$ROOT/collections"
 }
 
 @Serializable

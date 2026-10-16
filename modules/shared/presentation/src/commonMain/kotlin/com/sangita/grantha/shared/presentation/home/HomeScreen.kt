@@ -23,6 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueDiscoveryFeatureDto
 import com.sangita.grantha.shared.presentation.RasikaCopy
+import com.sangita.grantha.shared.presentation.collections.CollectionsPresenter
+import com.sangita.grantha.shared.presentation.collections.CollectionsShelf
 import com.sangita.grantha.shared.presentation.components.LoadState
 import com.sangita.grantha.shared.presentation.components.RagaSequence
 import com.sangita.grantha.shared.presentation.components.RasikaChip
@@ -41,6 +43,9 @@ fun HomeScreen(
     onOpenRagas: () -> Unit,
     onOpenComposers: () -> Unit,
     modifier: Modifier = Modifier,
+    collections: CollectionsPresenter? = null,
+    onOpenCollection: (String) -> Unit = {},
+    onOpenCollections: () -> Unit = {},
 ) {
     val state by presenter.state.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) { presenter.loadIfNeeded() }
@@ -83,6 +88,13 @@ fun HomeScreen(
             Row(horizontalArrangement = Arrangement.spacedBy(RasikaTokens.xs)) {
                 RasikaChip(selected = false, onClick = onOpenRagas, label = RasikaCopy.BROWSE_RAGAS)
                 RasikaChip(selected = false, onClick = onOpenComposers, label = RasikaCopy.BROWSE_COMPOSERS)
+            }
+            collections?.let {
+                CollectionsShelf(
+                    presenter = it,
+                    onOpenCollection = onOpenCollection,
+                    onOpenAll = onOpenCollections,
+                )
             }
             Text(
                 RasikaCopy.HOME_INVITE,

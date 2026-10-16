@@ -2,6 +2,8 @@ package com.sangita.grantha.shared.mobile.network
 
 import com.sangita.grantha.shared.domain.model.SemanticSearchRequest
 import com.sangita.grantha.shared.domain.model.SemanticSearchResponse
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueCollectionDetailDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueCollectionListDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerDetailDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerSummaryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueContract
@@ -92,6 +94,12 @@ class KtorCatalogueApi(
 
     override suspend fun getComposer(id: Uuid, interaction: InteractionContext): CatalogueComposerDetailDto =
         get("${CatalogueV2Contract.COMPOSERS_PATH}/$id", interaction)
+
+    override suspend fun listCollections(interaction: InteractionContext): CatalogueCollectionListDto =
+        get(CatalogueV2Contract.COLLECTIONS_PATH, interaction)
+
+    override suspend fun getCollection(slug: String, interaction: InteractionContext): CatalogueCollectionDetailDto =
+        get("${CatalogueV2Contract.COLLECTIONS_PATH}/$slug", interaction)
 
     override suspend fun searchHybrid(
         request: SemanticSearchRequest,

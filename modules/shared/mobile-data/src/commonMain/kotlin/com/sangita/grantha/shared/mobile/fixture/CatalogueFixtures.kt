@@ -276,8 +276,22 @@ class FixtureCatalogueApi(
     override suspend fun getKrithi(id: Uuid, interaction: InteractionContext): CatalogueKrithiReaderDto =
         when (id) {
             CatalogueFixtures.vatapiId -> CatalogueFixtures.vatapiReader
-            CatalogueFixtures.endaroId -> CatalogueFixtures.endaroReader
-            else -> throw CatalogueFailure.NotFound()
+            CatalogueFixtures.endaroId ->
+                CatalogueFixtures.endaroReader.copy(cycleContext = CollectionFixtures.cycleContextFor(id))
+            else -> CollectionFixtures.memberSummary(id)?.let { summary ->
+                CatalogueKrithiReaderDto(
+                    id = summary.id,
+                    title = summary.title,
+                    incipit = summary.incipit,
+                    composer = summary.composer,
+                    ragas = summary.ragas,
+                    tala = summary.tala,
+                    musicalForm = summary.musicalForm,
+                    originalLanguage = LanguageCodeDto.SA,
+                    completeness = CatalogueCompletenessDto.UNKNOWN,
+                    cycleContext = CollectionFixtures.cycleContextFor(id),
+                )
+            } ?: throw CatalogueFailure.NotFound()
         }
 
     override suspend fun getLyrics(
@@ -350,6 +364,11 @@ class FixtureCatalogueApi(
             publishedCompositionCount = summary.publishedCompositionCount,
         )
     }
+
+    override suspend fun listCollections(interaction: InteractionContext) = CollectionFixtures.list
+
+    override suspend fun getCollection(slug: String, interaction: InteractionContext) =
+        CollectionFixtures.detail(slug) ?: throw CatalogueFailure.NotFound()
 
     override suspend fun searchHybrid(
         request: SemanticSearchRequest,
@@ -449,6 +468,10 @@ class UnavailableCatalogueApi : CatalogueApi {
     ) = fail()
 
     override suspend fun getComposer(id: Uuid, interaction: InteractionContext) = fail()
+
+    override suspend fun listCollections(interaction: InteractionContext) = fail()
+
+    override suspend fun getCollection(slug: String, interaction: InteractionContext) = fail()
 
     override suspend fun searchHybrid(
         request: SemanticSearchRequest,

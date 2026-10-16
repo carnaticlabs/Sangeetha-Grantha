@@ -25,6 +25,10 @@ import androidx.navigationevent.compose.NavigationEventHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
 import com.sangita.grantha.shared.presentation.browse.BrowsePresenter
 import com.sangita.grantha.shared.presentation.browse.BrowseScreen
+import com.sangita.grantha.shared.presentation.collections.CollectionDetailPresenter
+import com.sangita.grantha.shared.presentation.collections.CollectionDetailScreen
+import com.sangita.grantha.shared.presentation.collections.CollectionsPresenter
+import com.sangita.grantha.shared.presentation.collections.CollectionsScreen
 import com.sangita.grantha.shared.presentation.components.RasikaPrimaryButton
 import com.sangita.grantha.shared.presentation.components.RasikaTabBar
 import com.sangita.grantha.shared.presentation.di.MobileAppContainer
@@ -69,6 +73,12 @@ fun RasikaApp(container: MobileAppContainer) {
     }
     val browsePresenter = remember {
         BrowsePresenter(container.catalogue, container.session, container.appScope)
+    }
+    val collectionsPresenter = remember {
+        CollectionsPresenter(container.catalogue, container.session, container.appScope)
+    }
+    val collectionDetailPresenter = remember {
+        CollectionDetailPresenter(container.catalogue, container.session, container.appScope)
     }
     val favouritesPresenter = remember { FavouritesPresenter(container.favourites) }
     val favourites by favouritesPresenter.state.collectAsStateWithLifecycle()
@@ -156,6 +166,7 @@ fun RasikaApp(container: MobileAppContainer) {
                             is RasikaDestination.KrithiReader -> "reader:${dest.krithiId}"
                             is RasikaDestination.RagaDetail -> "raga:${dest.ragaId}"
                             is RasikaDestination.ComposerDetail -> "composer:${dest.composerId}"
+                            is RasikaDestination.CollectionDetail -> "collection:${dest.slug}"
                             else -> dest::class.simpleName.orEmpty()
                         }
                     },
@@ -171,6 +182,9 @@ fun RasikaApp(container: MobileAppContainer) {
                                 sync()
                             },
                             onOpenKrithi = { open(RasikaDestination.KrithiReader(it)) },
+                            collections = collectionsPresenter,
+                            onOpenCollection = { open(RasikaDestination.CollectionDetail(it)) },
+                            onOpenCollections = { open(RasikaDestination.Collections) },
                             onOpenRagas = {
                                 searchPresenter.openDirectory(ExploreCategory.Ragas)
                                 navigator.selectTab(RasikaTab.Explore)
@@ -209,6 +223,23 @@ fun RasikaApp(container: MobileAppContainer) {
                                 favouritesPresenter.toggle(id, label)
                                 sync()
                             },
+                            onBack = {
+                                navigator.back()
+                                sync()
+                            },
+                        )
+                        RasikaDestination.Collections -> CollectionsScreen(
+                            presenter = collectionsPresenter,
+                            onOpenCollection = { open(RasikaDestination.CollectionDetail(it)) },
+                            onBack = {
+                                navigator.back()
+                                sync()
+                            },
+                        )
+                        is RasikaDestination.CollectionDetail -> CollectionDetailScreen(
+                            slug = dest.slug,
+                            presenter = collectionDetailPresenter,
+                            onOpenKrithi = { open(RasikaDestination.KrithiReader(it)) },
                             onBack = {
                                 navigator.back()
                                 sync()
@@ -255,6 +286,11 @@ fun RasikaApp(container: MobileAppContainer) {
                         is RasikaDestination.KrithiReader -> KrithiReaderScreen(
                             krithiId = dest.krithiId,
                             presenter = readerPresenter,
+                            onOpenCollection = { open(RasikaDestination.CollectionDetail(it)) },
+                            onOpenNeighbour = {
+                                navigator.replace(RasikaDestination.KrithiReader(it))
+                                sync()
+                            },
                             favourited = dest.krithiId in favouriteIds,
                             onToggleFavourite = { label ->
                                 favouritesPresenter.toggle(dest.krithiId, label)

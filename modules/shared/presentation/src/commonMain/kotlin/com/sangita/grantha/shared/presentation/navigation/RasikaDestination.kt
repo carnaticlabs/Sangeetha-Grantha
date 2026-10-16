@@ -15,6 +15,8 @@ sealed class RasikaDestination {
     data object Library : RasikaDestination()
     data object Settings : RasikaDestination()
     data object Browse : RasikaDestination()
+    data object Collections : RasikaDestination()
+    data class CollectionDetail(val slug: String) : RasikaDestination()
     data class RagaDetail(val ragaId: Uuid) : RasikaDestination()
     data class ComposerDetail(val composerId: Uuid) : RasikaDestination()
     data class KrithiReader(val krithiId: Uuid) : RasikaDestination()
@@ -54,6 +56,19 @@ class RasikaNavigator(
         }
         stack.add(destination)
         return true
+    }
+
+    /**
+     * Swaps the top destination instead of pushing, so stepping through a cycle with
+     * previous/next does not consume the bounded back stack.
+     */
+    fun replace(destination: RasikaDestination) {
+        val stack = stacks.getValue(selectedTab)
+        if (stack.size <= 1) {
+            open(destination)
+            return
+        }
+        stack[stack.lastIndex] = destination
     }
 
     fun openOn(tab: RasikaTab, destination: RasikaDestination): Boolean {

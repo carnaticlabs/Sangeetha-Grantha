@@ -1,6 +1,7 @@
 package com.sangita.grantha.backend.dal.repositories
 
 import com.sangita.grantha.backend.dal.DatabaseFactory
+import com.sangita.grantha.backend.dal.enums.CycleMemberRole
 import com.sangita.grantha.backend.dal.enums.MusicalForm
 import com.sangita.grantha.backend.dal.enums.WorkflowState
 import com.sangita.grantha.backend.dal.models.CatalogueLike
@@ -13,27 +14,38 @@ import com.sangita.grantha.backend.dal.support.toKotlinUuid
 import com.sangita.grantha.backend.dal.tables.ComposerAliasesTable
 import com.sangita.grantha.backend.dal.tables.ComposersTable
 import com.sangita.grantha.backend.dal.tables.DeitiesTable
+import com.sangita.grantha.backend.dal.tables.KrithiCycleMembershipsTable
 import com.sangita.grantha.backend.dal.tables.KrithiLyricSectionsTable
 import com.sangita.grantha.backend.dal.tables.KrithiLyricVariantsTable
 import com.sangita.grantha.backend.dal.tables.KrithiRagasTable
 import com.sangita.grantha.backend.dal.tables.KrithiSectionsTable
+import com.sangita.grantha.backend.dal.tables.KrithiTagsTable
 import com.sangita.grantha.backend.dal.tables.KrithisTable
 import com.sangita.grantha.backend.dal.tables.RagaAliasesTable
 import com.sangita.grantha.backend.dal.tables.RagaRelationsTable
 import com.sangita.grantha.backend.dal.tables.RagasTable
+import com.sangita.grantha.backend.dal.tables.TagsTable
 import com.sangita.grantha.backend.dal.tables.TalasTable
 import com.sangita.grantha.backend.dal.tables.TemplesTable
 import com.sangita.grantha.shared.domain.model.RagaSectionDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueCollectionDetailDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueCollectionMemberDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueCollectionNeighbourDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueCollectionRefDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueCollectionRoleDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueCollectionSummaryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerDetailDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerRefDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerSummaryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueCompletenessDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueCycleContextDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueDiscoveryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueKrithiReaderDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueKrithiSummaryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueLyricSectionDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueLyricsDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueNomenclatureLinkDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueOrderBasisDto
 import com.sangita.grantha.shared.domain.model.catalogue.CataloguePagedResponse
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueRagaDetailDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueRagaRefDto
@@ -42,10 +54,17 @@ import com.sangita.grantha.shared.domain.model.catalogue.CatalogueReferenceDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueTalaRefDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueVariantRefDto
 import java.util.UUID
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonObject
 import kotlin.uuid.Uuid
 import org.jetbrains.exposed.v1.core.JoinType
 import org.jetbrains.exposed.v1.core.Op
+import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.SortOrder
+import org.jetbrains.exposed.v1.core.TextColumnType
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.inList
@@ -55,8 +74,10 @@ import org.jetbrains.exposed.v1.core.LikePattern
 import org.jetbrains.exposed.v1.core.lowerCase
 import org.jetbrains.exposed.v1.core.neq
 import org.jetbrains.exposed.v1.core.or
+import org.jetbrains.exposed.v1.core.statements.StatementType
 import org.jetbrains.exposed.v1.jdbc.select
 import org.jetbrains.exposed.v1.jdbc.selectAll
+import org.jetbrains.exposed.v1.jdbc.transactions.TransactionManager
 
 /**
  * Published-only Rasika catalogue reads (TRACK-138). Raga membership is always
@@ -118,6 +139,7 @@ class CatalogueRepository {
             completeness = CatalogueCompletenessDto.UNKNOWN,
             deity = deityReference(row[KrithisTable.deityId]),
             temple = templeReference(row[KrithisTable.templeId]),
+            cycleContext = if (visibility == CatalogueVisibility.V2) cycleContext(javaId, row) else null,
         )
     }
 
@@ -321,6 +343,243 @@ class CatalogueRepository {
             ?.let(CatalogueV2DtoMappers::catalogueOrderFeature)
         CatalogueDiscoveryDto(feature = feature, editorialRevision = null)
     }
+
+    /** Reviewed, published cycle collections (TRACK-150). V2 only; nothing unreviewed is listed. */
+    suspend fun listCollections(): List<CatalogueCollectionSummaryDto> = DatabaseFactory.dbQuery {
+        val byTag = reviewedMemberRows(Op.TRUE).groupBy { it.tagId }
+        if (byTag.isEmpty()) return@dbQuery emptyList()
+        val tags = TagsTable.selectAll()
+            .where { TagsTable.id inList byTag.keys.toList() }
+            .associateBy { it[TagsTable.id].value }
+        val withOverview = overviewTagIds()
+        val composers = composerNames(byTag.values.flatten().map { it.composerId }.distinct())
+        byTag.mapNotNull { (tagId, members) ->
+            val tag = tags[tagId] ?: return@mapNotNull null
+            CatalogueCollectionSummaryDto(
+                id = tagId.toKotlinUuid(),
+                slug = tag[TagsTable.slug],
+                name = tag[TagsTable.displayNameEn],
+                composer = majorityComposer(members, composers),
+                memberCount = members.size,
+                orderBasis = orderBasis(members),
+                hasOverview = tagId in withOverview,
+            )
+        }.sortedWith(compareBy({ it.composer?.name ?: "\uffff" }, { it.name }))
+    }
+
+    suspend fun findCollection(slug: String): CatalogueCollectionDetailDto? = DatabaseFactory.dbQuery {
+        val tag = TagsTable.selectAll().where { TagsTable.slug eq slug }.singleOrNull()
+            ?: return@dbQuery null
+        val tagId = tag[TagsTable.id].value
+        val members = orderedMembers(reviewedMemberRows(KrithiCycleMembershipsTable.tagId eq tagId))
+        if (members.isEmpty()) return@dbQuery null
+        val summaries = hydrateSummaries(members.map { it.krithiId }).associateBy { it.id }
+        val composers = composerNames(members.map { it.composerId }.distinct())
+        var corePosition = 0
+        val memberDtos = members.mapNotNull { m ->
+            val summary = summaries[m.krithiId.toKotlinUuid()] ?: return@mapNotNull null
+            val position = if (m.role == CycleMemberRole.CORE) ++corePosition else null
+            CatalogueCollectionMemberDto(
+                krithi = summary,
+                role = m.role.toCollectionRole(),
+                sequenceOrder = m.sequenceOrder,
+                position = position,
+                axisValue = m.axisValue,
+                label = if (m.role == CycleMemberRole.DISPUTED_CONJECTURE) DISPUTED_LABEL else null,
+                attributes = m.attributes,
+            )
+        }
+        CatalogueCollectionDetailDto(
+            id = tagId.toKotlinUuid(),
+            slug = slug,
+            name = tag[TagsTable.displayNameEn],
+            composer = majorityComposer(members, composers),
+            overview = cycleOverview(tagId),
+            orderBasis = orderBasis(members),
+            orderConvention = members.firstNotNullOfOrNull { it.orderConvention },
+            isComplete = slug !in OPEN_COLLECTION_SLUGS,
+            coreCount = corePosition,
+            members = memberDtos,
+        )
+    }
+
+    private data class MemberRow(
+        val tagId: UUID,
+        val krithiId: UUID,
+        val composerId: UUID,
+        val title: String,
+        val role: CycleMemberRole,
+        val sequenceOrder: Int,
+        val axisValue: String?,
+        val attributes: Map<String, String>,
+        val orderConvention: String?,
+    )
+
+    /**
+     * The reviewed guard: a membership is public only when the same (kriti, tag) pair carries
+     * a `krithi_tags` row written by a reviewed seed, and the kriti is a published V2 composition.
+     * `krithi_cycle_memberships` has no review column, so row existence alone is not enough.
+     */
+    private fun reviewedMemberRows(extra: Op<Boolean>): List<MemberRow> =
+        KrithiCycleMembershipsTable
+            .join(
+                KrithiTagsTable,
+                JoinType.INNER,
+                onColumn = KrithiCycleMembershipsTable.krithiId,
+                otherColumn = KrithiTagsTable.krithiId,
+                additionalConstraint = { KrithiCycleMembershipsTable.tagId eq KrithiTagsTable.tagId },
+            )
+            .join(KrithisTable, JoinType.INNER, KrithiCycleMembershipsTable.krithiId, KrithisTable.id)
+            .selectAll()
+            .where {
+                (KrithiTagsTable.sourceInfo eq REVIEWED_CYCLE_SOURCE) and
+                    publishedComposition(CatalogueVisibility.V2) and extra
+            }
+            .map { row ->
+                val (attributes, convention) = parseAttributes(row[KrithiCycleMembershipsTable.discriminativeAttributes])
+                MemberRow(
+                    tagId = row[KrithiCycleMembershipsTable.tagId],
+                    krithiId = row[KrithiCycleMembershipsTable.krithiId],
+                    composerId = row[KrithisTable.composerId],
+                    title = row[KrithisTable.title],
+                    role = row[KrithiCycleMembershipsTable.role],
+                    sequenceOrder = row[KrithiCycleMembershipsTable.sequenceOrder],
+                    axisValue = row[KrithiCycleMembershipsTable.axisValue],
+                    attributes = attributes,
+                    orderConvention = convention,
+                )
+            }
+
+    private fun orderedMembers(rows: List<MemberRow>): List<MemberRow> =
+        rows.sortedWith(
+            compareBy<MemberRow>({ it.role.rank() }, { it.sequenceOrder }, { it.title.lowercase() }, { it.krithiId }),
+        )
+
+    private fun orderBasis(members: List<MemberRow>): CatalogueOrderBasisDto = when {
+        members.any { it.orderConvention != null } -> CatalogueOrderBasisDto.PERFORMANCE_CONVENTION
+        // Only a cycle that numbers its own members (the nine Avaranas) attests a sequence. An axis
+        // value alone is a label (a lingam, a European air) and says nothing about order.
+        members.any { it.attributes.containsKey("avarana") } -> CatalogueOrderBasisDto.SOURCE
+        else -> CatalogueOrderBasisDto.UNSPECIFIED
+    }
+
+    private fun composerNames(ids: List<UUID>): Map<UUID, String> =
+        if (ids.isEmpty()) {
+            emptyMap()
+        } else {
+            ComposersTable.selectAll()
+                .where { ComposersTable.id inList ids }
+                .associate { it[ComposersTable.id].value to it[ComposersTable.name] }
+        }
+
+    private fun majorityComposer(members: List<MemberRow>, names: Map<UUID, String>): CatalogueComposerRefDto? =
+        members.groupingBy { it.composerId }.eachCount()
+            .entries.sortedWith(compareBy({ -it.value }, { it.key }))
+            .firstNotNullOfOrNull { (id, _) -> names[id]?.let { CatalogueComposerRefDto(id.toKotlinUuid(), it) } }
+
+    /** Allow-listed attributes plus the cycle-level order convention. Raw JSON never leaves the DAL. */
+    private fun parseAttributes(raw: String): Pair<Map<String, String>, String?> {
+        val obj = runCatching { Json.parseToJsonElement(raw).jsonObject }.getOrNull()
+            ?: return emptyMap<String, String>() to null
+        val attributes = ALLOWED_ATTRIBUTE_KEYS.mapNotNull { key ->
+            (obj[key] as? JsonPrimitive)?.takeIf { it !is JsonNull }?.contentOrNull?.let { key to it }
+        }.toMap()
+        val convention = (obj["order_convention"] as? JsonPrimitive)?.takeIf { it !is JsonNull }?.contentOrNull
+        return attributes to convention
+    }
+
+    private fun overviewTagIds(): Set<UUID> {
+        val ids = mutableSetOf<UUID>()
+        TransactionManager.current().exec(
+            "SELECT DISTINCT tag_id FROM search_documents WHERE document_kind = 'CYCLE_OVERVIEW' AND tag_id IS NOT NULL AND is_published",
+            emptyList(),
+            StatementType.SELECT,
+        ) { rs -> while (rs.next()) ids += UUID.fromString(rs.getString("tag_id")) }
+        return ids
+    }
+
+    private fun cycleOverview(tagId: UUID): String? {
+        var text: String? = null
+        TransactionManager.current().exec(
+            "SELECT original_content FROM search_documents " +
+                "WHERE document_kind = 'CYCLE_OVERVIEW' AND is_published AND tag_id = CAST(? AS uuid) " +
+                "ORDER BY source_chunk_index LIMIT 1",
+            listOf(TextColumnType() to tagId.toString()),
+            StatementType.SELECT,
+        ) { rs -> if (rs.next()) text = rs.getString("original_content") }
+        return text
+    }
+
+    private fun cycleContext(krithiId: UUID, krithi: ResultRow): CatalogueCycleContextDto? {
+        val own = reviewedMemberRows(KrithiCycleMembershipsTable.krithiId eq krithiId)
+        val vibhakti = krithi[KrithisTable.vibhaktiCase]?.dbValue
+        val occasion = krithi[KrithisTable.occasionNote]?.takeIf { it.isNotBlank() }
+        if (own.isEmpty() && vibhakti == null && occasion == null) return null
+        val tagIds = own.map { it.tagId }.distinct()
+        val membersByTag = if (tagIds.isEmpty()) {
+            emptyMap()
+        } else {
+            reviewedMemberRows(KrithiCycleMembershipsTable.tagId inList tagIds)
+                .groupBy { it.tagId }
+                .mapValues { orderedMembers(it.value) }
+        }
+        val tags = if (tagIds.isEmpty()) {
+            emptyMap()
+        } else {
+            TagsTable.selectAll().where { TagsTable.id inList tagIds }.associateBy { it[TagsTable.id].value }
+        }
+        val neighbourIds = tagIds.flatMap { tagId ->
+            val ordered = membersByTag[tagId].orEmpty()
+            val index = ordered.indexOfFirst { it.krithiId == krithiId }
+            listOfNotNull(ordered.getOrNull(index - 1), ordered.getOrNull(index + 1)).map { it.krithiId }
+        }.distinct()
+        val neighbours = hydrateSummaries(neighbourIds).associateBy { it.id }
+        val collections = tagIds.mapNotNull { tagId ->
+            val tag = tags[tagId] ?: return@mapNotNull null
+            val ordered = membersByTag[tagId].orEmpty()
+            val index = ordered.indexOfFirst { it.krithiId == krithiId }
+            if (index < 0) return@mapNotNull null
+            val me = ordered[index]
+            fun neighbour(m: MemberRow?) = m?.let { n ->
+                neighbours[n.krithiId.toKotlinUuid()]?.let {
+                    CatalogueCollectionNeighbourDto(it.id, it.title, it.ragas.firstOrNull()?.name)
+                }
+            }
+            CatalogueCollectionRefDto(
+                collectionId = tagId.toKotlinUuid(),
+                slug = tag[TagsTable.slug],
+                name = tag[TagsTable.displayNameEn],
+                role = me.role.toCollectionRole(),
+                sequenceOrder = me.sequenceOrder,
+                position = if (me.role == CycleMemberRole.CORE) {
+                    ordered.take(index + 1).count { it.role == CycleMemberRole.CORE }
+                } else {
+                    null
+                },
+                coreCount = ordered.count { it.role == CycleMemberRole.CORE },
+                axisValue = me.axisValue,
+                orderBasis = orderBasis(ordered),
+                orderConvention = ordered.firstNotNullOfOrNull { it.orderConvention },
+                attributes = me.attributes,
+                previous = neighbour(ordered.getOrNull(index - 1)),
+                next = neighbour(ordered.getOrNull(index + 1)),
+            )
+        }.sortedBy { it.name }
+        if (collections.isEmpty() && vibhakti == null && occasion == null) return null
+        return CatalogueCycleContextDto(collections = collections, vibhaktiCase = vibhakti, occasionNote = occasion)
+    }
+
+    private fun CycleMemberRole.rank(): Int = when (this) {
+        CycleMemberRole.DHYANA -> 0
+        CycleMemberRole.CORE -> 1
+        CycleMemberRole.OPTIONAL -> 2
+        CycleMemberRole.MANGALAM -> 3
+        CycleMemberRole.DISPUTED_CONJECTURE -> 4
+    }
+
+    private fun CycleMemberRole.toCollectionRole(): CatalogueCollectionRoleDto =
+        CatalogueCollectionRoleDto.valueOf(name)
+
 
     private fun publishedComposition(visibility: CatalogueVisibility): Op<Boolean> {
         val published = KrithisTable.workflowState eq WorkflowState.PUBLISHED
@@ -632,4 +891,15 @@ class CatalogueRepository {
 
     private fun literalContains(raw: String): LikePattern =
         LikePattern(CatalogueLike.containsPattern(raw), CatalogueLike.ESCAPE_CHAR)
+
+    private companion object {
+        const val REVIEWED_CYCLE_SOURCE = "reviewed_cycle"
+        const val DISPUTED_LABEL = "disputed"
+
+        /** Open sets: membership is not a closed grid, so clients must not imply completeness. */
+        val OPEN_COLLECTION_SLUGS = setOf("shodasa-ganapati", "nottusvara-sahitya")
+
+        /** Reviewed attribute keys safe to show; everything else in the stored JSON stays private. */
+        val ALLOWED_ATTRIBUTE_KEYS = listOf("avarana", "yogini", "laya", "structure", "mudra", "theme")
+    }
 }
