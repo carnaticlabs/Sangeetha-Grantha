@@ -17,7 +17,6 @@ from src.tyagaraja_classification import (
     ClaimAxis,
     ClassificationClaim,
     EvidenceKind,
-    GeographyState,
     ImportCensusRow,
     ReviewState,
     SubjectKind,
