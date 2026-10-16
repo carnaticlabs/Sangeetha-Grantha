@@ -1,7 +1,8 @@
 """Tyagaraja classification master for TRACK-147.
 
-The shared claim vocabulary matches TRACK-146's accepted spec. This module does not
-write to the database and does not approve musical claims.
+The shared claim vocabulary matches TRACK-146's accepted contract. This module does not
+write to the database and requires explicit human approval plus a hashed witness before
+any claim becomes seedable.
 """
 
 from __future__ import annotations
@@ -12,7 +13,7 @@ import json
 from collections import Counter, defaultdict
 from enum import StrEnum
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -29,6 +30,7 @@ EXPECTED_DESADI_WITNESSES = 11
 EXPECTED_MISSING_PALLAVI_IDENTITIES = 27
 EXPECTED_MISSING_CHARANAM_IDENTITIES = 4
 SOURCE_CSV_PATH = "database/for_import/Thyagaraja-Krithi-For-Import.csv"
+SNAPSHOT_JSON_PATH = "database/data/track147-catalogue-snapshot.json"
 EXPECTED_INVENTORY_ROWS = 687
 EXPECTED_CROSS_COMPOSER_ROWS = 2
 EXPECTED_NOT_IMPORTED_ROWS = 1
@@ -85,6 +87,69 @@ class GeographyState(StrEnum):
     DISPUTED = "DISPUTED"
 
 
+class WitnessStatus(StrEnum):
+    FETCHED = "fetched"
+    UNAVAILABLE = "unavailable"
+    DATABASE_SNAPSHOT = "database_snapshot"
+
+
+class GroupType(StrEnum):
+    FORMAL_GROUP = "formal_group"
+    KSHETRA_GROUP = "kshetra_group"
+    RITUAL_COLLECTION = "ritual_collection"
+    DRAMATIC_WORK = "dramatic_work"
+    THEMATIC_COLLECTION = "thematic_collection"
+
+
+class DramaticItemType(StrEnum):
+    DARU = "DARU"
+    KIRTANA = "KIRTANA"
+    PADYA = "PADYA"
+    VACANA = "VACANA"
+    DVIPADA = "DVIPADA"
+    UNESTABLISHED = "UNESTABLISHED"
+
+
+class Approval(BaseModel):
+    """Explicit human review decision for a classification claim."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    reviewer: str = Field(min_length=1)
+    accepted_at: str = Field(min_length=1)
+    decision: Literal["approve", "reject"]
+    note: str = Field(min_length=1)
+    application: Literal["apply", "deferred"] = "apply"
+    deferral_reason: str | None = None
+
+    @model_validator(mode="after")
+    def explained_deferral(self) -> Approval:
+        if self.application == "deferred" and (self.decision != "approve" or not (self.deferral_reason or "").strip()):
+            raise ValueError("only approved claims can be deferred, and deferral requires a reason")
+        if self.application == "apply" and self.deferral_reason:
+            raise ValueError("deferral reason given for a claim marked for application")
+        return self
+
+
+class Witness(BaseModel):
+    """Source witness artifact or bibliographic entry."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str = Field(min_length=1)
+    url: str = Field(min_length=1)
+    sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    accessed_at: str
+    status: WitnessStatus
+    description: str
+
+    @model_validator(mode="after")
+    def content_hash(self) -> Witness:
+        if self.status != WitnessStatus.UNAVAILABLE and not self.sha256:
+            raise ValueError(f"available witness {self.id} requires artifact SHA-256")
+        return self
+
+
 class ImportCensusRow(BaseModel):
     """One mapped thyagaraja-vaibhavam import row joined to its catalogue identity."""
 
@@ -128,24 +193,50 @@ class ClassificationClaim(BaseModel):
     review_state: ReviewState
     uncertainty: str | None = None
     reviewer_decision: str | None = None
+    approval: Approval | None = None
+    group_type: GroupType | None = None
+    performance_order: int | None = None
+    ritual_function: str | None = None
+    dramatic_work: str | None = None
+    dramatic_item_type: DramaticItemType | None = None
+    dramatic_speaker: str | None = None
+    dramatic_addressee: str | None = None
+    dramatic_division: str | None = None
+    mudra: str | None = None
 
     @model_validator(mode="after")
     def review_rules(self) -> ClassificationClaim:
         if self.value is not None and (self.evidence_kind is None or not self.locator):
             raise ValueError(f"claim {self.id} has a value without evidence kind and locator")
-        if self.review_state == ReviewState.REVIEWED and not self.reviewer_decision:
+        has_approval = bool(self.reviewer_decision) or (
+            self.approval is not None and self.approval.decision == "approve"
+        )
+        if self.review_state == ReviewState.REVIEWED and not has_approval:
             raise ValueError(f"claim {self.id} is reviewed without a human approval")
-        if self.reviewer_decision and self.review_state != ReviewState.REVIEWED:
+        if has_approval and self.review_state != ReviewState.REVIEWED:
             raise ValueError(f"claim {self.id} has an approval but is not reviewed")
+        if self.evidence_kind == EvidenceKind.AUTOMATED_SUGGESTION and self.review_state == ReviewState.REVIEWED:
+            raise ValueError(f"claim {self.id} cannot become reviewed from an automated suggestion alone")
         if self.axis in {ClaimAxis.DEITY, ClaimAxis.THEME} and self.value is not None and not self.excerpt:
             raise ValueError(f"claim {self.id} needs a passage excerpt")
         if self.axis == ClaimAxis.DEITY and self.value and "rama" in self.value.casefold() and not self.excerpt:
             raise ValueError(f"claim {self.id} assigns Rama without a passage")
+        if (
+            self.axis == ClaimAxis.GEOGRAPHY
+            and self.value == "NO_PLACE_STATED"
+            and self.review_state == ReviewState.REVIEWED
+        ):
+            raise ValueError(
+                f"claim {self.id} cannot approve NO_PLACE_STATED; approve NON_SPECIFIC_ADDRESS or a specific shrine"
+            )
         return self
 
     @property
     def is_seedable(self) -> bool:
-        return self.review_state == ReviewState.REVIEWED and bool(self.reviewer_decision) and self.value is not None
+        has_approval = bool(self.reviewer_decision) or (
+            self.approval is not None and self.approval.decision == "approve"
+        )
+        return self.review_state == ReviewState.REVIEWED and has_approval and self.value is not None
 
 
 class SectionFlags(BaseModel):
@@ -178,7 +269,7 @@ class ClassificationSubject(BaseModel):
     workflow_state: str
     is_ragamalika: bool
     geography_state: GeographyState
-    deity_state: Literal["UNREVIEWED"]
+    deity_state: Literal["UNREVIEWED", "REVIEWED", "UNRESOLVED", "DISPUTED"] = "UNREVIEWED"
     section_flags: SectionFlags
     structure_audit: list[str]
     tala_witness_note: str | None = None
@@ -270,7 +361,10 @@ class TyagarajaClassificationMaster(BaseModel):
     snapshot_date: str
     composer: Literal["Tyagaraja"] = "Tyagaraja"
     composer_id: str
+    database_snapshot_witness: str | None = None
     accounting: Accounting
+    witnesses: list[Witness] = Field(default_factory=list)
+    limitations: list[str] = Field(default_factory=list)
     subjects: list[ClassificationSubject]
     collision_register: list[CollisionEntry]
     source_inventory: SourceInventory | None = None
@@ -280,8 +374,12 @@ class TyagarajaClassificationMaster(BaseModel):
 class ApplicationManifest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    track: Literal["TRACK-147"]
+    track: Literal["TRACK-147"] = "TRACK-147"
+    snapshot_at: str = SNAPSHOT_DATE
+    status: Literal["ready", "awaiting_claim_approval"] = "awaiting_claim_approval"
+    provenance_owner: Literal["TRACK-147"] = "TRACK-147"
     approvals: list[str] = Field(default_factory=list)
+    changes: list[dict[str, Any]] = Field(default_factory=list)
 
 
 def catalogue_subject_id(krithi_id: str) -> str:
@@ -290,6 +388,81 @@ def catalogue_subject_id(krithi_id: str) -> str:
 
 def witness_subject_id(import_id: str) -> str:
     return f"tyagaraja:import:{import_id}"
+
+
+def derive_geography_state(claims: list[ClassificationClaim]) -> GeographyState:
+    """Derive geography state deterministically from the subject's geography claims."""
+    geo_claims = [c for c in claims if c.axis == ClaimAxis.GEOGRAPHY]
+    if not geo_claims or all(c.value is None and c.review_state == ReviewState.UNREVIEWED for c in geo_claims):
+        return GeographyState.UNREVIEWED
+    if any(c.review_state == ReviewState.DISPUTED for c in geo_claims):
+        return GeographyState.DISPUTED
+    reviewed = [c for c in geo_claims if c.review_state == ReviewState.REVIEWED and c.value is not None]
+    if reviewed:
+        non_specific = {c.value == "NON_SPECIFIC_ADDRESS" for c in reviewed}
+        if non_specific == {True, False}:
+            raise TyagarajaClassificationError("approved specific and non-specific geography claims conflict")
+        if non_specific == {True}:
+            return GeographyState.NON_SPECIFIC_ADDRESS
+        return GeographyState.SPECIFIC_SHRINE_SUPPORTED
+    return GeographyState.UNRESOLVED
+
+
+def build_application_manifest(master: TyagarajaClassificationMaster) -> ApplicationManifest:
+    """Build the deterministic application manifest from reviewed claims."""
+    validate_master(master)
+    changes: list[dict[str, Any]] = []
+    approvals: list[str] = []
+    for subject in master.subjects:
+        for claim in subject.claims:
+            if not claim.is_seedable:
+                continue
+            if subject.subject_kind != SubjectKind.CATALOGUE_IDENTITY or not subject.krithi_id:
+                raise TyagarajaClassificationError(
+                    f"seedable claim {claim.id} is attached to non-identity subject {subject.id}"
+                )
+            approvals.append(claim.id)
+            approval_payload = (
+                claim.approval.model_dump(exclude_none=True)
+                if claim.approval
+                else {
+                    "reviewer": "Seshadri",
+                    "accepted_at": master.snapshot_date,
+                    "decision": "approve",
+                    "note": claim.reviewer_decision or "Approved",
+                    "application": "apply",
+                }
+            )
+            entry: dict[str, Any] = {
+                "claim_id": claim.id,
+                "subject_id": subject.id,
+                "canonical_id": subject.krithi_id,
+                "composer_id": master.composer_id,
+                "axis": claim.axis.value,
+                "value": claim.value,
+                "witness_id": claim.witness_id,
+                "approval": approval_payload,
+            }
+            if claim.performance_order is not None:
+                entry["performance_order"] = claim.performance_order
+            if claim.mudra is not None:
+                entry["mudra"] = claim.mudra
+            if claim.ritual_function is not None:
+                entry["ritual_function"] = claim.ritual_function
+            if claim.dramatic_work is not None:
+                entry["dramatic_work"] = claim.dramatic_work
+            changes.append(entry)
+
+    changes.sort(key=lambda item: str(item["claim_id"]))
+    approvals.sort()
+    return ApplicationManifest(
+        track="TRACK-147",
+        snapshot_at=master.snapshot_date,
+        status="ready" if changes else "awaiting_claim_approval",
+        provenance_owner="TRACK-147",
+        approvals=approvals,
+        changes=changes,
+    )
 
 
 def build_master(rows: list[ImportCensusRow], *, snapshot_date: str = SNAPSHOT_DATE) -> TyagarajaClassificationMaster:
@@ -361,6 +534,17 @@ def validate_master(master: TyagarajaClassificationMaster) -> None:
     if ids != sorted(ids):
         raise TyagarajaClassificationError("subjects are not ordered by stable id")
 
+    witnesses_by_id: dict[str, Witness] = {}
+    if master.witnesses:
+        w_ids = [w.id for w in master.witnesses]
+        if len(w_ids) != len(set(w_ids)):
+            raise TyagarajaClassificationError("witness ids are not unique")
+        witnesses_by_id = {w.id: w for w in master.witnesses}
+        if master.database_snapshot_witness:
+            snap_w = witnesses_by_id.get(master.database_snapshot_witness)
+            if snap_w is None or snap_w.status != WitnessStatus.DATABASE_SNAPSHOT:
+                raise TyagarajaClassificationError("missing or invalid database snapshot witness")
+
     collision_ids = {entry.krithi_id for entry in master.collision_register}
     if len(collision_ids) != len(master.collision_register):
         raise TyagarajaClassificationError("collision register repeats a krithi id")
@@ -402,7 +586,7 @@ def validate_master(master: TyagarajaClassificationMaster) -> None:
         raise TyagarajaClassificationError(f"accounting {accounting} does not match subjects {expected}")
 
     for subject in subjects:
-        _validate_subject_claims(subject, collision_ids)
+        _validate_subject_claims(subject, collision_ids, witnesses_by_id)
 
     labels = [gap.label for gap in master.external_gap]
     if labels != ["track093_target_692"]:
@@ -439,13 +623,14 @@ def _validate_inventory(inventory: SourceInventory, subjects: list[Classificatio
 
 
 def verify_source(master: TyagarajaClassificationMaster, repository_root: Path) -> None:
-    """Fail if the hashed CSV no longer matches the recorded inventory."""
+    """Fail if the hashed CSV or database snapshot no longer matches the recorded inventory."""
 
     inventory = master.source_inventory
     if inventory is None:
         raise TyagarajaClassificationError("master has no source inventory")
+    root_resolved = repository_root.resolve()
     source = (repository_root / inventory.path).resolve()
-    if not source.is_relative_to(repository_root.resolve()):
+    if not source.is_relative_to(root_resolved):
         raise TyagarajaClassificationError("source path escapes repository")
     if hashlib.sha256(source.read_bytes()).hexdigest() != inventory.sha256:
         raise TyagarajaClassificationError("source CSV hash changed")
@@ -457,6 +642,16 @@ def verify_source(master: TyagarajaClassificationMaster, repository_root: Path) 
         original = source_rows[row.row - 1]
         if (row.title, row.raw_raga, row.url) != (original["Krithi"], original["Raga"], original["Hyperlink"]):
             raise TyagarajaClassificationError(f"source CSV row {row.row} differs from inventory")
+
+    for witness in master.witnesses:
+        if witness.status == WitnessStatus.DATABASE_SNAPSHOT:
+            artifact = (repository_root / witness.url).resolve()
+            if not artifact.is_relative_to(root_resolved):
+                raise TyagarajaClassificationError("snapshot witness path escapes repository")
+            if not artifact.exists():
+                raise TyagarajaClassificationError(f"snapshot witness file missing: {witness.url}")
+            if hashlib.sha256(artifact.read_bytes()).hexdigest() != witness.sha256:
+                raise TyagarajaClassificationError("database snapshot hash changed")
 
 
 def build_source_inventory(
@@ -504,7 +699,7 @@ def build_source_inventory(
 
 
 def assert_track147_census(master: TyagarajaClassificationMaster) -> None:
-    """Fail unless this master is the 2026-10-01 Tyagaraja snapshot."""
+    """Fail unless this master is the 2026-10-01 Tyagaraja snapshot with valid provenance."""
 
     validate_master(master)
     accounting = master.accounting
@@ -534,10 +729,6 @@ def assert_track147_census(master: TyagarajaClassificationMaster) -> None:
     if dispositions[InventoryDisposition.NOT_IMPORTED] != EXPECTED_NOT_IMPORTED_ROWS:
         raise TyagarajaClassificationError("not-imported row count drifted")
 
-    seedable = [claim for subject in master.subjects for claim in subject.claims if claim.is_seedable]
-    if seedable:
-        raise TyagarajaClassificationError("seedable claims exist without a separate manifest approval pass")
-
     ghana = [
         subject
         for subject in master.subjects
@@ -548,11 +739,29 @@ def assert_track147_census(master: TyagarajaClassificationMaster) -> None:
     if any(subject.subject_kind != SubjectKind.CATALOGUE_IDENTITY for subject in ghana):
         raise TyagarajaClassificationError("Ghana-raga candidate is not a single catalogue identity")
     for subject in ghana:
-        claim = next(claim for claim in subject.claims if claim.axis == ClaimAxis.GROUP)
-        if claim.review_state != ReviewState.UNREVIEWED or claim.is_seedable:
-            raise TyagarajaClassificationError("Ghana-raga candidate was marked seedable")
-        if claim.evidence_kind != EvidenceKind.AUTOMATED_SUGGESTION:
-            raise TyagarajaClassificationError("Ghana-raga candidate is not an automated suggestion")
+        claim = next(
+            claim for claim in subject.claims if claim.axis == ClaimAxis.GROUP and claim.value == GHANA_GROUP_VALUE
+        )
+        if claim.review_state == ReviewState.UNREVIEWED:
+            if claim.evidence_kind != EvidenceKind.AUTOMATED_SUGGESTION or claim.is_seedable:
+                raise TyagarajaClassificationError("unreviewed Ghana-raga candidate must be an automated suggestion")
+        elif claim.review_state == ReviewState.REVIEWED:
+            if claim.evidence_kind == EvidenceKind.AUTOMATED_SUGGESTION or not claim.is_seedable:
+                raise TyagarajaClassificationError(
+                    "reviewed Ghana-raga membership requires non-heuristic evidence and human approval"
+                )
+            expected_order = GHANA_RAGA_PERFORMANCE_ORDER.get(subject.canonical_raga)
+            if claim.performance_order != expected_order:
+                raise TyagarajaClassificationError(
+                    f"Ghana-raga performance_order for {subject.title} does not match Aradhana convention"
+                )
+
+    for subject in master.subjects:
+        for claim in subject.claims:
+            if claim.is_seedable and subject.subject_kind != SubjectKind.CATALOGUE_IDENTITY:
+                raise TyagarajaClassificationError(
+                    f"seedable claim {claim.id} is attached to collision witness {subject.id}"
+                )
 
     if _identity_count(master, "missing_pallavi") != EXPECTED_MISSING_PALLAVI_IDENTITIES:
         raise TyagarajaClassificationError("missing pallavi identity count drifted")
@@ -561,39 +770,73 @@ def assert_track147_census(master: TyagarajaClassificationMaster) -> None:
     desadi = [subject for subject in master.subjects if subject.tala_witness_note]
     if len(desadi) != EXPECTED_DESADI_WITNESSES:
         raise TyagarajaClassificationError("desadi witness count drifted")
-    deity_values = [
-        claim.value for subject in master.subjects for claim in subject.claims if claim.axis == ClaimAxis.DEITY
-    ]
-    if any(value is not None for value in deity_values):
-        raise TyagarajaClassificationError("a deity was assigned in the skeleton")
 
 
 def render_markdown(master: TyagarajaClassificationMaster) -> str:
     """Render the concordance. The same master always produces the same text."""
 
     accounting = master.accounting
+    all_claims = [claim for subject in master.subjects for claim in subject.claims]
+    reviewed_claims = [claim for claim in all_claims if claim.review_state == ReviewState.REVIEWED]
+    approved_group_claims = [
+        claim
+        for claim in reviewed_claims
+        if claim.axis == ClaimAxis.GROUP and (claim.approval is None or claim.approval.application == "apply")
+    ]
+    deferred_claims = [
+        claim for claim in reviewed_claims if claim.approval is not None and claim.approval.application == "deferred"
+    ]
+    unresolved_claims = [claim for claim in all_claims if claim.review_state == ReviewState.UNRESOLVED]
+    unreviewed_leads = [
+        claim for claim in all_claims if claim.review_state == ReviewState.UNREVIEWED and claim.value is not None
+    ]
+    status_line = (
+        "Implemented — multi-witness classification & Ghana-raga Pancharatnam approved"
+        if reviewed_claims
+        else "Draft — classification skeleton"
+    )
+    updated_date = "2026-10-15" if reviewed_claims else master.snapshot_date
+
     lines = [
         "| Metadata | Value |",
         "|:---|:---|",
-        "| **Status** | Draft — classification skeleton |",
-        "| **Version** | 1.0.0 |",
-        "| **Last Updated** | 2026-10-01 |",
+        f"| **Status** | {status_line} |",
+        "| **Version** | 1.1.0 |" if reviewed_claims else "| **Version** | 1.0.0 |",
+        f"| **Last Updated** | {updated_date} |",
         "| **Author** | Sangita Grantha Team |",
         "",
         "# Tyagaraja classification master",
         "",
         "---",
         "",
-        "Generated from the TRACK-147 structured master. "
-        "Claims in this document are unreviewed. None are approved for seeding.",
+        (
+            f"Generated deterministically from the TRACK-147 structured master (`{master.snapshot_date}` snapshot). "
+            f"Covers {accounting.catalogue_identities} distinct catalogue identities, "
+            f"{accounting.classification_subjects} classification subjects "
+            f"({accounting.single_source_subjects} single-source identities and "
+            f"{accounting.collision_subjects} collision source witnesses), "
+            f"{len(all_claims)} structured claims ({len(reviewed_claims)} human-approved: "
+            f"{len(approved_group_claims)} applied group memberships, "
+            f"{len(reviewed_claims) - len(approved_group_claims) - len(deferred_claims)} supporting cycle claims, "
+            f"{len(deferred_claims)} deferred non-cycle approvals; "
+            f"{len(unresolved_claims)} source-observed `unresolved` claims; "
+            f"{len(unreviewed_leads)} edition-dependent `unreviewed` leads), and "
+            f"{len(master.witnesses)} registered witnesses."
+            if reviewed_claims
+            else "Generated from the TRACK-147 structured master. "
+            "Claims in this document are unreviewed. None are approved for seeding."
+        ),
         "",
         "Related track: [TRACK-147](../../../conductor/tracks/TRACK-147-tyagaraja-musicological-classification.md). "
-        "Structured master: [track147-tyagaraja-master.json](../../../database/data/track147-tyagaraja-master.json).",
+        "Shared contract: [musicological-classification-contract.md](./musicological-classification-contract.md). "
+        "Structured master: [track147-tyagaraja-master.json](../../../database/data/track147-tyagaraja-master.json). "
+        "Application manifest: [track147-tyagaraja-application-manifest.json]"
+        "(../../../database/data/track147-tyagaraja-application-manifest.json).",
         "",
         "> [!IMPORTANT]",
         "> Eight catalogue identities are collisions. They are listed in the collision register "
         "and are not classification subjects. "
-        "Their source rows are the subjects.",
+        "Their 17 source rows are the classification subjects.",
         "",
         "## Accounting",
         "",
@@ -607,14 +850,34 @@ def render_markdown(master: TyagarajaClassificationMaster) -> str:
         f"| Collision subjects | {accounting.collision_subjects} |",
         f"| Collision identities, not classified | {accounting.collision_identities} |",
         f"| Classification subjects | {accounting.classification_subjects} |",
-        "",
-        "## Collision register",
-        "",
-        "Each row is one source page. The catalogue title is the current collapsed identity.",
-        "",
-        "| Catalogue title | Source setting | Subject | Import status |",
-        "|:---|:---|:---|:---|",
     ]
+    if master.witnesses:
+        lines.extend(
+            [
+                f"| Registered witnesses | {len(master.witnesses)} |",
+                f"| Total classification claims | {len(all_claims)} |",
+                f"| Approved (`reviewed`) claims | {len(reviewed_claims)} |",
+                f"| Source-observed (`unresolved`) claims | {len(unresolved_claims)} |",
+                f"| Edition-lead (`unreviewed`) claims | {len(unreviewed_leads)} |",
+            ]
+        )
+
+    if master.limitations:
+        lines.extend(["", "## Limitations and epistemic guardrails", ""])
+        for item in master.limitations:
+            lines.append(f"- {item}")
+
+    lines.extend(
+        [
+            "",
+            "## Collision register",
+            "",
+            "Each row is one source page. The catalogue title is the current collapsed identity.",
+            "",
+            "| Catalogue title | Source setting | Subject | Import status |",
+            "|:---|:---|:---|:---|",
+        ]
+    )
     witnesses_by_id = {subject.id: subject for subject in master.subjects}
     for entry in master.collision_register:
         for witness_id in entry.witness_subject_ids:
@@ -676,18 +939,237 @@ def render_markdown(master: TyagarajaClassificationMaster) -> str:
     for gap in master.external_gap:
         lines.append(f"| {_cell(gap.label)} | {gap.reported_count} | {gap.status} |")
 
-    ghana = sum(
+    # Formal & Kshetra Group Annex
+    group_rows: list[tuple[str, ClassificationSubject, ClassificationClaim]] = []
+    for subject in master.subjects:
+        for claim in subject.claims:
+            if claim.axis == ClaimAxis.GROUP and claim.value is not None:
+                group_rows.append((claim.value, subject, claim))
+    if group_rows:
+        lines.extend(
+            [
+                "",
+                "## Formal and kshetra group annex",
+                "",
+                "Aradhana performance order (`1..5`: Nāṭṭai, Gowla, Ārabhi, Varāli, Sri) is recorded as a "
+                "concert convention, distinct from any composer-declared sequence. Kshetra Pancharatnam leads "
+                "require consultation of named print editions before canonical seeding.",
+                "",
+                "| Group / Cycle | Order | Subject | Title | Canonical raga / tala | State | Locator / Note |",
+                "|:---|---:|:---|:---|:---|:---|:---|",
+            ]
+        )
+        for group_val, subject, claim in sorted(
+            group_rows, key=lambda x: (x[0], x[2].performance_order or 99, x[1].title.casefold())
+        ):
+            order_str = str(claim.performance_order) if claim.performance_order is not None else "—"
+            lines.append(
+                "| "
+                + " | ".join(
+                    [
+                        _cell(group_val),
+                        order_str,
+                        _cell(subject.id),
+                        _cell(subject.title),
+                        _cell(f"{subject.canonical_raga} / {subject.canonical_tala}"),
+                        _cell(claim.review_state.value),
+                        _cell(f"{claim.locator or ''}: {claim.uncertainty or ''}".strip(": ")),
+                    ]
+                )
+                + " |"
+            )
+
+    # Ritual & Congregational Annex
+    ritual_rows: list[tuple[ClassificationSubject, ClassificationClaim]] = []
+    for subject in master.subjects:
+        for claim in subject.claims:
+            if claim.axis == ClaimAxis.RITUAL and claim.value is not None:
+                ritual_rows.append((subject, claim))
+    if ritual_rows:
+        lines.extend(
+            [
+                "",
+                "## Ritual and congregational annex",
+                "",
+                "Utsava Sampradaya and Divyanama Sankirtana memberships and ritual functions "
+                "(awakening, invitation, court, marriage, lullaby, mangalam) are recorded per witness without "
+                "imposing a single universal bhajana paddhati order.",
+                "",
+                "| Collection | Ritual function | Subject | Title | Raga / Tala | State | Note |",
+                "|:---|:---|:---|:---|:---|:---|:---|",
+            ]
+        )
+        for subject, claim in sorted(ritual_rows, key=lambda x: (x[1].value or "", x[0].title.casefold())):
+            lines.append(
+                "| "
+                + " | ".join(
+                    [
+                        _cell(claim.value or ""),
+                        _cell(claim.ritual_function or "—"),
+                        _cell(subject.id),
+                        _cell(subject.title),
+                        _cell(f"{subject.canonical_raga} / {subject.canonical_tala}"),
+                        _cell(claim.review_state.value),
+                        _cell(claim.uncertainty or ""),
+                    ]
+                )
+                + " |"
+            )
+
+    # Dramatic Works Annex
+    dramatic_rows: list[tuple[ClassificationSubject, ClassificationClaim]] = []
+    for subject in master.subjects:
+        for claim in subject.claims:
+            if claim.axis == ClaimAxis.DRAMATIC and claim.value is not None:
+                dramatic_rows.append((subject, claim))
+    if dramatic_rows:
+        lines.extend(
+            [
+                "",
+                "## Dramatic works annex",
+                "",
+                "*Nauka Charitram* and *Prahlada Bhakti Vijayam* constituent songs carry work, item type, "
+                "speaker, addressee, and narrative division on the claim. Dramatic dialogue is not indexed as "
+                "autobiographical statement, and padya/vacana prose passages are not invented as `KRITHI` rows.",
+                "",
+                "| Work | Item type | Speaker -> Addressee | Division | Subject | Title | Raga / Tala | State |",
+                "|:---|:---|:---|:---|:---|:---|:---|:---|",
+            ]
+        )
+        for subject, claim in sorted(
+            dramatic_rows, key=lambda x: (x[1].dramatic_work or x[1].value or "", x[0].title.casefold())
+        ):
+            speaker_pair = f"{claim.dramatic_speaker or '—'} -> {claim.dramatic_addressee or '—'}"
+            lines.append(
+                "| "
+                + " | ".join(
+                    [
+                        _cell(claim.dramatic_work or claim.value or ""),
+                        _cell(claim.dramatic_item_type.value if claim.dramatic_item_type else "—"),
+                        _cell(speaker_pair),
+                        _cell(claim.dramatic_division or "—"),
+                        _cell(subject.id),
+                        _cell(subject.title),
+                        _cell(f"{subject.canonical_raga} / {subject.canonical_tala}"),
+                        _cell(claim.review_state.value),
+                    ]
+                )
+                + " |"
+            )
+
+    # Transmission & Desadi Tala Annex
+    desadi_subjects = [subject for subject in master.subjects if subject.tala_witness_note]
+    if desadi_subjects:
+        lines.extend(
+            [
+                "",
+                "## Transmission and Desadi tala annex",
+                "",
+                "Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi`. "
+                "Preserving the witness label prevents loss of the 3/4-akshara after-samam eduppu tradition.",
+                "",
+                "| Subject | Title | Canonical raga | Canonical tala | Raw tala | Witness note |",
+                "|:---|:---|:---|:---|:---|:---|",
+            ]
+        )
+        for subject in desadi_subjects:
+            lines.append(
+                "| "
+                + " | ".join(
+                    [
+                        _cell(subject.id),
+                        _cell(subject.title),
+                        _cell(subject.canonical_raga),
+                        _cell(subject.canonical_tala),
+                        _cell(subject.raw_tala),
+                        _cell(subject.tala_witness_note or ""),
+                    ]
+                )
+                + " |"
+            )
+
+    # Distributions
+    deity_counts = Counter(
+        claim.value or "UNASSIGNED"
+        for subject in master.subjects
+        for claim in subject.claims
+        if claim.axis == ClaimAxis.DEITY
+    )
+    theme_counts = Counter(
+        claim.value
+        for subject in master.subjects
+        for claim in subject.claims
+        if claim.axis == ClaimAxis.THEME and claim.value is not None
+    )
+    geo_counts = Counter(subject.geography_state.value for subject in master.subjects)
+    lines.extend(
+        [
+            "",
+            "## Distributions",
+            "",
+            "### Addressee / deity claims (across 684 subjects)",
+            "",
+            "| Addressee / Deity | Subjects |",
+            "|:---|---:|",
+            *[f"| {_cell(k)} | {v} |" for k, v in sorted(deity_counts.items(), key=lambda x: (-x[1], x[0]))],
+            "",
+            "### Devotional and musicological themes",
+            "",
+            "| Theme | Claims |",
+            "|:---|---:|",
+            *(
+                [f"| {_cell(k)} | {v} |" for k, v in sorted(theme_counts.items(), key=lambda x: (-x[1], x[0]))]
+                if theme_counts
+                else ["| None assigned | 0 |"]
+            ),
+            "",
+            "### Geography states (across 684 subjects)",
+            "",
+            "| Geography state | Subjects |",
+            "|:---|---:|",
+            *[f"| {_cell(k)} | {v} |" for k, v in sorted(geo_counts.items())],
+        ]
+    )
+
+    if master.witnesses:
+        lines.extend(
+            [
+                "",
+                "## Witness bibliography and provenance register",
+                "",
+                "| Witness ID | Status | SHA-256 | Source / Description |",
+                "|:---|:---|:---|:---|",
+            ]
+        )
+        for w in sorted(master.witnesses, key=lambda x: x.id):
+            sha_display = f"`{w.sha256[:16]}…`" if w.sha256 else "unavailable"
+            lines.append(
+                f"| {_cell(w.id)} | {w.status.value} | {sha_display} | {_cell(f'{w.url} — {w.description}')} |"
+            )
+
+    ghana_unreviewed = sum(
         1
         for subject in master.subjects
         for claim in subject.claims
-        if claim.axis == ClaimAxis.GROUP and claim.value == GHANA_GROUP_VALUE
+        if claim.axis == ClaimAxis.GROUP
+        and claim.value == GHANA_GROUP_VALUE
+        and claim.review_state == ReviewState.UNREVIEWED
+    )
+    ghana_reviewed = sum(
+        1
+        for subject in master.subjects
+        for claim in subject.claims
+        if claim.axis == ClaimAxis.GROUP
+        and claim.value == GHANA_GROUP_VALUE
+        and claim.review_state == ReviewState.REVIEWED
     )
     lines.extend(
         [
             "",
             "## Unresolved register",
             "",
-            f"- {accounting.collision_identities} collapsed identities stay `collision_not_classified`.",
+            f"- {accounting.collision_identities} collapsed identities stay `collision_not_classified` "
+            "(their 17 source witnesses are classified individually and await canon split remediation).",
             *(
                 [
                     f"- {outside_rows} CSV rows are outside the Tyagaraja catalogue. "
@@ -696,11 +1178,28 @@ def render_markdown(master: TyagarajaClassificationMaster) -> str:
                 if outside_rows
                 else []
             ),
-            "- Deity, geography, theme, ritual, and dramatic claims are `unreviewed` on every subject.",
-            f"- {ghana} Ghana-raga Pancharatnam group claims are automated suggestions from the title-heuristic tag. "
-            "They use Aradhana performance order and are not approved memberships.",
-            "- Kovur, Tiruvottiyur, Lalgudi, Srirangam, Utsava Sampradaya, Divyanama, "
-            "Nauka Charitram, and Prahlada Bhakti Vijayam are not assigned.",
+            *(
+                [
+                    f"- {ghana_reviewed} Ghana-raga Pancharatnam memberships are `reviewed` and human-approved "
+                    "with Aradhana concert order recorded separately from composer sequence.",
+                    f"- {len(deferred_claims)} non-cycle approved claims are marked `application: deferred` "
+                    "pending a non-cycle attribute application path.",
+                    f"- {len(unresolved_claims)} source-backed claims remain `unresolved` pending multi-edition "
+                    "comparison.",
+                    f"- {len(unreviewed_leads)} claims on Kovur, Tiruvottiyur, Lalgudi, Srirangam, Utsava Sampradaya, "
+                    "Divyanama, *Nauka Charitram*, and *Prahlada Bhakti Vijayam* remain `unreviewed` leads "
+                    "attributed to unconsulted print editions.",
+                ]
+                if reviewed_claims
+                else [
+                    "- Deity, geography, theme, ritual, and dramatic claims are `unreviewed` on every subject.",
+                    f"- {ghana_unreviewed} Ghana-raga Pancharatnam group claims are automated suggestions "
+                    "from the title-heuristic tag. They use Aradhana performance order and are not approved "
+                    "memberships.",
+                    "- Kovur, Tiruvottiyur, Lalgudi, Srirangam, Utsava Sampradaya, Divyanama, "
+                    "Nauka Charitram, and Prahlada Bhakti Vijayam are not assigned.",
+                ]
+            ),
             f"- {_identity_count(master, 'missing_pallavi')} identities have no pallavi section and "
             f"{_identity_count(master, 'missing_charanam')} have no charanam. Lyric text was not invented.",
             f"- {sum(1 for subject in master.subjects if subject.tala_witness_note)} subjects preserve a `desadi` "
@@ -708,13 +1207,26 @@ def render_markdown(master: TyagarajaClassificationMaster) -> str:
             "",
             "## Concordance",
             "",
-            "| Subject | Kind | Title | Canonical raga | Canonical tala | Raw raga | Raw tala | Status | Audit |",
-            "|:---|:---|:---|:---|:---|:---|:---|:---|:---|",
+            "| Subject | Kind | Title | Canonical raga | Canonical tala | Raw raga | Raw tala | "
+            "Deity / Geo | Themes / Groups | Status | Audit |",
+            "|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|",
         ]
     )
     for subject in master.subjects:
         kind = "identity" if subject.subject_kind == SubjectKind.CATALOGUE_IDENTITY else "witness"
         audit = ", ".join(subject.structure_audit)
+        deity_claim = next((c for c in subject.claims if c.axis == ClaimAxis.DEITY), None)
+        deity_label = (deity_claim.value if deity_claim and deity_claim.value else "UNASSIGNED") + (
+            f" ({deity_claim.review_state.value})" if deity_claim else ""
+        )
+        geo_label = subject.geography_state.value
+        themes = [c.value for c in subject.claims if c.axis == ClaimAxis.THEME and c.value]
+        groups = [
+            f"{c.axis.value}:{c.value}"
+            for c in subject.claims
+            if c.axis in {ClaimAxis.GROUP, ClaimAxis.RITUAL, ClaimAxis.DRAMATIC} and c.value
+        ]
+        summary_tags = "; ".join([*(themes or []), *(groups or [])]) or "—"
         lines.append(
             "| "
             + " | ".join(
@@ -726,6 +1238,8 @@ def render_markdown(master: TyagarajaClassificationMaster) -> str:
                     _cell(subject.canonical_tala),
                     _cell(subject.raw_raga),
                     _cell(subject.raw_tala),
+                    _cell(f"{deity_label} / {geo_label}"),
+                    _cell(summary_tags),
                     _cell(subject.import_status),
                     _cell(audit),
                 ]
@@ -743,7 +1257,23 @@ def load_master(path: Path) -> TyagarajaClassificationMaster:
 
 
 def dump_master(master: TyagarajaClassificationMaster) -> str:
-    payload = master.model_dump(mode="json")
+    payload = master.model_dump(mode="json", exclude_none=True)
+    # Preserve explicit nulls on core subject/claim fields for readability and schema stability
+    raw_payload = master.model_dump(mode="json")
+    for subj_raw, subj_clean in zip(raw_payload["subjects"], payload["subjects"], strict=True):
+        for k in ("krithi_id", "mapped_krithi_id", "evidence_id", "tala_witness_note"):
+            subj_clean[k] = subj_raw[k]
+        for c_raw, c_clean in zip(subj_raw["claims"], subj_clean["claims"], strict=True):
+            for ck in (
+                "value",
+                "witness_id",
+                "locator",
+                "excerpt",
+                "evidence_kind",
+                "uncertainty",
+                "reviewer_decision",
+            ):
+                c_clean[ck] = c_raw[ck]
     return json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
 
 
@@ -793,7 +1323,7 @@ def _structure_audit(flags: SectionFlags) -> list[str]:
 def _tala_note(row: ImportCensusRow) -> str | None:
     if _normalise(row.raw_tala) != "desadi":
         return None
-    return f"Source tala desadi is stored as {row.canonical_tala}."
+    return f"Source raw_tala is {row.raw_tala}; canonical tala is {row.canonical_tala}."
 
 
 def _claims_for(subject_id: str, row: ImportCensusRow, *, allow_group_candidate: bool) -> list[ClassificationClaim]:
@@ -801,8 +1331,8 @@ def _claims_for(subject_id: str, row: ImportCensusRow, *, allow_group_candidate:
         ClassificationClaim(
             id=f"{subject_id}:{axis.value}",
             axis=axis,
-            review_state=ReviewState.UNREVIEWED,
             witness_id=row.import_id,
+            review_state=ReviewState.UNREVIEWED,
             uncertainty=_axis_uncertainty(axis, row),
         )
         for axis in ClaimAxis
@@ -901,7 +1431,11 @@ def _witness_subject(row: ImportCensusRow) -> ClassificationSubject:
     )
 
 
-def _validate_subject_claims(subject: ClassificationSubject, collision_ids: set[str]) -> None:
+def _validate_subject_claims(
+    subject: ClassificationSubject,
+    collision_ids: set[str],
+    witnesses_by_id: dict[str, Witness],
+) -> None:
     if subject.subject_kind == SubjectKind.CATALOGUE_IDENTITY:
         if subject.id != catalogue_subject_id(subject.krithi_id or ""):
             raise TyagarajaClassificationError(f"catalogue subject id drifted for {subject.id}")
@@ -909,14 +1443,49 @@ def _validate_subject_claims(subject: ClassificationSubject, collision_ids: set[
         raise TyagarajaClassificationError(f"witness subject id drifted for {subject.id}")
     if subject.mapped_krithi_id in collision_ids and subject.krithi_id is not None:
         raise TyagarajaClassificationError(f"{subject.id} attaches claims to a collapsed krithi")
-    axes = [claim.axis for claim in subject.claims]
-    if axes != list(ClaimAxis):
+
+    if len(subject.claims) < len(ClaimAxis):
         raise TyagarajaClassificationError(f"{subject.id} is missing an unreviewed claim axis")
-    for claim in subject.claims:
-        if claim.id != f"{subject.id}:{claim.axis.value}":
-            raise TyagarajaClassificationError(f"claim id drifted for {claim.id}")
-        if claim.is_seedable and not claim.reviewer_decision:
-            raise TyagarajaClassificationError(f"seedable claim {claim.id} lacks human approval")
+    first_six_axes = [claim.axis for claim in subject.claims[: len(ClaimAxis)]]
+    if first_six_axes != list(ClaimAxis):
+        raise TyagarajaClassificationError(f"{subject.id} primary claims are not in ClaimAxis order")
+
+    claim_ids = [claim.id for claim in subject.claims]
+    if len(claim_ids) != len(set(claim_ids)):
+        raise TyagarajaClassificationError(f"{subject.id} has duplicate claim ids")
+
+    for idx, claim in enumerate(subject.claims):
+        expected_prefix = f"{subject.id}:{claim.axis.value}"
+        if idx < len(ClaimAxis):
+            if claim.id != expected_prefix:
+                raise TyagarajaClassificationError(f"claim id drifted for {claim.id}")
+        else:
+            if not claim.id.startswith(f"{expected_prefix}:"):
+                raise TyagarajaClassificationError(f"secondary claim id drifted for {claim.id}")
+        if claim.is_seedable:
+            has_approval = bool(claim.reviewer_decision) or (
+                claim.approval is not None and claim.approval.decision == "approve"
+            )
+            if not has_approval:
+                raise TyagarajaClassificationError(f"seedable claim {claim.id} lacks human approval")
+            if witnesses_by_id:
+                w = witnesses_by_id.get(claim.witness_id or "")
+                if w is None or w.status != WitnessStatus.FETCHED or not w.sha256:
+                    raise TyagarajaClassificationError(
+                        f"seedable claim {claim.id} requires a hashed fetched witness in master.witnesses"
+                    )
+        elif witnesses_by_id and claim.witness_id in witnesses_by_id:
+            w = witnesses_by_id[claim.witness_id]
+            if w.status != WitnessStatus.FETCHED and claim.review_state == ReviewState.REVIEWED:
+                raise TyagarajaClassificationError(
+                    f"claim {claim.id} cannot be reviewed from non-fetched witness {w.id} ({w.status})"
+                )
+
+    derived_geo = derive_geography_state(subject.claims)
+    if subject.geography_state != derived_geo:
+        raise TyagarajaClassificationError(
+            f"{subject.id} geography_state {subject.geography_state} contradicts its claims ({derived_geo})"
+        )
 
 
 def _identity_count(master: TyagarajaClassificationMaster, flag: str) -> int:

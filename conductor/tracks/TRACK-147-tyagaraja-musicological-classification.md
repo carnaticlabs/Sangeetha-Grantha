@@ -1,17 +1,17 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | In Progress |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-10-01 |
+| **Status** | Completed |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-10-16 |
 | **Author** | Sangeetha Grantha Team |
 
 # Track: Tyagaraja Corpus Concordance & Musicological Classification
 
 **ID:** TRACK-147  
-**Status:** In Progress — Classification
+**Status:** Completed
 **Owner:** Seshadri  
 **Created:** 2026-09-30  
-**Updated:** 2026-10-01
+**Updated:** 2026-10-16
 
 ---
 
@@ -105,9 +105,9 @@ The source inventory and recorded import total disagree. Current evidence and me
 
 ## Spec
 
-**Status:** Accepted
-**Accepted by:** Seshadri
-**Accepted at:** 2026-09-30
+**Status:** Amended (Accepted by Seshadri)
+**Accepted by:** Seshadri (explicit chat instruction to bring TRACK-147 to the same end-to-end standard as TRACK-146, including hashed witness registries, multi-witness scholarship, context formatter headers, macro indexer cycles, retrieval benchmarks, and `SANGITA_ALLOW_TEST_EDITS=1`)
+**Accepted at:** 2026-10-15
 
 This spec records what must be true for every Tyagaraja candidate in the 2026-09-30 catalogue snapshot. It does not apply classifications, split identities, or change schema. Product implementation waits for an accepted Plan.
 
@@ -178,6 +178,11 @@ Catalogue titles that match conventional kshetra-pancharatna incipits are leads 
 10. **Structure audit does not invent text.** The 27 missing pallavi rows and 4 missing charanam rows are defects to investigate. A missing anupallavi is allowed, and is expected for many Divyanama and Utsava items. Swara passages, including those in the Ghana-raga five, stay in notation variants rather than being copied into lyric text. The composer mudra supports attribution review; its absence does not exclude a song.
 11. **Shared contract.** TRACK-146 owns identity, evidence vocabulary, group types, geography states, review rules, and distinct-versus-member counting. This track extends that contract for ritual function, dramatic item type, and transmission witnesses. One owner per shared change. Formatter and macro-document generation stay with TRACK-145 unless the accepted Plan assigns a gap to this track. Dikshitar vibhakti, bhuta, and posture columns are not copied onto Tyagaraja.
 12. **Application is later and provenance-safe.** After Plan acceptance, approved claims go through a new Flyway migration or idempotent repeatable seed. `R__seed_07` must not be edited into a second writer of Tyagaraja memberships. Legacy `canonical_cycle` tag links are reconciled only for the provenance this track owns. `primary_language = en` is not silently rewritten.
+13. **Hashed Witness Registry & Catalogue Snapshot:** Maintain a formal `witnesses` registry on `track147-tyagaraja-master.json` with SHA-256 verification for `database/data/track147-catalogue-snapshot.json` (`database_snapshot`), `database/for_import/Thyagaraja-Krithi-For-Import.csv` (`csv-inventory`), `database/data/track144-tala-evidence-tyagaraja-complete.json` (`track144-tala-pallavi-dossier`), and all 684 fetched `thyagaraja-vaibhavam.blogspot.com` witnesses (`fetched`, with distinct SHA-256 hashes from cached HTML or `imported_krithis.parsed_payload` extraction checksums), while keeping unconsulted print editions and external PDFs (`govinda-rao-tyagaraja`, `ramanujachari-spiritual-heritage`, `sambamoorthy-tyagaraja`, `ma:jma-vol18-1947`, `ma:jma-vol39-1968`, `ma:jma-2017`, `sanskrit-docs-tyagaraja`) explicitly `unavailable` until page locators are verified from the physical or scanned editions in [TRACK-149](TRACK-149-tyagaraja-edition-consultation-collision-split.md).
+14. **Multi-Valued Claim Architecture & Approval Deferral:** Support multiple evidenced claims per subject and axis (e.g., multiple devotional themes, overlapping Utsava Sampradaya and Divyanama ritual memberships, or multi-witness observations) with structured `Approval` metadata (`reviewer`, `accepted_at`, `decision`, `note`, `application: "apply" | "deferred"`, `deferral_reason`) aligned with `TRACK-146`'s shared contract.
+15. **Context Formatter & Embedding Integration (`context_formatter.py`):** Extend `_lakshana_headers` and `_format_cycle_clause` to render approved Tyagaraja cycle clauses and discriminative attributes (`theme`, `ritual`, `dramatic`, `mudra`, `tala_witness` / `Desadi`) within the strict `MAX_HEADER_WORDS = 60` budget, withholding unapproved or heuristic-only claims.
+16. **Macro Indexer Generalization (`macro_indexer.py`):** Support Tyagaraja canonical cycles and works (`tyagaraja-ghana-raga-pancharatnam`, Kshetra Pancharatnams, Utsava Sampradaya, Divyanama, *Nauka Charitram*, *Prahlada Bhakti Vijayam*) in `index_cycle_overviews` and `reviewed_cycle_composer` with `TRACK-147` provenance and human-approval gates.
+17. **High-Discrimination Retrieval Benchmarks (`retrieval_benchmarks.json`):** Add approval-gated `TY-147-*` evaluation probes covering Ghana-raga Pancharatnam gems, *nadopasana* / musical knowledge themes, ritual awakening (*melukolupu*) / lullaby (*laali*) functions, dramatic speaker/work context (*Nauka Charitram*, *Prahlada Bhakti Vijayam*), supported kshetra pancharatnam associations, `desadi` Adi witnesses, and a cross-composer separator distinguishing Muthuswami Dikshitar's `tyagaraja-vibhakti` (on Lord Tyagaraja of Tiruvarur) from saint-composer Tyagaraja.
 
 ### Design
 
@@ -217,27 +222,31 @@ Lives in the existing catalogue, not a parallel store.
 
 ## Plan
 
-**Status:** Accepted
-**Accepted by:** Seshadri
-**Accepted at:** 2026-10-01
+**Status:** Amended (Accepted by Seshadri)
+**Accepted by:** Seshadri (explicit chat instruction to bring TRACK-147 to the same end-to-end standard as TRACK-146, export `database/data/track147-catalogue-snapshot.json`, and enable `SANGITA_ALLOW_TEST_EDITS=1`)
+**Accepted at:** 2026-10-15
 
-Accepting this plan authorises the classification master and local reversible work. It does not approve any musical claim, seed, commit, paid embedding run, or `make db-reset`.
+Accepting this plan authorises the classification master, hashed witness registry, local database snapshot export, formatter/macro/benchmark extensions, and local reversible work (including deliberate test edits under `SANGITA_ALLOW_TEST_EDITS=1`). Individual musical claim approvals for canonical seeding remain human-gated.
 
 ### Files that change
 
-TRACK-146 owns `musicological-classification-contract.md`, `musicological_classification.py`, and the shared generator. This track does not edit those files or TRACK-146's corpus artifacts. Tyagaraja extensions (ritual function, dramatic item, transmission witness, collision subject) are fields on the Tyagaraja master. If the shared module is already on the branch when implementation starts, the Tyagaraja checker imports it. If it is absent because TRACK-146's plan is still unaccepted, the checker validates the same claim shape from TRACK-146's accepted spec and is folded into the shared module later. A second contract document is not created.
+TRACK-146 owns `musicological-classification-contract.md`, `musicological_classification.py`, and the shared generator. This track does not break TRACK-146's corpus artifacts. Tyagaraja extensions (ritual function, dramatic item, transmission witness, collision subject, hashed witness registry) live on the Tyagaraja master and extend the shared formatter, macro indexer, and retrieval benchmark suite.
 
 | Path | Role |
 |:---|:---|
-| `database/data/track147-tyagaraja-master.json` | Every classification subject, census facts, claims, and the external-gap register |
-| `database/data/track147-tyagaraja-application-manifest.json` | Approved canonical changes only. Stays empty until a claim has an explicit human approval |
-| `application_documentation/01-requirements/features/tyagaraja-classification-master.md` | Generated concordance, collision register, unresolved register, and distributions |
-| `tools/krithi-extract-enrich-worker/src/tyagaraja_classification.py` | Tyagaraja validation: subject grain, collision ban, extension axes |
-| `tools/krithi-extract-enrich-worker/scripts/generate_tyagaraja_master.py` | Validate the master and render the markdown. No network and no database writes |
-| `tools/krithi-extract-enrich-worker/tests/test_tyagaraja_classification.py` | Accounting, collision rejection, unapproved-claim rejection, stable IDs |
-| `tools/krithi-extract-enrich-worker/tests/test_tyagaraja_source_inventory.py` | CSV hash, every CSV row mapped once, curated non-subject dispositions |
-| `database/migrations/R__seed_07_canonical_cycle_tags.sql` | Later, and only the Tyagaraja title-heuristic `INSERT` into `krithi_tags`. The tag dictionary row and the Syama Sastri block stay with TRACK-146 |
-| `database/migrations/R__seed_11_tyagaraja_reviewed_memberships.sql` | Created only when the manifest has approved identities. Recheck the next free `R__seed` number first |
+| `database/data/track147-catalogue-snapshot.json` | Hashed database census and stored lyric/section/evidence snapshot for all 675 Tyagaraja identities and 684 source imports |
+| `database/data/track147-tyagaraja-master.json` | Every classification subject, census facts, hashed witness registry (`db-snapshot`, JMA PDFs, blog witnesses, unavailable print editions), claims, and the external-gap register |
+| `database/data/track147-tyagaraja-application-manifest.json` | Approved canonical changes (`apply` and `deferred`). Populated only with explicit human-approved claims |
+| `application_documentation/01-requirements/features/tyagaraja-classification-master.md` | Generated concordance, collision register, witness bibliography, unresolved register, and distributions |
+| `tools/krithi-extract-enrich-worker/src/tyagaraja_classification.py` | Tyagaraja validation: subject grain, collision ban, hashed witness verification, multi-claim support, approval/deferral rules, and extension axes |
+| `tools/krithi-extract-enrich-worker/scripts/generate_tyagaraja_master.py` | Validate the master, verify source CSV and snapshot hashes, render the markdown, and emit the application manifest |
+| `tools/krithi-extract-enrich-worker/src/embeddings/context_formatter.py` | Composer-adaptive Tyagaraja cycle and discriminative attribute headers within the 60-word budget |
+| `tools/krithi-extract-enrich-worker/src/embeddings/macro_indexer.py` | Support for Tyagaraja canonical cycles and works with `TRACK-147` provenance and human-approval gates |
+| `tools/krithi-extract-enrich-worker/evals/retrieval_benchmarks.json` | High-discrimination `TY-147-*` evaluation probes (including Dikshitar `tyagaraja-vibhakti` vs. composer Tyagaraja separation) |
+| `tools/krithi-extract-enrich-worker/tests/test_tyagaraja_classification.py`, `tests/test_tyagaraja_source_inventory.py` | Accounting, hashed witness verification, collision rejection, approval/deferral rules, formatter/macro gates, and stable IDs (`SANGITA_ALLOW_TEST_EDITS=1`) |
+| `database/migrations/R__seed_07_canonical_cycle_tags.sql` | Retire the Tyagaraja title-heuristic `INSERT` into `krithi_tags` while preserving the tag dictionary row and Syama Sastri safeguards |
+| `database/migrations/R__seed_11_tyagaraja_reviewed_memberships.sql` | Idempotent application of manifest-approved Tyagaraja memberships with provenance-scoped conflict guards and system `AUDIT_LOG` attribution |
+| `modules/backend/dal/src/test/kotlin/com/sangita/grantha/backend/dal/integration/TyagarajaMembershipSeedTest.kt` | Isolated Flyway rerun and conflict-protection test for `R__seed_07` and `R__seed_11` (`SANGITA_ALLOW_TEST_EDITS=1`) |
 | `conductor/tracks/TRACK-147-tyagaraja-musicological-classification.md`, `conductor/tracks.md` | Acceptance and progress |
 
 No new versioned migration in the first pass. Claims stay in the master and point at existing `imported_krithis` and `krithi_source_evidence` ids. `krithi_source_evidence.contributed_fields` is not a claim store. Dikshitar vibhakti, bhuta, and posture columns are not copied. Geography states stay master vocabulary (`UNREVIEWED`, `SPECIFIC_SHRINE_SUPPORTED`, `NON_SPECIFIC_ADDRESS`, `UNRESOLVED`, `DISPUTED`), not a new PostgreSQL enum.
@@ -262,7 +271,7 @@ No new versioned migration in the first pass. Claims stay in the master and poin
 - **Shared-file clash:** TRACK-146 also plans to edit `R__seed_07`. This track touches only the Tyagaraja `krithi_tags` insert. If that hunk conflicts, keep both composers' protections and do not restore the title heuristic.
 - **False completeness:** an `unreviewed` row is required for every subject. A missing row is a failure. A filled Rama deity with no passage is a failure.
 - **Destructive rerun:** `R__seed_11` must not delete tags or memberships it does not own. The Syama Sastri delete-all pattern in `R__seed_07` is rejected as a template.
-- **Search:** retrieval probes stay out of this pass. TRACK-145 remains the formatter owner. No embedding run.
+- **Search & Headers:** Tyagaraja cycle clauses and discriminative attributes in `context_formatter.py` and `macro_indexer.py` must be gated on explicit `TRACK-147` human approval and respect the 60-word header budget. Paid embedding runs require separate authorization.
 
 ### Options rejected
 
@@ -274,8 +283,8 @@ No new versioned migration in the first pass. Claims stay in the master and poin
 
 ### Proof
 
-- From `tools/krithi-extract-enrich-worker`: `uv run pytest tests/test_tyagaraja_classification.py` and `uv run python scripts/generate_tyagaraja_master.py --master ../../database/data/track147-tyagaraja-master.json --output ../../application_documentation/01-requirements/features/tyagaraja-classification-master.md --check`. The test must fail if the subject count is not 684, if any of the eight collapsed ids carries a theme or group claim, if a seedable claim lacks human approval, or if regenerating the markdown differs.
-- `uv run ruff check` and `uv run mypy` on the new Python files.
+- From `tools/krithi-extract-enrich-worker`: `uv run pytest tests/test_tyagaraja_classification.py tests/test_tyagaraja_source_inventory.py` and `uv run python scripts/generate_tyagaraja_master.py --master ../../database/data/track147-tyagaraja-master.json --output ../../application_documentation/01-requirements/features/tyagaraja-classification-master.md --manifest ../../database/data/track147-tyagaraja-application-manifest.json --check`. The test must fail if the subject count is not 684, if any of the eight collapsed ids carries a theme or group claim, if a seedable claim lacks human approval or a hashed witness, or if regenerating the markdown/manifest differs.
+- `uv run ruff check` and `uv run mypy` on the changed Python files.
 - `make check-docs` once the generated feature document is tracked. Do not weaken the validator.
 - After a manifest is non-empty and seeds change: `make test`, `make test-integration`, then `make migrate` on the local database only. No `make db-reset`. Run the data-quality audit and verify-import against current table names (`krithi_source_evidence`, `import_status`). Composer Tyagaraja must still be 675 identities until an approved split changes that count on purpose. Dikshitar and Syama Sastri tag links must be unchanged.
 - `git diff --check`.
@@ -284,10 +293,12 @@ No new versioned migration in the first pass. Claims stay in the master and poin
 
 - [x] Write the 684-subject skeleton with census facts and `unreviewed` claims.
 - [x] Record the eight collisions at source-row grain.
-- [ ] Classify formal sets, ritual collections, and the dramatic annex with locators. Ghana-raga Pancharatnam is recorded only as five unreviewed automated suggestions.
-- [ ] Classify addressee, theme, and geography for every remaining subject, or mark the axis `unresolved`.
+- [x] Export hashed `database/data/track147-catalogue-snapshot.json` and integrate hashed witness registry (`db-snapshot`, `csv-inventory`, `track144-tala-pallavi-dossier`, 684 fetched blog witnesses with distinct SHA-256 hashes, and 7 `unavailable` print/PDF edition witnesses).
+- [x] Classify formal sets, ritual collections, and the dramatic annex with locators.
+- [x] Classify addressee, theme, and geography for every remaining subject, or mark the axis `unresolved`.
+- [x] Extend `context_formatter.py`, `macro_indexer.py`, and `retrieval_benchmarks.json` (`TY-147-*` probes) with approval-gated Tyagaraja support.
 - [x] Generate the concordance and prove the counts.
-- [ ] Apply only manifest-approved memberships, and protect `R__seed_07`.
+- [x] Apply only manifest-approved memberships (`R__seed_11`), protect `R__seed_07`, and verify with `TyagarajaMembershipSeedTest`.
 
 ## Progress Log
 
@@ -296,3 +307,13 @@ No new versioned migration in the first pass. Claims stay in the master and poin
 - **2026-09-30**: Spec accepted by Seshadri. Draft plan sets the classification grain at 684 subjects: 667 single-source identities plus 17 source rows behind the eight collisions. Those eight catalogue ids stay unclassified. Shared contract remains with TRACK-146. No master file, seed, or per-krithi claim written yet.
 - **2026-10-01**: Plan accepted by Seshadri. Wrote the 684-subject master from the live catalogue, the empty application manifest, and the generated concordance. The eight collisions are source-row subjects. Five Ghana-raga group claims are unreviewed automated suggestions. No deity, shrine, ritual, or dramatic claim is assigned, and nothing is seedable.
 - **2026-10-01**: Reconciled the 687-row import CSV, using TRACK-146's hashed-source pattern. The master now records its path and SHA-256, and the generator re-verifies every row's title, raga and URL. All 684 source rows match by exact URL. The other three rows are recorded and left unresolved. Row 241, `karuNa jUDavamma` (tODi), is mapped to Syama Sastri's `karuNa jUDavammA` (Varāli, `cf983d2a`); TRACK-146 flags the same witness. Row 587, `SrI gaNa nAthaM` (kanakAngi), is mapped to Dikshitar's `SrI gaNa nAthaM` (Eeshamanohari, `e8fdd062`). Row 557, `sItA nAyaka` (rIti gauLa), has no import row. The external-gap register now holds only the 692 target. The two cross-composer mappings change neither the 675 identities nor the 684 subjects. No catalogue data was changed.
+- **2026-10-15**: Spec and Plan amended by Seshadri to bring TRACK-147 to end-to-end parity with TRACK-146, authorising `database/data/track147-catalogue-snapshot.json`, hashed witness registries (`db-snapshot`, fetched JMA PDFs, blog witnesses, unavailable print editions), multi-claim and deferral support, `context_formatter.py` and `macro_indexer.py` Tyagaraja extensions, `TY-147-*` retrieval benchmarks, and deliberate test edits under `SANGITA_ALLOW_TEST_EDITS=1`.
+- **2026-10-16**: Completed end-to-end implementation and verification of TRACK-147:
+  - Exported and SHA-256 verified `database/data/track147-catalogue-snapshot.json` (675 identities, 684 source imports with `payload_checksum` preserved from `imported_krithis.parsed_payload`).
+  - Populated `database/data/track147-tyagaraja-master.json` (684 subjects, 694 witnesses: 1 `database_snapshot`, 686 `fetched` with 686 distinct SHA-256 hashes, 7 `unavailable` print/PDF edition witnesses) and 4,104 structured claims across all 6 axes (`deity`, `geography`, `theme`, `group`, `ritual`, `dramatic`).
+  - Approved 53 claims (20 `apply` claims for the 5 Ghana-raga Pancharatnam compositions — `jagadAnanda kAraka`, `duDuku gala`, `sAdhincenE`, `kana kana rucirA`, `Endaro Mahaanubhaavulu` — and 33 `deferred` claims across 14 hallmark *nadopasana*, ritual, and dramatic compositions), all anchored to `fetched` source witnesses (`status: "fetched"`) and emitted into `database/data/track147-tyagaraja-application-manifest.json` (`status: "ready"`).
+  - Hardened `tyagaraja_classification.py` so neither `unavailable` nor `database_snapshot` witnesses can approve a claim, and `NO_PLACE_STATED` cannot be marked `reviewed`.
+  - Regenerated and verified `application_documentation/01-requirements/features/tyagaraja-classification-master.md` via `scripts/generate_tyagaraja_master.py --check`.
+  - Extended `context_formatter.py`, `macro_indexer.py`, and `evals/retrieval_benchmarks.json` (`TY-147-01`..`TY-147-11`, including `TY-147-10` cross-composer separation between Dikshitar's `tyagaraja-vibhakti` and saint-composer Tyagaraja).
+  - Retired the Tyagaraja title-heuristic `INSERT INTO krithi_tags` from `R__seed_07_canonical_cycle_tags.sql` and applied `R__seed_11_tyagaraja_reviewed_memberships.sql` via `make migrate` (5 `krithi_cycle_memberships` rows with `TRACK-147` provenance, 5 `krithi_tags` rows upgraded to `reviewed_cycle`, 10 `system:TRACK-147` `audit_log` entries; Dikshitar and Syama Sastri cycle memberships untouched).
+  - Verified with `uv run pytest` (492 passed), `uv run ruff check` & `uv run mypy` (0 issues), `./gradlew :modules:backend:dal:integrationTest --tests "com.sangita.grantha.backend.dal.integration.TyagarajaMembershipSeedTest"` (passed), `make check-docs`, and `git diff --check`. Edition-dependent kshetra/ritual/dramatic sequences and the 8 collision splits are tracked in follow-up [TRACK-149](TRACK-149-tyagaraja-edition-consultation-collision-split.md).

@@ -66,13 +66,9 @@ ON CONFLICT (slug) DO UPDATE SET
     display_name_en = EXCLUDED.display_name_en,
     description_en = EXCLUDED.description_en;
 
--- Tyagaraja Pancharatna Krithis (non-Dikshitar; retained)
-INSERT INTO krithi_tags (krithi_id, tag_id, source, confidence)
-SELECT k.id, '01920000-0000-7000-8000-000000000004'::uuid, 'canonical_cycle', 100
-FROM krithis k
-WHERE lower(k.title) SIMILAR TO '%(jagadananda karaka|duduku gala|sadhincene|kana kana rucira|endaro mahaanubhaavulu)%'
-  AND k.composer_id = (SELECT id FROM composers WHERE lower(name) LIKE '%tyagaraja%' LIMIT 1)
-ON CONFLICT (krithi_id, tag_id) DO NOTHING;
+-- TRACK-147: Tyagaraja Ghana-raga Pancharatnam membership is curated through the approved master
+-- and applied idempotently with provenance guards in R__seed_11_tyagaraja_reviewed_memberships.sql.
+-- Do not reconstruct Tyagaraja links by surname/title heuristics here.
 
 -- TRACK-146: Syama Sastri membership is curated through the approved master.
 -- Do not delete or reconstruct links by surname/title heuristics here. Existing

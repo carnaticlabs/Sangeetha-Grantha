@@ -76,6 +76,32 @@ SYAMA_AXES: tuple[tuple[str, str], ...] = (
     ("mudra", "Mudra"),
 )
 
+# Approved membership attribute keys rendered for Tyagaraja (TRACK-147), in priority order.
+TYAGARAJA_AXES: tuple[tuple[str, str], ...] = (
+    ("performance_order", "Aradhana Order"),
+    ("theme", "Theme"),
+    ("ritual", "Ritual Function"),
+    ("dramatic", "Dramatic Context"),
+    ("structure", "Structure"),
+    ("tala_witness", "Tala Witness"),
+    ("mudra", "Mudra"),
+)
+
+TYAGARAJA_CYCLE_SLUGS: frozenset[str] = frozenset(
+    {
+        "tyagaraja-pancharatnam",
+        "tyagaraja-ghana-raga-pancharatnam",
+        "tyagaraja-kovur-pancharatnam",
+        "tyagaraja-tiruvottiyur-pancharatnam",
+        "tyagaraja-lalgudi-pancharatnam",
+        "tyagaraja-srirangam-pancharatnam",
+        "tyagaraja-utsava-sampradaya",
+        "tyagaraja-divyanama-sankirtana",
+        "tyagaraja-nauka-charitram",
+        "tyagaraja-prahlada-bhakti-vijayam",
+    }
+)
+
 
 def _track146_approved(attrs: dict[str, Any]) -> bool:
     """True only for membership attributes carrying an explicit human approval (TRACK-146 contract)."""
@@ -90,8 +116,21 @@ def _track146_approved(attrs: dict[str, Any]) -> bool:
     )
 
 
+def _track147_approved(attrs: dict[str, Any]) -> bool:
+    """True only for membership attributes carrying an explicit human approval (TRACK-147 contract)."""
+    approval = attrs.get("approval")
+    return bool(
+        attrs.get("provenance_owner") == "TRACK-147"
+        and attrs.get("review_state") == "reviewed"
+        and attrs.get("claim_id")
+        and isinstance(approval, dict)
+        and approval.get("decision") == "approve"
+        and all(approval.get(k) for k in ("reviewer", "accepted_at", "note"))
+    )
+
+
 def _format_cycle_clause(cycle_info: dict[str, Any]) -> str | None:
-    """Formats a discriminative cycle clause matching TRACK-145 specification."""
+    """Formats a discriminative cycle clause matching TRACK-145/146/147 specifications."""
     slug = cycle_info.get("slug") or ""
     display_name = cycle_info.get("display_name") or cycle_info.get("name") or "Canonical Cycle"
     role = cycle_info.get("role")
@@ -107,6 +146,16 @@ def _format_cycle_clause(cycle_info: dict[str, Any]) -> str | None:
             value = attrs.get(key)
             if isinstance(value, str) and value.strip():
                 parts.append(f"{label}: {value.strip()}")
+        return f"[{'; '.join(parts)}]"
+
+    if slug in TYAGARAJA_CYCLE_SLUGS:
+        if not _track147_approved(attrs):
+            return None
+        parts = [f"Cycle: {display_name}"]
+        for key, label in TYAGARAJA_AXES:
+            value = attrs.get(key)
+            if isinstance(value, (str, int)) and str(value).strip():
+                parts.append(f"{label}: {str(value).strip()}")
         return f"[{'; '.join(parts)}]"
 
     if slug == "kamalamba-navavarnam":
@@ -201,10 +250,15 @@ def _lakshana_headers(
         core_parts.append(f"[Grammar: {case_name}]")
 
     # Cycle clause
-    if cycle_info and (not str(cycle_info.get("slug", "")).startswith("syama-sastri-") or composer == "Syama Sastri"):
-        clause = _format_cycle_clause(cycle_info)
-        if clause:
-            core_parts.append(clause)
+    if cycle_info:
+        c_slug = str(cycle_info.get("slug", ""))
+        composer_matches = (not c_slug.startswith("syama-sastri-") or composer == "Syama Sastri") and (
+            c_slug not in TYAGARAJA_CYCLE_SLUGS or composer == "Tyagaraja"
+        )
+        if composer_matches:
+            clause = _format_cycle_clause(cycle_info)
+            if clause:
+                core_parts.append(clause)
 
     # Structural features
     if structural_features:
@@ -221,7 +275,7 @@ def _lakshana_headers(
         secondary_parts.append(f"[Occasion: {occasion_note.strip()}]")
 
     if tags:
-        # Filter out cycle names if already captured
+        # Filter out cycle names if already captured or if gated by TRACK-146/147 approval
         cycle_slug = cycle_info.get("slug") if cycle_info else None
         valid_tags = [
             t.strip()
@@ -229,7 +283,10 @@ def _lakshana_headers(
             if t
             and t.strip()
             and (not cycle_slug or cycle_slug.lower() not in t.lower().replace(" ", "-"))
-            and not any(name in t.casefold() for name in ("ratnatrayam", "navaratnamalika"))
+            and not any(
+                name in t.casefold()
+                for name in ("ratnatrayam", "navaratnamalika", "tyagaraja-pancharatnam", "ghana raga pancharatnam")
+            )
         ]
         if valid_tags:
             secondary_parts.append(f"[Thematic Group / Tags: {', '.join(valid_tags[:3])}]")
@@ -397,6 +454,11 @@ def format_cycle_overview(
                 val = disc_attrs.get(k)
                 if isinstance(val, str) and val.strip():
                     attrs.append(f"{label}: {val.strip()}")
+        elif isinstance(disc_attrs, dict) and _track147_approved(disc_attrs):
+            for k, label in TYAGARAJA_AXES:
+                val = disc_attrs.get(k)
+                if isinstance(val, (str, int)) and str(val).strip():
+                    attrs.append(f"{label}: {str(val).strip()}")
         attr_str = f" [{'; '.join(attrs)}]" if attrs else ""
         body_parts.append(f"{seq}. {t} ({r}){attr_str}")
 

@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.3.0 |
-| **Last Updated** | 2026-09-30 |
+| **Version** | 1.3.1 |
+| **Last Updated** | 2026-10-16 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Navigation |
 
@@ -47,6 +47,7 @@ Read the [curator guide](../../05-frontend/admin-web/ui-specs.md), [bulk-import 
 | Public V1/V2 contracts, published visibility, strict query parsing | [API contract](../../03-api/api-contract.md) |
 | Embedding profiles, overview/passage indexing, hybrid rank fusion | [Search guide](../../03-api/search.md) |
 | Dikshitar kshetra & musicological metadata, macro indexing | [TRACK-145 implementation](../../10-implementations/track-145-dikshitar-kshetra-musicological-metadata.md), [Search guide](../../03-api/search.md) |
+| Tyagaraja classification master and Ghana-raga Pancharatnam memberships | [TRACK-147 implementation](../../10-implementations/track-147-tyagaraja-musicological-classification.md), [concordance](./tyagaraja-classification-master.md) |
 | Append-only revisions and per-section source provenance | [Versioned canon](../../04-database/versioned-canon.md) |
 | Raga aliases, authority, match keys, resolution queue | [Raga identity](../../04-database/raga-identity.md) |
 | Python extraction, canonical payloads, Kotlin persistence | [Ingestion architecture](./bulk-import/02-implementation/technical-implementation-guide.md) |
@@ -60,6 +61,7 @@ The documents below explain feature design or earlier implementation work. Check
 - [Advanced notation and transliteration](./advanced-krithi-notation-transliteration.md)
 - [Searchable deity and temple management](./searchable-deity-temple-management.md)
 - [Dikshitar kshetra & musicological metadata](./dikshitar-kshetra-musicological-enrichment.md) (Implemented: [TRACK-145](../../10-implementations/track-145-dikshitar-kshetra-musicological-metadata.md))
+- [Tyagaraja classification master](./tyagaraja-classification-master.md) (Implemented: [TRACK-147](../../10-implementations/track-147-tyagaraja-musicological-classification.md))
 - [Content ingestion requirements](./intelligent-content-ingestion.md), [generic extraction history](./generic-scraping.md)
 - [Database optimization](./database-layer-optimization.md), [development environment](./cross-platform-development-environment-standardisation.md)
 - [Graph Explorer proposal](./graph-explorer.md), [global architecture proposal](./global-scale-architecture.md), [GCP strategy](./gcp-implementation-strategy.md)
