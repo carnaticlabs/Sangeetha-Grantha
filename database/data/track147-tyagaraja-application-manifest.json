@@ -1,4 +1,997 @@
 {
   "track": "TRACK-147",
-  "approvals": []
+  "snapshot_at": "2026-10-01",
+  "status": "ready",
+  "provenance_owner": "TRACK-147",
+  "approvals": [
+    "tyagaraja:krithi:2b65609e-9fbf-4232-baae-096cafdf4e79:deity",
+    "tyagaraja:krithi:2b65609e-9fbf-4232-baae-096cafdf4e79:geography",
+    "tyagaraja:krithi:2b65609e-9fbf-4232-baae-096cafdf4e79:group",
+    "tyagaraja:krithi:2b65609e-9fbf-4232-baae-096cafdf4e79:theme",
+    "tyagaraja:krithi:2e115182-dcc2-4a41-962c-8381821a7489:deity",
+    "tyagaraja:krithi:2e115182-dcc2-4a41-962c-8381821a7489:geography",
+    "tyagaraja:krithi:2e115182-dcc2-4a41-962c-8381821a7489:group",
+    "tyagaraja:krithi:2e115182-dcc2-4a41-962c-8381821a7489:theme",
+    "tyagaraja:krithi:6c9d0ab2-70a2-4c6b-a0df-c4a925bf8ae9:deity",
+    "tyagaraja:krithi:6c9d0ab2-70a2-4c6b-a0df-c4a925bf8ae9:theme",
+    "tyagaraja:krithi:6fd7860c-0e5d-428f-af9f-cd02c3ad2da8:deity",
+    "tyagaraja:krithi:6fd7860c-0e5d-428f-af9f-cd02c3ad2da8:geography",
+    "tyagaraja:krithi:6fd7860c-0e5d-428f-af9f-cd02c3ad2da8:group",
+    "tyagaraja:krithi:6fd7860c-0e5d-428f-af9f-cd02c3ad2da8:theme",
+    "tyagaraja:krithi:73b44194-00c1-4753-8c8a-924d9fa3e18b:deity",
+    "tyagaraja:krithi:73b44194-00c1-4753-8c8a-924d9fa3e18b:theme",
+    "tyagaraja:krithi:77d3a9de-411c-4c6b-b285-026d19d0bf27:deity",
+    "tyagaraja:krithi:77d3a9de-411c-4c6b-b285-026d19d0bf27:theme",
+    "tyagaraja:krithi:78b86c5a-7c6e-4797-a4ab-0be561979065:deity",
+    "tyagaraja:krithi:78b86c5a-7c6e-4797-a4ab-0be561979065:dramatic",
+    "tyagaraja:krithi:78b86c5a-7c6e-4797-a4ab-0be561979065:theme",
+    "tyagaraja:krithi:9e06c13c-2bbb-47a7-b580-1de7365754cc:deity",
+    "tyagaraja:krithi:9e06c13c-2bbb-47a7-b580-1de7365754cc:ritual",
+    "tyagaraja:krithi:9e06c13c-2bbb-47a7-b580-1de7365754cc:theme",
+    "tyagaraja:krithi:b4029df0-a209-470b-ba56-3d64fa8aebc4:deity",
+    "tyagaraja:krithi:b4029df0-a209-470b-ba56-3d64fa8aebc4:geography",
+    "tyagaraja:krithi:b4029df0-a209-470b-ba56-3d64fa8aebc4:group",
+    "tyagaraja:krithi:b4029df0-a209-470b-ba56-3d64fa8aebc4:theme",
+    "tyagaraja:krithi:d4579215-90be-47f8-8410-44020f815417:deity",
+    "tyagaraja:krithi:d4579215-90be-47f8-8410-44020f815417:dramatic",
+    "tyagaraja:krithi:d4579215-90be-47f8-8410-44020f815417:theme",
+    "tyagaraja:krithi:d4a411e4-f029-46c9-8aad-699e2d235cae:deity",
+    "tyagaraja:krithi:d4a411e4-f029-46c9-8aad-699e2d235cae:theme",
+    "tyagaraja:krithi:d59984e7-fabc-4536-b5a2-60e550277626:deity",
+    "tyagaraja:krithi:d59984e7-fabc-4536-b5a2-60e550277626:geography",
+    "tyagaraja:krithi:d59984e7-fabc-4536-b5a2-60e550277626:group",
+    "tyagaraja:krithi:d59984e7-fabc-4536-b5a2-60e550277626:theme",
+    "tyagaraja:krithi:da47bd3e-75ff-4227-8d7f-174aa3bb0d87:deity",
+    "tyagaraja:krithi:da47bd3e-75ff-4227-8d7f-174aa3bb0d87:theme",
+    "tyagaraja:krithi:e0151a7a-e0d9-413d-b07a-4c1b2854971f:deity",
+    "tyagaraja:krithi:e0151a7a-e0d9-413d-b07a-4c1b2854971f:theme",
+    "tyagaraja:krithi:e8de604f-1086-4bb5-bb70-cc9b7b21828e:deity",
+    "tyagaraja:krithi:e8de604f-1086-4bb5-bb70-cc9b7b21828e:theme",
+    "tyagaraja:krithi:f0fd6665-d378-48fd-8772-6610a997c34d:deity",
+    "tyagaraja:krithi:f0fd6665-d378-48fd-8772-6610a997c34d:theme",
+    "tyagaraja:krithi:f5081739-3f8e-4427-90c7-becb3b1eeba9:deity",
+    "tyagaraja:krithi:f5081739-3f8e-4427-90c7-becb3b1eeba9:ritual",
+    "tyagaraja:krithi:f5081739-3f8e-4427-90c7-becb3b1eeba9:theme",
+    "tyagaraja:krithi:f5b3f945-9362-4b7b-945e-8d920e6b66c9:deity",
+    "tyagaraja:krithi:f5b3f945-9362-4b7b-945e-8d920e6b66c9:dramatic",
+    "tyagaraja:krithi:f5b3f945-9362-4b7b-945e-8d920e6b66c9:theme",
+    "tyagaraja:krithi:f885a354-b961-400f-ac3f-df5fee309d0c:deity",
+    "tyagaraja:krithi:f885a354-b961-400f-ac3f-df5fee309d0c:theme"
+  ],
+  "changes": [
+    {
+      "claim_id": "tyagaraja:krithi:2b65609e-9fbf-4232-baae-096cafdf4e79:deity",
+      "subject_id": "tyagaraja:krithi:2b65609e-9fbf-4232-baae-096cafdf4e79",
+      "canonical_id": "2b65609e-9fbf-4232-baae-096cafdf4e79",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "deity",
+      "value": "Rama",
+      "witness_id": "2dba9752-6148-405a-9fdf-515059099221",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved canonical Ghana-raga Pancharatnam membership (Sri, Aradhana order 5) verified against fetched witness and catalogue snapshot.",
+        "application": "apply"
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:2b65609e-9fbf-4232-baae-096cafdf4e79:geography",
+      "subject_id": "tyagaraja:krithi:2b65609e-9fbf-4232-baae-096cafdf4e79",
+      "canonical_id": "2b65609e-9fbf-4232-baae-096cafdf4e79",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "geography",
+      "value": "NON_SPECIFIC_ADDRESS",
+      "witness_id": "2dba9752-6148-405a-9fdf-515059099221",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved canonical Ghana-raga Pancharatnam membership (Sri, Aradhana order 5) verified against fetched witness and catalogue snapshot.",
+        "application": "apply"
+      }
+    },
+    {
+      "claim_id": "tyagaraja:krithi:2b65609e-9fbf-4232-baae-096cafdf4e79:group",
+      "subject_id": "tyagaraja:krithi:2b65609e-9fbf-4232-baae-096cafdf4e79",
+      "canonical_id": "2b65609e-9fbf-4232-baae-096cafdf4e79",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "group",
+      "value": "tyagaraja-ghana-raga-pancharatnam",
+      "witness_id": "2dba9752-6148-405a-9fdf-515059099221",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved canonical Ghana-raga Pancharatnam membership (Sri, Aradhana order 5) verified against fetched witness and catalogue snapshot.",
+        "application": "apply"
+      },
+      "performance_order": 5,
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:2b65609e-9fbf-4232-baae-096cafdf4e79:theme",
+      "subject_id": "tyagaraja:krithi:2b65609e-9fbf-4232-baae-096cafdf4e79",
+      "canonical_id": "2b65609e-9fbf-4232-baae-096cafdf4e79",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "theme",
+      "value": "Saints and Teachers & Nadopasana",
+      "witness_id": "2dba9752-6148-405a-9fdf-515059099221",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved canonical Ghana-raga Pancharatnam membership (Sri, Aradhana order 5) verified against fetched witness and catalogue snapshot.",
+        "application": "apply"
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:2e115182-dcc2-4a41-962c-8381821a7489:deity",
+      "subject_id": "tyagaraja:krithi:2e115182-dcc2-4a41-962c-8381821a7489",
+      "canonical_id": "2e115182-dcc2-4a41-962c-8381821a7489",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "deity",
+      "value": "Rama",
+      "witness_id": "bfa5e66f-9307-49c2-b410-da863fe3d249",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved canonical Ghana-raga Pancharatnam membership (Nattai, Aradhana order 1) verified against fetched witness and catalogue snapshot.",
+        "application": "apply"
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:2e115182-dcc2-4a41-962c-8381821a7489:geography",
+      "subject_id": "tyagaraja:krithi:2e115182-dcc2-4a41-962c-8381821a7489",
+      "canonical_id": "2e115182-dcc2-4a41-962c-8381821a7489",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "geography",
+      "value": "NON_SPECIFIC_ADDRESS",
+      "witness_id": "bfa5e66f-9307-49c2-b410-da863fe3d249",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved canonical Ghana-raga Pancharatnam membership (Nattai, Aradhana order 1) verified against fetched witness and catalogue snapshot.",
+        "application": "apply"
+      }
+    },
+    {
+      "claim_id": "tyagaraja:krithi:2e115182-dcc2-4a41-962c-8381821a7489:group",
+      "subject_id": "tyagaraja:krithi:2e115182-dcc2-4a41-962c-8381821a7489",
+      "canonical_id": "2e115182-dcc2-4a41-962c-8381821a7489",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "group",
+      "value": "tyagaraja-ghana-raga-pancharatnam",
+      "witness_id": "bfa5e66f-9307-49c2-b410-da863fe3d249",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved canonical Ghana-raga Pancharatnam membership (Nattai, Aradhana order 1) verified against fetched witness and catalogue snapshot.",
+        "application": "apply"
+      },
+      "performance_order": 1,
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:2e115182-dcc2-4a41-962c-8381821a7489:theme",
+      "subject_id": "tyagaraja:krithi:2e115182-dcc2-4a41-962c-8381821a7489",
+      "canonical_id": "2e115182-dcc2-4a41-962c-8381821a7489",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "theme",
+      "value": "Rama Bhakti & Nama Mahima",
+      "witness_id": "bfa5e66f-9307-49c2-b410-da863fe3d249",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved canonical Ghana-raga Pancharatnam membership (Nattai, Aradhana order 1) verified against fetched witness and catalogue snapshot.",
+        "application": "apply"
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:6c9d0ab2-70a2-4c6b-a0df-c4a925bf8ae9:deity",
+      "subject_id": "tyagaraja:krithi:6c9d0ab2-70a2-4c6b-a0df-c4a925bf8ae9",
+      "canonical_id": "6c9d0ab2-70a2-4c6b-a0df-c4a925bf8ae9",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "deity",
+      "value": "Siva (Sankara)",
+      "witness_id": "c9816574-42d9-4ace-826a-76ec10bee202",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved Shiva addressee and Nadopasana claim attested in snapshot pallavi.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:6c9d0ab2-70a2-4c6b-a0df-c4a925bf8ae9:theme",
+      "subject_id": "tyagaraja:krithi:6c9d0ab2-70a2-4c6b-a0df-c4a925bf8ae9",
+      "canonical_id": "6c9d0ab2-70a2-4c6b-a0df-c4a925bf8ae9",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "theme",
+      "value": "Nadopasana & Musical Knowledge",
+      "witness_id": "c9816574-42d9-4ace-826a-76ec10bee202",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved Shiva addressee and Nadopasana claim attested in snapshot pallavi.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:6fd7860c-0e5d-428f-af9f-cd02c3ad2da8:deity",
+      "subject_id": "tyagaraja:krithi:6fd7860c-0e5d-428f-af9f-cd02c3ad2da8",
+      "canonical_id": "6fd7860c-0e5d-428f-af9f-cd02c3ad2da8",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "deity",
+      "value": "Rama",
+      "witness_id": "29525601-6207-4c41-b5b6-eda120e028a8",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved canonical Ghana-raga Pancharatnam membership (Arabhi, Aradhana order 3, 7 Swara-Sahitya sections) verified against fetched witness and catalogue snapshot.",
+        "application": "apply"
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:6fd7860c-0e5d-428f-af9f-cd02c3ad2da8:geography",
+      "subject_id": "tyagaraja:krithi:6fd7860c-0e5d-428f-af9f-cd02c3ad2da8",
+      "canonical_id": "6fd7860c-0e5d-428f-af9f-cd02c3ad2da8",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "geography",
+      "value": "NON_SPECIFIC_ADDRESS",
+      "witness_id": "29525601-6207-4c41-b5b6-eda120e028a8",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved canonical Ghana-raga Pancharatnam membership (Arabhi, Aradhana order 3, 7 Swara-Sahitya sections) verified against fetched witness and catalogue snapshot.",
+        "application": "apply"
+      }
+    },
+    {
+      "claim_id": "tyagaraja:krithi:6fd7860c-0e5d-428f-af9f-cd02c3ad2da8:group",
+      "subject_id": "tyagaraja:krithi:6fd7860c-0e5d-428f-af9f-cd02c3ad2da8",
+      "canonical_id": "6fd7860c-0e5d-428f-af9f-cd02c3ad2da8",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "group",
+      "value": "tyagaraja-ghana-raga-pancharatnam",
+      "witness_id": "29525601-6207-4c41-b5b6-eda120e028a8",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved canonical Ghana-raga Pancharatnam membership (Arabhi, Aradhana order 3, 7 Swara-Sahitya sections) verified against fetched witness and catalogue snapshot.",
+        "application": "apply"
+      },
+      "performance_order": 3,
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:6fd7860c-0e5d-428f-af9f-cd02c3ad2da8:theme",
+      "subject_id": "tyagaraja:krithi:6fd7860c-0e5d-428f-af9f-cd02c3ad2da8",
+      "canonical_id": "6fd7860c-0e5d-428f-af9f-cd02c3ad2da8",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "theme",
+      "value": "Narrative Allusion & Leela Praise",
+      "witness_id": "29525601-6207-4c41-b5b6-eda120e028a8",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved canonical Ghana-raga Pancharatnam membership (Arabhi, Aradhana order 3, 7 Swara-Sahitya sections) verified against fetched witness and catalogue snapshot.",
+        "application": "apply"
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:73b44194-00c1-4753-8c8a-924d9fa3e18b:deity",
+      "subject_id": "tyagaraja:krithi:73b44194-00c1-4753-8c8a-924d9fa3e18b",
+      "canonical_id": "73b44194-00c1-4753-8c8a-924d9fa3e18b",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "deity",
+      "value": "Rama",
+      "witness_id": "2261e4b5-aa24-46ab-808e-f12ca2de85b5",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved Nadopasana & Sangita Sastra hallmark claim attested in snapshot pallavi.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:73b44194-00c1-4753-8c8a-924d9fa3e18b:theme",
+      "subject_id": "tyagaraja:krithi:73b44194-00c1-4753-8c8a-924d9fa3e18b",
+      "canonical_id": "73b44194-00c1-4753-8c8a-924d9fa3e18b",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "theme",
+      "value": "Nadopasana & Musical Knowledge",
+      "witness_id": "2261e4b5-aa24-46ab-808e-f12ca2de85b5",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved Nadopasana & Sangita Sastra hallmark claim attested in snapshot pallavi.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:77d3a9de-411c-4c6b-b285-026d19d0bf27:deity",
+      "subject_id": "tyagaraja:krithi:77d3a9de-411c-4c6b-b285-026d19d0bf27",
+      "canonical_id": "77d3a9de-411c-4c6b-b285-026d19d0bf27",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "deity",
+      "value": "Rama",
+      "witness_id": "275b11a3-d1cd-4c27-b72d-559fd3d20bad",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved Nadopasana & Laya-Sahitya aesthetic claim attested in snapshot pallavi.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:77d3a9de-411c-4c6b-b285-026d19d0bf27:theme",
+      "subject_id": "tyagaraja:krithi:77d3a9de-411c-4c6b-b285-026d19d0bf27",
+      "canonical_id": "77d3a9de-411c-4c6b-b285-026d19d0bf27",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "theme",
+      "value": "Nadopasana & Musical Knowledge",
+      "witness_id": "275b11a3-d1cd-4c27-b72d-559fd3d20bad",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved Nadopasana & Laya-Sahitya aesthetic claim attested in snapshot pallavi.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:78b86c5a-7c6e-4797-a4ab-0be561979065:deity",
+      "subject_id": "tyagaraja:krithi:78b86c5a-7c6e-4797-a4ab-0be561979065",
+      "canonical_id": "78b86c5a-7c6e-4797-a4ab-0be561979065",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "deity",
+      "value": "Rama",
+      "witness_id": "d3980894-c4c6-4213-86da-ab730aa36087",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved Prahlada Bhakti Vijayam invocatory kirtana attested in snapshot pallavi.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:78b86c5a-7c6e-4797-a4ab-0be561979065:dramatic",
+      "subject_id": "tyagaraja:krithi:78b86c5a-7c6e-4797-a4ab-0be561979065",
+      "canonical_id": "78b86c5a-7c6e-4797-a4ab-0be561979065",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "dramatic",
+      "value": "tyagaraja-prahlada-bhakti-vijayam",
+      "witness_id": "d3980894-c4c6-4213-86da-ab730aa36087",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved Prahlada Bhakti Vijayam invocatory kirtana attested in snapshot pallavi.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+      },
+      "dramatic_work": "Prahlada Bhakti Vijayam"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:78b86c5a-7c6e-4797-a4ab-0be561979065:theme",
+      "subject_id": "tyagaraja:krithi:78b86c5a-7c6e-4797-a4ab-0be561979065",
+      "canonical_id": "78b86c5a-7c6e-4797-a4ab-0be561979065",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "theme",
+      "value": "Surrender (Saranagati)",
+      "witness_id": "d3980894-c4c6-4213-86da-ab730aa36087",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved Prahlada Bhakti Vijayam invocatory kirtana attested in snapshot pallavi.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:9e06c13c-2bbb-47a7-b580-1de7365754cc:deity",
+      "subject_id": "tyagaraja:krithi:9e06c13c-2bbb-47a7-b580-1de7365754cc",
+      "canonical_id": "9e06c13c-2bbb-47a7-b580-1de7365754cc",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "deity",
+      "value": "Rama",
+      "witness_id": "93c8437d-c93a-45eb-abe3-424097db6afe",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved Utsava Sampradaya royal welcome (heccarika) function attested in snapshot pallavi.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:9e06c13c-2bbb-47a7-b580-1de7365754cc:ritual",
+      "subject_id": "tyagaraja:krithi:9e06c13c-2bbb-47a7-b580-1de7365754cc",
+      "canonical_id": "9e06c13c-2bbb-47a7-b580-1de7365754cc",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "ritual",
+      "value": "tyagaraja-utsava-sampradaya",
+      "witness_id": "93c8437d-c93a-45eb-abe3-424097db6afe",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved Utsava Sampradaya royal welcome (heccarika) function attested in snapshot pallavi.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+      },
+      "ritual_function": "invitation_heccarika"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:9e06c13c-2bbb-47a7-b580-1de7365754cc:theme",
+      "subject_id": "tyagaraja:krithi:9e06c13c-2bbb-47a7-b580-1de7365754cc",
+      "canonical_id": "9e06c13c-2bbb-47a7-b580-1de7365754cc",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "theme",
+      "value": "Rama Bhakti",
+      "witness_id": "93c8437d-c93a-45eb-abe3-424097db6afe",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved Utsava Sampradaya royal welcome (heccarika) function attested in snapshot pallavi.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:b4029df0-a209-470b-ba56-3d64fa8aebc4:deity",
+      "subject_id": "tyagaraja:krithi:b4029df0-a209-470b-ba56-3d64fa8aebc4",
+      "canonical_id": "b4029df0-a209-470b-ba56-3d64fa8aebc4",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "deity",
+      "value": "Rama",
+      "witness_id": "22931f68-70a0-4e2f-af1d-1de2f6c8f502",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved canonical Ghana-raga Pancharatnam membership (Gowla, Aradhana order 2) verified against fetched witness and catalogue snapshot.",
+        "application": "apply"
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:b4029df0-a209-470b-ba56-3d64fa8aebc4:geography",
+      "subject_id": "tyagaraja:krithi:b4029df0-a209-470b-ba56-3d64fa8aebc4",
+      "canonical_id": "b4029df0-a209-470b-ba56-3d64fa8aebc4",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "geography",
+      "value": "NON_SPECIFIC_ADDRESS",
+      "witness_id": "22931f68-70a0-4e2f-af1d-1de2f6c8f502",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved canonical Ghana-raga Pancharatnam membership (Gowla, Aradhana order 2) verified against fetched witness and catalogue snapshot.",
+        "application": "apply"
+      }
+    },
+    {
+      "claim_id": "tyagaraja:krithi:b4029df0-a209-470b-ba56-3d64fa8aebc4:group",
+      "subject_id": "tyagaraja:krithi:b4029df0-a209-470b-ba56-3d64fa8aebc4",
+      "canonical_id": "b4029df0-a209-470b-ba56-3d64fa8aebc4",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "group",
+      "value": "tyagaraja-ghana-raga-pancharatnam",
+      "witness_id": "22931f68-70a0-4e2f-af1d-1de2f6c8f502",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved canonical Ghana-raga Pancharatnam membership (Gowla, Aradhana order 2) verified against fetched witness and catalogue snapshot.",
+        "application": "apply"
+      },
+      "performance_order": 2,
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:b4029df0-a209-470b-ba56-3d64fa8aebc4:theme",
+      "subject_id": "tyagaraja:krithi:b4029df0-a209-470b-ba56-3d64fa8aebc4",
+      "canonical_id": "b4029df0-a209-470b-ba56-3d64fa8aebc4",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "theme",
+      "value": "Ethical Reflection & Self-Reproach",
+      "witness_id": "22931f68-70a0-4e2f-af1d-1de2f6c8f502",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved canonical Ghana-raga Pancharatnam membership (Gowla, Aradhana order 2) verified against fetched witness and catalogue snapshot.",
+        "application": "apply"
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:d4579215-90be-47f8-8410-44020f815417:deity",
+      "subject_id": "tyagaraja:krithi:d4579215-90be-47f8-8410-44020f815417",
+      "canonical_id": "d4579215-90be-47f8-8410-44020f815417",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "deity",
+      "value": "Krishna",
+      "witness_id": "029504f2-ef4a-480c-a574-e7ac79dae1ea",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved Nauka Charitram opening daru attested in snapshot pallavi.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:d4579215-90be-47f8-8410-44020f815417:dramatic",
+      "subject_id": "tyagaraja:krithi:d4579215-90be-47f8-8410-44020f815417",
+      "canonical_id": "d4579215-90be-47f8-8410-44020f815417",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "dramatic",
+      "value": "tyagaraja-nauka-charitram",
+      "witness_id": "029504f2-ef4a-480c-a574-e7ac79dae1ea",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved Nauka Charitram opening daru attested in snapshot pallavi.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+      },
+      "dramatic_work": "Nauka Charitram"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:d4579215-90be-47f8-8410-44020f815417:theme",
+      "subject_id": "tyagaraja:krithi:d4579215-90be-47f8-8410-44020f815417",
+      "canonical_id": "d4579215-90be-47f8-8410-44020f815417",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "theme",
+      "value": "Narrative Allusion & Leela Praise",
+      "witness_id": "029504f2-ef4a-480c-a574-e7ac79dae1ea",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved Nauka Charitram opening daru attested in snapshot pallavi.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:d4a411e4-f029-46c9-8aad-699e2d235cae:deity",
+      "subject_id": "tyagaraja:krithi:d4a411e4-f029-46c9-8aad-699e2d235cae",
+      "canonical_id": "d4a411e4-f029-46c9-8aad-699e2d235cae",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "deity",
+      "value": "Rama",
+      "witness_id": "da2a25ac-43ed-489a-98e6-6a859c118b6f",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved Nadopasana (Raga Sudha Rasa) claim attested in snapshot pallavi.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:d4a411e4-f029-46c9-8aad-699e2d235cae:theme",
+      "subject_id": "tyagaraja:krithi:d4a411e4-f029-46c9-8aad-699e2d235cae",
+      "canonical_id": "d4a411e4-f029-46c9-8aad-699e2d235cae",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "theme",
+      "value": "Nadopasana & Musical Knowledge",
+      "witness_id": "da2a25ac-43ed-489a-98e6-6a859c118b6f",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved Nadopasana (Raga Sudha Rasa) claim attested in snapshot pallavi.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:d59984e7-fabc-4536-b5a2-60e550277626:deity",
+      "subject_id": "tyagaraja:krithi:d59984e7-fabc-4536-b5a2-60e550277626",
+      "canonical_id": "d59984e7-fabc-4536-b5a2-60e550277626",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "deity",
+      "value": "Rama",
+      "witness_id": "7e554430-877f-4ee7-9c75-c00dc3cac147",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved canonical Ghana-raga Pancharatnam membership (Varali, Aradhana order 4) verified against fetched witness and catalogue snapshot.",
+        "application": "apply"
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:d59984e7-fabc-4536-b5a2-60e550277626:geography",
+      "subject_id": "tyagaraja:krithi:d59984e7-fabc-4536-b5a2-60e550277626",
+      "canonical_id": "d59984e7-fabc-4536-b5a2-60e550277626",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "geography",
+      "value": "NON_SPECIFIC_ADDRESS",
+      "witness_id": "7e554430-877f-4ee7-9c75-c00dc3cac147",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved canonical Ghana-raga Pancharatnam membership (Varali, Aradhana order 4) verified against fetched witness and catalogue snapshot.",
+        "application": "apply"
+      }
+    },
+    {
+      "claim_id": "tyagaraja:krithi:d59984e7-fabc-4536-b5a2-60e550277626:group",
+      "subject_id": "tyagaraja:krithi:d59984e7-fabc-4536-b5a2-60e550277626",
+      "canonical_id": "d59984e7-fabc-4536-b5a2-60e550277626",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "group",
+      "value": "tyagaraja-ghana-raga-pancharatnam",
+      "witness_id": "7e554430-877f-4ee7-9c75-c00dc3cac147",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved canonical Ghana-raga Pancharatnam membership (Varali, Aradhana order 4) verified against fetched witness and catalogue snapshot.",
+        "application": "apply"
+      },
+      "performance_order": 4,
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:d59984e7-fabc-4536-b5a2-60e550277626:theme",
+      "subject_id": "tyagaraja:krithi:d59984e7-fabc-4536-b5a2-60e550277626",
+      "canonical_id": "d59984e7-fabc-4536-b5a2-60e550277626",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "theme",
+      "value": "Rama Bhakti & Darshana Bliss",
+      "witness_id": "7e554430-877f-4ee7-9c75-c00dc3cac147",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved canonical Ghana-raga Pancharatnam membership (Varali, Aradhana order 4) verified against fetched witness and catalogue snapshot.",
+        "application": "apply"
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:da47bd3e-75ff-4227-8d7f-174aa3bb0d87:deity",
+      "subject_id": "tyagaraja:krithi:da47bd3e-75ff-4227-8d7f-174aa3bb0d87",
+      "canonical_id": "da47bd3e-75ff-4227-8d7f-174aa3bb0d87",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "deity",
+      "value": "Rama",
+      "witness_id": "6005eec8-70bf-4096-88b8-3de5f1dd97fb",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved Musical Knowledge (Sangita Sastra Jnanamu) claim attested in snapshot pallavi.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:da47bd3e-75ff-4227-8d7f-174aa3bb0d87:theme",
+      "subject_id": "tyagaraja:krithi:da47bd3e-75ff-4227-8d7f-174aa3bb0d87",
+      "canonical_id": "da47bd3e-75ff-4227-8d7f-174aa3bb0d87",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "theme",
+      "value": "Nadopasana & Musical Knowledge",
+      "witness_id": "6005eec8-70bf-4096-88b8-3de5f1dd97fb",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved Musical Knowledge (Sangita Sastra Jnanamu) claim attested in snapshot pallavi.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:e0151a7a-e0d9-413d-b07a-4c1b2854971f:deity",
+      "subject_id": "tyagaraja:krithi:e0151a7a-e0d9-413d-b07a-4c1b2854971f",
+      "canonical_id": "e0151a7a-e0d9-413d-b07a-4c1b2854971f",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "deity",
+      "value": "Siva (Kovur Sundareswara)",
+      "witness_id": "176fb858-4b6a-4b4e-8795-030f465efb10",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved Kovur Sundareswara Shiva addressee claim attested in snapshot pallavi.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:e0151a7a-e0d9-413d-b07a-4c1b2854971f:theme",
+      "subject_id": "tyagaraja:krithi:e0151a7a-e0d9-413d-b07a-4c1b2854971f",
+      "canonical_id": "e0151a7a-e0d9-413d-b07a-4c1b2854971f",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "theme",
+      "value": "Deity Stuti & Darshana Bliss",
+      "witness_id": "176fb858-4b6a-4b4e-8795-030f465efb10",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved Kovur Sundareswara Shiva addressee claim attested in snapshot pallavi.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:e8de604f-1086-4bb5-bb70-cc9b7b21828e:deity",
+      "subject_id": "tyagaraja:krithi:e8de604f-1086-4bb5-bb70-cc9b7b21828e",
+      "canonical_id": "e8de604f-1086-4bb5-bb70-cc9b7b21828e",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "deity",
+      "value": "Rama",
+      "witness_id": "10a24ea1-a3d6-4975-9778-a3c652e65a41",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved Gita-artha & Sangita-ananda philosophical claim attested in snapshot pallavi.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:e8de604f-1086-4bb5-bb70-cc9b7b21828e:theme",
+      "subject_id": "tyagaraja:krithi:e8de604f-1086-4bb5-bb70-cc9b7b21828e",
+      "canonical_id": "e8de604f-1086-4bb5-bb70-cc9b7b21828e",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "theme",
+      "value": "Nadopasana & Musical Knowledge",
+      "witness_id": "10a24ea1-a3d6-4975-9778-a3c652e65a41",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved Gita-artha & Sangita-ananda philosophical claim attested in snapshot pallavi.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:f0fd6665-d378-48fd-8772-6610a997c34d:deity",
+      "subject_id": "tyagaraja:krithi:f0fd6665-d378-48fd-8772-6610a997c34d",
+      "canonical_id": "f0fd6665-d378-48fd-8772-6610a997c34d",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "deity",
+      "value": "Siva, Vishnu & Brahma (Trimurti)",
+      "witness_id": "a9032a06-0a6d-4a42-bd59-aeae38b90319",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved Nadopasana claim attested in snapshot pallavi.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:f0fd6665-d378-48fd-8772-6610a997c34d:theme",
+      "subject_id": "tyagaraja:krithi:f0fd6665-d378-48fd-8772-6610a997c34d",
+      "canonical_id": "f0fd6665-d378-48fd-8772-6610a997c34d",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "theme",
+      "value": "Nadopasana & Musical Knowledge",
+      "witness_id": "a9032a06-0a6d-4a42-bd59-aeae38b90319",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved Nadopasana claim attested in snapshot pallavi.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:f5081739-3f8e-4427-90c7-becb3b1eeba9:deity",
+      "subject_id": "tyagaraja:krithi:f5081739-3f8e-4427-90c7-becb3b1eeba9",
+      "canonical_id": "f5081739-3f8e-4427-90c7-becb3b1eeba9",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "deity",
+      "value": "Rama & Sita",
+      "witness_id": "0270a1c2-88cf-40a3-b9fd-fd633e66b68a",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved Utsava Sampradaya divine marriage (kalyana utsavam) function attested in snapshot pallavi.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:f5081739-3f8e-4427-90c7-becb3b1eeba9:ritual",
+      "subject_id": "tyagaraja:krithi:f5081739-3f8e-4427-90c7-becb3b1eeba9",
+      "canonical_id": "f5081739-3f8e-4427-90c7-becb3b1eeba9",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "ritual",
+      "value": "tyagaraja-utsava-sampradaya",
+      "witness_id": "0270a1c2-88cf-40a3-b9fd-fd633e66b68a",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved Utsava Sampradaya divine marriage (kalyana utsavam) function attested in snapshot pallavi.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+      },
+      "ritual_function": "marriage_kalyanam"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:f5081739-3f8e-4427-90c7-becb3b1eeba9:theme",
+      "subject_id": "tyagaraja:krithi:f5081739-3f8e-4427-90c7-becb3b1eeba9",
+      "canonical_id": "f5081739-3f8e-4427-90c7-becb3b1eeba9",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "theme",
+      "value": "Rama Bhakti",
+      "witness_id": "0270a1c2-88cf-40a3-b9fd-fd633e66b68a",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved Utsava Sampradaya divine marriage (kalyana utsavam) function attested in snapshot pallavi.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:f5b3f945-9362-4b7b-945e-8d920e6b66c9:deity",
+      "subject_id": "tyagaraja:krithi:f5b3f945-9362-4b7b-945e-8d920e6b66c9",
+      "canonical_id": "f5b3f945-9362-4b7b-945e-8d920e6b66c9",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "deity",
+      "value": "Krishna",
+      "witness_id": "645fcbc7-082e-470a-b5c3-906f61328338",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved Nauka Charitram dramatic daru (Gopis addressing Krishna) attested in snapshot pallavi.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:f5b3f945-9362-4b7b-945e-8d920e6b66c9:dramatic",
+      "subject_id": "tyagaraja:krithi:f5b3f945-9362-4b7b-945e-8d920e6b66c9",
+      "canonical_id": "f5b3f945-9362-4b7b-945e-8d920e6b66c9",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "dramatic",
+      "value": "tyagaraja-nauka-charitram",
+      "witness_id": "645fcbc7-082e-470a-b5c3-906f61328338",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved Nauka Charitram dramatic daru (Gopis addressing Krishna) attested in snapshot pallavi.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+      },
+      "dramatic_work": "Nauka Charitram"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:f5b3f945-9362-4b7b-945e-8d920e6b66c9:theme",
+      "subject_id": "tyagaraja:krithi:f5b3f945-9362-4b7b-945e-8d920e6b66c9",
+      "canonical_id": "f5b3f945-9362-4b7b-945e-8d920e6b66c9",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "theme",
+      "value": "Narrative Allusion & Leela Praise",
+      "witness_id": "645fcbc7-082e-470a-b5c3-906f61328338",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved Nauka Charitram dramatic daru (Gopis addressing Krishna) attested in snapshot pallavi.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:f885a354-b961-400f-ac3f-df5fee309d0c:deity",
+      "subject_id": "tyagaraja:krithi:f885a354-b961-400f-ac3f-df5fee309d0c",
+      "canonical_id": "f885a354-b961-400f-ac3f-df5fee309d0c",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "deity",
+      "value": "Rama",
+      "witness_id": "aabbf81a-3851-40e8-bbc3-6a7a0d351e04",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved Nama Mahima & Desadi tala witness claim attested in snapshot and import record.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+      },
+      "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:f885a354-b961-400f-ac3f-df5fee309d0c:theme",
+      "subject_id": "tyagaraja:krithi:f885a354-b961-400f-ac3f-df5fee309d0c",
+      "canonical_id": "f885a354-b961-400f-ac3f-df5fee309d0c",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "theme",
+      "value": "Nama Mahima",
+      "witness_id": "aabbf81a-3851-40e8-bbc3-6a7a0d351e04",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-10-15",
+        "decision": "approve",
+        "note": "Approved Nama Mahima & Desadi tala witness claim attested in snapshot and import record.",
+        "application": "deferred",
+        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+      },
+      "mudra": "Tyagaraja"
+    }
+  ]
 }
