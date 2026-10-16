@@ -38,6 +38,14 @@ fun Route.catalogueV2Routes(catalogueService: CatalogueService) {
                 ),
             )
         }
+        get("/collections") {
+            call.respondCatalogue(catalogueService.listCollections(call.request.queryParameters))
+        }
+        get("/collections/{slug}") {
+            call.respondCatalogue(
+                catalogueService.getCollection(call.parameters["slug"], call.request.queryParameters),
+            )
+        }
         get("/ragas") {
             call.respondCatalogue(
                 catalogueService.searchRagas(call.request.queryParameters, CatalogueVisibility.V2),

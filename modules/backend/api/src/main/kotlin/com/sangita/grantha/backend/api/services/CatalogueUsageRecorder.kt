@@ -85,6 +85,8 @@ class CatalogueUsageRecorder(
             path.startsWith(CatalogueContract.COMPOSERS_PATH) -> "catalogue.composers"
             path.startsWith("/v2/catalogue/composers/") -> "catalogue.composer"
             path.startsWith("/v2/catalogue/composers") -> "catalogue.composers"
+            path.startsWith("/v2/catalogue/collections/") -> "catalogue.collection"
+            path.startsWith("/v2/catalogue/collections") -> "catalogue.collections"
             else -> "catalogue.other"
         }
 
@@ -95,6 +97,7 @@ class CatalogueUsageRecorder(
             "catalogue.ragas", "catalogue.raga" -> "raga_directory"
             "catalogue.composers", "catalogue.composer" -> "composer_directory"
             "catalogue.discovery" -> "discovery"
+            "catalogue.collections", "catalogue.collection" -> "collections"
             else -> "other"
         }
     }

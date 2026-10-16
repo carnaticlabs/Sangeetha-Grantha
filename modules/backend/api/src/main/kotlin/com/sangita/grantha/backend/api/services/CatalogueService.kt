@@ -5,6 +5,8 @@ import com.sangita.grantha.backend.api.catalogue.CatalogueParseResult
 import com.sangita.grantha.backend.dal.SangitaDal
 import com.sangita.grantha.backend.dal.models.CatalogueVisibility
 import com.sangita.grantha.backend.dal.support.toJavaUuid
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueCollectionDetailDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueCollectionListDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerDetailDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerSummaryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueDiscoveryDto
@@ -164,6 +166,19 @@ class CatalogueService(
         return CatalogueResult.Ok(dal.catalogue.findDiscovery(visibility))
     }
 
+    /** Reviewed cycle collections (TRACK-150). V2 only; unreviewed memberships never appear. */
+    suspend fun listCollections(params: Parameters): CatalogueResult<CatalogueCollectionListDto> {
+        rejectExtra(params)?.let { return it }
+        return CatalogueResult.Ok(CatalogueCollectionListDto(dal.catalogue.listCollections()))
+    }
+
+    suspend fun getCollection(slugRaw: String?, params: Parameters): CatalogueResult<CatalogueCollectionDetailDto> {
+        rejectExtra(params)?.let { return it }
+        val slug = slugRaw?.takeIf { it.length <= SLUG_MAX && SLUG_PATTERN.matches(it) }
+            ?: return CatalogueResult.Invalid("slug must be lowercase letters, digits and hyphens")
+        return dal.catalogue.findCollection(slug)?.let { CatalogueResult.Ok(it) } ?: CatalogueResult.NotFound
+    }
+
     private fun rejectExtra(params: Parameters): CatalogueResult.Invalid? =
         when (val parsed = CatalogueParameters.rejectQueryParameters(params)) {
             is CatalogueParseResult.Invalid -> CatalogueResult.Invalid(parsed.message)
@@ -177,4 +192,9 @@ class CatalogueService(
         }
 
     private fun pathInvalid(label: String) = CatalogueResult.Invalid("$label must be a valid UUID")
+
+    private companion object {
+        const val SLUG_MAX = 80
+        val SLUG_PATTERN = Regex("^[a-z0-9]+(-[a-z0-9]+)*$")
+    }
 }
