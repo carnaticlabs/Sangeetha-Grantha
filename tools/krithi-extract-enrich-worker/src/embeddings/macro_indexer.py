@@ -14,7 +14,7 @@ from typing import Any
 import psycopg
 from psycopg.rows import dict_row
 
-from .context_formatter import format_cycle_overview, format_kshetra_overview
+from .context_formatter import TYAGARAJA_CYCLE_SLUGS, format_cycle_overview, format_kshetra_overview
 from .gemini_embedder import GeminiEmbedder
 
 logger = logging.getLogger(__name__)
@@ -28,7 +28,7 @@ def reviewed_cycle_composer(slug: str, members: list[dict[str, Any]]) -> str | N
     """Derive attribution from members; newly curated groups require claim approval.
 
     Existing Dikshitar membership behavior is preserved. Empty/mixed attribution
-    and unapproved Syama Sastri groups abstain instead of generating false macros.
+    and unapproved Syama Sastri or Tyagaraja groups abstain instead of generating false macros.
     """
     composers = {m.get("composer_name") for m in members}
     if len(composers) != 1 or not all(composers):
@@ -39,6 +39,20 @@ def reviewed_cycle_composer(slug: str, members: list[dict[str, Any]]) -> str | N
         for member in members:
             attrs = member.get("discriminative_attributes") or {}
             if not isinstance(attrs, dict) or attrs.get("provenance_owner") != "TRACK-146":
+                return None
+            if attrs.get("review_state") != "reviewed" or not attrs.get("claim_id"):
+                return None
+            approval = attrs.get("approval")
+            if not isinstance(approval, dict) or approval.get("decision") != "approve":
+                return None
+            if not all(approval.get(k) for k in ("reviewer", "accepted_at", "note")):
+                return None
+    elif slug in TYAGARAJA_CYCLE_SLUGS:
+        if composers != {"Tyagaraja"} or not members:
+            return None
+        for member in members:
+            attrs = member.get("discriminative_attributes") or {}
+            if not isinstance(attrs, dict) or attrs.get("provenance_owner") != "TRACK-147":
                 return None
             if attrs.get("review_state") != "reviewed" or not attrs.get("claim_id"):
                 return None
@@ -73,7 +87,8 @@ def index_cycle_overviews(
             'shodasa-ganapati',
             'nottusvara-sahitya',
             'syama-sastri-swarajathi-ratnatrayam',
-            'syama-sastri-navaratnamalika'
+            'syama-sastri-navaratnamalika',
+            'tyagaraja-pancharatnam'
         )
         ORDER BY display_name_en
     """

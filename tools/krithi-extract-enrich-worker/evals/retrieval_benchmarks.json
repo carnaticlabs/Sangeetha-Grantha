@@ -457,5 +457,202 @@
     "requires_human_approval": true,
     "review_state": "unresolved",
     "notes": "Meenakshi Navaratnamalika cycle; sources disagree on complete nine-member set."
+  },
+  {
+    "id": "TY-147-01",
+    "category": "ghana_raga_pancharatnam_nattai",
+    "query": "Tyagaraja Ghana Raga Pancharatnam first gem in Nattai Adi tala Jagadanandakaraka",
+    "expected_krithi_id": "2e115182-dcc2-4a41-962c-8381821a7489",
+    "expected_title_contains": "jagadAnanda kAraka",
+    "expected_composer": "Tyagaraja",
+    "expected_raga": "Nāṭṭai",
+    "requires_human_approval": true,
+    "review_state": "reviewed",
+    "approval": {
+      "decision": "approve",
+      "reviewer": "Seshadri",
+      "accepted_at": "2026-10-15",
+      "note": "Approved expected identity for Ghana-raga Pancharatnam Gem 1 in Nattai (jagadAnanda kAraka)."
+    },
+    "notes": "Ghana-raga Pancharatnam in Nattai (Adi, Aradhana performance order 1)."
+  },
+  {
+    "id": "TY-147-02",
+    "category": "ghana_raga_pancharatnam_sri",
+    "query": "Tyagaraja Ghana Raga Pancharatnam fifth gem in Sri raga Endaro Mahanubhavulu",
+    "expected_krithi_id": "2b65609e-9fbf-4232-baae-096cafdf4e79",
+    "expected_title_contains": "Endaro Mahaanubhaavulu",
+    "expected_composer": "Tyagaraja",
+    "expected_raga": "Sri",
+    "requires_human_approval": true,
+    "review_state": "reviewed",
+    "approval": {
+      "decision": "approve",
+      "reviewer": "Seshadri",
+      "accepted_at": "2026-10-15",
+      "note": "Approved expected identity for Ghana-raga Pancharatnam Gem 5 in Sri (Endaro Mahaanubhaavulu)."
+    },
+    "notes": "Ghana-raga Pancharatnam in Sri (Adi, Aradhana performance order 5, Saints and Teachers & Nadopasana)."
+  },
+  {
+    "id": "TY-147-03",
+    "category": "nadopasana_svara_raga_sudha",
+    "query": "Tyagaraja Sankarabharanam krithi on nadopasana and musical knowledge Svara Raga Sudha Rasa",
+    "expected_krithi_id": "73b44194-00c1-4753-8c8a-924d9fa3e18b",
+    "expected_title_contains": "svara rAga sudhA",
+    "expected_composer": "Tyagaraja",
+    "expected_raga": "SankarAbharaNaM",
+    "requires_human_approval": true,
+    "review_state": "reviewed",
+    "approval": {
+      "decision": "approve",
+      "reviewer": "Seshadri",
+      "accepted_at": "2026-10-15",
+      "note": "Approved expected identity for Svara Raga Sudha (Nadopasana & musical knowledge in Sankarabharanam)."
+    },
+    "notes": "Nadopasana and Sangita Sastra treatise krithi in Sankarabharanam."
+  },
+  {
+    "id": "TY-147-04",
+    "category": "nadopasana_shiva_embodiment",
+    "query": "Tyagaraja Chittaranjani krithi praising Lord Shiva as embodiment of Nada Tanumanisham",
+    "expected_krithi_id": "6c9d0ab2-70a2-4c6b-a0df-c4a925bf8ae9",
+    "expected_title_contains": "nAda tanumAnishaM",
+    "expected_composer": "Tyagaraja",
+    "expected_raga": "Chittaranjani",
+    "requires_human_approval": true,
+    "review_state": "reviewed",
+    "approval": {
+      "decision": "approve",
+      "reviewer": "Seshadri",
+      "accepted_at": "2026-10-15",
+      "note": "Approved expected identity for Nada Tanumanisham (Shiva addressee and Nadopasana in Chittaranjani)."
+    },
+    "notes": "Non-Rama addressee (Shiva / Sankara) and Nadopasana theme in Chittaranjani."
+  },
+  {
+    "id": "TY-147-05",
+    "category": "ritual_utsava_invitation",
+    "query": "Tyagaraja Utsava Sampradaya royal welcome invitation Heccarikaga Rara in Yadukulakambhoji",
+    "expected_krithi_id": "9e06c13c-2bbb-47a7-b580-1de7365754cc",
+    "expected_title_contains": "heccarikagA rArA",
+    "expected_composer": "Tyagaraja",
+    "expected_raga": "Yadukula Kāmbhoji",
+    "requires_human_approval": true,
+    "review_state": "reviewed",
+    "approval": {
+      "decision": "approve",
+      "reviewer": "Seshadri",
+      "accepted_at": "2026-10-15",
+      "note": "Approved expected identity for Heccarikaga Rara (Utsava Sampradaya invitation / heccarika function)."
+    },
+    "notes": "Utsava Sampradaya ritual invitation piece in Yadukulakambhoji."
+  },
+  {
+    "id": "TY-147-06",
+    "category": "dramatic_nauka_charitram_gopis",
+    "query": "Tyagaraja Nauka Charitram opera daru Gopis perfuming Krishna with sandalwood paste Gandhamu Puyyaruga Punnagavarali",
+    "expected_krithi_id": "f5b3f945-9362-4b7b-945e-8d920e6b66c9",
+    "expected_title_contains": "gandhamu puyyarugA",
+    "expected_composer": "Tyagaraja",
+    "expected_raga": "Punnagavarali",
+    "requires_human_approval": true,
+    "review_state": "reviewed",
+    "approval": {
+      "decision": "approve",
+      "reviewer": "Seshadri",
+      "accepted_at": "2026-10-15",
+      "note": "Approved expected identity for Gandhamu Puyyaruga (Nauka Charitram dramatic daru, Gopis speaker context)."
+    },
+    "notes": "Nauka Charitram dramatic work item in Punnagavarali."
+  },
+  {
+    "id": "TY-147-07",
+    "category": "dramatic_prahlada_bhakti_vijayam",
+    "query": "Tyagaraja Prahlada Bhakti Vijayam dramatic invocation Vandanamu Raghunandana in Sahana",
+    "expected_krithi_id": "78b86c5a-7c6e-4797-a4ab-0be561979065",
+    "expected_title_contains": "vandanamu raghunandana",
+    "expected_composer": "Tyagaraja",
+    "expected_raga": "Sahana",
+    "requires_human_approval": true,
+    "review_state": "reviewed",
+    "approval": {
+      "decision": "approve",
+      "reviewer": "Seshadri",
+      "accepted_at": "2026-10-15",
+      "note": "Approved expected identity for Vandanamu Raghunandana (Prahlada Bhakti Vijayam dramatic kirtana)."
+    },
+    "notes": "Prahlada Bhakti Vijayam dramatic work item in Sahana."
+  },
+  {
+    "id": "TY-147-08",
+    "category": "kshetra_kovur_sundareswara",
+    "query": "Tyagaraja Kovur Pancharatnam praising Lord Shiva Sundareswara in Sankarabharanam Sundaresvaruni",
+    "expected_krithi_id": "e0151a7a-e0d9-413d-b07a-4c1b2854971f",
+    "expected_title_contains": "sundarESvaruni",
+    "expected_composer": "Tyagaraja",
+    "expected_raga": "SankarAbharaNaM",
+    "requires_human_approval": true,
+    "review_state": "reviewed",
+    "approval": {
+      "decision": "approve",
+      "reviewer": "Seshadri",
+      "accepted_at": "2026-10-15",
+      "note": "Approved expected identity for Sundaresvaruni (Kovur Sundareswara Shiva addressee in Sankarabharanam)."
+    },
+    "notes": "Kovur Sundareswara kshetra piece in Sankarabharanam."
+  },
+  {
+    "id": "TY-147-09",
+    "category": "transmission_desadi_tala_witness",
+    "query": "Tyagaraja Janaranjani Desadi tala witness stored as Adi Smarane Sukhamu Rama Nama",
+    "expected_krithi_id": "f885a354-b961-400f-ac3f-df5fee309d0c",
+    "expected_title_contains": "smaraNE sukhamu",
+    "expected_composer": "Tyagaraja",
+    "expected_raga": "Jana Ranjani",
+    "requires_human_approval": true,
+    "review_state": "reviewed",
+    "approval": {
+      "decision": "approve",
+      "reviewer": "Seshadri",
+      "accepted_at": "2026-10-15",
+      "note": "Approved expected identity for Smarane Sukhamu (Desadi source tala witness stored as Adi in Janaranjani)."
+    },
+    "notes": "Desadi tala transmission witness and Nama Mahima theme in Janaranjani."
+  },
+  {
+    "id": "TY-147-10",
+    "category": "cross_composer_tyagaraja_deity_vs_composer",
+    "query": "Muthuswami Dikshitar Tyagaraja Vibhakti cycle at Tiruvarur Tyagaraja Yoga Vaibhavam Anandabhairavi",
+    "expected_title_contains": "tyAgarAja yOga vaibhavaM",
+    "expected_composer": "Muthuswami Dikshitar",
+    "unexpected_composer": "Tyagaraja",
+    "expected_raga": "Anandabhairavi",
+    "requires_human_approval": true,
+    "review_state": "reviewed",
+    "approval": {
+      "decision": "approve",
+      "reviewer": "Seshadri",
+      "accepted_at": "2026-10-15",
+      "note": "Approved cross-composer discriminator separating Dikshitar's Tyagaraja deity/vibhakti cycle from composer Tyagaraja."
+    },
+    "notes": "Cross-composer separator: Dikshitar's Tyagaraja Vibhakti cycle on Lord Tyagaraja of Tiruvarur vs saint-composer Tyagaraja."
+  },
+  {
+    "id": "TY-147-11",
+    "category": "track147_macro_ghana_raga_pancharatnam",
+    "query": "Tyagaraja Ghana Raga Pancharatnam five gems Nattai Gaula Arabhi Varali Sri cycle overview",
+    "is_macro": true,
+    "expected_document_kind": "CYCLE_OVERVIEW",
+    "expected_composer": "Tyagaraja",
+    "requires_human_approval": true,
+    "review_state": "reviewed",
+    "approval": {
+      "decision": "approve",
+      "reviewer": "Seshadri",
+      "accepted_at": "2026-10-15",
+      "note": "Approved macro probe for Tyagaraja Ghana Raga Pancharatnam (CYCLE_OVERVIEW)."
+    },
+    "notes": "Reviewed Ghana-raga Pancharatnam membership required."
   }
 ]
