@@ -41,7 +41,18 @@ These operations are mounted under **both** `/v1/catalogue` and `/v2/catalogue`:
 | `GET /composers` | Paged composer directory with published-composition counts |
 | `GET /composers/{id}` | Composer metadata and aliases |
 
-V2 additionally mounts **`GET /v2/catalogue/discovery`**. It accepts no query parameters. V2 directory endpoints for talas, deities, temples, languages, and musical forms are planned and are not mounted yet.
+V2 additionally mounts **`GET /v2/catalogue/discovery`**. It accepts no query parameters.
+
+V2 also mounts reviewed cycle collections (TRACK-150), both anonymous and published-only, accepting no query parameters:
+
+| Method and path | Result |
+|:---|:---|
+| `GET /v2/catalogue/collections` | `{ items }` of collections, ordered by composer then name |
+| `GET /v2/catalogue/collections/{slug}` | One collection with overview text, order basis and ordered members; `404` when unknown or when no published reviewed member remains |
+
+A collection is visible only when its memberships were written by a reviewed seed (a `krithi_tags` row with `source = 'reviewed_cycle'` for the same kriti and tag) and the kriti is published. Members sort by role (dhyana, core, optional, mangalam, then disputed), `sequenceOrder`, title. `position` numbers CORE members only, and clients show ordinals only when `orderBasis` is `SOURCE`; `PERFORMANCE_CONVENTION` marks a later concert order such as the Ghana-raga Pancharatnam, and `UNSPECIFIED` claims no sequence. `isComplete` is false for open sets (Shodasa Ganapati, Nottusvara Sahitya). Disputed members (Rahu and Ketu in the Navagraha set) carry `label: "disputed"`. Attribute maps expose an allow-list of reviewed keys (`avarana`, `yogini`, `laya`, `structure`, `mudra`, `theme`); stored provenance and approval JSON never leave the server.
+
+`GET /v2/catalogue/krithis/{id}` adds an optional `cycleContext` (collections with position, neighbours, plus `vibhaktiCase` and `occasionNote`). It is omitted when the kriti has no reviewed context and is never present on `/v1`. V2 directory endpoints for talas, deities, temples, languages, and musical forms are planned and are not mounted yet.
 
 ### Query parameters and pagination
 
