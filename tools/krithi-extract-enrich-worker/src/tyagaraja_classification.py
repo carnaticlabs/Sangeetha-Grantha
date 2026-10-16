@@ -124,9 +124,7 @@ class Approval(BaseModel):
 
     @model_validator(mode="after")
     def explained_deferral(self) -> Approval:
-        if self.application == "deferred" and (
-            self.decision != "approve" or not (self.deferral_reason or "").strip()
-        ):
+        if self.application == "deferred" and (self.decision != "approve" or not (self.deferral_reason or "").strip()):
             raise ValueError("only approved claims can be deferred, and deferral requires a reason")
         if self.application == "apply" and self.deferral_reason:
             raise ValueError("deferral reason given for a claim marked for application")

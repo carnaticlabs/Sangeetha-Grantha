@@ -553,8 +553,7 @@ def _infer_deity_and_theme(title: str, raga: str, pallavi: str | None) -> tuple[
     elif any(k in text for k in ("anjaney", "hanuman", "pahi rama duta", "pavanaja", "vayu kumara")):
         deity = "Hanuman"
     elif any(
-        k in text
-        for k in ("krishna", "krsna", "gandhamu", "navanitasa", "gopika", "venu gana", "govinda", "mukunda")
+        k in text for k in ("krishna", "krsna", "gandhamu", "navanitasa", "gopika", "venu gana", "govinda", "mukunda")
     ):
         deity = "Krishna / Vishnu"
     elif any(k in text for k in ("ranga", "phanipati sayi", "phani sayana", "uraga raja sayana")):
@@ -606,13 +605,9 @@ def _infer_deity_and_theme(title: str, raga: str, pallavi: str | None) -> tuple[
 def main() -> None:
     raw_master = json.loads(MASTER_PATH.read_text(encoding="utf-8"))
     pallavis = {
-        r["id"]: r["pallavi"]
-        for r in json.loads(PALLAVIS_PATH.read_text(encoding="utf-8"))
-        if r.get("pallavi")
+        r["id"]: r["pallavi"] for r in json.loads(PALLAVIS_PATH.read_text(encoding="utf-8")) if r.get("pallavi")
     }
-    t144_rows = {
-        r["krithi_id"]: r for r in json.loads(T144_DOSSIER_PATH.read_text(encoding="utf-8")).get("rows", [])
-    }
+    t144_rows = {r["krithi_id"]: r for r in json.loads(T144_DOSSIER_PATH.read_text(encoding="utf-8")).get("rows", [])}
 
     # Map cached HTML files by URL SHA-256
     cache_files = {p.stem: p for p in CACHE_DIR.glob("*.html")}
@@ -796,8 +791,7 @@ def main() -> None:
             accessed_at="2026-10-15",
             status=WitnessStatus.UNAVAILABLE,
             description=(
-                "Journal of the Music Academy Vol. XXXIX (1968): Tyagaraja transmission research lead "
-                "(not consulted)."
+                "Journal of the Music Academy Vol. XXXIX (1968): Tyagaraja transmission research lead (not consulted)."
             ),
         ),
         Witness(
