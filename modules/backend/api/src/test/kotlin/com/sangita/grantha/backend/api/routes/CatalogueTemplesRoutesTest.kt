@@ -187,6 +187,20 @@ class CatalogueTemplesRoutesTest : IntegrationTestBase() {
     }
 
     @Test
+    fun `child shrine with only an overview is never a recorded gap`() = testApplication {
+        mount()
+        val parent = temple("T Gap Parent", placeKind = "COMPLEX").also { krithi(it, "Parent Song") }
+        val shrine = temple("T Described Shrine", parent = parent, placeKind = "SANNIDHI")
+            .also { overview(it, "Central sanctum of the complex.") }
+
+        val body = parse(detail(shrine).bodyAsText())
+        assertEquals(0, body["publishedKrithiCount"]!!.jsonPrimitive.content.toInt())
+        assertEquals("false", body["recordedGap"]!!.jsonPrimitive.content)
+        val nested = parse(detail(parent).bodyAsText())["children"]!!.jsonArray.single().jsonObject
+        assertEquals("false", nested["recordedGap"]!!.jsonPrimitive.content)
+    }
+
+    @Test
     fun `list is ordered by mandalam then name and filters by element and mandalam`() = testApplication {
         mount()
         val nadu = temple("A Nadu", mandalam = "NADU").also { overview(it, "x") }

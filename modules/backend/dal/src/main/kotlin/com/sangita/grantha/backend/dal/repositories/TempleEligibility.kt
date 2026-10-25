@@ -21,9 +21,12 @@ data class TempleEligibilityRow(
     /** Direct eligibility: a published kriti or a published KSHETRA_OVERVIEW at this very temple. */
     val direct: Boolean get() = publishedKrithiCount > 0 || hasPublishedOverview
 
-    /** Derived gap (TRACK-151 Spec 6): an overview but no published kriti here or in any eligible child. */
+    /**
+     * Derived gap (TRACK-151 Spec 6): an overview but no published kriti here or in any eligible
+     * child. Root temples only: a child shrine's overview describes it and is not a gap reason.
+     */
     val recordedGap: Boolean
-        get() = eligible && hasPublishedOverview && publishedKrithiCount == 0L && !childHasPublishedKrithi
+        get() = eligible && parentId == null && hasPublishedOverview && publishedKrithiCount == 0L && !childHasPublishedKrithi
 }
 
 /**
