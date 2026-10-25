@@ -374,6 +374,70 @@ paths:
           "$ref": "#/components/responses/CatalogueValidationError"
         "404":
           "$ref": "#/components/responses/CatalogueNotFound"
+  "/v2/catalogue/temples":
+    "get":
+      "tags":
+        - "Catalogue"
+      "summary": "Kshetras (temples) with published data"
+      "description": "Published-only V2. Lists root temples only (child shrines are nested in detail), in mandalam order (declaration order, unassigned last), then name. A temple is listed only when it is eligible: a published kriti or a published kshetra overview is recorded at it or at one of its child shrines. Unknown or repeated query parameters and invalid enum values are rejected. Not paginated (about 100 temples)."
+      "security": []
+      "parameters":
+        -
+          "name": "element"
+          "in": "query"
+          "required": false
+          "description": "Filters on the root temple's own bhuta. APPU is water."
+          "schema":
+            "$ref": "#/components/schemas/CatalogueTempleElement"
+        -
+          "name": "mandalam"
+          "in": "query"
+          "required": false
+          "schema":
+            "$ref": "#/components/schemas/CatalogueMandalam"
+        -
+          "$ref": "#/components/parameters/RasikaSessionHeader"
+        -
+          "$ref": "#/components/parameters/RasikaInteractionHeader"
+      "responses":
+        "200":
+          "description": "Eligible root temples. Cache-Control: no-store."
+          "content":
+            "application/json":
+              "schema":
+                "$ref": "#/components/schemas/CatalogueTempleList"
+        "400":
+          "$ref": "#/components/responses/CatalogueValidationError"
+  "/v2/catalogue/temples/{id}":
+    "get":
+      "tags":
+        - "Catalogue"
+      "summary": "One kshetra with child shrines and the kritis sung there"
+      "description": "Unknown and ineligible ids are 404. `krithis` are the published kritis recorded directly at this temple, by title; child shrines appear in `children`, each addressable by its own id. `recordedGap` is true when an overview exists but no published kriti is recorded here or in any eligible child; `overview` is then the recorded reason."
+      "security": []
+      "parameters":
+        -
+          "name": "id"
+          "in": "path"
+          "required": true
+          "schema":
+            "type": "string"
+            "format": "uuid"
+        -
+          "$ref": "#/components/parameters/RasikaSessionHeader"
+        -
+          "$ref": "#/components/parameters/RasikaInteractionHeader"
+      "responses":
+        "200":
+          "description": "Temple detail. Cache-Control: no-store."
+          "content":
+            "application/json":
+              "schema":
+                "$ref": "#/components/schemas/CatalogueTempleDetail"
+        "400":
+          "$ref": "#/components/responses/CatalogueValidationError"
+        "404":
+          "$ref": "#/components/responses/CatalogueNotFound"
   "/v2/catalogue/talas":
     "get":
       "tags":
@@ -2393,6 +2457,168 @@ components:
           "type": "array"
           "items":
             "$ref": "#/components/schemas/CatalogueCollectionSummary"
+    "CatalogueMandalam":
+      "type": "string"
+      "enum": ["CHOLA", "PANDYA", "TONDAI", "NADU", "CHERA", "KONGU", "UTTARA"]
+    "CataloguePlaceKind":
+      "type": "string"
+      "enum": ["LOCALITY", "COMPLEX", "SANNIDHI", "MANDAPAM"]
+    "CatalogueTempleElement":
+      "type": "string"
+      "enum": ["AKASHA", "VAYU", "AGNI", "PRITHVI", "APPU"]
+      "description": "The five bhutas. APPU is water."
+    "CatalogueDeityPosture":
+      "type": "string"
+      "enum": ["SAYANA", "STHANAKA", "ASINA", "TANDAVA"]
+    "CatalogueTemplePlace":
+      "type": "object"
+      "required":
+        - "googlePlaceId"
+        - "precision"
+      "description": "Present only when the temple's place review state is CONFIRMED. The id is for building a Google Maps link client-side, with no API key. Nothing else from Google (coordinates, name, address) is stored or exposed. Always absent until TRACK-154 supplies confirmed place ids."
+      "properties":
+        "googlePlaceId":
+          "type": "string"
+        "precision":
+          "type": "string"
+          "enum": ["TEMPLE", "PARENT_COMPLEX"]
+          "description": "TEMPLE is the temple's own place; PARENT_COMPLEX is a sannidhi or mandapam inheriting its parent complex's place."
+    "CatalogueTempleSummary":
+      "type": "object"
+      "required":
+        - "id"
+        - "name"
+        - "placeKind"
+        - "publishedKrithiCount"
+        - "childCount"
+        - "recordedGap"
+      "properties":
+        "id":
+          "type": "string"
+          "format": "uuid"
+        "name":
+          "type": "string"
+        "city":
+          "type": "string"
+          "nullable": true
+        "state":
+          "type": "string"
+          "nullable": true
+        "placeKind":
+          "$ref": "#/components/schemas/CataloguePlaceKind"
+        "mandalam":
+          "allOf":
+            -
+              "$ref": "#/components/schemas/CatalogueMandalam"
+          "nullable": true
+        "element":
+          "allOf":
+            -
+              "$ref": "#/components/schemas/CatalogueTempleElement"
+          "nullable": true
+        "publishedKrithiCount":
+          "type": "integer"
+          "format": "int64"
+          "description": "Published kritis recorded directly at this temple; not rolled up over child shrines."
+        "childCount":
+          "type": "integer"
+          "description": "Eligible child shrines."
+        "recordedGap":
+          "type": "boolean"
+          "description": "Derived: an overview exists but no published kriti is recorded here or in any eligible child."
+    "CatalogueTempleList":
+      "type": "object"
+      "required":
+        - "items"
+      "properties":
+        "items":
+          "type": "array"
+          "items":
+            "$ref": "#/components/schemas/CatalogueTempleSummary"
+    "CatalogueTempleDetail":
+      "type": "object"
+      "required":
+        - "id"
+        - "name"
+        - "placeKind"
+        - "publishedKrithiCount"
+        - "childCount"
+        - "recordedGap"
+        - "children"
+        - "krithis"
+      "properties":
+        "id":
+          "type": "string"
+          "format": "uuid"
+        "name":
+          "type": "string"
+        "city":
+          "type": "string"
+          "nullable": true
+        "state":
+          "type": "string"
+          "nullable": true
+        "country":
+          "type": "string"
+          "nullable": true
+        "placeKind":
+          "$ref": "#/components/schemas/CataloguePlaceKind"
+        "mandalam":
+          "allOf":
+            -
+              "$ref": "#/components/schemas/CatalogueMandalam"
+          "nullable": true
+        "element":
+          "allOf":
+            -
+              "$ref": "#/components/schemas/CatalogueTempleElement"
+          "nullable": true
+        "publishedKrithiCount":
+          "type": "integer"
+          "format": "int64"
+          "description": "Published kritis recorded directly at this temple; not rolled up over child shrines."
+        "childCount":
+          "type": "integer"
+          "description": "Eligible child shrines."
+        "recordedGap":
+          "type": "boolean"
+          "description": "Derived: an overview exists but no published kriti is recorded here or in any eligible child."
+        "sthalaVriksha":
+          "type": "string"
+          "nullable": true
+        "sthalaTirtha":
+          "type": "string"
+          "nullable": true
+        "nadiTirtha":
+          "type": "string"
+          "nullable": true
+        "deityPosture":
+          "allOf":
+            -
+              "$ref": "#/components/schemas/CatalogueDeityPosture"
+          "nullable": true
+        "overview":
+          "type": "string"
+          "nullable": true
+          "description": "Stored kshetra overview text, returned as written; for a recorded gap it is the reason."
+        "parent":
+          "allOf":
+            -
+              "$ref": "#/components/schemas/CatalogueReference"
+          "nullable": true
+        "children":
+          "type": "array"
+          "items":
+            "$ref": "#/components/schemas/CatalogueTempleSummary"
+        "krithis":
+          "type": "array"
+          "items":
+            "$ref": "#/components/schemas/CatalogueKrithiSummaryV2"
+        "place":
+          "allOf":
+            -
+              "$ref": "#/components/schemas/CatalogueTemplePlace"
+          "nullable": true
     "CatalogueCollectionMember":
       "type": "object"
       "required":

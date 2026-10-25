@@ -16,6 +16,8 @@ import com.sangita.grantha.shared.domain.model.catalogue.CatalogueLyricsDto
 import com.sangita.grantha.shared.domain.model.catalogue.CataloguePagedResponse
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueRagaDetailDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueRagaSummaryDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueTempleDetailDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueTempleListDto
 import io.ktor.http.Parameters
 import kotlin.uuid.Uuid
 
@@ -177,6 +179,22 @@ class CatalogueService(
         val slug = slugRaw?.takeIf { it.length <= SLUG_MAX && SLUG_PATTERN.matches(it) }
             ?: return CatalogueResult.Invalid("slug must be lowercase letters, digits and hyphens")
         return dal.catalogue.findCollection(slug)?.let { CatalogueResult.Ok(it) } ?: CatalogueResult.NotFound
+    }
+
+    /** Eligible root kshetras (TRACK-151). Eligibility is decided only by `TempleEligibility`. */
+    suspend fun listTemples(params: Parameters): CatalogueResult<CatalogueTempleListDto> =
+        when (val parsed = CatalogueParameters.parseTempleList(params)) {
+            is CatalogueParseResult.Invalid -> CatalogueResult.Invalid(parsed.message)
+            is CatalogueParseResult.Ok ->
+                CatalogueResult.Ok(
+                    CatalogueTempleListDto(dal.catalogue.listTemples(parsed.value.element, parsed.value.mandalam)),
+                )
+        }
+
+    suspend fun getTemple(idRaw: String?, params: Parameters): CatalogueResult<CatalogueTempleDetailDto> {
+        rejectExtra(params)?.let { return it }
+        val id = pathUuid(idRaw, "id") ?: return pathInvalid("id")
+        return dal.catalogue.findTemple(id.toJavaUuid())?.let { CatalogueResult.Ok(it) } ?: CatalogueResult.NotFound
     }
 
     private fun rejectExtra(params: Parameters): CatalogueResult.Invalid? =

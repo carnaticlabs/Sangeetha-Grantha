@@ -12,6 +12,7 @@ object RasikaCatalogueContract {
     const val COMPOSERS_PATH = "$ROOT/composers"
     const val DISCOVERY_PATH = "$ROOT/discovery"
     const val COLLECTIONS_PATH = "$ROOT/collections"
+    const val TEMPLES_PATH = "$ROOT/temples"
 }
 
 @Serializable

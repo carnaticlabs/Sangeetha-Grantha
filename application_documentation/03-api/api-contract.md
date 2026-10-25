@@ -52,7 +52,18 @@ V2 also mounts reviewed cycle collections (TRACK-150), both anonymous and publis
 
 A collection is visible only when its memberships were written by a reviewed seed (a `krithi_tags` row with `source = 'reviewed_cycle'` for the same kriti and tag) and the kriti is published. Members sort by role (dhyana, core, optional, mangalam, then disputed), `sequenceOrder`, title. `position` numbers CORE members only, and clients show ordinals only when `orderBasis` is `SOURCE`; `PERFORMANCE_CONVENTION` marks a later concert order such as the Ghana-raga Pancharatnam, and `UNSPECIFIED` claims no sequence. `isComplete` is false for open sets (Shodasa Ganapati, Nottusvara Sahitya). Disputed members (Rahu and Ketu in the Navagraha set) carry `label: "disputed"`. Attribute maps expose an allow-list of reviewed keys (`avarana`, `yogini`, `laya`, `structure`, `mudra`, `theme`); stored provenance and approval JSON never leave the server.
 
-`GET /v2/catalogue/krithis/{id}` adds an optional `cycleContext` (collections with position, neighbours, plus `vibhaktiCase` and `occasionNote`). It is omitted when the kriti has no reviewed context and is never present on `/v1`. V2 directory endpoints for talas, deities, temples, languages, and musical forms are planned and are not mounted yet.
+`GET /v2/catalogue/krithis/{id}` adds an optional `cycleContext` (collections with position, neighbours, plus `vibhaktiCase` and `occasionNote`). It is omitted when the kriti has no reviewed context and is never present on `/v1`. V2 directory endpoints for talas, deities, languages, and musical forms are planned and are not mounted yet.
+
+V2 also mounts kshetras (temples, TRACK-151), anonymous, published-only and read-only:
+
+| Method and path | Result |
+|:---|:---|
+| `GET /v2/catalogue/temples` | `{ items }` of eligible **root** temples, ordered by mandalam (declaration order `CHOLA, PANDYA, TONDAI, NADU, CHERA, KONGU, UTTARA`, unassigned last), then name. Optional `element` (`AKASHA, VAYU, AGNI, PRITHVI, APPU`; `APPU` is water) and `mandalam`; other, repeated or invalid parameters are `400`. Not paginated |
+| `GET /v2/catalogue/temples/{id}` | One temple with sthala fields, `overview`, `parent`, nested eligible `children` and the published `krithis` recorded directly there; `400` for a malformed id, `404` when unknown or ineligible |
+
+**Eligibility contract (shared rule).** A temple is *direct* when a published kriti has `krithis.temple_id = temple.id`, or a published `KSHETRA_OVERVIEW` search document carries that `temple_id`. It is *eligible* when it is direct or has at least one direct child, so a child stays reachable when its parent has no data of its own (the parent then shows `publishedKrithiCount = 0`). Ineligible temples are never returned by list or detail, whatever their columns hold. The rule lives in one place, `TempleEligibility` in the DAL; temple search hits (TRACK-152) and region/element facets (TRACK-153) must call it, not restate it. A non-null `temple_id` counts as reviewed because only published kritis count and publishing is a curator step.
+
+`publishedKrithiCount` is direct only, not rolled up over children, and `childCount` counts eligible children. `recordedGap` is derived, not stored: the temple is eligible, has a published overview, and neither it nor any eligible child has a published kriti; the overview text is then the recorded reason. Child shrines are nested in detail and not repeated in the list. `place` is optional (`googlePlaceId` and `precision` `TEMPLE` or `PARENT_COMPLEX`), present only for a CONFIRMED place, and always absent until TRACK-154 lands; the id builds a Maps link client-side and no coordinates are stored or exposed.
 
 ### Query parameters and pagination
 
@@ -94,7 +105,7 @@ Successful catalogue responses set `Cache-Control: no-store`. Missing, unpublish
 
 The catalogue error enum also defines `NOT_FOUND` and `UNAVAILABLE`. Do not assume every API family uses this envelope: some auth failures return plain text and other routes use shared error handling.
 
-Sources: [query parser](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/catalogue/CatalogueParameters.kt), [catalogue DTOs](../../modules/shared/domain/src/commonMain/kotlin/com/sangita/grantha/shared/domain/model/catalogue/CatalogueDtos.kt), [V2 routes](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/RasikaCatalogueRoutes.kt).
+Sources: [query parser](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/catalogue/CatalogueParameters.kt), [catalogue DTOs](../../modules/shared/domain/src/commonMain/kotlin/com/sangita/grantha/shared/domain/model/catalogue/CatalogueDtos.kt), [V2 routes](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/RasikaCatalogueRoutes.kt), [temple eligibility](../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/repositories/TempleEligibility.kt).
 
 ## Hybrid and semantic search
 

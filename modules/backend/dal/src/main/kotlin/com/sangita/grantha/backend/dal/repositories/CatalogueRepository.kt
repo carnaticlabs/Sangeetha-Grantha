@@ -52,6 +52,12 @@ import com.sangita.grantha.shared.domain.model.catalogue.CatalogueRagaRefDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueRagaSummaryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueReferenceDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueTalaRefDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueDeityPostureDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueMandalamDto
+import com.sangita.grantha.shared.domain.model.catalogue.CataloguePlaceKindDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueTempleDetailDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueTempleElementDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueTempleSummaryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueVariantRefDto
 import java.util.UUID
 import kotlinx.serialization.json.Json
@@ -401,6 +407,105 @@ class CatalogueRepository {
             coreCount = corePosition,
             members = memberDtos,
         )
+    }
+
+    /**
+     * Root temples the public catalogue may list (TRACK-151). Children are nested in detail, not listed.
+     * Eligibility comes only from [TempleEligibility]; ordering is mandalam (enum order, nulls last),
+     * normalised name, then id.
+     */
+    suspend fun listTemples(
+        element: CatalogueTempleElementDto? = null,
+        mandalam: CatalogueMandalamDto? = null,
+    ): List<CatalogueTempleSummaryDto> = DatabaseFactory.dbQuery {
+        val facts = TempleEligibility.snapshot()
+        val rootIds = facts.values.filter { it.eligible && it.parentId == null }.map { it.id }
+        if (rootIds.isEmpty()) return@dbQuery emptyList()
+        TemplesTable.selectAll()
+            .where { TemplesTable.id inList rootIds }
+            .filter { row ->
+                (element == null || row[TemplesTable.bhuta]?.name == element.name) &&
+                    (mandalam == null || row[TemplesTable.mandalam]?.name == mandalam.name)
+            }
+            .sortedWith(
+                compareBy<ResultRow> { it[TemplesTable.mandalam]?.ordinal ?: Int.MAX_VALUE }
+                    .thenBy { it[TemplesTable.nameNormalized] }
+                    .thenBy { it[TemplesTable.id].value.toString() },
+            )
+            .map { row -> row.toTempleSummary(facts.getValue(row[TemplesTable.id].value)) }
+    }
+
+    /** Null when the temple is unknown or ineligible. `place` stays null until TRACK-154 lands. */
+    suspend fun findTemple(id: UUID): CatalogueTempleDetailDto? = DatabaseFactory.dbQuery {
+        val facts = TempleEligibility.snapshot()
+        val own = facts[id]?.takeIf { it.eligible } ?: return@dbQuery null
+        val row = TemplesTable.selectAll().where { TemplesTable.id eq id }.singleOrNull()
+            ?: return@dbQuery null
+        val childRows = TemplesTable.selectAll()
+            .where { TemplesTable.parentTempleId eq id }
+            .filter { facts[it[TemplesTable.id].value]?.eligible == true }
+            .sortedWith(
+                compareBy<ResultRow> { it[TemplesTable.nameNormalized] }
+                    .thenBy { it[TemplesTable.id].value.toString() },
+            )
+        val parent = own.parentId?.let { parentId ->
+            TemplesTable.selectAll().where { TemplesTable.id eq parentId }.singleOrNull()?.let {
+                CatalogueReferenceDto(parentId.toKotlinUuid(), it[TemplesTable.name])
+            }
+        }
+        val krithiIds = KrithisTable
+            .select(KrithisTable.id)
+            .where { (KrithisTable.templeId eq id) and publishedComposition(CatalogueVisibility.ALL_PUBLISHED) }
+            .orderBy(KrithisTable.titleNormalized to SortOrder.ASC, KrithisTable.id to SortOrder.ASC)
+            .map { it[KrithisTable.id].value }
+        val summary = row.toTempleSummary(own)
+        CatalogueTempleDetailDto(
+            id = summary.id,
+            name = summary.name,
+            city = summary.city,
+            state = summary.state,
+            country = row[TemplesTable.country],
+            placeKind = summary.placeKind,
+            mandalam = summary.mandalam,
+            element = summary.element,
+            publishedKrithiCount = summary.publishedKrithiCount,
+            childCount = summary.childCount,
+            recordedGap = summary.recordedGap,
+            sthalaVriksha = row[TemplesTable.sthalaVriksha],
+            sthalaTirtha = row[TemplesTable.sthalaTirtha],
+            nadiTirtha = row[TemplesTable.nadiTirtha],
+            deityPosture = row[TemplesTable.deityPosture]?.let { CatalogueDeityPostureDto.valueOf(it.name) },
+            overview = templeOverview(id),
+            parent = parent,
+            children = childRows.map { it.toTempleSummary(facts.getValue(it[TemplesTable.id].value)) },
+            krithis = hydrateSummaries(krithiIds),
+            place = null,
+        )
+    }
+
+    private fun ResultRow.toTempleSummary(facts: TempleEligibilityRow) = CatalogueTempleSummaryDto(
+        id = this[TemplesTable.id].value.toKotlinUuid(),
+        name = this[TemplesTable.name],
+        city = this[TemplesTable.city],
+        state = this[TemplesTable.state],
+        placeKind = CataloguePlaceKindDto.valueOf(this[TemplesTable.placeKind].name),
+        mandalam = this[TemplesTable.mandalam]?.let { CatalogueMandalamDto.valueOf(it.name) },
+        element = this[TemplesTable.bhuta]?.let { CatalogueTempleElementDto.valueOf(it.name) },
+        publishedKrithiCount = facts.publishedKrithiCount,
+        childCount = facts.eligibleChildCount,
+        recordedGap = facts.recordedGap,
+    )
+
+    private fun templeOverview(templeId: UUID): String? {
+        var text: String? = null
+        TransactionManager.current().exec(
+            "SELECT original_content FROM search_documents " +
+                "WHERE document_kind = 'KSHETRA_OVERVIEW' AND is_published AND temple_id = CAST(? AS uuid) " +
+                "ORDER BY source_chunk_index LIMIT 1",
+            listOf(TextColumnType() to templeId.toString()),
+            StatementType.SELECT,
+        ) { rs -> if (rs.next()) text = rs.getString("original_content") }
+        return text
     }
 
     private data class MemberRow(

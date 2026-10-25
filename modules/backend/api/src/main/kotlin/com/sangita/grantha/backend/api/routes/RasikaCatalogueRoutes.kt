@@ -46,6 +46,12 @@ fun Route.rasikaCatalogueRoutes(catalogueService: CatalogueService) {
                 catalogueService.getCollection(call.parameters["slug"], call.request.queryParameters),
             )
         }
+        get("/temples") {
+            call.respondCatalogue(catalogueService.listTemples(call.request.queryParameters))
+        }
+        get("/temples/{id}") {
+            call.respondCatalogue(catalogueService.getTemple(call.parameters["id"], call.request.queryParameters))
+        }
         get("/ragas") {
             call.respondCatalogue(
                 catalogueService.searchRagas(call.request.queryParameters, CatalogueVisibility.ALL_PUBLISHED),
