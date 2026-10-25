@@ -1,0 +1,61 @@
+{
+  "track": "TRACK-154",
+  "version": 1,
+  "approvals": [
+    {
+      "reviewer": "Test Curator",
+      "date": "2026-10-25",
+      "scope": "synthetic fixture"
+    }
+  ],
+  "entries": [
+    {
+      "name": "Alpha Temple",
+      "name_normalized": "alpha temple",
+      "city": "Townville",
+      "state": "Tamil Nadu",
+      "country": "India",
+      "review_state": "CONFIRMED",
+      "google_place_id": "synthetic-place-1",
+      "reviewed_by": "system:TRACK-154:auto",
+      "reviewed_at": "2026-10-25",
+      "note": ""
+    },
+    {
+      "name": "Beta Temple",
+      "name_normalized": "beta temple",
+      "city": "Townville",
+      "state": "Tamil Nadu",
+      "country": "India",
+      "review_state": "LOCALITY_ONLY",
+      "google_place_id": null,
+      "reviewed_by": "Test Curator",
+      "reviewed_at": "2026-10-25",
+      "note": "town only"
+    },
+    {
+      "name": "Gamma Temple",
+      "name_normalized": "gamma temple",
+      "city": "Townville",
+      "state": "Tamil Nadu",
+      "country": "India",
+      "review_state": "UNRESOLVED",
+      "google_place_id": null,
+      "reviewed_by": "Test Curator",
+      "reviewed_at": "2026-10-25",
+      "note": ""
+    },
+    {
+      "name": "Absent Temple",
+      "name_normalized": "absent temple",
+      "city": "Nowhere",
+      "state": "Tamil Nadu",
+      "country": "India",
+      "review_state": "CONFIRMED",
+      "google_place_id": "synthetic-place-9",
+      "reviewed_by": "Test Curator",
+      "reviewed_at": "2026-10-25",
+      "note": ""
+    }
+  ]
+}
