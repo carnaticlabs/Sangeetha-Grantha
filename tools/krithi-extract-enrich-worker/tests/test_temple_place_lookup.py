@@ -391,3 +391,10 @@ def test_committed_reviewed_json_and_seed_agree_when_present():
     assert parsed.approvals
     assert tpl.embedded_matches_json(seed_file.read_text("utf-8"), data_file.read_text("utf-8"))
     assert seed_file.read_text("utf-8") == tpl.render_seed_sql(parsed)
+
+
+def test_auto_confirmed_lines_show_google_address_for_curator_check():
+    a, b = target("Alpha Temple"), target("Beta Temple")
+    data = tpl.CandidateFile(records=[record(a, cand("pa", "Alpha Temple", "Hill Rd, Townville, TN")), record(b)])
+    lines = tpl.auto_confirmed_lines(tpl.triage([a, b], data))
+    assert lines == ["Alpha Temple (Townville, Tamil Nadu) -> Alpha Temple | Hill Rd, Townville, TN | pa"]

@@ -79,6 +79,13 @@ def cmd_triage(args: argparse.Namespace) -> int:
     for e in review.entries:
         if e.decision is None:
             print(f"  review [{e.triage}] {e.name} ({e.city}, {e.state})")
+    auto = tpl.auto_confirmed_lines(review)
+    print(
+        f"\nauto-confirmed ({len(auto)}) - check each address is the temple, not a nearby shrine;"
+        " your sign-off covers these:"
+    )
+    for line in auto:
+        print(f"  {line}")
     return 0
 
 

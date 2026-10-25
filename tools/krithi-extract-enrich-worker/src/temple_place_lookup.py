@@ -496,6 +496,19 @@ def _demote_duplicate_auto_confirmations(entries: list[ReviewEntry]) -> None:
                 e.risk = 0
 
 
+def auto_confirmed_lines(review: ReviewFile) -> list[str]:
+    """One line per auto-confirmation with Google's name and address, for the curator to eyeball.
+
+    Name and town matching cannot tell two places in one town apart, so the sign-off must cover these.
+    """
+    lines = []
+    for e in review.entries:
+        if e.reviewed_by == AUTO_ACTOR and e.candidates:
+            c = e.candidates[0]
+            lines.append(f"{e.name} ({e.city}, {e.state}) -> {c.display_name} | {c.formatted_address} | {c.place_id}")
+    return lines
+
+
 def coverage_report(review: ReviewFile, all_targets: int | None = None) -> CoverageReport:
     counts = {"CONFIRMED": 0, "LOCALITY_ONLY": 0, "UNRESOLVED": 0, "PENDING_REVIEW": 0}
     for e in review.entries:
