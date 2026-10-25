@@ -556,65 +556,6 @@ paths:
           "$ref": "#/components/responses/CatalogueValidationError"
         "404":
           "$ref": "#/components/responses/CatalogueNotFound"
-  "/v2/catalogue/temples":
-    "get":
-      "tags":
-        - "Catalogue"
-      "security": []
-      "description": "Published-only V2 contract. Unknown or repeated query parameters are rejected. No silent V1 fallback."
-      "parameters":
-        -
-          "$ref": "#/components/parameters/CatalogueQuery"
-        -
-          "$ref": "#/components/parameters/CataloguePage"
-        -
-          "$ref": "#/components/parameters/CataloguePageSize"
-      "responses":
-        "200":
-          "description": "Allowlisted public response. Cache-Control: no-store."
-          "headers":
-            "Cache-Control":
-              "schema":
-                "type": "string"
-                "enum":
-                  - "no-store"
-          "content":
-            "application/json":
-              "schema":
-                "$ref": "#/components/schemas/CatalogueMetadataPage"
-        "400":
-          "$ref": "#/components/responses/CatalogueValidationError"
-  "/v2/catalogue/temples/{id}":
-    "get":
-      "tags":
-        - "Catalogue"
-      "security": []
-      "description": "Published-only V2 contract. Unknown or repeated query parameters are rejected. No silent V1 fallback."
-      "parameters":
-        -
-          "name": "id"
-          "in": "path"
-          "required": true
-          "schema":
-            "type": "string"
-            "format": "uuid"
-      "responses":
-        "200":
-          "description": "Allowlisted public response. Cache-Control: no-store."
-          "headers":
-            "Cache-Control":
-              "schema":
-                "type": "string"
-                "enum":
-                  - "no-store"
-          "content":
-            "application/json":
-              "schema":
-                "$ref": "#/components/schemas/CatalogueMetadataDetail"
-        "400":
-          "$ref": "#/components/responses/CatalogueValidationError"
-        "404":
-          "$ref": "#/components/responses/CatalogueNotFound"
   "/v2/catalogue/languages":
     "get":
       "tags":
