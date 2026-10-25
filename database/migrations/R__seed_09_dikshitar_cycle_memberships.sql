@@ -879,6 +879,10 @@ ON CONFLICT (krithi_id, tag_id) DO UPDATE SET
 
 
 -- 7. Complete composition lakshana and kshetra update for ALL 481 Dikshitar compositions.
+-- Tiruvarur: kritis addressed to Tyagaraja sit at the Tyagaraja Sanctum (...0004); the eight
+-- tyagaraja-vibhakti members match the cycle's declared temple. Generic Sarasvati, Ganapati, Devi,
+-- Subrahmanya and other kritis stay on the parent complex: no shrine-specific source names a child
+-- sannidhi for them. 'mucukunda varada' (296) also stays until its sahitya is checked.
 WITH comp_data (
     row_id, title, raga_name, vibhakti, stem, temple_id, deity_key, manipravala, occasion_note, yati_pattern
 ) AS (
@@ -976,7 +980,7 @@ WITH comp_data (
     (91, 'SrI sugandhi kuntaLAmbikE', 'Kunthalam', 'SAPTAMI', 'Kuntalambik', '01930000-0000-7000-8000-00000000003b'::uuid, NULL, false, NULL, 'NONE'),
     (92, 'SrI sundara rAjaM', 'Kāshirāmakriyā', 'DVITIYA', 'Raj', '01930000-0000-7000-8000-00000000002e'::uuid, NULL, false, NULL, 'NONE'),
     (93, 'SrI svAmi nAthAyA', 'Kamās', 'CHATURTHI', 'Nath', '01930000-0000-7000-8000-000000000054'::uuid, NULL, false, NULL, 'NONE'),
-    (94, 'SrI tyAgarAjasya', 'Rudrapriyā', 'SHASHTHI', 'Tyagaraja', '01930000-0000-7000-8000-000000000001'::uuid, NULL, false, NULL, 'NONE'),
+    (94, 'SrI tyAgarAjasya', 'Rudrapriyā', 'SHASHTHI', 'Tyagaraja', '01930000-0000-7000-8000-000000000004'::uuid, NULL, false, NULL, 'NONE'),
     (95, 'SrI vAncha nAthaM', 'suraTi', 'DVITIYA', 'Nath', '01930000-0000-7000-8000-00000000005a'::uuid, NULL, false, NULL, 'NONE'),
     (96, 'SrI vENu gOpAla', 'kuranji', 'DVITIYA', 'Sri', '01930000-0000-7000-8000-000000000001'::uuid, NULL, false, NULL, 'NONE'),
     (97, 'SrI vENu gOpAlaM bhaja', 'SankarAbharaNaM', 'DVITIYA', 'Gopal', '01930000-0000-7000-8000-000000000001'::uuid, NULL, false, NULL, 'NONE'),
@@ -1323,17 +1327,17 @@ WITH comp_data (
     (438, 'trilOcana mOhinIM', 'Bhairavi', 'DVITIYA', 'Mohinim', '01930000-0000-7000-8000-000000000001'::uuid, NULL, false, NULL, 'NONE'),
     (439, 'tripura sundari Sankari', 'sAma', 'DVITIYA', 'Tripura', '01930000-0000-7000-8000-000000000056'::uuid, NULL, false, NULL, 'NONE'),
     (440, 'tripura sundari namOstu tE', 'Deva Manohari', 'SAPTAMI', 'T', '01930000-0000-7000-8000-000000000056'::uuid, NULL, false, NULL, 'NONE'),
-    (441, 'tyAgESaM bhajarE', 'Rudrapriyā', 'DVITIYA', 'Tyages', '01930000-0000-7000-8000-000000000001'::uuid, NULL, false, NULL, 'NONE'),
-    (442, 'tyAgarAjAdanyaM', 'Darbar', 'PANCHAMI', 'Tyagaraja', '01930000-0000-7000-8000-000000000001'::uuid, NULL, false, NULL, 'NONE'),
-    (443, 'tyAgarAjAya namastE', 'Begada', 'CHATURTHI', 'Tyagaraja', '01930000-0000-7000-8000-000000000001'::uuid, NULL, false, NULL, 'NONE'),
-    (444, 'tyAgarAjE kRtyAkRtyaM', 'Sāranga', 'SAPTAMI', 'Tyagaraja', '01930000-0000-7000-8000-000000000001'::uuid, NULL, false, NULL, 'NONE'),
-    (445, 'tyAgarAjEna', 'Sālagabhairavi', 'TRITIYA', 'Tyagaraja', '01930000-0000-7000-8000-000000000001'::uuid, NULL, false, NULL, 'NONE'),
-    (446, 'tyAgarAjO virAjatE', 'Atāna', 'PRATHAMA', 'Tyagaraja', '01930000-0000-7000-8000-000000000001'::uuid, NULL, false, NULL, 'NONE'),
-    (447, 'tyAgarAja mahadhvaja', 'Sri', 'DVITIYA', 'Tyagaraja', '01930000-0000-7000-8000-000000000001'::uuid, NULL, false, NULL, 'NONE'),
-    (448, 'tyAgarAja pAlayASu', 'Gowla', 'DVITIYA', 'Tyagaraja', '01930000-0000-7000-8000-000000000001'::uuid, NULL, false, NULL, 'NONE'),
-    (449, 'tyAgarAja yOga', 'Anandabhairavi', 'DVITIYA', 'Tyagaraja', '01930000-0000-7000-8000-000000000001'::uuid, NULL, false, 'Poetic architecture: Masterpiece in Anandabhairavi featuring double yati structures (gopuccha yati and srotovaha yati).', 'GOPUCCHA'),
-    (450, 'tyAgarAjaM bhajEhaM', 'Neelāmbari', 'DVITIYA', 'Tyagaraj', '01930000-0000-7000-8000-000000000001'::uuid, NULL, false, NULL, 'NONE'),
-    (451, 'tyAgarAjaM bhajarE', 'Yadukula Kāmbhoji', 'DVITIYA', 'Tyagaraja', '01930000-0000-7000-8000-000000000001'::uuid, NULL, false, NULL, 'NONE'),
+    (441, 'tyAgESaM bhajarE', 'Rudrapriyā', 'DVITIYA', 'Tyages', '01930000-0000-7000-8000-000000000004'::uuid, NULL, false, NULL, 'NONE'),
+    (442, 'tyAgarAjAdanyaM', 'Darbar', 'PANCHAMI', 'Tyagaraja', '01930000-0000-7000-8000-000000000004'::uuid, NULL, false, NULL, 'NONE'),
+    (443, 'tyAgarAjAya namastE', 'Begada', 'CHATURTHI', 'Tyagaraja', '01930000-0000-7000-8000-000000000004'::uuid, NULL, false, NULL, 'NONE'),
+    (444, 'tyAgarAjE kRtyAkRtyaM', 'Sāranga', 'SAPTAMI', 'Tyagaraja', '01930000-0000-7000-8000-000000000004'::uuid, NULL, false, NULL, 'NONE'),
+    (445, 'tyAgarAjEna', 'Sālagabhairavi', 'TRITIYA', 'Tyagaraja', '01930000-0000-7000-8000-000000000004'::uuid, NULL, false, NULL, 'NONE'),
+    (446, 'tyAgarAjO virAjatE', 'Atāna', 'PRATHAMA', 'Tyagaraja', '01930000-0000-7000-8000-000000000004'::uuid, NULL, false, NULL, 'NONE'),
+    (447, 'tyAgarAja mahadhvaja', 'Sri', 'DVITIYA', 'Tyagaraja', '01930000-0000-7000-8000-000000000004'::uuid, NULL, false, NULL, 'NONE'),
+    (448, 'tyAgarAja pAlayASu', 'Gowla', 'DVITIYA', 'Tyagaraja', '01930000-0000-7000-8000-000000000004'::uuid, NULL, false, NULL, 'NONE'),
+    (449, 'tyAgarAja yOga', 'Anandabhairavi', 'DVITIYA', 'Tyagaraja', '01930000-0000-7000-8000-000000000004'::uuid, NULL, false, 'Poetic architecture: Masterpiece in Anandabhairavi featuring double yati structures (gopuccha yati and srotovaha yati).', 'GOPUCCHA'),
+    (450, 'tyAgarAjaM bhajEhaM', 'Neelāmbari', 'DVITIYA', 'Tyagaraj', '01930000-0000-7000-8000-000000000004'::uuid, NULL, false, NULL, 'NONE'),
+    (451, 'tyAgarAjaM bhajarE', 'Yadukula Kāmbhoji', 'DVITIYA', 'Tyagaraja', '01930000-0000-7000-8000-000000000004'::uuid, NULL, false, NULL, 'NONE'),
     (452, 'ucchishTa gaNapatau', 'Kāshirāmakriyā', 'DVITIYA', 'Ucchishta', '01930000-0000-7000-8000-000000000001'::uuid, NULL, false, NULL, 'NONE'),
     (453, 'vAgdEvi mAmava', 'SankarAbharaNaM', 'DVITIYA', 'Vagdevi', '01930000-0000-7000-8000-000000000038'::uuid, NULL, false, NULL, 'NONE'),
     (454, 'vAmAnka sthitayA', 'Atāna', 'CHATURTHI', 'Sthit', '01930000-0000-7000-8000-000000000001'::uuid, NULL, false, NULL, 'NONE'),
@@ -1347,7 +1351,7 @@ WITH comp_data (
     (462, 'vINA bhEri', 'Abheri', 'DVITIYA', 'Vina', '01930000-0000-7000-8000-000000000001'::uuid, NULL, false, NULL, 'NONE'),
     (463, 'vINA pustaka', 'Vegavāhini', 'DVITIYA', 'Vina', '01930000-0000-7000-8000-000000000038'::uuid, NULL, false, NULL, 'NONE'),
     (464, 'vIra hanumatE', 'Karnātaka Kāpi', 'SAPTAMI', 'Hanumat', '01930000-0000-7000-8000-000000000001'::uuid, NULL, false, NULL, 'NONE'),
-    (465, 'vIra vasanta', 'Veeravasantham', 'SAMBODHANA', 'Tyagaraja', '01930000-0000-7000-8000-000000000001'::uuid, NULL, false, NULL, 'NONE'),
+    (465, 'vIra vasanta', 'Veeravasantham', 'SAMBODHANA', 'Tyagaraja', '01930000-0000-7000-8000-000000000004'::uuid, NULL, false, NULL, 'NONE'),
     (466, 'vaMSavati', 'Vamshavathi', 'DVITIYA', 'Vamsavati', '01930000-0000-7000-8000-000000000021'::uuid, NULL, false, NULL, 'NONE'),
     (467, 'vadAnyESvaraM', 'Devagāndhāri', 'DVITIYA', 'Vadanyesvar', '01930000-0000-7000-8000-000000000058'::uuid, NULL, false, NULL, 'NONE'),
     (468, 'vallabhA nAyakasya', 'Begada', 'SHASHTHI', 'Nayak', '01930000-0000-7000-8000-000000000001'::uuid, NULL, false, NULL, 'NONE'),
