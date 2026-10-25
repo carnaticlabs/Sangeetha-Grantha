@@ -10,6 +10,7 @@ import com.sangita.grantha.backend.dal.enums.LanguageCode
 import com.sangita.grantha.backend.dal.enums.Mandalam
 import com.sangita.grantha.backend.dal.enums.MusicalForm
 import com.sangita.grantha.backend.dal.enums.PlaceKind
+import com.sangita.grantha.backend.dal.enums.PlaceReviewState
 import com.sangita.grantha.backend.dal.enums.RagaMudraKind
 import com.sangita.grantha.backend.dal.enums.RagaSection
 import com.sangita.grantha.backend.dal.enums.ScriptCode
@@ -116,6 +117,10 @@ object TemplesTable : UUIDTable("temples") {
     val sthalaTirtha = varchar("sthala_tirtha", 64).nullable()
     val nadiTirtha = varchar("nadi_tirtha", 64).nullable()
     val deityPosture = pgEnum<DeityPosture>("deity_posture", DeityPosture.DB_TYPE).nullable()
+    val googlePlaceId = text("google_place_id").nullable()
+    val placeReviewState = pgEnum<PlaceReviewState>("place_review_state", PlaceReviewState.DB_TYPE).nullable()
+    val placeReviewedBy = text("place_reviewed_by").nullable()
+    val placeReviewedAt = timestampWithTimeZone("place_reviewed_at").nullable()
     val createdAt = timestampWithTimeZone("created_at")
     val updatedAt = timestampWithTimeZone("updated_at")
 }

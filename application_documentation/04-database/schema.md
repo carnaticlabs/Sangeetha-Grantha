@@ -24,6 +24,8 @@ PostgreSQL stores the canonical catalogue, editorial state, ingestion work, sour
 | `krithi_ragas` | Ordered raga membership, including Ragamalika and optional section association |
 | `tags`, `krithi_tags`, `sampradayas` | Controlled thematic and tradition metadata |
 
+**Temple place review (V68, TRACK-154).** `temples` carries `google_place_id`, `place_review_state` (`CONFIRMED`, `LOCALITY_ONLY`, `UNRESOLVED`; NULL = not reviewed), `place_reviewed_by` and `place_reviewed_at`. Only the Google `place_id` is stored: no Google name, address or coordinate, and `latitude`/`longitude` are never written from Google results. CHECKs require a place id for `CONFIRMED`, forbid one for `UNRESOLVED`, require an approver and date with any state, and keep `SANNIDHI`/`MANDAPAM` rows free of their own place (they inherit the parent's). A partial unique index stops two `CONFIRMED` temples sharing a place id. Reviewed values are applied by the generated `R__seed_12_temple_place_review.sql` once the live lookup and curator review are done.
+
 A composition must retain its raga junction rows as well as any primary-raga foreign key. Public raga-filtered and Ragamalika views depend on those relationships. [Raga identity](./raga-identity.md) explains why display-name normalization is not a unique identity key.
 
 ## 2. Form and lifecycle

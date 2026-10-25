@@ -178,6 +178,17 @@ enum class PlaceKind(override val dbValue: String) : DbEnum {
     }
 }
 
+/** Review outcome for a temple's Google place (TRACK-154). A NULL column value means not yet reviewed. */
+enum class PlaceReviewState(override val dbValue: String) : DbEnum {
+    CONFIRMED("CONFIRMED"),
+    LOCALITY_ONLY("LOCALITY_ONLY"),
+    UNRESOLVED("UNRESOLVED");
+
+    companion object {
+        const val DB_TYPE = "place_review_state_enum"
+    }
+}
+
 enum class Bhuta(override val dbValue: String) : DbEnum {
     AKASHA("AKASHA"),
     VAYU("VAYU"),
