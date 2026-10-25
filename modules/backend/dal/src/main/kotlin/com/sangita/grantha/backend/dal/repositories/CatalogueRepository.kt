@@ -6,7 +6,7 @@ import com.sangita.grantha.backend.dal.enums.MusicalForm
 import com.sangita.grantha.backend.dal.enums.WorkflowState
 import com.sangita.grantha.backend.dal.models.CatalogueLike
 import com.sangita.grantha.backend.dal.models.CatalogueReadingDefaults
-import com.sangita.grantha.backend.dal.models.CatalogueV2DtoMappers
+import com.sangita.grantha.backend.dal.models.RasikaCatalogueMappers
 import com.sangita.grantha.backend.dal.models.CatalogueVisibility
 import com.sangita.grantha.backend.dal.models.toDto
 import com.sangita.grantha.backend.dal.support.toJavaUuid
@@ -91,7 +91,7 @@ class CatalogueRepository {
         ragaId: UUID?,
         page: Int,
         pageSize: Int,
-        visibility: CatalogueVisibility = CatalogueVisibility.V1,
+        visibility: CatalogueVisibility = CatalogueVisibility.LEGACY_KNOWN_FORMS,
     ): CataloguePagedResponse<CatalogueKrithiSummaryDto> = DatabaseFactory.dbQuery {
         val condition = krithiFilter(query, composerId, ragaId, visibility)
         val total = KrithisTable.select(KrithisTable.id).where { condition }.count()
@@ -113,7 +113,7 @@ class CatalogueRepository {
 
     suspend fun findPublishedReader(
         id: Uuid,
-        visibility: CatalogueVisibility = CatalogueVisibility.V1,
+        visibility: CatalogueVisibility = CatalogueVisibility.LEGACY_KNOWN_FORMS,
     ): CatalogueKrithiReaderDto? = DatabaseFactory.dbQuery {
         val javaId = id.toJavaUuid()
         val row = KrithisTable
@@ -139,14 +139,14 @@ class CatalogueRepository {
             completeness = CatalogueCompletenessDto.UNKNOWN,
             deity = deityReference(row[KrithisTable.deityId]),
             temple = templeReference(row[KrithisTable.templeId]),
-            cycleContext = if (visibility == CatalogueVisibility.V2) cycleContext(javaId, row) else null,
+            cycleContext = if (visibility == CatalogueVisibility.ALL_PUBLISHED) cycleContext(javaId, row) else null,
         )
     }
 
     suspend fun findPublishedLyrics(
         krithiId: Uuid,
         variantId: Uuid,
-        visibility: CatalogueVisibility = CatalogueVisibility.V1,
+        visibility: CatalogueVisibility = CatalogueVisibility.LEGACY_KNOWN_FORMS,
     ): CatalogueLyricsDto? = DatabaseFactory.dbQuery {
         val javaKrithiId = krithiId.toJavaUuid()
         val published = KrithisTable
@@ -203,7 +203,7 @@ class CatalogueRepository {
         query: String?,
         page: Int,
         pageSize: Int,
-        visibility: CatalogueVisibility = CatalogueVisibility.V1,
+        visibility: CatalogueVisibility = CatalogueVisibility.LEGACY_KNOWN_FORMS,
     ): CataloguePagedResponse<CatalogueRagaSummaryDto> = DatabaseFactory.dbQuery {
         val condition = ragaFilter(query)
         val total = RagasTable.select(RagasTable.id).where { condition }.count()
@@ -243,7 +243,7 @@ class CatalogueRepository {
 
     suspend fun findRaga(
         id: Uuid,
-        visibility: CatalogueVisibility = CatalogueVisibility.V1,
+        visibility: CatalogueVisibility = CatalogueVisibility.LEGACY_KNOWN_FORMS,
     ): CatalogueRagaDetailDto? = DatabaseFactory.dbQuery {
         val javaId = id.toJavaUuid()
         val row = RagasTable.selectAll().where { RagasTable.id eq javaId }.singleOrNull()
@@ -275,7 +275,7 @@ class CatalogueRepository {
         query: String?,
         page: Int,
         pageSize: Int,
-        visibility: CatalogueVisibility = CatalogueVisibility.V1,
+        visibility: CatalogueVisibility = CatalogueVisibility.LEGACY_KNOWN_FORMS,
     ): CataloguePagedResponse<CatalogueComposerSummaryDto> = DatabaseFactory.dbQuery {
         val condition = composerFilter(query)
         val total = ComposersTable.select(ComposersTable.id).where { condition }.count()
@@ -308,7 +308,7 @@ class CatalogueRepository {
 
     suspend fun findComposer(
         id: Uuid,
-        visibility: CatalogueVisibility = CatalogueVisibility.V1,
+        visibility: CatalogueVisibility = CatalogueVisibility.LEGACY_KNOWN_FORMS,
     ): CatalogueComposerDetailDto? = DatabaseFactory.dbQuery {
         val javaId = id.toJavaUuid()
         val row = ComposersTable.selectAll().where { ComposersTable.id eq javaId }.singleOrNull()
@@ -330,7 +330,7 @@ class CatalogueRepository {
     }
 
     suspend fun findDiscovery(
-        visibility: CatalogueVisibility = CatalogueVisibility.V2,
+        visibility: CatalogueVisibility = CatalogueVisibility.ALL_PUBLISHED,
     ): CatalogueDiscoveryDto = DatabaseFactory.dbQuery {
         val firstId = KrithisTable
             .select(KrithisTable.id)
@@ -340,7 +340,7 @@ class CatalogueRepository {
             .map { it[KrithisTable.id].value }
             .singleOrNull()
         val feature = firstId?.let { hydrateSummaries(listOf(it)).singleOrNull() }
-            ?.let(CatalogueV2DtoMappers::catalogueOrderFeature)
+            ?.let(RasikaCatalogueMappers::catalogueOrderFeature)
         CatalogueDiscoveryDto(feature = feature, editorialRevision = null)
     }
 
@@ -433,7 +433,7 @@ class CatalogueRepository {
             .selectAll()
             .where {
                 (KrithiTagsTable.sourceInfo eq REVIEWED_CYCLE_SOURCE) and
-                    publishedComposition(CatalogueVisibility.V2) and extra
+                    publishedComposition(CatalogueVisibility.ALL_PUBLISHED) and extra
             }
             .map { row ->
                 val (attributes, convention) = parseAttributes(row[KrithiCycleMembershipsTable.discriminativeAttributes])
@@ -583,7 +583,7 @@ class CatalogueRepository {
 
     private fun publishedComposition(visibility: CatalogueVisibility): Op<Boolean> {
         val published = KrithisTable.workflowState eq WorkflowState.PUBLISHED
-        return if (visibility == CatalogueVisibility.V1) {
+        return if (visibility == CatalogueVisibility.LEGACY_KNOWN_FORMS) {
             published and (KrithisTable.musicalForm neq MusicalForm.UNESTABLISHED)
         } else {
             published

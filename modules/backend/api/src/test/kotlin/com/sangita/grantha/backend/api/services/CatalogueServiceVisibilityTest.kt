@@ -27,14 +27,14 @@ class CatalogueServiceVisibilityTest {
             30,
         )
         coEvery {
-            dal.catalogue.searchKrithis(eq("Vatapi"), any(), isNull(), eq(0), eq(30), CatalogueVisibility.V2)
+            dal.catalogue.searchKrithis(eq("Vatapi"), any(), isNull(), eq(0), eq(30), CatalogueVisibility.ALL_PUBLISHED)
         } returns page
-        coEvery { dal.catalogue.findDiscovery(CatalogueVisibility.V2) } returns CatalogueDiscoveryDto()
+        coEvery { dal.catalogue.findDiscovery(CatalogueVisibility.ALL_PUBLISHED) } returns CatalogueDiscoveryDto()
 
-        val search = service.searchKrithis(parametersOf("query" to listOf("Vatapi")), CatalogueVisibility.V2)
+        val search = service.searchKrithis(parametersOf("query" to listOf("Vatapi")), CatalogueVisibility.ALL_PUBLISHED)
         assertIs<CatalogueResult.Ok<*>>(search)
         coVerify(exactly = 1) {
-            dal.catalogue.searchKrithis(eq("Vatapi"), any(), isNull(), eq(0), eq(30), CatalogueVisibility.V2)
+            dal.catalogue.searchKrithis(eq("Vatapi"), any(), isNull(), eq(0), eq(30), CatalogueVisibility.ALL_PUBLISHED)
         }
 
         val discovery = service.discovery(parametersOf())
@@ -48,9 +48,9 @@ class CatalogueServiceVisibilityTest {
     @Test
     fun v1ReaderUsesKnownFormVisibility() = runTest {
         val id = Uuid.parse("66666666-6666-4666-8666-666666666666")
-        coEvery { dal.catalogue.findPublishedReader(id, CatalogueVisibility.V1) } returns null
-        val result = service.getKrithi(id.toString(), parametersOf(), CatalogueVisibility.V1)
+        coEvery { dal.catalogue.findPublishedReader(id, CatalogueVisibility.LEGACY_KNOWN_FORMS) } returns null
+        val result = service.getKrithi(id.toString(), parametersOf(), CatalogueVisibility.LEGACY_KNOWN_FORMS)
         assertIs<CatalogueResult.NotFound>(result)
-        coVerify { dal.catalogue.findPublishedReader(id, CatalogueVisibility.V1) }
+        coVerify { dal.catalogue.findPublishedReader(id, CatalogueVisibility.LEGACY_KNOWN_FORMS) }
     }
 }

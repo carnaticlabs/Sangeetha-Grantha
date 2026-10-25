@@ -94,7 +94,7 @@ Successful catalogue responses set `Cache-Control: no-store`. Missing, unpublish
 
 The catalogue error enum also defines `NOT_FOUND` and `UNAVAILABLE`. Do not assume every API family uses this envelope: some auth failures return plain text and other routes use shared error handling.
 
-Sources: [query parser](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/catalogue/CatalogueParameters.kt), [catalogue DTOs](../../modules/shared/domain/src/commonMain/kotlin/com/sangita/grantha/shared/domain/model/catalogue/CatalogueDtos.kt), [V2 routes](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/CatalogueV2Routes.kt).
+Sources: [query parser](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/catalogue/CatalogueParameters.kt), [catalogue DTOs](../../modules/shared/domain/src/commonMain/kotlin/com/sangita/grantha/shared/domain/model/catalogue/CatalogueDtos.kt), [V2 routes](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/RasikaCatalogueRoutes.kt).
 
 ## Hybrid and semantic search
 

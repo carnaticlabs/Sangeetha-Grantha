@@ -2,7 +2,7 @@ package com.sangita.grantha.shared.mobile.network
 
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueDiscoveryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CataloguePagedResponse
-import com.sangita.grantha.shared.domain.model.catalogue.CatalogueV2Contract
+import com.sangita.grantha.shared.domain.model.catalogue.RasikaCatalogueContract
 import com.sangita.grantha.shared.mobile.config.MobileApiConfig
 import com.sangita.grantha.shared.mobile.fixture.CatalogueFixtures
 import com.sangita.grantha.shared.mobile.fixture.FixtureCatalogueApi
@@ -23,7 +23,7 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-class CatalogueV2ClientTest {
+class RasikaCatalogueClientTest {
     @Test
     fun searchAndDiscoveryUseV2PathsOnly() = runTest {
         val paths = mutableListOf<String>()
@@ -50,10 +50,10 @@ class CatalogueV2ClientTest {
         val discovery = api.getDiscovery(interaction)
         assertEquals(1, page.total)
         assertNull(discovery.feature)
-        assertTrue(paths.all { it.startsWith(CatalogueV2Contract.ROOT) })
+        assertTrue(paths.all { it.startsWith(RasikaCatalogueContract.ROOT) })
         assertTrue(paths.none { it.contains("/v1/catalogue") })
-        assertTrue(paths.any { it.endsWith(CatalogueV2Contract.KRITHIS_PATH) || it.endsWith("/v2/catalogue/krithis") })
-        assertTrue(paths.any { it.endsWith(CatalogueV2Contract.DISCOVERY_PATH) || it.endsWith("/v2/catalogue/discovery") })
+        assertTrue(paths.any { it.endsWith(RasikaCatalogueContract.KRITHIS_PATH) || it.endsWith("/v2/catalogue/krithis") })
+        assertTrue(paths.any { it.endsWith(RasikaCatalogueContract.DISCOVERY_PATH) || it.endsWith("/v2/catalogue/discovery") })
     }
 
     @Test

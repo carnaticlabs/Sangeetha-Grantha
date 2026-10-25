@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
 /** V2 is explicit: clients must not downgrade to the legacy known-form catalogue. */
-object CatalogueV2Contract {
+object RasikaCatalogueContract {
     const val ROOT = "/v2/catalogue"
     const val KRITHIS_PATH = "$ROOT/krithis"
     const val RAGAS_PATH = "$ROOT/ragas"

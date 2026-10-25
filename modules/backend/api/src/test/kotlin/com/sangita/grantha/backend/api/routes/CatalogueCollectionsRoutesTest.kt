@@ -16,7 +16,7 @@ import com.sangita.grantha.backend.testsupport.CatalogueTestFixtures
 import com.sangita.grantha.backend.testsupport.IntegrationTestBase
 import com.sangita.grantha.backend.testsupport.TestFixtures
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueContract
-import com.sangita.grantha.shared.domain.model.catalogue.CatalogueV2Contract
+import com.sangita.grantha.shared.domain.model.catalogue.RasikaCatalogueContract
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
@@ -110,7 +110,7 @@ class CatalogueCollectionsRoutesTest : IntegrationTestBase() {
         configureSerialization()
         routing {
             catalogueRoutes(service)
-            catalogueV2Routes(service)
+            rasikaCatalogueRoutes(service)
         }
     }
 
@@ -121,12 +121,12 @@ class CatalogueCollectionsRoutesTest : IntegrationTestBase() {
         mount()
         seedCycle("test-cycle")
 
-        val list = parse(client.get(CatalogueV2Contract.COLLECTIONS_PATH).bodyAsText())["items"]!!.jsonArray
+        val list = parse(client.get(RasikaCatalogueContract.COLLECTIONS_PATH).bodyAsText())["items"]!!.jsonArray
         assertEquals(1, list.size)
         // dhyana + first + second + disputed; unreviewed and draft are excluded
         assertEquals("4", list[0].jsonObject["memberCount"]!!.jsonPrimitive.content)
 
-        val detail = parse(client.get("${CatalogueV2Contract.COLLECTIONS_PATH}/test-cycle").bodyAsText())
+        val detail = parse(client.get("${RasikaCatalogueContract.COLLECTIONS_PATH}/test-cycle").bodyAsText())
         val titles = detail["members"]!!.jsonArray.map {
             it.jsonObject["krithi"]!!.jsonObject["title"]!!.jsonPrimitive.content
         }
@@ -144,7 +144,7 @@ class CatalogueCollectionsRoutesTest : IntegrationTestBase() {
     fun `raw stored attributes never leave the api`() = testApplication {
         mount()
         seedCycle("attr-cycle")
-        val body = client.get("${CatalogueV2Contract.COLLECTIONS_PATH}/attr-cycle").bodyAsText()
+        val body = client.get("${RasikaCatalogueContract.COLLECTIONS_PATH}/attr-cycle").bodyAsText()
         assertFalse(body.contains("provenance_owner"))
         assertFalse(body.contains("TRACK-X"))
         assertTrue(body.contains("Test Mudra"))
@@ -154,7 +154,7 @@ class CatalogueCollectionsRoutesTest : IntegrationTestBase() {
     fun `order convention marks a cycle as performance order`() = testApplication {
         mount()
         seedCycle("convention-cycle", attrs = """{"order_convention":"Aradhana tradition","mudra":"M"}""")
-        val detail = parse(client.get("${CatalogueV2Contract.COLLECTIONS_PATH}/convention-cycle").bodyAsText())
+        val detail = parse(client.get("${RasikaCatalogueContract.COLLECTIONS_PATH}/convention-cycle").bodyAsText())
         assertEquals("PERFORMANCE_CONVENTION", detail["orderBasis"]!!.jsonPrimitive.content)
         assertEquals("Aradhana tradition", detail["orderConvention"]!!.jsonPrimitive.content)
     }
@@ -163,7 +163,7 @@ class CatalogueCollectionsRoutesTest : IntegrationTestBase() {
     fun `an axis value alone does not claim a sequence`() = testApplication {
         mount()
         seedCycle("label-cycle", attrs = """{"mudra":"M"}""")
-        val detail = parse(client.get("${CatalogueV2Contract.COLLECTIONS_PATH}/label-cycle").bodyAsText())
+        val detail = parse(client.get("${RasikaCatalogueContract.COLLECTIONS_PATH}/label-cycle").bodyAsText())
         assertEquals("UNSPECIFIED", detail["orderBasis"]!!.jsonPrimitive.content)
     }
 
@@ -173,7 +173,7 @@ class CatalogueCollectionsRoutesTest : IntegrationTestBase() {
         val seeded = seedCycle("reader-cycle")
         val second = seeded.ids.getValue("second")
 
-        val v2 = parse(client.get("${CatalogueV2Contract.KRITHIS_PATH}/$second").bodyAsText())
+        val v2 = parse(client.get("${RasikaCatalogueContract.KRITHIS_PATH}/$second").bodyAsText())
         val collection = v2["cycleContext"]!!.jsonObject["collections"]!!.jsonArray.single().jsonObject
         assertEquals("2", collection["position"]!!.jsonPrimitive.content)
         assertEquals("2", collection["coreCount"]!!.jsonPrimitive.content)
@@ -189,12 +189,12 @@ class CatalogueCollectionsRoutesTest : IntegrationTestBase() {
         mount()
         val seeded = seedCycle("hidden-cycle")
         val unreviewed = parse(
-            client.get("${CatalogueV2Contract.KRITHIS_PATH}/${seeded.ids.getValue("unreviewed")}").bodyAsText(),
+            client.get("${RasikaCatalogueContract.KRITHIS_PATH}/${seeded.ids.getValue("unreviewed")}").bodyAsText(),
         )
         assertFalse(unreviewed.containsKey("cycleContext"))
         assertEquals(
             HttpStatusCode.NotFound,
-            client.get("${CatalogueV2Contract.KRITHIS_PATH}/${seeded.ids.getValue("draft")}").status,
+            client.get("${RasikaCatalogueContract.KRITHIS_PATH}/${seeded.ids.getValue("draft")}").status,
         )
     }
 
@@ -203,10 +203,10 @@ class CatalogueCollectionsRoutesTest : IntegrationTestBase() {
         mount()
         assertEquals(
             0,
-            parse(client.get(CatalogueV2Contract.COLLECTIONS_PATH).bodyAsText())["items"]!!.jsonArray.size,
+            parse(client.get(RasikaCatalogueContract.COLLECTIONS_PATH).bodyAsText())["items"]!!.jsonArray.size,
         )
-        assertEquals(HttpStatusCode.NotFound, client.get("${CatalogueV2Contract.COLLECTIONS_PATH}/missing").status)
-        assertEquals(HttpStatusCode.BadRequest, client.get("${CatalogueV2Contract.COLLECTIONS_PATH}/Bad_Slug").status)
-        assertEquals(HttpStatusCode.BadRequest, client.get("${CatalogueV2Contract.COLLECTIONS_PATH}?x=1").status)
+        assertEquals(HttpStatusCode.NotFound, client.get("${RasikaCatalogueContract.COLLECTIONS_PATH}/missing").status)
+        assertEquals(HttpStatusCode.BadRequest, client.get("${RasikaCatalogueContract.COLLECTIONS_PATH}/Bad_Slug").status)
+        assertEquals(HttpStatusCode.BadRequest, client.get("${RasikaCatalogueContract.COLLECTIONS_PATH}?x=1").status)
     }
 }

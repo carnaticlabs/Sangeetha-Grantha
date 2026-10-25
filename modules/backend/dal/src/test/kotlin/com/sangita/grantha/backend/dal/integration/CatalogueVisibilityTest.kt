@@ -36,17 +36,17 @@ class CatalogueVisibilityTest : IntegrationTestBase() {
             musicalForm = MusicalForm.UNESTABLISHED,
         )
 
-        val v1 = dal.catalogue.searchKrithis("Alpha", null, null, 0, 30, CatalogueVisibility.V1)
+        val v1 = dal.catalogue.searchKrithis("Alpha", null, null, 0, 30, CatalogueVisibility.LEGACY_KNOWN_FORMS)
         assertEquals(1, v1.total)
         assertEquals(listOf("Known Form Alpha"), v1.items.map { it.title })
-        assertNull(dal.catalogue.findPublishedReader(unknown.id, CatalogueVisibility.V1))
+        assertNull(dal.catalogue.findPublishedReader(unknown.id, CatalogueVisibility.LEGACY_KNOWN_FORMS))
 
-        val v2 = dal.catalogue.searchKrithis("Alpha", null, null, 0, 30, CatalogueVisibility.V2)
+        val v2 = dal.catalogue.searchKrithis("Alpha", null, null, 0, 30, CatalogueVisibility.ALL_PUBLISHED)
         assertEquals(2, v2.total)
         assertTrue(v2.items.any { it.musicalForm == MusicalFormDto.UNESTABLISHED })
-        assertEquals("Unknown Form Alpha", dal.catalogue.findPublishedReader(unknown.id, CatalogueVisibility.V2)?.title)
+        assertEquals("Unknown Form Alpha", dal.catalogue.findPublishedReader(unknown.id, CatalogueVisibility.ALL_PUBLISHED)?.title)
 
-        val discovery = dal.catalogue.findDiscovery(CatalogueVisibility.V2)
+        val discovery = dal.catalogue.findDiscovery(CatalogueVisibility.ALL_PUBLISHED)
         assertEquals(CatalogueSelectionDto.CATALOGUE_ORDER, discovery.feature?.selection)
         assertEquals("From the collection", discovery.feature?.heading)
     }
@@ -71,8 +71,8 @@ class CatalogueVisibilityTest : IntegrationTestBase() {
             primaryRagaId = raga.id.toJavaUuid(),
             musicalForm = MusicalForm.UNESTABLISHED,
         )
-        val v1 = dal.catalogue.findRaga(raga.id, CatalogueVisibility.V1)
-        val v2 = dal.catalogue.findRaga(raga.id, CatalogueVisibility.V2)
+        val v1 = dal.catalogue.findRaga(raga.id, CatalogueVisibility.LEGACY_KNOWN_FORMS)
+        val v2 = dal.catalogue.findRaga(raga.id, CatalogueVisibility.ALL_PUBLISHED)
         assertEquals(1, v1?.publishedCompositionCount)
         assertEquals(2, v2?.publishedCompositionCount)
     }
@@ -90,7 +90,7 @@ class CatalogueVisibilityTest : IntegrationTestBase() {
         assertEquals(MusicalFormDto.KRITHI, created.musicalForm)
         assertEquals(
             MusicalFormDto.KRITHI,
-            dal.catalogue.findPublishedReader(created.id, CatalogueVisibility.V1)?.musicalForm,
+            dal.catalogue.findPublishedReader(created.id, CatalogueVisibility.LEGACY_KNOWN_FORMS)?.musicalForm,
         )
     }
 }

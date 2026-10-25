@@ -4,7 +4,7 @@ import com.sangita.grantha.shared.domain.model.catalogue.CatalogueDiscoveryFeatu
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueKrithiSummaryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueSelectionDto
 
-object CatalogueV2DtoMappers {
+object RasikaCatalogueMappers {
     const val CATALOGUE_ORDER_HEADING = "From the collection"
     const val CATALOGUE_ORDER_SUMMARY = "Explore a composition in this library."
     const val HEADING_MAX_CODE_POINTS = 80

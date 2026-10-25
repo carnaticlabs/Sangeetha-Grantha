@@ -15,7 +15,7 @@ import com.sangita.grantha.shared.domain.model.catalogue.CatalogueLyricsDto
 import com.sangita.grantha.shared.domain.model.catalogue.CataloguePagedResponse
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueRagaDetailDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueRagaSummaryDto
-import com.sangita.grantha.shared.domain.model.catalogue.CatalogueV2Contract
+import com.sangita.grantha.shared.domain.model.catalogue.RasikaCatalogueContract
 import com.sangita.grantha.shared.mobile.usage.InteractionContext
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -37,7 +37,7 @@ class KtorCatalogueApi(
     private val client: HttpClient,
 ) : CatalogueApi {
     override suspend fun getDiscovery(interaction: InteractionContext): CatalogueDiscoveryDto =
-        get(CatalogueV2Contract.DISCOVERY_PATH, interaction)
+        get(RasikaCatalogueContract.DISCOVERY_PATH, interaction)
 
     override suspend fun searchKrithis(
         query: String?,
@@ -47,7 +47,7 @@ class KtorCatalogueApi(
         pageSize: Int,
         interaction: InteractionContext,
     ): CataloguePagedResponse<CatalogueKrithiSummaryDto> =
-        get(CatalogueV2Contract.KRITHIS_PATH, interaction) {
+        get(RasikaCatalogueContract.KRITHIS_PATH, interaction) {
             optionalQuery("query", query)
             optionalUuid("composerId", composerId)
             optionalUuid("ragaId", ragaId)
@@ -56,14 +56,14 @@ class KtorCatalogueApi(
         }
 
     override suspend fun getKrithi(id: Uuid, interaction: InteractionContext): CatalogueKrithiReaderDto =
-        get("${CatalogueV2Contract.KRITHIS_PATH}/$id", interaction)
+        get("${RasikaCatalogueContract.KRITHIS_PATH}/$id", interaction)
 
     override suspend fun getLyrics(
         krithiId: Uuid,
         variantId: Uuid,
         interaction: InteractionContext,
     ): CatalogueLyricsDto =
-        get("${CatalogueV2Contract.KRITHIS_PATH}/$krithiId/lyrics/$variantId", interaction)
+        get("${RasikaCatalogueContract.KRITHIS_PATH}/$krithiId/lyrics/$variantId", interaction)
 
     override suspend fun searchRagas(
         query: String?,
@@ -71,14 +71,14 @@ class KtorCatalogueApi(
         pageSize: Int,
         interaction: InteractionContext,
     ): CataloguePagedResponse<CatalogueRagaSummaryDto> =
-        get(CatalogueV2Contract.RAGAS_PATH, interaction) {
+        get(RasikaCatalogueContract.RAGAS_PATH, interaction) {
             optionalQuery("query", query)
             parameter("page", page)
             parameter("pageSize", pageSize)
         }
 
     override suspend fun getRaga(id: Uuid, interaction: InteractionContext): CatalogueRagaDetailDto =
-        get("${CatalogueV2Contract.RAGAS_PATH}/$id", interaction)
+        get("${RasikaCatalogueContract.RAGAS_PATH}/$id", interaction)
 
     override suspend fun searchComposers(
         query: String?,
@@ -86,20 +86,20 @@ class KtorCatalogueApi(
         pageSize: Int,
         interaction: InteractionContext,
     ): CataloguePagedResponse<CatalogueComposerSummaryDto> =
-        get(CatalogueV2Contract.COMPOSERS_PATH, interaction) {
+        get(RasikaCatalogueContract.COMPOSERS_PATH, interaction) {
             optionalQuery("query", query)
             parameter("page", page)
             parameter("pageSize", pageSize)
         }
 
     override suspend fun getComposer(id: Uuid, interaction: InteractionContext): CatalogueComposerDetailDto =
-        get("${CatalogueV2Contract.COMPOSERS_PATH}/$id", interaction)
+        get("${RasikaCatalogueContract.COMPOSERS_PATH}/$id", interaction)
 
     override suspend fun listCollections(interaction: InteractionContext): CatalogueCollectionListDto =
-        get(CatalogueV2Contract.COLLECTIONS_PATH, interaction)
+        get(RasikaCatalogueContract.COLLECTIONS_PATH, interaction)
 
     override suspend fun getCollection(slug: String, interaction: InteractionContext): CatalogueCollectionDetailDto =
-        get("${CatalogueV2Contract.COLLECTIONS_PATH}/$slug", interaction)
+        get("${RasikaCatalogueContract.COLLECTIONS_PATH}/$slug", interaction)
 
     override suspend fun searchHybrid(
         request: SemanticSearchRequest,
