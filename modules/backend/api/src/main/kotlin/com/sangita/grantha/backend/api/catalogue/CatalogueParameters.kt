@@ -1,6 +1,8 @@
 package com.sangita.grantha.backend.api.catalogue
 
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueContract
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueMandalamDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueTempleElementDto
 import io.ktor.http.Parameters
 import kotlin.uuid.Uuid
 
@@ -12,6 +14,11 @@ data class CatalogueListQuery(
     val pageSize: Int,
 )
 
+data class CatalogueTempleListQuery(
+    val element: CatalogueTempleElementDto?,
+    val mandalam: CatalogueMandalamDto?,
+)
+
 sealed class CatalogueParseResult<out T> {
     data class Ok<T>(val value: T) : CatalogueParseResult<T>()
     data class Invalid(val message: String) : CatalogueParseResult<Nothing>()
@@ -20,6 +27,7 @@ sealed class CatalogueParseResult<out T> {
 object CatalogueParameters {
     private val krithiSearchParams = setOf("query", "composerId", "ragaId", "page", "pageSize")
     private val directoryParams = setOf("query", "page", "pageSize")
+    private val templeListParams = setOf("element", "mandalam")
 
     fun parseKrithiSearch(params: Parameters): CatalogueParseResult<CatalogueListQuery> {
         unknown(params, krithiSearchParams)?.let { return it }
@@ -79,6 +87,24 @@ object CatalogueParameters {
                 pageSize = pageSize,
             ),
         )
+    }
+
+    fun parseTempleList(params: Parameters): CatalogueParseResult<CatalogueTempleListQuery> {
+        unknown(params, templeListParams)?.let { return it }
+        repeated(params)?.let { return it }
+        val element = params["element"]?.let { raw ->
+            CatalogueTempleElementDto.entries.firstOrNull { it.name == raw }
+                ?: return CatalogueParseResult.Invalid(
+                    "element must be one of ${CatalogueTempleElementDto.entries.joinToString { it.name }}",
+                )
+        }
+        val mandalam = params["mandalam"]?.let { raw ->
+            CatalogueMandalamDto.entries.firstOrNull { it.name == raw }
+                ?: return CatalogueParseResult.Invalid(
+                    "mandalam must be one of ${CatalogueMandalamDto.entries.joinToString { it.name }}",
+                )
+        }
+        return CatalogueParseResult.Ok(CatalogueTempleListQuery(element, mandalam))
     }
 
     fun parsePathUuid(raw: String?, label: String): CatalogueParseResult<Uuid> {

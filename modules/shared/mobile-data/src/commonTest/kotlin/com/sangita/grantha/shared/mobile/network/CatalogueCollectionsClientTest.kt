@@ -5,7 +5,7 @@ import com.sangita.grantha.shared.domain.model.catalogue.CatalogueCollectionList
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueCollectionRoleDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueKrithiReaderDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueOrderBasisDto
-import com.sangita.grantha.shared.domain.model.catalogue.CatalogueV2Contract
+import com.sangita.grantha.shared.domain.model.catalogue.RasikaCatalogueContract
 import com.sangita.grantha.shared.mobile.config.MobileApiConfig
 import com.sangita.grantha.shared.mobile.fixture.CatalogueFixtures
 import com.sangita.grantha.shared.mobile.fixture.CollectionFixtures
@@ -50,7 +50,7 @@ class CatalogueCollectionsClientTest {
         assertEquals(3, list.items.size)
         assertEquals(11, detail.members.size)
         assertEquals(9, detail.coreCount)
-        assertTrue(paths.all { it.startsWith(CatalogueV2Contract.COLLECTIONS_PATH) })
+        assertTrue(paths.all { it.startsWith(RasikaCatalogueContract.COLLECTIONS_PATH) })
     }
 
     @Test

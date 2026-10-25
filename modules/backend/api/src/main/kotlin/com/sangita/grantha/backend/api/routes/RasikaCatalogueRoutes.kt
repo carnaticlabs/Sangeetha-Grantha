@@ -2,21 +2,21 @@ package com.sangita.grantha.backend.api.routes
 
 import com.sangita.grantha.backend.api.services.CatalogueService
 import com.sangita.grantha.backend.dal.models.CatalogueVisibility
-import com.sangita.grantha.shared.domain.model.catalogue.CatalogueV2Contract
+import com.sangita.grantha.shared.domain.model.catalogue.RasikaCatalogueContract
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.route
 
-fun Route.catalogueV2Routes(catalogueService: CatalogueService) {
-    route(CatalogueV2Contract.ROOT) {
+fun Route.rasikaCatalogueRoutes(catalogueService: CatalogueService) {
+    route(RasikaCatalogueContract.ROOT) {
         get("/discovery") {
             call.respondCatalogue(
-                catalogueService.discovery(call.request.queryParameters, CatalogueVisibility.V2),
+                catalogueService.discovery(call.request.queryParameters, CatalogueVisibility.ALL_PUBLISHED),
             )
         }
         get("/krithis") {
             call.respondCatalogue(
-                catalogueService.searchKrithis(call.request.queryParameters, CatalogueVisibility.V2),
+                catalogueService.searchKrithis(call.request.queryParameters, CatalogueVisibility.ALL_PUBLISHED),
             )
         }
         get("/krithis/{id}") {
@@ -24,7 +24,7 @@ fun Route.catalogueV2Routes(catalogueService: CatalogueService) {
                 catalogueService.getKrithi(
                     call.parameters["id"],
                     call.request.queryParameters,
-                    CatalogueVisibility.V2,
+                    CatalogueVisibility.ALL_PUBLISHED,
                 ),
             )
         }
@@ -34,7 +34,7 @@ fun Route.catalogueV2Routes(catalogueService: CatalogueService) {
                     call.parameters["id"],
                     call.parameters["variantId"],
                     call.request.queryParameters,
-                    CatalogueVisibility.V2,
+                    CatalogueVisibility.ALL_PUBLISHED,
                 ),
             )
         }
@@ -46,9 +46,15 @@ fun Route.catalogueV2Routes(catalogueService: CatalogueService) {
                 catalogueService.getCollection(call.parameters["slug"], call.request.queryParameters),
             )
         }
+        get("/temples") {
+            call.respondCatalogue(catalogueService.listTemples(call.request.queryParameters))
+        }
+        get("/temples/{id}") {
+            call.respondCatalogue(catalogueService.getTemple(call.parameters["id"], call.request.queryParameters))
+        }
         get("/ragas") {
             call.respondCatalogue(
-                catalogueService.searchRagas(call.request.queryParameters, CatalogueVisibility.V2),
+                catalogueService.searchRagas(call.request.queryParameters, CatalogueVisibility.ALL_PUBLISHED),
             )
         }
         get("/ragas/{id}") {
@@ -56,13 +62,13 @@ fun Route.catalogueV2Routes(catalogueService: CatalogueService) {
                 catalogueService.getRaga(
                     call.parameters["id"],
                     call.request.queryParameters,
-                    CatalogueVisibility.V2,
+                    CatalogueVisibility.ALL_PUBLISHED,
                 ),
             )
         }
         get("/composers") {
             call.respondCatalogue(
-                catalogueService.searchComposers(call.request.queryParameters, CatalogueVisibility.V2),
+                catalogueService.searchComposers(call.request.queryParameters, CatalogueVisibility.ALL_PUBLISHED),
             )
         }
         get("/composers/{id}") {
@@ -70,7 +76,7 @@ fun Route.catalogueV2Routes(catalogueService: CatalogueService) {
                 catalogueService.getComposer(
                     call.parameters["id"],
                     call.request.queryParameters,
-                    CatalogueVisibility.V2,
+                    CatalogueVisibility.ALL_PUBLISHED,
                 ),
             )
         }

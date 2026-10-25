@@ -6,7 +6,7 @@ import com.sangita.grantha.backend.dal.enums.MusicalForm
 import com.sangita.grantha.backend.dal.enums.WorkflowState
 import com.sangita.grantha.backend.dal.models.CatalogueLike
 import com.sangita.grantha.backend.dal.models.CatalogueReadingDefaults
-import com.sangita.grantha.backend.dal.models.CatalogueV2DtoMappers
+import com.sangita.grantha.backend.dal.models.RasikaCatalogueMappers
 import com.sangita.grantha.backend.dal.models.CatalogueVisibility
 import com.sangita.grantha.backend.dal.models.toDto
 import com.sangita.grantha.backend.dal.support.toJavaUuid
@@ -52,6 +52,12 @@ import com.sangita.grantha.shared.domain.model.catalogue.CatalogueRagaRefDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueRagaSummaryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueReferenceDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueTalaRefDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueDeityPostureDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueMandalamDto
+import com.sangita.grantha.shared.domain.model.catalogue.CataloguePlaceKindDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueTempleDetailDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueTempleElementDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueTempleSummaryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueVariantRefDto
 import java.util.UUID
 import kotlinx.serialization.json.Json
@@ -91,7 +97,7 @@ class CatalogueRepository {
         ragaId: UUID?,
         page: Int,
         pageSize: Int,
-        visibility: CatalogueVisibility = CatalogueVisibility.V1,
+        visibility: CatalogueVisibility = CatalogueVisibility.LEGACY_KNOWN_FORMS,
     ): CataloguePagedResponse<CatalogueKrithiSummaryDto> = DatabaseFactory.dbQuery {
         val condition = krithiFilter(query, composerId, ragaId, visibility)
         val total = KrithisTable.select(KrithisTable.id).where { condition }.count()
@@ -113,7 +119,7 @@ class CatalogueRepository {
 
     suspend fun findPublishedReader(
         id: Uuid,
-        visibility: CatalogueVisibility = CatalogueVisibility.V1,
+        visibility: CatalogueVisibility = CatalogueVisibility.LEGACY_KNOWN_FORMS,
     ): CatalogueKrithiReaderDto? = DatabaseFactory.dbQuery {
         val javaId = id.toJavaUuid()
         val row = KrithisTable
@@ -139,14 +145,14 @@ class CatalogueRepository {
             completeness = CatalogueCompletenessDto.UNKNOWN,
             deity = deityReference(row[KrithisTable.deityId]),
             temple = templeReference(row[KrithisTable.templeId]),
-            cycleContext = if (visibility == CatalogueVisibility.V2) cycleContext(javaId, row) else null,
+            cycleContext = if (visibility == CatalogueVisibility.ALL_PUBLISHED) cycleContext(javaId, row) else null,
         )
     }
 
     suspend fun findPublishedLyrics(
         krithiId: Uuid,
         variantId: Uuid,
-        visibility: CatalogueVisibility = CatalogueVisibility.V1,
+        visibility: CatalogueVisibility = CatalogueVisibility.LEGACY_KNOWN_FORMS,
     ): CatalogueLyricsDto? = DatabaseFactory.dbQuery {
         val javaKrithiId = krithiId.toJavaUuid()
         val published = KrithisTable
@@ -203,7 +209,7 @@ class CatalogueRepository {
         query: String?,
         page: Int,
         pageSize: Int,
-        visibility: CatalogueVisibility = CatalogueVisibility.V1,
+        visibility: CatalogueVisibility = CatalogueVisibility.LEGACY_KNOWN_FORMS,
     ): CataloguePagedResponse<CatalogueRagaSummaryDto> = DatabaseFactory.dbQuery {
         val condition = ragaFilter(query)
         val total = RagasTable.select(RagasTable.id).where { condition }.count()
@@ -243,7 +249,7 @@ class CatalogueRepository {
 
     suspend fun findRaga(
         id: Uuid,
-        visibility: CatalogueVisibility = CatalogueVisibility.V1,
+        visibility: CatalogueVisibility = CatalogueVisibility.LEGACY_KNOWN_FORMS,
     ): CatalogueRagaDetailDto? = DatabaseFactory.dbQuery {
         val javaId = id.toJavaUuid()
         val row = RagasTable.selectAll().where { RagasTable.id eq javaId }.singleOrNull()
@@ -275,7 +281,7 @@ class CatalogueRepository {
         query: String?,
         page: Int,
         pageSize: Int,
-        visibility: CatalogueVisibility = CatalogueVisibility.V1,
+        visibility: CatalogueVisibility = CatalogueVisibility.LEGACY_KNOWN_FORMS,
     ): CataloguePagedResponse<CatalogueComposerSummaryDto> = DatabaseFactory.dbQuery {
         val condition = composerFilter(query)
         val total = ComposersTable.select(ComposersTable.id).where { condition }.count()
@@ -308,7 +314,7 @@ class CatalogueRepository {
 
     suspend fun findComposer(
         id: Uuid,
-        visibility: CatalogueVisibility = CatalogueVisibility.V1,
+        visibility: CatalogueVisibility = CatalogueVisibility.LEGACY_KNOWN_FORMS,
     ): CatalogueComposerDetailDto? = DatabaseFactory.dbQuery {
         val javaId = id.toJavaUuid()
         val row = ComposersTable.selectAll().where { ComposersTable.id eq javaId }.singleOrNull()
@@ -330,7 +336,7 @@ class CatalogueRepository {
     }
 
     suspend fun findDiscovery(
-        visibility: CatalogueVisibility = CatalogueVisibility.V2,
+        visibility: CatalogueVisibility = CatalogueVisibility.ALL_PUBLISHED,
     ): CatalogueDiscoveryDto = DatabaseFactory.dbQuery {
         val firstId = KrithisTable
             .select(KrithisTable.id)
@@ -340,7 +346,7 @@ class CatalogueRepository {
             .map { it[KrithisTable.id].value }
             .singleOrNull()
         val feature = firstId?.let { hydrateSummaries(listOf(it)).singleOrNull() }
-            ?.let(CatalogueV2DtoMappers::catalogueOrderFeature)
+            ?.let(RasikaCatalogueMappers::catalogueOrderFeature)
         CatalogueDiscoveryDto(feature = feature, editorialRevision = null)
     }
 
@@ -403,6 +409,105 @@ class CatalogueRepository {
         )
     }
 
+    /**
+     * Root temples the public catalogue may list (TRACK-151). Children are nested in detail, not listed.
+     * Eligibility comes only from [TempleEligibility]; ordering is mandalam (enum order, nulls last),
+     * normalised name, then id.
+     */
+    suspend fun listTemples(
+        element: CatalogueTempleElementDto? = null,
+        mandalam: CatalogueMandalamDto? = null,
+    ): List<CatalogueTempleSummaryDto> = DatabaseFactory.dbQuery {
+        val facts = TempleEligibility.snapshot()
+        val rootIds = facts.values.filter { it.eligible && it.parentId == null }.map { it.id }
+        if (rootIds.isEmpty()) return@dbQuery emptyList()
+        TemplesTable.selectAll()
+            .where { TemplesTable.id inList rootIds }
+            .filter { row ->
+                (element == null || row[TemplesTable.bhuta]?.name == element.name) &&
+                    (mandalam == null || row[TemplesTable.mandalam]?.name == mandalam.name)
+            }
+            .sortedWith(
+                compareBy<ResultRow> { it[TemplesTable.mandalam]?.ordinal ?: Int.MAX_VALUE }
+                    .thenBy { it[TemplesTable.nameNormalized] }
+                    .thenBy { it[TemplesTable.id].value.toString() },
+            )
+            .map { row -> row.toTempleSummary(facts.getValue(row[TemplesTable.id].value)) }
+    }
+
+    /** Null when the temple is unknown or ineligible. `place` stays null until TRACK-154 lands. */
+    suspend fun findTemple(id: UUID): CatalogueTempleDetailDto? = DatabaseFactory.dbQuery {
+        val facts = TempleEligibility.snapshot()
+        val own = facts[id]?.takeIf { it.eligible } ?: return@dbQuery null
+        val row = TemplesTable.selectAll().where { TemplesTable.id eq id }.singleOrNull()
+            ?: return@dbQuery null
+        val childRows = TemplesTable.selectAll()
+            .where { TemplesTable.parentTempleId eq id }
+            .filter { facts[it[TemplesTable.id].value]?.eligible == true }
+            .sortedWith(
+                compareBy<ResultRow> { it[TemplesTable.nameNormalized] }
+                    .thenBy { it[TemplesTable.id].value.toString() },
+            )
+        val parent = own.parentId?.let { parentId ->
+            TemplesTable.selectAll().where { TemplesTable.id eq parentId }.singleOrNull()?.let {
+                CatalogueReferenceDto(parentId.toKotlinUuid(), it[TemplesTable.name])
+            }
+        }
+        val krithiIds = KrithisTable
+            .select(KrithisTable.id)
+            .where { (KrithisTable.templeId eq id) and publishedComposition(CatalogueVisibility.ALL_PUBLISHED) }
+            .orderBy(KrithisTable.titleNormalized to SortOrder.ASC, KrithisTable.id to SortOrder.ASC)
+            .map { it[KrithisTable.id].value }
+        val summary = row.toTempleSummary(own)
+        CatalogueTempleDetailDto(
+            id = summary.id,
+            name = summary.name,
+            city = summary.city,
+            state = summary.state,
+            country = row[TemplesTable.country],
+            placeKind = summary.placeKind,
+            mandalam = summary.mandalam,
+            element = summary.element,
+            publishedKrithiCount = summary.publishedKrithiCount,
+            childCount = summary.childCount,
+            recordedGap = summary.recordedGap,
+            sthalaVriksha = row[TemplesTable.sthalaVriksha],
+            sthalaTirtha = row[TemplesTable.sthalaTirtha],
+            nadiTirtha = row[TemplesTable.nadiTirtha],
+            deityPosture = row[TemplesTable.deityPosture]?.let { CatalogueDeityPostureDto.valueOf(it.name) },
+            overview = templeOverview(id),
+            parent = parent,
+            children = childRows.map { it.toTempleSummary(facts.getValue(it[TemplesTable.id].value)) },
+            krithis = hydrateSummaries(krithiIds),
+            place = null,
+        )
+    }
+
+    private fun ResultRow.toTempleSummary(facts: TempleEligibilityRow) = CatalogueTempleSummaryDto(
+        id = this[TemplesTable.id].value.toKotlinUuid(),
+        name = this[TemplesTable.name],
+        city = this[TemplesTable.city],
+        state = this[TemplesTable.state],
+        placeKind = CataloguePlaceKindDto.valueOf(this[TemplesTable.placeKind].name),
+        mandalam = this[TemplesTable.mandalam]?.let { CatalogueMandalamDto.valueOf(it.name) },
+        element = this[TemplesTable.bhuta]?.let { CatalogueTempleElementDto.valueOf(it.name) },
+        publishedKrithiCount = facts.publishedKrithiCount,
+        childCount = facts.eligibleChildCount,
+        recordedGap = facts.recordedGap,
+    )
+
+    private fun templeOverview(templeId: UUID): String? {
+        var text: String? = null
+        TransactionManager.current().exec(
+            "SELECT original_content FROM search_documents " +
+                "WHERE document_kind = 'KSHETRA_OVERVIEW' AND is_published AND temple_id = CAST(? AS uuid) " +
+                "ORDER BY source_chunk_index LIMIT 1",
+            listOf(TextColumnType() to templeId.toString()),
+            StatementType.SELECT,
+        ) { rs -> if (rs.next()) text = rs.getString("original_content") }
+        return text
+    }
+
     private data class MemberRow(
         val tagId: UUID,
         val krithiId: UUID,
@@ -433,7 +538,7 @@ class CatalogueRepository {
             .selectAll()
             .where {
                 (KrithiTagsTable.sourceInfo eq REVIEWED_CYCLE_SOURCE) and
-                    publishedComposition(CatalogueVisibility.V2) and extra
+                    publishedComposition(CatalogueVisibility.ALL_PUBLISHED) and extra
             }
             .map { row ->
                 val (attributes, convention) = parseAttributes(row[KrithiCycleMembershipsTable.discriminativeAttributes])
@@ -583,7 +688,7 @@ class CatalogueRepository {
 
     private fun publishedComposition(visibility: CatalogueVisibility): Op<Boolean> {
         val published = KrithisTable.workflowState eq WorkflowState.PUBLISHED
-        return if (visibility == CatalogueVisibility.V1) {
+        return if (visibility == CatalogueVisibility.LEGACY_KNOWN_FORMS) {
             published and (KrithisTable.musicalForm neq MusicalForm.UNESTABLISHED)
         } else {
             published

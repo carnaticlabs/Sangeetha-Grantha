@@ -11,7 +11,7 @@ import com.sangita.grantha.backend.testsupport.CatalogueTestFixtures
 import com.sangita.grantha.backend.testsupport.IntegrationTestBase
 import com.sangita.grantha.backend.testsupport.TestFixtures
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueContract
-import com.sangita.grantha.shared.domain.model.catalogue.CatalogueV2Contract
+import com.sangita.grantha.shared.domain.model.catalogue.RasikaCatalogueContract
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpHeaders
@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class CatalogueV2RoutesTest : IntegrationTestBase() {
+class RasikaCatalogueRoutesTest : IntegrationTestBase() {
     private lateinit var dal: SangitaDal
     private lateinit var catalogueService: CatalogueService
 
@@ -44,7 +44,7 @@ class CatalogueV2RoutesTest : IntegrationTestBase() {
             configureSerialization()
             routing {
                 catalogueRoutes(catalogueService)
-                catalogueV2Routes(catalogueService)
+                rasikaCatalogueRoutes(catalogueService)
             }
         }
         val seed = TestFixtures.seedReferenceData(dal)
@@ -69,21 +69,21 @@ class CatalogueV2RoutesTest : IntegrationTestBase() {
         assertEquals("1", v1Body["total"]?.jsonPrimitive?.content)
         assertEquals(HttpStatusCode.NotFound, client.get("${CatalogueContract.KRITHIS_PATH}/${unknown.id}").status)
 
-        val v2 = client.get("${CatalogueV2Contract.KRITHIS_PATH}?query=Route")
+        val v2 = client.get("${RasikaCatalogueContract.KRITHIS_PATH}?query=Route")
         assertEquals(HttpStatusCode.OK, v2.status)
         assertEquals("no-store", v2.headers[HttpHeaders.CacheControl])
         val v2Body = Json.parseToJsonElement(v2.bodyAsText()).jsonObject
         assertEquals("2", v2Body["total"]?.jsonPrimitive?.content)
         assertTrue(v2Body["items"]?.jsonArray?.any { it.jsonObject["title"]?.jsonPrimitive?.content == "Route Unknown" } == true)
 
-        val discovery = client.get(CatalogueV2Contract.DISCOVERY_PATH)
+        val discovery = client.get(RasikaCatalogueContract.DISCOVERY_PATH)
         assertEquals(HttpStatusCode.OK, discovery.status)
         assertEquals("no-store", discovery.headers[HttpHeaders.CacheControl])
         val feature = Json.parseToJsonElement(discovery.bodyAsText()).jsonObject["feature"]?.jsonObject
         assertEquals("CATALOGUE_ORDER", feature?.get("selection")?.jsonPrimitive?.content)
         assertEquals("From the collection", feature?.get("heading")?.jsonPrimitive?.content)
 
-        val repeated = client.get("${CatalogueV2Contract.KRITHIS_PATH}?query=a&query=b")
+        val repeated = client.get("${RasikaCatalogueContract.KRITHIS_PATH}?query=a&query=b")
         assertEquals(HttpStatusCode.BadRequest, repeated.status)
         assertTrue(repeated.bodyAsText().contains("VALIDATION_ERROR"))
     }

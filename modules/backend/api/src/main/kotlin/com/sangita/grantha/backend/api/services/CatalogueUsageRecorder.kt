@@ -87,6 +87,8 @@ class CatalogueUsageRecorder(
             path.startsWith("/v2/catalogue/composers") -> "catalogue.composers"
             path.startsWith("/v2/catalogue/collections/") -> "catalogue.collection"
             path.startsWith("/v2/catalogue/collections") -> "catalogue.collections"
+            path.startsWith("/v2/catalogue/temples/") -> "catalogue.temple"
+            path.startsWith("/v2/catalogue/temples") -> "catalogue.temples"
             else -> "catalogue.other"
         }
 
@@ -98,6 +100,7 @@ class CatalogueUsageRecorder(
             "catalogue.composers", "catalogue.composer" -> "composer_directory"
             "catalogue.discovery" -> "discovery"
             "catalogue.collections", "catalogue.collection" -> "collections"
+            "catalogue.temples", "catalogue.temple" -> "kshetras"
             else -> "other"
         }
     }
