@@ -19,7 +19,6 @@ import com.sangita.grantha.backend.dal.tables.KrithiLyricSectionsTable
 import com.sangita.grantha.backend.dal.tables.KrithiLyricVariantsTable
 import com.sangita.grantha.backend.dal.tables.KrithiRagasTable
 import com.sangita.grantha.backend.dal.tables.KrithiSectionsTable
-import com.sangita.grantha.backend.dal.tables.KrithiTagsTable
 import com.sangita.grantha.backend.dal.tables.KrithisTable
 import com.sangita.grantha.backend.dal.tables.RagaAliasesTable
 import com.sangita.grantha.backend.dal.tables.RagaRelationsTable
@@ -40,6 +39,8 @@ import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerSummar
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueCompletenessDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueCycleContextDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueDiscoveryDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueFacetKeyDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueFacetListDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueKrithiReaderDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueKrithiSummaryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueLyricSectionDto
@@ -123,8 +124,10 @@ class CatalogueRepository {
         page: Int,
         pageSize: Int,
         visibility: CatalogueVisibility = CatalogueVisibility.LEGACY_KNOWN_FORMS,
+        facets: FacetSelection = FacetSelection.NONE,
     ): CataloguePagedResponse<CatalogueKrithiSummaryDto> = DatabaseFactory.dbQuery {
-        val condition = krithiFilter(query, composerId, ragaId, visibility)
+        val condition = krithiFilter(query, composerId, ragaId, visibility) and
+            CatalogueFacets.predicate(facets, FacetContext())
         val total = KrithisTable.select(KrithisTable.id).where { condition }.count()
         val offset = page.toLong() * pageSize.toLong()
         val ids = KrithisTable
@@ -171,7 +174,37 @@ class CatalogueRepository {
             deity = deityReference(row[KrithisTable.deityId]),
             temple = templeReference(row[KrithisTable.templeId]),
             cycleContext = if (visibility == CatalogueVisibility.ALL_PUBLISHED) cycleContext(javaId, row) else null,
+            facetChips = if (visibility == CatalogueVisibility.ALL_PUBLISHED) {
+                CatalogueFacets.chips(row, FacetContext())
+            } else {
+                emptyList()
+            },
         )
+    }
+
+    /**
+     * Valid filter values per facet over the whole published catalogue (TRACK-153). The service
+     * validates dynamic values (collection slug, tune) and zero-published enum members against this.
+     */
+    suspend fun facetValueSets(
+        visibility: CatalogueVisibility = CatalogueVisibility.ALL_PUBLISHED,
+    ): Map<CatalogueFacetKeyDto, Set<String>> = DatabaseFactory.dbQuery {
+        CatalogueFacets.valueSets(publishedComposition(visibility), FacetContext())
+    }
+
+    /**
+     * Facets that have a value in the scope of [query]/[composerId]/[ragaId] (facet filters do not
+     * narrow the listing). Counts run one grouped query per facet and only when [counts] is set.
+     */
+    suspend fun listFacets(
+        query: String?,
+        composerId: UUID?,
+        ragaId: UUID?,
+        selection: FacetSelection,
+        counts: Boolean,
+        visibility: CatalogueVisibility = CatalogueVisibility.ALL_PUBLISHED,
+    ): CatalogueFacetListDto = DatabaseFactory.dbQuery {
+        CatalogueFacets.list(krithiFilter(query, composerId, ragaId, visibility), selection, counts, FacetContext())
     }
 
     suspend fun findPublishedLyrics(
@@ -617,18 +650,11 @@ class CatalogueRepository {
      * `krithi_cycle_memberships` has no review column, so row existence alone is not enough.
      */
     private fun reviewedMemberRows(extra: Op<Boolean>): List<MemberRow> =
-        KrithiCycleMembershipsTable
-            .join(
-                KrithiTagsTable,
-                JoinType.INNER,
-                onColumn = KrithiCycleMembershipsTable.krithiId,
-                otherColumn = KrithiTagsTable.krithiId,
-                additionalConstraint = { KrithiCycleMembershipsTable.tagId eq KrithiTagsTable.tagId },
-            )
+        reviewedMembershipJoin()
             .join(KrithisTable, JoinType.INNER, KrithiCycleMembershipsTable.krithiId, KrithisTable.id)
             .selectAll()
             .where {
-                (KrithiTagsTable.sourceInfo eq REVIEWED_CYCLE_SOURCE) and
+                reviewedMembershipPredicate and
                     publishedComposition(CatalogueVisibility.ALL_PUBLISHED) and extra
             }
             .map { row ->
@@ -1089,7 +1115,6 @@ class CatalogueRepository {
         LikePattern(CatalogueLike.containsPattern(raw), CatalogueLike.ESCAPE_CHAR)
 
     private companion object {
-        const val REVIEWED_CYCLE_SOURCE = "reviewed_cycle"
         const val DISPUTED_LABEL = "disputed"
 
         /** Open sets: membership is not a closed grid, so clients must not imply completeness. */

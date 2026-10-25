@@ -2,7 +2,7 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.4.0 |
-| **Last Updated** | 2026-09-10 |
+| **Last Updated** | 2026-10-25 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Current guide |
 
@@ -64,6 +64,37 @@ V2 also mounts kshetras (temples, TRACK-151), anonymous, published-only and read
 **Eligibility contract (shared rule).** A temple is *direct* when a published kriti has `krithis.temple_id = temple.id`, or a published `KSHETRA_OVERVIEW` search document carries that `temple_id`. It is *eligible* when it is direct or has at least one direct child, so a child stays reachable when its parent has no data of its own (the parent then shows `publishedKrithiCount = 0`). Ineligible temples are never returned by list or detail, whatever their columns hold. The rule lives in one place, `TempleEligibility` in the DAL; temple search hits (TRACK-152) and region/element facets (TRACK-153) must call it, not restate it. A non-null `temple_id` counts as reviewed because only published kritis count and publishing is a curator step.
 
 `publishedKrithiCount` is direct only, not rolled up over children, and `childCount` counts eligible children. `recordedGap` is derived, not stored and applies to root temples only (a child shrine's overview describes it and is never a gap reason): the temple is eligible, has a published overview, and neither it nor any eligible child has a published kriti; the overview text is then the recorded reason. Child shrines are nested in detail and not repeated in the list. `place` is optional (`googlePlaceId` and `precision` `TEMPLE` or `PARENT_COMPLEX`), present only for a CONFIRMED place, and always absent until TRACK-154 lands; the id builds a Maps link client-side and no coordinates are stored or exposed.
+
+### Lakshana facets (TRACK-153, V2 only)
+
+Five facets exist; wire keys equal the query-parameter names. Each is derived only from stored, reviewed columns and memberships, never from text, and only published kritis count.
+
+| Facet | Source | Offered today |
+|:---|:---|:---|
+| `vibhakti` | `krithis.vibhakti_case` (written only by `R__seed_09`) | 8 values, Dikshitar only |
+| `collection` | reviewed cycle memberships (same `reviewed_cycle` guard as collections, all roles), value = tag slug | 12 cycles, 3 composers |
+| `tune` | `axis_value` of the `nottusvara-sahitya` cycle only (pinned slug; other cycles' axis values are not tunes) | 7 tunes, Dikshitar only |
+| `mandalam` (copy: Region) | the kriti's own `temple_id` temple's `mandalam`, only when `TempleEligibility` says the temple is eligible; not inherited from a parent | 7 regions, Dikshitar only |
+| `element` | the same temple's `bhuta` (`APPU` is water) | 5 values, Dikshitar only |
+
+- `GET /v2/catalogue/krithis` accepts `vibhakti`, `collection`, `tune`, `mandalam`, `element` (one value each); all filters combine with AND. A value that is blank, over 64 code points, not an enum member, or not currently offered over the whole published catalogue (stale slug, unknown tune, `SARVA_VIBHAKTI` with no kritis) is `400`; an offered value that matches nothing in combination is `200` with `total = 0`. Responses for requests without these parameters are unchanged. `/v1/catalogue/krithis` rejects them as unsupported parameters.
+- `GET /v2/catalogue/facets` (`query`, `composerId`, `ragaId`, the five filters, `counts=true|false`) returns `{ facets: [{ key, values: [{ value, label?, count? }] }] }`. A facet is listed only when it has a value in the scope of `query`/`composerId`/`ragaId`, so there is no vibhakti for Tyagaraja or Syama Sastri. Listed values ignore the facet filters; with `counts=true` each facet's counts apply every other facet's filter but not its own, so a listed value can show `0`. Counts are never computed by default. `facets` is `[]` when nothing is in scope.
+- `GET /v2/catalogue/krithis/{id}` adds `facetChips` (`vibhakti`, `tune`, `mandalam` only, only where a value is stored); the field is omitted when empty and never present on V1. Every chip value is accepted by the filter.
+- Adding a later facet (Viloma Chapu, eduppu, swarasahitya) is one `FacetDefinition` in the DAL plus one member of `CatalogueFacetKeyDto`; no new endpoint, parser or response shape.
+
+**Data readiness.**
+
+| Discriminator | Stored today? | Facet status | Waits on |
+|:---|:---|:---|:---|
+| Vibhakti case | Yes, 481 Dikshitar | Ships | none (Tyagaraja and Syama Sastri have no vibhakti data) |
+| Cycle membership | Yes, 124 reviewed memberships, 12 cycles, 3 composers | Ships | none |
+| Nottusvara tune | Yes, 7 of 38 memberships | Ships | The 31 untuned memberships need curator review |
+| Kshetra region (`mandalam`) | Yes, 97 temples, 481 Dikshitar kritis | Ships | Syama Sastri geography is `UNRESOLVED` (TRACK-146); Tyagaraja kritis carry no temple |
+| Kshetra element (`bhuta`) | Yes, 5 temples, 25 kritis | Ships | none (small by nature) |
+| Viloma Chapu, anagata eduppu, swarasahitya | No (TRACK-146 master only) | Not a facet | TRACK-148 / TRACK-149 |
+| Raga mudra kind | `NONE` on all 1,226 | Not a facet | A reviewed raga-mudra pass (no track yet) |
+| Yati pattern | `NONE` on 1,225, one `GOPUCCHA` | Not a facet | A reviewed yati pass (no track yet) |
+| Manipravala | 1 kriti | Not a facet | Not worth a facet |
 
 ### Query parameters and pagination
 

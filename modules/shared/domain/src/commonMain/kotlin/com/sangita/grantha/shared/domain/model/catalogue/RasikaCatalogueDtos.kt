@@ -15,6 +15,7 @@ object RasikaCatalogueContract {
     const val TEMPLES_PATH = "$ROOT/temples"
     const val SEARCH_HYBRID_PATH = "$ROOT/search/hybrid"
     const val SEARCH_SEMANTIC_PATH = "$ROOT/search/semantic"
+    const val FACETS_PATH = "$ROOT/facets"
 }
 
 @Serializable

@@ -1,6 +1,9 @@
 package com.sangita.grantha.backend.api.catalogue
 
+import com.sangita.grantha.backend.dal.enums.VibhaktiCase
+import com.sangita.grantha.backend.dal.repositories.FacetSelection
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueContract
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueFacetKeyDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueMandalamDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueTempleElementDto
 import io.ktor.http.Parameters
@@ -12,6 +15,16 @@ data class CatalogueListQuery(
     val ragaId: Uuid?,
     val page: Int,
     val pageSize: Int,
+    val facets: FacetSelection = FacetSelection.NONE,
+)
+
+/** `GET /v2/catalogue/facets`: the search scope, the active facet filters and whether to count. */
+data class CatalogueFacetsQuery(
+    val query: String?,
+    val composerId: Uuid?,
+    val ragaId: Uuid?,
+    val facets: FacetSelection,
+    val counts: Boolean,
 )
 
 data class CatalogueTempleListQuery(
@@ -28,10 +41,21 @@ object CatalogueParameters {
     private val krithiSearchParams = setOf("query", "composerId", "ragaId", "page", "pageSize")
     private val directoryParams = setOf("query", "page", "pageSize")
     private val templeListParams = setOf("element", "mandalam")
+    private val facetParams = CatalogueFacetKeyDto.entries.map { it.wireKey }.toSet()
+    private val facetsEndpointParams = setOf("query", "composerId", "ragaId", "counts") + facetParams
 
-    fun parseKrithiSearch(params: Parameters): CatalogueParseResult<CatalogueListQuery> {
-        unknown(params, krithiSearchParams)?.let { return it }
+    /** Facet parameters are V2 only; V1 passes `allowFacets = false` and rejects them as unknown. */
+    fun parseKrithiSearch(params: Parameters, allowFacets: Boolean = false): CatalogueParseResult<CatalogueListQuery> {
+        unknown(params, if (allowFacets) krithiSearchParams + facetParams else krithiSearchParams)?.let { return it }
         repeated(params)?.let { return it }
+        val facets = if (allowFacets) {
+            when (val parsed = parseFacetSelection(params)) {
+                is CatalogueParseResult.Invalid -> return parsed
+                is CatalogueParseResult.Ok -> parsed.value
+            }
+        } else {
+            FacetSelection.NONE
+        }
         val query = when (val parsed = parseQuery(params["query"])) {
             is OptionalString.Missing -> null
             is OptionalString.Present -> parsed.value
@@ -60,9 +84,88 @@ object CatalogueParameters {
                 ragaId = ragaId,
                 page = page,
                 pageSize = pageSize,
+                facets = facets,
             ),
         )
     }
+
+    fun parseFacets(params: Parameters): CatalogueParseResult<CatalogueFacetsQuery> {
+        unknown(params, facetsEndpointParams)?.let { return it }
+        repeated(params)?.let { return it }
+        val query = when (val parsed = parseQuery(params["query"])) {
+            is OptionalString.Missing -> null
+            is OptionalString.Present -> parsed.value
+            OptionalString.Invalid -> return queryTooLong()
+        }
+        val composerId = when (val parsed = parseOptionalUuid(params["composerId"])) {
+            is OptionalUuid.Missing -> null
+            is OptionalUuid.Present -> parsed.value
+            OptionalUuid.Invalid -> return CatalogueParseResult.Invalid("composerId must be a valid UUID")
+        }
+        val ragaId = when (val parsed = parseOptionalUuid(params["ragaId"])) {
+            is OptionalUuid.Missing -> null
+            is OptionalUuid.Present -> parsed.value
+            OptionalUuid.Invalid -> return CatalogueParseResult.Invalid("ragaId must be a valid UUID")
+        }
+        val counts = when (params["counts"]) {
+            null -> false
+            "true" -> true
+            "false" -> false
+            else -> return CatalogueParseResult.Invalid("counts must be true or false")
+        }
+        val facets = when (val parsed = parseFacetSelection(params)) {
+            is CatalogueParseResult.Invalid -> return parsed
+            is CatalogueParseResult.Ok -> parsed.value
+        }
+        return CatalogueParseResult.Ok(CatalogueFacetsQuery(query, composerId, ragaId, facets, counts))
+    }
+
+    /**
+     * Syntax only: blank, overlong and (for enum facets) non-member values. Whether a value is
+     * currently offered over the published catalogue is checked by the service.
+     */
+    private fun parseFacetSelection(params: Parameters): CatalogueParseResult<FacetSelection> {
+        fun value(key: CatalogueFacetKeyDto, members: List<String>? = null): CatalogueParseResult<String?> {
+            val raw = params[key.wireKey] ?: return CatalogueParseResult.Ok(null)
+            if (raw.isBlank()) return CatalogueParseResult.Invalid("${key.wireKey} must not be blank")
+            if (raw.codePointCount(0, raw.length) > FACET_VALUE_MAX_CODE_POINTS) {
+                return CatalogueParseResult.Invalid(
+                    "${key.wireKey} must be at most $FACET_VALUE_MAX_CODE_POINTS characters",
+                )
+            }
+            if (members != null && raw !in members) {
+                return CatalogueParseResult.Invalid("${key.wireKey} must be one of ${members.joinToString()}")
+            }
+            return CatalogueParseResult.Ok(raw)
+        }
+        fun <T> CatalogueParseResult<T>.orReturn(): T = when (this) {
+            is CatalogueParseResult.Ok -> value
+            is CatalogueParseResult.Invalid -> throw FacetInvalid(message)
+        }
+        return try {
+            CatalogueParseResult.Ok(
+                FacetSelection(
+                    vibhakti = value(CatalogueFacetKeyDto.VIBHAKTI, VibhaktiCase.entries.map { it.name }).orReturn(),
+                    collection = value(CatalogueFacetKeyDto.COLLECTION).orReturn(),
+                    tune = value(CatalogueFacetKeyDto.TUNE).orReturn(),
+                    mandalam = value(
+                        CatalogueFacetKeyDto.MANDALAM,
+                        CatalogueMandalamDto.entries.map { it.name },
+                    ).orReturn(),
+                    element = value(
+                        CatalogueFacetKeyDto.ELEMENT,
+                        CatalogueTempleElementDto.entries.map { it.name },
+                    ).orReturn(),
+                ),
+            )
+        } catch (e: FacetInvalid) {
+            CatalogueParseResult.Invalid(e.message)
+        }
+    }
+
+    private class FacetInvalid(override val message: String) : RuntimeException(message)
+
+    private const val FACET_VALUE_MAX_CODE_POINTS = 64
 
     fun parseDirectory(params: Parameters): CatalogueParseResult<CatalogueListQuery> {
         unknown(params, directoryParams)?.let { return it }

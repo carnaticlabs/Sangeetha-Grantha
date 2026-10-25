@@ -3,6 +3,7 @@ package com.sangita.grantha.backend.api.services
 import com.sangita.grantha.backend.api.catalogue.CatalogueParameters
 import com.sangita.grantha.backend.api.catalogue.CatalogueParseResult
 import com.sangita.grantha.backend.dal.SangitaDal
+import com.sangita.grantha.backend.dal.repositories.FacetSelection
 import com.sangita.grantha.backend.dal.models.CatalogueVisibility
 import com.sangita.grantha.backend.dal.support.toJavaUuid
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueCollectionDetailDto
@@ -10,6 +11,8 @@ import com.sangita.grantha.shared.domain.model.catalogue.CatalogueCollectionList
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerDetailDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerSummaryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueDiscoveryDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueFacetKeyDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueFacetListDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueKrithiReaderDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueKrithiSummaryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueLyricsDto
@@ -34,9 +37,15 @@ class CatalogueService(
         params: Parameters,
         visibility: CatalogueVisibility = CatalogueVisibility.LEGACY_KNOWN_FORMS,
     ): CatalogueResult<CataloguePagedResponse<CatalogueKrithiSummaryDto>> =
-        when (val parsed = CatalogueParameters.parseKrithiSearch(params)) {
+        when (
+            val parsed = CatalogueParameters.parseKrithiSearch(
+                params,
+                allowFacets = visibility == CatalogueVisibility.ALL_PUBLISHED,
+            )
+        ) {
             is CatalogueParseResult.Invalid -> CatalogueResult.Invalid(parsed.message)
-            is CatalogueParseResult.Ok -> CatalogueResult.Ok(
+            is CatalogueParseResult.Ok -> offeredFacetsError(parsed.value.facets)?.let { CatalogueResult.Invalid(it) }
+                ?: CatalogueResult.Ok(
                 if (visibility == CatalogueVisibility.LEGACY_KNOWN_FORMS) {
                     dal.catalogue.searchKrithis(
                         query = parsed.value.query,
@@ -53,10 +62,45 @@ class CatalogueService(
                         page = parsed.value.page,
                         pageSize = parsed.value.pageSize,
                         visibility = visibility,
+                        facets = parsed.value.facets,
                     )
                 },
             )
         }
+
+    /**
+     * Lakshana facets over the published catalogue (TRACK-153). Counts are computed only when the
+     * request asks for them.
+     */
+    suspend fun listFacets(params: Parameters): CatalogueResult<CatalogueFacetListDto> =
+        when (val parsed = CatalogueParameters.parseFacets(params)) {
+            is CatalogueParseResult.Invalid -> CatalogueResult.Invalid(parsed.message)
+            is CatalogueParseResult.Ok -> offeredFacetsError(parsed.value.facets)?.let { CatalogueResult.Invalid(it) }
+                ?: CatalogueResult.Ok(
+                    dal.catalogue.listFacets(
+                        query = parsed.value.query,
+                        composerId = parsed.value.composerId?.toJavaUuid(),
+                        ragaId = parsed.value.ragaId?.toJavaUuid(),
+                        selection = parsed.value.facets,
+                        counts = parsed.value.counts,
+                    ),
+                )
+        }
+
+    /**
+     * A selected value must be one the facet currently offers over the whole published catalogue,
+     * so a stale slug or an empty enum member is a 400, not a silent empty page. A valid value that
+     * matches nothing in combination with other filters is not an error.
+     */
+    private suspend fun offeredFacetsError(selection: FacetSelection): String? {
+        if (selection.isEmpty) return null
+        val offered = dal.catalogue.facetValueSets()
+        return CatalogueFacetKeyDto.entries.firstNotNullOfOrNull { key ->
+            val value = selection[key] ?: return@firstNotNullOfOrNull null
+            val valid = offered[key].orEmpty()
+            if (value in valid) null else "${key.wireKey} is not offered: $value (offered: ${valid.sorted().joinToString()})"
+        }
+    }
 
     suspend fun getKrithi(
         idRaw: String?,
