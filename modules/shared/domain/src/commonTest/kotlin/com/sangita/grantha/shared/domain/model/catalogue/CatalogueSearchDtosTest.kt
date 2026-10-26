@@ -103,4 +103,13 @@ class CatalogueSearchDtosTest {
         assertTrue(server.parseToJsonElement(text).jsonObject.getValue("macroHits").jsonArray.isEmpty())
         assertEquals(v2, server.decodeFromString(CatalogueSearchResponseDto.serializer(), text))
     }
+
+    @Test
+    fun unknownMacroKindsAreDroppedNotFatal() {
+        val text = """{"query":"q","totalMatches":2,"macroHits":[
+            {"kind":"COLLECTION","title":"Navavarana","snippet":"s","collectionSlug":"navavarana","similarityScore":0.9},
+            {"kind":"RAGA","title":"Future","snippet":"s","similarityScore":0.9}],"items":[]}"""
+        val decoded = Json { ignoreUnknownKeys = true }.decodeFromString(CatalogueSearchResponseDto.serializer(), text)
+        assertEquals(listOf("Navavarana"), decoded.macroHits.map { it.title })
+    }
 }

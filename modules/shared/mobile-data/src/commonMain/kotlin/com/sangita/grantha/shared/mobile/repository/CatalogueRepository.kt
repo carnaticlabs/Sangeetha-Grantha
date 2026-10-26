@@ -1,7 +1,6 @@
 package com.sangita.grantha.shared.mobile.repository
 
 import com.sangita.grantha.shared.domain.model.SemanticSearchRequest
-import com.sangita.grantha.shared.domain.model.SemanticSearchResponse
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueCollectionDetailDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueCollectionListDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerDetailDto
@@ -13,6 +12,7 @@ import com.sangita.grantha.shared.domain.model.catalogue.CatalogueKrithiSummaryD
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueLyricsDto
 import com.sangita.grantha.shared.domain.model.catalogue.CataloguePagedResponse
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueRagaDetailDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueSearchResponseDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueRagaSummaryDto
 import com.sangita.grantha.shared.mobile.network.CatalogueApi
 import com.sangita.grantha.shared.mobile.usage.InteractionContext
@@ -74,10 +74,10 @@ class CatalogueRepository(
     suspend fun searchHybrid(
         request: SemanticSearchRequest,
         interaction: InteractionContext,
-    ): SemanticSearchResponse = api.searchHybrid(request, interaction)
+    ): CatalogueSearchResponseDto = api.searchHybridWithCards(request, interaction)
 
     suspend fun searchSemantic(
         request: SemanticSearchRequest,
         interaction: InteractionContext,
-    ): SemanticSearchResponse = api.searchSemantic(request, interaction)
+    ): CatalogueSearchResponseDto = api.searchSemanticWithCards(request, interaction)
 }

@@ -3,6 +3,11 @@ package com.sangita.grantha.shared.domain.model.catalogue
 import com.sangita.grantha.shared.domain.model.SemanticSearchResultItem
 import com.sangita.grantha.shared.domain.serialization.UuidSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.JsonTransformingSerializer
 import kotlin.uuid.Uuid
 
 /**
@@ -54,6 +59,7 @@ data class CatalogueSearchResponseDto(
     /** Kriti hits plus macro hits. */
     val totalMatches: Int,
     /** At most [MAX_MACRO_HITS]; may be empty. Render above `items`, after [exactTitleMatchId]. */
+    @Serializable(with = MacroHitListSerializer::class)
     val macroHits: List<CatalogueMacroHitDto> = emptyList(),
     val items: List<SemanticSearchResultItem>,
     /** Set when the query equals a published kriti's title or incipit; render that kriti first. */
@@ -63,4 +69,21 @@ data class CatalogueSearchResponseDto(
     companion object {
         const val MAX_MACRO_HITS = 3
     }
+}
+
+/**
+ * Decodes `macroHits` leniently: an element whose `kind` this build does not know (a kind added
+ * later) is dropped instead of failing the whole response (TRACK-152 Spec 24).
+ */
+object MacroHitListSerializer : JsonTransformingSerializer<List<CatalogueMacroHitDto>>(
+    ListSerializer(CatalogueMacroHitDto.serializer()),
+) {
+    private val known = setOf(CatalogueSearchHitKindDto.COLLECTION.name, CatalogueSearchHitKindDto.KSHETRA.name)
+
+    override fun transformDeserialize(element: JsonElement): JsonElement =
+        JsonArray(
+            (element as? JsonArray).orEmpty().filter {
+                ((it as? kotlinx.serialization.json.JsonObject)?.get("kind") as? JsonPrimitive)?.content in known
+            },
+        )
 }

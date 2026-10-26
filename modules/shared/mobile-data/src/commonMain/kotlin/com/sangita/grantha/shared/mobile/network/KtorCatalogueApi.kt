@@ -14,6 +14,7 @@ import com.sangita.grantha.shared.domain.model.catalogue.CatalogueKrithiSummaryD
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueLyricsDto
 import com.sangita.grantha.shared.domain.model.catalogue.CataloguePagedResponse
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueRagaDetailDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueSearchResponseDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueRagaSummaryDto
 import com.sangita.grantha.shared.domain.model.catalogue.RasikaCatalogueContract
 import com.sangita.grantha.shared.mobile.usage.InteractionContext
@@ -110,6 +111,16 @@ class KtorCatalogueApi(
         request: SemanticSearchRequest,
         interaction: InteractionContext,
     ): SemanticSearchResponse = postDiscovery(SEMANTIC_PATH, request, interaction)
+
+    override suspend fun searchHybridWithCards(
+        request: SemanticSearchRequest,
+        interaction: InteractionContext,
+    ): CatalogueSearchResponseDto = postDiscovery(RasikaCatalogueContract.SEARCH_HYBRID_PATH, request, interaction)
+
+    override suspend fun searchSemanticWithCards(
+        request: SemanticSearchRequest,
+        interaction: InteractionContext,
+    ): CatalogueSearchResponseDto = postDiscovery(RasikaCatalogueContract.SEARCH_SEMANTIC_PATH, request, interaction)
 
     private suspend inline fun <reified T> postDiscovery(
         path: String,

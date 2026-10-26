@@ -14,6 +14,7 @@ import com.sangita.grantha.shared.domain.model.catalogue.CatalogueLyricsDto
 import com.sangita.grantha.shared.domain.model.catalogue.CataloguePagedResponse
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueRagaDetailDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueRagaSummaryDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueSearchResponseDto
 import com.sangita.grantha.shared.mobile.usage.InteractionContext
 import kotlin.uuid.Uuid
 
@@ -65,6 +66,20 @@ interface CatalogueApi {
         interaction: InteractionContext,
     ): SemanticSearchResponse
 
+    /**
+     * V2 search with collection and kshetra cards (TRACK-152). Fakes that predate it fall back to the
+     * kriti-only V1 response with an empty macro group.
+     */
+    suspend fun searchHybridWithCards(
+        request: SemanticSearchRequest,
+        interaction: InteractionContext,
+    ): CatalogueSearchResponseDto = searchHybrid(request, interaction).toCardsResponse()
+
+    suspend fun searchSemanticWithCards(
+        request: SemanticSearchRequest,
+        interaction: InteractionContext,
+    ): CatalogueSearchResponseDto = searchSemantic(request, interaction).toCardsResponse()
+
     /** Reviewed cycle collections (TRACK-150). Fakes that predate collections report them unavailable. */
     suspend fun listCollections(interaction: InteractionContext): CatalogueCollectionListDto =
         throw CatalogueFailure.Unavailable("Collections are not available.")
@@ -72,3 +87,6 @@ interface CatalogueApi {
     suspend fun getCollection(slug: String, interaction: InteractionContext): CatalogueCollectionDetailDto =
         throw CatalogueFailure.Unavailable("Collections are not available.")
 }
+
+private fun SemanticSearchResponse.toCardsResponse() =
+    CatalogueSearchResponseDto(query = query, totalMatches = totalMatches, items = items)
