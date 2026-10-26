@@ -58,7 +58,7 @@ VALUES
     'STOTRA_STYLE',
     'nottusvara-sahitya',
     'Nottusvara Sahitya Compositions',
-    'Attested Sankarabharanam note-svara sahityas. axis_value holds a published European air name when one is identified; otherwise it stays null.',
+    'Attested Sankarabharanam note-svara sahityas. Where a European air has been identified, the entry names it.',
     NOW()
 )
 ON CONFLICT (slug) DO UPDATE SET
@@ -144,7 +144,7 @@ VALUES
 (
     '01930000-0000-7000-8000-000000000015', 'Bhagavati Amman Temple', 'bhagavati amman temple', 'Kanyakumari', 'Tamil Nadu', 'India',
     'COMPLEX', 'PANDYA', NULL, NULL, NULL, NULL, NULL,
-    'Recorded gap. No Dikshitar kriti is seeded here. The worker alone writes the KSHETRA_OVERVIEW document.',
+    'No kriti of Dikshitar for this shrine is recorded in this library yet.',
     NOW(), NOW()
 ),
 (
