@@ -85,6 +85,24 @@ import org.jetbrains.exposed.v1.jdbc.select
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.transactions.TransactionManager
 
+/** What a search card shows for an eligible collection (TRACK-152). */
+data class CollectionSearchFacts(
+    val tagId: UUID,
+    val slug: String,
+    val name: String,
+    val composerName: String?,
+    val memberCount: Int,
+)
+
+/** What a search card shows for an eligible temple (TRACK-152). */
+data class TempleSearchFacts(
+    val templeId: UUID,
+    val name: String,
+    val place: String?,
+    val publishedKrithiCount: Int,
+    val recordedGap: Boolean,
+)
+
 /**
  * Published-only Rasika catalogue reads (TRACK-138). Raga membership is always
  * the `krithi_ragas` junction, including repeated ragamalika rows.
@@ -352,25 +370,79 @@ class CatalogueRepository {
 
     /** Reviewed, published cycle collections (TRACK-150). V2 only; nothing unreviewed is listed. */
     suspend fun listCollections(): List<CatalogueCollectionSummaryDto> = DatabaseFactory.dbQuery {
+        val collections = reviewedCollections()
+        if (collections.isEmpty()) return@dbQuery emptyList()
+        val withOverview = overviewTagIds()
+        collections.map { c ->
+            CatalogueCollectionSummaryDto(
+                id = c.tagId.toKotlinUuid(),
+                slug = c.tag[TagsTable.slug],
+                name = c.tag[TagsTable.displayNameEn],
+                composer = c.composer,
+                memberCount = c.members.size,
+                orderBasis = orderBasis(c.members),
+                hasOverview = c.tagId in withOverview,
+            )
+        }.sortedWith(compareBy({ it.composer?.name ?: "\uffff" }, { it.name }))
+    }
+
+    /**
+     * Collections a search card may point at, by tag id: exactly the set [listCollections] and
+     * [findCollection] expose (TRACK-152). Search never restates the reviewed-member rule.
+     */
+    suspend fun searchableCollections(): Map<UUID, CollectionSearchFacts> = DatabaseFactory.dbQuery {
+        reviewedCollections().associate { c ->
+            c.tagId to CollectionSearchFacts(
+                tagId = c.tagId,
+                slug = c.tag[TagsTable.slug],
+                name = c.tag[TagsTable.displayNameEn],
+                composerName = c.composer?.name,
+                memberCount = c.members.size,
+            )
+        }
+    }
+
+    /**
+     * Temples a search card may point at, by temple id: exactly [TempleEligibility.eligibleIds] with the
+     * facts a card shows (TRACK-152). Includes child shrines, since `GET /v2/catalogue/temples/{id}` resolves them.
+     */
+    suspend fun searchableTemples(): Map<UUID, TempleSearchFacts> = DatabaseFactory.dbQuery {
+        val facts = TempleEligibility.snapshot().filterValues { it.eligible }
+        if (facts.isEmpty()) return@dbQuery emptyMap()
+        TemplesTable.selectAll()
+            .where { TemplesTable.id inList facts.keys.toList() }
+            .associate { row ->
+                val id = row[TemplesTable.id].value
+                val f = facts.getValue(id)
+                id to TempleSearchFacts(
+                    templeId = id,
+                    name = row[TemplesTable.name],
+                    place = row[TemplesTable.city] ?: row[TemplesTable.state],
+                    publishedKrithiCount = f.publishedKrithiCount.toInt(),
+                    recordedGap = f.recordedGap,
+                )
+            }
+    }
+
+    private class ReviewedCollection(
+        val tagId: UUID,
+        val tag: ResultRow,
+        val members: List<MemberRow>,
+        val composer: CatalogueComposerRefDto?,
+    )
+
+    /** Tags with at least one reviewed, published member: the one collections-eligibility rule. */
+    private fun reviewedCollections(): List<ReviewedCollection> {
         val byTag = reviewedMemberRows(Op.TRUE).groupBy { it.tagId }
-        if (byTag.isEmpty()) return@dbQuery emptyList()
+        if (byTag.isEmpty()) return emptyList()
         val tags = TagsTable.selectAll()
             .where { TagsTable.id inList byTag.keys.toList() }
             .associateBy { it[TagsTable.id].value }
-        val withOverview = overviewTagIds()
         val composers = composerNames(byTag.values.flatten().map { it.composerId }.distinct())
-        byTag.mapNotNull { (tagId, members) ->
+        return byTag.mapNotNull { (tagId, members) ->
             val tag = tags[tagId] ?: return@mapNotNull null
-            CatalogueCollectionSummaryDto(
-                id = tagId.toKotlinUuid(),
-                slug = tag[TagsTable.slug],
-                name = tag[TagsTable.displayNameEn],
-                composer = majorityComposer(members, composers),
-                memberCount = members.size,
-                orderBasis = orderBasis(members),
-                hasOverview = tagId in withOverview,
-            )
-        }.sortedWith(compareBy({ it.composer?.name ?: "\uffff" }, { it.name }))
+            ReviewedCollection(tagId, tag, members, majorityComposer(members, composers))
+        }
     }
 
     suspend fun findCollection(slug: String): CatalogueCollectionDetailDto? = DatabaseFactory.dbQuery {
