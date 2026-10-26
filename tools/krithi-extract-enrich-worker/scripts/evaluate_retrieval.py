@@ -10,6 +10,11 @@ Usage:
   uv run python scripts/evaluate_retrieval.py --mode hybrid
   uv run python scripts/evaluate_retrieval.py --mode semantic
   uv run python scripts/evaluate_retrieval.py --mode all
+  uv run python scripts/evaluate_retrieval.py --mode hybrid --via-api http://localhost:8080
+
+`--via-api` posts each probe to the V2 endpoints (`/v2/catalogue/search/{hybrid|semantic}`) instead of
+querying the database: macro probes are scored on `macroHits`, the rest on `items`. Each probe is also
+posted to the V1 endpoint and the `items` order is compared (TRACK-152 parity check).
 """
 
 from __future__ import annotations
@@ -20,6 +25,9 @@ import logging
 import os
 import re
 import sys
+import time
+import urllib.error
+import urllib.request
 from pathlib import Path
 from typing import Any
 
@@ -323,6 +331,107 @@ def evaluate_item(
     return False, 0.0
 
 
+def _post_json(url: str, body: dict[str, Any]) -> dict[str, Any]:
+    request = urllib.request.Request(
+        url,
+        data=json.dumps(body).encode("utf-8"),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    for attempt in range(6):
+        try:
+            with urllib.request.urlopen(request, timeout=60) as response:
+                return json.loads(response.read().decode("utf-8"))
+        except urllib.error.HTTPError as err:
+            # The backend applies a per-host global rate limit; wait for the bucket to refill.
+            if err.code != 429 or attempt == 5:
+                raise
+            time.sleep(15)
+    raise RuntimeError("unreachable")
+
+
+def _api_item_result(item: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "id": item["krithiId"],
+        "title": item["title"],
+        "composer": item.get("composerName") or "",
+        "raga": item.get("ragaName") or "",
+        "document_kind": item.get("documentKind"),
+        "similarity": item.get("similarityScore") or 0.0,
+        "lexical_score": item.get("lexicalScore") or 0.0,
+        "rrf_score": item.get("rrfScore"),
+    }
+
+
+def _api_macro_result(hit: dict[str, Any]) -> dict[str, Any]:
+    kind = "CYCLE_OVERVIEW" if hit["kind"] == "COLLECTION" else "KSHETRA_OVERVIEW"
+    return {
+        "id": hit.get("collectionSlug") or hit.get("templeId"),
+        "title": hit["title"],
+        "composer": hit.get("subtitle") or "",
+        "raga": "",
+        "document_kind": kind,
+        "similarity": hit.get("similarityScore") or 0.0,
+        "lexical_score": hit.get("lexicalScore") or 0.0,
+        "rrf_score": hit.get("rrfScore"),
+        "kind": hit["kind"],
+    }
+
+
+def run_api_suite(base_url: str, benchmarks: list[dict[str, Any]], mode: str, top_k: int) -> tuple[float, float, float]:
+    """Scores probes through the live V2 endpoints and checks `items` parity with V1."""
+    base = base_url.rstrip("/")
+    hits_at_1 = hits_at_k = parity_diffs = 0
+    rr_sum = 0.0
+    macro_on_kriti_probes: list[str] = []
+
+    print("\n" + "=" * 80)
+    print(f"EVALUATION VIA API ({base}): MODE={mode.upper()} (Top-{top_k} Cutoff)")
+    print("=" * 80)
+
+    for item in benchmarks:
+        qid, query = item["id"], item["query"]
+        print(f'\nQuery [{qid}]: "{query}"')
+        body = {"query": query, "limit": max(top_k, 20)}
+        v2 = _post_json(f"{base}/v2/catalogue/search/{mode}", body)
+        v1 = _post_json(f"{base}/v1/search/{mode}", body)
+        v2_ids = [i["krithiId"] for i in v2["items"]]
+        v1_ids = [i["krithiId"] for i in v1["items"]]
+        if v2_ids != v1_ids:
+            parity_diffs += 1
+            print(f"   !! items differ from V1: V2={v2_ids[:top_k]} V1={v1_ids[:top_k]}")
+
+        macro = [_api_macro_result(h) for h in v2.get("macroHits", [])]
+        results = macro if item.get("is_macro") else [_api_item_result(i) for i in v2["items"]]
+        results = results[:top_k]
+        hit, rr = evaluate_item(item, results)
+        if hit:
+            hits_at_k += 1
+            if rr == 1.0:
+                hits_at_1 += 1
+        rr_sum += rr
+        print(f"-> Status: {'HIT' if hit else 'MISS'} (RR: {rr:.2f})")
+        for idx, res in enumerate(results, start=1):
+            print(f"   #{idx}: {res['title']} | {res['composer']} | {res['raga']} (Sim: {float(res['similarity']):.3f})")
+        if not item.get("is_macro") and macro:
+            macro_on_kriti_probes.append(qid)
+        if macro or v2.get("exactTitleMatchId"):
+            print(f"   macroHits: {[(h['kind'], h['title'], round(float(h['similarity']), 3)) for h in macro]}"
+                  f" exactTitleMatchId={v2.get('exactTitleMatchId')}")
+
+    total = len(benchmarks)
+    print("\n" + "-" * 80)
+    print(f"METRICS FOR {mode.upper()} RETRIEVAL (via API)")
+    print(f"Total Queries Evaluated: {total}")
+    print(f"Recall@1:                {hits_at_1 / total * 100.0:.1f}% ({hits_at_1}/{total})")
+    print(f"Recall@{top_k}:                {hits_at_k / total * 100.0:.1f}% ({hits_at_k}/{total})")
+    print(f"Mean Reciprocal Rank:    {rr_sum / total:.3f}")
+    print(f"V1/V2 items parity:      {parity_diffs} differences over {total} probes")
+    print(f"Non-macro probes with macro hits: {macro_on_kriti_probes}")
+    print("-" * 80)
+    return hits_at_1 / total * 100.0, hits_at_k / total * 100.0, rr_sum / total
+
+
 def run_benchmark_suite(
     conn: psycopg.Connection,
     embedder: GeminiEmbedder,
@@ -396,10 +505,18 @@ def main():
     )
     parser.add_argument("--model", type=str, default="gemini-embedding-2", help="Embedding model name")
     parser.add_argument("--dims", type=int, default=768, help="Output dimensions")
+    parser.add_argument("--via-api", type=str, default=None, metavar="BASE_URL",
+                        help="Score probes through the V2 search endpoints of a running backend instead of the database")
     args = parser.parse_args()
 
     benchmarks = load_benchmarks()
     logger.info("Loaded %d benchmark queries from %s", len(benchmarks), BENCHMARK_PATH)
+
+    if args.via_api:
+        for mode in ("hybrid", "semantic"):
+            if args.mode in (mode, "all"):
+                run_api_suite(args.via_api, benchmarks, mode, args.k)
+        return
 
     with psycopg.connect(args.db_url) as conn:
         with conn.cursor() as cur:
