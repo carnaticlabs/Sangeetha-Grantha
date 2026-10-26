@@ -113,7 +113,7 @@ class RasikaSearchService(
                 kind = CatalogueSearchHitKindDto.KSHETRA,
                 title = f.name,
                 subtitle = f.place,
-                snippet = snippetOf(c.content),
+                snippet = snippetOf(thinOverviewWithFacts(c.content, f)),
                 templeId = f.templeId.toKotlinUuid(),
                 publishedKrithiCount = f.publishedKrithiCount,
                 recordedGap = f.recordedGap,
@@ -134,6 +134,49 @@ class RasikaSearchService(
          */
         val DEFAULT_HYBRID_FLOOR = MacroFloor(minSimilarity = 0.83, minLexical = 0.8)
         val DEFAULT_SEMANTIC_FLOOR = MacroFloor(minSimilarity = 0.83, minLexical = Double.MAX_VALUE)
+
+        /** A stored overview shorter than this mostly repeats the temple's name and place. */
+        const val THIN_OVERVIEW_LENGTH = 60
+
+        /**
+         * Enriches a one-line overview with facts already recorded for the temple (region, sacred water
+         * and tree, deity posture, published kritis and their composers); nothing is invented, and a
+         * longer overview is left alone. Display only: the stored text and its embedding are unchanged.
+         */
+        fun thinOverviewWithFacts(overview: String, f: TempleSearchFacts): String {
+            val base = overview.trim()
+            if (base.length >= THIN_OVERVIEW_LENGTH) return overview
+            val parts = buildList {
+                f.mandalam?.let { add("In the ${it.lowercase().replaceFirstChar(Char::uppercase)} region.") }
+                val details = listOfNotNull(
+                    f.sthalaTirtha?.let { "sacred water: $it" },
+                    f.sthalaVriksha?.let { "sacred tree: $it" },
+                    f.deityPosture?.let(::postureWords)?.let { "$it deity" },
+                )
+                if (details.isNotEmpty()) add(details.joinToString("; ").replaceFirstChar(Char::uppercase) + ".")
+                if (f.publishedKrithiCount > 0) {
+                    val noun = if (f.publishedKrithiCount == 1) "kriti" else "kritis"
+                    add("${f.publishedKrithiCount} $noun recorded here" + composersPhrase(f.composerNames) + ".")
+                }
+            }
+            if (parts.isEmpty()) return overview
+            val sentence = if (base.last() in ".!?") base else "$base."
+            return "$sentence ${parts.joinToString(" ")}"
+        }
+
+        private fun postureWords(name: String): String? = when (name) {
+            "SAYANA" -> "reclining"
+            "STHANAKA" -> "standing"
+            "ASINA" -> "seated"
+            "TANDAVA" -> "dancing"
+            else -> null
+        }
+
+        private fun composersPhrase(names: List<String>): String = when (names.size) {
+            0 -> ""
+            1 -> ", by ${names[0]}"
+            else -> ", by ${names.dropLast(1).joinToString(", ")} and ${names.last()}"
+        }
 
         /**
          * A prefix of the stored overview, whitespace collapsed, cut at the last sentence end (or word

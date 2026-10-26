@@ -83,7 +83,7 @@ Sources: [HybridSearchService](../../modules/backend/api/src/main/kotlin/com/san
 | Kshetra eligibility | `TempleEligibility.eligibleIds()`; a recorded-gap temple returns `recordedGap = true` |
 | Scope filters | `composerId` or `ragaId` set: `macroHits` is empty |
 | No active profile | Hybrid: lexical retrieval for both groups. Semantic: both groups empty |
-| Snippet | Stored overview prefix, at most 240 characters; never generated |
+| Snippet | Stored overview prefix, at most 240 characters. A kshetra overview shorter than 60 characters is followed by facts already recorded for the temple (region, sacred water and tree, deity posture, published kritis and their composers); nothing is invented and the stored text and embedding are unchanged |
 
 Every `COLLECTION` hit opens `/v2/catalogue/collections/{slug}` and every `KSHETRA` hit `/v2/catalogue/temples/{id}`. The floor was chosen on the benchmark probes: the exact-title kriti probes peak at similarity 0.787, the macro probes at 0.837 and 0.854. Re-check it with `evaluate_retrieval.py --via-api <base-url>` after changing the embedding profile or the overview text; the command also reports V1/V2 `items` parity.
 

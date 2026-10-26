@@ -101,6 +101,13 @@ data class TempleSearchFacts(
     val place: String?,
     val publishedKrithiCount: Int,
     val recordedGap: Boolean,
+    /** Enum names, so the caller words them; null when not recorded. */
+    val mandalam: String? = null,
+    val sthalaVriksha: String? = null,
+    val sthalaTirtha: String? = null,
+    val deityPosture: String? = null,
+    /** Composers of the published kritis recorded directly at this temple, by name. */
+    val composerNames: List<String> = emptyList(),
 )
 
 /**
@@ -409,6 +416,13 @@ class CatalogueRepository {
     suspend fun searchableTemples(): Map<UUID, TempleSearchFacts> = DatabaseFactory.dbQuery {
         val facts = TempleEligibility.snapshot().filterValues { it.eligible }
         if (facts.isEmpty()) return@dbQuery emptyMap()
+        val composersByTemple = KrithisTable
+            .join(ComposersTable, JoinType.INNER, KrithisTable.composerId, ComposersTable.id)
+            .select(KrithisTable.templeId, ComposersTable.name)
+            .where { (KrithisTable.templeId inList facts.keys.toList()) and publishedComposition(CatalogueVisibility.ALL_PUBLISHED) }
+            .map { it[KrithisTable.templeId]!! to it[ComposersTable.name] }
+            .groupBy({ it.first }, { it.second })
+            .mapValues { (_, names) -> names.distinct().sorted() }
         TemplesTable.selectAll()
             .where { TemplesTable.id inList facts.keys.toList() }
             .associate { row ->
@@ -420,6 +434,11 @@ class CatalogueRepository {
                     place = row[TemplesTable.city] ?: row[TemplesTable.state],
                     publishedKrithiCount = f.publishedKrithiCount.toInt(),
                     recordedGap = f.recordedGap,
+                    mandalam = row[TemplesTable.mandalam]?.name,
+                    sthalaVriksha = row[TemplesTable.sthalaVriksha],
+                    sthalaTirtha = row[TemplesTable.sthalaTirtha],
+                    deityPosture = row[TemplesTable.deityPosture]?.name,
+                    composerNames = composersByTemple[id].orEmpty(),
                 )
             }
     }
