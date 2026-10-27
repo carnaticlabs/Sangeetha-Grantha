@@ -5,6 +5,8 @@ import com.sangita.grantha.shared.domain.model.MusicalFormDto
 import com.sangita.grantha.shared.domain.model.RagaSectionDto
 import com.sangita.grantha.shared.domain.model.ScriptCodeDto
 import com.sangita.grantha.shared.domain.serialization.UuidSerializer
+import kotlinx.serialization.EncodeDefault
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
@@ -124,6 +126,10 @@ data class CatalogueKrithiReaderDto(
     val deity: CatalogueReferenceDto? = null,
     val temple: CatalogueReferenceDto? = null,
     val cycleContext: CatalogueCycleContextDto? = null,
+    /** V2 Details chips (TRACK-153). Never encoded when empty, so V1 payloads gain no field. */
+    @OptIn(ExperimentalSerializationApi::class)
+    @EncodeDefault(EncodeDefault.Mode.NEVER)
+    val facetChips: List<CatalogueFacetChipDto> = emptyList(),
 )
 
 @Serializable

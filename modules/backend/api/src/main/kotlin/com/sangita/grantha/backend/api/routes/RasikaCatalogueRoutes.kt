@@ -19,6 +19,9 @@ fun Route.rasikaCatalogueRoutes(catalogueService: CatalogueService) {
                 catalogueService.searchKrithis(call.request.queryParameters, CatalogueVisibility.ALL_PUBLISHED),
             )
         }
+        get("/facets") {
+            call.respondCatalogue(catalogueService.listFacets(call.request.queryParameters))
+        }
         get("/krithis/{id}") {
             call.respondCatalogue(
                 catalogueService.getKrithi(

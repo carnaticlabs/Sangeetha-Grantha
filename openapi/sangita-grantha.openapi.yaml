@@ -95,6 +95,44 @@ paths:
               - "KRITHI"
               - "VARNAM"
               - "SWARAJATHI"
+        -
+          "name": "vibhakti"
+          "in": "query"
+          "required": false
+          "description": "Dikshitar vibhakti case (TRACK-153). Stored on `krithis.vibhakti_case`; only members with at least one published kriti are accepted. A value that is not currently offered by `GET /v2/catalogue/facets` over the whole published catalogue is a 400; an offered value that matches nothing in combination returns 200 with total 0."
+          "schema":
+            "type": "string"
+            "enum": ["PRATHAMA", "DVITIYA", "TRITIYA", "CHATURTHI", "PANCHAMI", "SHASHTHI", "SAPTAMI", "SAMBODHANA", "SARVA_VIBHAKTI"]
+        -
+          "name": "collection"
+          "in": "query"
+          "required": false
+          "description": "Slug of a reviewed cycle collection (see `/v2/catalogue/collections`). All member roles count. A value that is not currently offered by `GET /v2/catalogue/facets` over the whole published catalogue is a 400; an offered value that matches nothing in combination returns 200 with total 0."
+          "schema":
+            "type": "string"
+            "maxLength": 64
+        -
+          "name": "tune"
+          "in": "query"
+          "required": false
+          "description": "Nottusvara tune name, as stored (`axis_value` of the `nottusvara-sahitya` cycle only). A value that is not currently offered by `GET /v2/catalogue/facets` over the whole published catalogue is a 400; an offered value that matches nothing in combination returns 200 with total 0."
+          "schema":
+            "type": "string"
+            "maxLength": 64
+        -
+          "name": "mandalam"
+          "in": "query"
+          "required": false
+          "description": "Region of the kriti's own eligible temple (copy: Region). Not inherited from a parent complex. A value that is not currently offered by `GET /v2/catalogue/facets` over the whole published catalogue is a 400; an offered value that matches nothing in combination returns 200 with total 0."
+          "schema":
+            "$ref": "#/components/schemas/CatalogueMandalam"
+        -
+          "name": "element"
+          "in": "query"
+          "required": false
+          "description": "Bhuta of the kriti's own eligible temple. APPU is water. A value that is not currently offered by `GET /v2/catalogue/facets` over the whole published catalogue is a 400; an offered value that matches nothing in combination returns 200 with total 0."
+          "schema":
+            "$ref": "#/components/schemas/CatalogueTempleElement"
       "responses":
         "200":
           "description": "Paged published kriti summaries"
@@ -374,6 +412,86 @@ paths:
           "$ref": "#/components/responses/CatalogueValidationError"
         "404":
           "$ref": "#/components/responses/CatalogueNotFound"
+  "/v2/catalogue/facets":
+    "get":
+      "tags":
+        - "Catalogue"
+      "summary": "Lakshana facets with values in scope (TRACK-153)"
+      "description": "Anonymous, published-only, V2 only. Lists only facets that have at least one published value in the scope of `query`, `composerId` and `ragaId` (the facet filters never narrow the listing, so siblings stay visible). Facets: vibhakti, collection, tune, mandalam, element, in that order; values are ordered by enum declaration order (vibhakti, mandalam, element) or by name (collection, tune). `count` is present only with `counts=true`: distinct kritis per value under scope plus every other facet's filter but not its own, so a listed value may show 0. `facets` is `[]` when nothing is in scope. Unknown or repeated parameters and invalid or not-offered values are 400. Cache-Control: no-store."
+      "security": []
+      "parameters":
+        -
+          "$ref": "#/components/parameters/CatalogueQuery"
+        -
+          "name": "composerId"
+          "in": "query"
+          "schema":
+            "type": "string"
+            "format": "uuid"
+        -
+          "name": "ragaId"
+          "in": "query"
+          "schema":
+            "type": "string"
+            "format": "uuid"
+        -
+          "name": "counts"
+          "in": "query"
+          "required": false
+          "schema":
+            "type": "boolean"
+            "default": false
+        -
+          "name": "vibhakti"
+          "in": "query"
+          "required": false
+          "description": "Dikshitar vibhakti case (TRACK-153). Stored on `krithis.vibhakti_case`; only members with at least one published kriti are accepted. A value that is not currently offered by `GET /v2/catalogue/facets` over the whole published catalogue is a 400; an offered value that matches nothing in combination returns 200 with total 0."
+          "schema":
+            "type": "string"
+            "enum": ["PRATHAMA", "DVITIYA", "TRITIYA", "CHATURTHI", "PANCHAMI", "SHASHTHI", "SAPTAMI", "SAMBODHANA", "SARVA_VIBHAKTI"]
+        -
+          "name": "collection"
+          "in": "query"
+          "required": false
+          "description": "Slug of a reviewed cycle collection (see `/v2/catalogue/collections`). All member roles count. A value that is not currently offered by `GET /v2/catalogue/facets` over the whole published catalogue is a 400; an offered value that matches nothing in combination returns 200 with total 0."
+          "schema":
+            "type": "string"
+            "maxLength": 64
+        -
+          "name": "tune"
+          "in": "query"
+          "required": false
+          "description": "Nottusvara tune name, as stored (`axis_value` of the `nottusvara-sahitya` cycle only). A value that is not currently offered by `GET /v2/catalogue/facets` over the whole published catalogue is a 400; an offered value that matches nothing in combination returns 200 with total 0."
+          "schema":
+            "type": "string"
+            "maxLength": 64
+        -
+          "name": "mandalam"
+          "in": "query"
+          "required": false
+          "description": "Region of the kriti's own eligible temple (copy: Region). Not inherited from a parent complex. A value that is not currently offered by `GET /v2/catalogue/facets` over the whole published catalogue is a 400; an offered value that matches nothing in combination returns 200 with total 0."
+          "schema":
+            "$ref": "#/components/schemas/CatalogueMandalam"
+        -
+          "name": "element"
+          "in": "query"
+          "required": false
+          "description": "Bhuta of the kriti's own eligible temple. APPU is water. A value that is not currently offered by `GET /v2/catalogue/facets` over the whole published catalogue is a 400; an offered value that matches nothing in combination returns 200 with total 0."
+          "schema":
+            "$ref": "#/components/schemas/CatalogueTempleElement"
+        -
+          "$ref": "#/components/parameters/RasikaSessionHeader"
+        -
+          "$ref": "#/components/parameters/RasikaInteractionHeader"
+      "responses":
+        "200":
+          "description": "Facets with values in scope"
+          "content":
+            "application/json":
+              "schema":
+                "$ref": "#/components/schemas/CatalogueFacetList"
+        "400":
+          "$ref": "#/components/responses/CatalogueValidationError"
   "/v2/catalogue/temples":
     "get":
       "tags":
@@ -2341,6 +2459,11 @@ components:
               "$ref": "#/components/schemas/CatalogueCycleContext"
           "nullable": true
           "description": "V2 only. Omitted when the kriti has no reviewed cycle context."
+        "facetChips":
+          "type": "array"
+          "description": "V2 only (TRACK-153). Tappable lakshana properties for Details: vibhakti, tune and mandalam, only where a reviewed value is stored. Omitted when empty. Each value is accepted by the matching search filter."
+          "items":
+            "$ref": "#/components/schemas/CatalogueFacetChip"
     "CatalogueOrderBasis":
       "type": "string"
       "enum":
@@ -2536,6 +2659,51 @@ components:
         "recordedGap":
           "type": "boolean"
           "description": "Derived: an overview exists but no published kriti is recorded here or in any eligible child."
+    "CatalogueFacetKey":
+      "type": "string"
+      "enum": ["vibhakti", "collection", "tune", "mandalam", "element"]
+      "description": "Wire keys equal the query-parameter names."
+    "CatalogueFacetValue":
+      "type": "object"
+      "required": ["value"]
+      "properties":
+        "value":
+          "type": "string"
+        "label":
+          "type": "string"
+          "description": "Collection display name or the stored tune string; absent for enum facets (client copy)."
+        "count":
+          "type": "integer"
+          "format": "int64"
+          "description": "Present only with counts=true."
+    "CatalogueFacet":
+      "type": "object"
+      "required": ["key", "values"]
+      "properties":
+        "key":
+          "$ref": "#/components/schemas/CatalogueFacetKey"
+        "values":
+          "type": "array"
+          "items":
+            "$ref": "#/components/schemas/CatalogueFacetValue"
+    "CatalogueFacetList":
+      "type": "object"
+      "required": ["facets"]
+      "properties":
+        "facets":
+          "type": "array"
+          "items":
+            "$ref": "#/components/schemas/CatalogueFacet"
+    "CatalogueFacetChip":
+      "type": "object"
+      "required": ["key", "value"]
+      "properties":
+        "key":
+          "$ref": "#/components/schemas/CatalogueFacetKey"
+        "value":
+          "type": "string"
+        "label":
+          "type": "string"
     "CatalogueTempleList":
       "type": "object"
       "required":
