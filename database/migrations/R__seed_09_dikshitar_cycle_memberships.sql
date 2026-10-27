@@ -144,7 +144,7 @@ VALUES
 (
     '01930000-0000-7000-8000-000000000015', 'Bhagavati Amman Temple', 'bhagavati amman temple', 'Kanyakumari', 'Tamil Nadu', 'India',
     'COMPLEX', 'PANDYA', NULL, NULL, NULL, NULL, NULL,
-    'No kriti of Dikshitar for this shrine is recorded in this library yet.',
+    'No kriti for this shrine is recorded in this library yet.',
     NOW(), NOW()
 ),
 (
