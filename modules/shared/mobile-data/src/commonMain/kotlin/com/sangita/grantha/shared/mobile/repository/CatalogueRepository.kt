@@ -14,7 +14,9 @@ import com.sangita.grantha.shared.domain.model.catalogue.CataloguePagedResponse
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueRagaDetailDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueSearchResponseDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueRagaSummaryDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueFacetListDto
 import com.sangita.grantha.shared.mobile.network.CatalogueApi
+import com.sangita.grantha.shared.mobile.network.LakshanaFacetSelection
 import com.sangita.grantha.shared.mobile.usage.InteractionContext
 import kotlin.uuid.Uuid
 
@@ -33,6 +35,26 @@ class CatalogueRepository(
         interaction: InteractionContext,
     ): CataloguePagedResponse<CatalogueKrithiSummaryDto> =
         api.searchKrithis(query, composerId, ragaId, page, pageSize, interaction)
+
+    suspend fun searchKrithis(
+        query: String? = null,
+        composerId: Uuid? = null,
+        ragaId: Uuid? = null,
+        facets: LakshanaFacetSelection,
+        page: Int = CatalogueContract.DEFAULT_PAGE,
+        pageSize: Int = CatalogueContract.DEFAULT_PAGE_SIZE,
+        interaction: InteractionContext,
+    ): CataloguePagedResponse<CatalogueKrithiSummaryDto> =
+        api.searchKrithisFaceted(query, composerId, ragaId, facets, page, pageSize, interaction)
+
+    suspend fun listFacets(
+        query: String? = null,
+        composerId: Uuid? = null,
+        ragaId: Uuid? = null,
+        facets: LakshanaFacetSelection = LakshanaFacetSelection.NONE,
+        counts: Boolean = false,
+        interaction: InteractionContext,
+    ): CatalogueFacetListDto = api.listFacets(query, composerId, ragaId, facets, counts, interaction)
 
     suspend fun getKrithi(id: Uuid, interaction: InteractionContext): CatalogueKrithiReaderDto =
         api.getKrithi(id, interaction)

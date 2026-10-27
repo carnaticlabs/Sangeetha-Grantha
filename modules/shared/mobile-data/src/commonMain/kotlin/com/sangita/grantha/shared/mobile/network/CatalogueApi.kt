@@ -8,6 +8,7 @@ import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerDetail
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerSummaryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueContract
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueDiscoveryDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueFacetListDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueKrithiReaderDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueKrithiSummaryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueLyricsDto
@@ -29,6 +30,33 @@ interface CatalogueApi {
         pageSize: Int = CatalogueContract.DEFAULT_PAGE_SIZE,
         interaction: InteractionContext,
     ): CataloguePagedResponse<CatalogueKrithiSummaryDto>
+
+    /**
+     * Krithi search narrowed by lakshana facets (TRACK-153). Fakes that predate facets keep working
+     * for an empty selection and report facets unavailable otherwise.
+     */
+    suspend fun searchKrithisFaceted(
+        query: String? = null,
+        composerId: Uuid? = null,
+        ragaId: Uuid? = null,
+        facets: LakshanaFacetSelection,
+        page: Int = CatalogueContract.DEFAULT_PAGE,
+        pageSize: Int = CatalogueContract.DEFAULT_PAGE_SIZE,
+        interaction: InteractionContext,
+    ): CataloguePagedResponse<CatalogueKrithiSummaryDto> {
+        if (!facets.isEmpty) throw CatalogueFailure.Unavailable("Facets are not available.")
+        return searchKrithis(query, composerId, ragaId, page, pageSize, interaction)
+    }
+
+    /** Facets offered for a scope; values carry counts only when [counts] is true. */
+    suspend fun listFacets(
+        query: String? = null,
+        composerId: Uuid? = null,
+        ragaId: Uuid? = null,
+        facets: LakshanaFacetSelection = LakshanaFacetSelection.NONE,
+        counts: Boolean = false,
+        interaction: InteractionContext,
+    ): CatalogueFacetListDto = throw CatalogueFailure.Unavailable("Facets are not available.")
 
     suspend fun getKrithi(id: Uuid, interaction: InteractionContext): CatalogueKrithiReaderDto
 

@@ -8,6 +8,7 @@ import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerDetail
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerSummaryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueContract
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueDiscoveryDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueFacetListDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueErrorDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueKrithiReaderDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueKrithiSummaryDto
@@ -54,6 +55,40 @@ class KtorCatalogueApi(
             optionalUuid("ragaId", ragaId)
             parameter("page", page)
             parameter("pageSize", pageSize)
+        }
+
+    override suspend fun searchKrithisFaceted(
+        query: String?,
+        composerId: Uuid?,
+        ragaId: Uuid?,
+        facets: LakshanaFacetSelection,
+        page: Int,
+        pageSize: Int,
+        interaction: InteractionContext,
+    ): CataloguePagedResponse<CatalogueKrithiSummaryDto> =
+        get(RasikaCatalogueContract.KRITHIS_PATH, interaction) {
+            optionalQuery("query", query)
+            optionalUuid("composerId", composerId)
+            optionalUuid("ragaId", ragaId)
+            facets.values.forEach { (key, value) -> parameter(key.wireKey, value) }
+            parameter("page", page)
+            parameter("pageSize", pageSize)
+        }
+
+    override suspend fun listFacets(
+        query: String?,
+        composerId: Uuid?,
+        ragaId: Uuid?,
+        facets: LakshanaFacetSelection,
+        counts: Boolean,
+        interaction: InteractionContext,
+    ): CatalogueFacetListDto =
+        get(RasikaCatalogueContract.FACETS_PATH, interaction) {
+            optionalQuery("query", query)
+            optionalUuid("composerId", composerId)
+            optionalUuid("ragaId", ragaId)
+            facets.values.forEach { (key, value) -> parameter(key.wireKey, value) }
+            if (counts) parameter("counts", "true")
         }
 
     override suspend fun getKrithi(id: Uuid, interaction: InteractionContext): CatalogueKrithiReaderDto =

@@ -1,5 +1,7 @@
 package com.sangita.grantha.shared.presentation.reader
 
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueFacetChipDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueFacetKeyDto
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -69,6 +71,7 @@ fun KrithiReaderScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
     onOpenCollection: (String) -> Unit = {},
+    onOpenFacet: (CatalogueFacetKeyDto, String, String) -> Unit = { _, _, _ -> },
     onOpenNeighbour: (Uuid) -> Unit = {},
 ) {
     val state by presenter.state.collectAsStateWithLifecycle()
@@ -119,7 +122,7 @@ fun KrithiReaderScreen(
             val reader = state.reader ?: return@LoadStateContent
             when (tab) {
                 ReaderTab.Lyrics -> LyricsPane(state, presenter, reader)
-                ReaderTab.Details -> DetailsPane(reader, state, onOpenCollection, onOpenNeighbour)
+                ReaderTab.Details -> DetailsPane(reader, state, onOpenCollection, onOpenNeighbour, onOpenFacet)
             }
         }
     }
@@ -370,12 +373,36 @@ private fun LyricSection(
     }
 }
 
+/** Reviewed lakshana chips; a kriti with none shows no row. A tap opens Browse with that one facet. */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun FacetChipRow(
+    chips: List<CatalogueFacetChipDto>,
+    onOpenFacet: (CatalogueFacetKeyDto, String, String) -> Unit,
+) {
+    if (chips.isEmpty()) return
+    FlowRow(
+        Modifier.padding(vertical = RasikaTokens.sm),
+        horizontalArrangement = Arrangement.spacedBy(RasikaTokens.xs),
+    ) {
+        chips.forEach { chip ->
+            val label = chip.label ?: chip.value
+            RasikaChip(
+                selected = false,
+                onClick = { onOpenFacet(chip.key, chip.value, label) },
+                label = RasikaCopy.facetChipDescription(RasikaCopy.facetName(chip.key), label),
+            )
+        }
+    }
+}
+
 @Composable
 private fun DetailsPane(
     reader: CatalogueKrithiReaderDto,
     state: ReaderUiState,
     onOpenCollection: (String) -> Unit,
     onOpenNeighbour: (Uuid) -> Unit,
+    onOpenFacet: (CatalogueFacetKeyDto, String, String) -> Unit,
 ) {
     Column(
         Modifier
@@ -383,6 +410,7 @@ private fun DetailsPane(
             .verticalScroll(rememberScrollState())
             .padding(horizontal = RasikaTokens.screen, vertical = RasikaTokens.xs),
     ) {
+        FacetChipRow(reader.facetChips, onOpenFacet)
         DetailRow("RĀGA", reader.ragas.sortedBy { it.orderIndex }.joinToString(" · ") { it.name }, if (reader.isRagamalika) RasikaCopy.RAGAMALIKA else null)
         reader.tala?.let { DetailRow("TĀLA", it.name, null) }
         RasikaCopy.musicalFormLabel(reader.musicalForm)?.let { form ->

@@ -54,6 +54,22 @@ object RasikaCopy {
     const val BROWSE_COMPOSERS = "Composers"
     const val BROWSE_TITLE = "Browse"
     const val BROWSE_FILTER = "Filter this directory"
+    const val FACETS_HEADING = "Filter by"
+    const val FACET_REMOVE = "Remove filter"
+    const val FACET_NOTE = "Filters cover only the compositions that have reviewed data for them."
+
+    /** Facet names; "Region" glosses mandalam (the traditional division of the country). */
+    fun facetName(key: com.sangita.grantha.shared.domain.model.catalogue.CatalogueFacetKeyDto): String = when (key) {
+        com.sangita.grantha.shared.domain.model.catalogue.CatalogueFacetKeyDto.VIBHAKTI -> "Vibhakti"
+        com.sangita.grantha.shared.domain.model.catalogue.CatalogueFacetKeyDto.COLLECTION -> "Cycle"
+        com.sangita.grantha.shared.domain.model.catalogue.CatalogueFacetKeyDto.TUNE -> "Tune"
+        com.sangita.grantha.shared.domain.model.catalogue.CatalogueFacetKeyDto.MANDALAM -> "Region"
+        com.sangita.grantha.shared.domain.model.catalogue.CatalogueFacetKeyDto.ELEMENT -> "Element"
+    }
+
+    fun facetValue(label: String, count: Long?): String = if (count == null) label else "$label ($count)"
+    fun facetChipDescription(name: String, label: String): String = "$name: $label"
+    fun facetRemoveDescription(name: String, label: String): String = "Remove filter $name: $label"
     const val ALL_RAGAS = "All ragas"
     const val ALL_COMPOSERS = "All composers"
     const val FAVOURITES_TITLE = "Library"

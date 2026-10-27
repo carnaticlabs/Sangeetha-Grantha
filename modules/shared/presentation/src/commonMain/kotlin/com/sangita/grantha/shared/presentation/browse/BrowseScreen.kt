@@ -2,6 +2,8 @@ package com.sangita.grantha.shared.presentation.browse
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -45,10 +47,13 @@ fun BrowseScreen(
 ) {
     val state by presenter.state.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) {
-        if (state.ragas.isEmpty() && state.load is LoadState.Idle) presenter.loadDirectory()
+        val scoped = state.selectedRagaId != null || state.selectedComposerId != null || !state.facetSelection.isEmpty
+        if (!scoped && state.ragas.isEmpty() && state.load is LoadState.Idle) presenter.loadDirectory()
     }
-    val showingAssociated = state.selectedRagaId != null || state.selectedComposerId != null
+    val showingAssociated = state.selectedRagaId != null || state.selectedComposerId != null ||
+        !state.facetSelection.isEmpty
     val contextTitle = when {
+        state.facetTitle != null -> state.facetTitle!!
         state.selectedRagaId != null ->
             state.ragas.firstOrNull { it.id == state.selectedRagaId }?.name ?: RasikaCopy.BROWSE_RAGAS
         state.selectedComposerId != null ->
@@ -99,6 +104,7 @@ fun BrowseScreen(
                 androidx.compose.foundation.layout.Spacer(
                     Modifier.padding(top = RasikaTokens.md),
                 )
+                LakshanaFacetBar(state, presenter)
             }
             LoadStateContent(
                 state = state.load,
@@ -147,6 +153,54 @@ fun BrowseScreen(
                 }
             }
         }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun LakshanaFacetBar(state: BrowseUiState, presenter: BrowsePresenter) {
+    if (state.facets.isEmpty() && state.facetSelection.isEmpty) return
+    Column(Modifier.padding(bottom = RasikaTokens.sm), verticalArrangement = Arrangement.spacedBy(RasikaTokens.xs)) {
+        if (state.facets.isNotEmpty()) {
+            Text(RasikaCopy.FACETS_HEADING, style = MaterialTheme.typography.labelMedium, color = RasikaTheme.colors.inkMuted)
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(RasikaTokens.xs)) {
+                state.facets.forEach { facet ->
+                    RasikaChip(
+                        selected = state.openFacet == facet.key,
+                        onClick = {
+                            if (state.openFacet == facet.key) presenter.onCloseFacetPicker()
+                            else presenter.onOpenFacetPicker(facet.key)
+                        },
+                        label = RasikaCopy.facetName(facet.key),
+                    )
+                }
+            }
+        }
+        val open = state.facets.firstOrNull { it.key == state.openFacet }
+        if (open != null) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(RasikaTokens.xs)) {
+                open.values.forEach { option ->
+                    RasikaChip(
+                        selected = state.facetSelection[open.key] == option.value,
+                        onClick = { presenter.onFacetValue(open.key, option.value) },
+                        label = RasikaCopy.facetValue(option.label, option.count),
+                    )
+                }
+            }
+        }
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(RasikaTokens.xs)) {
+            state.facetSelection.values.forEach { (key, value) ->
+                val label = state.facets.firstOrNull { it.key == key }?.values
+                    ?.firstOrNull { it.value == value }?.label ?: state.facetTitle ?: value
+                val name = RasikaCopy.facetName(key)
+                RasikaChip(
+                    selected = true,
+                    onClick = { presenter.onClearFacet(key) },
+                    label = RasikaCopy.facetRemoveDescription(name, label),
+                )
+            }
+        }
+        Text(RasikaCopy.FACET_NOTE, style = MaterialTheme.typography.labelSmall, color = RasikaTheme.colors.inkMuted)
     }
 }
 
