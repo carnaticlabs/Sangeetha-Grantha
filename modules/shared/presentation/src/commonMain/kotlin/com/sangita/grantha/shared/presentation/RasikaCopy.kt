@@ -67,6 +67,21 @@ object RasikaCopy {
         com.sangita.grantha.shared.domain.model.catalogue.CatalogueFacetKeyDto.ELEMENT -> "Element"
     }
 
+    /**
+     * Display label for a facet value. The server sends a label only for cycles and tunes, so vibhakti
+     * cases and regions are rendered here from their enum values.
+     */
+    fun facetLabel(
+        key: com.sangita.grantha.shared.domain.model.catalogue.CatalogueFacetKeyDto,
+        value: String,
+        label: String?,
+    ): String = when {
+        !label.isNullOrBlank() -> label
+        key == com.sangita.grantha.shared.domain.model.catalogue.CatalogueFacetKeyDto.VIBHAKTI ->
+            com.sangita.grantha.shared.presentation.collections.CollectionCopy.vibhakti(value)
+        else -> value.lowercase().replace('_', ' ').replaceFirstChar { it.uppercase() }
+    }
+
     fun facetValue(label: String, count: Long?): String = if (count == null) label else "$label ($count)"
     fun facetChipDescription(name: String, label: String): String = "$name: $label"
     fun facetRemoveDescription(name: String, label: String): String = "Remove filter $name: $label"

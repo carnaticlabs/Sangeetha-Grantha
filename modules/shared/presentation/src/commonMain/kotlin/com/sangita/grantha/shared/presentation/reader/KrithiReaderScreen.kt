@@ -386,7 +386,7 @@ private fun FacetChipRow(
         horizontalArrangement = Arrangement.spacedBy(RasikaTokens.xs),
     ) {
         chips.forEach { chip ->
-            val label = chip.label ?: chip.value
+            val label = RasikaCopy.facetLabel(chip.key, chip.value, chip.label)
             RasikaChip(
                 selected = false,
                 onClick = { onOpenFacet(chip.key, chip.value, label) },

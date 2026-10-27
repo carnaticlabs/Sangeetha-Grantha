@@ -117,7 +117,7 @@ fun BrowseScreen(
                     contentPadding = PaddingValues(bottom = RasikaTokens.xl),
                     verticalArrangement = Arrangement.spacedBy(RasikaTokens.sm),
                 ) {
-                    if (state.directory == BrowseDirectory.Ragas && state.selectedRagaId == null) {
+                    if (!showingAssociated && state.directory == BrowseDirectory.Ragas) {
                         items(state.ragas, key = { it.id.toString() }) { raga ->
                             DirectoryRow(
                                 title = raga.name,
@@ -132,7 +132,7 @@ fun BrowseScreen(
                                 onClick = { onOpenRaga(raga.id) },
                             )
                         }
-                    } else if (state.directory == BrowseDirectory.Composers && state.selectedComposerId == null) {
+                    } else if (!showingAssociated && state.directory == BrowseDirectory.Composers) {
                         items(state.composers, key = { it.id.toString() }) { composer ->
                             DirectoryRow(
                                 title = composer.name,

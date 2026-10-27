@@ -8,6 +8,7 @@ import com.sangita.grantha.shared.mobile.network.CatalogueFailure
 import com.sangita.grantha.shared.mobile.network.LakshanaFacetSelection
 import com.sangita.grantha.shared.mobile.repository.CatalogueRepository
 import com.sangita.grantha.shared.mobile.usage.MobileSession
+import com.sangita.grantha.shared.presentation.RasikaCopy
 import com.sangita.grantha.shared.presentation.components.LoadState
 import com.sangita.grantha.shared.presentation.components.userMessage
 import kotlinx.coroutines.CoroutineScope
@@ -121,7 +122,10 @@ class BrowsePresenter(
 
     /** A reader chip: Browse with this one facet, composer and raga cleared (TRACK-153). */
     fun openFacet(key: CatalogueFacetKeyDto, value: String, label: String) =
-        loadAssociated(selection = LakshanaFacetSelection.NONE.with(key, value), title = label)
+        loadAssociated(
+            selection = LakshanaFacetSelection.NONE.with(key, value),
+            title = RasikaCopy.facetLabel(key, value, label.takeUnless { it == value }),
+        )
 
     /** Apply [value] for [key], or clear it when it is already the selection. */
     fun onFacetValue(key: CatalogueFacetKeyDto, value: String) {
@@ -266,7 +270,10 @@ class BrowsePresenter(
 }
 
 private fun com.sangita.grantha.shared.domain.model.catalogue.CatalogueFacetDto.toUi() =
-    LakshanaFacetUi(key, values.map { LakshanaFacetValueUi(it.value, it.label ?: it.value, it.count) })
+    LakshanaFacetUi(
+        key,
+        values.map { LakshanaFacetValueUi(it.value, RasikaCopy.facetLabel(key, it.value, it.label), it.count) },
+    )
 
 private fun LakshanaFacetSelection.retainOffered(offered: List<LakshanaFacetUi>): LakshanaFacetSelection =
     LakshanaFacetSelection(

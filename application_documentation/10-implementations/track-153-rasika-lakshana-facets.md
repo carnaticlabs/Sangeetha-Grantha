@@ -29,5 +29,7 @@ A facet-only entry point from Home or Explore, facet counts in the search respon
 
 - `./gradlew :modules:shared:domain:allTests :modules:shared:mobile-data:allTests :modules:shared:presentation:allTests` (JVM, Android host and iOS simulator targets).
 - `./gradlew :modules:mobile:androidApp:assembleDebug`.
+- iOS simulator walk-through against the live backend (iPhone 17 Pro, Phase 1 backend): Home → Abhayamba Vibhakti → a Dikshitar kriti → Details shows `Vibhakti: Prathama · nominative` and `Region: Chola` chips; tapping the vibhakti chip opens Browse with that facet and the matching kritis; the Vibhakti picker lists counts on demand (Tritiya 24). The walk-through caught two defects, fixed here: the facet-only list rendered the empty raga directory, and raw enum values (`PRATHAMA`, `CHOLA`) were shown as labels.
+- Browse is reached only through a reader chip today; no navigation path opens Browse for a composer, so the per-composer facet counts (five for Dikshitar, one for Tyagaraja) are proven by presenter tests and the API, not by tapping through the app.
 - Presenter tests: facet list per composer, stale selection dropped, counts only on picker open, chip opens Browse with one facet, clearing a facet.
 - Client tests: facet parameters sent by wire key, `counts` only when asked.
