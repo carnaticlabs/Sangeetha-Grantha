@@ -175,20 +175,20 @@ class MacroSearchRepository {
     }
 
     /**
-     * The published kriti whose normalised title or incipit equals the normalised query, ignoring
-     * spaces (stored values split compounds: `vatapi gana patim`). Narrow on purpose: a partial
-     * title never claims the top slot (TRACK-152 Spec 11).
+     * The published kriti whose title or incipit key equals the query's, under one lenient key applied
+     * to both sides (see [TITLE_KEY]): stored `title_normalized` values come from several writers (the
+     * worker drops honorifics and a trailing anusvara, others only fold diacritics), so equality on the
+     * raw values would miss `Vatapi Ganapatim`. Still narrow on purpose: a partial title never claims
+     * the top slot (TRACK-152 Spec 11).
      */
     suspend fun exactTitleMatchId(rawQuery: String): UUID? = DatabaseFactory.dbQuery {
         var id: UUID? = null
         exec(
             """
-            WITH q AS (
-                SELECT replace(lower(strip_diacritics(btrim(CAST(? AS text)))), ' ', '') AS n
-            )
+            WITH q AS (SELECT ${titleKey("CAST(? AS text)")} AS n)
             SELECT k.id FROM krithis k CROSS JOIN q
             WHERE k.workflow_state = 'published' AND q.n <> ''
-              AND (replace(k.title_normalized, ' ', '') = q.n OR replace(COALESCE(k.incipit_normalized, ''), ' ', '') = q.n)
+              AND (${titleKey("k.title_normalized")} = q.n OR ${titleKey("COALESCE(k.incipit_normalized, '')")} = q.n)
             ORDER BY k.id LIMIT 1
             """.trimIndent(),
             listOf(TextColumnType() to rawQuery),
@@ -224,6 +224,20 @@ class MacroSearchRepository {
 
     companion object {
         const val DEFAULT_LIMIT = 10
+
+        /**
+         * Lenient comparison key for exact-title matching: diacritics folded, lower-cased, punctuation
+         * and honorific words (the worker's list) dropped, a trailing anusvara `m` after a vowel dropped,
+         * doubled consonants collapsed, spaces removed. Applied to the query and the stored value alike.
+         */
+        internal fun titleKey(expr: String): String =
+            "regexp_replace(regexp_replace(regexp_replace(regexp_replace(regexp_replace(" +
+                "lower(strip_diacritics(btrim($expr))), " +
+                "'[^a-z0-9]+', ' ', 'g'), " +
+                "'\\m(saint|sri|swami|sir|dr|prof|smt)\\M', ' ', 'g'), " +
+                "'([aeiou])m\\M', '\\1', 'g'), " +
+                "'([b-df-hj-np-tv-z])\\1+', '\\1', 'g'), " +
+                "' ', '', 'g')"
         private const val MAX_LIMIT = 50
 
         /**

@@ -425,6 +425,26 @@ class RasikaSearchRoutesTest : IntegrationTestBase() {
     }
 
     @Test
+    fun `exact title matches a worker style stored key and honorific variants`() = testApplication {
+        mount()
+        val seed = TestFixtures.seedReferenceData(dal)
+        val kriti = CatalogueTestFixtures.createKrithi(
+            dal,
+            title = "Vatapi Ganapatim",
+            composerId = seed.composer.id.toJavaUuid(),
+            ragaIds = listOf(seed.raga.id.toJavaUuid()),
+            workflowState = WorkflowState.PUBLISHED,
+        )
+        // The worker's key drops a trailing anusvara and honorifics; other writers only fold diacritics.
+        DatabaseFactory.dbQuery { exec("UPDATE krithis SET title_normalized = 'vatapi ganapati' WHERE id = '${kriti.id}'") }
+
+        assertEquals(kriti.id, v2("Vatapi Ganapatim").exactTitleMatchId)
+        assertEquals(kriti.id, v2("vatapi ganapati").exactTitleMatchId)
+        assertEquals(kriti.id, v2("  Vātāpi  Gaṇapatiṁ ").exactTitleMatchId)
+        assertNull(v2("Vatapi Gana").exactTitleMatchId)
+    }
+
+    @Test
     fun `empty query returns an empty V2 response`() = testApplication {
         mount()
         val body = v2("   ")
