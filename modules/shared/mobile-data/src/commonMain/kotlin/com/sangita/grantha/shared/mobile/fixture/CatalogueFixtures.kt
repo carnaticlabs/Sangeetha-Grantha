@@ -12,6 +12,11 @@ import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerRefDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerSummaryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueDiscoveryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueDiscoveryFeatureDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueFacetChipDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueFacetDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueFacetKeyDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueFacetListDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueFacetValueDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueSelectionDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueKrithiReaderDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueKrithiSummaryDto
@@ -28,6 +33,7 @@ import com.sangita.grantha.shared.domain.model.catalogue.CatalogueTalaRefDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueVariantRefDto
 import com.sangita.grantha.shared.mobile.network.CatalogueApi
 import com.sangita.grantha.shared.mobile.network.CatalogueFailure
+import com.sangita.grantha.shared.mobile.network.LakshanaFacetSelection
 import com.sangita.grantha.shared.mobile.usage.InteractionContext
 import kotlin.uuid.Uuid
 
@@ -95,6 +101,32 @@ object CatalogueFixtures {
         sourceReference = "Fixture",
     )
 
+    /** Synthetic facet chip for the Vatapi sample (not a claim about the real composition). */
+    val vatapiFacetChips = listOf(
+        CatalogueFacetChipDto(CatalogueFacetKeyDto.VIBHAKTI, "TRITIYA", "Tritiya"),
+        CatalogueFacetChipDto(CatalogueFacetKeyDto.MANDALAM, "CHOLA", "Chola"),
+    )
+
+    /** Facets offered per composer scope: Dikshitar has all five sample facets, others only `collection`. */
+    fun facetsFor(composerId: Uuid?, counts: Boolean): CatalogueFacetListDto {
+        fun values(vararg pairs: Triple<String, String, Long>) =
+            pairs.map { (v, l, c) -> CatalogueFacetValueDto(v, l, if (counts) c else null) }
+        val collection = CatalogueFacetDto(
+            CatalogueFacetKeyDto.COLLECTION,
+            values(Triple("navavarana", "Navavarana", 9L)),
+        )
+        if (composerId == tyagarajaId) return CatalogueFacetListDto(listOf(collection))
+        return CatalogueFacetListDto(
+            listOf(
+                CatalogueFacetDto(CatalogueFacetKeyDto.VIBHAKTI, values(Triple("TRITIYA", "Tritiya", 1L))),
+                collection,
+                CatalogueFacetDto(CatalogueFacetKeyDto.TUNE, values(Triple("nottusvara-sahitya", "Nottusvara Sahitya", 1L))),
+                CatalogueFacetDto(CatalogueFacetKeyDto.MANDALAM, values(Triple("CHOLA", "Chola", 1L))),
+                CatalogueFacetDto(CatalogueFacetKeyDto.ELEMENT, values(Triple("VAYU", "Vayu", 1L))),
+            ),
+        )
+    }
+
     val vatapiReader = CatalogueKrithiReaderDto(
         id = vatapiId,
         title = vatapiSummary.title,
@@ -107,6 +139,7 @@ object CatalogueFixtures {
         defaultVariantId = vatapiLatinId,
         variants = listOf(vatapiLatin, vatapiDevanagari),
         completeness = CatalogueCompletenessDto.PARTIAL,
+        facetChips = vatapiFacetChips,
     )
 
     val endaroReader = CatalogueKrithiReaderDto(
@@ -279,6 +312,36 @@ class FixtureCatalogueApi(
         val slice = if (from >= filtered.size) emptyList() else filtered.drop(from).take(pageSize)
         return CataloguePagedResponse(slice, filtered.size.toLong(), page, pageSize)
     }
+
+    /** Facet filters match the synthetic Vatapi sample only; a selection it does not hold matches nothing. */
+    override suspend fun searchKrithisFaceted(
+        query: String?,
+        composerId: Uuid?,
+        ragaId: Uuid?,
+        facets: LakshanaFacetSelection,
+        page: Int,
+        pageSize: Int,
+        interaction: InteractionContext,
+    ): CataloguePagedResponse<CatalogueKrithiSummaryDto> {
+        val base = searchKrithis(query, composerId, ragaId, 0, Int.MAX_VALUE / 2, interaction).items
+        val filtered = base.filter { summary ->
+            facets.values.all { (key, value) ->
+                summary.id == CatalogueFixtures.vatapiId &&
+                    CatalogueFixtures.facetsFor(summary.composer.id, counts = false).facets
+                        .firstOrNull { it.key == key }?.values?.any { it.value == value } == true
+            }
+        }
+        return pageOf(filtered, page, pageSize)
+    }
+
+    override suspend fun listFacets(
+        query: String?,
+        composerId: Uuid?,
+        ragaId: Uuid?,
+        facets: LakshanaFacetSelection,
+        counts: Boolean,
+        interaction: InteractionContext,
+    ): CatalogueFacetListDto = CatalogueFixtures.facetsFor(composerId, counts)
 
     override suspend fun getKrithi(id: Uuid, interaction: InteractionContext): CatalogueKrithiReaderDto =
         when (id) {
