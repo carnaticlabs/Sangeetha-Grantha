@@ -399,3 +399,24 @@ def test_auto_confirmed_lines_show_google_address_for_curator_check():
     data = tpl.CandidateFile(records=[record(a, cand("pa", "Alpha Temple", "Hill Rd, Townville, TN")), record(b)])
     lines = tpl.auto_confirmed_lines(tpl.triage([a, b], data))
     assert lines == ["Alpha Temple (Townville, Tamil Nadu) -> Alpha Temple | Hill Rd, Townville, TN | pa"]
+
+
+def test_duplicate_natural_keys_are_rejected_before_any_lookup(tmp_path: Path) -> None:
+    def target(city: str | None) -> dict[str, Any]:
+        return {
+            "name": "Subrahmanya Swamy Temple",
+            "name_normalized": "subrahmanya swamy temple",
+            "city": city,
+            "state": None,
+            "country": "India",
+            "place_kind": "COMPLEX",
+            "aliases": [],
+        }
+
+    path = tmp_path / "targets.json"
+    path.write_text(json.dumps([target(None), target("")]), "utf-8")
+    with pytest.raises(tpl.DuplicateTargetKeyError):
+        tpl.load_targets(path)
+
+    path.write_text(json.dumps([target(None), target("Tiruchendur")]), "utf-8")
+    assert len(tpl.load_targets(path)) == 2

@@ -298,8 +298,32 @@ def save_candidates(path: Path, data: CandidateFile) -> None:
     _atomic_write(path, data.model_dump_json(indent=2))
 
 
+class DuplicateTargetKeyError(ValueError):
+    """Two temples share one natural key, so lookup and seed could not tell their rows apart."""
+
+
+def assert_unique_keys(targets: list[TempleTarget]) -> list[TempleTarget]:
+    """Reject targets whose natural keys collide (NULL and empty location parts compare equal in the key).
+
+    ``temples_name_city_uq`` allows two rows with the same name and a NULL location field; the workflow keys on
+    ``natural_key``, so such a pair would share one lookup and one seed match. Fail before any paid call.
+    """
+    seen: dict[str, str] = {}
+    clashes: list[str] = []
+    for target in targets:
+        key = target.key
+        if key in seen:
+            clashes.append(f"{target.name!r} ({key})")
+        seen[key] = target.name
+    if clashes:
+        raise DuplicateTargetKeyError(
+            "temples share a natural key and need distinct name/location before lookup: " + "; ".join(clashes)
+        )
+    return targets
+
+
 def load_targets(path: Path) -> list[TempleTarget]:
-    return [TempleTarget.model_validate(item) for item in json.loads(path.read_text("utf-8"))]
+    return assert_unique_keys([TempleTarget.model_validate(item) for item in json.loads(path.read_text("utf-8"))])
 
 
 # ─── Stage 1: lookup ──────────────────────────────────────────────────────────────────────────
@@ -729,9 +753,17 @@ def export_targets(conn: object) -> list[TempleTarget]:
         "FROM temples t LEFT JOIN temple_names n ON n.temple_id = t.id "
         "GROUP BY t.id ORDER BY t.name_normalized"
     ).fetchall()
-    return [
-        TempleTarget(
-            name=r[0], name_normalized=r[1], city=r[2], state=r[3], country=r[4], place_kind=r[5], aliases=list(r[6])
-        )
-        for r in rows
-    ]
+    return assert_unique_keys(
+        [
+            TempleTarget(
+                name=r[0],
+                name_normalized=r[1],
+                city=r[2],
+                state=r[3],
+                country=r[4],
+                place_kind=r[5],
+                aliases=list(r[6]),
+            )
+            for r in rows
+        ]
+    )
