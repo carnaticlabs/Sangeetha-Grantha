@@ -4,6 +4,7 @@ import json
 import logging
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 
 import httpx
 import pytest
@@ -27,7 +28,7 @@ def target(name: str, city: str = "Townville", kind: str = "COMPLEX", aliases: l
     )
 
 
-def place(pid: str, name: str, address: str) -> dict:
+def place(pid: str, name: str, address: str) -> dict[str, Any]:
     # `location` is included on purpose: it must never survive parsing.
     return {
         "id": pid,
@@ -37,7 +38,7 @@ def place(pid: str, name: str, address: str) -> dict:
     }
 
 
-def reply(*places: dict) -> httpx.Response:
+def reply(*places: dict[str, Any]) -> httpx.Response:
     return httpx.Response(200, json={"places": list(places)})
 
 
