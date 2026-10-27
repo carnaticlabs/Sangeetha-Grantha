@@ -412,12 +412,15 @@ def run_api_suite(base_url: str, benchmarks: list[dict[str, Any]], mode: str, to
         rr_sum += rr
         print(f"-> Status: {'HIT' if hit else 'MISS'} (RR: {rr:.2f})")
         for idx, res in enumerate(results, start=1):
-            print(f"   #{idx}: {res['title']} | {res['composer']} | {res['raga']} (Sim: {float(res['similarity']):.3f})")
+            sim = float(res["similarity"])
+            print(f"   #{idx}: {res['title']} | {res['composer']} | {res['raga']} (Sim: {sim:.3f})")
         if not item.get("is_macro") and macro:
             macro_on_kriti_probes.append(qid)
         if macro or v2.get("exactTitleMatchId"):
-            print(f"   macroHits: {[(h['kind'], h['title'], round(float(h['similarity']), 3)) for h in macro]}"
-                  f" exactTitleMatchId={v2.get('exactTitleMatchId')}")
+            print(
+                f"   macroHits: {[(h['kind'], h['title'], round(float(h['similarity']), 3)) for h in macro]}"
+                f" exactTitleMatchId={v2.get('exactTitleMatchId')}"
+            )
 
     total = len(benchmarks)
     print("\n" + "-" * 80)
@@ -505,8 +508,13 @@ def main():
     )
     parser.add_argument("--model", type=str, default="gemini-embedding-2", help="Embedding model name")
     parser.add_argument("--dims", type=int, default=768, help="Output dimensions")
-    parser.add_argument("--via-api", type=str, default=None, metavar="BASE_URL",
-                        help="Score probes through the V2 search endpoints of a running backend instead of the database")
+    parser.add_argument(
+        "--via-api",
+        type=str,
+        default=None,
+        metavar="BASE_URL",
+        help="Score probes through a running backend's V2 search endpoints instead of the database",
+    )
     args = parser.parse_args()
 
     benchmarks = load_benchmarks()
