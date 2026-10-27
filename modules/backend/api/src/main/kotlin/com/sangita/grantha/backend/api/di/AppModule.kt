@@ -3,6 +3,7 @@ package com.sangita.grantha.backend.api.di
 import com.sangita.grantha.backend.api.clients.GeminiApiClient
 import com.sangita.grantha.backend.api.clients.GeminiEmbeddingClient
 import com.sangita.grantha.backend.api.services.HybridSearchService
+import com.sangita.grantha.backend.api.services.RasikaSearchService
 import com.sangita.grantha.backend.api.config.ApiEnvironment
 import com.sangita.grantha.backend.api.config.JwtConfig
 import com.sangita.grantha.backend.api.services.AdminDashboardService
@@ -62,6 +63,7 @@ fun appModule(env: ApiEnvironment, metricsRegistry: PrometheusMeterRegistry) = m
             embeddingClient = get()
         )
     }
+    single { RasikaSearchService(dal = get(), search = get()) }
     single<ITransliterator> { TransliterationServiceImpl(get()) }
     single { NameNormalizationService() }
     single<IEntityResolver> { EntityResolutionServiceImpl(get(), get()) }

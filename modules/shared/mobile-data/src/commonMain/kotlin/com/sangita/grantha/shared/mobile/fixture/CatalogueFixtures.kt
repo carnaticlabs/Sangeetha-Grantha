@@ -20,7 +20,10 @@ import com.sangita.grantha.shared.domain.model.catalogue.CatalogueLyricsDto
 import com.sangita.grantha.shared.domain.model.catalogue.CataloguePagedResponse
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueRagaDetailDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueRagaRefDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueMacroHitDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueRagaSummaryDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueSearchHitKindDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueSearchResponseDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueTalaRefDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueVariantRefDto
 import com.sangita.grantha.shared.mobile.network.CatalogueApi
@@ -190,6 +193,10 @@ object CatalogueFixtures {
 
     /** Cosine similarity used by the semantic fixture rank (0.874 → 87%). */
     const val VATAPI_SIMILARITY: Double = 0.874
+
+    /** Fixture collection and kshetra the V2 search cards point at (TRACK-152). */
+    const val KAMALAMBA_SLUG: String = "kamalamba-navavarnam"
+    val KANYAKUMARI_TEMPLE_ID: Uuid = Uuid.parse("01930000-0000-7000-8000-000000000015")
 
     /** Hybrid reciprocal-rank score rendered to four decimal places. */
     const val VATAPI_RRF: Double = 0.0325
@@ -379,6 +386,65 @@ class FixtureCatalogueApi(
         request: SemanticSearchRequest,
         interaction: InteractionContext,
     ): SemanticSearchResponse = discovery(request, hybrid = false)
+
+    override suspend fun searchHybridWithCards(
+        request: SemanticSearchRequest,
+        interaction: InteractionContext,
+    ): CatalogueSearchResponseDto = withCards(discovery(request, hybrid = true), request)
+
+    override suspend fun searchSemanticWithCards(
+        request: SemanticSearchRequest,
+        interaction: InteractionContext,
+    ): CatalogueSearchResponseDto = withCards(discovery(request, hybrid = false), request)
+
+    /**
+     * V2 shape over the V1 fixture response. "navavarnam" surfaces the Kamalamba collection card and
+     * "kanyakumari" a recorded-gap kshetra card; a typed full title sets `exactTitleMatchId`.
+     * Kriti-scoped filters empty the macro group, as the server does.
+     */
+    private fun withCards(base: SemanticSearchResponse, request: SemanticSearchRequest): CatalogueSearchResponseDto {
+        val needle = base.query.lowercase()
+        val kritiScoped = request.composerId != null || request.ragaId != null
+        val hits = buildList {
+            if (!kritiScoped && "navavarnam" in needle) {
+                CollectionFixtures.detail(CatalogueFixtures.KAMALAMBA_SLUG)?.let { c ->
+                    add(
+                        CatalogueMacroHitDto(
+                            kind = CatalogueSearchHitKindDto.COLLECTION,
+                            title = c.name,
+                            subtitle = c.composer?.name,
+                            snippet = c.overview?.take(CatalogueMacroHitDto.MAX_SNIPPET_LENGTH) ?: c.name,
+                            collectionSlug = c.slug,
+                            memberCount = c.members.size,
+                            similarityScore = 0.86,
+                        ),
+                    )
+                }
+            }
+            if (!kritiScoped && "kanyakumari" in needle) {
+                add(
+                    CatalogueMacroHitDto(
+                        kind = CatalogueSearchHitKindDto.KSHETRA,
+                        title = "Bhagavati Amman Temple",
+                        subtitle = "Kanyakumari",
+                        snippet = "Recorded gap. No Dikshitar kriti is recorded here.",
+                        templeId = CatalogueFixtures.KANYAKUMARI_TEMPLE_ID,
+                        publishedKrithiCount = 0,
+                        recordedGap = true,
+                        similarityScore = 0.85,
+                    ),
+                )
+            }
+        }
+        val exact = base.items.firstOrNull { it.title.equals(base.query, ignoreCase = true) }?.krithiId
+        return CatalogueSearchResponseDto(
+            query = base.query,
+            totalMatches = base.items.size + hits.size,
+            macroHits = hits,
+            items = base.items,
+            exactTitleMatchId = exact,
+        )
+    }
 
     /**
      * Blank queries return an empty list, matching HybridSearchService. Filter ids are honored

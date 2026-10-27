@@ -832,6 +832,75 @@ paths:
 
 
 
+  /v2/catalogue/search/hybrid:
+    post:
+      tags: [Search]
+      summary: Hybrid search with collection and kshetra cards (V2)
+      description: >
+        Anonymous and published-only. `items` are exactly the kriti hits `/v1/search/hybrid` returns
+        for a non-admin caller, same fields and order. `macroHits` is a separate group of at most 3
+        collection and kshetra cards, each backed by a published `CYCLE_OVERVIEW` or `KSHETRA_OVERVIEW`
+        document, at most one per collection or temple, and only above a relevance floor, so it is
+        often empty. Every `COLLECTION` hit resolves at `/v2/catalogue/collections/{slug}` and every
+        `KSHETRA` hit at `/v2/catalogue/temples/{id}`. `exactTitleMatchId` is set when the query equals
+        a published kriti's title or incipit: render that kriti first, then `macroHits`, then the
+        remaining items. A `composerId` or `ragaId` filter empties `macroHits`. With no active
+        embedding profile, retrieval is lexical for both groups. A blank query returns empty groups.
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/RasikaSessionHeader"
+        - $ref: "#/components/parameters/RasikaInteractionHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SemanticSearchRequest"
+      responses:
+        "200":
+          description: Kriti items plus the macro group
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CatalogueSearchResponse"
+        "503":
+          description: Incompatible embedding profile or embedder failure
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /v2/catalogue/search/semantic:
+    post:
+      tags: [Search]
+      summary: Semantic search with collection and kshetra cards (V2)
+      description: >
+        Same contract as `/v2/catalogue/search/hybrid`, vector ranking only. With no active embedding
+        profile both groups are empty.
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/RasikaSessionHeader"
+        - $ref: "#/components/parameters/RasikaInteractionHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SemanticSearchRequest"
+      responses:
+        "200":
+          description: Kriti items plus the macro group
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CatalogueSearchResponse"
+        "503":
+          description: Incompatible embedding profile or embedder failure
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /v1/search/hybrid:
     post:
       tags: [Search]
@@ -3025,6 +3094,55 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/SemanticSearchResultItem"
+
+    CatalogueSearchResponse:
+      type: object
+      required: [query, totalMatches, macroHits, items]
+      properties:
+        query: { type: string }
+        totalMatches:
+          type: integer
+          description: Kriti hits plus macro hits returned.
+        macroHits:
+          type: array
+          maxItems: 3
+          items:
+            $ref: "#/components/schemas/CatalogueMacroHit"
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/SemanticSearchResultItem"
+        exactTitleMatchId:
+          type: string
+          format: uuid
+          description: Present when the query equals a published kriti's normalised title or incipit.
+
+    CatalogueMacroHit:
+      type: object
+      required: [kind, title, snippet, similarityScore]
+      description: Exactly one of collectionSlug (COLLECTION) or templeId (KSHETRA) is present.
+      properties:
+        kind:
+          type: string
+          enum: [COLLECTION, KSHETRA]
+        title: { type: string }
+        subtitle:
+          type: string
+          description: Composer name for a collection; place for a kshetra.
+        snippet:
+          type: string
+          maxLength: 240
+          description: Prefix of the stored overview, cut at a sentence or word boundary.
+        collectionSlug: { type: string }
+        templeId: { type: string, format: uuid }
+        memberCount: { type: integer }
+        publishedKrithiCount: { type: integer }
+        recordedGap:
+          type: boolean
+          default: false
+        similarityScore: { type: number, format: double }
+        lexicalScore: { type: number, format: double }
+        rrfScore: { type: number, format: double }
 
     SemanticSearchResultItem:
       type: object

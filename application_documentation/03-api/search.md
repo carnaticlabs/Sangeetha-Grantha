@@ -69,6 +69,26 @@ Requests without an admin role are restricted to published results. Admin identi
 
 Sources: [HybridSearchService](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/HybridSearchService.kt), [search routes](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/SemanticSearchRoutes.kt), [search DTOs](../../modules/shared/domain/src/commonMain/kotlin/com/sangita/grantha/shared/domain/model/SearchDtos.kt).
 
+## Collection and kshetra cards (V2, TRACK-152)
+
+`POST /v2/catalogue/search/hybrid` and `POST /v2/catalogue/search/semantic` take the same request body and return `CatalogueSearchResponse`: the unchanged kriti `items`, plus `macroHits`, a separate group of collection and kshetra cards built from the already-embedded `CYCLE_OVERVIEW` and `KSHETRA_OVERVIEW` documents. The V1 paths are unchanged: same DTO, no macro hit, and a V1 or older client never receives a hit without `krithiId`. The V2 routes are anonymous and published-only.
+
+| Rule | Behaviour |
+|:---|:---|
+| Kriti `items` | Identical ids and order to the V1 endpoint for a non-admin caller; the kriti SQL is not edited |
+| Cap | At most 3 macro hits per response, at most one per collection or temple (multi-chunk overviews collapse to the best chunk) |
+| Floor | A card needs dense similarity of at least 0.83, or (hybrid) a lexical score of at least 0.8. The group is often empty; the cap is a ceiling, not a quota |
+| Exact title | `exactTitleMatchId` is set when the query equals a published kriti's title or incipit (spaces ignored). Render that kriti first, then the macro group, then the other kritis |
+| Collection eligibility | The tags `GET /v2/catalogue/collections` returns (at least one reviewed, published member); one function in `CatalogueRepository` serves both |
+| Kshetra eligibility | `TempleEligibility.eligibleIds()`; a recorded-gap temple returns `recordedGap = true` |
+| Scope filters | `composerId` or `ragaId` set: `macroHits` is empty |
+| No active profile | Hybrid: lexical retrieval for both groups. Semantic: both groups empty |
+| Snippet | Stored overview prefix, at most 240 characters. A kshetra overview shorter than 60 characters is followed by facts already recorded for the temple (region, sacred water and tree, deity posture, published kritis and their composers); nothing is invented and the stored text and embedding are unchanged |
+
+Every `COLLECTION` hit opens `/v2/catalogue/collections/{slug}` and every `KSHETRA` hit `/v2/catalogue/temples/{id}`. The floor was chosen on the benchmark probes: the exact-title kriti probes peak at similarity 0.787, the macro probes at 0.837 and 0.854. Re-check it with `evaluate_retrieval.py --via-api <base-url>` after changing the embedding profile or the overview text; the command also reports V1/V2 `items` parity.
+
+Sources: [RasikaSearchService](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/RasikaSearchService.kt), [MacroSearchRepository](../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/repositories/MacroSearchRepository.kt), [CatalogueSearchDtos](../../modules/shared/domain/src/commonMain/kotlin/com/sangita/grantha/shared/domain/model/catalogue/CatalogueSearchDtos.kt).
+
 ## Ranking and result identity
 
 Semantic retrieval uses cosine similarity (`1 - cosine distance`) and selects one representative matched document per composition. Hybrid retrieves up to 500 lexical and vector candidates per branch, combines document ranks with `1/(60 + vectorRank) + 1/(60 + lexicalRank)` for the available branches, then selects one representative per composition. Small overview preferences influence representative selection.

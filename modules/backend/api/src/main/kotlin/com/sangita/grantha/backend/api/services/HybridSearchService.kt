@@ -20,6 +20,15 @@ class HybridSearchService(
     private val queryVectorCache = LinkedHashMap<String, List<Float>>(QUERY_VECTOR_CACHE_SIZE, 0.75f, true)
     private val queryVectorCacheMutex = Mutex()
 
+    /** The embedded query and the profile it is bound to, so two retrievals share one embedding space. */
+    class PreparedQuery(val query: String, val profile: EmbeddingProfileRef?, val vector: List<Float>?)
+
+    /** Binds to the active profile and embeds the query (cached). Both are null when nothing is indexed yet. */
+    suspend fun prepareQuery(query: String): PreparedQuery {
+        val profile = resolveCompatibleProfile()
+        return PreparedQuery(query, profile, profile?.let { embedQueryCached(query) })
+    }
+
     /**
      * Hybrid search degrades to lexical-only when no embedding profile is active yet
      * (nothing indexed); it never mixes embedding spaces.
@@ -27,27 +36,43 @@ class HybridSearchService(
     suspend fun searchHybrid(
         request: SemanticSearchRequest,
         publishedOnly: Boolean = true,
-    ): SemanticSearchResponse = execute(request) { query, profile ->
-        dal.krithiSearch.searchHybrid(
-            rawQuery = query,
-            queryVector = profile?.let { embedQueryCached(query) },
-            profileId = profile?.id,
-            composerId = request.composerId?.toJavaUuid(),
-            ragaId = request.ragaId?.toJavaUuid(),
-            limit = request.limit,
-            publishedOnly = publishedOnly,
-        )
+    ): SemanticSearchResponse = execute(request) { prepared ->
+        searchHybridItems(request, prepared, publishedOnly)
     }
 
     suspend fun searchSemantic(
         request: SemanticSearchRequest,
         publishedOnly: Boolean = true,
-    ): SemanticSearchResponse = execute(request) { query, profile ->
-        if (profile == null) {
+    ): SemanticSearchResponse = execute(request) { prepared ->
+        searchSemanticItems(request, prepared, publishedOnly)
+    }
+
+    suspend fun searchHybridItems(
+        request: SemanticSearchRequest,
+        prepared: PreparedQuery,
+        publishedOnly: Boolean = true,
+    ): List<SemanticSearchResultItem> = dal.krithiSearch.searchHybrid(
+        rawQuery = prepared.query,
+        queryVector = prepared.vector,
+        profileId = prepared.profile?.id,
+        composerId = request.composerId?.toJavaUuid(),
+        ragaId = request.ragaId?.toJavaUuid(),
+        limit = request.limit,
+        publishedOnly = publishedOnly,
+    )
+
+    suspend fun searchSemanticItems(
+        request: SemanticSearchRequest,
+        prepared: PreparedQuery,
+        publishedOnly: Boolean = true,
+    ): List<SemanticSearchResultItem> {
+        val profile = prepared.profile
+        val vector = prepared.vector
+        return if (profile == null || vector == null) {
             emptyList()
         } else {
             dal.krithiSearch.searchSemantic(
-                queryVector = embedQueryCached(query),
+                queryVector = vector,
                 profileId = profile.id,
                 composerId = request.composerId?.toJavaUuid(),
                 ragaId = request.ragaId?.toJavaUuid(),
@@ -59,13 +84,13 @@ class HybridSearchService(
 
     private suspend fun execute(
         request: SemanticSearchRequest,
-        search: suspend (query: String, profile: EmbeddingProfileRef?) -> List<SemanticSearchResultItem>,
+        search: suspend (PreparedQuery) -> List<SemanticSearchResultItem>,
     ): SemanticSearchResponse {
         val query = request.query.trim()
         if (query.isEmpty()) {
             return SemanticSearchResponse(query = query, totalMatches = 0, items = emptyList())
         }
-        val items = search(query, resolveCompatibleProfile())
+        val items = search(prepareQuery(query))
         return SemanticSearchResponse(query = query, totalMatches = items.size, items = items)
     }
 

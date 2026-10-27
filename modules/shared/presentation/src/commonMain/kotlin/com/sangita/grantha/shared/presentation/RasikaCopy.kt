@@ -33,6 +33,10 @@ object RasikaCopy {
     const val BROWSE_RAGAS_ACTION = "Browse rāgas"
     const val TITLE_ORDER = "Title order"
     const val TOP_MATCHES = "Top matches"
+    const val MACRO_GROUP_HEADING = "Collections and kshetras"
+    const val KIND_COLLECTION = "Collection"
+    const val KIND_KSHETRA = "Kshetra"
+    const val RECORDED_GAP = "Recorded gap"
     const val SEARCH_OPTIONS = "Search options"
     const val HIDE_SEARCH_OPTIONS = "Hide options"
     const val SEARCH_HYBRID_HINT = "Search titles, lyrics and meaning together."
@@ -120,6 +124,14 @@ object RasikaCopy {
     fun inThisLibrary(n: Int): String = inThisLibrary(n.toLong())
 
     fun resultCount(n: Int): String = inThisLibrary(n)
+
+    /** Spoken description of a collection or kshetra search card. */
+    fun macroCardDescription(kind: String, title: String, subtitle: String?, recordedGap: Boolean): String =
+        buildString {
+            append(kind).append(": ").append(title)
+            if (!subtitle.isNullOrBlank()) append(", ").append(subtitle)
+            if (recordedGap) append(", ").append(RECORDED_GAP.lowercase())
+        }
 
     fun musicalFormLabel(form: MusicalFormDto): String? =
         when (form) {

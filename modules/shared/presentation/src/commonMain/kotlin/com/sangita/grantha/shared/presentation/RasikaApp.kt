@@ -203,6 +203,7 @@ fun RasikaApp(container: MobileAppContainer) {
                             onOpenKrithi = { open(RasikaDestination.KrithiReader(it)) },
                             onOpenRaga = { open(RasikaDestination.RagaDetail(it)) },
                             onOpenComposer = { open(RasikaDestination.ComposerDetail(it)) },
+                            onOpenCollection = { open(RasikaDestination.CollectionDetail(it)) },
                             onOpenPreferences = {
                                 navigator.selectTab(RasikaTab.Settings)
                                 sync()

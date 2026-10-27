@@ -30,6 +30,7 @@ import com.sangita.grantha.shared.presentation.components.DiscoveryKrithiCard
 import com.sangita.grantha.shared.presentation.components.KrithiCard
 import com.sangita.grantha.shared.presentation.components.LoadState
 import com.sangita.grantha.shared.presentation.components.LoadStateContent
+import com.sangita.grantha.shared.presentation.components.MacroHitCard
 import com.sangita.grantha.shared.presentation.components.RasikaChip
 import com.sangita.grantha.shared.presentation.components.RasikaFilterChip
 import com.sangita.grantha.shared.presentation.components.RasikaPressable
@@ -50,6 +51,7 @@ fun SearchScreen(
     onOpenKrithi: (Uuid) -> Unit,
     onOpenRaga: (Uuid) -> Unit,
     onOpenComposer: (Uuid) -> Unit,
+    onOpenCollection: (String) -> Unit,
     onOpenPreferences: () -> Unit,
     isFavourite: (Uuid) -> Boolean,
     onToggleFavourite: (Uuid, String) -> Unit,
@@ -155,6 +157,7 @@ fun SearchScreen(
                         onOpenKrithi,
                         onOpenRaga,
                         onOpenComposer,
+                        onOpenCollection,
                         isFavourite,
                         onToggleFavourite,
                     )
@@ -287,6 +290,7 @@ private fun ResultList(
     onOpenKrithi: (Uuid) -> Unit,
     onOpenRaga: (Uuid) -> Unit,
     onOpenComposer: (Uuid) -> Unit,
+    onOpenCollection: (String) -> Unit,
     isFavourite: (Uuid) -> Boolean,
     onToggleFavourite: (Uuid, String) -> Unit,
 ) {
@@ -322,7 +326,35 @@ private fun ResultList(
         }
         when (state.category) {
             ExploreCategory.Krithis -> if (state.discoveryResults) {
-                items(state.discoveryItems, key = { it.krithiId.toString() }) { item ->
+                // Exact-title kriti first, then the macro group, then the remaining kritis (TRACK-152).
+                state.exactTitleItem?.let { item ->
+                    item(key = "kriti-${item.krithiId}") {
+                        DiscoveryKrithiCard(
+                            item = item,
+                            mode = state.mode,
+                            onClick = { onOpenKrithi(item.krithiId) },
+                            favourited = isFavourite(item.krithiId),
+                            onToggleFavourite = { onToggleFavourite(item.krithiId, item.title) },
+                        )
+                    }
+                }
+                if (state.macroHits.isNotEmpty()) {
+                    item(key = "macro-heading") {
+                        Text(
+                            RasikaCopy.MACRO_GROUP_HEADING,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(top = RasikaTokens.xs),
+                        )
+                    }
+                    items(state.macroHits, key = { "macro-${it.kind}-${it.collectionSlug ?: it.templeId}" }) { hit ->
+                        MacroHitCard(
+                            hit = hit,
+                            onClick = { hit.collectionSlug?.let(onOpenCollection) },
+                        )
+                    }
+                }
+                items(state.remainingDiscoveryItems, key = { "kriti-${it.krithiId}" }) { item ->
                     DiscoveryKrithiCard(
                         item = item,
                         mode = state.mode,
@@ -475,7 +507,7 @@ private val SearchUiState.discoveryResults: Boolean
     get() = category == ExploreCategory.Krithis && mode != KrithiSearchMode.Lexical
 
 private fun currentCount(state: SearchUiState): Int = when (state.category) {
-    ExploreCategory.Krithis -> if (state.discoveryResults) state.discoveryItems.size else state.items.size
+    ExploreCategory.Krithis -> if (state.discoveryResults) state.discoveryItems.size + state.macroHits.size else state.items.size
     ExploreCategory.Ragas -> state.ragaItems.size
     ExploreCategory.Composers -> state.composerItems.size
 }

@@ -1,7 +1,7 @@
 package com.sangita.grantha.shared.presentation.search
 
 import com.sangita.grantha.shared.domain.model.SemanticSearchRequest
-import com.sangita.grantha.shared.domain.model.SemanticSearchResponse
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueSearchResponseDto
 import com.sangita.grantha.shared.mobile.fixture.CatalogueFixtures
 import com.sangita.grantha.shared.mobile.fixture.FixtureCatalogueApi
 import com.sangita.grantha.shared.mobile.network.CatalogueApi
@@ -25,12 +25,12 @@ import kotlin.uuid.Uuid
 class SearchPresenterTest {
     @Test
     fun lateHybridResponseCannotReplaceSemanticResults() = runTest {
-        val pending = kotlinx.coroutines.CompletableDeferred<SemanticSearchResponse>()
+        val pending = kotlinx.coroutines.CompletableDeferred<CatalogueSearchResponseDto>()
         val api = object : CatalogueApi by FixtureCatalogueApi() {
-            override suspend fun searchHybrid(
+            override suspend fun searchHybridWithCards(
                 request: SemanticSearchRequest,
                 interaction: InteractionContext,
-            ): SemanticSearchResponse = kotlinx.coroutines.withContext(kotlinx.coroutines.NonCancellable) {
+            ): CatalogueSearchResponseDto = kotlinx.coroutines.withContext(kotlinx.coroutines.NonCancellable) {
                 pending.await()
             }
         }
@@ -43,7 +43,7 @@ class SearchPresenterTest {
         runCurrent()
         val semanticState = presenter.state.value
         assertEquals(CatalogueFixtures.vatapiId, semanticState.discoveryItems.single().krithiId)
-        pending.complete(SemanticSearchResponse("Vatapi", 0, emptyList()))
+        pending.complete(CatalogueSearchResponseDto("Vatapi", 0, items = emptyList()))
         advanceUntilIdle()
         assertEquals(semanticState, presenter.state.value)
     }
@@ -72,12 +72,12 @@ class SearchPresenterTest {
         var attempts = 0
         val fixture = FixtureCatalogueApi()
         val api = object : CatalogueApi by fixture {
-            override suspend fun searchHybrid(
+            override suspend fun searchHybridWithCards(
                 request: SemanticSearchRequest,
                 interaction: InteractionContext,
-            ): SemanticSearchResponse {
+            ): CatalogueSearchResponseDto {
                 if (++attempts == 1) throw CatalogueFailure.Unavailable(serverMessage = "Try again")
-                return fixture.searchHybrid(request, interaction)
+                return fixture.searchHybridWithCards(request, interaction)
             }
         }
         val presenter = presenter(api)
@@ -262,10 +262,10 @@ class SearchPresenterTest {
         val presenter = SearchPresenter(
             catalogue = CatalogueRepository(
                 object : CatalogueApi by FixtureCatalogueApi() {
-                    override suspend fun searchHybrid(
+                    override suspend fun searchHybridWithCards(
                         request: SemanticSearchRequest,
                         interaction: InteractionContext,
-                    ): SemanticSearchResponse {
+                    ): CatalogueSearchResponseDto {
                         throw CatalogueFailure.Unavailable(serverMessage = "No compatible embedding profile.")
                     }
                 },
@@ -324,19 +324,19 @@ private class RecordingCatalogueApi : CatalogueApi by FixtureCatalogueApi() {
         lexicalCalls += 1
     }
 
-    override suspend fun searchHybrid(
+    override suspend fun searchHybridWithCards(
         request: SemanticSearchRequest,
         interaction: InteractionContext,
-    ): SemanticSearchResponse {
+    ): CatalogueSearchResponseDto {
         hybridRequests += request
-        return fixture.searchHybrid(request, interaction)
+        return fixture.searchHybridWithCards(request, interaction)
     }
 
-    override suspend fun searchSemantic(
+    override suspend fun searchSemanticWithCards(
         request: SemanticSearchRequest,
         interaction: InteractionContext,
-    ): SemanticSearchResponse {
+    ): CatalogueSearchResponseDto {
         semanticRequests += request
-        return fixture.searchSemantic(request, interaction)
+        return fixture.searchSemanticWithCards(request, interaction)
     }
 }

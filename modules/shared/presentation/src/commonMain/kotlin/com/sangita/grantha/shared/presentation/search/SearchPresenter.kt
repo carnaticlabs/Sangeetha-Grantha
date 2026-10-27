@@ -5,7 +5,10 @@ import com.sangita.grantha.shared.domain.model.SemanticSearchResultItem
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerSummaryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueContract
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueKrithiSummaryDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueMacroHitDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueRagaSummaryDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueSearchHitKindDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueSearchResponseDto
 import com.sangita.grantha.shared.mobile.network.CatalogueFailure
 import com.sangita.grantha.shared.mobile.repository.CatalogueRepository
 import com.sangita.grantha.shared.mobile.usage.MobileSession
@@ -35,6 +38,9 @@ data class SearchUiState(
     val searchOptionsExpanded: Boolean = false,
     val items: List<CatalogueKrithiSummaryDto> = emptyList(),
     val discoveryItems: List<SemanticSearchResultItem> = emptyList(),
+    /** Collection and kshetra cards from the V2 search (TRACK-152); empty for Lexical mode. */
+    val macroHits: List<CatalogueMacroHitDto> = emptyList(),
+    val exactTitleMatchId: Uuid? = null,
     val ragaItems: List<CatalogueRagaSummaryDto> = emptyList(),
     val composerItems: List<CatalogueComposerSummaryDto> = emptyList(),
     val filterRagas: List<CatalogueRagaSummaryDto> = emptyList(),
@@ -46,12 +52,22 @@ data class SearchUiState(
     val nextPageLoad: LoadState = LoadState.Idle,
 ) {
     val hasUnappliedFilters: Boolean get() = draftFacets != appliedFacets
+
+    /** The kriti whose title the query equals; it renders before the macro group. */
+    val exactTitleItem: SemanticSearchResultItem? get() =
+        exactTitleMatchId?.let { id -> discoveryItems.firstOrNull { it.krithiId == id } }
+
+    /** Kriti hits after the exact-title match, in server order; macro hits never reorder them. */
+    val remainingDiscoveryItems: List<SemanticSearchResultItem> get() =
+        exactTitleItem?.let { exact -> discoveryItems.filterNot { it === exact } } ?: discoveryItems
 }
 
 class SearchPresenter(
     private val catalogue: CatalogueRepository,
     private val session: MobileSession,
     private val scope: CoroutineScope,
+    /** False until a kshetra detail destination exists in the build (TRACK-151 Phase 2): KSHETRA hits are then dropped. */
+    private val kshetraDestinationAvailable: Boolean = false,
 ) {
     private val _state = MutableStateFlow(SearchUiState())
     val state: StateFlow<SearchUiState> = _state.asStateFlow()
@@ -135,6 +151,8 @@ class SearchPresenter(
                 page = 0,
                 items = emptyList(),
                 discoveryItems = emptyList(),
+                macroHits = emptyList(),
+                exactTitleMatchId = null,
                 total = 0,
                 hasMore = false,
                 nextPageLoad = LoadState.Idle,
@@ -232,6 +250,8 @@ class SearchPresenter(
                         load = LoadState.Loading,
                         items = emptyList(),
                         discoveryItems = emptyList(),
+                macroHits = emptyList(),
+                exactTitleMatchId = null,
                         ragaItems = emptyList(),
                         composerItems = emptyList(),
                         total = 0,
@@ -262,6 +282,8 @@ class SearchPresenter(
                                 it.copy(
                                     items = capped,
                                     discoveryItems = emptyList(),
+                macroHits = emptyList(),
+                exactTitleMatchId = null,
                                     total = response.total,
                                     page = page,
                                     hasMore = capped.size < response.total && loadedPages < MAX_PAGES,
@@ -283,14 +305,17 @@ class SearchPresenter(
                                 catalogue.searchSemantic(request, interaction)
                             }
                             if (requested != generation) return@launch
+                            val macro = displayableMacroHits(response)
                             _state.update {
                                 it.copy(
                                     items = emptyList(),
                                     discoveryItems = response.items,
+                                    macroHits = macro,
+                                    exactTitleMatchId = response.exactTitleMatchId,
                                     total = 0,
                                     page = 0,
                                     hasMore = false,
-                                    load = if (response.items.isEmpty()) LoadState.Empty else LoadState.Idle,
+                                    load = if (response.items.isEmpty() && macro.isEmpty()) LoadState.Empty else LoadState.Idle,
                                     nextPageLoad = LoadState.Idle,
                                 )
                             }
@@ -355,6 +380,19 @@ class SearchPresenter(
             }
         }
     }
+
+    /**
+     * Kinds this build can open: COLLECTION always, KSHETRA only once its destination exists. Anything
+     * else is dropped, never shown as a card that goes nowhere.
+     */
+    private fun displayableMacroHits(response: CatalogueSearchResponseDto): List<CatalogueMacroHitDto> =
+        response.macroHits.filter {
+            when (it.kind) {
+                CatalogueSearchHitKindDto.COLLECTION -> true
+                CatalogueSearchHitKindDto.KSHETRA -> kshetraDestinationAvailable
+                CatalogueSearchHitKindDto.KRITHI -> false
+            }
+        }
 
     private fun loadFilterOptions() {
         val existing = _state.value
