@@ -38,6 +38,8 @@ import com.sangita.grantha.shared.presentation.components.RasikaPrimaryButton
 import com.sangita.grantha.shared.presentation.components.RasikaScreenHeader
 import com.sangita.grantha.shared.presentation.components.RasikaSearchField
 import com.sangita.grantha.shared.presentation.explore.ExploreCategory
+import com.sangita.grantha.shared.presentation.navigation.RasikaDestination
+import com.sangita.grantha.shared.presentation.navigation.destination
 import com.sangita.grantha.shared.presentation.explore.groupRagas
 import com.sangita.grantha.shared.presentation.explore.ragaRelationshipCaption
 import com.sangita.grantha.shared.presentation.theme.RasikaTheme
@@ -52,6 +54,7 @@ fun SearchScreen(
     onOpenRaga: (Uuid) -> Unit,
     onOpenComposer: (Uuid) -> Unit,
     onOpenCollection: (String) -> Unit,
+    onOpenKshetra: (Uuid) -> Unit,
     onOpenPreferences: () -> Unit,
     isFavourite: (Uuid) -> Boolean,
     onToggleFavourite: (Uuid, String) -> Unit,
@@ -158,6 +161,7 @@ fun SearchScreen(
                         onOpenRaga,
                         onOpenComposer,
                         onOpenCollection,
+                        onOpenKshetra,
                         isFavourite,
                         onToggleFavourite,
                     )
@@ -291,6 +295,7 @@ private fun ResultList(
     onOpenRaga: (Uuid) -> Unit,
     onOpenComposer: (Uuid) -> Unit,
     onOpenCollection: (String) -> Unit,
+    onOpenKshetra: (Uuid) -> Unit,
     isFavourite: (Uuid) -> Boolean,
     onToggleFavourite: (Uuid, String) -> Unit,
 ) {
@@ -350,7 +355,13 @@ private fun ResultList(
                     items(state.macroHits, key = { "macro-${it.kind}-${it.collectionSlug ?: it.templeId}" }) { hit ->
                         MacroHitCard(
                             hit = hit,
-                            onClick = { hit.collectionSlug?.let(onOpenCollection) },
+                            onClick = {
+                                when (val target = hit.destination()) {
+                                    is RasikaDestination.CollectionDetail -> onOpenCollection(target.slug)
+                                    is RasikaDestination.KshetraDetail -> onOpenKshetra(target.templeId)
+                                    else -> Unit
+                                }
+                            },
                         )
                     }
                 }
