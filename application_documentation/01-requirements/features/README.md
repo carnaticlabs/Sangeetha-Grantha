@@ -21,6 +21,7 @@ This is the current capability map for Sangeetha Grantha, reviewed against repos
 | Search and browse | Explicit submitted query across compositions, ragas, composers; paging; UUID filters | Tala, deity, temple, language, and form directories are not mounted in V2 |
 | Entity pages | Raga/composer detail and works lists; aliases and raga lineage where available | Displayed metadata depends on stored reference coverage |
 | Lyric reader | One source variant at a time; script/source selection; stored section labels; ordered ragas | No generated transliteration, playback, or notation renderer in the Rasika reader |
+| Kshetras | Home shelf; list grouped by mandalam with an element filter; detail with nested shrines, kritis and recorded-gap state; reader temple link; search cards ([details](rasika-kshetra-exploration.md)) | Maps link waits for TRACK-154 place ids; embedded map is a follow-up track |
 | Library | Device-local bookmarks across restart | Account sync, collections, and recents remain planned |
 | Accessibility | Large-text handling and reduced-motion behavior; native journey test targets | TalkBack, VoiceOver, and device runtime proof are still required |
 
