@@ -47,7 +47,7 @@ object KshetraCopy {
         CatalogueMandalamDto.CHOLA -> "Chola Nadu · the Kaveri delta"
         CatalogueMandalamDto.PANDYA -> "Pandya Nadu · the far south"
         CatalogueMandalamDto.TONDAI -> "Tondai Nadu · the northern plain"
-        CatalogueMandalamDto.NADU -> "Nadu Nadu"
+        CatalogueMandalamDto.NADU -> "Nadu Desam"
         CatalogueMandalamDto.CHERA -> "Chera Nadu · the west coast"
         CatalogueMandalamDto.KONGU -> "Kongu Nadu · the western uplands"
         CatalogueMandalamDto.UTTARA -> "Uttara · northern places"
