@@ -15,6 +15,8 @@ import com.sangita.grantha.shared.domain.model.catalogue.CataloguePagedResponse
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueRagaDetailDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueRagaSummaryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueSearchResponseDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueTempleDetailDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueTempleListDto
 import com.sangita.grantha.shared.mobile.usage.InteractionContext
 import kotlin.uuid.Uuid
 
@@ -86,6 +88,13 @@ interface CatalogueApi {
 
     suspend fun getCollection(slug: String, interaction: InteractionContext): CatalogueCollectionDetailDto =
         throw CatalogueFailure.Unavailable("Collections are not available.")
+
+    /** Eligible root kshetras (TRACK-151). Fakes that predate kshetras report them unavailable. */
+    suspend fun listTemples(interaction: InteractionContext): CatalogueTempleListDto =
+        throw CatalogueFailure.Unavailable("Kshetras are not available.")
+
+    suspend fun getTemple(id: Uuid, interaction: InteractionContext): CatalogueTempleDetailDto =
+        throw CatalogueFailure.Unavailable("Kshetras are not available.")
 }
 
 private fun SemanticSearchResponse.toCardsResponse() =
