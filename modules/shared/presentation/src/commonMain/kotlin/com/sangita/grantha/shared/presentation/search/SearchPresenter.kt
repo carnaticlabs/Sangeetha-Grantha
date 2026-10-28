@@ -66,8 +66,8 @@ class SearchPresenter(
     private val catalogue: CatalogueRepository,
     private val session: MobileSession,
     private val scope: CoroutineScope,
-    /** False until a kshetra detail destination exists in the build (TRACK-151 Phase 2): KSHETRA hits are then dropped. */
-    private val kshetraDestinationAvailable: Boolean = false,
+    /** The kshetra detail destination ships in this build (TRACK-151 Phase 2). When false, KSHETRA hits are dropped. */
+    private val kshetraDestinationAvailable: Boolean = true,
 ) {
     private val _state = MutableStateFlow(SearchUiState())
     val state: StateFlow<SearchUiState> = _state.asStateFlow()

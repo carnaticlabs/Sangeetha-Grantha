@@ -37,6 +37,11 @@ import com.sangita.grantha.shared.presentation.entities.EntityDetailPresenter
 import com.sangita.grantha.shared.presentation.entities.RagaDetailScreen
 import com.sangita.grantha.shared.presentation.explore.ExploreCategory
 import com.sangita.grantha.shared.presentation.favourites.FavouritesPresenter
+import com.sangita.grantha.shared.presentation.kshetra.KshetraDetailPresenter
+import com.sangita.grantha.shared.presentation.kshetra.KshetraDetailScreen
+import com.sangita.grantha.shared.presentation.kshetra.KshetraListPresenter
+import com.sangita.grantha.shared.presentation.kshetra.KshetrasScreen
+import com.sangita.grantha.shared.presentation.kshetra.TempleLinkPresenter
 import com.sangita.grantha.shared.presentation.favourites.FavouritesScreen
 import com.sangita.grantha.shared.presentation.home.HomePresenter
 import com.sangita.grantha.shared.presentation.home.HomeScreen
@@ -79,6 +84,15 @@ fun RasikaApp(container: MobileAppContainer) {
     }
     val collectionDetailPresenter = remember {
         CollectionDetailPresenter(container.catalogue, container.session, container.appScope)
+    }
+    val kshetraListPresenter = remember {
+        KshetraListPresenter(container.catalogue, container.session, container.appScope)
+    }
+    val kshetraDetailPresenter = remember {
+        KshetraDetailPresenter(container.catalogue, container.session, container.appScope)
+    }
+    val templeLinkPresenter = remember {
+        TempleLinkPresenter(container.catalogue, container.session, container.appScope)
     }
     val favouritesPresenter = remember { FavouritesPresenter(container.favourites) }
     val favourites by favouritesPresenter.state.collectAsStateWithLifecycle()
@@ -167,6 +181,7 @@ fun RasikaApp(container: MobileAppContainer) {
                             is RasikaDestination.RagaDetail -> "raga:${dest.ragaId}"
                             is RasikaDestination.ComposerDetail -> "composer:${dest.composerId}"
                             is RasikaDestination.CollectionDetail -> "collection:${dest.slug}"
+                            is RasikaDestination.KshetraDetail -> "kshetra:${dest.templeId}"
                             else -> dest::class.simpleName.orEmpty()
                         }
                     },
@@ -185,6 +200,8 @@ fun RasikaApp(container: MobileAppContainer) {
                             collections = collectionsPresenter,
                             onOpenCollection = { open(RasikaDestination.CollectionDetail(it)) },
                             onOpenCollections = { open(RasikaDestination.Collections) },
+                            kshetras = kshetraListPresenter,
+                            onOpenKshetras = { open(RasikaDestination.Kshetras) },
                             onOpenRagas = {
                                 searchPresenter.openDirectory(ExploreCategory.Ragas)
                                 navigator.selectTab(RasikaTab.Explore)
@@ -204,6 +221,7 @@ fun RasikaApp(container: MobileAppContainer) {
                             onOpenRaga = { open(RasikaDestination.RagaDetail(it)) },
                             onOpenComposer = { open(RasikaDestination.ComposerDetail(it)) },
                             onOpenCollection = { open(RasikaDestination.CollectionDetail(it)) },
+                            onOpenKshetra = { open(RasikaDestination.KshetraDetail(it)) },
                             onOpenPreferences = {
                                 navigator.selectTab(RasikaTab.Settings)
                                 sync()
@@ -241,6 +259,24 @@ fun RasikaApp(container: MobileAppContainer) {
                             slug = dest.slug,
                             presenter = collectionDetailPresenter,
                             onOpenKrithi = { open(RasikaDestination.KrithiReader(it)) },
+                            onBack = {
+                                navigator.back()
+                                sync()
+                            },
+                        )
+                        RasikaDestination.Kshetras -> KshetrasScreen(
+                            presenter = kshetraListPresenter,
+                            onOpenKshetra = { open(RasikaDestination.KshetraDetail(it)) },
+                            onBack = {
+                                navigator.back()
+                                sync()
+                            },
+                        )
+                        is RasikaDestination.KshetraDetail -> KshetraDetailScreen(
+                            templeId = dest.templeId,
+                            presenter = kshetraDetailPresenter,
+                            onOpenKrithi = { open(RasikaDestination.KrithiReader(it)) },
+                            onOpenKshetra = { open(RasikaDestination.KshetraDetail(it)) },
                             onBack = {
                                 navigator.back()
                                 sync()
@@ -288,6 +324,8 @@ fun RasikaApp(container: MobileAppContainer) {
                             krithiId = dest.krithiId,
                             presenter = readerPresenter,
                             onOpenCollection = { open(RasikaDestination.CollectionDetail(it)) },
+                            templeLink = templeLinkPresenter,
+                            onOpenKshetra = { open(RasikaDestination.KshetraDetail(it)) },
                             onOpenNeighbour = {
                                 navigator.replace(RasikaDestination.KrithiReader(it))
                                 sync()

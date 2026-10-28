@@ -52,8 +52,12 @@ import com.sangita.grantha.shared.presentation.components.RasikaChip
 import com.sangita.grantha.shared.presentation.components.RasikaFavouriteButton
 import com.sangita.grantha.shared.presentation.components.RasikaPrimaryButton
 import com.sangita.grantha.shared.presentation.components.RasikaScreenHeader
+import com.sangita.grantha.shared.presentation.kshetra.KshetraCopy
+import com.sangita.grantha.shared.presentation.kshetra.TempleLinkPresenter
+import com.sangita.grantha.shared.presentation.kshetra.TempleLinkUiState
 import com.sangita.grantha.shared.presentation.theme.RasikaTheme
 import com.sangita.grantha.shared.presentation.theme.RasikaTokens
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlin.uuid.Uuid
 
@@ -70,10 +74,15 @@ fun KrithiReaderScreen(
     modifier: Modifier = Modifier,
     onOpenCollection: (String) -> Unit = {},
     onOpenNeighbour: (Uuid) -> Unit = {},
+    templeLink: TempleLinkPresenter? = null,
+    onOpenKshetra: (Uuid) -> Unit = {},
 ) {
     val state by presenter.state.collectAsStateWithLifecycle()
     LaunchedEffect(krithiId) { presenter.open(krithiId) }
     var tab by remember { mutableStateOf(ReaderTab.Lyrics) }
+    val templeId = state.reader?.temple?.id
+    LaunchedEffect(templeId) { templeLink?.resolve(templeId) }
+    val link by (templeLink?.state ?: remember { MutableStateFlow(TempleLinkUiState()) }).collectAsStateWithLifecycle()
 
     Column(modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface)) {
         RasikaScreenHeader(
@@ -97,6 +106,19 @@ fun KrithiReaderScreen(
                 RagaSequence(reader.ragas)
                 RasikaCopy.musicalFormLabel(reader.musicalForm)?.let { form ->
                     Text(form, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.secondary)
+                }
+                reader.temple?.let { temple ->
+                    val label = KshetraCopy.templeChipLabel(temple.name)
+                    // A temple the catalogue does not serve (404) stays a plain label.
+                    if (link.templeId == temple.id && link.linkable) {
+                        RasikaChip(selected = false, onClick = { onOpenKshetra(temple.id) }, label = label)
+                    } else {
+                        Text(
+                            label,
+                            style = MaterialTheme.typography.labelMedium,
+                            color = RasikaTheme.colors.inkMuted,
+                        )
+                    }
                 }
                 reader.cycleContext?.collections?.forEach { ref ->
                     RasikaChip(

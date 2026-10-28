@@ -7,6 +7,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import kotlin.uuid.Uuid
 
 class CatalogueFacetDtosTest {
@@ -28,7 +29,7 @@ class CatalogueFacetDtosTest {
         val text = json.encodeToString(list)
         CatalogueFacetKeyDto.entries.forEach { assertEquals(it, CatalogueFacetKeyDto.fromWireKey(it.wireKey)) }
         assertEquals(listOf("vibhakti", "collection", "tune", "mandalam", "element"), CatalogueFacetKeyDto.entries.map { it.wireKey })
-        listOf("vibhakti", "collection", "tune", "mandalam", "element").forEach { assert("\"key\":\"$it\"" in text) }
+        listOf("vibhakti", "collection", "tune", "mandalam", "element").forEach { assertTrue("\"key\":\"$it\"" in text) }
         assertEquals(list, json.decodeFromString<CatalogueFacetListDto>(text))
         assertNull(CatalogueFacetKeyDto.fromWireKey("VIBHAKTI"))
     }

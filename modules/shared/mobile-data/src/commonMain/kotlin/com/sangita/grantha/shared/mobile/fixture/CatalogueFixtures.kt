@@ -22,6 +22,7 @@ import com.sangita.grantha.shared.domain.model.catalogue.CatalogueRagaDetailDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueRagaRefDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueMacroHitDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueRagaSummaryDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueReferenceDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueSearchHitKindDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueSearchResponseDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueTalaRefDto
@@ -46,6 +47,8 @@ object CatalogueFixtures {
     val vatapiLatinId: Uuid = Uuid.parse("88888888-8888-4888-8888-888888888888")
     val vatapiDevanagariId: Uuid = Uuid.parse("99999999-9999-4999-8999-999999999999")
     val endaroLatinId: Uuid = Uuid.parse("aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa")
+    /** The temple the Vatapi reader names (TRACK-151). Held here so the two fixture objects do not initialise each other. */
+    val TIRUVARUR_TEMPLE_ID: Uuid = Uuid.parse("01930000-0000-7000-8000-000000000001")
     val vatapiPallaviId: Uuid = Uuid.parse("bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb")
     val vatapiAnupallaviId: Uuid = Uuid.parse("cccccccc-cccc-4ccc-8ccc-cccccccccccc")
 
@@ -107,6 +110,7 @@ object CatalogueFixtures {
         defaultVariantId = vatapiLatinId,
         variants = listOf(vatapiLatin, vatapiDevanagari),
         completeness = CatalogueCompletenessDto.PARTIAL,
+        temple = CatalogueReferenceDto(TIRUVARUR_TEMPLE_ID, "Tyagaraja Temple, Tiruvarur"),
     )
 
     val endaroReader = CatalogueKrithiReaderDto(
@@ -377,6 +381,11 @@ class FixtureCatalogueApi(
     override suspend fun getCollection(slug: String, interaction: InteractionContext) =
         CollectionFixtures.detail(slug) ?: throw CatalogueFailure.NotFound()
 
+    override suspend fun listTemples(interaction: InteractionContext) = KshetraFixtures.list
+
+    override suspend fun getTemple(id: Uuid, interaction: InteractionContext) =
+        KshetraFixtures.detail(id) ?: throw CatalogueFailure.NotFound()
+
     override suspend fun searchHybrid(
         request: SemanticSearchRequest,
         interaction: InteractionContext,
@@ -538,6 +547,10 @@ class UnavailableCatalogueApi : CatalogueApi {
     override suspend fun listCollections(interaction: InteractionContext) = fail()
 
     override suspend fun getCollection(slug: String, interaction: InteractionContext) = fail()
+
+    override suspend fun listTemples(interaction: InteractionContext) = fail()
+
+    override suspend fun getTemple(id: Uuid, interaction: InteractionContext) = fail()
 
     override suspend fun searchHybrid(
         request: SemanticSearchRequest,
