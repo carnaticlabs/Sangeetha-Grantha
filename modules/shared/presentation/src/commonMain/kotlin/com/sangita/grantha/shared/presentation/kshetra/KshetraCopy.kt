@@ -44,12 +44,12 @@ object KshetraCopy {
 
     /** Plain names with a short gloss; [CatalogueMandalamDto.NADU] has no gloss because none is settled. */
     fun mandalam(value: CatalogueMandalamDto?): String = when (value) {
-        CatalogueMandalamDto.CHOLA -> "Chola Nadu · the Kaveri delta"
-        CatalogueMandalamDto.PANDYA -> "Pandya Nadu · the far south"
-        CatalogueMandalamDto.TONDAI -> "Tondai Nadu · the northern plain"
+        CatalogueMandalamDto.CHOLA -> "Chola Desam · the Kaveri delta"
+        CatalogueMandalamDto.PANDYA -> "Pandya Desam · the far south"
+        CatalogueMandalamDto.TONDAI -> "Tondai Desam · the northern plain"
         CatalogueMandalamDto.NADU -> "Nadu Desam"
-        CatalogueMandalamDto.CHERA -> "Chera Nadu · the west coast"
-        CatalogueMandalamDto.KONGU -> "Kongu Nadu · the western uplands"
+        CatalogueMandalamDto.CHERA -> "Chera Desam · the west coast"
+        CatalogueMandalamDto.KONGU -> "Kongu Desam · the western uplands"
         CatalogueMandalamDto.UTTARA -> "Uttara · northern places"
         null -> OTHER_PLACES
     }
