@@ -8,7 +8,8 @@
 
 DO $$
 DECLARE
-    v_data CONSTANT jsonb := $track154${
+    v_data CONSTANT jsonb := $track154$
+{
   "approvals": [
     {
       "date": "2026-10-25",
