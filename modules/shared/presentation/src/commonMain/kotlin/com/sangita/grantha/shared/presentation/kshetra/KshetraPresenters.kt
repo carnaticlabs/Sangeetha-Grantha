@@ -118,7 +118,10 @@ data class KshetraDetailUiState(
     val templeId: Uuid? = null,
     val detail: CatalogueTempleDetailDto? = null,
     val load: LoadState = LoadState.Idle,
-)
+) {
+    /** Present only when the detail carries a confirmed place. */
+    val mapLink: KshetraMapLink? get() = detail?.let(KshetraMapLink::from)
+}
 
 class KshetraDetailPresenter(
     private val catalogue: CatalogueRepository,

@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -166,6 +167,7 @@ fun KshetraDetailScreen(
     modifier: Modifier = Modifier,
 ) {
     val state by presenter.state.collectAsStateWithLifecycle()
+    val uriHandler = LocalUriHandler.current
     LaunchedEffect(templeId) { presenter.open(templeId) }
     Column(modifier.fillMaxSize()) {
         RasikaScreenHeader(
@@ -196,6 +198,30 @@ fun KshetraDetailScreen(
                 }
                 detail.overview?.takeIf { it.isNotBlank() }?.let {
                     Text(it, style = MaterialTheme.typography.bodyLarge)
+                }
+                state.mapLink?.let { link ->
+                    RasikaPressable(
+                        onClick = { uriHandler.openUri(link.url) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = RasikaTokens.sm)
+                            .semantics { contentDescription = KshetraCopy.mapLinkDescription(link) },
+                    ) {
+                        Column(Modifier.fillMaxWidth().padding(RasikaTokens.sm)) {
+                            Text(
+                                KshetraCopy.OPEN_IN_MAPS,
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                            if (link.opensParentComplex) {
+                                Text(
+                                    KshetraCopy.mapParentNote(link.targetName),
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = RasikaTheme.colors.inkMuted,
+                                )
+                            }
+                        }
+                    }
                 }
                 detail.parent?.let { parent ->
                     SectionLabel(KshetraCopy.PART_OF)

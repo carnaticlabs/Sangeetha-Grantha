@@ -37,6 +37,7 @@ object KshetraCopy {
     const val NADI_TIRTHA = "NADI TIRTHA"
     const val POSTURE = "DEITY"
     const val TEMPLE_LABEL_PREFIX = "Sung at"
+    const val OPEN_IN_MAPS = "Open in Google Maps"
 
     fun kritiCount(count: Long): String = if (count == 1L) "1 kriti" else "$count kritis"
 
@@ -91,4 +92,11 @@ object KshetraCopy {
         listOf(item.name, rowSubtitle(item)).filter { it.isNotBlank() }.joinToString(", ")
 
     fun templeChipLabel(name: String): String = "$TEMPLE_LABEL_PREFIX $name"
+
+    /** Shown under the map control only when it opens the parent complex, so a sannidhi never claims its own pin. */
+    fun mapParentNote(complexName: String): String = "Opens the temple complex, $complexName. This shrine has no pin of its own."
+
+    fun mapLinkDescription(link: KshetraMapLink): String =
+        if (link.opensParentComplex) "$OPEN_IN_MAPS. ${mapParentNote(link.targetName)}"
+        else "$OPEN_IN_MAPS, ${link.targetName}"
 }
