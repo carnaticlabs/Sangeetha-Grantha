@@ -24,11 +24,7 @@ Give each temple a reviewed Google `place_id` so the kshetra detail can open Goo
 
 - Rerunning the seed is a no-op. A generated seed literal must not contain `${`, which Flyway reads as a placeholder (regression-tested).
 - The place id can go stale. Clients must tolerate a link that no longer resolves; the refresh cadence is not decided.
-- The `SarAvatI taTa` cycle membership in `R__seed_09` still carries a sthala note naming Basrur and the Sharavati river. It was not changed here because it is a musicological attribution (see Open follow-up).
-
-## Open follow-up
-
-Review the `SarAvatI taTa` sthala note against the Basara identification, ideally with the `carnatic-musicologist` reviewer.
+- The `SarAvatI taTa` sthala note in `R__seed_09` names the Basara identification (Gnana Saraswati temple, Godavari), matching the V69 temple row.
 
 ## Verification
 
