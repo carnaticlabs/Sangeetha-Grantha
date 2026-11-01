@@ -466,9 +466,9 @@ VALUES
     NOW(), NOW()
 ),
 (
-    '01930000-0000-7000-8000-00000000004d', 'Saraswati Temple', 'saraswati temple', 'Basrur', 'Karnataka', 'India',
-    'COMPLEX', 'UTTARA', NULL, NULL, NULL, 'Sharavati', 'ASINA',
-    'Historical Saraswati temple on the banks of Sharavati river at Basrur.',
+    '01930000-0000-7000-8000-00000000004d', 'Saraswati Temple', 'saraswati temple', 'Basara', 'Telangana', 'India',
+    'COMPLEX', 'UTTARA', NULL, NULL, NULL, 'Godavari', 'ASINA',
+    'Gnana Saraswati temple on the banks of the Godavari at Basara.',
     NOW(), NOW()
 ),
 (
@@ -914,7 +914,7 @@ WITH comp_data (
     (25, 'Sankara vara', 'SankarAbharaNaM', 'DVITIYA', 'Sankara', '01930000-0000-7000-8000-000000000038'::uuid, NULL, false, NULL, 'NONE'),
     (26, 'SankaraM abhirAmI', 'Manohari', 'DVITIYA', 'Sankar', '01930000-0000-7000-8000-00000000001a'::uuid, NULL, false, 'Markandeya longevity sthala: Lord Shiva (Amritaghateshwara) granting eternal life to sage Markandeya against Yama at Thirukkadaiyur.', 'NONE'),
     (27, 'Sankha cakra gadA', 'Poornachandrika', 'DVITIYA', 'Sankha', '01930000-0000-7000-8000-000000000001'::uuid, NULL, false, NULL, 'NONE'),
-    (28, 'SarAvatI taTa', 'Sharāvathi', 'PRATHAMA', 'Sarasvati', '01930000-0000-7000-8000-00000000004d'::uuid, NULL, false, 'Sthala attribution: In praise of Saraswati on the banks of the Sharavati River (traditionally identified with the historical Saraswati shrine at Basrur or regions along the Sharavati in Karnataka), distinct from Sringeri on the Tunga River.', 'NONE'),
+    (28, 'SarAvatI taTa', 'Sharāvathi', 'PRATHAMA', 'Sarasvati', '01930000-0000-7000-8000-00000000004d'::uuid, NULL, false, 'Sthala attribution: In praise of Saraswati at the Gnana Saraswati temple at Basara, Telangana, on the banks of the Godavari, distinct from Sringeri on the Tunga River.', 'NONE'),
     (29, 'SaravaNa bhava', 'Revagupti', 'DVITIYA', 'Saravana', '01930000-0000-7000-8000-000000000057'::uuid, NULL, false, NULL, 'NONE'),
     (30, 'Sauri vidhi nutE', 'SankarAbharaNaM', 'SAPTAMI', 'Nut', '01930000-0000-7000-8000-000000000038'::uuid, NULL, false, NULL, 'NONE'),
     (31, 'Siva kAMI patiM', 'nATa kuranji', 'DVITIYA', 'Patim', '01930000-0000-7000-8000-000000000013'::uuid, NULL, false, NULL, 'NONE'),

@@ -364,6 +364,12 @@ def test_seed_sql_embeds_the_json_exactly():
     assert not tpl.embedded_matches_json(sql, drifted)
 
 
+def test_seed_sql_literal_never_contains_a_flyway_placeholder():
+    # "$tag${" would be read by Flyway as a "${...}" placeholder and fail every migration.
+    sql = tpl.render_seed_sql(synthetic_data())
+    assert "${" not in sql
+
+
 def test_seed_sql_never_writes_coordinates_or_other_columns():
     sql = tpl.render_seed_sql(synthetic_data())
     update = sql[sql.index("UPDATE temples") : sql.index("WHERE id = t.id")]

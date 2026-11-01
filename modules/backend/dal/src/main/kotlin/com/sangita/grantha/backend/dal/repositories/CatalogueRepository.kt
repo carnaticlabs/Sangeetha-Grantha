@@ -3,6 +3,8 @@ package com.sangita.grantha.backend.dal.repositories
 import com.sangita.grantha.backend.dal.DatabaseFactory
 import com.sangita.grantha.backend.dal.enums.CycleMemberRole
 import com.sangita.grantha.backend.dal.enums.MusicalForm
+import com.sangita.grantha.backend.dal.enums.PlaceKind
+import com.sangita.grantha.backend.dal.enums.PlaceReviewState
 import com.sangita.grantha.backend.dal.enums.WorkflowState
 import com.sangita.grantha.backend.dal.models.CatalogueLike
 import com.sangita.grantha.backend.dal.models.CatalogueReadingDefaults
@@ -57,6 +59,8 @@ import com.sangita.grantha.shared.domain.model.catalogue.CatalogueDeityPostureDt
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueMandalamDto
 import com.sangita.grantha.shared.domain.model.catalogue.CataloguePlaceKindDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueTempleDetailDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueTemplePlaceDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueTemplePlacePrecisionDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueTempleElementDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueTempleSummaryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueVariantRefDto
@@ -72,6 +76,7 @@ import org.jetbrains.exposed.v1.core.Op
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.SortOrder
 import org.jetbrains.exposed.v1.core.TextColumnType
+import org.jetbrains.exposed.v1.core.alias
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.inList
@@ -559,11 +564,17 @@ class CatalogueRepository {
             .map { row -> row.toTempleSummary(facts.getValue(row[TemplesTable.id].value)) }
     }
 
-    /** Null when the temple is unknown or ineligible. `place` stays null until TRACK-154 lands. */
+    /** Null when the temple is unknown or ineligible. `place` is set only for a CONFIRMED place (TRACK-154). */
     suspend fun findTemple(id: UUID): CatalogueTempleDetailDto? = DatabaseFactory.dbQuery {
         val facts = TempleEligibility.snapshot()
         val own = facts[id]?.takeIf { it.eligible } ?: return@dbQuery null
-        val row = TemplesTable.selectAll().where { TemplesTable.id eq id }.singleOrNull()
+        // One query for the temple and its parent: the parent's place state decides sub-shrine inheritance.
+        val parentAlias = TemplesTable.alias("parent_temple")
+        val row = TemplesTable
+            .join(parentAlias, JoinType.LEFT, TemplesTable.parentTempleId, parentAlias[TemplesTable.id])
+            .selectAll()
+            .where { TemplesTable.id eq id }
+            .singleOrNull()
             ?: return@dbQuery null
         val childRows = TemplesTable.selectAll()
             .where { TemplesTable.parentTempleId eq id }
@@ -603,8 +614,33 @@ class CatalogueRepository {
             parent = parent,
             children = childRows.map { it.toTempleSummary(facts.getValue(it[TemplesTable.id].value)) },
             krithis = hydrateSummaries(krithiIds),
-            place = null,
+            place = resolvePlace(
+                placeKind = row[TemplesTable.placeKind],
+                ownPlaceId = row[TemplesTable.googlePlaceId],
+                ownState = row[TemplesTable.placeReviewState],
+                parentPlaceId = row[parentAlias[TemplesTable.googlePlaceId]],
+                parentState = row[parentAlias[TemplesTable.placeReviewState]],
+            ),
         )
+    }
+
+    /**
+     * TRACK-154 R4/R7: only CONFIRMED places leave the repository. A sannidhi or mandapam never uses its own
+     * columns; it inherits its parent's confirmed place as PARENT_COMPLEX, else has none.
+     */
+    private fun resolvePlace(
+        placeKind: PlaceKind,
+        ownPlaceId: String?,
+        ownState: PlaceReviewState?,
+        parentPlaceId: String?,
+        parentState: PlaceReviewState?,
+    ): CatalogueTemplePlaceDto? = when (placeKind) {
+        PlaceKind.SANNIDHI, PlaceKind.MANDAPAM ->
+            parentPlaceId?.takeIf { parentState == PlaceReviewState.CONFIRMED }
+                ?.let { CatalogueTemplePlaceDto(it, CatalogueTemplePlacePrecisionDto.PARENT_COMPLEX) }
+        else ->
+            ownPlaceId?.takeIf { ownState == PlaceReviewState.CONFIRMED }
+                ?.let { CatalogueTemplePlaceDto(it, CatalogueTemplePlacePrecisionDto.TEMPLE) }
     }
 
     private fun ResultRow.toTempleSummary(facts: TempleEligibilityRow) = CatalogueTempleSummaryDto(
