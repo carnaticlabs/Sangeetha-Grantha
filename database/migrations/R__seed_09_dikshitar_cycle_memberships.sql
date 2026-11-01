@@ -466,9 +466,9 @@ VALUES
     NOW(), NOW()
 ),
 (
-    '01930000-0000-7000-8000-00000000004d', 'Saraswati Temple', 'saraswati temple', 'Basrur', 'Karnataka', 'India',
-    'COMPLEX', 'UTTARA', NULL, NULL, NULL, 'Sharavati', 'ASINA',
-    'Historical Saraswati temple on the banks of Sharavati river at Basrur.',
+    '01930000-0000-7000-8000-00000000004d', 'Saraswati Temple', 'saraswati temple', 'Basara', 'Telangana', 'India',
+    'COMPLEX', 'UTTARA', NULL, NULL, NULL, 'Godavari', 'ASINA',
+    'Gnana Saraswati temple on the banks of the Godavari at Basara.',
     NOW(), NOW()
 ),
 (

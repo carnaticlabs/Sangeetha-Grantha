@@ -740,16 +740,16 @@
       "state": "Tamil Nadu"
     },
     {
-      "city": "Basrur",
+      "city": "Basara",
       "country": "India",
       "google_place_id": "ChIJqfI1-Y3hzTsR94Q263H9Bss",
       "name": "Saraswati Temple",
       "name_normalized": "saraswati temple",
-      "note": "Curator-verified: the temple is at Basara, Telangana. The catalogue row (Basrur, Karnataka) is wrong and needs a separate fix.",
+      "note": "Curator-verified: Basara, Telangana. The catalogue row was corrected from Basrur, Karnataka (V69).",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
       "reviewed_by": "Seshadri",
-      "state": "Karnataka"
+      "state": "Telangana"
     },
     {
       "city": "Sharda",
