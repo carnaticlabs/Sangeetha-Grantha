@@ -718,7 +718,8 @@ def render_seed_sql(data: PlaceReviewData) -> str:
     payload = canonical_json(data)
     if _DOLLAR_TAG in payload or "${" in payload:
         raise BuildError("payload contains a dollar-quote tag or a Flyway placeholder")
-    literal = f"{_DOLLAR_TAG}{payload}{_DOLLAR_TAG}"
+    # The newline keeps "$track154$" and "{" apart: Flyway reads "${" as a placeholder.
+    literal = f"{_DOLLAR_TAG}\n{payload}{_DOLLAR_TAG}"
     return (
         _SEED_TEMPLATE.replace("__PAYLOAD__", literal)
         .replace("__ACTOR__", SEED_ACTOR)
