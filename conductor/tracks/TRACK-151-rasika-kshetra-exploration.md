@@ -1,6 +1,6 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | In Progress |
+| **Status** | Completed |
 | **Version** | 1.0.0 |
 | **Last Updated** | 2026-11-01 |
 | **Author** | Sangeetha Grantha Team |
@@ -8,7 +8,7 @@
 # Track: Rasika Kshetra Exploration
 
 **ID:** TRACK-151
-**Status:** In Review: Phases 0 to 2 merged; Phase 3 in PR #53
+**Status:** Complete: Phases 0 to 3 merged; follow-ups listed in the Progress Log
 **Owner:** Seshadri
 **Created:** 2026-10-16
 **Updated:** 2026-11-01
@@ -247,7 +247,7 @@ All phases: `git diff --check`; `make agent-evals` only if `CLAUDE.md` or `.clau
 
 - [x] Phase 1 (PR #43, 2026-10-25): shared DTOs, `TEMPLES_PATH`, OpenAPI, `TempleEligibility`, list and detail queries, service, routes, tests, docs.
 - [x] Phase 2 (PR #49, 2026-11-01): mobile client, fixtures, presenters, screens, reader link.
-- [x] Phase 3 (PR #53, open; mark Done when merged): place read and Google Maps link.
+- [x] Phase 3 (PR #53, 2026-11-01): place read and Google Maps link.
 
 ## Progress Log
 
@@ -259,3 +259,4 @@ All phases: `git diff --check`; `make agent-evals` only if `CLAUDE.md` or `.clau
 - **2026-11-01**: PR #49 (Phase 2, mobile) merged (`d9153f5`). TRACK-154 data and mapper merged (PRs #48, #50): 84 CONFIRMED, 1 LOCALITY_ONLY, 12 sub-shrines inheriting. Phase 3 (the "Open in Google Maps" link built from the place id, no key) is in PR #53, open: JVM tests, `make test`, `make check-docs` and an iOS simulator walk-through pass per the implementation session; the Android assemble was not run locally (no Android SDK) and is covered by CI.
 - **Findings, not yet fixed**: the kshetra list loses its scroll position on back; the Tiruvarur detail renders 114 kritis in one long list and keeps scrolling after a swipe (possible performance issue); the reader's Tamil lyrics for hEramb Aya show stray "3" characters (a lyric or transliteration data issue unrelated to this track).
 - **Follow-up**: the embedded Google Maps SDK map is a separate track, not yet created.
+- **2026-11-01**: Phase 3 ("Open in Google Maps" link built from the place id, no key; parent-complex wording for sub-shrines; hidden when there is no place) merged in PR #53 (`b6c32dc`) with all CI checks green, including the Android debug APK and iOS simulator host build. Track marked Completed. Open follow-ups: the findings above (scroll position, long Tiruvarur list, stray lyric glyphs), and the embedded Google Maps SDK map as a separate track.
