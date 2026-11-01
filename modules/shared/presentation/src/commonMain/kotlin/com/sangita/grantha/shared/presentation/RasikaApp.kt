@@ -324,6 +324,10 @@ fun RasikaApp(container: MobileAppContainer) {
                             krithiId = dest.krithiId,
                             presenter = readerPresenter,
                             onOpenCollection = { open(RasikaDestination.CollectionDetail(it)) },
+                            onOpenFacet = { key, value, label ->
+                                browsePresenter.openFacet(key, value, label)
+                                open(RasikaDestination.Browse)
+                            },
                             templeLink = templeLinkPresenter,
                             onOpenKshetra = { open(RasikaDestination.KshetraDetail(it)) },
                             onOpenNeighbour = {
