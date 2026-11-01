@@ -154,7 +154,7 @@
 | [TRACK-148](./tracks/TRACK-148-syama-sastri-edition-consultation-adjudication.md) | Syama Sastri Edition Consultation & Musicological Adjudication | Proposed |
 | [TRACK-149](./tracks/TRACK-149-tyagaraja-edition-consultation-collision-split.md) | Tyagaraja Edition Consultation & Collision Canon Split | Proposed |
 | [TRACK-150](./tracks/TRACK-150-rasika-collections-and-lakshana-reader.md) | Rasika Collections & Reader Cycle Context | Completed |
-| [TRACK-151](./tracks/TRACK-151-rasika-kshetra-exploration.md) | Rasika Kshetra Exploration | In Progress |
+| [TRACK-151](./tracks/TRACK-151-rasika-kshetra-exploration.md) | Rasika Kshetra Exploration | Completed |
 | [TRACK-152](./tracks/TRACK-152-rasika-search-over-cycles-and-kshetras.md) | Rasika Search over Cycles and Kshetras | Completed |
 | [TRACK-153](./tracks/TRACK-153-rasika-lakshana-facets.md) | Rasika Lakshana Facets | Completed |
 | [TRACK-154](./tracks/TRACK-154-temple-google-place-ids.md) | Temple Google Place IDs | Completed |
