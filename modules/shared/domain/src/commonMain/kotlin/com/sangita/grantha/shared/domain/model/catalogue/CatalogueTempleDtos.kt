@@ -84,6 +84,6 @@ data class CatalogueTempleDetailDto(
     val parent: CatalogueReferenceDto? = null,
     val children: List<CatalogueTempleSummaryDto> = emptyList(),
     val krithis: List<CatalogueKrithiSummaryDto> = emptyList(),
-    /** Always null until TRACK-154 supplies confirmed place ids. */
+    /** Set only for CONFIRMED places (TRACK-154); sub-shrines inherit the parent complex place. */
     val place: CatalogueTemplePlaceDto? = null,
 )
