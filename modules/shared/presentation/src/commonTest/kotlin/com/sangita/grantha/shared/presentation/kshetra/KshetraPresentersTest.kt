@@ -152,6 +152,61 @@ class KshetraPresentersTest {
         assertEquals(LoadState.Idle, presenter.state.value.load)
     }
 
+    private suspend fun kotlinx.coroutines.test.TestScope.mapLinkFor(id: Uuid): KshetraMapLink? {
+        val presenter = KshetraDetailPresenter(repo(), session, this)
+        presenter.open(id)
+        advanceUntilIdle()
+        return presenter.state.value.mapLink
+    }
+
+    @Test
+    fun tiruvarurOffersItsOwnPin() = runTest {
+        val link = mapLinkFor(KshetraFixtures.tiruvarurId)!!
+        assertFalse(link.opensParentComplex)
+        assertEquals(
+            "https://www.google.com/maps/search/?api=1&query=Tyagaraja%20Temple%2C%20Tiruvarur&query_place_id=FIXTURE_PLACE_TIRUVARUR",
+            link.url,
+        )
+    }
+
+    @Test
+    fun sannidhiLinkOpensTheParentComplexAndSaysSo() = runTest {
+        val link = mapLinkFor(KshetraFixtures.kamalambaShrineId)!!
+        assertTrue(link.opensParentComplex)
+        assertEquals("Tyagaraja Temple, Tiruvarur", link.targetName)
+        assertTrue(link.url.contains("query=Tyagaraja%20Temple%2C%20Tiruvarur"))
+        assertFalse(link.url.contains("Kamalamba"))
+        assertTrue(KshetraCopy.mapLinkDescription(link).contains("no pin of its own"))
+    }
+
+    @Test
+    fun noPlaceMeansNoLink() = runTest {
+        assertNull(mapLinkFor(KshetraFixtures.chidambaramId))
+        assertNull(mapLinkFor(KshetraFixtures.nilotpalambaShrineId))
+        assertNull(mapLinkFor(KshetraFixtures.kanyakumariId))
+    }
+
+    @Test
+    fun mapLinkIsAbsentWhileLoadingAndAfterFailure() = runTest {
+        val presenter = KshetraDetailPresenter(repo(), session, this)
+        assertNull(presenter.state.value.mapLink)
+        presenter.open(KshetraFixtures.unknownId)
+        advanceUntilIdle()
+        assertNull(presenter.state.value.mapLink)
+    }
+
+    @Test
+    fun mapUrlPercentEncodesUtf8AndReservedCharacters() {
+        assertEquals("a%20b%26c%3Dd%23e%2Bf%2Fg", KshetraMapLink.encode("a b&c=d#e+f/g"))
+        assertEquals("Tiruvarur-1_2.3~", KshetraMapLink.encode("Tiruvarur-1_2.3~"))
+        assertEquals("%E0%AE%A4%E0%AE%BF%E0%AE%B0%E0%AF%81", KshetraMapLink.encode("திரு"))
+        assertEquals("%C4%81", KshetraMapLink.encode("ā"))
+        assertEquals(
+            "https://www.google.com/maps/search/?api=1&query=Kapaleeshwarar%20%26%20Co&query_place_id=ChIJ_a-b",
+            KshetraMapLink.build("Kapaleeshwarar & Co", "ChIJ_a-b"),
+        )
+    }
+
     @Test
     fun gapDetailIsLoadedNotAnError() = runTest {
         val presenter = KshetraDetailPresenter(repo(), session, this)
