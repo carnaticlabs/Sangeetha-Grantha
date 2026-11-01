@@ -2608,7 +2608,7 @@ components:
       "required":
         - "googlePlaceId"
         - "precision"
-      "description": "Present only when the temple's place review state is CONFIRMED. The id is for building a Google Maps link client-side, with no API key. Nothing else from Google (coordinates, name, address) is stored or exposed. Always absent until TRACK-154 supplies confirmed place ids."
+      "description": "Present only when the temple's place review state is CONFIRMED. The id is for building a Google Maps link client-side, with no API key. Nothing else from Google (coordinates, name, address) is stored or exposed. Absent for LOCALITY_ONLY, UNRESOLVED and unreviewed temples, and for a sannidhi or mandapam whose parent is not CONFIRMED (TRACK-154); absent for every temple until reviewed place ids are seeded."
       "properties":
         "googlePlaceId":
           "type": "string"
