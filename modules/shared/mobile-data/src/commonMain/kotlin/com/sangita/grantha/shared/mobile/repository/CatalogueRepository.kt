@@ -3,6 +3,8 @@ package com.sangita.grantha.shared.mobile.repository
 import com.sangita.grantha.shared.domain.model.SemanticSearchRequest
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueCollectionDetailDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueCollectionListDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueTempleDetailDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueTempleListDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerDetailDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueComposerSummaryDto
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueContract
@@ -70,6 +72,12 @@ class CatalogueRepository(
 
     suspend fun getCollection(slug: String, interaction: InteractionContext): CatalogueCollectionDetailDto =
         api.getCollection(slug, interaction)
+
+    suspend fun listTemples(interaction: InteractionContext): CatalogueTempleListDto =
+        api.listTemples(interaction)
+
+    suspend fun getTemple(id: Uuid, interaction: InteractionContext): CatalogueTempleDetailDto =
+        api.getTemple(id, interaction)
 
     suspend fun searchHybrid(
         request: SemanticSearchRequest,

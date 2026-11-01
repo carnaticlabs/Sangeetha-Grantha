@@ -1,5 +1,7 @@
 package com.sangita.grantha.shared.presentation.navigation
 
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueMacroHitDto
+import com.sangita.grantha.shared.domain.model.catalogue.CatalogueSearchHitKindDto
 import kotlin.uuid.Uuid
 
 enum class RasikaTab {
@@ -17,9 +19,18 @@ sealed class RasikaDestination {
     data object Browse : RasikaDestination()
     data object Collections : RasikaDestination()
     data class CollectionDetail(val slug: String) : RasikaDestination()
+    data object Kshetras : RasikaDestination()
+    data class KshetraDetail(val templeId: Uuid) : RasikaDestination()
     data class RagaDetail(val ragaId: Uuid) : RasikaDestination()
     data class ComposerDetail(val composerId: Uuid) : RasikaDestination()
     data class KrithiReader(val krithiId: Uuid) : RasikaDestination()
+}
+
+/** Where a collection or kshetra search card opens; null if the hit carries no target. */
+fun CatalogueMacroHitDto.destination(): RasikaDestination? = when (kind) {
+    CatalogueSearchHitKindDto.COLLECTION -> collectionSlug?.let { RasikaDestination.CollectionDetail(it) }
+    CatalogueSearchHitKindDto.KSHETRA -> templeId?.let { RasikaDestination.KshetraDetail(it) }
+    CatalogueSearchHitKindDto.KRITHI -> null
 }
 
 class RasikaNavigator(

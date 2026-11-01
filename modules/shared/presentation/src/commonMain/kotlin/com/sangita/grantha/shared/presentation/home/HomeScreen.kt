@@ -31,6 +31,8 @@ import com.sangita.grantha.shared.presentation.components.RasikaChip
 import com.sangita.grantha.shared.presentation.components.RasikaPrimaryButton
 import com.sangita.grantha.shared.presentation.components.RasikaScreenHeader
 import com.sangita.grantha.shared.presentation.components.RasikaSearchField
+import com.sangita.grantha.shared.presentation.kshetra.KshetraListPresenter
+import com.sangita.grantha.shared.presentation.kshetra.KshetraShelf
 import com.sangita.grantha.shared.presentation.theme.RasikaTheme
 import com.sangita.grantha.shared.presentation.theme.RasikaTokens
 import kotlin.uuid.Uuid
@@ -46,6 +48,8 @@ fun HomeScreen(
     collections: CollectionsPresenter? = null,
     onOpenCollection: (String) -> Unit = {},
     onOpenCollections: () -> Unit = {},
+    kshetras: KshetraListPresenter? = null,
+    onOpenKshetras: () -> Unit = {},
 ) {
     val state by presenter.state.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) { presenter.loadIfNeeded() }
@@ -95,6 +99,9 @@ fun HomeScreen(
                     onOpenCollection = onOpenCollection,
                     onOpenAll = onOpenCollections,
                 )
+            }
+            kshetras?.let {
+                KshetraShelf(presenter = it, onOpenAll = onOpenKshetras)
             }
             Text(
                 RasikaCopy.HOME_INVITE,
