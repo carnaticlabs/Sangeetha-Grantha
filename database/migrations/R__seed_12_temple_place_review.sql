@@ -13,7 +13,7 @@ DECLARE
   "approvals": [
     {
       "date": "2026-11-01",
-      "reviewer": "curator:TRACK-154",
+      "reviewer": "Seshadri",
       "scope": "Reviewed and finalized all 85 temple and locality mappings."
     }
   ],
@@ -27,7 +27,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -39,7 +39,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -51,7 +51,7 @@ DECLARE
       "note": "Curator-verified in Maps; temple at Agathiyampalli near Vedaranyam, accepted for this entry.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -63,7 +63,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -75,7 +75,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -87,7 +87,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -99,7 +99,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -111,7 +111,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -123,7 +123,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -135,7 +135,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Uttarakhand"
     },
     {
@@ -147,7 +147,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -159,7 +159,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -171,7 +171,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -183,7 +183,7 @@ DECLARE
       "note": "Curator-verified in Maps; Devi shrine at Ettayapuram.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -195,7 +195,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Uttar Pradesh"
     },
     {
@@ -207,7 +207,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -219,7 +219,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -231,7 +231,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -243,7 +243,7 @@ DECLARE
       "note": "Curator-selected Gokul place from the retry candidates.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Uttar Pradesh"
     },
     {
@@ -255,7 +255,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Uttar Pradesh"
     },
     {
@@ -267,7 +267,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -279,7 +279,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Kerala"
     },
     {
@@ -291,7 +291,7 @@ DECLARE
       "note": "Curator-verified in Maps; Devi shrine near Sattur.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -303,7 +303,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Odisha"
     },
     {
@@ -315,7 +315,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -327,7 +327,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -339,7 +339,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -351,7 +351,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -363,7 +363,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -375,7 +375,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Uttar Pradesh"
     },
     {
@@ -387,7 +387,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -399,7 +399,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -411,7 +411,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -423,7 +423,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -435,7 +435,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -447,7 +447,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Karnataka"
     },
     {
@@ -459,7 +459,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -471,7 +471,7 @@ DECLARE
       "note": "Locality entry; the place is the Manali locality of Chennai, not a temple.",
       "review_state": "LOCALITY_ONLY",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -483,7 +483,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -507,7 +507,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -543,7 +543,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -555,7 +555,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -567,7 +567,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -579,7 +579,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -591,7 +591,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Kerala"
     },
     {
@@ -603,7 +603,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -615,7 +615,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -627,7 +627,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -651,7 +651,7 @@ DECLARE
       "note": "Curator-selected from three Thanjavur candidates.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -663,7 +663,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -675,7 +675,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -687,7 +687,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -699,7 +699,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -711,7 +711,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -723,7 +723,7 @@ DECLARE
       "note": "Curator-selected from pass 2 candidates at Vijayapuram.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -735,7 +735,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Kerala"
     },
     {
@@ -747,7 +747,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -759,7 +759,7 @@ DECLARE
       "note": "Curator-verified: the temple is at Basara, Telangana. The catalogue row (Basrur, Karnataka) is wrong and needs a separate fix.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Karnataka"
     },
     {
@@ -771,7 +771,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Kashmir"
     },
     {
@@ -783,7 +783,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -795,7 +795,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -807,7 +807,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Andhra Pradesh"
     },
     {
@@ -819,7 +819,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -831,7 +831,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -843,7 +843,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -855,7 +855,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -867,7 +867,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -879,7 +879,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -891,7 +891,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -903,7 +903,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -915,7 +915,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -927,7 +927,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -939,7 +939,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -951,7 +951,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -975,7 +975,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -987,7 +987,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -999,7 +999,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -1011,7 +1011,7 @@ DECLARE
       "note": "Curator-selected from pass 2 candidates.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Andhra Pradesh"
     },
     {
@@ -1023,7 +1023,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     },
     {
@@ -1035,7 +1035,7 @@ DECLARE
       "note": "Curator-reviewed match.",
       "review_state": "CONFIRMED",
       "reviewed_at": "2026-11-01T00:00:00Z",
-      "reviewed_by": "curator:TRACK-154",
+      "reviewed_by": "Seshadri",
       "state": "Tamil Nadu"
     }
   ],
