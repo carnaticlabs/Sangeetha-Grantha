@@ -131,3 +131,4 @@ ds-bundle/
 # Xcode local user state
 xcuserdata/
 *.xcuserstate
+.agents/**/**.bak
