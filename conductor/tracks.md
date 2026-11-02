@@ -160,7 +160,7 @@
 | [TRACK-154](./tracks/TRACK-154-temple-google-place-ids.md) | Temple Google Place IDs | Completed |
 | [TRACK-155](./tracks/TRACK-155-rasika-kshetra-list-ux.md) | Rasika Kshetra List UX | Completed |
 | [TRACK-156](./tracks/TRACK-156-tamil-lyric-stray-digits.md) | Stray digits in Tamil-script lyrics | Completed |
-| [TRACK-157](./tracks/TRACK-157-macro-search-followups.md) | Macro Search Follow-ups | In Progress |
+| [TRACK-157](./tracks/TRACK-157-macro-search-followups.md) | Macro Search Follow-ups | Completed |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)
