@@ -127,17 +127,55 @@ describe('SearchPane', () => {
         expect(searchPreviewKrithis).toHaveBeenLastCalledWith(expect.objectContaining({ page: 2, pageSize: 30 }), 'PUBLISHED_ONLY');
     });
 
-    it('applies the raga picker limit note and tells the curator when results are older than a save', async () => {
-        vi.mocked(searchPreviewKrithis).mockResolvedValue({ items: [], total: 0, page: 0, pageSize: 30 });
-        vi.mocked(searchPreviewRagas).mockResolvedValue({ items: [{ id: 'r', name: 'Todi', matchingAliases: [], publishedCompositionCount: 1 }], total: 1014, page: 0, pageSize: 30 });
-        vi.mocked(searchPreviewComposers).mockResolvedValue({ items: [], total: 0, page: 0, pageSize: 30 });
-        const { user } = render(<SearchPane open={vi.fn()} />);
+    const raga = (n: number, name = `Raga ${n}`) => ({ id: `r${n}`, name, matchingAliases: [], publishedCompositionCount: 1 });
+    const ragaPage = (all: ReturnType<typeof raga>[], query: string | undefined, page: number) => {
+        const matching = all.filter((r) => !query || r.name.toLowerCase().includes(query.toLowerCase()));
+        return { items: matching.slice(page * 30, page * 30 + 30), total: matching.length, page, pageSize: 30 };
+    };
+
+    const openPicker = async (user: ReturnType<typeof render>['user']) => {
         await user.click(screen.getByRole('button', { name: 'Search options' }));
         await user.click(screen.getByRole('button', { name: 'Titles & lyrics' }));
         await user.click(screen.getByRole('button', { name: '+ Rāga or composer' }));
-        expect(await screen.findByText(/only the first 1 of 1014 ragas/)).toBeInTheDocument();
-        await user.click(screen.getByRole('button', { name: 'Cancel' }));
+        return screen.findByRole('dialog', { name: 'Filters' });
+    };
 
+    it('lets the rāga picker reach every raga: search, load more, and the chosen one stays visible (D8)', async () => {
+        const all = Array.from({ length: 70 }, (_, i) => raga(i + 1, i % 10 === 9 ? `Kalyani ${i + 1}` : `Raga ${i + 1}`));
+        vi.mocked(searchPreviewKrithis).mockResolvedValue({ items: [], total: 0, page: 0, pageSize: 30 });
+        vi.mocked(searchPreviewRagas).mockImplementation(async (q) => ragaPage(all, q?.query, q?.page ?? 0));
+        vi.mocked(searchPreviewComposers).mockResolvedValue({ items: [], total: 0, page: 0, pageSize: 30 });
+        const { user } = render(<SearchPane open={vi.fn()} />);
+        const sheet = await openPicker(user);
+
+        expect(await within(sheet).findByText('Showing 30 of 70')).toBeInTheDocument();
+        expect(within(sheet).queryByText(/cannot be picked/)).not.toBeInTheDocument();
+        await user.click(within(sheet).getByRole('button', { name: 'Load more' }));
+        expect(await within(sheet).findByText('Showing 60 of 70')).toBeInTheDocument();
+        await user.click(within(sheet).getByRole('button', { name: 'Load more' }));
+        expect(await within(sheet).findByText('Showing 70 of 70')).toBeInTheDocument();
+        expect(within(sheet).queryByRole('button', { name: 'Load more' })).not.toBeInTheDocument();
+        expect(within(sheet).getByRole('button', { name: 'Raga 69' })).toBeInTheDocument();
+
+        await user.click(within(sheet).getByRole('button', { name: 'Raga 69' }));
+        await user.type(within(sheet).getByLabelText('Find a rāga'), 'kalyani');
+        await user.click(within(sheet).getByRole('button', { name: 'Find' }));
+        expect(await within(sheet).findByText('Showing 7 of 7')).toBeInTheDocument();
+        expect(vi.mocked(searchPreviewRagas)).toHaveBeenLastCalledWith({ query: 'kalyani', page: 0, pageSize: 30 }, 'PUBLISHED_ONLY');
+        // Raga 69 is not among the Kalyani matches but is still shown selected.
+        expect(within(sheet).getByRole('button', { name: 'Raga 69', pressed: true })).toBeInTheDocument();
+
+        await user.clear(within(sheet).getByLabelText('Find a rāga'));
+        await user.type(within(sheet).getByLabelText('Find a rāga'), 'zzzz');
+        await user.click(within(sheet).getByRole('button', { name: 'Find' }));
+        expect(await within(sheet).findByText('No rāga matches that name.')).toBeInTheDocument();
+    });
+
+    it('tells the curator when results are older than a save', async () => {
+        vi.mocked(searchPreviewKrithis).mockResolvedValue({ items: [], total: 0, page: 0, pageSize: 30 });
+        const { user } = render(<SearchPane open={vi.fn()} />);
+        await user.click(screen.getByRole('button', { name: 'Search options' }));
+        await user.click(screen.getByRole('button', { name: 'Titles & lyrics' }));
         await searchFor(user, 'ta');
         await screen.findByText('Nothing stored under that');
         expect(screen.queryByText(/Edits saved since this search/)).not.toBeInTheDocument();

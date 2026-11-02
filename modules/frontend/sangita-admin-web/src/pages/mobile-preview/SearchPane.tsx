@@ -86,17 +86,25 @@ export const SearchPane: React.FC<SearchPaneProps> = ({ open, seed }) => {
         },
     });
 
-    const filterRagas = useQuery({
-        queryKey: previewKeys.list('filter-ragas', { scope }),
-        queryFn: () => api.searchPreviewRagas({ pageSize: s.PAGE_SIZE }, scope),
+    // The picker pages 30 at a time and can search, as the mobile sheet does (TRACK-159 D8).
+    const [ragaText, setRagaText] = useState('');
+    const [ragaQuery, setRagaQuery] = useState('');
+    const filterRagas = useInfiniteQuery({
+        queryKey: previewKeys.list('filter-ragas', { scope, q: ragaQuery }),
         enabled: sheetOpen,
+        initialPageParam: 0,
+        queryFn: ({ pageParam }) => api.searchPreviewRagas({ query: ragaQuery || undefined, page: pageParam, pageSize: s.PAGE_SIZE }, scope),
+        getNextPageParam: (last, all) => (all.reduce((n, p) => n + p.items.length, 0) < last.total && last.items.length > 0 ? all.length : undefined),
     });
-    const filterComposers = useQuery({
+    const filterComposers = useInfiniteQuery({
         queryKey: previewKeys.list('filter-composers', { scope }),
-        queryFn: () => api.searchPreviewComposers({ pageSize: s.PAGE_SIZE }, scope),
         enabled: sheetOpen,
+        initialPageParam: 0,
+        queryFn: ({ pageParam }) => api.searchPreviewComposers({ page: pageParam, pageSize: s.PAGE_SIZE }, scope),
+        getNextPageParam: (last, all) => (all.reduce((n, p) => n + p.items.length, 0) < last.total && last.items.length > 0 ? all.length : undefined),
     });
 
+    const flat = <T,>(pages: { items: T[] }[] | undefined): T[] => pages?.flatMap((p) => p.items) ?? [];
     const submit = () => { setCommitted(text.trim()); setRanAt(Date.now()); };
     const openKrithi = (id: string) => open({ kind: 'KrithiReader', krithiId: id });
 
@@ -107,7 +115,6 @@ export const SearchPane: React.FC<SearchPaneProps> = ({ open, seed }) => {
         </button>
     ) : null;
 
-    const flat = <T,>(pages: { items: T[] }[] | undefined): T[] => pages?.flatMap((p) => p.items) ?? [];
     const idle = category === 'Krithis' && committed === null;
     const lexicalItems = flat(lexical.data?.pages);
     const emptyDiscovery = discoveryQuery.data && discoveryQuery.data.response.items.length === 0 && s.displayableMacroHits(discoveryQuery.data.response).length === 0;
@@ -123,14 +130,20 @@ export const SearchPane: React.FC<SearchPaneProps> = ({ open, seed }) => {
                 category={category} onCategory={setCategory}
                 scope={scope} onScope={setScope}
                 applied={applied}
-                onOpenFilters={() => { setDraft(applied); setSheetOpen(true); }}
+                onOpenFilters={() => { setDraft(applied); setRagaText(''); setRagaQuery(''); setSheetOpen(true); }}
                 onRemoveRaga={() => setApplied({ ...applied, ragaId: undefined, ragaLabel: undefined })}
                 onRemoveComposer={() => setApplied({ ...applied, composerId: undefined, composerLabel: undefined })}
             />
             {sheetOpen ? (
                 <FilterSheet
-                    ragas={filterRagas.data?.items ?? []} composers={filterComposers.data?.items ?? []} ragaTotal={filterRagas.data?.total ?? 0}
+                    ragas={flat(filterRagas.data?.pages)} ragaTotal={filterRagas.data?.pages[0]?.total ?? 0}
+                    ragaText={ragaText} ragaQuery={ragaQuery}
+                    composers={flat(filterComposers.data?.pages)} composerTotal={filterComposers.data?.pages[0]?.total ?? 0}
                     draft={draft}
+                    onRagaText={setRagaText}
+                    onRagaSearch={() => setRagaQuery(ragaText.trim())}
+                    onLoadMoreRagas={() => { void filterRagas.fetchNextPage(); }}
+                    onLoadMoreComposers={() => { void filterComposers.fetchNextPage(); }}
                     onDraftRaga={(id, label) => setDraft({ ...draft, ragaId: id ?? undefined, ragaLabel: label ?? undefined })}
                     onDraftComposer={(id, label) => setDraft({ ...draft, composerId: id ?? undefined, composerLabel: label ?? undefined })}
                     onApply={() => { setApplied(draft); setSheetOpen(false); }}

@@ -75,47 +75,66 @@ export const SearchControls: React.FC<ControlsProps> = (p) => {
     );
 };
 
+/**
+ * The rāga and composer picker (mirrors the mobile filter sheet after TRACK-159 D8): a search box and chips, a
+ * "Load more" while more exist, and the chosen rāga kept visible even when the current search does not list it.
+ */
 export const FilterSheet: React.FC<{
-    ragas: RagaSummary[]; composers: ComposerSummary[]; ragaTotal: number;
+    ragas: RagaSummary[]; ragaTotal: number; ragaText: string; ragaQuery: string;
+    composers: ComposerSummary[]; composerTotal: number;
     draft: AppliedFilters;
+    onRagaText: (v: string) => void; onRagaSearch: () => void;
+    onLoadMoreRagas: () => void; onLoadMoreComposers: () => void;
     onDraftRaga: (id: string | null, label: string | null) => void;
     onDraftComposer: (id: string | null, label: string | null) => void;
     onApply: () => void; onCancel: () => void; onReset: () => void;
-}> = ({ ragas, composers, ragaTotal, draft, onDraftRaga, onDraftComposer, onApply, onCancel, onReset }) => {
+}> = (p) => {
     const pal = usePalette();
+    const chosenMissing = p.draft.ragaId && p.draft.ragaLabel && !p.ragas.some((r) => r.id === p.draft.ragaId);
     return (
         <div role="dialog" aria-label="Filters" className="m-5 rounded-xl p-4" style={{ background: pal.card, border: `1px solid ${pal.hairline}` }}>
             <p className="text-sm font-semibold">Filters</p>
             <p className="text-xs" style={{ color: pal.inkSoft }}>Choose one rāga and one composer. Apply commits both. Cancel discards the draft.</p>
-            <label className="mt-3 block text-xs font-semibold">Rāga
-                <select
-                    value={draft.ragaId ?? ''}
-                    onChange={(e) => { const r = ragas.find((x) => x.id === e.target.value); onDraftRaga(r?.id ?? null, r?.name ?? null); }}
-                    className="mt-1 w-full rounded border px-2 py-1 text-sm" style={{ borderColor: pal.hairline, background: pal.card, color: pal.ink }}
-                >
-                    <option value="">All ragas</option>
-                    {ragas.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
-                </select>
-            </label>
-            {ragaTotal > ragas.length ? (
-                <p role="note" className="mt-1 text-xs" style={{ color: pal.inkSoft }}>
-                    Mobile lists only the first {ragas.length} of {ragaTotal} ragas here, so the others cannot be picked in the app (TRACK-158 finding D8).
-                </p>
+
+            <p className="mt-3 text-xs font-semibold" style={{ color: pal.primary }}>Ragas</p>
+            <form className="mt-1 flex gap-2" onSubmit={(e) => { e.preventDefault(); p.onRagaSearch(); }}>
+                <input
+                    aria-label="Find a rāga"
+                    value={p.ragaText}
+                    onChange={(e) => p.onRagaText(e.target.value)}
+                    placeholder="Find a rāga"
+                    className="min-w-0 flex-1 rounded border px-2 py-1 text-sm"
+                    style={{ borderColor: pal.hairline, background: pal.card, color: pal.ink }}
+                />
+                <button type="submit" className="rounded border px-2 py-1 text-xs" style={{ borderColor: pal.hairline }}>Find</button>
+            </form>
+            <div className="mt-2 flex flex-wrap gap-1">
+                <Chip label="All ragas" selected={!p.draft.ragaId} onClick={() => p.onDraftRaga(null, null)} />
+                {chosenMissing ? <Chip label={p.draft.ragaLabel as string} selected onClick={() => p.onDraftRaga(null, null)} /> : null}
+                {p.ragas.map((r) => <Chip key={r.id} label={r.name} selected={p.draft.ragaId === r.id} onClick={() => p.onDraftRaga(r.id, r.name)} />)}
+            </div>
+            {p.ragaQuery && p.ragas.length === 0 ? (
+                <p className="mt-1 text-xs" style={{ color: pal.inkSoft }}>No rāga matches that name.</p>
+            ) : p.ragaTotal > 0 ? (
+                <p className="mt-1 text-xs" style={{ color: pal.inkSoft }}>Showing {p.ragas.length} of {p.ragaTotal}</p>
             ) : null}
-            <label className="mt-3 block text-xs font-semibold">Composer
-                <select
-                    value={draft.composerId ?? ''}
-                    onChange={(e) => { const c = composers.find((x) => x.id === e.target.value); onDraftComposer(c?.id ?? null, c?.name ?? null); }}
-                    className="mt-1 w-full rounded border px-2 py-1 text-sm" style={{ borderColor: pal.hairline, background: pal.card, color: pal.ink }}
-                >
-                    <option value="">All composers</option>
-                    {composers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                </select>
-            </label>
+            {p.ragas.length < p.ragaTotal ? (
+                <button type="button" onClick={p.onLoadMoreRagas} className="mt-1 text-xs font-semibold underline" style={{ color: pal.primary }}>Load more</button>
+            ) : null}
+
+            <p className="mt-4 text-xs font-semibold" style={{ color: pal.primary }}>Composers</p>
+            <div className="mt-2 flex flex-wrap gap-1">
+                <Chip label="All composers" selected={!p.draft.composerId} onClick={() => p.onDraftComposer(null, null)} />
+                {p.composers.map((c) => <Chip key={c.id} label={c.name} selected={p.draft.composerId === c.id} onClick={() => p.onDraftComposer(c.id, c.name)} />)}
+            </div>
+            {p.composers.length < p.composerTotal ? (
+                <button type="button" onClick={p.onLoadMoreComposers} className="mt-1 text-xs font-semibold underline" style={{ color: pal.primary }}>Load more composers</button>
+            ) : null}
+
             <div className="mt-4 flex gap-2">
-                <button type="button" onClick={onApply} className="rounded px-3 py-1 text-sm text-white" style={{ background: pal.primary }}>Apply filters</button>
-                <button type="button" onClick={onCancel} className="rounded border px-3 py-1 text-sm" style={{ borderColor: pal.hairline }}>Cancel</button>
-                <button type="button" onClick={onReset} className="rounded border px-3 py-1 text-sm" style={{ borderColor: pal.hairline }}>Reset</button>
+                <button type="button" onClick={p.onApply} className="rounded px-3 py-1 text-sm text-white" style={{ background: pal.primary }}>Apply filters</button>
+                <button type="button" onClick={p.onCancel} className="rounded border px-3 py-1 text-sm" style={{ borderColor: pal.hairline }}>Cancel</button>
+                <button type="button" onClick={p.onReset} className="rounded border px-3 py-1 text-sm" style={{ borderColor: pal.hairline }}>Reset</button>
             </div>
         </div>
     );
