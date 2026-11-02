@@ -1,17 +1,17 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Proposed |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-11-01 |
+| **Status** | In Progress |
+| **Version** | 1.2.0 |
+| **Last Updated** | 2026-11-02 |
 | **Author** | Sangeetha Grantha Team |
 
 # Track: Stray digits in Tamil-script lyrics
 
 **ID:** TRACK-156
-**Status:** Proposed — Intent, Spec and Plan drafted; none yet Accepted
+**Status:** In Progress — Intent, Spec and Plan Accepted
 **Owner:** Seshadri
 **Created:** 2026-11-01
-**Updated:** 2026-11-01
+**Updated:** 2026-11-02
 
 ## Goal
 
@@ -113,11 +113,23 @@ Result: **81 sections in 78 krithis** keep a digit after markers are removed. Th
 
 Each is a lyric-correctness defect of its own; they are proposed for a follow-up track rather than widened into this one.
 
+### Musicologist review of the marker sample (2026-11-02)
+
+The `carnatic-musicologist` agent checked 125 sections (62 krithis; Tyagaraja, Dikshitar, Syama Sastri; including hErambAya and the 14-raga viSva nAthaM bhajEhaM) against their Latin text. **Verdict: mapping confirmed, no contradiction**, display form acceptable. It found these refinements, all adopted in the implementation (Plan divergence recorded here):
+
+1. The digit can follow a vowel sign or virama (`ஆதி 3`, `கௌ 3`, `ரு 2`, `ப் 3`), about 400 of 914 occurrences in the sample. The rule therefore validates the **(base letter, digit) pair**: `க ச ட த ப` with 2–4, `ஸ` with 1, `ரு` with 2, and (found in the full corpus by us) `ஜ` with 2 (jha). Any other pair, such as `கீதம் 1` (ம), is left alone.
+2. The leaked four-line notation legend is not lyric text and must not be formatted; the formatter skips it (stripping it from data is the follow-up track).
+3. Plain `ஸ` can still be ś (`ஸ்ரீ`): a source convention, no effect on the rule.
+
+Corpus check of the final rule over all 4,318 stored Tamil sections: 31,656 marker pairs found, 0 invalid pairs. Remaining ASCII digits 1–4 outside the legend are only line-start ordinals, Geetham numbers (`கீதம் 1` to `4`) and one bracketed form `(கீ)3` that the notation does not define (left as stored).
+
+**Spacing finding (changes R1).** A single space after a digit is sometimes mid-word (`தே 3 வ`, dEva) and sometimes a word boundary (`நிதே 4 ஜய`, nidhE jaya); stored text cannot tell which. So the formatter always removes the space **before** the digit and removes the space **after** it only when the base ends in a virama (which must continue into the next consonant). hErambAya's Pallava is shown as `ஹேரம்பா³ ய நமஸ்தே ஹரி ப்³ரஹ்மேந்த்³ராதி³ -`; the `பா³ ய` gap remains. Closing that gap needs word boundaries restored in the data (re-extraction or Latin-aligned repair) and is left to the follow-up track.
+
 ## Intent
 
-**Status:** Draft
-**Accepted by:** —
-**Accepted at:** —
+**Status:** Accepted
+**Accepted by:** Seshadri (chat instruction)
+**Accepted at:** 2026-11-02
 
 ### Problem
 
@@ -143,16 +155,16 @@ Rasika readers (iOS and Android) of the Tamil script; the V2 public lyric payloa
 
 ### Open questions
 
-1. **Layer.** Display-only transform (stored text untouched), or one-time repair of stored text to Unicode superscripts? Recommended: display-only (see Plan).
+1. **Layer.** Display-only transform (stored text untouched), or one-time repair of stored text to Unicode superscripts? **Decided 2026-11-02:** display-only; stored text untouched, no data repair.
 2. **Which form for readers who do not know the scheme?** Superscript digits as the sources print them, or a plain-Tamil reading (for example `க³` shown as the Grantha letter `க்³`/`ग` equivalent)? Recommended: superscript digits now; a legend or Grantha rendering is a later product decision.
 3. **Should the Curator UI apply the same display step?** Curators editing the Tamil text need the raw form. Recommended: raw in the editor, formatted in read views only.
 4. **Leaked legend, "Word Division" heading and `kshEtra` line:** separate follow-up track, yes or no?
 
 ## Spec
 
-**Status:** Draft
-**Accepted by:** —
-**Accepted at:** —
+**Status:** Accepted
+**Accepted by:** Seshadri (chat instruction)
+**Accepted at:** 2026-11-02
 
 ### Requirements
 
@@ -182,9 +194,9 @@ Questions 1 to 4 from Intent, with the recommendations stated there.
 
 ## Plan
 
-**Status:** Draft
-**Accepted by:** —
-**Accepted at:** —
+**Status:** Accepted
+**Accepted by:** Seshadri (chat instruction)
+**Accepted at:** 2026-11-02
 
 ### Files that change
 
@@ -219,11 +231,15 @@ If the Spec's recommendation is overturned and Seshadri prefers repairing stored
 
 ## Implementation Plan
 
-- [ ] Musicologist review of the marker sample (Plan step 1)
-- [ ] Failing tests, then `TamilNotation.kt` and reader wiring
-- [ ] Simulator and Android glyph check
-- [ ] Domain Model §6 note, `make check-docs`, close the track
+- [x] Musicologist review of the marker sample (Plan step 1)
+- [x] Failing tests, then `TamilNotation.kt` and reader wiring
+- [x] Simulator glyph check on iPhone 18 Pro ([screenshot](evidence/TRACK-156-tamil-reader-after.png)); Android not run in this environment
+- [x] Domain Model §6.5 note, `make check-docs`
+- [ ] Close the track after review and merge
 
 ## Progress Log
 
 - **2026-11-01**: Track created. Read-only investigation of the dev database and the worker code established that the digits are the source edition's Tamil notation, present on all 1,125 Tamil variants (4,213 of 4,318 sections), and that no stage of the pipeline alters them. Intent, Spec and Plan drafted; awaiting Seshadri's acceptance of each.
+- **2026-11-02**: Seshadri accepted Intent, Spec and Plan with the display-only fix. Track In Progress.
+- **2026-11-02**: Musicologist review confirmed the mapping; rule refined (pair validation, legend skip, spacing). `TamilNotation.kt`, reader wiring, unit and corpus tests, Domain Model §6.5 done.
+- **2026-11-02**: iPhone 18 Pro simulator check: superscript glyphs (¹ ² ³ ⁴) render in the Tamil reader with consistent baselines and no fallback boxes. Search on the running backend returned "could not reach the catalogue" (older backend build; not part of this change), so the reader was reached through Collections.
