@@ -7,8 +7,15 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.route
 
-fun Route.rasikaCatalogueRoutes(catalogueService: CatalogueService) {
-    route(RasikaCatalogueContract.ROOT) {
+/**
+ * The V2 reads. [root] is overridden only by the admin-gated preview mount (TRACK-158), which passes a
+ * service over the unpublished-visible repository so both mounts share these exact handlers.
+ */
+fun Route.rasikaCatalogueRoutes(
+    catalogueService: CatalogueService,
+    root: String = RasikaCatalogueContract.ROOT,
+) {
+    route(root) {
         get("/discovery") {
             call.respondCatalogue(
                 catalogueService.discovery(call.request.queryParameters, CatalogueVisibility.ALL_PUBLISHED),

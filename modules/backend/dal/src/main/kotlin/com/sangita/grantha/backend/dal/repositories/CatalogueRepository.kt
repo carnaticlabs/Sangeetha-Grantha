@@ -10,6 +10,7 @@ import com.sangita.grantha.backend.dal.models.CatalogueLike
 import com.sangita.grantha.backend.dal.models.CatalogueReadingDefaults
 import com.sangita.grantha.backend.dal.models.RasikaCatalogueMappers
 import com.sangita.grantha.backend.dal.models.CatalogueVisibility
+import com.sangita.grantha.backend.dal.models.PreviewScope
 import com.sangita.grantha.backend.dal.models.toDto
 import com.sangita.grantha.backend.dal.support.toJavaUuid
 import com.sangita.grantha.backend.dal.support.toKotlinUuid
@@ -120,7 +121,10 @@ data class TempleSearchFacts(
  * Published-only Rasika catalogue reads (TRACK-138). Raga membership is always
  * the `krithi_ragas` junction, including repeated ragamalika rows.
  */
-class CatalogueRepository {
+class CatalogueRepository(private val scope: PreviewScope = PreviewScope.PUBLISHED_ONLY) {
+
+    /** The same reads with draft and in-review compositions visible, for the curator preview (TRACK-158). */
+    fun previewing(): CatalogueRepository = CatalogueRepository(PreviewScope.INCLUDE_UNPUBLISHED)
 
     suspend fun searchKrithis(
         query: String?,
@@ -840,7 +844,11 @@ class CatalogueRepository {
 
 
     private fun publishedComposition(visibility: CatalogueVisibility): Op<Boolean> {
-        val published = KrithisTable.workflowState eq WorkflowState.PUBLISHED
+        val published = if (scope == PreviewScope.INCLUDE_UNPUBLISHED) {
+            KrithisTable.workflowState neq WorkflowState.ARCHIVED
+        } else {
+            KrithisTable.workflowState eq WorkflowState.PUBLISHED
+        }
         return if (visibility == CatalogueVisibility.LEGACY_KNOWN_FORMS) {
             published and (KrithisTable.musicalForm neq MusicalForm.UNESTABLISHED)
         } else {

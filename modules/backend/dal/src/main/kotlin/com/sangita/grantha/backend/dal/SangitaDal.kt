@@ -16,6 +16,7 @@ import com.sangita.grantha.backend.dal.repositories.KrithiLyricRepository
 import com.sangita.grantha.backend.dal.repositories.KrithiRepository
 import com.sangita.grantha.backend.dal.repositories.KrithiSearchRepository
 import com.sangita.grantha.backend.dal.repositories.MacroSearchRepository
+import com.sangita.grantha.backend.dal.repositories.PreviewIndexRepository
 //import com.sangita.grantha.backend.dal.repositories.NotationRepository
 import com.sangita.grantha.backend.dal.repositories.QualityDashboardRepository
 import com.sangita.grantha.backend.dal.repositories.RevisionRepository
@@ -40,6 +41,7 @@ interface SangitaDal {
     val krithis: KrithiRepository
     val krithiSearch: KrithiSearchRepository
     val macroSearch: MacroSearchRepository
+    val previewIndex: PreviewIndexRepository
     val catalogue: CatalogueRepository
     val krithiLyrics: KrithiLyricRepository
     val composerAliases: ComposerAliasRepository
@@ -78,6 +80,7 @@ class SangitaDalImpl : SangitaDal {
     override val krithis = KrithiRepository()
     override val krithiSearch = KrithiSearchRepository()
     override val macroSearch = MacroSearchRepository()
+    override val previewIndex = PreviewIndexRepository()
     override val catalogue = CatalogueRepository()
     override val krithiLyrics = KrithiLyricRepository()
     override val composerAliases = ComposerAliasRepository()

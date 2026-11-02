@@ -1,6 +1,7 @@
 package com.sangita.grantha.backend.api.plugins
 
 import com.sangita.grantha.backend.api.routes.catalogueRoutes
+import com.sangita.grantha.backend.api.routes.previewSearchRoutes
 import com.sangita.grantha.backend.api.routes.rasikaCatalogueRoutes
 import com.sangita.grantha.backend.api.routes.adminDashboardRoutes
 import com.sangita.grantha.backend.api.routes.adminKrithiRoutes
@@ -74,6 +75,7 @@ fun Application.configureRouting() {
     val ragaResolutionService by inject<RagaResolutionService>()
     val hybridSearchService by inject<HybridSearchService>()
     val rasikaSearchService by inject<RasikaSearchService>()
+    val previewSearchService by inject<com.sangita.grantha.backend.api.services.PreviewSearchService>()
     val metricsRegistry by inject<PrometheusMeterRegistry>()
     val env by inject<ApiEnvironment>()
     val jwtConfig by inject<JwtConfig>()
@@ -109,6 +111,12 @@ fun Application.configureRouting() {
                 remediationRoutes(auditRunnerService, remediationService, extractionProcessor)
                 curatorRoutes(curatorService, ragaResolutionService)
                 metricsRoutes(metricsRegistry)
+                // TRACK-158: the V2 reads again, over the unpublished-visible repository, outside
+                // /v2/catalogue so mobile usage logging and anonymous access never see them.
+                rasikaCatalogueRoutes(catalogueService.previewing(), PREVIEW_CATALOGUE_ROOT)
+                // The unchanged published-only reads, so a curator can check exactly what mobile gets without the usage log seeing it.
+                rasikaCatalogueRoutes(catalogueService, PREVIEW_MOBILE_ROOT)
+                previewSearchRoutes(previewSearchService)
             }
         }
         
@@ -118,3 +126,9 @@ fun Application.configureRouting() {
         }
     }
 }
+
+/** Curator Mobile Preview mount of the V2 catalogue reads (TRACK-158). Admin only; never under `/v2/catalogue`. */
+const val PREVIEW_CATALOGUE_ROOT = "/v1/admin/preview/catalogue"
+
+/** Admin-gated mirror of the published-only V2 reads: byte-identical to `/v2/catalogue`, outside its usage logging. */
+const val PREVIEW_MOBILE_ROOT = "/v1/admin/preview/mobile"
