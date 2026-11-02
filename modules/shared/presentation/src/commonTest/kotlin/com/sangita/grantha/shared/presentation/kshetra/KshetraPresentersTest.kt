@@ -108,6 +108,26 @@ class KshetraPresentersTest {
     }
 
     @Test
+    fun reenteringTheListKeepsTheElementFilterAndDoesNotReload() = runTest {
+        var calls = 0
+        val api = object : CatalogueApi by FixtureCatalogueApi() {
+            override suspend fun listTemples(interaction: InteractionContext): CatalogueTempleListDto {
+                calls++
+                return KshetraFixtures.list
+            }
+        }
+        val presenter = KshetraListPresenter(repo(api), session, this)
+        presenter.loadIfNeeded()
+        advanceUntilIdle()
+        presenter.selectElement(CatalogueTempleElementDto.AKASHA)
+        // The screen is recomposed from scratch on back and asks again.
+        presenter.loadIfNeeded()
+        advanceUntilIdle()
+        assertEquals(1, calls)
+        assertEquals(CatalogueTempleElementDto.AKASHA, presenter.state.value.element)
+    }
+
+    @Test
     fun anElementFilterSurvivesRefreshOnlyIfStillPresent() = runTest {
         val presenter = KshetraListPresenter(repo(), session, this)
         presenter.loadIfNeeded()
