@@ -1,14 +1,14 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | In Progress |
-| **Version** | 1.1.0 |
+| **Status** | Completed |
+| **Version** | 1.2.0 |
 | **Last Updated** | 2026-11-02 |
 | **Author** | Sangeetha Grantha Team |
 
 # Track: Macro Search Follow-ups
 
 **ID:** TRACK-157
-**Status:** In Progress (Intent, Spec and Plan accepted 2026-11-02; live runs not authorised)
+**Status:** Completed (2026-11-02)
 **Owner:** Seshadri
 **Created:** 2026-11-01
 **Updated:** 2026-11-02
@@ -293,13 +293,13 @@ Authorised by Seshadri in chat. This branch's backend ran on port 8081 against t
 - [x] Phase 2 proof: `--via-api` run 2026-11-02 (see Results, live run 2).
 - [x] Seshadri's keep or drop on the review table rows: keep all (2026-11-02).
 - [x] Phase 3 code and docs: `--macro-only`, `--check`, shared freshness logic, tests, runbook, corrected `search.md` snippet.
-- [ ] Phase 3 per-environment: `--macro-only --check` output for each environment. Local dev database done 2026-11-02 (stale = 0 after a 2-call re-embed, see Progress Log). Other environments: not run; none are known or reachable from this session.
+- [x] Phase 3 per-environment: `--macro-only --check` output for each environment. Local dev database done 2026-11-02 (stale = 0 after a 2-call re-embed, see Progress Log). No other environment serves search today (Seshadri, 2026-11-02); any future one follows the runbook.
 
 ## Open items for Seshadri (not done by this track)
 
-1. Check Gemini usage in the Google console for the reported extra calls (about 1,000 paid embedding calls beyond what was authorised, reversed from a hash-verified backup, per the TRACK-152 Progress Log). Not verified here and not verifiable from the repo.
-2. Authorise each live run in the Plan when its turn comes.
-3. Confirm which probe the "Syama Sastri Ratnatrayam" query is.
+1. ~~Check Gemini usage in the Google console~~ Done 2026-11-02 (see Progress Log): net ₹0.00.
+2. ~~Authorise each live run~~ Done: runs 1 and 2 and the dev re-embed were authorised.
+3. ~~Confirm which probe the "Syama Sastri Ratnatrayam" query is~~ Recorded as `SS-146-01` in the review table; Seshadri kept all rows.
 
 ## Progress Log
 
@@ -310,3 +310,4 @@ Authorised by Seshadri in chat. This branch's backend ran on port 8081 against t
 - **2026-11-02 (live run 2)**: Seshadri authorised the `--via-api` proof. Ran this branch's backend on 8081 (the worker and backend found their keys through the repo's config loading via temporary symlinks to the gitignored files, since removed; no key was read or printed). All three macro probes HIT at rank 1, `items` parity 0 differences in both modes, no card on the exact-title or wrong-looking probes. Nine non-macro probes show cards; table updated. Remaining: Seshadri's keep or drop on the review rows, the per-environment `--macro-only --check`, and the Gemini usage check.
 - **2026-11-02**: Seshadri decided to keep every card in the review table (`EVAL-05`, `EVAL-06`, `EVAL-20`, `EVAL-22`, `EVAL-24`, `EVAL-26`, `EVAL-27`, `SS-146-01`, `SS-146-02`, `SS-146-03`). No floor change follows. Remaining: per-environment `--macro-only --check` and the Gemini usage check (Seshadri's).
 - **2026-11-02 (dev environment check)**: Phase 3 run on the local dev database (migration version 69, 106 published macro overviews, active profile `gemini-embedding-2` / 768). `--macro-only --check` (read-only, no API call) reported `checked = 106 | stale = 2 (cycle 0, kshetra 2)`: `KSHETRA_OVERVIEW` Bhagavati Amman Temple (Kanyakumari) and Saraswati Temple (Basara), both "source data changed since the document was stored" (the Kanyakumari wording change and the TRACK-154 Basara correction). `--macro-only --dry-run` (no API call) said it would embed 0 cycle and 2 kshetra overviews, 12 and 92 up to date. Seshadri authorised the re-embed: `--macro-only` made exactly 2 `batchEmbedContents` calls (both HTTP 200) and embedded 2 kshetra overviews. Re-check: `Macro freshness | checked = 106 | stale = 0 (cycle 0, kshetra 0) | profile 01a07605-793b-7209-bbd2-f173e41b6d92`. Gemini usage was checked in the Google Cloud console the same day: about 6.88 million embedding tokens in the last 90 days, gross ₹131.59, fully offset by savings (net ₹0.00); October 26 and 27 showed 130,751 tokens (₹2.51 gross), the upper bound for the extra calls. Remaining: the same check in any other environment that serves search.
+- **2026-11-02 (closure)**: Track closed. All phases done; the dev database is the only environment that serves search, so the per-environment check is complete. Future environments follow `macro-embeddings-runbook.md` (migrate, `--macro-only --check`, `--dry-run`, authorised `--macro-only`, re-check).
