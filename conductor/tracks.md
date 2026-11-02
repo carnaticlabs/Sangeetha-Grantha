@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.36.0 |
-| **Last Updated** | 2026-10-15 |
+| **Version** | 1.37.0 |
+| **Last Updated** | 2026-11-02 |
 | **Author** | Sangeetha Grantha Team |
 
 # Conductor Tracks Registry
@@ -161,6 +161,7 @@
 | [TRACK-155](./tracks/TRACK-155-rasika-kshetra-list-ux.md) | Rasika Kshetra List UX | Completed |
 | [TRACK-156](./tracks/TRACK-156-tamil-lyric-stray-digits.md) | Stray digits in Tamil-script lyrics | Completed |
 | [TRACK-157](./tracks/TRACK-157-macro-search-followups.md) | Macro Search Follow-ups | Completed |
+| [TRACK-158](./tracks/TRACK-158-mobile-preview.md) | Mobile Preview (Admin Web) | Completed |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)

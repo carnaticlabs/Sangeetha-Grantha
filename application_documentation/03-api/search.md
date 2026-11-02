@@ -89,6 +89,10 @@ Every `COLLECTION` hit opens `/v2/catalogue/collections/{slug}` and every `KSHET
 
 Sources: [RasikaSearchService](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/RasikaSearchService.kt), [MacroSearchRepository](../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/repositories/MacroSearchRepository.kt), [CatalogueSearchDtos](../../modules/shared/domain/src/commonMain/kotlin/com/sangita/grantha/shared/domain/model/catalogue/CatalogueSearchDtos.kt).
 
+## Curator preview of mobile search (TRACK-158)
+
+The Curator Console's [Mobile Preview](../05-frontend/admin-web/mobile-preview.md) runs this same V2 pipeline through admin-gated routes: `POST /v1/admin/preview/search/{hybrid|semantic}` wraps the unchanged V2 response with an explanation (active profile, the floor, every macro candidate and why it was hidden) and, for `scope: INCLUDE_UNPUBLISHED`, the ids of unpublished results. `GET /v1/admin/preview/krithis/{id}/index-status` reports whether the search index may be behind an edit, from timestamps. These routes are read-only, rate-limited to 20 requests per minute per curator and not recorded in the mobile usage log.
+
 ## Ranking and result identity
 
 Semantic retrieval uses cosine similarity (`1 - cosine distance`) and selects one representative matched document per composition. Hybrid retrieves up to 500 lexical and vector candidates per branch, combines document ranks with `1/(60 + vectorRank) + 1/(60 + lexicalRank)` for the available branches, then selects one representative per composition. Small overview preferences influence representative selection.

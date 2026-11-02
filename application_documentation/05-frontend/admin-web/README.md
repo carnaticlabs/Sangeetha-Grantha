@@ -15,6 +15,7 @@ The [screen guide](./ui-specs.md) explains navigation, search, editing, sourcing
 ## In this section
 
 - [Curator Console guide](./ui-specs.md)
+- [Mobile Preview](./mobile-preview.md)
 
 ---
 

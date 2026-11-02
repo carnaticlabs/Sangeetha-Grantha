@@ -1019,6 +1019,125 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /v1/admin/preview/search/hybrid:
+    post:
+      tags: [Admin, Search]
+      summary: Mobile Preview hybrid search (curator, TRACK-158)
+      description: >
+        Admin role required. Runs the same `RasikaSearchService` the V2 route runs, so with
+        `scope: PUBLISHED_ONLY` (the default) `response` equals the V2 response for the same query. `INCLUDE_UNPUBLISHED`
+        also lets indexed draft and in-review krithis into the kriti list and lists them in `unpublishedKrithiIds`;
+        macro cards and `exactTitleMatchId` keep their published-only rules. `explain` reports the active embedding
+        profile, the floor in force and every collection or kshetra candidate with the condition that kept it out.
+        Read-only, writes nothing, is not recorded in the mobile usage log, and is limited to 20 requests per minute per
+        curator (429 beyond that). Each call may embed the query once (cached per query string).
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PreviewSearchRequest"
+      responses:
+        "200":
+          description: The V2 response, the explanation, and the unpublished result ids
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PreviewSearchResponse"
+        "401": { description: Not authenticated }
+        "403": { description: Authenticated without the admin role }
+        "429": { description: Preview search rate limit reached }
+        "503":
+          description: Incompatible embedding profile or embedder failure
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /v1/admin/preview/search/semantic:
+    post:
+      tags: [Admin, Search]
+      summary: Mobile Preview semantic search (curator, TRACK-158)
+      description: Same contract as `/v1/admin/preview/search/hybrid`, vector ranking only.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PreviewSearchRequest"
+      responses:
+        "200":
+          description: The V2 response, the explanation, and the unpublished result ids
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PreviewSearchResponse"
+        "401": { description: Not authenticated }
+        "403": { description: Authenticated without the admin role }
+        "429": { description: Preview search rate limit reached }
+        "503":
+          description: Incompatible embedding profile or embedder failure
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /v1/admin/preview/krithis/{id}/index-status:
+    get:
+      tags: [Admin, Search]
+      summary: Search index freshness for one krithi (curator, TRACK-158)
+      description: >
+        Admin role required. Compares the newest change to the krithi, its sections, lyric variants and lyric sections
+        with the newest write to its search documents, checks the published flag against the workflow state and that
+        embeddings exist for the active profile. Timestamps only: `CURRENT` means nothing changed after the documents were
+        written, not that their text is identical. Known blind spots: a raga or composer rename, and a no-op edit
+        followed by a worker run that skipped on an unchanged hash.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: Index status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PreviewIndexStatus"
+        "400": { description: id is not a UUID }
+        "401": { description: Not authenticated }
+        "403": { description: Authenticated without the admin role }
+        "404": { description: Unknown krithi }
+
+  /v1/admin/preview/catalogue/{path}:
+    get:
+      tags: [Admin, Catalogue]
+      summary: Mobile Preview catalogue reads including unpublished krithis (curator, TRACK-158)
+      description: >
+        Admin role required. Mirrors every `GET /v2/catalogue/*` read (discovery, krithis, krithis/{id},
+        krithis/{id}/lyrics/{variantId}, facets, ragas, composers, collections, temples and their detail routes) with the same
+        handlers and DTOs, but draft and in-review krithis are visible; archived stay hidden. Collection and kshetra
+        eligibility keeps its published-only rules. `/v1/admin/preview/mobile/{path}` is the same mirror over the
+        unchanged published-only reads and returns exactly what `/v2/catalogue/{path}` returns.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: path
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: The V2 DTO for that read }
+        "401": { description: Not authenticated }
+        "403": { description: Authenticated without the admin role }
+        "404": { description: Unknown or archived }
+
   /v1/search/hybrid:
     post:
       tags: [Search]
@@ -3284,6 +3403,80 @@ components:
           type: string
           format: uuid
           description: Present when the query equals a published kriti's normalised title or incipit.
+
+    PreviewSearchRequest:
+      type: object
+      required: [query]
+      properties:
+        query: { type: string }
+        composerId: { type: string, format: uuid, nullable: true }
+        ragaId: { type: string, format: uuid, nullable: true }
+        limit: { type: integer, default: 30 }
+        scope: { type: string, enum: [PUBLISHED_ONLY, INCLUDE_UNPUBLISHED], default: PUBLISHED_ONLY }
+        explain: { type: boolean, default: true }
+
+    PreviewSearchResponse:
+      type: object
+      required: [response]
+      properties:
+        response:
+          $ref: "#/components/schemas/CatalogueSearchResponse"
+        explain:
+          $ref: "#/components/schemas/PreviewSearchExplain"
+        unpublishedKrithiIds:
+          type: array
+          description: Result krithis that are not published; empty for PUBLISHED_ONLY.
+          items: { type: string, format: uuid }
+
+    PreviewSearchExplain:
+      type: object
+      required: [mode, floorCalibrated, macroCandidates]
+      properties:
+        mode: { type: string, enum: [HYBRID, SEMANTIC] }
+        profileModel: { type: string, nullable: true }
+        profileDimensions: { type: integer, nullable: true }
+        floorCalibrated:
+          type: boolean
+          description: False when the active profile has no calibrated floor, so no card can show.
+        floor:
+          type: object
+          nullable: true
+          required: [minGap]
+          properties:
+            minSimilarity: { type: number, nullable: true }
+            minLexical: { type: number, nullable: true }
+            minGap: { type: number }
+        macroCandidates:
+          type: array
+          items:
+            type: object
+            required: [kind, title, cleared]
+            properties:
+              kind: { type: string, enum: [COLLECTION, KSHETRA] }
+              title: { type: string }
+              similarity: { type: number, nullable: true }
+              gap: { type: number, nullable: true }
+              lexicalScore: { type: number, nullable: true }
+              cleared: { type: boolean }
+              reason: { type: string, nullable: true }
+
+    PreviewIndexStatus:
+      type: object
+      required: [krithiId, verdict, workflowState, documentCount, publishedFlagMatches, embeddedForActiveProfile, reasons]
+      properties:
+        krithiId: { type: string, format: uuid }
+        verdict: { type: string, enum: [NOT_INDEXED, MAY_BE_STALE, CURRENT] }
+        workflowState: { type: string }
+        documentCount: { type: integer }
+        publishedFlagMatches: { type: boolean }
+        embeddedForActiveProfile: { type: boolean }
+        indexedAt: { type: string, format: date-time, nullable: true }
+        sourceUpdatedAt: { type: string, format: date-time, nullable: true }
+        activeProfileModel: { type: string, nullable: true }
+        activeProfileDimensions: { type: integer, nullable: true }
+        reasons:
+          type: array
+          items: { type: string }
 
     CatalogueMacroHit:
       type: object
