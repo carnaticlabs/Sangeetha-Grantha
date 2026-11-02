@@ -13,11 +13,30 @@ import com.sangita.grantha.shared.domain.model.catalogue.CatalogueSearchHitKindD
 import com.sangita.grantha.shared.domain.model.catalogue.CatalogueSearchResponseDto
 
 /**
- * A macro candidate is shown only when it clears the floor: dense similarity at or above
- * [minSimilarity], or (hybrid only) a lexical score at or above [minLexical]. Without a floor
- * every query would return three cards out of ~105 documents (TRACK-152 Spec 13).
+ * A macro candidate is shown only when it clears the floor (TRACK-152 Spec 13, TRACK-157): either dense
+ * similarity at or above [minSimilarity] *and* standing out from the pack by at least [minGap] (its
+ * similarity minus the 4th-best anchor's), or (hybrid only) a lexical score at or above [minLexical].
+ * Without a floor every query would return three cards out of ~105 documents; the gap condition is what
+ * keeps a flat score landscape, where nothing really stands out, from producing a card.
  */
-data class MacroFloor(val minSimilarity: Double, val minLexical: Double)
+data class MacroFloor(val minSimilarity: Double, val minLexical: Double, val minGap: Double = 0.0)
+
+data class MacroFloorPair(val hybrid: MacroFloor, val semantic: MacroFloor)
+
+/** An embedding profile as it is stored: dense scores are only comparable within one of these. */
+data class ProfileKey(val modelName: String, val dimensions: Int)
+
+/**
+ * Floors per embedding profile. Cosine similarity is specific to a model, width and document text, so a
+ * profile with no entry gets no macro cards (and one WARN) rather than another profile's number.
+ */
+fun interface MacroFloors {
+    fun forProfile(key: ProfileKey): MacroFloorPair?
+}
+
+class ProfileFloors(private val byProfile: Map<ProfileKey, MacroFloorPair>) : MacroFloors {
+    override fun forProfile(key: ProfileKey): MacroFloorPair? = byProfile[key]
+}
 
 enum class RasikaSearchMode { HYBRID, SEMANTIC }
 
@@ -29,9 +48,10 @@ enum class RasikaSearchMode { HYBRID, SEMANTIC }
 class RasikaSearchService(
     private val dal: SangitaDal,
     private val search: HybridSearchService,
-    private val hybridFloor: MacroFloor = DEFAULT_HYBRID_FLOOR,
-    private val semanticFloor: MacroFloor = DEFAULT_SEMANTIC_FLOOR,
+    private val floors: MacroFloors = DEFAULT_FLOORS,
 ) {
+    private val warnedProfiles = java.util.concurrent.ConcurrentHashMap.newKeySet<ProfileKey>()
+
     suspend fun search(request: SemanticSearchRequest, mode: RasikaSearchMode): CatalogueSearchResponseDto {
         val query = request.query.trim()
         if (query.isEmpty()) return CatalogueSearchResponseDto(query = query, totalMatches = 0, items = emptyList())
@@ -80,15 +100,32 @@ class RasikaSearchService(
                 templeIds = temples.keys,
             )
         }
-        val floor = if (mode == RasikaSearchMode.HYBRID) hybridFloor else semanticFloor
+        val floor = floorFor(mode, profile?.let { ProfileKey(it.modelName, it.dimensions) }) ?: return emptyList()
         return candidates
-            .filter { clearsFloor(it, floor) }
+            .filter { Companion.clearsFloor(it, floor) }
             .mapNotNull { toHit(it, collections, temples) }
             .take(CatalogueSearchResponseDto.MAX_MACRO_HITS)
     }
 
-    private fun clearsFloor(c: MacroCandidate, floor: MacroFloor): Boolean =
-        (c.similarity ?: -1.0) >= floor.minSimilarity || (c.lexicalScore ?: -1.0) >= floor.minLexical
+    /**
+     * The floor for the active profile, or null (with one WARN per profile) when it has none. With no active
+     * profile only the lexical route exists, and lexical scores do not depend on an embedding space.
+     */
+    private fun floorFor(mode: RasikaSearchMode, key: ProfileKey?): MacroFloor? {
+        if (key == null) return LEXICAL_ONLY_FLOOR
+        val pair = floors.forProfile(key)
+        if (pair == null) {
+            if (warnedProfiles.add(key)) {
+                logger.warn(
+                    "No macro relevance floor for embedding profile {}/{}; macro cards are off until one is " +
+                        "calibrated (TRACK-157)",
+                    key.modelName, key.dimensions,
+                )
+            }
+            return null
+        }
+        return if (mode == RasikaSearchMode.HYBRID) pair.hybrid else pair.semantic
+    }
 
     private fun toHit(
         c: MacroCandidate,
@@ -125,15 +162,36 @@ class RasikaSearchService(
     }
 
     companion object {
+        private val logger = org.slf4j.LoggerFactory.getLogger(RasikaSearchService::class.java)
+
         /**
-         * Calibrated 2026-10-26 on the benchmark probes (Phase 0 scores): the six exact-title kriti probes
-         * peak at dense similarity 0.787 (lexical 0.63), the macro hits sit at 0.837 and 0.854. 0.83 keeps a
-         * 0.043 margin above the exact-title probes and sits 0.007 below the weakest macro hit; the lexical
-         * floor admits only near-verbatim containment (the only macro route when no profile is active).
-         * Chosen from the gap, not tuned to the last digit.
+         * Calibrated 2026-11-02 on `evals/macro_scores.json` (53 probes against all 106 macro anchors,
+         * `gemini-embedding-2` / 768): the labelled macro hits score 0.836 to 0.852 with a gap to the 4th
+         * anchor of 0.044 to 0.050; the six exact-title kriti probes peak at 0.787; four cards that look wrong
+         * (`EVAL-08`, `TY-147-04`, `TY-147-10`, `EVAL-29`) score 0.819 to 0.823 with a gap of 0.004 to 0.013.
+         * Similarity 0.81 sits 0.026 below the weakest hit and 0.023 above the exact-title peak; gap 0.03
+         * sits 0.014 below the weakest hit's and 0.017 above the wrong-looking cards'. `MacroFloorsMarginTest`
+         * holds these margins against the recorded file. The lexical floor admits only near-verbatim
+         * containment (exact-title probes reach 0.63 at most; the no-profile fallback relies on it).
          */
-        val DEFAULT_HYBRID_FLOOR = MacroFloor(minSimilarity = 0.83, minLexical = 0.8)
-        val DEFAULT_SEMANTIC_FLOOR = MacroFloor(minSimilarity = 0.83, minLexical = Double.MAX_VALUE)
+        val GEMINI_EMBEDDING_2_768 = MacroFloorPair(
+            hybrid = MacroFloor(minSimilarity = 0.81, minLexical = 0.8, minGap = 0.03),
+            semantic = MacroFloor(minSimilarity = 0.81, minLexical = Double.MAX_VALUE, minGap = 0.03),
+        )
+
+        val DEFAULT_FLOORS: MacroFloors = ProfileFloors(
+            mapOf(ProfileKey("gemini-embedding-2", 768) to GEMINI_EMBEDDING_2_768),
+        )
+
+        /** Hybrid with no active embedding profile: lexical containment only. */
+        val LEXICAL_ONLY_FLOOR = MacroFloor(minSimilarity = Double.MAX_VALUE, minLexical = 0.8)
+
+        /** True when [c] clears [floor]; the vector route needs both similarity and a gap. */
+        fun clearsFloor(c: MacroCandidate, floor: MacroFloor): Boolean {
+            val vectorRoute = (c.similarity ?: -1.0) >= floor.minSimilarity &&
+                (c.similarityGap ?: -1.0) >= floor.minGap
+            return vectorRoute || (c.lexicalScore ?: -1.0) >= floor.minLexical
+        }
 
         /** A stored overview shorter than this mostly repeats the temple's name and place. */
         const val THIN_OVERVIEW_LENGTH = 60

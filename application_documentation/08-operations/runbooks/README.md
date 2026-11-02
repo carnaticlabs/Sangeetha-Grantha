@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.2.0 |
-| **Last Updated** | 2026-09-10 |
+| **Version** | 1.3.0 |
+| **Last Updated** | 2026-11-02 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Navigation |
 
@@ -16,6 +16,7 @@ Choose the relevant procedure and confirm the intended environment before mutati
 
 - [Database operations runbook](./database-runbook.md)
 - [Incident Response Runbook](./incident-response.md)
+- [Macro embeddings runbook](./macro-embeddings-runbook.md)
 - [Steel Thread Runbook](./steel-thread-runbook.md)
 
 ---
