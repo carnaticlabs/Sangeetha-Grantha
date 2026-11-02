@@ -1,6 +1,6 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | In Progress |
+| **Status** | Completed |
 | **Version** | 1.0.0 |
 | **Last Updated** | 2026-11-02 |
 | **Author** | Sangeetha Grantha Team |
@@ -8,7 +8,7 @@
 # Track: Rasika Kshetra List UX
 
 **ID:** TRACK-155
-**Status:** In Progress (Intent, Spec and Plan Accepted 2026-11-02)
+**Status:** Completed (PR #59; follow-ups listed in the Progress Log)
 **Owner:** Seshadri
 **Created:** 2026-11-01
 **Updated:** 2026-11-02
@@ -173,7 +173,7 @@ Step 1 baseline numbers, the six simulator items above, the new unit and UI test
 - [x] Per-temple detail scroll state
 - [x] Detail converted to `LazyColumn`
 - [x] Tests and simulator evidence (VoiceOver pass not done)
-- [ ] Track closed (waits for the PR to merge)
+- [x] Track closed
 
 ## Progress Log
 
@@ -183,3 +183,4 @@ Step 1 baseline numbers, the six simulator items above, the new unit and UI test
 - **2026-11-02 baseline**: `GET /v2/catalogue/temples/{Tiruvarur}` = 44,169 bytes in 85 ms (warm, one request), so the payload and server are not the cost; the Spec 8 decision (no page parameter) stands. Before the fix, back from a temple put the list at the top (screenshots in `evidence/TRACK-155/`).
 - **2026-11-02 after**: back restores the list (a row opened mid-list and returned to the same place), the Tiruvarur detail (scrolled deep into its 114 kritis, kriti opened, back, same place within 2 px), a list restored again after back from Tiruvarur, a fresh visit from Home starts at the top, filter on then cleared returns to the top. Tests: `KshetraScrollStatesTest` (6) and one new `KshetraPresentersTest` case; `make test` and `make test-mobile` pass.
 - **Not done, and why**: (1) no before/after frame-time trace of Tiruvarur and no direct measurement of the "keeps moving after a swipe" symptom: synthetic swipes in the simulator do not reproduce a human fling, so Spec requirement 6 (stops within normal fling) is not proven; the lazy list removes the composition cost but if the long deceleration is the platform default it will still be there on a device. (2) No VoiceOver pass. (3) No Collections/Browse baseline; by the same cause they should reset on back and are left unchanged (Option B follow-up). (4) No Compose UI test: the module has no `compose.uiTest` dependency and adding one needs a version-catalog change, which the Plan said to ask about first; the holder logic is unit tested and the walk-through covers the rest. (5) The detail screen still reloads the temple when re-entered (skeleton flash) because `KshetraDetailPresenter.open` always refetches; position is restored regardless. Also seen, unrelated: Explore search showed "Could not reach the catalogue" for "Tiruvarur" while the temple endpoints answered.
+- **2026-11-02**: PR #59 merged after all 11 CI checks passed (including the Android debug APK and iOS simulator host build). Track completed. Open follow-ups: confirm the post-swipe feel on a real touch, a VoiceOver pass, and the same scroll-on-back fix for Collections and Browse (Spec item 4 Option B).
