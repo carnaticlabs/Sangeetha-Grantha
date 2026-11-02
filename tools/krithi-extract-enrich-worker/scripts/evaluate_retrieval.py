@@ -11,10 +11,15 @@ Usage:
   uv run python scripts/evaluate_retrieval.py --mode semantic
   uv run python scripts/evaluate_retrieval.py --mode all
   uv run python scripts/evaluate_retrieval.py --mode hybrid --via-api http://localhost:8080
+  uv run python scripts/evaluate_retrieval.py --dump-macro-scores evals/macro_scores.json
 
 `--via-api` posts each probe to the V2 endpoints (`/v2/catalogue/search/{hybrid|semantic}`) instead of
 querying the database: macro probes are scored on `macroHits`, the rest on `items`. Each probe is also
 posted to the V1 endpoint and the `items` order is compared (TRACK-152 parity check).
+
+`--dump-macro-scores PATH` (TRACK-157) records, for every probe, the dense similarity and the lexical score of
+*every* published macro document (not only the top k), so the backend relevance floor can be calibrated on
+recorded data. Each distinct query is embedded once. It does not score or print metrics.
 """
 
 from __future__ import annotations
@@ -435,6 +440,97 @@ def run_api_suite(base_url: str, benchmarks: list[dict[str, Any]], mode: str, to
     return hits_at_1 / total * 100.0, hits_at_k / total * 100.0, rr_sum / total
 
 
+MACRO_SCORES_SCHEMA = 1
+
+
+def fetch_macro_scores(conn: psycopg.Connection, query: str, query_vector: list[float]) -> list[dict[str, Any]]:
+    """Dense similarity and lexical score of every published macro document under the active profile.
+
+    The lexical score is `word_similarity(query, indexed_content)`, the same predicate the backend's hybrid
+    branch uses. Not filtered by collection or kshetra eligibility (a later join does that), so it can list
+    a few more anchors than the API could return.
+    """
+    sql = """
+        SELECT
+            d.document_kind,
+            COALESCE(d.tag_id, d.temple_id)::text AS anchor_id,
+            COALESCE(tmp.name, tg.display_name_en, '') AS title,
+            d.source_chunk_index,
+            1 - (e.embedding <=> %s::vector(768)) AS similarity,
+            word_similarity(%s, d.indexed_content) AS lexical
+        FROM document_embeddings e
+        JOIN search_documents d ON e.document_id = d.id
+        JOIN embedding_profiles p ON e.profile_id = p.id
+        LEFT JOIN temples tmp ON d.temple_id = tmp.id
+        LEFT JOIN tags tg ON d.tag_id = tg.id
+        WHERE p.is_active = true
+          AND d.is_published = true
+          AND d.document_kind IN ('CYCLE_OVERVIEW', 'KSHETRA_OVERVIEW')
+        ORDER BY similarity DESC, anchor_id, d.source_chunk_index
+    """
+    vec_str = "[" + ",".join(str(v) for v in query_vector) + "]"
+    with conn.cursor(row_factory=dict_row) as cur:
+        cur.execute(sql, (vec_str, query))
+        return cur.fetchall()
+
+
+def build_macro_scores_document(
+    benchmarks: list[dict[str, Any]],
+    embed_query: Any,
+    fetch_scores: Any,
+    profile: dict[str, Any],
+    recorded_on: str,
+) -> dict[str, Any]:
+    """Builds the `macro_scores.json` document. `embed_query(text)` is called once per distinct query."""
+    vectors: dict[str, list[float]] = {}
+    probes: dict[str, Any] = {}
+    for item in benchmarks:
+        query = item["query"]
+        if query not in vectors:
+            vectors[query] = embed_query(query)
+        rows = fetch_scores(query, vectors[query])
+        probes[item["id"]] = {
+            "query": query,
+            "is_macro": bool(item.get("is_macro")),
+            "candidates": [
+                {
+                    "kind": r["document_kind"],
+                    "anchor_id": str(r["anchor_id"]),
+                    "title": r["title"],
+                    "chunk": r["source_chunk_index"],
+                    "similarity": round(float(r["similarity"]), 6),
+                    "lexical": round(float(r["lexical"]), 6),
+                }
+                for r in rows
+            ],
+        }
+    return {
+        "schema": MACRO_SCORES_SCHEMA,
+        "recorded_on": recorded_on,
+        "profile": profile,
+        "note": "Published macro documents under the active profile; not filtered by collection/kshetra eligibility.",
+        "probes": probes,
+    }
+
+
+def dump_macro_scores(conn: psycopg.Connection, embedder: Any, benchmarks: list[dict[str, Any]], path: Path) -> None:
+    with conn.cursor(row_factory=dict_row) as cur:
+        cur.execute("SELECT id::text AS id, model_name, dimensions FROM embedding_profiles WHERE is_active LIMIT 1")
+        row = cur.fetchone()
+    if row is None:
+        raise RuntimeError("No active embedding profile; nothing to score against")
+    doc = build_macro_scores_document(
+        benchmarks,
+        embedder.embed_query,
+        lambda q, v: fetch_macro_scores(conn, q, v),
+        {"id": row["id"], "model_name": row["model_name"], "dimensions": row["dimensions"]},
+        time.strftime("%Y-%m-%d"),
+    )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(doc, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    logger.info("Wrote macro scores for %d probes to %s", len(doc["probes"]), path)
+
+
 def run_benchmark_suite(
     conn: psycopg.Connection,
     embedder: GeminiEmbedder,
@@ -515,6 +611,13 @@ def main():
         metavar="BASE_URL",
         help="Score probes through a running backend's V2 search endpoints instead of the database",
     )
+    parser.add_argument(
+        "--dump-macro-scores",
+        type=Path,
+        default=None,
+        metavar="PATH",
+        help="Record every probe's similarity and lexical score against all macro documents, then exit",
+    )
     args = parser.parse_args()
 
     benchmarks = load_benchmarks()
@@ -541,6 +644,10 @@ def main():
             sys.exit(0)
 
         embedder = GeminiEmbedder(model=args.model, dimensions=args.dims)
+
+        if args.dump_macro_scores:
+            dump_macro_scores(conn, embedder, benchmarks, args.dump_macro_scores)
+            return
 
         if args.mode in ("hybrid", "all"):
             run_benchmark_suite(conn, embedder, benchmarks, mode="hybrid", top_k=args.k)
