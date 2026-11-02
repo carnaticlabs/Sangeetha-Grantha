@@ -1,6 +1,6 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | In Progress |
+| **Status** | Completed |
 | **Version** | 1.2.0 |
 | **Last Updated** | 2026-11-02 |
 | **Author** | Sangeetha Grantha Team |
@@ -8,7 +8,7 @@
 # Track: Stray digits in Tamil-script lyrics
 
 **ID:** TRACK-156
-**Status:** In Progress — Intent, Spec and Plan Accepted
+**Status:** Complete: Intent, Spec and Plan accepted; display-only fix merged in PR #58
 **Owner:** Seshadri
 **Created:** 2026-11-01
 **Updated:** 2026-11-02
@@ -235,7 +235,7 @@ If the Spec's recommendation is overturned and Seshadri prefers repairing stored
 - [x] Failing tests, then `TamilNotation.kt` and reader wiring
 - [x] Simulator glyph check on iPhone 18 Pro ([screenshot](evidence/TRACK-156-tamil-reader-after.png)); Android not run in this environment
 - [x] Domain Model §6.5 note, `make check-docs`
-- [ ] Close the track after review and merge
+- [x] Close the track after review and merge (PR #58, 2026-11-02)
 
 ## Progress Log
 
@@ -243,3 +243,4 @@ If the Spec's recommendation is overturned and Seshadri prefers repairing stored
 - **2026-11-02**: Seshadri accepted Intent, Spec and Plan with the display-only fix. Track In Progress.
 - **2026-11-02**: Musicologist review confirmed the mapping; rule refined (pair validation, legend skip, spacing). `TamilNotation.kt`, reader wiring, unit and corpus tests, Domain Model §6.5 done.
 - **2026-11-02**: iPhone 18 Pro simulator check: superscript glyphs (¹ ² ³ ⁴) render in the Tamil reader with consistent baselines and no fallback boxes. Search on the running backend returned "could not reach the catalogue" (older backend build; not part of this change), so the reader was reached through Collections.
+- **2026-11-02**: PR #58 merged (`e80d7b3`) with all 11 CI checks green, including backend integration and the iOS simulator host build. Track marked Completed. Open: the glyph check on an Android device or emulator was not run (no Android SDK on the build machine; CI builds the Android debug APK); stored Tamil text is unchanged by design.
