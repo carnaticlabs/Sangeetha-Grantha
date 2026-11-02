@@ -323,6 +323,7 @@ private fun LyricsPane(
                                 section = section,
                                 musicalForm = reader.musicalForm,
                                 ragaLabel = SectionLabels.ragaNamesForSection(reader.ragas, section.sectionId),
+                                script = selected?.script,
                             )
                         }
                     }
@@ -330,7 +331,7 @@ private fun LyricsPane(
             } else if (!unsegmented.isNullOrBlank()) {
                 SelectionContainer {
                     Text(
-                        unsegmented,
+                        displayLyrics(unsegmented, selected?.script),
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(top = RasikaTokens.md),
                     )
@@ -341,11 +342,16 @@ private fun LyricsPane(
     }
 }
 
+/** TRACK-156: Tamil-script text shows the source's digit notation as attached superscripts; stored text is unchanged. */
+private fun displayLyrics(text: String, script: ScriptCodeDto?): String =
+    if (script == ScriptCodeDto.TAMIL) TamilNotation.format(text) else text
+
 @Composable
 private fun LyricSection(
     section: CatalogueLyricSectionDto,
     musicalForm: com.sangita.grantha.shared.domain.model.MusicalFormDto,
     ragaLabel: String?,
+    script: ScriptCodeDto?,
 ) {
     Row(
         Modifier.fillMaxWidth().padding(top = RasikaTokens.lg),
@@ -378,7 +384,7 @@ private fun LyricSection(
     SelectionContainer {
         if (SectionLabels.isPreformattedSwara(section.sectionType)) {
             Text(
-                section.text,
+                displayLyrics(section.text, script),
                 style = MaterialTheme.typography.bodyMedium,
                 softWrap = false,
                 modifier = Modifier
@@ -387,7 +393,7 @@ private fun LyricSection(
             )
         } else {
             Text(
-                section.text,
+                displayLyrics(section.text, script),
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(top = RasikaTokens.sm),
             )
