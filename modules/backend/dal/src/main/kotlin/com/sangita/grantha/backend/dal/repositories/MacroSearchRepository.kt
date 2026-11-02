@@ -20,6 +20,11 @@ data class MacroCandidate(
     val similarity: Double?,
     val lexicalScore: Double?,
     val rrfScore: Double?,
+    /**
+     * Similarity minus that of the 4th-best anchor among all eligible anchors (the lowest one when fewer than
+     * four exist): how far this anchor stands out from the pack. Null when there is no vector score.
+     */
+    val similarityGap: Double? = null,
 )
 
 /**
@@ -118,7 +123,13 @@ class MacroSearchRepository {
                                ) AS anchor_rank
                         FROM fused f JOIN eligible x ON x.id = f.doc_id
                     )
-                    SELECT document_kind, anchor_id, original_content, similarity, lex_score, rrf_score
+                    SELECT document_kind, anchor_id, original_content, similarity, lex_score, rrf_score,
+                           similarity - COALESCE(
+                               NTH_VALUE(similarity, 4) OVER (
+                                   ORDER BY similarity DESC NULLS LAST
+                                   ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING),
+                               MIN(similarity) OVER ()
+                           ) AS sim_gap
                     FROM per_anchor
                     WHERE anchor_rank = 1
                     ORDER BY rrf_score DESC, similarity DESC NULLS LAST, anchor_id
@@ -164,7 +175,13 @@ class MacroSearchRepository {
                     WHERE e.profile_id = ?
                 )
                 SELECT document_kind, anchor_id, original_content, similarity,
-                       CAST(NULL AS double precision) AS lex_score, CAST(NULL AS double precision) AS rrf_score
+                       CAST(NULL AS double precision) AS lex_score, CAST(NULL AS double precision) AS rrf_score,
+                           similarity - COALESCE(
+                               NTH_VALUE(similarity, 4) OVER (
+                                   ORDER BY similarity DESC NULLS LAST
+                                   ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING),
+                               MIN(similarity) OVER ()
+                           ) AS sim_gap
                 FROM scored
                 WHERE anchor_rank = 1
                 ORDER BY similarity DESC, anchor_id
@@ -212,6 +229,7 @@ class MacroSearchRepository {
                     similarity = rs.getObject("similarity")?.let { (it as Number).toDouble() },
                     lexicalScore = if (hybridScores) rs.getObject("lex_score")?.let { (it as Number).toDouble() } else null,
                     rrfScore = if (hybridScores) rs.getObject("rrf_score")?.let { (it as Number).toDouble() } else null,
+                    similarityGap = rs.getObject("sim_gap")?.let { (it as Number).toDouble() },
                 )
             }
         }

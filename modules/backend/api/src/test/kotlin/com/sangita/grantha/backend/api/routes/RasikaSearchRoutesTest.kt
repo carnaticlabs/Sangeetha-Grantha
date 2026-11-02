@@ -7,6 +7,9 @@ import com.sangita.grantha.backend.api.plugins.configureSerialization
 import com.sangita.grantha.backend.api.plugins.configureStatusPages
 import com.sangita.grantha.backend.api.services.CatalogueService
 import com.sangita.grantha.backend.api.services.HybridSearchService
+import com.sangita.grantha.backend.api.services.MacroFloor
+import com.sangita.grantha.backend.api.services.MacroFloorPair
+import com.sangita.grantha.backend.api.services.MacroFloors
 import com.sangita.grantha.backend.api.services.RasikaSearchService
 import com.sangita.grantha.backend.dal.DatabaseFactory
 import com.sangita.grantha.backend.dal.SangitaDal
@@ -55,6 +58,16 @@ import kotlin.test.assertTrue
  * unit vector e0, so a document embedded as e0 scores similarity 1.0 and one embedded as e1 scores 0.
  */
 class RasikaSearchRoutesTest : IntegrationTestBase() {
+    private companion object {
+        /** Synthetic unit vectors score 1.0 or 0 and several documents tie, so only the similarity floor is exercised. */
+        val SYNTHETIC_VECTOR_FLOORS = MacroFloors {
+            MacroFloorPair(
+                hybrid = MacroFloor(minSimilarity = 0.83, minLexical = 0.8),
+                semantic = MacroFloor(minSimilarity = 0.83, minLexical = Double.MAX_VALUE),
+            )
+        }
+    }
+
     private lateinit var dal: SangitaDal
     private lateinit var catalogue: CatalogueService
     private lateinit var searchService: RasikaSearchService
@@ -72,7 +85,7 @@ class RasikaSearchRoutesTest : IntegrationTestBase() {
         dal = SangitaDalImpl()
         catalogue = CatalogueService(dal)
         hybrid = HybridSearchService(dal, GeminiEmbeddingClient(apiKey = "", allowSyntheticFallback = true))
-        searchService = RasikaSearchService(dal, hybrid)
+        searchService = RasikaSearchService(dal, hybrid, floors = SYNTHETIC_VECTOR_FLOORS)
     }
 
     private fun ApplicationTestBuilder.mount() = application {
