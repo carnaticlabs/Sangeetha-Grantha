@@ -218,22 +218,37 @@ These spend Gemini quota and are **not** run by anyone until Seshadri says so fo
 10. Write the runbook and the pointers; replace the broken snippet in `search.md`.
 11. Run `--macro-only --check` against the dev database (read-only) and paste the output; with authorisation, run it in each other environment after its `make migrate` and re-embed, and paste the outputs.
 
-### Review table (to be generated in Phase 2 step 6; recorded data does not exist yet)
+### Review table (from `macro_scores.json`, recorded 2026-11-02)
 
-Prepared from the repo only. No recorded card or score exists for these probes (the Phase 0 baseline stores hit and reciprocal rank only), so the card, score and recommendation columns are placeholders to be filled from `macro_scores.json`. Provisional recommendations come from probe text and expected kriti, and are marked as such.
+Cards that a floor of 0.83 would show, per probe, using each probe's best macro document per anchor (dense similarity, lexical score, `gap4` = top similarity minus the 4th-best anchor's). The recording is not eligibility-filtered, so a row can disappear in the API if its anchor is ineligible. Keep or drop is **provisional** until Seshadri decides; the first four rows follow requirement 8 (the expected kriti is a member of the card's collection, checked by a read-only query on `krithi_cycle_memberships`).
 
-| Probe | Probe text | Card now shown | Similarity / lexical | Provisional recommendation (to confirm) |
+| Probe | Probe text | Card | Sim / lex / gap4 | Recommendation |
 |:---|:---|:---|:---|:---|
-| `EVAL-22` | Swarajathi Kritis of Syama Sastri | To be filled (expected: the Syama Sastri Swarajathi Ratnatrayam collection, not confirmed) | To be filled | Keep, if the card is the Ratnatrayam collection: the query asks for the form by this composer, and the cycle is that set |
-| `SS-146-02` | Syama Sastri Swarajathi in Todi Adi tala Rave Himagiri Kumari 6 charanams | To be filled | To be filled | Keep if the expected kriti (`2974996a-...`, Rave Himagiri Kumari) is a member of the card's collection, drop otherwise; low priority because the kriti is still first |
-| `SS-146-03` | Syama Sastri Swarajathi in Yadukulakambhoji Misra Chapu Kamakshi Ni Padayugamu 11 charanams | To be filled | To be filled | Same rule, expected kriti `7c15e1c9-...` |
-| Ratnatrayam query | Probably `SS-146-01`, "Syama Sastri Swarajathi Ratnatrayam first gem in Bhairavi Misra Chapu Kamakshi Anudinamu" (the TRACK-152 note names "Syama Sastri Ratnatrayam" without an id; the only non-macro probe containing that word is `SS-146-01`; to be confirmed with Seshadri) | To be filled | To be filled | Same rule, expected kriti `f5a415fd-...` |
+| `EVAL-22` | Swarajathi Kritis of Syama Sastri | Syama Sastri Swarajathi Ratnatrayam (collection) | 0.838 / 0.69 / 0.044 | Keep: the form by this composer is that set (no `expected_krithi_id`; judgement) |
+| `SS-146-03` | Syama Sastri Swarajathi in Yadukulakambhoji ... Kamakshi Ni Padayugamu | same | 0.839 / 0.45 / 0.043 | Keep: expected kriti is a member |
+| `SS-146-02` | Syama Sastri Swarajathi in Todi ... Rave Himagiri Kumari | same | 0.831 / 0.38 / 0.049 | Keep: expected kriti is a member |
+| `SS-146-01` ("Ratnatrayam" query) | Syama Sastri Swarajathi Ratnatrayam first gem in Bhairavi ... | same | 0.824 / 0.47 / 0.042 | Keep: expected kriti is a member (below 0.83, so no card today; shows at floor 0.82) |
+| `EVAL-05` | Dikshitar krithi in Chidambaram describing the cosmic dance | Nataraja Temple (kshetra) | 0.849 / 0.30 / 0.041 | Keep, plausible (Seshadri to confirm) |
+| `EVAL-20` | Praise of Lord Shiva Nataraja in Kedaram raga | Nataraja Temple (kshetra) | 0.834 / 0.33 / 0.038 | Keep, plausible |
+| `EVAL-27` | Fifth enclosure Kamalamba Navavarnam Panchami vibhakti Bhairavi | Kamalamba Sannidhi (kshetra) | 0.843 / 0.34 / 0.038 | Keep, plausible (a Kamalamba Navavarnam collection card would fit better; it is second, gap2 0.005) |
+| `EVAL-24` | Muthuswami Dikshitar Agni lingam fire element at Tiruvannamalai | Arunachaleswarar Temple (kshetra) | 0.8304 / 0.45 / 0.047 | Keep: the TRACK-152 Spec expected this card; only 0.0004 above the floor |
+| `EVAL-06` | Abhayamba series krithi in Kalyani raga | Abhayamba Vibhakti Krithis (collection) | 0.8305 / 0.34 / 0.020 | Keep, plausible; weak separation (gap4 0.020) |
 
-If Seshadri prefers not to wait for Phase 1, the same table can be filled by running the four probe queries through the V2 endpoint once, which needs live run 2's calls for four queries only; that also needs authorisation.
+Unreviewed cards the TRACK-152 note did not mention appear in this recording at 0.83 (`EVAL-05`, `EVAL-20`, `EVAL-27`, `EVAL-24`, `EVAL-06`): either they are filtered by eligibility in the API or the note was incomplete; the `--via-api` run settles which.
 
-### Results
+Probes just under 0.83 whose top card looks wrong (so a lower absolute floor would add them): `EVAL-08` Tiruvarur Pancha Linga Krithis for "Dikshitar krithi in Anandabhairavi" (0.823, gap4 0.009), `TY-147-10` (0.821, gap4 0.004), `EVAL-29` (0.819, gap4 0.013) and `TY-147-04` (0.819, gap4 0.012), all Anandavalli Sametha Thanjapureeswarar Temple. These are my reading of the probe text, not labels.
 
-(Filled in Phase 1 and 2 from `macro_scores.json`. Empty until then.)
+### Results (Phase 1 live run, 2026-11-02)
+
+Authorised by Seshadri in chat; 53 query embeddings; recorded in `tools/krithi-extract-enrich-worker/evals/macro_scores.json` (profile `gemini-embedding-2`, 768, id `01a07605-793b-7209-bbd2-f173e41b6d92`; 106 macro anchors per probe).
+
+- **Labelled positives** (best macro hit, similarity / lexical): `TY-147-11` 0.852 / 0.64 (Tyagaraja Ghana Raga Pancharatnam), `SS-146-11` 0.847 / 0.79 (Ratnatrayam), `EVAL-31` **0.836** / 0.49 (Bhagavati Amman Temple, the weakest). `SS-146-12` is not loaded by the evaluator (unresolved review).
+- **Exact-title negatives**: `EVAL-13` 0.787, `EVAL-01` 0.777, `EVAL-23` 0.743, `EVAL-04` 0.732, `EVAL-09` 0.724, `EVAL-17` 0.624. Peak 0.787, as recorded. Their best lexical scores stay at or below 0.52 against a lexical floor of 0.8.
+- **Reconciled figures**: `EVAL-31` is 0.836 (TRACK-152 was right). TRACK-145's 0.854 is stale. The "0.837 and 0.854" in the code comment and `search.md` are not the weakest hit; the other two positives are 0.847 and 0.852. Margins at 0.83: +0.006 above the weakest positive's side, 0.043 above the strongest exact-title negative.
+- **`TY-147-11`** ranks first at 0.852 with composer Tyagaraja (the stored text carries `[Composer: Tyagaraja]`), so the evaluator's DB path would now score it a HIT. The Phase 0 baseline MISS is stale or predates the macro text fix; the floor was never the cause.
+- **Requirement 2 cannot be met by an absolute floor alone.** The 0.02 margin on both sides needs a value no higher than 0.816 (to sit 0.02 below 0.836) and no lower than 0.807 (0.02 above 0.787), so about 0.81 is feasible against the exact-title probes. But below 0.83 the top cards for `EVAL-08`, `TY-147-10`, `EVAL-29` and `TY-147-04` start to clear, and they look wrong.
+- **Relative rules alone do not work either.** A z-score over the 106 anchors does not separate (`EVAL-13`, an exact-title probe, has z 3.58, higher than `EVAL-31` at 3.16). The gap to the 4th anchor does separate the four wrong-looking cards (gap4 0.004 to 0.013) from the positives (0.044 to 0.050), but only as a second condition on top of an absolute floor.
+- **Candidate rule for decision**: similarity at or above 0.81 and gap4 at or above 0.03, keyed to this profile. On the recording this keeps all three positives (margins +0.026 similarity and +0.014 gap4), drops all six exact-title probes (0.023 below), and drops the four wrong-looking cards (gap4 0.017 below). It misses the 0.02 margin on the gap dimension, uses only three positives, and the "wrong-looking" labels are mine. That needs Seshadri's decision and a Spec amendment (option C layered on A), as the Plan requires.
 
 ### Risks
 
@@ -255,8 +270,8 @@ If Seshadri prefers not to wait for Phase 1, the same table can be filled by run
 
 - [x] Phase 0: Seshadri accepted Intent, Spec and Plan (2026-11-02). Gemini usage check remains Seshadri's.
 - [x] Phase 1 code: `--dump-macro-scores` with tests (fake embedder).
-- [ ] Phase 1 live: authorised scores capture, `macro_scores.json`, Results, reconcile 0.836 / 0.837 / 0.854, explain `TY-147-11`. **Blocked on Seshadri's authorisation of live run 1.**
-- [ ] Phase 2: choose floor from data, margin test, profile-keyed floor, review table and decisions, authorised `--via-api` proof, corrected docs. **Blocked on `macro_scores.json` (live run 1); no numbers are guessed.**
+- [x] Phase 1 live: scores captured 2026-11-02, `macro_scores.json` committed, figures reconciled, `TY-147-11` explained (see Results).
+- [ ] Phase 2: choose floor from data, margin test, profile-keyed floor, review table and decisions, authorised `--via-api` proof, corrected docs. **Blocked on Seshadri's decision on the floor rule (see Results): an absolute floor alone cannot give a 0.02 margin without admitting wrong-looking cards.**
 - [x] Phase 3 code and docs: `--macro-only`, `--check`, shared freshness logic, tests, runbook, corrected `search.md` snippet.
 - [ ] Phase 3 per-environment: `--macro-only --check` output for each environment (dev check is read-only but not yet run here; re-embeds need authorisation).
 
@@ -270,3 +285,4 @@ If Seshadri prefers not to wait for Phase 1, the same table can be filled by run
 
 - **2026-11-01**: Track created as Proposed from the TRACK-152 follow-ups. Intent, Spec and Plan drafted in one pass for review; none accepted. Evidence read: TRACK-152 and its notes, `RasikaSearchService`, `MacroSearchRepository`, `evaluate_retrieval.py`, `retrieval_benchmarks.json`, `embed_catalogue.py`, `macro_indexer.py`, `search.md`. No application code, data or embedding changed; no paid Gemini call and no live evaluator run made. Findings that change the picture: the floor was calibrated on two macro hits, and the records disagree on which is weakest (0.836 `EVAL-31` in TRACK-152, 0.854 `EVAL-31` in TRACK-145, 0.837 and 0.854 in the code comment); per-probe macro scores are not stored anywhere in the repo; the documented macro-only command cannot run and `--include-macro` alone walks the whole catalogue.
 - **2026-11-02**: Intent, Spec and Plan accepted by Seshadri; implementation approved with no live run authorised. Implemented without any live run: `evaluate_retrieval.py --dump-macro-scores` (one embedding per distinct query, all published macro documents with dense and lexical scores, tested with a fake embedder); `embed_catalogue.py --macro-only` (never fetches krithis), `--macro-only --check` (database reads and local hashing, exit 1 when stale) and `--macro-only --dry-run`; the indexers now share `build_*_documents` and `stale_reasons` with the check, so they skip exactly what the check calls fresh (a vector whose hash differs from the document is now re-embedded, which the old skip test missed); runbook `macro-embeddings-runbook.md` and the corrected `search.md` command. Worker `pytest` (538 passed), `ruff check`, `ruff format --check` and `mypy .` pass. Not run: any live evaluator, API probe, embedding or database check. Phase 2 is blocked on live run 1.
+- **2026-11-02 (later)**: Seshadri authorised live run 1. It ran against the local database (53 query embeddings; the worker found its key itself, no key was read or printed) and wrote `evals/macro_scores.json`. Results: `EVAL-31` is the weakest positive at 0.836 (TRACK-145's 0.854 is stale); exact-title peak 0.787; `TY-147-11` ranks first at 0.852 and would now HIT. Requirement 2 cannot be met by an absolute floor alone; a stop-and-report per the Plan. Review table filled (SS-146-01/02/03 keep, by membership). Phase 2 code (profile-keyed floor, margin test) waits for Seshadri's choice of rule.
