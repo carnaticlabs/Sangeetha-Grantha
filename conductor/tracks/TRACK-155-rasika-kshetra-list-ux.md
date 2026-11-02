@@ -1,17 +1,17 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Proposed |
+| **Status** | In Progress |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-11-01 |
+| **Last Updated** | 2026-11-02 |
 | **Author** | Sangeetha Grantha Team |
 
 # Track: Rasika Kshetra List UX
 
 **ID:** TRACK-155
-**Status:** Proposed (Intent, Spec and Plan are drafts; nothing implemented)
+**Status:** In Progress (Intent, Spec and Plan Accepted 2026-11-02)
 **Owner:** Seshadri
 **Created:** 2026-11-01
-**Updated:** 2026-11-01
+**Updated:** 2026-11-02
 
 ## Goal
 
@@ -25,9 +25,9 @@ Make the Rasika kshetra screens behave well with real data: the Kshetras list ke
 
 ## Intent
 
-**Status:** Draft
-**Accepted by:** —
-**Accepted at:** —
+**Status:** Accepted
+**Accepted by:** Seshadri
+**Accepted at:** 2026-11-02
 
 ### Problem
 
@@ -59,9 +59,9 @@ Rasika users on iOS and Android. Module `modules/shared/presentation` only, unle
 
 ## Spec
 
-**Status:** Draft
-**Accepted by:** —
-**Accepted at:** —
+**Status:** Accepted
+**Accepted by:** Seshadri
+**Accepted at:** 2026-11-02
 
 Written from code reading and a live database query on 2026-11-01. The simulator was not driven in this drafting session, so the cause of defect 2 is a code-based hypothesis; Plan step 1 measures it before any change.
 
@@ -107,11 +107,11 @@ Intent 1 (scope A or B) and Intent 2 (back only, or also fresh visits). The Spec
 
 ## Plan
 
-**Status:** Draft (Proposed; waiting for the Spec and then the Plan to be Accepted)
-**Accepted by:** —
-**Accepted at:** —
+**Status:** Accepted
+**Accepted by:** Seshadri
+**Accepted at:** 2026-11-02
 
-Nothing is implemented. Do not start until Intent, Spec and Plan are each Accepted.
+Accepted 2026-11-02; implementation may start. Open questions are answered as the Spec assumed (Option A, kshetra-only; back-only restore).
 
 ### Files that change
 
@@ -165,16 +165,21 @@ Step 1 baseline numbers, the six simulator items above, the new unit and UI test
 
 ## Implementation Checklist
 
-- [ ] Intent accepted
-- [ ] Spec accepted
-- [ ] Plan accepted
-- [ ] Step 1 baseline measured and logged
-- [ ] List scroll state hoisted; filter resets to top
-- [ ] Per-temple detail scroll state
-- [ ] Detail converted to `LazyColumn`
-- [ ] Tests and simulator evidence
-- [ ] Track closed
+- [x] Intent accepted
+- [x] Spec accepted
+- [x] Plan accepted
+- [x] Step 1 baseline measured and logged (defect 1 reproduced; payload measured; frame-time trace and Collections/Browse baseline not captured, see log)
+- [x] List scroll state hoisted; filter resets to top
+- [x] Per-temple detail scroll state
+- [x] Detail converted to `LazyColumn`
+- [x] Tests and simulator evidence (VoiceOver pass not done)
+- [ ] Track closed (waits for the PR to merge)
 
 ## Progress Log
 
 - **2026-11-01**: Track created from two findings in TRACK-151's Progress Log. Intent, Spec and Plan drafted from code reading (`KshetraScreens.kt`, `RasikaApp.kt`, `RasikaDestination.kt`) and one database query (1 temple with 50 or more direct published kritis; maximum 114; 90th percentile 10). No simulator run, no application code changed. Waiting for Seshadri to accept Intent, then Spec, then Plan.
+- **2026-11-02**: Intent, Spec and Plan accepted by Seshadri (relayed in chat); status In Progress. Implementation started with the baseline measurement.
+- **2026-11-02**: Implemented. `KshetraScrollStates` (new, owned by `RasikaApp`) holds the list `ScrollState` and one `LazyListState` per temple, and `sync()` drops positions whose screen has left the stack, so only back restores. `KshetrasScreen` takes the hoisted state and scrolls to the top when the element filter changes. `KshetraDetailScreen` is now one `LazyColumn` with stable keys; copy, order and semantics are unchanged. No presenter, backend, OpenAPI or data change.
+- **2026-11-02 baseline**: `GET /v2/catalogue/temples/{Tiruvarur}` = 44,169 bytes in 85 ms (warm, one request), so the payload and server are not the cost; the Spec 8 decision (no page parameter) stands. Before the fix, back from a temple put the list at the top (screenshots in `evidence/TRACK-155/`).
+- **2026-11-02 after**: back restores the list (a row opened mid-list and returned to the same place), the Tiruvarur detail (scrolled deep into its 114 kritis, kriti opened, back, same place within 2 px), a list restored again after back from Tiruvarur, a fresh visit from Home starts at the top, filter on then cleared returns to the top. Tests: `KshetraScrollStatesTest` (6) and one new `KshetraPresentersTest` case; `make test` and `make test-mobile` pass.
+- **Not done, and why**: (1) no before/after frame-time trace of Tiruvarur and no direct measurement of the "keeps moving after a swipe" symptom: synthetic swipes in the simulator do not reproduce a human fling, so Spec requirement 6 (stops within normal fling) is not proven; the lazy list removes the composition cost but if the long deceleration is the platform default it will still be there on a device. (2) No VoiceOver pass. (3) No Collections/Browse baseline; by the same cause they should reset on back and are left unchanged (Option B follow-up). (4) No Compose UI test: the module has no `compose.uiTest` dependency and adding one needs a version-catalog change, which the Plan said to ask about first; the holder logic is unit tested and the walk-through covers the rest. (5) The detail screen still reloads the temple when re-entered (skeleton flash) because `KshetraDetailPresenter.open` always refetches; position is restored regardless. Also seen, unrelated: Explore search showed "Could not reach the catalogue" for "Tiruvarur" while the temple endpoints answered.
