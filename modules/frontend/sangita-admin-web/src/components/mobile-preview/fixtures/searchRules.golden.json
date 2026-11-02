@@ -1,0 +1,13 @@
+{
+  "note": "Derived from SearchPresenter.kt. A Kotlin test must read this file too (TRACK-158 step C1).",
+  "exactTitle": {
+    "ids": ["a", "b", "c"],
+    "exact": "b",
+    "expectFirst": "b",
+    "expectRest": ["a", "c"]
+  },
+  "noExactTitle": { "ids": ["a", "b"], "exact": null, "expectFirst": null, "expectRest": ["a", "b"] },
+  "macroKinds": { "available": ["COLLECTION", "KSHETRA"], "kshetraDropped": ["COLLECTION"] },
+  "paging": { "pageSize": 30, "maxPages": 3, "discoveryLimit": 30 },
+  "modeLabels": { "Hybrid": "All matches", "Semantic": "Related meanings", "Lexical": "Titles & lyrics" }
+}

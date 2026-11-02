@@ -17,6 +17,10 @@ import LyricVariantTabs from '../components/krithi-editor/LyricVariantTabs';
 import { formatLanguageCode, getWorkflowStateColor, formatWorkflowState } from '../utils/enums';
 import { MusicalForm, KrithiDetail } from '../types';
 import { EDITOR_TABS, isEditorTab } from '../types/krithi-editor.types';
+import MobilePreviewApp from './mobile-preview/MobilePreviewApp';
+import { previewKeys } from '../api/previewApi';
+import { markEdited } from '../components/mobile-preview/previewEdits';
+import { useQueryClient } from '@tanstack/react-query';
 
 const KrithiEditor: React.FC = () => {
     const { id: paramKrithiId } = useParams();
@@ -26,6 +30,7 @@ const KrithiEditor: React.FC = () => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const toast = useToast();
+    const queryClient = useQueryClient();
 
     // 1. Reference Data State
     const referenceData = useReferenceData();
@@ -133,6 +138,9 @@ const KrithiEditor: React.FC = () => {
         dispatch({ type: 'SET_SAVING', payload: false });
 
         if (savedId) {
+            // TRACK-158: an open Mobile Preview refetches what the save changed.
+            void queryClient.invalidateQueries({ queryKey: previewKeys.all });
+            markEdited();
             if (isNew) {
                 navigate(`/krithis/${savedId}`, { replace: true });
             } else {
@@ -234,7 +242,7 @@ const KrithiEditor: React.FC = () => {
                                 return null;
                             }
                             // Hide Source Evidence and Lyric Variants for new compositions
-                            if ((tab === 'Source Evidence' || tab === 'Lyric Variants') && isNew) {
+                            if ((tab === 'Source Evidence' || tab === 'Lyric Variants' || tab === 'Mobile Preview') && isNew) {
                                 return null;
                             }
 
@@ -302,6 +310,9 @@ const KrithiEditor: React.FC = () => {
                             krithiId={state.krithi.id}
                             krithiTitle={state.krithi.title}
                         />
+                    )}
+                    {state.activeTab === 'Mobile Preview' && state.krithi.id && (
+                        <MobilePreviewApp krithiId={state.krithi.id} />
                     )}
                     {state.activeTab === 'Lyric Variants' && state.krithi.id && (
                         <LyricVariantTabs

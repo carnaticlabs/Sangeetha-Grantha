@@ -30,7 +30,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/v1';
 
 const getAuthToken = () => localStorage.getItem('authToken');
 
-async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+export async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const token = getAuthToken();
     const headers = {
         'Content-Type': 'application/json',

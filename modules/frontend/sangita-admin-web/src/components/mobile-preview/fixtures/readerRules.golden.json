@@ -1,0 +1,30 @@
+{
+  "note": "Expected values are derived from the Kotlin rules named in readerLogic.ts. A Kotlin test must read this file too (TRACK-158 step C1).",
+  "tamil": [
+    { "name": "aspirate chain", "in": "ப் 3 ரஹ்மேந்த் 3 ராதி 3", "out": "ப்³ரஹ்மேந்த்³ராதி³" },
+    { "name": "line-start ordinal untouched", "in": "1. ஸ்ரீ ராகம்", "out": "1. ஸ்ரீ ராகம்" },
+    { "name": "geetham number untouched", "in": "கீதம் 1", "out": "கீதம் 1" },
+    { "name": "charanam number untouched", "in": "சரனம் 1", "out": "சரனம் 1" },
+    { "name": "multi-digit untouched", "in": "த 34", "out": "த 34" },
+    { "name": "sibilant takes 1 only", "in": "ஸ 1", "out": "ஸ¹" },
+    { "name": "sibilant rejects 3", "in": "ஸ 3", "out": "ஸ 3" },
+    { "name": "no digits", "in": "வாதாபி கணபதிம்", "out": "வாதாபி கணபதிம்" }
+  ],
+  "headings": [
+    { "type": "PALLAVI", "label": null, "out": "Pallavi" },
+    { "type": "CHARANAM", "label": "Charanam 2", "out": "Charanam 2" },
+    { "type": "MADHYAMA_KALA", "label": "  ", "out": "Madhyamakala" },
+    { "type": "UNKNOWN_KIND", "label": null, "out": "UNKNOWN_KIND" }
+  ],
+  "captions": [
+    { "type": "CHARANAM", "form": "VARNAM", "out": "pallavi of the charanam" },
+    { "type": "CHARANAM", "form": "KRITHI", "out": null },
+    { "type": "PALLAVI", "form": "VARNAM", "out": null }
+  ],
+  "preformatted": { "yes": ["MUKTAYI_SWARA", "CHITTASWARAM", "ETTUGADA_SWARA"], "no": ["PALLAVI", "SWARA_SAHITYA", "MADHYAMA_KALA"] },
+  "vibhakti": [
+    { "in": "SHASHTHI", "out": "Shashthi · genitive" },
+    { "in": "SARVA_VIBHAKTI", "out": "All cases" },
+    { "in": "SOMETHING_NEW", "out": "Something new" }
+  ]
+}
