@@ -162,6 +162,7 @@
 | [TRACK-156](./tracks/TRACK-156-tamil-lyric-stray-digits.md) | Stray digits in Tamil-script lyrics | Completed |
 | [TRACK-157](./tracks/TRACK-157-macro-search-followups.md) | Macro Search Follow-ups | Completed |
 | [TRACK-158](./tracks/TRACK-158-mobile-preview.md) | Mobile Preview (Admin Web) | Completed |
+| [TRACK-159](./tracks/TRACK-159-lexical-lyric-search-and-raga-picker.md) | Lexical Lyric Search and Searchable Raga Picker | Completed |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)

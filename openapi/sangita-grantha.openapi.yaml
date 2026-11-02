@@ -33,7 +33,7 @@ paths:
       "tags":
         - "Catalogue"
       "summary": "Search published kritis"
-      "description": "Public published-only summaries. Query length is capped at 200 Unicode code points. Filters combine with AND. Raga filter matches any ordered junction membership. Page default 0, pageSize default 30, max 100. Unknown parameters and malformed UUIDs return 400. `%` and `_` in query are literals, not SQL wildcards. Stable order is normalized title then UUID. Analytics headers are optional metadata and never credentials.\n V2 includes published UNESTABLISHED records in unfiltered searches; specific form facets never match unknown. All seven facets combine with AND. Repeated scalar parameters return 400."
+      "description": "Public published-only summaries. Query length is capped at 200 Unicode code points. Filters combine with AND. Raga filter matches any ordered junction membership. Page default 0, pageSize default 30, max 100. Unknown parameters and malformed UUIDs return 400. `%` and `_` in query are literals, not SQL wildcards. `query` matches title, incipit, composer and raga names and aliases, and stored lyrics in any script (case-insensitive substring; a space also matches a line break). Stable order is normalized title then UUID. Analytics headers are optional metadata and never credentials.\n V2 includes published UNESTABLISHED records in unfiltered searches; specific form facets never match unknown. All seven facets combine with AND. Repeated scalar parameters return 400."
       "security": []
       "parameters":
         -
@@ -1231,8 +1231,10 @@ paths:
         code points. Filters combine with AND. Raga filter matches any ordered
         junction membership. Page default 0, pageSize default 30, max 100.
         Unknown parameters and malformed UUIDs return 400. `%` and `_` in
-        query are literals, not SQL wildcards. Stable order is
-        normalized title then UUID. Analytics headers are optional metadata and
+        query are literals, not SQL wildcards. `query` matches title, incipit,
+        composer and raga names and aliases, and stored lyrics in any script
+        (case-insensitive substring; a space also matches a line break).
+        Stable order is normalized title then UUID. Analytics headers are optional metadata and
         never credentials.
       security: []
       parameters:

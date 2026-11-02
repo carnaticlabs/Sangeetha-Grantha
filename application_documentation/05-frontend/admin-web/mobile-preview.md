@@ -60,10 +60,10 @@ The status check compares timestamps. It can say "out of date" after an edit tha
 | Krithi visibility | Published only | The krithi list and admin search show every workflow state |
 | Search endpoint | `POST /v2/catalogue/search/*` with cards and exact-title ordering | The list's Hybrid and Semantic use `POST /v1/search/*`: no cards, no exact-title ordering |
 | Filters on discovery | Raga and composer apply to Titles & lyrics only | The list sends them to Hybrid and Semantic as well |
-| Titles & lyrics | Matches titles, incipits, composers and ragas, not lyric text, despite the label (finding D7) | Admin search has a lyric parameter |
-| Raga picker | Loads the first 30 of 1,014 ragas (finding D8) | Full reference data |
+| Titles & lyrics | Matches titles, incipits, composers, ragas and stored lyrics in any script ([TRACK-159](../../../conductor/tracks/TRACK-159-lexical-lyric-search-and-raga-picker.md) fixed finding D7) | Admin search has a separate lyric parameter |
+| Raga picker | Search box and "Load more", so every raga can be chosen (TRACK-159 fixed finding D8) | Full reference data |
 
-D7 and D8 were confirmed against the dev catalogue and are mobile behaviours; the preview reproduces them and flags D8 in the filter sheet. They are candidates for separate tracks.
+Findings D7 (Titles & lyrics did not search lyrics) and D8 (the raga picker reached 30 of 1,014 ragas) were confirmed against the dev catalogue and fixed in both the app and the preview by TRACK-159.
 
 ## API
 

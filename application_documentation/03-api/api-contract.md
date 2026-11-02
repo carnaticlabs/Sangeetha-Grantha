@@ -102,7 +102,7 @@ Five facets exist; wire keys equal the query-parameter names. Each is derived on
 
 | Parameter | Accepted by | Contract |
 |:---|:---|:---|
-| `query` | Composition and directory lists | Optional; trimmed; at most 200 Unicode code points |
+| `query` | Composition and directory lists | Optional; trimmed; at most 200 Unicode code points. On the composition list it matches title, incipit, composer and raga names and aliases, and the stored lyrics of every script (a case-insensitive substring; each run of spaces also matches a line break, so a phrase can span lines) |
 | `composerId` | Composition list | Optional UUID |
 | `ragaId` | Composition list | Optional UUID |
 | `page` | Lists | Zero-based; default `0`; integer ≥ 0 |
