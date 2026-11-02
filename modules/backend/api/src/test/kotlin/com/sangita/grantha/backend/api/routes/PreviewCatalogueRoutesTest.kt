@@ -37,6 +37,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
+import kotlin.test.assertTrue
 import kotlin.uuid.Uuid
 
 /** TRACK-158 A1: the admin-gated preview mount of the V2 catalogue reads. */
@@ -192,5 +193,32 @@ class PreviewCatalogueRoutesTest : IntegrationTestBase() {
         val v2 = client.get("${RasikaCatalogueContract.KRITHIS_PATH}?query=Mirror").bodyAsText()
         assertEquals(v2, mirror("/krithis?query=Mirror").bodyAsText())
         assertEquals(HttpStatusCode.Unauthorized, client.get("$PREVIEW_MOBILE_ROOT/discovery").status)
+    }
+
+    @Test
+    fun `a lyric phrase finds the krithi on V2 and both preview mounts, and a draft's lyric only on preview`() = testApplication {
+        mount()
+        val seed = TestFixtures.seedReferenceData(dal)
+        suspend fun krithiWith(title: String, lyrics: String, state: WorkflowState) {
+            val k = CatalogueTestFixtures.createKrithi(
+                dal, title = title, composerId = seed.composer.id.toJavaUuid(),
+                ragaIds = listOf(seed.raga.id.toJavaUuid()), workflowState = state,
+            )
+            CatalogueTestFixtures.createVariant(dal, k.id, lyrics, isPrimary = true)
+        }
+        krithiWith("Route Lyric Published", "first line\nnIvE(y)anucunu bhakti kUDina", WorkflowState.PUBLISHED)
+        krithiWith("Route Lyric Draft", "a draft only phrase here", WorkflowState.DRAFT)
+        val token = adminToken()
+        suspend fun titles(body: String) = Json.parseToJsonElement(body).jsonObject["items"].toString()
+
+        val v2 = client.get("${RasikaCatalogueContract.KRITHIS_PATH}?query=anucunu+bhakti").bodyAsText()
+        assertTrue(titles(v2).contains("Route Lyric Published"), v2)
+        val mirror = client.get("$PREVIEW_MOBILE_ROOT/krithis?query=anucunu+bhakti") { header(HttpHeaders.Authorization, "Bearer $token") }.bodyAsText()
+        assertEquals(v2, mirror)
+        assertTrue(titles(client.preview("/krithis?query=anucunu+bhakti", token).bodyAsText()).contains("Route Lyric Published"))
+
+        val draftQuery = "query=draft+only+phrase"
+        assertEquals("0", Json.parseToJsonElement(client.get("${RasikaCatalogueContract.KRITHIS_PATH}?$draftQuery").bodyAsText()).jsonObject["total"]?.jsonPrimitive?.content)
+        assertEquals("1", Json.parseToJsonElement(client.preview("/krithis?$draftQuery", token).bodyAsText()).jsonObject["total"]?.jsonPrimitive?.content)
     }
 }
