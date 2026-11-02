@@ -77,7 +77,7 @@ Sources: [HybridSearchService](../../modules/backend/api/src/main/kotlin/com/san
 |:---|:---|
 | Kriti `items` | Identical ids and order to the V1 endpoint for a non-admin caller; the kriti SQL is not edited |
 | Cap | At most 3 macro hits per response, at most one per collection or temple (multi-chunk overviews collapse to the best chunk) |
-| Floor | A card needs dense similarity of at least 0.83, or (hybrid) a lexical score of at least 0.8. The group is often empty; the cap is a ceiling, not a quota |
+| Floor | Per embedding profile. For `gemini-embedding-2` / 768 a card needs dense similarity of at least 0.81 **and** a gap of at least 0.03 over the 4th-best anchor's similarity, or (hybrid) a lexical score of at least 0.8. A profile with no calibrated floor shows no cards (one WARN). The group is often empty; the cap is a ceiling, not a quota |
 | Exact title | `exactTitleMatchId` is set when the query equals a published kriti's title or incipit (spaces ignored). Render that kriti first, then the macro group, then the other kritis |
 | Collection eligibility | The tags `GET /v2/catalogue/collections` returns (at least one reviewed, published member); one function in `CatalogueRepository` serves both |
 | Kshetra eligibility | `TempleEligibility.eligibleIds()`; a recorded-gap temple returns `recordedGap = true` |
@@ -85,7 +85,7 @@ Sources: [HybridSearchService](../../modules/backend/api/src/main/kotlin/com/san
 | No active profile | Hybrid: lexical retrieval for both groups. Semantic: both groups empty |
 | Snippet | Stored overview prefix, at most 240 characters. A kshetra overview shorter than 60 characters is followed by facts already recorded for the temple (region, sacred water and tree, deity posture, published kritis and their composers); nothing is invented and the stored text and embedding are unchanged |
 
-Every `COLLECTION` hit opens `/v2/catalogue/collections/{slug}` and every `KSHETRA` hit `/v2/catalogue/temples/{id}`. The floor was chosen on the benchmark probes: the exact-title kriti probes peak at similarity 0.787, the macro probes at 0.837 and 0.854. Re-check it with `evaluate_retrieval.py --via-api <base-url>` after changing the embedding profile or the overview text; the command also reports V1/V2 `items` parity.
+Every `COLLECTION` hit opens `/v2/catalogue/collections/{slug}` and every `KSHETRA` hit `/v2/catalogue/temples/{id}`. The floor was chosen on the recorded scores in `tools/krithi-extract-enrich-worker/evals/macro_scores.json` (2026-11-02): the labelled macro hits score 0.836 to 0.852 with a gap of 0.044 to 0.050, the exact-title kriti probes peak at 0.787, and cards that look wrong score 0.819 to 0.823 with a gap of 0.004 to 0.013. `MacroFloorsMarginTest` holds those margins. After changing the embedding profile or the overview text, re-record the scores with `evaluate_retrieval.py --dump-macro-scores evals/macro_scores.json`, recalibrate, and re-check with `evaluate_retrieval.py --via-api <base-url>`; the command also reports V1/V2 `items` parity.
 
 Sources: [RasikaSearchService](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/services/RasikaSearchService.kt), [MacroSearchRepository](../../modules/backend/dal/src/main/kotlin/com/sangita/grantha/backend/dal/repositories/MacroSearchRepository.kt), [CatalogueSearchDtos](../../modules/shared/domain/src/commonMain/kotlin/com/sangita/grantha/shared/domain/model/catalogue/CatalogueSearchDtos.kt).
 
