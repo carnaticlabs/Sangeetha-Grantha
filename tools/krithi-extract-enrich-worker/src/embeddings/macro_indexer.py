@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
+from dataclasses import dataclass
 from typing import Any
 
 import psycopg
@@ -64,14 +65,24 @@ def reviewed_cycle_composer(slug: str, members: list[dict[str, Any]]) -> str | N
     return str(next(iter(composers)))
 
 
-def index_cycle_overviews(
-    conn: psycopg.Connection,
-    embedder: GeminiEmbedder,
-    profile_id: str,
-    force: bool = False,
-    dry_run: bool = False,
-) -> dict[str, int]:
-    """Generates and embeds CYCLE_OVERVIEW documents anchored to tags.id."""
+@dataclass(frozen=True)
+class MacroDocument:
+    """One regenerated macro document: what `search_documents` and its embedding should currently hold."""
+
+    kind: str  # 'CYCLE_OVERVIEW' or 'KSHETRA_OVERVIEW'
+    anchor_id: Any
+    label: str
+    original_content: str
+    overview_text: str
+    content_hash: str
+    detail: str
+
+
+def build_cycle_documents(conn: psycopg.Connection) -> tuple[list[MacroDocument], int]:
+    """Regenerates every eligible CYCLE_OVERVIEW from current source data (no writes, no embedding).
+
+    Returns the documents and the number of cycles that abstained (empty, mixed-composer or unapproved).
+    """
     query_tags = """
         SELECT id, slug, display_name_en, description_en
         FROM tags
@@ -92,8 +103,8 @@ def index_cycle_overviews(
         )
         ORDER BY display_name_en
     """
-
-    stats = {"embedded": 0, "skipped": 0}
+    abstained = 0
+    docs: list[MacroDocument] = []
 
     with conn.cursor(row_factory=dict_row) as cur:
         cur.execute(query_tags)
@@ -130,7 +141,7 @@ def index_cycle_overviews(
 
         composer = reviewed_cycle_composer(tag["slug"], members)
         if composer is None:
-            stats["skipped"] += 1
+            abstained += 1
             logger.warning("Skipped empty, mixed-composer or unapproved cycle %s", tag["slug"])
             continue
 
@@ -140,81 +151,29 @@ def index_cycle_overviews(
             description=desc,
             members=members,
         )
-        content_hash = md5_hash(overview_text)
-
-        with conn.cursor() as cur:
-            cur.execute(
-                """
-                SELECT sd.id, de.id, sd.content_hash
-                FROM search_documents sd
-                LEFT JOIN document_embeddings de ON de.document_id = sd.id AND de.profile_id = %s
-                WHERE sd.tag_id = %s AND sd.document_kind = 'CYCLE_OVERVIEW'
-                """,
-                (profile_id, tag_id),
+        docs.append(
+            MacroDocument(
+                kind="CYCLE_OVERVIEW",
+                anchor_id=tag_id,
+                label=name,
+                original_content=desc,
+                overview_text=overview_text,
+                content_hash=md5_hash(overview_text),
+                detail=f"{len(members)} members",
             )
-            existing = cur.fetchone()
-
-            if existing and existing[1] and existing[2] == content_hash and not force:
-                stats["skipped"] += 1
-                continue
-
-            if not dry_run:
-                vector = embedder.embed_document(overview_text, title=f"Cycle: {name}")
-                cur.execute(
-                    """
-                    INSERT INTO search_documents (
-                        tag_id, document_kind, original_content, indexed_content, content_hash
-                    ) VALUES (%s, 'CYCLE_OVERVIEW', %s, %s, %s)
-                    ON CONFLICT (
-                        krithi_id, temple_id, tag_id, section_id,
-                        variant_id, document_kind, source_chunk_index
-                    )
-                    DO UPDATE SET original_content = EXCLUDED.original_content,
-                                  indexed_content = EXCLUDED.indexed_content,
-                                  content_hash = EXCLUDED.content_hash,
-                                  updated_at = clock_timestamp()
-                    RETURNING id
-                    """,
-                    (tag_id, desc, overview_text, content_hash),
-                )
-                doc_row = cur.fetchone()
-                if not doc_row:
-                    raise RuntimeError(f"Failed to upsert search document for cycle {name}")
-                doc_id = doc_row[0]
-
-                cur.execute(
-                    """
-                    INSERT INTO document_embeddings (document_id, profile_id, embedding, content_hash)
-                    VALUES (%s, %s, %s, %s)
-                    ON CONFLICT (document_id, profile_id)
-                    DO UPDATE SET embedding = EXCLUDED.embedding, content_hash = EXCLUDED.content_hash
-                    """,
-                    (doc_id, profile_id, vector, content_hash),
-                )
-                conn.commit()
-            stats["embedded"] += 1
-            logger.info("Embedded CYCLE_OVERVIEW for %s (%d members)", name, len(members))
-
-    return stats
+        )
+    return docs, abstained
 
 
-def index_kshetra_overviews(
-    conn: psycopg.Connection,
-    embedder: GeminiEmbedder,
-    profile_id: str,
-    force: bool = False,
-    dry_run: bool = False,
-    composer: str | None = None,
-) -> dict[str, int]:
-    """Generates and embeds KSHETRA_OVERVIEW documents anchored to temples.id."""
+def build_kshetra_documents(conn: psycopg.Connection, composer: str | None = None) -> list[MacroDocument]:
+    """Regenerates every KSHETRA_OVERVIEW from current source data (no writes, no embedding)."""
     query_temples = """
         SELECT id, name, city, state, mandalam, bhuta, deity_posture, notes
         FROM temples
         WHERE place_kind IN ('COMPLEX', 'SANNIDHI')
         ORDER BY name
     """
-
-    stats = {"embedded": 0, "skipped": 0}
+    docs: list[MacroDocument] = []
 
     with conn.cursor(row_factory=dict_row) as cur:
         cur.execute(query_temples)
@@ -271,59 +230,145 @@ def index_kshetra_overviews(
             is_gap=is_gap,
             composer=composer,
         )
-        content_hash = md5_hash(overview_text)
-
-        with conn.cursor() as cur:
-            cur.execute(
-                """
-                SELECT sd.id, de.id, sd.content_hash
-                FROM search_documents sd
-                LEFT JOIN document_embeddings de ON de.document_id = sd.id AND de.profile_id = %s
-                WHERE sd.temple_id = %s AND sd.document_kind = 'KSHETRA_OVERVIEW'
-                """,
-                (profile_id, temple_id),
+        docs.append(
+            MacroDocument(
+                kind="KSHETRA_OVERVIEW",
+                anchor_id=temple_id,
+                label=f"{name} ({city})",
+                original_content=notes,
+                overview_text=overview_text,
+                content_hash=md5_hash(overview_text),
+                detail=f"gap={is_gap}, {len(kritis)} kritis",
             )
-            existing = cur.fetchone()
+        )
+    return docs
 
-            if existing and existing[1] and existing[2] == content_hash and not force:
-                stats["skipped"] += 1
-                continue
 
-            if not dry_run:
-                vector = embedder.embed_document(overview_text, title=f"Kshetra: {name} ({city})")
-                cur.execute(
-                    """
-                    INSERT INTO search_documents (
-                        temple_id, document_kind, original_content, indexed_content, content_hash
-                    ) VALUES (%s, 'KSHETRA_OVERVIEW', %s, %s, %s)
-                    ON CONFLICT (
-                        krithi_id, temple_id, tag_id, section_id,
-                        variant_id, document_kind, source_chunk_index
-                    )
-                    DO UPDATE SET original_content = EXCLUDED.original_content,
-                                  indexed_content = EXCLUDED.indexed_content,
-                                  content_hash = EXCLUDED.content_hash,
-                                  updated_at = clock_timestamp()
-                    RETURNING id
-                    """,
-                    (temple_id, notes, overview_text, content_hash),
-                )
-                doc_row = cur.fetchone()
-                if not doc_row:
-                    raise RuntimeError(f"Failed to upsert search document for temple {name}")
-                doc_id = doc_row[0]
+def stale_reasons(conn: psycopg.Connection, doc: MacroDocument, profile_id: str) -> list[str]:
+    """Why the stored document or its vector no longer matches `doc`; empty when fully up to date.
 
-                cur.execute(
-                    """
-                    INSERT INTO document_embeddings (document_id, profile_id, embedding, content_hash)
-                    VALUES (%s, %s, %s, %s)
-                    ON CONFLICT (document_id, profile_id)
-                    DO UPDATE SET embedding = EXCLUDED.embedding, content_hash = EXCLUDED.content_hash
-                    """,
-                    (doc_id, profile_id, vector, content_hash),
-                )
-                conn.commit()
-            stats["embedded"] += 1
-            logger.info("Embedded KSHETRA_OVERVIEW for %s (%s) [gap=%s, %d kritis]", name, city, is_gap, len(kritis))
+    Database reads only. The indexers skip a document exactly when this is empty, and `--check` reports
+    these reasons, so the two cannot disagree.
+    """
+    anchor_column = "tag_id" if doc.kind == "CYCLE_OVERVIEW" else "temple_id"
+    with conn.cursor() as cur:
+        cur.execute(
+            f"""
+            SELECT sd.id, de.id, sd.content_hash, de.content_hash, md5(sd.indexed_content)
+            FROM search_documents sd
+            LEFT JOIN document_embeddings de ON de.document_id = sd.id AND de.profile_id = %s
+            WHERE sd.{anchor_column} = %s AND sd.document_kind = %s
+            ORDER BY sd.source_chunk_index
+            LIMIT 1
+            """,  # noqa: S608 - column name is chosen from two constants above
+            (profile_id, doc.anchor_id, doc.kind),
+        )
+        row = cur.fetchone()
+    if row is None:
+        return ["no search document"]
+    reasons: list[str] = []
+    if row[1] is None:
+        reasons.append("no embedding for the active profile")
+    elif row[3] != doc.content_hash:
+        reasons.append("embedding hash differs from the regenerated document")
+    if row[2] != doc.content_hash:
+        reasons.append("source data changed since the document was stored")
+    if row[4] != row[2]:
+        reasons.append("document hash differs from its indexed text")
+    return reasons
 
+
+def check_macro_freshness(
+    conn: psycopg.Connection, profile_id: str
+) -> tuple[int, list[tuple[MacroDocument, list[str]]]]:
+    """Compares every regenerated macro document with what is stored. Reads and local hashing only.
+
+    Returns the number of documents checked and the stale ones with their reasons.
+    """
+    cycle_docs, _ = build_cycle_documents(conn)
+    docs = cycle_docs + build_kshetra_documents(conn)
+    stale = [(d, r) for d in docs if (r := stale_reasons(conn, d, profile_id))]
+    return len(docs), stale
+
+
+def _upsert_and_embed(
+    conn: psycopg.Connection, embedder: GeminiEmbedder | None, profile_id: str, doc: MacroDocument
+) -> None:
+    if embedder is None:
+        raise RuntimeError("An embedder is required unless dry_run is set")
+    anchor_column = "tag_id" if doc.kind == "CYCLE_OVERVIEW" else "temple_id"
+    prefix = "Cycle" if doc.kind == "CYCLE_OVERVIEW" else "Kshetra"
+    vector = embedder.embed_document(doc.overview_text, title=f"{prefix}: {doc.label}")
+    with conn.cursor() as cur:
+        cur.execute(
+            f"""
+            INSERT INTO search_documents (
+                {anchor_column}, document_kind, original_content, indexed_content, content_hash
+            ) VALUES (%s, %s, %s, %s, %s)
+            ON CONFLICT (
+                krithi_id, temple_id, tag_id, section_id,
+                variant_id, document_kind, source_chunk_index
+            )
+            DO UPDATE SET original_content = EXCLUDED.original_content,
+                          indexed_content = EXCLUDED.indexed_content,
+                          content_hash = EXCLUDED.content_hash,
+                          updated_at = clock_timestamp()
+            RETURNING id
+            """,  # noqa: S608 - column name is chosen from two constants above
+            (doc.anchor_id, doc.kind, doc.original_content, doc.overview_text, doc.content_hash),
+        )
+        doc_row = cur.fetchone()
+        if not doc_row:
+            raise RuntimeError(f"Failed to upsert search document for {doc.kind} {doc.label}")
+        cur.execute(
+            """
+            INSERT INTO document_embeddings (document_id, profile_id, embedding, content_hash)
+            VALUES (%s, %s, %s, %s)
+            ON CONFLICT (document_id, profile_id)
+            DO UPDATE SET embedding = EXCLUDED.embedding, content_hash = EXCLUDED.content_hash
+            """,
+            (doc_row[0], profile_id, vector, doc.content_hash),
+        )
+    conn.commit()
+
+
+def index_cycle_overviews(
+    conn: psycopg.Connection,
+    embedder: GeminiEmbedder | None,
+    profile_id: str,
+    force: bool = False,
+    dry_run: bool = False,
+) -> dict[str, int]:
+    """Generates and embeds CYCLE_OVERVIEW documents anchored to tags.id."""
+    docs, abstained = build_cycle_documents(conn)
+    stats = {"embedded": 0, "skipped": abstained}
+    for doc in docs:
+        if not force and not stale_reasons(conn, doc, profile_id):
+            stats["skipped"] += 1
+            continue
+        if not dry_run:
+            _upsert_and_embed(conn, embedder, profile_id, doc)
+        stats["embedded"] += 1
+        logger.info("Embedded CYCLE_OVERVIEW for %s (%s)", doc.label, doc.detail)
+    return stats
+
+
+def index_kshetra_overviews(
+    conn: psycopg.Connection,
+    embedder: GeminiEmbedder | None,
+    profile_id: str,
+    force: bool = False,
+    dry_run: bool = False,
+    composer: str | None = None,
+) -> dict[str, int]:
+    """Generates and embeds KSHETRA_OVERVIEW documents anchored to temples.id."""
+    stats = {"embedded": 0, "skipped": 0}
+    for doc in build_kshetra_documents(conn, composer):
+        if not force and not stale_reasons(conn, doc, profile_id):
+            stats["skipped"] += 1
+            continue
+        if not dry_run:
+            _upsert_and_embed(conn, embedder, profile_id, doc)
+        stats["embedded"] += 1
+        logger.info("Embedded KSHETRA_OVERVIEW for %s [%s]", doc.label, doc.detail)
     return stats

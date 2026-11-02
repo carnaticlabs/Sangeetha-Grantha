@@ -43,6 +43,7 @@ from src.embeddings.context_formatter import (
 )
 from src.embeddings.gemini_embedder import GeminiEmbedder
 from src.embeddings.macro_indexer import (
+    check_macro_freshness,
     index_cycle_overviews,
     index_kshetra_overviews,
 )
@@ -471,6 +472,57 @@ def index_krithi(
     return inserted_count, retired_count
 
 
+def run_macro_only(conn: psycopg.Connection, args: argparse.Namespace) -> int:
+    """Cycle and kshetra overviews only: never fetches or embeds a krithi document (TRACK-157).
+
+    `--check` reads and hashes locally (no embedding client, no API call) and returns 1 when anything is
+    stale. `--dry-run` reports what would be embedded without calling the API. Otherwise stale overviews
+    are re-embedded (a paid call each); `--force` re-embeds every overview.
+    """
+    profile = find_profile(conn, args.model, args.dims)
+    if profile is None:
+        logger.error(
+            "No embedding profile for %s/%d; run the catalogue indexer once to create it", args.model, args.dims
+        )
+        return 2
+    if not profile.is_active:
+        logger.warning("Profile %s is not the active profile; search will not use these vectors yet", profile.id)
+
+    if args.check:
+        checked, stale = check_macro_freshness(conn, profile.id)
+        for doc, reasons in stale:
+            logger.error("STALE %s %s: %s", doc.kind, doc.label, "; ".join(reasons))
+        kinds = {k: sum(1 for d, _ in stale if d.kind == k) for k in ("CYCLE_OVERVIEW", "KSHETRA_OVERVIEW")}
+        logger.info(
+            "Macro freshness | checked = %d | stale = %d (cycle %d, kshetra %d) | profile %s",
+            checked,
+            len(stale),
+            kinds["CYCLE_OVERVIEW"],
+            kinds["KSHETRA_OVERVIEW"],
+            profile.id,
+        )
+        return 1 if stale else 0
+
+    embedder = (
+        None
+        if args.dry_run
+        else GeminiEmbedder(model=args.model, dimensions=args.dims, vertexai=args.vertexai, project_id=args.project_id)
+    )
+    cycle = index_cycle_overviews(conn, embedder, profile.id, force=args.force, dry_run=args.dry_run)
+    kshetra = index_kshetra_overviews(conn, embedder, profile.id, force=args.force, dry_run=args.dry_run)
+    verb = "would embed" if args.dry_run else "embedded"
+    logger.info(
+        "Macro-only run | cycle overviews: %s %d, up to date or abstained %d | kshetra overviews: %s %d, up to date %d",
+        verb,
+        cycle["embedded"],
+        cycle["skipped"],
+        verb,
+        kshetra["embedded"],
+        kshetra["skipped"],
+    )
+    return 0
+
+
 def main():
     parser = argparse.ArgumentParser(description="Backfill Gemini Embedding 2 vectors into PostgreSQL")
     parser.add_argument("--limit", type=int, help="Limit number of krithis to process")
@@ -489,6 +541,16 @@ def main():
             "Only process krithis with stale embeddings "
             "(content_hash is STALE_TRACK_144_NEEDS_REBUILD or does not match the document)"
         ),
+    )
+    parser.add_argument(
+        "--macro-only",
+        action="store_true",
+        help="Only cycle and kshetra overviews: no krithi is fetched or embedded. Use with --dry-run or --check",
+    )
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="With --macro-only: verify overviews are up to date using database reads only; exit 1 if any is stale",
     )
     parser.add_argument("--dry-run", action="store_true", help="Print plan without calling embedding API or saving")
     parser.add_argument("--force", action="store_true", help="Force re-embed even if hash matches")
@@ -509,6 +571,22 @@ def main():
     )
 
     args = parser.parse_args()
+
+    if args.check and not args.macro_only:
+        parser.error("--check is only valid with --macro-only")
+    if args.macro_only:
+        if args.limit or args.krithi_id or args.all or args.composer or args.stale_only or args.include_macro:
+            parser.error("--macro-only cannot be combined with krithi selection flags or --include-macro")
+        if args.check and args.dry_run:
+            parser.error("--check already makes no API call; drop --dry-run")
+        try:
+            validate_dimensions(args.dims)
+        except ValueError as exc:
+            logger.error("%s", exc)
+            sys.exit(2)
+        logger.info("Connecting to database: %s", args.db_url.split("@")[-1])
+        with psycopg.connect(args.db_url) as conn:
+            sys.exit(run_macro_only(conn, args))
 
     if not (
         args.limit
