@@ -158,7 +158,7 @@
 | [TRACK-152](./tracks/TRACK-152-rasika-search-over-cycles-and-kshetras.md) | Rasika Search over Cycles and Kshetras | Completed |
 | [TRACK-153](./tracks/TRACK-153-rasika-lakshana-facets.md) | Rasika Lakshana Facets | Completed |
 | [TRACK-154](./tracks/TRACK-154-temple-google-place-ids.md) | Temple Google Place IDs | Completed |
-| [TRACK-157](./tracks/TRACK-157-macro-search-followups.md) | Macro Search Follow-ups | Proposed |
+| [TRACK-157](./tracks/TRACK-157-macro-search-followups.md) | Macro Search Follow-ups | In Progress |
 
 ## 3. Deprecated Tracks
 - [TRACK-066](tracks/TRACK-066-sarvam-pdf-extraction.md): Sarvam API PDF Extraction Test (Completed)

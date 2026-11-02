@@ -143,20 +143,15 @@ For concurrent full-catalogue batch embedding:
 uv run python scripts/batch_embed_catalogue.py --concurrency 8 --delay 0.05 --report-path /tmp/embedding-run.md
 ```
 
-To index macro cycle and kshetra overviews:
+To refresh the macro cycle and kshetra overviews (never `--include-macro`, which also walks every krithi), check, preview, then embed only what is stale:
 
 ```bash
-uv run python -c "
-import psycopg2, os
-from src.embeddings.macro_indexer import index_cycle_overviews, index_kshetra_overviews
-from src.embeddings.client import GeminiEmbeddingClient
-conn = psycopg2.connect(os.environ.get('DATABASE_URL', 'postgresql://postgres:postgres@localhost:5432/sangita_grantha'))
-client = GeminiEmbeddingClient()
-print('Cycles:', index_cycle_overviews(conn, client))
-print('Kshetras:', index_kshetra_overviews(conn, client))
-conn.close()
-"
+uv run python scripts/embed_catalogue.py --macro-only --check
+uv run python scripts/embed_catalogue.py --macro-only --dry-run
+uv run python scripts/embed_catalogue.py --macro-only
 ```
+
+The [macro embeddings runbook](../08-operations/runbooks/macro-embeddings-runbook.md) covers the order, the success output and the read-only SQL form of the check.
 
 Use the script's `--help` for `--krithi-id`, `--all`, `--force`, `--model`, and `--activate-profile`. Keep the backend query embedder and active profile aligned. A different model needs its own profile and compatible index coverage before activation. Dimension changes require a storage migration; changing a flag cannot resize the existing column.
 

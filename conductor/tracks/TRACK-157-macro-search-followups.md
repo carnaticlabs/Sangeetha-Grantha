@@ -1,17 +1,17 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Proposed |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-11-01 |
+| **Status** | In Progress |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-11-02 |
 | **Author** | Sangeetha Grantha Team |
 
 # Track: Macro Search Follow-ups
 
 **ID:** TRACK-157
-**Status:** Proposed (Intent, Spec and Plan drafted together for review; none accepted)
+**Status:** In Progress (Intent, Spec and Plan accepted 2026-11-02; live runs not authorised)
 **Owner:** Seshadri
 **Created:** 2026-11-01
-**Updated:** 2026-11-01
+**Updated:** 2026-11-02
 
 ## Goal
 
@@ -26,9 +26,9 @@ Close the open items [TRACK-152](TRACK-152-rasika-search-over-cycles-and-kshetra
 
 ## Intent
 
-**Status:** Draft
-**Accepted by:** —
-**Accepted at:** —
+**Status:** Accepted
+**Accepted by:** Seshadri (chat instruction; live runs not authorised)
+**Accepted at:** 2026-11-02
 
 ### Problem
 
@@ -59,9 +59,9 @@ Close the open items [TRACK-152](TRACK-152-rasika-search-over-cycles-and-kshetra
 
 ## Spec
 
-**Status:** Draft
-**Accepted by:** —
-**Accepted at:** —
+**Status:** Accepted
+**Accepted by:** Seshadri (chat instruction; live runs not authorised)
+**Accepted at:** 2026-11-02
 
 ### Evidence read (all from the repo and TRACK-152 notes)
 
@@ -100,7 +100,7 @@ Close the open items [TRACK-152](TRACK-152-rasika-search-over-cycles-and-kshetra
 
 **A. Floor robustness**
 
-1. A recorded scores file (`tools/krithi-extract-enrich-worker/evals/macro_scores.json`) holds, per probe and per mode, the similarity (and lexical score in hybrid) of every candidate the macro query returned (all eligible anchors, not only those clearing the floor), the profile id/model/dimensions, and the date. It is data, committed, and regenerated only by an authorised run.
+1. A recorded scores file (`tools/krithi-extract-enrich-worker/evals/macro_scores.json`) holds, per probe, the dense similarity and the lexical score (both mode-independent; the hybrid rank is not needed because the floor reads only these two) of every candidate the macro query returned (all eligible anchors, not only those clearing the floor), the profile id/model/dimensions, and the date. It is data, committed, and regenerated only by an authorised run.
 2. The floor is chosen by a stated rule: all labelled positives (macro probes that currently HIT, plus any added with Seshadri's approval) clear it, the six exact-title probes return no card, and the margin to the nearest labelled positive and the nearest labelled negative is at least 0.02 on each side. If no value satisfies this, the Plan stops and reports to Seshadri before any code changes (options B/C).
 3. The floor constants are keyed by embedding profile (model and dimensions). A profile with no entry returns an empty macro group and logs once at WARN, rather than reusing another profile's number.
 4. An offline unit test (no network, no database) reads `macro_scores.json` and asserts requirement 2 against the constants in code, so a change to either fails the build.
@@ -153,9 +153,9 @@ The three Intent questions, with draft answers above.
 
 ## Plan
 
-**Status:** Draft
-**Accepted by:** —
-**Accepted at:** —
+**Status:** Accepted
+**Accepted by:** Seshadri (chat instruction; live runs not authorised)
+**Accepted at:** 2026-11-02
 
 Nothing is implemented. Do not start until Seshadri accepts this Plan. Phases land separately.
 
@@ -182,19 +182,20 @@ These spend Gemini quota and are **not** run by anyone until Seshadri says so fo
 
 1. **Scores capture.** One embedding call per distinct probe query (53 probes loaded; about 53 calls, shared between modes by the Phase 1 change). From the worker directory, against the intended database and with the credentials the worker already uses:
    ```bash
-   uv run python scripts/evaluate_retrieval.py --mode all --dump-macro-scores evals/macro_scores.json
+   uv run python scripts/evaluate_retrieval.py --dump-macro-scores evals/macro_scores.json
    ```
-   Note: before Phase 1 lands, `--mode all` embeds each query once per mode (about 106 calls); the Phase 1 caching change brings it to about 53.
+   The dump mode embeds each distinct probe query once and exits; it does not take `--mode`. Needs `DATABASE_URL` (or `--db-url`) for the intended database and the worker's Gemini credentials.
 2. **End-to-end proof after Phase 2** (calls the backend, which embeds each probe query: about 53 calls per mode, the backend's own cache applies within a run):
    ```bash
    uv run python scripts/evaluate_retrieval.py --mode all --via-api http://localhost:8080
    ```
 3. **Macro re-embed, per environment** (a few calls: only overviews whose text changed; see runbook):
    ```bash
+   uv run python scripts/embed_catalogue.py --macro-only --check
    uv run python scripts/embed_catalogue.py --macro-only --dry-run
    uv run python scripts/embed_catalogue.py --macro-only
    ```
-   The first command makes no API call. Run the second only after reading its output.
+   The first two make no API call. Run the third only after reading their output.
 
 ### Order of work
 
@@ -252,10 +253,12 @@ If Seshadri prefers not to wait for Phase 1, the same table can be filled by run
 
 ## Implementation Plan
 
-- [ ] Phase 0: Seshadri accepts or edits Intent, Spec and Plan; Seshadri checks Gemini usage in the console.
-- [ ] Phase 1: `--dump-macro-scores`, authorised scores capture, `macro_scores.json`, Results, reconcile 0.836 / 0.837 / 0.854, explain `TY-147-11`.
-- [ ] Phase 2: choose floor from data, margin test, profile-keyed floor, review table and decisions, authorised `--via-api` proof, corrected docs.
-- [ ] Phase 3: `--macro-only` and `--check`, runbook, corrected `search.md` snippet, per-environment check outputs.
+- [x] Phase 0: Seshadri accepted Intent, Spec and Plan (2026-11-02). Gemini usage check remains Seshadri's.
+- [x] Phase 1 code: `--dump-macro-scores` with tests (fake embedder).
+- [ ] Phase 1 live: authorised scores capture, `macro_scores.json`, Results, reconcile 0.836 / 0.837 / 0.854, explain `TY-147-11`. **Blocked on Seshadri's authorisation of live run 1.**
+- [ ] Phase 2: choose floor from data, margin test, profile-keyed floor, review table and decisions, authorised `--via-api` proof, corrected docs. **Blocked on `macro_scores.json` (live run 1); no numbers are guessed.**
+- [x] Phase 3 code and docs: `--macro-only`, `--check`, shared freshness logic, tests, runbook, corrected `search.md` snippet.
+- [ ] Phase 3 per-environment: `--macro-only --check` output for each environment (dev check is read-only but not yet run here; re-embeds need authorisation).
 
 ## Open items for Seshadri (not done by this track)
 
@@ -266,3 +269,4 @@ If Seshadri prefers not to wait for Phase 1, the same table can be filled by run
 ## Progress Log
 
 - **2026-11-01**: Track created as Proposed from the TRACK-152 follow-ups. Intent, Spec and Plan drafted in one pass for review; none accepted. Evidence read: TRACK-152 and its notes, `RasikaSearchService`, `MacroSearchRepository`, `evaluate_retrieval.py`, `retrieval_benchmarks.json`, `embed_catalogue.py`, `macro_indexer.py`, `search.md`. No application code, data or embedding changed; no paid Gemini call and no live evaluator run made. Findings that change the picture: the floor was calibrated on two macro hits, and the records disagree on which is weakest (0.836 `EVAL-31` in TRACK-152, 0.854 `EVAL-31` in TRACK-145, 0.837 and 0.854 in the code comment); per-probe macro scores are not stored anywhere in the repo; the documented macro-only command cannot run and `--include-macro` alone walks the whole catalogue.
+- **2026-11-02**: Intent, Spec and Plan accepted by Seshadri; implementation approved with no live run authorised. Implemented without any live run: `evaluate_retrieval.py --dump-macro-scores` (one embedding per distinct query, all published macro documents with dense and lexical scores, tested with a fake embedder); `embed_catalogue.py --macro-only` (never fetches krithis), `--macro-only --check` (database reads and local hashing, exit 1 when stale) and `--macro-only --dry-run`; the indexers now share `build_*_documents` and `stale_reasons` with the check, so they skip exactly what the check calls fresh (a vector whose hash differs from the document is now re-embedded, which the old skip test missed); runbook `macro-embeddings-runbook.md` and the corrected `search.md` command. Worker `pytest` (538 passed), `ruff check`, `ruff format --check` and `mypy .` pass. Not run: any live evaluator, API probe, embedding or database check. Phase 2 is blocked on live run 1.
