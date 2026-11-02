@@ -40,6 +40,7 @@ import com.sangita.grantha.shared.presentation.favourites.FavouritesPresenter
 import com.sangita.grantha.shared.presentation.kshetra.KshetraDetailPresenter
 import com.sangita.grantha.shared.presentation.kshetra.KshetraDetailScreen
 import com.sangita.grantha.shared.presentation.kshetra.KshetraListPresenter
+import com.sangita.grantha.shared.presentation.kshetra.KshetraScrollStates
 import com.sangita.grantha.shared.presentation.kshetra.KshetrasScreen
 import com.sangita.grantha.shared.presentation.kshetra.TempleLinkPresenter
 import com.sangita.grantha.shared.presentation.favourites.FavouritesScreen
@@ -91,6 +92,7 @@ fun RasikaApp(container: MobileAppContainer) {
     val kshetraDetailPresenter = remember {
         KshetraDetailPresenter(container.catalogue, container.session, container.appScope)
     }
+    val kshetraScroll = remember { KshetraScrollStates() }
     val templeLinkPresenter = remember {
         TempleLinkPresenter(container.catalogue, container.session, container.appScope)
     }
@@ -102,6 +104,12 @@ fun RasikaApp(container: MobileAppContainer) {
     }
 
     fun sync() {
+        // Scroll positions survive only while their screen is still on the stack (back, not a fresh visit).
+        val stack = navigator.stackSnapshot()
+        kshetraScroll.retain(
+            listOpen = stack.any { it is RasikaDestination.Kshetras },
+            openDetails = stack.mapNotNull { (it as? RasikaDestination.KshetraDetail)?.templeId }.toSet(),
+        )
         current = navigator.current
         selectedTab = navigator.selectedTab
         stackLimitReached = navigator.stackLimitReached
@@ -266,6 +274,7 @@ fun RasikaApp(container: MobileAppContainer) {
                         )
                         RasikaDestination.Kshetras -> KshetrasScreen(
                             presenter = kshetraListPresenter,
+                            scrollState = kshetraScroll.list,
                             onOpenKshetra = { open(RasikaDestination.KshetraDetail(it)) },
                             onBack = {
                                 navigator.back()
@@ -275,6 +284,7 @@ fun RasikaApp(container: MobileAppContainer) {
                         is RasikaDestination.KshetraDetail -> KshetraDetailScreen(
                             templeId = dest.templeId,
                             presenter = kshetraDetailPresenter,
+                            listState = kshetraScroll.detail(dest.templeId),
                             onOpenKrithi = { open(RasikaDestination.KrithiReader(it)) },
                             onOpenKshetra = { open(RasikaDestination.KshetraDetail(it)) },
                             onBack = {

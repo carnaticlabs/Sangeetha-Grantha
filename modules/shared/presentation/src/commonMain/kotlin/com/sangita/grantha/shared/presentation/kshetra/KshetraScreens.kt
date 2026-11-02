@@ -1,6 +1,12 @@
 package com.sangita.grantha.shared.presentation.kshetra
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -16,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.semantics.contentDescription
@@ -34,6 +41,7 @@ import com.sangita.grantha.shared.presentation.components.RasikaScreenHeader
 import com.sangita.grantha.shared.presentation.theme.RasikaTheme
 import com.sangita.grantha.shared.presentation.theme.RasikaTokens
 import kotlin.uuid.Uuid
+import kotlinx.coroutines.launch
 
 /**
  * Home shelf. It is supplementary, so a failed or empty load shows nothing rather than an error
@@ -67,9 +75,15 @@ fun KshetrasScreen(
     onOpenKshetra: (Uuid) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    scrollState: ScrollState = rememberScrollState(),
 ) {
     val state by presenter.state.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
     LaunchedEffect(Unit) { presenter.loadIfNeeded() }
+    // Changing the filter changes the content, so the list starts again from the top.
+    fun toTop() {
+        scope.launch { scrollState.scrollTo(0) }
+    }
     Column(modifier.fillMaxSize()) {
         RasikaScreenHeader(
             title = KshetraCopy.SECTION,
@@ -86,7 +100,7 @@ fun KshetrasScreen(
             Column(
                 Modifier
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(scrollState)
                     .padding(horizontal = RasikaTokens.screen, vertical = RasikaTokens.md),
                 verticalArrangement = Arrangement.spacedBy(RasikaTokens.xs),
             ) {
@@ -104,13 +118,19 @@ fun KshetrasScreen(
                     ) {
                         RasikaChip(
                             selected = state.element == null,
-                            onClick = presenter::clearElement,
+                            onClick = {
+                                presenter.clearElement()
+                                toTop()
+                            },
                             label = KshetraCopy.ELEMENT_ALL,
                         )
                         state.availableElements.forEach { element ->
                             RasikaChip(
                                 selected = state.element == element,
-                                onClick = { presenter.selectElement(element) },
+                                onClick = {
+                                    presenter.selectElement(element)
+                                    toTop()
+                                },
                                 label = KshetraCopy.element(element),
                             )
                         }
@@ -123,7 +143,14 @@ fun KshetrasScreen(
                         modifier = Modifier.padding(top = RasikaTokens.md),
                     )
                     Text(KshetraCopy.FILTER_EMPTY_BODY, style = MaterialTheme.typography.bodyLarge, color = RasikaTheme.colors.inkMuted)
-                    RasikaChip(selected = false, onClick = presenter::clearElement, label = KshetraCopy.CLEAR_FILTER)
+                    RasikaChip(
+                        selected = false,
+                        onClick = {
+                            presenter.clearElement()
+                            toTop()
+                        },
+                        label = KshetraCopy.CLEAR_FILTER,
+                    )
                 }
                 state.groups.forEach { group ->
                     Text(
@@ -165,6 +192,7 @@ fun KshetraDetailScreen(
     onOpenKshetra: (Uuid) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    listState: LazyListState = rememberLazyListState(),
 ) {
     val state by presenter.state.collectAsStateWithLifecycle()
     val uriHandler = LocalUriHandler.current
@@ -183,58 +211,64 @@ fun KshetraDetailScreen(
             modifier = Modifier.fillMaxSize(),
         ) {
             val detail = state.detail ?: return@LoadStateContent
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = RasikaTokens.screen, vertical = RasikaTokens.md),
+            // One lazy list, so only the rows on screen are composed: Tiruvarur sings 114 kritis.
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                state = listState,
+                contentPadding = PaddingValues(horizontal = RasikaTokens.screen, vertical = RasikaTokens.md),
                 verticalArrangement = Arrangement.spacedBy(RasikaTokens.xs),
             ) {
                 if (detail.recordedGap) {
-                    SectionLabel(KshetraCopy.RECORDED_GAP)
-                    Text(KshetraCopy.GAP_NOTE, style = MaterialTheme.typography.labelMedium, color = RasikaTheme.colors.inkMuted)
+                    item(key = "gap-label") { SectionLabel(KshetraCopy.RECORDED_GAP) }
+                    item(key = "gap-note") {
+                        Text(KshetraCopy.GAP_NOTE, style = MaterialTheme.typography.labelMedium, color = RasikaTheme.colors.inkMuted)
+                    }
                 } else if (!detail.overview.isNullOrBlank()) {
-                    SectionLabel(KshetraCopy.ABOUT)
+                    item(key = "about-label") { SectionLabel(KshetraCopy.ABOUT) }
                 }
                 detail.overview?.takeIf { it.isNotBlank() }?.let {
-                    Text(it, style = MaterialTheme.typography.bodyLarge)
+                    item(key = "overview") { Text(it, style = MaterialTheme.typography.bodyLarge) }
                 }
                 state.mapLink?.let { link ->
-                    RasikaPressable(
-                        onClick = { uriHandler.openUri(link.url) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = RasikaTokens.sm)
-                            .semantics { contentDescription = KshetraCopy.mapLinkDescription(link) },
-                    ) {
-                        Column(Modifier.fillMaxWidth().padding(RasikaTokens.sm)) {
-                            Text(
-                                KshetraCopy.OPEN_IN_MAPS,
-                                style = MaterialTheme.typography.titleMedium,
-                                color = MaterialTheme.colorScheme.primary,
-                            )
-                            if (link.opensParentComplex) {
+                    item(key = "map-link") {
+                        RasikaPressable(
+                            onClick = { uriHandler.openUri(link.url) },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = RasikaTokens.sm)
+                                .semantics { contentDescription = KshetraCopy.mapLinkDescription(link) },
+                        ) {
+                            Column(Modifier.fillMaxWidth().padding(RasikaTokens.sm)) {
                                 Text(
-                                    KshetraCopy.mapParentNote(link.targetName),
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = RasikaTheme.colors.inkMuted,
+                                    KshetraCopy.OPEN_IN_MAPS,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.primary,
                                 )
+                                if (link.opensParentComplex) {
+                                    Text(
+                                        KshetraCopy.mapParentNote(link.targetName),
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = RasikaTheme.colors.inkMuted,
+                                    )
+                                }
                             }
                         }
                     }
                 }
                 detail.parent?.let { parent ->
-                    SectionLabel(KshetraCopy.PART_OF)
-                    RasikaPressable(
-                        onClick = { onOpenKshetra(parent.id) },
-                        modifier = Modifier.fillMaxWidth().semantics { contentDescription = "${KshetraCopy.PART_OF} ${parent.name}" },
-                    ) {
-                        Text(
-                            parent.name,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.padding(RasikaTokens.sm),
-                        )
+                    item(key = "part-of-label") { SectionLabel(KshetraCopy.PART_OF) }
+                    item(key = "part-of") {
+                        RasikaPressable(
+                            onClick = { onOpenKshetra(parent.id) },
+                            modifier = Modifier.fillMaxWidth().semantics { contentDescription = "${KshetraCopy.PART_OF} ${parent.name}" },
+                        ) {
+                            Text(
+                                parent.name,
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.padding(RasikaTokens.sm),
+                            )
+                        }
                     }
                 }
                 val facts = listOfNotNull(
@@ -246,17 +280,23 @@ fun KshetraDetailScreen(
                     detail.deityPosture?.let { KshetraCopy.POSTURE to KshetraCopy.posture(it) },
                 )
                 if (facts.isNotEmpty()) {
-                    Column(Modifier.padding(top = RasikaTokens.sm)) {
-                        facts.forEach { (key, value) -> FactRow(key, value) }
+                    item(key = "facts") {
+                        Column(Modifier.padding(top = RasikaTokens.sm)) {
+                            facts.forEach { (key, value) -> FactRow(key, value) }
+                        }
                     }
                 }
                 if (detail.children.isNotEmpty()) {
-                    SectionLabel(KshetraCopy.SHRINES_HEADING)
-                    detail.children.forEach { child -> KshetraRow(child, onClick = { onOpenKshetra(child.id) }) }
+                    item(key = "shrines-label") { SectionLabel(KshetraCopy.SHRINES_HEADING) }
+                    items(detail.children, key = { "shrine:${it.id}" }) { child ->
+                        KshetraRow(child, onClick = { onOpenKshetra(child.id) })
+                    }
                 }
                 if (detail.krithis.isNotEmpty() && !detail.recordedGap) {
-                    SectionLabel(KshetraCopy.KRITIS_HEADING)
-                    detail.krithis.forEach { krithi -> KritiRow(krithi, onClick = { onOpenKrithi(krithi.id) }) }
+                    item(key = "kritis-label") { SectionLabel(KshetraCopy.KRITIS_HEADING) }
+                    items(detail.krithis, key = { "kriti:${it.id}" }) { krithi ->
+                        KritiRow(krithi, onClick = { onOpenKrithi(krithi.id) })
+                    }
                 }
             }
         }

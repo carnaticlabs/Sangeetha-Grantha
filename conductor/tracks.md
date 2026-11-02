@@ -158,6 +158,7 @@
 | [TRACK-152](./tracks/TRACK-152-rasika-search-over-cycles-and-kshetras.md) | Rasika Search over Cycles and Kshetras | Completed |
 | [TRACK-153](./tracks/TRACK-153-rasika-lakshana-facets.md) | Rasika Lakshana Facets | Completed |
 | [TRACK-154](./tracks/TRACK-154-temple-google-place-ids.md) | Temple Google Place IDs | Completed |
+| [TRACK-155](./tracks/TRACK-155-rasika-kshetra-list-ux.md) | Rasika Kshetra List UX | Completed |
 | [TRACK-156](./tracks/TRACK-156-tamil-lyric-stray-digits.md) | Stray digits in Tamil-script lyrics | In Progress |
 
 ## 3. Deprecated Tracks
