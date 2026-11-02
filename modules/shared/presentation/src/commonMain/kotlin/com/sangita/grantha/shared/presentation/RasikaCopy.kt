@@ -85,6 +85,8 @@ object RasikaCopy {
     fun facetValue(label: String, count: Long?): String = if (count == null) label else "$label ($count)"
     fun facetChipDescription(name: String, label: String): String = "$name: $label"
     fun facetRemoveDescription(name: String, label: String): String = "Remove filter $name: $label"
+    const val FIND_RAGA = "Find a rāga"
+    const val NO_RAGA_MATCH = "No rāga matches that name."
     const val ALL_RAGAS = "All ragas"
     const val ALL_COMPOSERS = "All composers"
     const val FAVOURITES_TITLE = "Library"
@@ -144,6 +146,8 @@ object RasikaCopy {
     const val PARTIAL_READING =
         "Some sections are not present in the stored source reading, so completeness is partial."
     const val COMPLETE_READING = "This stored reading is complete for the selected source."
+
+    fun showingOf(shown: Int, total: Long): String = "Showing $shown of $total"
 
     fun moreRagas(n: Int): String = "+$n more"
 

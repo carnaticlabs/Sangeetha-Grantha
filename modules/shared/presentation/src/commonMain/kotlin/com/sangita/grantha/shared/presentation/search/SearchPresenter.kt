@@ -45,6 +45,13 @@ data class SearchUiState(
     val composerItems: List<CatalogueComposerSummaryDto> = emptyList(),
     val filterRagas: List<CatalogueRagaSummaryDto> = emptyList(),
     val filterComposers: List<CatalogueComposerSummaryDto> = emptyList(),
+    /** Text in the picker's raga search box, and the query the loaded [filterRagas] answer (TRACK-159). */
+    val filterRagaText: String = "",
+    val filterRagaQuery: String = "",
+    val filterRagasTotal: Long = 0,
+    val filterRagasPage: Int = 0,
+    val filterComposersTotal: Long = 0,
+    val filterComposersPage: Int = 0,
     val total: Long = 0,
     val page: Int = 0,
     val hasMore: Boolean = false,
@@ -52,6 +59,10 @@ data class SearchUiState(
     val nextPageLoad: LoadState = LoadState.Idle,
 ) {
     val hasUnappliedFilters: Boolean get() = draftFacets != appliedFacets
+
+    /** More ragas exist for the current picker query than are loaded; the sheet offers "Load more". */
+    val hasMoreFilterRagas: Boolean get() = filterRagas.size < filterRagasTotal
+    val hasMoreFilterComposers: Boolean get() = filterComposers.size < filterComposersTotal
 
     /** The kriti whose title the query equals; it renders before the macro group. */
     val exactTitleItem: SemanticSearchResultItem? get() =
@@ -72,6 +83,7 @@ class SearchPresenter(
     private val _state = MutableStateFlow(SearchUiState())
     val state: StateFlow<SearchUiState> = _state.asStateFlow()
     private var generation: Int = 0
+    private var ragaPickerGeneration: Int = 0
     private var job: Job? = null
     private var searchCommitted: Boolean = false
 
@@ -394,19 +406,127 @@ class SearchPresenter(
             }
         }
 
+    /**
+     * Opens the picker on the first page of every raga and composer. The pickers used to stop there: 30 of 1,014
+     * ragas could be chosen (TRACK-159 D8). Search and "Load more" below reach the rest.
+     */
     private fun loadFilterOptions() {
         val existing = _state.value
-        if (existing.filterRagas.isNotEmpty() && existing.filterComposers.isNotEmpty()) return
+        val needRagas = existing.filterRagas.isEmpty() || existing.filterRagaQuery.isNotEmpty()
+        val needComposers = existing.filterComposers.isEmpty()
+        if (!needRagas && !needComposers) return
+        val interaction = session.beginInteraction()
+        val requested = ++ragaPickerGeneration
+        scope.launch {
+            if (needRagas) {
+                try {
+                    val ragas = catalogue.searchRagas(pageSize = PAGE_SIZE, interaction = interaction)
+                    if (requested == ragaPickerGeneration) {
+                        _state.update {
+                            it.copy(
+                                filterRagas = ragas.items,
+                                filterRagasTotal = ragas.total,
+                                filterRagasPage = 0,
+                                filterRagaText = "",
+                                filterRagaQuery = "",
+                            )
+                        }
+                    }
+                } catch (_: CatalogueFailure) {
+                    // The picker stays as it was; Apply still works if a facet was already chosen.
+                }
+            }
+            if (needComposers) {
+                try {
+                    val composers = catalogue.searchComposers(pageSize = PAGE_SIZE, interaction = interaction)
+                    _state.update {
+                        it.copy(filterComposers = composers.items, filterComposersTotal = composers.total, filterComposersPage = 0)
+                    }
+                } catch (_: CatalogueFailure) {
+                    // As above.
+                }
+            }
+        }
+    }
+
+    fun onFilterRagaTextChange(text: String) {
+        _state.update { it.copy(filterRagaText = text) }
+    }
+
+    /** Replaces the picker's ragas with page 0 of the ragas matching [query] (blank means every raga). */
+    fun searchFilterRagas(query: String = _state.value.filterRagaText) {
+        val committed = query.trim()
+        val requested = ++ragaPickerGeneration
+        _state.update { it.copy(filterRagaText = committed, filterRagaQuery = committed) }
         val interaction = session.beginInteraction()
         scope.launch {
             try {
-                val ragas = catalogue.searchRagas(pageSize = PAGE_SIZE, interaction = interaction)
-                val composers = catalogue.searchComposers(pageSize = PAGE_SIZE, interaction = interaction)
-                _state.update {
-                    it.copy(filterRagas = ragas.items, filterComposers = composers.items)
-                }
+                val ragas = catalogue.searchRagas(
+                    query = committed.ifEmpty { null },
+                    pageSize = PAGE_SIZE,
+                    interaction = interaction,
+                )
+                if (requested != ragaPickerGeneration) return@launch
+                _state.update { it.copy(filterRagas = ragas.items, filterRagasTotal = ragas.total, filterRagasPage = 0) }
+            } catch (cancelled: kotlinx.coroutines.CancellationException) {
+                throw cancelled
             } catch (_: CatalogueFailure) {
-                // Pickers stay empty; Apply still works if a facet was already chosen.
+                // The previous list stays; the same search can be submitted again.
+            }
+        }
+    }
+
+    /** Appends the next page of ragas for the current picker query. */
+    fun loadMoreFilterRagas() {
+        val snapshot = _state.value
+        if (!snapshot.hasMoreFilterRagas) return
+        val next = snapshot.filterRagasPage + 1
+        val requested = ++ragaPickerGeneration
+        val interaction = session.beginInteraction()
+        scope.launch {
+            try {
+                val ragas = catalogue.searchRagas(
+                    query = snapshot.filterRagaQuery.ifEmpty { null },
+                    page = next,
+                    pageSize = PAGE_SIZE,
+                    interaction = interaction,
+                )
+                if (requested != ragaPickerGeneration) return@launch
+                _state.update {
+                    it.copy(
+                        filterRagas = it.filterRagas + ragas.items.filterNot { added -> it.filterRagas.any { have -> have.id == added.id } },
+                        filterRagasTotal = ragas.total,
+                        filterRagasPage = next,
+                    )
+                }
+            } catch (cancelled: kotlinx.coroutines.CancellationException) {
+                throw cancelled
+            } catch (_: CatalogueFailure) {
+                // "Load more" stays available to try again.
+            }
+        }
+    }
+
+    /** Appends the next page of composers. */
+    fun loadMoreFilterComposers() {
+        val snapshot = _state.value
+        if (!snapshot.hasMoreFilterComposers) return
+        val next = snapshot.filterComposersPage + 1
+        val interaction = session.beginInteraction()
+        scope.launch {
+            try {
+                val composers = catalogue.searchComposers(page = next, pageSize = PAGE_SIZE, interaction = interaction)
+                _state.update {
+                    it.copy(
+                        filterComposers = it.filterComposers + composers.items.filterNot { added -> it.filterComposers.any { have -> have.id == added.id } },
+                        filterComposersTotal = composers.total,
+                        filterComposersPage = next,
+                    )
+                }
+            } catch (cancelled: kotlinx.coroutines.CancellationException) {
+                throw cancelled
+            } catch (_: CatalogueFailure) {
+                // "Load more" stays available to try again.
             }
         }
     }
