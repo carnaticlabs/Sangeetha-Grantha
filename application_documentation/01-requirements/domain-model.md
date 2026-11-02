@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.4.0 |
-| **Last Updated** | 2026-09-10 |
+| **Version** | 1.5.0 |
+| **Last Updated** | 2026-11-02 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Current guide |
 
@@ -247,6 +247,21 @@ incorrect raga scale or tala anga is a data-quality defect, not a cosmetic one.
   `beatCount`); generated tala data must have correct angas.
 - **Terminology**: use correct Sanskrit/Tamil section terms — Pallavi,
   Anupallavi, Charanam, Chittaswaram, Muktayi Swaram, Madhyamakala.
+
+## 6.5 Tamil-script notation digits
+
+Tamil-script lyrics sourced from the guru-guha, thyagaraja-vaibhavam and syamakrishnavaibhavam editions write
+Sanskrit sounds that Tamil script has no letter for as a digit after the base letter: after `க ச ட த ப`,
+`2` is the aspirate, `3` the voiced and `4` the voiced aspirate (`த 3` = da, `த 4` = dha); `ஸ 1` is ś;
+`ரு 2` is ṛ; `ஜ 2` is jha. These digits are **lyric content** (the pronunciation), not noise:
+
+- Stored text keeps the source's plain ASCII digits; never strip or rewrite them in data. (TRACK-156)
+- Readers show them as superscripts attached to their letter (`ப்³ரஹ்மேந்த்³ராதி³`) through
+  `TamilNotation` in `modules/shared/presentation`; a digit is a marker only for a base/digit pair above.
+- A digit that is **not** a marker must display unchanged: line-start ordinals (`1. ஸ்ரீ ராகம்`), Geetham
+  numbers (`கீதம் 1`), charanam numbers (`சரனம் 1`) and multi-digit numbers.
+- The source's four-line notation legend (`க,ச,ட,த,ப - 2-ख छ ठ थ फ ...`) sometimes leaked into a section
+  and is not lyric text.
 
 ---
 
