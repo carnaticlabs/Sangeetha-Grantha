@@ -1,0 +1,12 @@
+{
+  "id": "library-version-audit",
+  "file": ".agents/skills/library-version-audit/SKILL.md",
+  "must_contain": [
+    "gradle/libs.versions.toml",
+    "modules/frontend/sangita-admin-web/package.json",
+    "tools/krithi-extract-enrich-worker/pyproject.toml",
+    "make check-library-versions",
+    "Do not edit",
+    "archive/"
+  ]
+}

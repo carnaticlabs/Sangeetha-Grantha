@@ -1,4 +1,4 @@
-.PHONY: dev dev-down db db-reset seed seed-dev migrate migrate-status bootstrap-admin test test-integration test-frontend test-mobile mobile-android mobile-ios check-docs agent-evals steel-thread clean raga-lakshana-checks mint-guard
+.PHONY: dev dev-down db db-reset seed seed-dev migrate migrate-status bootstrap-admin test test-integration test-frontend test-mobile mobile-android mobile-ios check-docs check-library-versions agent-evals steel-thread clean raga-lakshana-checks mint-guard
 
 COMPOSE := docker compose
 # Flyway runs as the compose `migrate` service (flyway/flyway image) on the db network.
@@ -81,6 +81,10 @@ check-docs:
 # Deterministic agent-config evals (CLAUDE.md, skills, hooks, REVIEW.md)
 agent-evals:
 	python3 evals/check.py
+
+# Newer stable releases for the Gradle catalog, admin-web npm deps, and worker Python deps
+check-library-versions:
+	python3 tools/check-library-versions.py
 
 # TRACK-136 §3.2: janya⊄parent + mela-as-own-janya (requires a migrated DB)
 raga-lakshana-checks:

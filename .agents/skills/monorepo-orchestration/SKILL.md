@@ -39,6 +39,7 @@ Always use the standardized Makefile commands for development tasks:
 - `make migrate`: Runs any pending Flyway migrations.
 - `make test`: Runs backend Gradle test suites.
 - `make test-frontend`: Runs frontend Vitest and Playwright test suites.
+- `make check-library-versions`: Reports newer stable Gradle, npm, and Python releases. Does not edit manifests.
 
 ## 4. Gradle Build System
 - Backend and Mobile shared builds are managed using **Gradle**.

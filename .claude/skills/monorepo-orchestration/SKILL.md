@@ -17,7 +17,7 @@ Prefer `make` targets over raw docker/gradle invocations — they encode the cor
 
 - Stack: `make dev` (DB + backend + frontend + extraction) · `make dev-down` · `make clean` (removes containers **and volumes**)
 - Database: `make db` · `make db-reset` · `make migrate` · `make migrate-status` · `make seed-dev` · `make bootstrap-admin` (needs `ADMIN_EMAIL`/`ADMIN_PASSWORD`)
-- Tests: `make test` (backend unit) · `make test-integration` · `make test-frontend` · `make steel-thread` (end-to-end) · `make check-docs`
+- Tests: `make test` (backend unit) · `make test-integration` · `make test-frontend` · `make steel-thread` (end-to-end) · `make check-docs` · `make check-library-versions` (upstream Gradle, npm, and Python releases; report only)
 - The user typically runs the full stack via `start-sangita.sh`.
 
 ## Docker Compose (compose.yaml)

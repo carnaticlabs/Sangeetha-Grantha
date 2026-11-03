@@ -29,6 +29,7 @@ make test-integration # Backend integration tests (Testcontainers)
 make test-frontend  # Frontend tests
 make steel-thread   # End-to-end steel thread test
 make check-docs     # Validate documentation links
+make check-library-versions # Newer stable Gradle, npm, and Python releases (report only)
 make agent-evals    # Deterministic agent-config evals (CLAUDE.md, skills, hooks)
 make clean          # Remove all containers and volumes
 ```
