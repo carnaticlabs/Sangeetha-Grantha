@@ -9,12 +9,12 @@
 
 ---
 
-Generated deterministically from the TRACK-147 structured master (`2026-10-01` snapshot). Covers 675 distinct catalogue identities, 684 classification subjects (667 single-source identities and 17 collision source witnesses), 4104 structured claims (53 human-approved: 5 applied group memberships, 15 supporting cycle claims, 33 deferred non-cycle approvals; 1991 source-observed `unresolved` claims; 94 edition-dependent `unreviewed` leads), and 694 registered witnesses.
+Generated deterministically from the TRACK-147 structured master (`2026-10-01` snapshot). Covers 684 distinct catalogue identities, 684 classification subjects (684 single-source identities and 0 collision source witnesses), 4104 structured claims (53 human-approved: 5 applied group memberships, 15 supporting cycle claims, 33 deferred non-cycle approvals; 1991 source-observed `unresolved` claims; 94 edition-dependent `unreviewed` leads), and 694 registered witnesses.
 
 Related track: [TRACK-147](../../../conductor/tracks/TRACK-147-tyagaraja-musicological-classification.md). Shared contract: [musicological-classification-contract.md](./musicological-classification-contract.md). Structured master: [track147-tyagaraja-master.json](../../../database/data/track147-tyagaraja-master.json). Application manifest: [track147-tyagaraja-application-manifest.json](../../../database/data/track147-tyagaraja-application-manifest.json).
 
 > [!IMPORTANT]
-> Eight catalogue identities are collisions. They are listed in the collision register and are not classification subjects. Their 17 source rows are the classification subjects.
+> Eight collided catalogue identities were split (TRACK-149). They stay in the collision register as the record of that split; each of their 17 source rows is now its own catalogue identity and classification subject.
 
 ## Accounting
 
@@ -22,11 +22,11 @@ Snapshot date: 2026-10-01. Composer id `b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6`.
 
 | Unit | Count |
 |:---|---:|
-| Catalogue identities | 675 |
+| Catalogue identities | 684 |
 | Source rows | 684 |
-| Single-source subjects | 667 |
-| Collision subjects | 17 |
-| Collision identities, not classified | 8 |
+| Single-source subjects | 684 |
+| Collision subjects | 0 |
+| Collision identities, not classified | 0 |
 | Classification subjects | 684 |
 | Registered witnesses | 694 |
 | Total classification claims | 4104 |
@@ -36,7 +36,7 @@ Snapshot date: 2026-10-01. Composer id `b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6`.
 
 ## Limitations and epistemic guardrails
 
-- Eight catalogue identities absorb 17 conflicting source imports and remain collision_not_classified; their 17 source witnesses (tyagaraja:import:*) are classified individually pending audited canon split in TRACK-149.
+- Eight catalogue identities that absorbed 17 conflicting source imports were split in TRACK-149 (owner-approved 2026-11-03, executed through the audited unmap and forceNew review path). Each of the 17 source witnesses is now its own catalogue identity; the 9 new krithi rows are draft / UNESTABLISHED.
 - Print editions (T.K. Govinda Rao, C. Ramanujachari & V. Raghavan's The Spiritual Heritage of Tyagaraja, P. Sambamoorthy) and external JMA PDF volumes were not physically consulted and remain registered as unavailable witnesses. Edition-dependent Kshetra Pancharatnam sequences, Utsava/Divyanama paddhati orderings, and dramatic verse/prose divisions remain unreviewed leads for TRACK-149.
 - Only the 5 Ghana-raga Pancharatnam memberships (with Aradhana concert order recorded separately from composer sequence) and their supporting claims are applied by R__seed_11. Non-cycle approved claims are marked application: deferred for TRACK-149.
 - 27 catalogue identities lack a PALLAVI section and 4 lack a CHARANAM section in current storage; no lyric text was invented.
@@ -44,27 +44,27 @@ Snapshot date: 2026-10-01. Composer id `b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6`.
 
 ## Collision register
 
-Each row is one source page. The catalogue title is the current collapsed identity.
+Each row is one source page. The catalogue title is the identity the pages were collapsed into.
 
-| Catalogue title | Source setting | Subject | Import status |
-|:---|:---|:---|:---|
-| SrI nArasiMha | phala ranjani / Unknown | tyagaraja:import:40e2d47b-a0c5-4e44-b301-8cdd05b9589d | mapped |
-| SrI nArasiMha | bilahari / Isra Capu | tyagaraja:import:733ec39f-27a2-4f8e-a703-e88196a5ab09 | mapped |
-| Sri Rama Jaya Rama | Madhyamavati / Unknown | tyagaraja:import:1f73ab63-0278-4b61-85ce-3fbacbce1ba0 | mapped |
-| Sri Rama Jaya Rama | varALi / Isra Capu | tyagaraja:import:3916fad4-5ef9-43ba-af21-5df0f233566c | mapped |
-| Rama Rama Rama Sita | Huseni / Unknown | tyagaraja:import:3115095a-36f9-4999-b32c-d8a063268cd9 | mapped |
-| Rama Rama Rama Sita | sAvEri / Adi | tyagaraja:import:3946f1d2-2a27-4591-b504-5e334d51b53e | mapped |
-| paripUrNa kAma | hamsa bhramari / Adi | tyagaraja:import:0082d54a-2341-48c0-9b54-d7039232b77c | approved |
-| paripUrNa kAma | pUri kalyANi / Adi | tyagaraja:import:4707048d-f06e-46f0-9202-3b985cee65b2 | approved |
-| rAma sItA rAma | SankarAbharaNaM / Unknown | tyagaraja:import:1daabb05-6208-44a6-89c0-dc48be8fb187 | approved |
-| rAma sItA rAma | balahamsa / Unknown | tyagaraja:import:ab6c4e31-d6a7-474d-ac72-e30adb14ecaf | mapped |
-| jaya mangaLaM | ghaNTA / Jhampa | tyagaraja:import:5d70a340-0137-4dfd-baa8-596ccaebf89f | mapped |
-| jaya mangaLaM | mOhanaM / Unknown | tyagaraja:import:6eb15e4d-fcd0-45e1-9edd-969928695354 | mapped |
-| jaya mangaLaM | nAda nAmakriya / Adi | tyagaraja:import:b26f89a5-7924-43e8-8ee6-c50d0a8bb6f1 | mapped |
-| Sri Narada Muni | Bhairavi / Unknown | tyagaraja:import:84ffdbb8-6845-4747-9127-b0a46cf65630 | mapped |
-| Sri Narada Muni | pantuvarALi / Rupakam | tyagaraja:import:c702d09d-b5a5-4b16-82ac-5fc01e265dd9 | mapped |
-| pAhi rAma candra | SankarAbharaNaM / Unknown | tyagaraja:import:3943b77a-d7b2-4f7f-8715-03ba0e5e2eb7 | approved |
-| pAhi rAma candra | yadukula kAmbhOji / Unknown | tyagaraja:import:604a9623-f1b0-4efc-9486-ea415b219870 | in_review |
+| Catalogue title | Source setting | Subject | Import status | Decision |
+|:---|:---|:---|:---|:---|
+| SrI nArasiMha | phala ranjani / Unknown | tyagaraja:krithi:12058429-320a-4040-b682-78c26399e0ae | mapped | split executed: retains krithi id |
+| SrI nArasiMha | bilahari / Isra Capu | tyagaraja:krithi:ff293925-2765-420a-831d-5d6314c456df | approved | split executed: new krithi |
+| Sri Rama Jaya Rama | Madhyamavati / Unknown | tyagaraja:krithi:1dfe4864-6224-460a-845a-5328aed9b638 | mapped | split executed: retains krithi id |
+| Sri Rama Jaya Rama | varALi / Isra Capu | tyagaraja:krithi:e9d91067-f4c7-4b2b-ae5c-06db11815ac2 | approved | split executed: new krithi |
+| Rama Rama Rama Sita | Huseni / Unknown | tyagaraja:krithi:f2700b5a-d26a-498b-b5c7-61806ebbb729 | approved | split executed: new krithi |
+| Rama Rama Rama Sita | sAvEri / Adi | tyagaraja:krithi:42d35ca5-4110-4fd8-bece-9ced6a37014e | mapped | split executed: retains krithi id |
+| paripUrNa kAma | hamsa bhramari / Adi | tyagaraja:krithi:20fb3477-37b1-4a67-bf22-cfb57fd45192 | approved | split executed: new krithi |
+| paripUrNa kAma | pUri kalyANi / Adi | tyagaraja:krithi:4abda836-1e15-4b0b-a7a7-58035712c55a | approved | split executed: retains krithi id |
+| rAma sItA rAma | SankarAbharaNaM / Unknown | tyagaraja:krithi:db90b28a-2b7f-43ee-a6dc-078558b40cf9 | approved | split executed: new krithi |
+| rAma sItA rAma | balahamsa / Unknown | tyagaraja:krithi:4f90dd54-c76e-4cce-88f8-1c460cdb3566 | mapped | split executed: retains krithi id |
+| jaya mangaLaM | ghaNTA / Jhampa | tyagaraja:krithi:191c44c1-9744-4afe-9f90-5a9cb45ade22 | approved | split executed: new krithi |
+| jaya mangaLaM | mOhanaM / Unknown | tyagaraja:krithi:474faeba-0c01-4688-a1e1-1ad41b536ee3 | approved | split executed: new krithi |
+| jaya mangaLaM | nAda nAmakriya / Adi | tyagaraja:krithi:6ddd3f36-022a-4a78-9a63-c769c5941508 | mapped | split executed: retains krithi id |
+| Sri Narada Muni | Bhairavi / Unknown | tyagaraja:krithi:76706063-efdd-49a7-b091-4817afed5b57 | mapped | split executed: retains krithi id |
+| Sri Narada Muni | pantuvarALi / Rupakam | tyagaraja:krithi:6d55561e-eedf-48c1-b1ea-2961a2750965 | approved | split executed: new krithi |
+| pAhi rAma candra | SankarAbharaNaM / Unknown | tyagaraja:krithi:7e7529c6-93ee-46fe-890e-c491854fbeee | approved | split executed: new krithi |
+| pAhi rAma candra | yadukula kAmbhOji / Unknown | tyagaraja:krithi:ba2ec6a9-1804-48f1-a379-0fc505078892 | in_review | split executed: retains krithi id |
 
 ## Source inventory
 
@@ -138,8 +138,8 @@ Utsava Sampradaya and Divyanama Sankirtana memberships and ritual functions (awa
 | tyagaraja-divyanama-sankirtana | congregational_namasankirtana | tyagaraja:krithi:9ccd7f15-0aac-4df4-8057-c9868e7a3fad | O Rama Rama Sarvonnata | Nāgagāndhāri / Misra Capu | unreviewed | Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed. |
 | tyagaraja-divyanama-sankirtana | congregational_namasankirtana | tyagaraja:krithi:7d556895-a35c-4b48-b922-e2815fa492e9 | O ramA ramaNa | Kedaram / Adi | unreviewed | Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed. |
 | tyagaraja-divyanama-sankirtana | congregational_namasankirtana | tyagaraja:krithi:498f50fb-3632-498c-888d-2c04e78f771d | Paahi Rama Ramayanucu | Kharaharapriyā / Tisra Ekam | unreviewed | Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed. |
-| tyagaraja-divyanama-sankirtana | congregational_namasankirtana | tyagaraja:import:3943b77a-d7b2-4f7f-8715-03ba0e5e2eb7 | pAhi rAma candra | Yadukula Kāmbhoji / Adi | unreviewed | Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed. |
-| tyagaraja-divyanama-sankirtana | congregational_namasankirtana | tyagaraja:import:604a9623-f1b0-4efc-9486-ea415b219870 | pAhi rAma candra | Yadukula Kāmbhoji / Adi | unreviewed | Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed. |
+| tyagaraja-divyanama-sankirtana | congregational_namasankirtana | tyagaraja:krithi:7e7529c6-93ee-46fe-890e-c491854fbeee | pAhi rAma candra | SankarAbharaNaM / Unknown | unreviewed | Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed. |
+| tyagaraja-divyanama-sankirtana | congregational_namasankirtana | tyagaraja:krithi:ba2ec6a9-1804-48f1-a379-0fc505078892 | pAhi rAma candra | Yadukula Kāmbhoji / Adi | unreviewed | Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed. |
 | tyagaraja-divyanama-sankirtana | congregational_namasankirtana | tyagaraja:krithi:a018529d-c3a4-4b90-808b-b2168626750f | pAhi rAma dUta | Vasantavarāli / Rupaka | unreviewed | Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed. |
 | tyagaraja-divyanama-sankirtana | congregational_namasankirtana | tyagaraja:krithi:3c94b2b6-27fa-430e-8c67-8211f0428a6d | pAhi ramA ramaNa | Varāli / Adi | unreviewed | Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed. |
 | tyagaraja-divyanama-sankirtana | congregational_namasankirtana | tyagaraja:krithi:01166b8b-a60b-4eac-9895-1d3feae3f94f | rAma rAma gOvinda | saurAshTraM / Adi | unreviewed | Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed. |
@@ -150,23 +150,23 @@ Utsava Sampradaya and Divyanama Sankirtana memberships and ritual functions (awa
 | tyagaraja-divyanama-sankirtana | congregational_namasankirtana | tyagaraja:krithi:cf46edfe-080f-4931-bf5d-7145e618a3bd | rAma rAma rAma nApai | Mechakalyāni / Misra Capu | unreviewed | Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed. |
 | tyagaraja-divyanama-sankirtana | congregational_namasankirtana | tyagaraja:krithi:848fe8eb-0b6e-423d-9b37-f0ce62ceffa5 | rAma rAma rAma rAma | cencuruTi / Rupaka | unreviewed | Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed. |
 | tyagaraja-divyanama-sankirtana | congregational_namasankirtana | tyagaraja:krithi:4cae5d72-c291-465d-b117-242dff25e96c | rAmA rAma rAma rAmAyani | Mohanam / Misra Capu | unreviewed | Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed. |
-| tyagaraja-divyanama-sankirtana | congregational_namasankirtana | tyagaraja:import:3115095a-36f9-4999-b32c-d8a063268cd9 | Rama Rama Rama Sita | Sāveri / Adi | unreviewed | Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed. |
-| tyagaraja-divyanama-sankirtana | congregational_namasankirtana | tyagaraja:import:3946f1d2-2a27-4591-b504-5e334d51b53e | Rama Rama Rama Sita | Sāveri / Adi | unreviewed | Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed. |
+| tyagaraja-divyanama-sankirtana | congregational_namasankirtana | tyagaraja:krithi:42d35ca5-4110-4fd8-bece-9ced6a37014e | Rama Rama Rama Sita | Sāveri / Adi | unreviewed | Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed. |
+| tyagaraja-divyanama-sankirtana | congregational_namasankirtana | tyagaraja:krithi:f2700b5a-d26a-498b-b5c7-61806ebbb729 | Rama Rama Rama Sita | Huseni / Unknown | unreviewed | Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed. |
 | tyagaraja-divyanama-sankirtana | congregational_namasankirtana | tyagaraja:krithi:a525487e-f906-4e61-a600-3a2694b96bbb | rAma rAma rAmacandra | Ghanta / Jhampa | unreviewed | Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed. |
 | tyagaraja-divyanama-sankirtana | congregational_namasankirtana | tyagaraja:krithi:64e3ccdf-ec93-422b-969c-6ccfd2f3e43c | ramA ramaNa bhAramA | Vasantabhairavi / Adi | unreviewed | Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed. |
 | tyagaraja-divyanama-sankirtana | congregational_namasankirtana | tyagaraja:krithi:72407711-358e-4764-a291-15c7fbbb90ad | ramA ramaNa rArA | SankarAbharaNaM / Adi | unreviewed | Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed. |
 | tyagaraja-divyanama-sankirtana | congregational_namasankirtana | tyagaraja:krithi:40792364-1527-4e70-804d-00e1323c621c | Ramaabhirama Ramaneeya | Darbar / Misra Capu | unreviewed | Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed. |
-| tyagaraja-divyanama-sankirtana | congregational_namasankirtana | tyagaraja:import:1f73ab63-0278-4b61-85ce-3fbacbce1ba0 | Sri Rama Jaya Rama | Madhyamāvathi / Adi | unreviewed | Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed. |
-| tyagaraja-divyanama-sankirtana | congregational_namasankirtana | tyagaraja:import:3916fad4-5ef9-43ba-af21-5df0f233566c | Sri Rama Jaya Rama | Madhyamāvathi / Adi | unreviewed | Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed. |
+| tyagaraja-divyanama-sankirtana | congregational_namasankirtana | tyagaraja:krithi:1dfe4864-6224-460a-845a-5328aed9b638 | Sri Rama Jaya Rama | Madhyamāvathi / Adi | unreviewed | Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed. |
+| tyagaraja-divyanama-sankirtana | congregational_namasankirtana | tyagaraja:krithi:e9d91067-f4c7-4b2b-ae5c-06db11815ac2 | SrI rAma jaya rAma | Varāli / Isra Capu | unreviewed | Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed. |
 | tyagaraja-divyanama-sankirtana | congregational_namasankirtana | tyagaraja:krithi:7253c9f5-6903-4ad3-b63f-1eb6b9f01052 | SrI rAma rAma jagadAtma | Poornachandrika / Khanda Capu | unreviewed | Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed. |
 | tyagaraja-divyanama-sankirtana | congregational_namasankirtana | tyagaraja:krithi:501d0f9a-35b4-4ae6-a31e-042f70e0b0fe | SrI rAma rAma rAma | Neelāmbari / Khanda Capu | unreviewed | Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed. |
 | tyagaraja-divyanama-sankirtana | congregational_namasankirtana | tyagaraja:krithi:bbc8382b-a344-47c2-8b4d-fb831a541230 | SrI rAma rAmASritulamu | Sāveri / Capu | unreviewed | Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed. |
 | tyagaraja-divyanama-sankirtana | congregational_namasankirtana | tyagaraja:krithi:8ea31119-0764-4ab4-8f99-92264ba34d3f | varadA navanItASa | rAga panjaraM / Triputa | unreviewed | Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed. |
 | tyagaraja-utsava-sampradaya | lullaby_dolotsavam | tyagaraja:krithi:7ad8d15d-8260-46b7-bc02-2ef448f61842 | Badalika Teera | Reethigowla / Adi | unreviewed | Utsava Sampradaya swing / lullaby (dolotsavam / laali) piece. |
 | tyagaraja-utsava-sampradaya | invitation_heccarika | tyagaraja:krithi:9e06c13c-2bbb-47a7-b580-1de7365754cc | heccarikagA | Yadukula Kāmbhoji / Jhampa | reviewed | Approved ritual function; cycle seeding deferred to TRACK-149. |
-| tyagaraja-utsava-sampradaya | benediction_mangalam | tyagaraja:import:5d70a340-0137-4dfd-baa8-596ccaebf89f | jaya mangaLaM | Nadanamakriya / Adi | unreviewed | Utsava Sampradaya concluding harati / mangalam benediction; source setting preserved. |
-| tyagaraja-utsava-sampradaya | benediction_mangalam | tyagaraja:import:6eb15e4d-fcd0-45e1-9edd-969928695354 | jaya mangaLaM | Nadanamakriya / Adi | unreviewed | Utsava Sampradaya concluding harati / mangalam benediction; source setting preserved. |
-| tyagaraja-utsava-sampradaya | benediction_mangalam | tyagaraja:import:b26f89a5-7924-43e8-8ee6-c50d0a8bb6f1 | jaya mangaLaM | Nadanamakriya / Adi | unreviewed | Utsava Sampradaya concluding harati / mangalam benediction; source setting preserved. |
+| tyagaraja-utsava-sampradaya | benediction_mangalam | tyagaraja:krithi:191c44c1-9744-4afe-9f90-5a9cb45ade22 | jaya mangaLaM | Ghanta / Jhampa | unreviewed | Utsava Sampradaya concluding harati / mangalam benediction; source setting preserved. |
+| tyagaraja-utsava-sampradaya | benediction_mangalam | tyagaraja:krithi:474faeba-0c01-4688-a1e1-1ad41b536ee3 | jaya mangaLaM | Mohanam / Unknown | unreviewed | Utsava Sampradaya concluding harati / mangalam benediction; source setting preserved. |
+| tyagaraja-utsava-sampradaya | benediction_mangalam | tyagaraja:krithi:6ddd3f36-022a-4a78-9a63-c769c5941508 | jaya mangaLaM | Nadanamakriya / Adi | unreviewed | Utsava Sampradaya concluding harati / mangalam benediction; source setting preserved. |
 | tyagaraja-utsava-sampradaya | lullaby_dolotsavam | tyagaraja:krithi:0f06796a-2f9a-489b-9b41-18a659c30754 | Jo Jo Rama | Reethigowla / Adi | unreviewed | Utsava Sampradaya swing / lullaby (dolotsavam / laali) piece. |
 | tyagaraja-utsava-sampradaya | court_koluvu_upachara | tyagaraja:krithi:e897a8c6-ef38-411f-8229-0b6f2ad13e3c | koluvaiyunnADE | Devagāndhāri / Adi | unreviewed | Utsava Sampradaya royal court / upachara piece; edition-qualified. |
 | tyagaraja-utsava-sampradaya | court_koluvu_upachara | tyagaraja:krithi:5e240d77-d99b-46f1-8c96-6fb183bf9734 | koluvamarE kada | Hanumatodi / Adi | unreviewed | Utsava Sampradaya royal court / upachara piece; edition-qualified. |
@@ -250,9 +250,9 @@ Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi
 | Theme | Claims |
 |:---|---:|
 | Rama Bhakti & Devotional Praise | 490 |
-| Surrender (Saranagati) & Appeal for Grace | 63 |
+| Surrender (Saranagati) & Appeal for Grace | 62 |
 | Instruction to the Mind (Manasa) | 40 |
-| Deity Stuti & Devotional Praise | 27 |
+| Deity Stuti & Devotional Praise | 28 |
 | Nadopasana & Musical Knowledge | 22 |
 | Nama Mahima | 13 |
 | Ethical Reflection & Devotional Appeal | 10 |
@@ -435,7 +435,7 @@ Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi
 | 379c7e5d-f7be-4f82-bd42-b181e6f34a5d | fetched | `fff20de6d267650b…` | http://thyagaraja-vaibhavam.blogspot.com/2007/08/thyagaraja-kriti-aparaadhamula-maanpi.html — Cached thyagaraja-vaibhavam HTML witness for Aparaadhamula Maanpi (Darbar). |
 | 38773f68-1f5b-43f7-b73d-c066019bf579 | fetched | `ee349063d4c65244…` | http://thyagaraja-vaibhavam.blogspot.com/2008/01/thyagaraja-kriti-endugo-baaga-raga.html — Cached thyagaraja-vaibhavam HTML witness for endukO bAga (mOhanaM). |
 | 38be8ece-f0f1-4817-a95f-2759d785ccc9 | fetched | `7453fee721b69715…` | http://thyagaraja-vaibhavam.blogspot.com/2008/04/thyagaraja-kriti-narada-gana-raga.html — Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for nArada gAna (aThANa). |
-| 3916fad4-5ef9-43ba-af21-5df0f233566c | fetched | `91ab184f4e3d1709…` | http://thyagaraja-vaibhavam.blogspot.com/2008/07/thyagaraja-kriti-sri-rama-jaya-rama.html — Cached thyagaraja-vaibhavam HTML witness for Sri Rama Jaya Rama (varALi). |
+| 3916fad4-5ef9-43ba-af21-5df0f233566c | fetched | `91ab184f4e3d1709…` | http://thyagaraja-vaibhavam.blogspot.com/2008/07/thyagaraja-kriti-sri-rama-jaya-rama.html — Cached thyagaraja-vaibhavam HTML witness for SrI rAma jaya rAma (varALi). |
 | 3943b77a-d7b2-4f7f-8715-03ba0e5e2eb7 | fetched | `3af9942e460598bc…` | http://thyagaraja-vaibhavam.blogspot.com/2008/03/thyagaraja-kriti-pahi-ramachandra-raga.html — Cached thyagaraja-vaibhavam HTML witness for pAhi rAma candra (SankarAbharaNaM). |
 | 3946f1d2-2a27-4591-b504-5e334d51b53e | fetched | `1bd3b316f96e2ec4…` | http://thyagaraja-vaibhavam.blogspot.com/2007/04/thyagaraja-kriti-sri-rama-rama-rama.html — Cached thyagaraja-vaibhavam HTML witness for Rama Rama Rama Sita (sAvEri). |
 | 395d1cb2-4051-44d3-8307-049a4a4733e4 | fetched | `f639bdf95040b300…` | http://thyagaraja-vaibhavam.blogspot.com/2007/08/thyagaraja-kriti-evarikai-raga-deva.html — Cached thyagaraja-vaibhavam HTML witness for Evarikai (Deva Manohari). |
@@ -603,7 +603,7 @@ Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi
 | 726099c3-e302-4b8e-bd73-a20b67c4b109 | fetched | `6462647788e217ea…` | http://thyagaraja-vaibhavam.blogspot.com/2007/07/thyagaraja-kriti-manasu-nilpa-raga.html — Cached thyagaraja-vaibhavam HTML witness for Manasu Nilpa (Abhogi). |
 | 7272c6ee-17d1-46a0-b858-0af6086a0de3 | fetched | `fb4d8beb2daa5b3c…` | http://thyagaraja-vaibhavam.blogspot.com/2008/04/thyagaraja-kriti-sitapati-kaavavayya.html — Cached thyagaraja-vaibhavam HTML witness for sItA pati kAvavayya (SankarAbharaNaM). |
 | 72ca32df-7f38-4870-85c4-369c0ff97439 | fetched | `355619eb11931da0…` | http://thyagaraja-vaibhavam.blogspot.com/2007/04/thyagaraja-kriti-manasaa-etulorthunae.html — Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for manasA eTulOrtunE (malaya mArutaM). |
-| 733ec39f-27a2-4f8e-a703-e88196a5ab09 | fetched | `e0ad6d03d78e3958…` | http://thyagaraja-vaibhavam.blogspot.com/2008/06/thyagaraja-kriti-narasimha-raga.html — Cached thyagaraja-vaibhavam HTML witness for SrI nArasiMha (bilahari). |
+| 733ec39f-27a2-4f8e-a703-e88196a5ab09 | fetched | `e0ad6d03d78e3958…` | http://thyagaraja-vaibhavam.blogspot.com/2008/06/thyagaraja-kriti-narasimha-raga.html — Cached thyagaraja-vaibhavam HTML witness for narasiMha (bilahari). |
 | 734fcb3d-5eb1-4f31-8f82-a56189540f24 | fetched | `765dc4b967629cfa…` | http://thyagaraja-vaibhavam.blogspot.com/2007/09/thyagaraja-kriti-kamalaapta-kula.html — Cached thyagaraja-vaibhavam HTML witness for Kamalaapta Kula (Brndavana Saranga). |
 | 739b1a2c-0032-4990-bb25-f70712189628 | fetched | `0b73d37735139e4c…` | http://thyagaraja-vaibhavam.blogspot.com/2007/04/thyagaraja-kriti-etlaa-dorigitivo-raga.html — Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for eTlA dorigitivO (vasanta). |
 | 746132ef-6f0f-42a6-a29c-d55b346e1e66 | fetched | `9bbbc23368900db8…` | http://thyagaraja-vaibhavam.blogspot.com/2008/05/thyagaraja-kriti-vinave-o-manasa-raga.html — Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for vinavE O manasA (vivardhani). |
@@ -823,7 +823,7 @@ Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi
 | c653d0f7-dfd1-40b7-b4a7-3564e68b9266 | fetched | `a82052bcc609032d…` | http://thyagaraja-vaibhavam.blogspot.com/2008/08/thyagaraja-kriti-lemi-telpa-raga.html — Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for lEmi telpa (navanItaM). |
 | c667ec68-5981-4d89-a178-48250424b9d2 | fetched | `9f0e13c09d812094…` | http://thyagaraja-vaibhavam.blogspot.com/2007/04/thyagaraja-kriti-seethamma-maayamma.html — Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for sItamma mAyamma (vasanta). |
 | c677e5bb-2674-4ada-866d-9a34b1dcb368 | fetched | `2ecc37b3073f6978…` | http://thyagaraja-vaibhavam.blogspot.com/2007/08/thyagaraja-kriti-nee-bhakti-raga-jaya.html — Cached thyagaraja-vaibhavam HTML witness for Nee Bhakti (Jaya Manohari). |
-| c702d09d-b5a5-4b16-82ac-5fc01e265dd9 | fetched | `0f5ac45548b51f58…` | http://thyagaraja-vaibhavam.blogspot.com/2008/08/thyagaraja-kriti-narada-muni-raga.html — Cached thyagaraja-vaibhavam HTML witness for Sri Narada Muni (pantuvarALi). |
+| c702d09d-b5a5-4b16-82ac-5fc01e265dd9 | fetched | `0f5ac45548b51f58…` | http://thyagaraja-vaibhavam.blogspot.com/2008/08/thyagaraja-kriti-narada-muni-raga.html — Cached thyagaraja-vaibhavam HTML witness for nArada muni (pantuvarALi). |
 | c78b213e-1379-403f-9816-71c4072d3a97 | fetched | `62a3232726d70419…` | http://thyagaraja-vaibhavam.blogspot.com/2009/01/ty.html — Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for SrI janaka tanayE (kalakaNThi). |
 | c874c67c-67f1-40c2-8165-7a0e9916befd | fetched | `ce39dcfcfbcd9d97…` | http://thyagaraja-vaibhavam.blogspot.com/2008/10/thyagaraja-kriti-emandune-vichitramunu.html — Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for EmandunE vicitramunu (SrImaNi). |
 | c8d778b7-2d7b-49c8-8ec6-dc6949e2d2b5 | fetched | `d2fdfcb924393dbe…` | http://thyagaraja-vaibhavam.blogspot.com/2007/07/thyagaraja-kriti-chera-raavademi-rage.html — Cached thyagaraja-vaibhavam HTML witness for Chera Raavademi (Riti Gaula). |
@@ -872,7 +872,7 @@ Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi
 | daa5d57d-b320-4a8b-a1c5-598c4bbdfda1 | fetched | `ba9b6a5c472b5be8…` | http://thyagaraja-vaibhavam.blogspot.com/2008/11/thyagaraja-kriti-proddu-poyyenu-raga.html — Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for proddu poyyenu (tODi). |
 | dacd74bf-f973-4826-81b3-ef1c5a2be312 | fetched | `d840368962bb1e89…` | http://thyagaraja-vaibhavam.blogspot.com/2008/10/thyagaraja-kriti-vasudevayani-raga.html — Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for vAsudEvayani (kalyANi). |
 | dafb9fd2-c59d-4015-873b-e4c8e7460745 | fetched | `252e14df289b821d…` | http://thyagaraja-vaibhavam.blogspot.com/2008/04/thyagaraja-kriti-ninne-nera-namminanu.html — Cached thyagaraja-vaibhavam HTML witness for ninnE nera namminAnu (Arabhi). |
-| db-snapshot | database_snapshot | `398df2e57213eb49…` | database/data/track147-catalogue-snapshot.json — Hashed database census and stored pallavi/section/evidence snapshot for 675 Tyagaraja catalogue identities and 684 source imports. |
+| db-snapshot | database_snapshot | `b8fd67bad2d843ab…` | database/data/track147-catalogue-snapshot.json — Hashed database census and stored pallavi/section/evidence snapshot for 675 Tyagaraja catalogue identities and 684 source imports. |
 | db1b5c0c-ad3f-4ab6-9746-5afead381ab2 | fetched | `4ee1255b0d333fcb…` | http://thyagaraja-vaibhavam.blogspot.com/2007/05/thyagaraja-kriti-meluko-dayaa-nidhi.html — Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for mElukO dayA nidhi (saurAshTraM). |
 | db273d0e-8386-4544-9bd7-9dd962372c7e | fetched | `c95860b20e335af2…` | http://thyagaraja-vaibhavam.blogspot.com/2007/07/thyagaraja-kriti-jo-jo-rama-raga-reethi.html — Cached thyagaraja-vaibhavam HTML witness for Jo Jo Rama (Riti Gaula). |
 | db53e339-8b5f-4e05-97f9-e4a62633924d | fetched | `fbe5a3ecd1095468…` | http://thyagaraja-vaibhavam.blogspot.com/2007/05/thyagaraja-kriti-kalugunaa-raga-poorna.html — Cached thyagaraja-vaibhavam HTML witness for Kalugunaa (Purna Lalita). |
@@ -974,36 +974,18 @@ Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi
 
 ## Unresolved register
 
-- 8 collapsed identities stay `collision_not_classified` (their 17 source witnesses are classified individually and await canon split remediation).
 - 3 CSV rows are outside the Tyagaraja catalogue. Their composer and identity stay unresolved.
 - 5 Ghana-raga Pancharatnam memberships are `reviewed` and human-approved with Aradhana concert order recorded separately from composer sequence.
 - 33 non-cycle approved claims are marked `application: deferred` pending a non-cycle attribute application path.
 - 1991 source-backed claims remain `unresolved` pending multi-edition comparison.
 - 94 claims on Kovur, Tiruvottiyur, Lalgudi, Srirangam, Utsava Sampradaya, Divyanama, *Nauka Charitram*, and *Prahlada Bhakti Vijayam* remain `unreviewed` leads attributed to unconsulted print editions.
-- 27 identities have no pallavi section and 4 have no charanam. Lyric text was not invented.
+- 26 identities have no pallavi section and 4 have no charanam. Lyric text was not invented.
 - 11 subjects preserve a `desadi` source tala stored as Adi.
 
 ## Concordance
 
 | Subject | Kind | Title | Canonical raga | Canonical tala | Raw raga | Raw tala | Deity / Geo | Themes / Groups | Status | Audit |
 |:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|
-| tyagaraja:import:0082d54a-2341-48c0-9b54-d7039232b77c | witness | paripUrNa kAma | pUri kalyANi | Adi | hamsa bhramari | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
-| tyagaraja:import:1daabb05-6208-44a6-89c0-dc48be8fb187 | witness | rAma sItA rAma | Bālahamsa | Adi | SankarAbharaNaM | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
-| tyagaraja:import:1f73ab63-0278-4b61-85ce-3fbacbce1ba0 | witness | Sri Rama Jaya Rama | Madhyamāvathi | Adi | Madhyamavati | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise; ritual:tyagaraja-divyanama-sankirtana | mapped | missing_pallavi |
-| tyagaraja:import:3115095a-36f9-4999-b32c-d8a063268cd9 | witness | Rama Rama Rama Sita | Sāveri | Adi | Huseni | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise; ritual:tyagaraja-divyanama-sankirtana | mapped |  |
-| tyagaraja:import:3916fad4-5ef9-43ba-af21-5df0f233566c | witness | Sri Rama Jaya Rama | Madhyamāvathi | Adi | varALi | Isra Capu | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise; ritual:tyagaraja-divyanama-sankirtana | mapped | missing_pallavi |
-| tyagaraja:import:3943b77a-d7b2-4f7f-8715-03ba0e5e2eb7 | witness | pAhi rAma candra | Yadukula Kāmbhoji | Adi | SankarAbharaNaM | Unknown | Rama (unresolved) / UNRESOLVED | Surrender (Saranagati) & Appeal for Grace; ritual:tyagaraja-divyanama-sankirtana | approved |  |
-| tyagaraja:import:3946f1d2-2a27-4591-b504-5e334d51b53e | witness | Rama Rama Rama Sita | Sāveri | Adi | sAvEri | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise; ritual:tyagaraja-divyanama-sankirtana | mapped |  |
-| tyagaraja:import:40e2d47b-a0c5-4e44-b301-8cdd05b9589d | witness | SrI nArasiMha | Phalaranjani | Adi | phala ranjani | Unknown | Narasimha (unresolved) / UNRESOLVED | Surrender (Saranagati) & Appeal for Grace | mapped |  |
-| tyagaraja:import:4707048d-f06e-46f0-9202-3b985cee65b2 | witness | paripUrNa kAma | pUri kalyANi | Adi | pUri kalyANi | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
-| tyagaraja:import:5d70a340-0137-4dfd-baa8-596ccaebf89f | witness | jaya mangaLaM | Nadanamakriya | Adi | ghaNTA | Jhampa | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise; ritual:tyagaraja-utsava-sampradaya | mapped |  |
-| tyagaraja:import:604a9623-f1b0-4efc-9486-ea415b219870 | witness | pAhi rAma candra | Yadukula Kāmbhoji | Adi | yadukula kAmbhOji | Unknown | Rama (unresolved) / UNRESOLVED | Surrender (Saranagati) & Appeal for Grace; ritual:tyagaraja-divyanama-sankirtana | in_review |  |
-| tyagaraja:import:6eb15e4d-fcd0-45e1-9edd-969928695354 | witness | jaya mangaLaM | Nadanamakriya | Adi | mOhanaM | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise; ritual:tyagaraja-utsava-sampradaya | mapped |  |
-| tyagaraja:import:733ec39f-27a2-4f8e-a703-e88196a5ab09 | witness | SrI nArasiMha | Phalaranjani | Adi | bilahari | Isra Capu | Narasimha (unresolved) / UNRESOLVED | Surrender (Saranagati) & Appeal for Grace | mapped |  |
-| tyagaraja:import:84ffdbb8-6845-4747-9127-b0a46cf65630 | witness | Sri Narada Muni | Bhairavi | Adi | Bhairavi | Unknown | Sage Narada (unresolved) / UNRESOLVED | Saints and Teachers | mapped | missing_pallavi |
-| tyagaraja:import:ab6c4e31-d6a7-474d-ac72-e30adb14ecaf | witness | rAma sItA rAma | Bālahamsa | Adi | balahamsa | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | mapped |  |
-| tyagaraja:import:b26f89a5-7924-43e8-8ee6-c50d0a8bb6f1 | witness | jaya mangaLaM | Nadanamakriya | Adi | nAda nAmakriya | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise; ritual:tyagaraja-utsava-sampradaya | mapped |  |
-| tyagaraja:import:c702d09d-b5a5-4b16-82ac-5fc01e265dd9 | witness | Sri Narada Muni | Bhairavi | Adi | pantuvarALi | Rupakam | Sage Narada (unresolved) / UNRESOLVED | Saints and Teachers | mapped | missing_pallavi |
 | tyagaraja:krithi:0040c0f8-7f32-44f7-85ef-0eb0ec2e05f1 | identity | nADADina mATa | Jana Ranjani | Misra Capu | jana ranjani | Isra Capu | Rama (unresolved) / UNRESOLVED | Nadopasana & Musical Knowledge | approved |  |
 | tyagaraja:krithi:005bc2ed-d9c5-4133-9071-df929a5e25f9 | identity | hari hari nIyokka | Punnagavarali | Adi | punnAga varALi | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:00d7ec02-dd0c-423b-8862-3fe5e24923e2 | identity | rAma rAma rAma mAM pAhi | yamunA kalyANi | Adi | yamunA kalyANi | Adi | Rama (unresolved) / UNRESOLVED | Surrender (Saranagati) & Appeal for Grace; ritual:tyagaraja-divyanama-sankirtana | approved |  |
@@ -1057,6 +1039,7 @@ Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi
 | tyagaraja:krithi:1156c31c-e939-4643-b650-9faa062bb33e | identity | Chakkani Raja | Kharaharapriyā | Adi | Kharahara Priya | Unknown | Rama (unresolved) / UNRESOLVED | Instruction to the Mind (Manasa) | approved |  |
 | tyagaraja:krithi:11aca4c2-2d69-44b0-93c8-5000619555c2 | identity | inka yOcanaitE | Ghanta | Adi | ghaNTA | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:11b3833e-634a-4018-b159-485576ccc8c2 | identity | aparAdhamulanOrva | rasALi-vanALi-vanAvaLi | Adi | rasALi-vanALi-vanAvaLi | Adi | Rama (unresolved) / UNRESOLVED | Surrender (Saranagati) & Appeal for Grace | approved |  |
+| tyagaraja:krithi:12058429-320a-4040-b682-78c26399e0ae | identity | SrI nArasiMha | Phalaranjani | Adi | phala ranjani | Unknown | Narasimha (unresolved) / UNRESOLVED | Surrender (Saranagati) & Appeal for Grace | mapped |  |
 | tyagaraja:krithi:125e543a-cb8c-462a-9b51-fe981e8e4337 | identity | pAlintuvO | Kāntāmani | Adi | kAntAmaNi | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:1270d6f4-f7c3-4714-8dfe-19932d2a58d0 | identity | kAru vElpulu | Mechakalyāni | Adi | kalyANi | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:12ab2d34-a5d6-4ba6-9923-92cf53c8ce3a | identity | balamu kulamu | Sāveri | Rupaka | sAvEri | Rupakam | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
@@ -1073,6 +1056,7 @@ Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi
 | tyagaraja:krithi:189bc0d1-e96b-4e26-9de8-ff55f51321a3 | identity | Ennaallu Tirigedi | Mālavashree | Adi | Malava Sri | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:18ace057-6496-48db-904d-e88db708a1c6 | identity | nI pada pankaja | Begada | Adi | bEgaDa | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:18ae493e-7724-40a7-b7c1-f1d861202b93 | identity | Inkaa Daya | nArAyaNa gauLa | Adi | Narayana Gaula | Unknown | Rama (unresolved) / UNRESOLVED | Surrender (Saranagati) & Appeal for Grace | approved |  |
+| tyagaraja:krithi:191c44c1-9744-4afe-9f90-5a9cb45ade22 | identity | jaya mangaLaM | Ghanta | Jhampa | ghaNTA | Jhampa | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise; ritual:tyagaraja-utsava-sampradaya | approved |  |
 | tyagaraja:krithi:195994c2-534a-4950-be10-ce9ba7a7f0cf | identity | pAhi paramAtma | Varāli | Adi | varALi | Adi | Rama (unresolved) / UNRESOLVED | Surrender (Saranagati) & Appeal for Grace | approved |  |
 | tyagaraja:krithi:198cf9c3-a2f0-4345-b0a7-c0be4f2f8d99 | identity | prArabdham | Swarāvali | Jhampa | svarAvaLi | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:1a5f7193-3f44-4170-b510-d13b78ad9390 | identity | Neeke Teliyaka | Anandabhairavi | Adi | Ananda Bhairavi | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
@@ -1088,6 +1072,7 @@ Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi
 | tyagaraja:krithi:1ccbd525-96aa-4e90-a999-ff7b2ec7ce7f | identity | daSaratha nandana | Asāveri | Adi | asAvEri | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:1d2d8060-66e8-48e4-933b-62a7ff17cb28 | identity | Rama Paahi | Kāpi | Misra Capu | Kapi | Unknown | Rama (unresolved) / UNRESOLVED | Surrender (Saranagati) & Appeal for Grace | approved |  |
 | tyagaraja:krithi:1d3c167b-d5ae-4f4b-8e55-8f11ab9c39e4 | identity | Ivasudha Neevanti | Sahāna | Adi | Sahana | Unknown | Siva (Kovur Sundareswara) (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise; group:tyagaraja-kovur-pancharatnam | approved |  |
+| tyagaraja:krithi:1dfe4864-6224-460a-845a-5328aed9b638 | identity | Sri Rama Jaya Rama | Madhyamāvathi | Adi | Madhyamavati | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise; ritual:tyagaraja-divyanama-sankirtana | mapped | missing_pallavi |
 | tyagaraja:krithi:1e8717c9-7316-4de5-9ed4-5a026a9722bc | identity | ninu bAsi | Bālahamsa | Adi | balahamsa | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:1eb54ff8-6e91-4195-aa3b-e11360ecdfdb | identity | enta bhAgyamu | Sāranga | Adi | sAranga | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | mapped |  |
 | tyagaraja:krithi:1ebf6bb3-f892-417d-aecd-cf8011706d3f | identity | mummUrtulu | Atāna | Adi | aThANa | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
@@ -1098,6 +1083,7 @@ Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi
 | tyagaraja:krithi:1fa2297e-2e46-4341-bfc7-faf18f161a78 | identity | Narada Guru Svami | Darbar | Adi | Darbar | Unknown | Sage Narada (unresolved) / UNRESOLVED | Saints and Teachers | approved |  |
 | tyagaraja:krithi:208081e1-0c9c-44f1-90bf-ae4b337238b0 | identity | Nagu Momu Kana Leni | Abheri | Adi | Abheri | Unknown | Rama (unresolved) / UNRESOLVED | Surrender (Saranagati) & Appeal for Grace | approved |  |
 | tyagaraja:krithi:209b89f7-44a8-4d47-a939-c70b8db7e919 | identity | Manavini Vinumaa | Jayanārāyani | Adi | Jaya Narayani | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
+| tyagaraja:krithi:20fb3477-37b1-4a67-bf22-cfb57fd45192 | identity | paripUrNa kAma | Hamsabhramari | Adi | hamsa bhramari | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:211ce953-0b8c-4d7a-a8d2-0415d5cfc72e | identity | unna tAvuna | Ghanta | Capu | ghaNTA | Capu | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:2192caff-da11-4a23-81ad-3036d3cdd173 | identity | sundari nI divya | Mechakalyāni | Adi | kalyANi | Adi | Devi (Tripurasundari) (unresolved) / UNRESOLVED | Deity Stuti & Devotional Praise; group:tyagaraja-tiruvottiyur-pancharatnam | approved |  |
 | tyagaraja:krithi:21d2c1a9-f3f0-437c-82b6-d6a91fcd0543 | identity | ninnanavalasina | Mechakalyāni | Misra Capu | kalyANi | Isra Capu | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
@@ -1188,6 +1174,7 @@ Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi
 | tyagaraja:krithi:4215e9b5-17dd-4730-a140-55d48014b034 | identity | Lalitae Sri Pravriddhae | Bhairavi | Adi | Bhairavi | Unknown | Devi (Pravrddha Srimati / Lalita) (unresolved) / UNRESOLVED | Deity Stuti & Devotional Praise; group:tyagaraja-lalgudi-pancharatnam; ritual:tyagaraja-utsava-sampradaya | approved |  |
 | tyagaraja:krithi:426f7403-9809-4704-b7e1-22e539b7acb3 | identity | Elaraa Sri Krishnaa | Kāmbhoji | Rupaka | Kambhoji | Unknown | Krishna / Vishnu (unresolved) / UNRESOLVED | Ethical Reflection & Devotional Appeal | approved |  |
 | tyagaraja:krithi:42c81e5a-4af5-4b5f-8538-81af000f2329 | identity | sandEhamunu | Rāmapriyā | Adi | rAma priya | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
+| tyagaraja:krithi:42d35ca5-4110-4fd8-bece-9ced6a37014e | identity | Rama Rama Rama Sita | Sāveri | Adi | sAvEri | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise; ritual:tyagaraja-divyanama-sankirtana | mapped |  |
 | tyagaraja:krithi:44d9e846-50b1-43dd-bc7e-9f82994d953c | identity | Tulasi Bilva | kEdAra gauLa | Adi | Kedara Gaula | Unknown | Tulasi (unresolved) / UNRESOLVED | Deity Stuti & Devotional Praise; ritual:tyagaraja-utsava-sampradaya | approved |  |
 | tyagaraja:krithi:44e32f1e-f9d6-4789-99e5-5f148bc97a82 | identity | Paraaku Neekelaraa | Keeranāvali | Adi | Kiranavali | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:451244d9-a0ee-43b3-b6aa-7a06cee44ce6 | identity | sArasa nEtra | SankarAbharaNaM | Adi | SankarAbharaNaM | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
@@ -1196,6 +1183,7 @@ Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi
 | tyagaraja:krithi:463943a7-924f-40c4-8f71-335093644ce6 | identity | nIvaNTi daivamu | Hanumatodi | Adi | tODi | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:46a8024b-ec47-4259-87ef-26bfb3e4b7be | identity | Ennaallu Nee Trova | Kāpi | Misra Capu | Kapi | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:4749735b-6ccb-4892-a504-04df5716bde0 | identity | Sara Sara Samaraika | Kunthalavarāli | Adi | Kuntala Varali | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
+| tyagaraja:krithi:474faeba-0c01-4688-a1e1-1ad41b536ee3 | identity | jaya mangaLaM | Mohanam | Unknown | mOhanaM | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise; ritual:tyagaraja-utsava-sampradaya | approved |  |
 | tyagaraja:krithi:477ec205-abda-480e-9101-df377a6f8e1f | identity | dinamE sudinamu | Latāngi | Misra Capu | latAngi | Isra Capu | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:47f8faf6-b867-486c-baef-007293872b12 | identity | O Jagannaatha | kEdAra gauLa | Adi | Kedara Gaula | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:48708093-afc0-4d70-8b10-7696f8175380 | identity | tanavAri tanamu | Begada | Adi | bEgaDa | Desadi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
@@ -1206,6 +1194,7 @@ Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi
 | tyagaraja:krithi:4a2f41e9-41fa-44eb-9d64-f42375f541b8 | identity | sadA madini | Gambheeravani | Adi | gambhIra vANi | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:4a53d422-1ce0-4895-a6d3-38f49d5df3a6 | identity | Yochanaa Kamala | Darbar | Adi | Darbar | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved | missing_pallavi |
 | tyagaraja:krithi:4a69d9af-b815-406c-a475-23e708182795 | identity | Elaavataara | Mukhāri | Adi | Mukhari | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
+| tyagaraja:krithi:4abda836-1e15-4b0b-a7a7-58035712c55a | identity | paripUrNa kAma | pUri kalyANi | Adi | pUri kalyANi | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:4b768a4c-4ef0-4cb4-a2e9-c8e76562063a | identity | Abhimaanamu Ledemi | Andhali | Triputa | Andali | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:4c8ae919-199e-427e-a405-10afe38ef806 | identity | Guru Leka | Gourimanohari | Khanda Capu | Gauri Manohari | Unknown | Rama (unresolved) / UNRESOLVED | Saints and Teachers | approved |  |
 | tyagaraja:krithi:4cae5d72-c291-465d-b117-242dff25e96c | identity | rAmA rAma rAma rAmAyani | Mohanam | Misra Capu | mOhanaM | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise; ritual:tyagaraja-divyanama-sankirtana | approved |  |
@@ -1215,6 +1204,7 @@ Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi
 | tyagaraja:krithi:4e9eac68-ee8d-4da8-8c75-7131e956f112 | identity | SrI kAnta nIyeDa | Bhavapriyā | Adi | bhava priya | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:4eb527cc-5ea7-4ff5-a6f8-364b3e599613 | identity | nEramA rAma | saurAshTraM | Adi | saurAshTraM | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise; ritual:tyagaraja-divyanama-sankirtana | approved |  |
 | tyagaraja:krithi:4f0d4529-dc92-41e6-8532-edb311bddd4b | identity | Evarikai | Deva Manohari | Adi | Deva Manohari | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
+| tyagaraja:krithi:4f90dd54-c76e-4cce-88f8-1c460cdb3566 | identity | rAma sItA rAma | Bālahamsa | Adi | balahamsa | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | mapped |  |
 | tyagaraja:krithi:4fa55259-3152-4f57-b528-52bcdf41b833 | identity | vinanAsakoni | Pratāpavarāli | Adi | pratApa varALi | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:501d0f9a-35b4-4ae6-a31e-042f70e0b0fe | identity | SrI rAma rAma rAma | Neelāmbari | Khanda Capu | nIlAmbari | Khanda Capu | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise; ritual:tyagaraja-divyanama-sankirtana | approved |  |
 | tyagaraja:krithi:503b3c2f-cfc0-418c-a914-0f313291a9b4 | identity | patiki hArati | suraTi | Adi | suraTi | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise; ritual:tyagaraja-utsava-sampradaya | approved |  |
@@ -1286,7 +1276,9 @@ Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi
 | tyagaraja:krithi:6c2fc35a-9ff3-4d04-9c51-fa4f03532744 | identity | nAda sudhA rasam | Ārabhi | Rupaka | Arabhi | Rupakam | Rama (unresolved) / UNRESOLVED | Nadopasana & Musical Knowledge | approved |  |
 | tyagaraja:krithi:6c9d0ab2-70a2-4c6b-a0df-c4a925bf8ae9 | identity | Naada Tanumanisam | Chittaranjani | Adi | Citta Ranjani | Unknown | Siva (Sankara) (reviewed) / UNRESOLVED | Nadopasana & Musical Knowledge | approved |  |
 | tyagaraja:krithi:6cb08ce2-279f-4088-84ef-6c7e84dbd30d | identity | sAramE kAni | Panthuvarāli | Misra Capu | pantuvarALi | Isra Capu | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
+| tyagaraja:krithi:6d55561e-eedf-48c1-b1ea-2961a2750965 | identity | nArada muni | Panthuvarāli | Rupaka | pantuvarALi | Rupakam | Sage Narada (unresolved) / UNRESOLVED | Saints and Teachers | approved |  |
 | tyagaraja:krithi:6db8faab-0307-4ec1-aeba-debdcdf3de00 | identity | oka pAri jUDaga | Kalāvati | Adi | kalAvati | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
+| tyagaraja:krithi:6ddd3f36-022a-4a78-9a63-c769c5941508 | identity | jaya mangaLaM | Nadanamakriya | Adi | nAda nAmakriya | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise; ritual:tyagaraja-utsava-sampradaya | mapped |  |
 | tyagaraja:krithi:6dfbf308-eb7a-408f-b4ed-ca9168670204 | identity | Paritaapamu | Manohari | Rupaka | Manohari | Unknown | Rama (unresolved) / UNRESOLVED | Ethical Reflection & Devotional Appeal | approved |  |
 | tyagaraja:krithi:6e54dc31-79d5-4368-b0c9-bd3ab6f9ceb7 | identity | Emi jEsitEnEmi | Hanumatodi | Misra Capu | tODi | Isra Capu | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:6f1b9810-3b06-4d1f-88fb-d1f030844691 | identity | Inta Saukhyamani | Kāpi | Adi | Kapi | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved | missing_pallavi |
@@ -1309,6 +1301,7 @@ Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi
 | tyagaraja:krithi:7570235e-b9cf-4060-a9cf-b400716ca3ae | identity | Indukaa Puttinchitivi | Bhairavi | Adi | Bhairavi | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:76025d5f-aa93-41a2-a9c4-8169981a2f79 | identity | Karunaa Jaladhi | kEdAra gauLa | Misra Capu | Kedara Gaula | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | mapped |  |
 | tyagaraja:krithi:760be4bc-5b3a-430d-9969-4835c43aac74 | identity | Evari Maata | Kāmbhoji | Adi | Kambhoji | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
+| tyagaraja:krithi:76706063-efdd-49a7-b091-4817afed5b57 | identity | Sri Narada Muni | Bhairavi | Adi | Bhairavi | Unknown | Sage Narada (unresolved) / UNRESOLVED | Saints and Teachers | mapped |  |
 | tyagaraja:krithi:76af1dff-ea85-4687-8238-27af5ac9dbc6 | identity | Mucchata | Madhyamāvathi | Adi | Madhyamavati | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:7762af58-19eb-4bd6-a6ce-d17a54dd7a73 | identity | sAri veDalina | Asāveri | Adi | asAvEri | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:77d3a9de-411c-4c6b-b285-026d19d0bf27 | identity | Sogasugaa Mridanga | Ranjani | Rupaka | Sri Ranjani | Unknown | Rama (reviewed) / UNRESOLVED | Nadopasana & Musical Knowledge | approved |  |
@@ -1330,6 +1323,7 @@ Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi
 | tyagaraja:krithi:7d556895-a35c-4b48-b922-e2815fa492e9 | identity | O ramA ramaNa | Kedaram | Adi | kEdAraM | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise; ritual:tyagaraja-divyanama-sankirtana | approved |  |
 | tyagaraja:krithi:7d7ffdc6-fe9f-4864-a630-a418679f4753 | identity | bhajana sEya rAdA | Atāna | Rupaka | aThANa | Rupakam | Rama (unresolved) / UNRESOLVED | Nama Mahima; ritual:tyagaraja-divyanama-sankirtana | approved |  |
 | tyagaraja:krithi:7e410ccb-66d7-48f4-adc2-2102b12681ad | identity | Laali Laalayya | kEdAra gauLa | Jhampa | Kedara Gaula | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
+| tyagaraja:krithi:7e7529c6-93ee-46fe-890e-c491854fbeee | identity | pAhi rAma candra | SankarAbharaNaM | Unknown | SankarAbharaNaM | Unknown | Rama (unresolved) / UNRESOLVED | Surrender (Saranagati) & Appeal for Grace; ritual:tyagaraja-divyanama-sankirtana | approved |  |
 | tyagaraja:krithi:7e954839-2267-43a1-8d6b-9872b7cb2a04 | identity | SrI raghu kulamandu | Hamsadhwani | Adi | hamsa dhvani | Desadi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:7ea89f3a-86c9-4e20-9a5a-98effa850ce6 | identity | nA jIvAdhAra | Bilahari | Adi | bilahari | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:7fa033e9-6780-4a14-ab66-095c4fcd15ac | identity | E pApamu jEsitirA | Atāna | Misra Capu | aThANa | Isra Capu | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
@@ -1494,6 +1488,7 @@ Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi
 | tyagaraja:krithi:b9063ef4-7e13-4609-9085-ad2d2134f70b | identity | sItamma mAyamma | Vasanthā | Rupaka | vasanta | Rupakam | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:b95c07ee-f897-49ea-9f7b-c37be42335ba | identity | Chalamelaraa | mArgahindOLaM | Adi | Marga Hindolam | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:b9af5088-9906-47c4-bec2-4ea59e57f75b | identity | mOhana rAma | Mohanam | Adi | mOhanaM | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
+| tyagaraja:krithi:ba2ec6a9-1804-48f1-a379-0fc505078892 | identity | pAhi rAma candra | Yadukula Kāmbhoji | Adi | yadukula kAmbhOji | Unknown | Rama (unresolved) / UNRESOLVED | Surrender (Saranagati) & Appeal for Grace; ritual:tyagaraja-divyanama-sankirtana | in_review |  |
 | tyagaraja:krithi:bad7d739-4c2d-443d-a38e-02efe78777d7 | identity | gaTTigAnu | Begada | Rupaka | bEgaDa | Rupakam | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:bbc8382b-a344-47c2-8b4d-fb831a541230 | identity | SrI rAma rAmASritulamu | Sāveri | Capu | sAvEri | Capu | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise; ritual:tyagaraja-divyanama-sankirtana | approved |  |
 | tyagaraja:krithi:bbe4c6a3-5a76-4902-abf9-32d547c04d49 | identity | rAmacandra nI daya | suraTi | Adi | suraTi | Unknown | Rama (unresolved) / UNRESOLVED | Surrender (Saranagati) & Appeal for Grace | approved |  |
@@ -1573,6 +1568,7 @@ Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi
 | tyagaraja:krithi:da47bd3e-75ff-4227-8d7f-174aa3bb0d87 | identity | Sangita Sastra | Mukhāri | Adi | Mukhari | Unknown | Rama (reviewed) / UNRESOLVED | Nadopasana & Musical Knowledge | approved |  |
 | tyagaraja:krithi:da7f37d0-ac3c-42f4-ba35-85bae4134678 | identity | lEmi telpa | Navanītam | Adi | navanItaM | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:db5c9fda-a13f-450d-985e-5e335cd6280a | identity | mahima taggincukO | Riśabhapriyā | Adi | rishabha priya | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
+| tyagaraja:krithi:db90b28a-2b7f-43ee-a6dc-078558b40cf9 | identity | rAma sItA rAma | SankarAbharaNaM | Unknown | SankarAbharaNaM | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:dbc42cee-6859-4196-90ae-16e05f9a06d1 | identity | parama pAvana | Panthuvarāli | Misra Capu | pantuvarALi | Isra Capu | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:dbcefbe4-de22-4830-b9be-468a632dbc8f | identity | rAma nAmamu janma | Atāna | Adi | aThANa | Adi | Rama (unresolved) / UNRESOLVED | Nama Mahima | approved |  |
 | tyagaraja:krithi:dbe88431-22bd-44ec-8cd8-f1282b64e468 | identity | gAravimpa rAdA | Ghanta | Rupaka | ghaNTA | Rupakam | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
@@ -1619,6 +1615,7 @@ Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi
 | tyagaraja:krithi:e90dc863-7cae-4986-a557-1711f7f98bd1 | identity | Dina Mani Vamsa | Harikāmbhōji | Adi | Hari Kambhoji | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:e931e5ec-b7c7-4404-acf9-a2b468b156d7 | identity | madilOna yOcana | Kolahalam | Adi | kOlAhalaM | Desadi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | mapped | missing_charanam |
 | tyagaraja:krithi:e9358be5-57d8-43f8-bb82-e8477f851b57 | identity | Natha Brovavae | Bhairavi | Adi | Bhairavi | Unknown | Rama (unresolved) / UNRESOLVED | Surrender (Saranagati) & Appeal for Grace | approved |  |
+| tyagaraja:krithi:e9d91067-f4c7-4b2b-ae5c-06db11815ac2 | identity | SrI rAma jaya rAma | Varāli | Isra Capu | varALi | Isra Capu | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise; ritual:tyagaraja-divyanama-sankirtana | approved |  |
 | tyagaraja:krithi:eb516533-8464-40c3-8c7c-86dcbce93129 | identity | manasA eTulOrtunE | Malayamārutam | Rupaka | malaya mArutaM | Rupakam | Rama (unresolved) / UNRESOLVED | Instruction to the Mind (Manasa) | approved |  |
 | tyagaraja:krithi:ec1fb06f-6d95-4689-9ae6-3a9cf0999d34 | identity | Sri Maanini | Purna Shadjam | Adi | Purna Shadjam | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:ed2395c0-fb30-482d-b293-95c3a690da5a | identity | E varamaDugudu | Mechakalyāni | Rupaka | kalyANi | Rupakam | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
@@ -1631,6 +1628,7 @@ Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi
 | tyagaraja:krithi:f1097b68-6d86-4a3c-8f98-08707295554e | identity | vina rAdA | Devagāndhāri | Adi | deva gAndhAri | Desadi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | mapped |  |
 | tyagaraja:krithi:f1a32daa-973d-48df-8bef-b3ee93fe17fa | identity | Rama Lobhamela | Darbar | Adi | Darbar | Unknown | Rama (unresolved) / UNRESOLVED | Ethical Reflection & Devotional Appeal | approved |  |
 | tyagaraja:krithi:f2651795-4c95-40e8-8734-418fe059b2e3 | identity | pAhi kalyANa sundara | Punnagavarali | Capu | punnAga varALi | Capu | Rama (unresolved) / UNRESOLVED | Surrender (Saranagati) & Appeal for Grace | approved |  |
+| tyagaraja:krithi:f2700b5a-d26a-498b-b5c7-61806ebbb729 | identity | Rama Rama Rama Sita | Huseni | Unknown | Huseni | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise; ritual:tyagaraja-divyanama-sankirtana | approved |  |
 | tyagaraja:krithi:f287410c-39e9-495d-9aab-419a63ecc2ed | identity | Nee Muddu Momu | Kamalā Manohari | Adi | Kamala Manohari | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:f2990794-8758-460b-96fd-abd3fbd0e589 | identity | Deva Sri Tapasteertha | Madhyamāvathi | Triputa | Madhyamavati | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:f37cec70-10b7-493a-8068-a305c502528e | identity | ilalO praNatArti | Atāna | Adi | aThANa | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
@@ -1666,6 +1664,7 @@ Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi
 | tyagaraja:krithi:fdbda5e6-0080-4b9d-84bf-6378a9cbd9bb | identity | Venu Gaana Loluni | kEdAra gauLa | Rupaka | Kedara Gaula | Unknown | Krishna / Vishnu (unresolved) / UNRESOLVED | Deity Stuti & Devotional Praise | approved |  |
 | tyagaraja:krithi:fdde206b-d725-41ac-a159-c7d0818916e4 | identity | AragimpavE | Hanumatodi | Rupaka | tODi | Rupakam | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:fe316a27-7978-4a95-a260-83977c69bf73 | identity | rAmA ninu nammina | Mohanam | Adi | mOhanaM | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
+| tyagaraja:krithi:ff293925-2765-420a-831d-5d6314c456df | identity | narasiMha | Bilahari | Isra Capu | bilahari | Isra Capu | Narasimha (unresolved) / UNRESOLVED | Deity Stuti & Devotional Praise | approved |  |
 | tyagaraja:krithi:ff680a45-cadf-4566-b7f7-a5c74e513eda | identity | nOrEmi SrI rAma | Varāli | Adi | varALi | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:ffb09968-4a54-4bd2-a32b-d326b72f0967 | identity | rAmAbhirAma manasu | Dhanyāsi | Adi | dhanyAsi | Adi | Rama (unresolved) / UNRESOLVED | Instruction to the Mind (Manasa) | approved |  |
 | tyagaraja:krithi:ffb45270-30b7-4431-b902-7aebca467ac0 | identity | dASarathI nI RNamu | Hanumatodi | Adi | tODi | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
