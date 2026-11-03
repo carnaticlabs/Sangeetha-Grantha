@@ -26,6 +26,7 @@ from typing import Any
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
+from src.lead_decisions import apply_to_tyagaraja, load_decisions
 from src.tyagaraja_classification import (
     GHANA_GROUP_VALUE,
     Approval,
@@ -53,6 +54,7 @@ MANIFEST_PATH = ROOT / "database" / "data" / "track147-tyagaraja-application-man
 MARKDOWN_PATH = (
     ROOT / "application_documentation" / "01-requirements" / "features" / "tyagaraja-classification-master.md"
 )
+DECISIONS_PATH = ROOT / "database" / "data" / "track149-lead-decisions.json"
 PALLAVIS_PATH = ROOT / "output" / "track-144" / "pallavis.json"
 T144_DOSSIER_PATH = ROOT / "database" / "data" / "track144-tala-evidence-tyagaraja-complete.json"
 CACHE_DIR = ROOT / "output" / "track-144" / "source-cache"
@@ -706,11 +708,11 @@ def main() -> None:
             id="db-snapshot",
             url="database/data/track147-catalogue-snapshot.json",
             sha256=snapshot_sha,
-            accessed_at="2026-10-15",
+            accessed_at="2026-11-03",
             status=WitnessStatus.DATABASE_SNAPSHOT,
             description=(
                 "Hashed database census and stored pallavi/section/evidence snapshot for "
-                "675 Tyagaraja catalogue identities and 684 source imports."
+                "684 Tyagaraja catalogue identities (after the TRACK-149 splits) and 684 source imports."
             ),
         ),
         Witness(
@@ -745,6 +747,9 @@ def main() -> None:
                 "Primary print authority for Tyagaraja sahitya, notation, and Kshetra Pancharatnam sets "
                 "(deferred to TRACK-149)."
             ),
+            rights="inaccessible",
+            rights_note="Print edition; not obtainable by the owner. Reopen if a copy becomes available.",
+            witness_kind="notated_edition",
         ),
         Witness(
             id="ramanujachari-spiritual-heritage",
@@ -758,6 +763,9 @@ def main() -> None:
             description=(
                 "Thematic classification and translation authority by Dr. V. Raghavan (deferred to TRACK-149)."
             ),
+            rights="inaccessible",
+            rights_note="Print edition; not obtainable by the owner. Reopen if a copy becomes available.",
+            witness_kind="notated_edition",
         ),
         Witness(
             id="sambamoorthy-tyagaraja",
@@ -772,46 +780,146 @@ def main() -> None:
                 "Scholarly authority for Tyagaraja's dramatic operas and kshetra pilgrimage biography "
                 "(deferred to TRACK-149)."
             ),
+            rights="inaccessible",
+            rights_note="Print edition; not obtainable by the owner. Reopen if a copy becomes available.",
+            witness_kind="notated_edition",
         ),
         Witness(
             id="ma:jma-vol18-1947",
             url="https://musicacademymadras.in/catalogue/files/journals/Vol.18_1947.pdf",
-            sha256=None,
-            accessed_at="2026-10-15",
-            status=WitnessStatus.UNAVAILABLE,
+            sha256="07a04f4c09be71081dcf43c3a4e73b1c98676ebc33c4768109c30ce72b3edc47",
+            accessed_at="2026-11-03",
+            status=WitnessStatus.FETCHED,
             description=(
-                "Journal of the Music Academy Vol. XVIII (1947): Walajapet manuscript collection research lead "
-                "(not consulted)."
+                "Journal of the Music Academy vol. XVIII (1947), 220 PDF pages. PDF p.53 names Melukovayya and "
+                "Patikiharatire among Utsava Sampradaya kritis and Jaya jaya Sitaram as a Divyanama kriti."
             ),
+            rights="openly_hosted",
+            witness_kind="scholarly_article",
         ),
         Witness(
             id="ma:jma-vol39-1968",
             url="https://musicacademymadras.in/catalogue/files/journals/Vol.39_1968.pdf",
-            sha256=None,
-            accessed_at="2026-10-15",
-            status=WitnessStatus.UNAVAILABLE,
+            sha256="93ec095c2be73d694f309c91524724d33055f862e80bca4ce196620bdd09d068",
+            accessed_at="2026-11-03",
+            status=WitnessStatus.FETCHED,
             description=(
-                "Journal of the Music Academy Vol. XXXIX (1968): Tyagaraja transmission research lead (not consulted)."
+                "Journal of the Music Academy vol. XXXIX (1968), 174 PDF pages. PDF pp.139-170 print an alphabetical "
+                "index of Tyagaraja kritis from two manuscript books with a footnote key for Nauka Charitam (N.C.) "
+                "and Utsava Sampradaya Kirtanam (U.S.K.); the OCR does not preserve the per-song markers, so no claim "
+                "rests on it."
             ),
+            rights="openly_hosted",
+            witness_kind="scholarly_article",
         ),
         Witness(
             id="ma:jma-2017",
             url="https://musicacademymadras.in/catalogue/files/journals/Music%20Academy%20Journal%202017.pdf",
-            sha256=None,
-            accessed_at="2026-10-15",
-            status=WitnessStatus.UNAVAILABLE,
+            sha256="28b17dcfddd6e0c51dd33bc612fe3bb2cf4a063c37cf67d29bcd47de029ff26e",
+            accessed_at="2026-11-03",
+            status=WitnessStatus.FETCHED,
             description=(
-                "Journal of the Music Academy (2017): dramatic-work daru, padya, and vacana analysis lead "
-                "(not consulted)."
+                "Journal of the Music Academy (2017), 123 PDF pages. Searched for Nauka Charitam, Prahlada Bhakti "
+                "Vijayam, Utsava and Divyanama; nothing relevant found."
             ),
+            rights="openly_hosted",
+            witness_kind="scholarly_article",
         ),
         Witness(
             id="sanskrit-docs-tyagaraja",
             url="https://sanskritdocuments.org/doc_deities_misc/tyAgarAjakRRitayaH.pdf",
-            sha256=None,
-            accessed_at="2026-10-15",
-            status=WitnessStatus.UNAVAILABLE,
-            description="Compiled Sanskrit compositions of Tyagaraja group inventory lead (not consulted).",
+            sha256="7f07dfe5956eb92b91fe0236a95fc525fd540e5a8634dda1b8c0e755fd282c04",
+            accessed_at="2026-11-03",
+            status=WitnessStatus.FETCHED,
+            description=(
+                "Sanskrit Documents, Sanskrit compositions of Tyagaraja (46 pp.). PDF p.2 introduction names the "
+                "Ghana Raga, Tiruvottiyur, Kovur, Srirangam and Lalgudi pancharatnams, the Divyanama and Utsava "
+                "Sampradaya kritis and the two operas, without listing members of the kshetra groups."
+            ),
+            rights="openly_hosted",
+            witness_kind="secondary_text",
+        ),
+        Witness(
+            id="ma:jma-vol54-1983",
+            url="https://musicacademymadras.in/catalogue/files/journals/Vol.54_1983.pdf",
+            sha256="ae8c9a073ed860ead24d392103e99cb8a51767a569a4fad6c0ba1794f5268d0e",
+            accessed_at="2026-11-03",
+            status=WitnessStatus.FETCHED,
+            description=(
+                "Journal of the Music Academy vol. LIV (1983). PDF p.40 reports a performance of the Srirangam "
+                "Pancharatnam naming Chutamu (Arabhi), O Rangasayi (Kambhoji), Karuna judavayya (Saranga), Rajuvedale "
+                "(Todi) and Vinarada (Devagandhari)."
+            ),
+            rights="openly_hosted",
+            witness_kind="scholarly_article",
+        ),
+        Witness(
+            id="ma:jma-vol69-1998",
+            url="https://musicacademymadras.in/catalogue/files/journals/Vol.69_1998.pdf",
+            sha256="3e735fb6fb89cdecb126839901c88c4c1d3ea61fa39968e5b96b8dd047c4e997",
+            accessed_at="2026-11-03",
+            status=WitnessStatus.FETCHED,
+            description=(
+                "Journal of the Music Academy vol. LXIX (1998). PDF p.39 reports a lecture naming the Lalgudi "
+                "Pancharatnam as Isa pahimam, Lalite sri pravruddhe, Mahita pravruddha, Gati neevani and Deva sri "
+                "tapastirtha."
+            ),
+            rights="openly_hosted",
+            witness_kind="scholarly_article",
+        ),
+        Witness(
+            id="ma:jma-vol66-1995",
+            url="https://musicacademymadras.in/catalogue/files/journals/Vol.66_1995.pdf",
+            sha256="7aec25157102916dadf3d78f7f6b2b02e72e57c4d3a4c4f7ebecc8254dd9601a",
+            accessed_at="2026-11-03",
+            status=WitnessStatus.FETCHED,
+            description=(
+                "Journal of the Music Academy vol. LXVI (1995). PDF p.107 names Sundari ninu (Arabhi) on "
+                "Tripurasundari of Tiruvottiyur and kritis on Dharmasamvardhini of Tiruvaiyaru and Pravridha Srimati "
+                "of Lalgudi."
+            ),
+            rights="openly_hosted",
+            witness_kind="scholarly_article",
+        ),
+        Witness(
+            id="ma:jma-vol42-1971",
+            url="https://musicacademymadras.in/catalogue/files/journals/Vol.42-1971.pdf",
+            sha256="9c6da9a7818d2e0f4afbebbdd24f757b3921e5278456415307648632c693ecb1",
+            accessed_at="2026-11-03",
+            status=WitnessStatus.FETCHED,
+            description=(
+                "Journal of the Music Academy vol. XLII (1971). PDF p.41 summarises a lecture on the Prahlada opera "
+                "and mentions Varali (Eti janmamidi)."
+            ),
+            rights="openly_hosted",
+            witness_kind="scholarly_article",
+        ),
+        Witness(
+            id="ma:souvenir-1969",
+            url="https://musicacademymadras.in/catalogue/files/souv/1969_43rd%20conference%20souvenir.pdf",
+            sha256="b6cf97d3c8c6705fd00a1a06279196367d7dbd6f742fe4f8a7ab66059ce17811",
+            accessed_at="2026-11-03",
+            status=WitnessStatus.FETCHED,
+            description=(
+                "43rd Conference souvenir (1969). PDF p.151 is a concert programme that lists Odanu jaripe (Saranga) "
+                "as Nowka Charitram."
+            ),
+            rights="openly_hosted",
+            witness_kind="secondary_text",
+        ),
+        Witness(
+            id="hindupedia-thyagaraja-compilation",
+            url="https://www.hindupedia.com/images/0/08/Compositions_of_Thyagaraja.pdf",
+            sha256="36026409b9db63fac3e64f7abc45b7fcb04760e4f9fcd2323be7c04360370164",
+            accessed_at="2026-11-03",
+            status=WitnessStatus.FETCHED,
+            description=(
+                "Hindupedia, Compositions of Thyagaraja (P.R. Ramachander translations of 627 kritis and the two "
+                "operas). A secondary compilation that labels Kovur Pancharatna items 1 (Shambho mahadeva), 2 (Kori "
+                "sevimparare), 4 (Nammi vachi) and 5 (Eeva sutha) at PDF pp.448, 188, 251 and 109."
+            ),
+            rights="openly_hosted",
+            witness_kind="secondary_text",
         ),
     ]
 
@@ -1116,6 +1224,9 @@ def main() -> None:
         subject.geography_state = derive_geography_state(subject.claims)
 
     # 4. Validate and write all outputs
+    # Owner decisions on leads (TRACK-149). Absent until a named reviewer decides; proposals alone change nothing.
+    if DECISIONS_PATH.exists():
+        apply_to_tyagaraja(master, load_decisions(DECISIONS_PATH))
     assert_track147_census(master)
     verify_source(master, ROOT)
     MASTER_PATH.write_text(dump_master(master), encoding="utf-8")

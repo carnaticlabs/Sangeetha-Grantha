@@ -20,12 +20,12 @@ def test_complete_accounting_and_no_unapproved_application():
     assert master.rows[0].subject_id == master.rows[21].subject_id
     manifest = master.application_manifest()
     assert manifest["status"] == "ready"
-    assert len(manifest["changes"]) == 18
-    assert sum(c.review_state == "reviewed" for c in master.claims) == 18
-    assert sum(c.review_state == "unreviewed" for c in master.claims) == 40
+    assert len(manifest["changes"]) == 33
+    assert sum(c.review_state == "reviewed" for c in master.claims) == 33
+    assert sum(c.review_state == "unreviewed" for c in master.claims) == 0
     assert all(c.approval is not None for c in master.claims if c.review_state == "reviewed")
     assert all(c.approval is None for c in master.claims if c.review_state in ("unresolved", "unreviewed", "disputed"))
-    assert len([w for w in master.witnesses if w.status == "fetched"]) == 78
+    assert len([w for w in master.witnesses if w.status == "fetched"]) == 81
 
 
 @pytest.mark.parametrize(
@@ -141,3 +141,60 @@ def test_retrieval_probes_require_exact_uuid_and_human_expected_identity():
     item = {"expected_krithi_id": "expected", "expected_composer": "Syama Sastri"}
     assert evaluate_item(item, [{"id": "sibling", "composer": "Syama Sastri"}]) == (False, 0.0)
     assert evaluate_item(item, [{"id": "expected", "composer": "Syama Sastri"}]) == (True, 1.0)
+
+
+def test_deferral_requires_an_approved_claim_and_a_reason():
+    from src.musicological_classification import Approval
+
+    base = {"reviewer": "Seshadri", "accepted_at": "2026-11-03", "note": "n"}
+    assert Approval(**base, decision="approve", application="deferred", deferral_reason="no path yet").application == (
+        "deferred"
+    )
+    with pytest.raises(ValidationError):
+        Approval(**base, decision="approve", application="deferred")
+    with pytest.raises(ValidationError):
+        Approval(**base, decision="reject", application="deferred", deferral_reason="x")
+    with pytest.raises(ValidationError):
+        Approval(**base, decision="approve", application="apply", deferral_reason="x")
+
+
+def test_witness_rights_rules_and_defaults():
+    from src.musicological_classification import Witness
+
+    kwargs = {"id": "w", "url": "u", "accessed_at": "2026-11-03", "description": "d"}
+    assert Witness(**kwargs, status="fetched", sha256="a" * 64).effective_rights == "openly_hosted"
+    assert Witness(**kwargs, status="unavailable").effective_rights == "inaccessible"
+    with pytest.raises(ValidationError):
+        Witness(**kwargs, status="fetched", sha256="a" * 64, rights="inaccessible")
+    with pytest.raises(ValidationError):
+        Witness(**kwargs, status="unavailable", rights="public_domain")
+
+
+def test_unresolved_reason_only_on_unresolved_or_disputed_claims():
+    data = load_master(MASTER).model_dump(mode="json")
+    unresolved = next(c for c in data["claims"] if c["review_state"] == "unresolved")
+    unresolved["unresolved_reason"] = "edition_inaccessible"
+    ClassificationMaster.model_validate(data)
+    unresolved["unresolved_reason"] = "bogus"
+    with pytest.raises(ValidationError):
+        ClassificationMaster.model_validate(data)
+    unresolved["unresolved_reason"] = None
+    reviewed = next(c for c in data["claims"] if c["review_state"] == "reviewed")
+    reviewed["unresolved_reason"] = "no_public_source"
+    with pytest.raises(ValidationError):
+        ClassificationMaster.model_validate(data)
+
+
+def test_rhythm_interpretation_needs_a_notated_edition_witness():
+    data = load_master(MASTER).model_dump(mode="json")
+    claim = next(c for c in data["claims"] if c["review_state"] == "reviewed" and c["axis"] == "laya")
+    claim["rhythm"] = {
+        "eduppu": 0.5,
+        "units": "matras",
+        "counting_origin": "sama",
+        "convention": "witness-stated",
+    }
+    with pytest.raises(ValidationError):
+        ClassificationMaster.model_validate(data)
+    next(w for w in data["witnesses"] if w["id"] == claim["witness_id"])["witness_kind"] = "notated_edition"
+    ClassificationMaster.model_validate(data)

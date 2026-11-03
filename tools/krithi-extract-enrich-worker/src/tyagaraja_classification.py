@@ -28,7 +28,7 @@ EXPECTED_COLLISION_IDENTITIES = 0
 EXPECTED_SPLIT_COLLISIONS = 8
 EXPECTED_GHANA_CANDIDATES = 5
 EXPECTED_DESADI_WITNESSES = 11
-EXPECTED_MISSING_PALLAVI_IDENTITIES = 26
+EXPECTED_MISSING_PALLAVI_IDENTITIES = 25
 EXPECTED_MISSING_CHARANAM_IDENTITIES = 4
 SOURCE_CSV_PATH = "database/for_import/Thyagaraja-Krithi-For-Import.csv"
 SNAPSHOT_JSON_PATH = "database/data/track147-catalogue-snapshot.json"
@@ -143,12 +143,27 @@ class Witness(BaseModel):
     accessed_at: str
     status: WitnessStatus
     description: str
+    # TRACK-148/149: informational only. Public availability is what matters; copyright is not a gate.
+    rights: Literal["public_domain", "openly_hosted", "inaccessible"] | None = None
+    rights_note: str | None = None
+    witness_kind: Literal["notated_edition", "scholarly_article", "secondary_text"] | None = None
 
     @model_validator(mode="after")
     def content_hash(self) -> Witness:
         if self.status != WitnessStatus.UNAVAILABLE and not self.sha256:
             raise ValueError(f"available witness {self.id} requires artifact SHA-256")
+        if self.rights == "inaccessible" and self.status != WitnessStatus.UNAVAILABLE:
+            raise ValueError(f"witness {self.id} is inaccessible but carries a fetched artifact")
+        if self.rights in ("public_domain", "openly_hosted") and self.status == WitnessStatus.UNAVAILABLE:
+            raise ValueError(f"unavailable witness {self.id} cannot be marked publicly accessible")
         return self
+
+    @property
+    def effective_rights(self) -> str:
+        """Declared rights, else derived from status so existing witnesses need no edit."""
+        if self.rights:
+            return self.rights
+        return "inaccessible" if self.status == WitnessStatus.UNAVAILABLE else "openly_hosted"
 
 
 class ImportCensusRow(BaseModel):
@@ -204,9 +219,13 @@ class ClassificationClaim(BaseModel):
     dramatic_addressee: str | None = None
     dramatic_division: str | None = None
     mudra: str | None = None
+    # TRACK-148/149: why a claim ended unresolved or disputed instead of approved.
+    unresolved_reason: Literal["edition_inaccessible", "no_public_source", "sources_conflict"] | None = None
 
     @model_validator(mode="after")
     def review_rules(self) -> ClassificationClaim:
+        if self.unresolved_reason and self.review_state not in (ReviewState.UNRESOLVED, ReviewState.DISPUTED):
+            raise ValueError(f"claim {self.id} has an unresolved reason but is not unresolved or disputed")
         if self.value is not None and (self.evidence_kind is None or not self.locator):
             raise ValueError(f"claim {self.id} has a value without evidence kind and locator")
         has_approval = bool(self.reviewer_decision) or (

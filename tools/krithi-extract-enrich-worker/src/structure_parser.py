@@ -377,7 +377,8 @@ METADATA_BOUNDARY_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
 # remainder. Without this, the Latin pallavi is head-captured and the whole
 # template under-counts (see giripai nelakonna).
 INLINE_PAC_PATTERNS: list[tuple[re.Pattern[str], str]] = [
-    (re.compile(r"^\s*P (?=[a-zA-Z\d])"), "PALLAVI"),
+    # TRACK-149: a footnote digit can also precede the label ("1 P paripAlaya", from <sup>1</sup>P).
+    (re.compile(r"^\s*(?:\d{1,2}\s?)?P (?=[a-zA-Z\d])"), "PALLAVI"),
     (re.compile(r"^\s*A (?=[a-zA-Z\d])"), "ANUPALLAVI"),
     (re.compile(r"^\s*C (?=[a-zA-Z\d])"), "CHARANAM"),
 ]

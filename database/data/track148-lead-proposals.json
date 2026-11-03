@@ -1,0 +1,282 @@
+{
+ "SS-0032:laya:1": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "academy-1954-lead",
+  "locator": "PDF pp.23-24 (printed pp.11-12)",
+  "note": "Source says the composer's favourite measure divides into four matras and three matras and names Marivere (Anandabhairavi). 1973 and JMA XV give the tala as chapu."
+ },
+ "SS-0044:laya:1": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": "ma:souvenir-1973",
+  "locator": "PDF pp.41-44",
+  "note": "1973 gives Chapu (Purvakalyani) only. The 4+3 grouping is not stated."
+ },
+ "SS-0035:laya:1": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": "ma:souvenir-1973",
+  "locator": "PDF pp.41-44",
+  "note": "1973 gives Chapu (Dhanyasi). The 4+3 grouping is not stated."
+ },
+ "SS-0068:laya:1": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": "ma:souvenir-1973",
+  "locator": "PDF pp.41-44",
+  "note": "1973 gives Chapu (Kalyani). The 4+3 grouping is not stated."
+ },
+ "SS-0038:laya:1": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": "ma:souvenir-1973",
+  "locator": "PDF pp.41-44",
+  "note": "1973 gives Chapu (Lalita). The 4+3 grouping is not stated."
+ },
+ "SS-0008:laya:1": {
+  "disposition": "unresolved",
+  "unresolved_reason": "no_public_source",
+  "witness_id": null,
+  "locator": null,
+  "note": "No public source names this composition's tala."
+ },
+ "SS-0070:laya:1": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": "ma:souvenir-1973",
+  "locator": "PDF pp.41-44",
+  "note": "1973 gives Eka, with a version in chapu. The 3+4 grouping is not stated."
+ },
+ "SS-0022:laya:1": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": "ma:souvenir-1973",
+  "locator": "PDF pp.41-44",
+  "note": "1973 gives Chapu for the Varali Bangaru Kamakshi kriti. The 3+4 grouping is not stated."
+ },
+ "SS-0022:laya:2": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": "ma:souvenir-1973",
+  "locator": "PDF pp.41-44",
+  "note": "Eduppu needs a notated edition. Nothing public states it."
+ },
+ "SS-0004:laya:1": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": "ma:souvenir-1973",
+  "locator": "PDF pp.41-44",
+  "note": "1973 confirms Rupaka (Kalyani). Eduppu needs a notated edition."
+ },
+ "SS-0011:laya:1": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": "ma:souvenir-1973",
+  "locator": "PDF pp.41-44",
+  "note": "1973 confirms Adi. Eduppu needs a notated edition."
+ },
+ "SS-0055:laya:1": {
+  "disposition": "disputed",
+  "unresolved_reason": "sources_conflict",
+  "witness_id": "ma:souvenir-1973",
+  "locator": "PDF pp.41-44",
+  "note": "Lead says Adi tala. 1973 gives Rupaka (Kalgada) for Parvati ninu."
+ },
+ "SS-0064:laya:1": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "ma:souvenir-1973",
+  "locator": "PDF pp.41-44",
+  "note": "1973 lists Sariyevvaramma in Bhairavi, Khanda jhampa."
+ },
+ "SS-0036:laya:1": {
+  "disposition": "unresolved",
+  "unresolved_reason": "no_public_source",
+  "witness_id": "ma:souvenir-1973",
+  "locator": "PDF pp.41-44",
+  "note": "1973 gives Ata for the Anandabhairavi varnam Samini, not for na manavini. See finding on Spec 9."
+ },
+ "SS-0032:structure:1": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "ma:jma-vol55-1984",
+  "locator": "PDF p.154",
+  "note": "JMA LV names Marivere gati (Anandabhairavi) among svara sahitya kritis. JMA XV also praises its svara sahitya."
+ },
+ "SS-0064:structure:1": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "ma:jma-vol55-1984",
+  "locator": "PDF p.154",
+  "note": "JMA LV names Sariyevvaramma (Bhairavi)."
+ },
+ "SS-0015:structure:1": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "ma:jma-vol55-1984",
+  "locator": "PDF p.154",
+  "note": "JMA LV names Durusuga (Saveri)."
+ },
+ "SS-0046:structure:1": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "ma:jma-vol55-1984",
+  "locator": "PDF p.154",
+  "note": "JMA LV names O Jagadamba (Anandabhairavi)."
+ },
+ "SS-0037:structure:1": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "No public source names svara sahitya for this kriti."
+ },
+ "SS-0051:structure:2": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "No public source names svara sahitya for this kriti."
+ },
+ "SS-0034:bhava:1": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "ma:jma-vol75-2002",
+  "locator": "PDF p.128",
+  "note": "JMA LXXV (2002) quotes the line Mayamma yani nae pilachitae and describes approaching the Mother as a child."
+ },
+ "SS-0032:bhava:1": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "academy-1954-lead",
+  "locator": "PDF pp.23-24 (printed pp.11-12)",
+  "note": "The 1954 article reads the repeated nammithi in Marivere as a child's faith in the Mother."
+ },
+ "SS-0033:bhava:1": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "No public source discusses this kriti."
+ },
+ "SS-0068:bhava:1": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "General Apatya Bhava descriptions exist; none names this kriti."
+ },
+ "SS-0007:bhava:1": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "General Apatya Bhava descriptions exist; none names this kriti."
+ },
+ "SS-0008:bhava:1": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "General Apatya Bhava descriptions exist; none names this kriti."
+ },
+ "SS-0031:bhava:1": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "General Apatya Bhava descriptions exist; none names this kriti."
+ },
+ "SS-0046:bhava:1": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "General Apatya Bhava descriptions exist; none names this kriti."
+ },
+ "SS-0050:bhava:1": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "General Apatya Bhava descriptions exist; none names this kriti."
+ },
+ "SS-0001:geography:2": {
+  "disposition": "unresolved",
+  "unresolved_reason": "no_public_source",
+  "witness_id": "ma:souvenir-1973",
+  "locator": "PDF pp.41-44",
+  "note": "1973 names the deity as Kamakshi without naming Thanjavur or Kanchi."
+ },
+ "SS-0026:geography:2": {
+  "disposition": "unresolved",
+  "unresolved_reason": "no_public_source",
+  "witness_id": "ma:souvenir-1973",
+  "locator": "PDF pp.41-44",
+  "note": "1973 names the deity as Kamakshi without naming Thanjavur or Kanchi."
+ },
+ "SS-0051:geography:2": {
+  "disposition": "unresolved",
+  "unresolved_reason": "no_public_source",
+  "witness_id": "ma:souvenir-1973",
+  "locator": "PDF pp.41-44",
+  "note": "1973 names Kamakshi without naming a shrine."
+ },
+ "SS-0058:geography:2": {
+  "disposition": "unresolved",
+  "unresolved_reason": "no_public_source",
+  "witness_id": "academy-1954-lead",
+  "locator": "PDF pp.23-24 (printed pp.11-12)",
+  "note": "1954 lists a ninth kriti only as 'in Sri Raga'. No public source names Rave parvata raja."
+ },
+ "SS-0012:geography:2": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "ma:souvenir-1973",
+  "locator": "PDF pp.41-44",
+  "note": "Both 1954 and 1973 list this kriti among the Navaratnamalika in praise of Meenakshi (Madurai)."
+ },
+ "SS-0014:geography:2": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "ma:souvenir-1973",
+  "locator": "PDF pp.41-44",
+  "note": "Both 1954 and 1973 list this kriti among the Navaratnamalika in praise of Meenakshi (Madurai)."
+ },
+ "SS-0032:geography:2": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "ma:souvenir-1973",
+  "locator": "PDF pp.41-44",
+  "note": "Both 1954 and 1973 list this kriti among the Navaratnamalika in praise of Meenakshi (Madurai)."
+ },
+ "SS-0034:geography:2": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "ma:souvenir-1973",
+  "locator": "PDF pp.41-44",
+  "note": "Both 1954 and 1973 list this kriti among the Navaratnamalika in praise of Meenakshi (Madurai)."
+ },
+ "SS-0035:geography:2": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "ma:souvenir-1973",
+  "locator": "PDF pp.41-44",
+  "note": "Both 1954 and 1973 list this kriti among the Navaratnamalika in praise of Meenakshi (Madurai)."
+ },
+ "SS-0038:geography:2": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "ma:souvenir-1973",
+  "locator": "PDF pp.41-44",
+  "note": "Both 1954 and 1973 list this kriti among the Navaratnamalika in praise of Meenakshi (Madurai)."
+ },
+ "SS-0065:geography:2": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "ma:souvenir-1973",
+  "locator": "PDF pp.41-44",
+  "note": "Both 1954 and 1973 list this kriti among the Navaratnamalika in praise of Meenakshi (Madurai)."
+ }
+}

@@ -860,7 +860,7 @@
       "aliases": [],
       "review_state": "unresolved",
       "unresolved_reason": "Source reviewed as a research witness; independent edition/notation verification and human adjudication are outstanding. Source introduction and stored form are compatible; source label alone does not prove structural completeness. No named-place association in introduction; full lyrics/editions may supply evidence. Geography remains unresolved. No stored notation, deity or temple association; no eduppu/arudi inferred.",
-      "geography_state": "UNRESOLVED",
+      "geography_state": "SPECIFIC_SHRINE_SUPPORTED",
       "observed": {
         "form": "KRITHI",
         "raga": "Āhiri",
@@ -964,7 +964,7 @@
       "aliases": [],
       "review_state": "unresolved",
       "unresolved_reason": "Source reviewed as a research witness; independent edition/notation verification and human adjudication are outstanding. Source introduction and stored form are compatible; source label alone does not prove structural completeness. No named-place association in introduction; full lyrics/editions may supply evidence. Geography remains unresolved. No stored notation, deity or temple association; no eduppu/arudi inferred.",
-      "geography_state": "UNRESOLVED",
+      "geography_state": "SPECIFIC_SHRINE_SUPPORTED",
       "observed": {
         "form": "KRITHI",
         "raga": "Dhanyāsi",
@@ -1609,7 +1609,7 @@
       "aliases": [],
       "review_state": "unresolved",
       "unresolved_reason": "Source reviewed as a research witness; independent edition/notation verification and human adjudication are outstanding. Source introduction and stored form are compatible; source label alone does not prove structural completeness. No named-place association in introduction; full lyrics/editions may supply evidence. Geography remains unresolved. No stored notation, deity or temple association; no eduppu/arudi inferred.",
-      "geography_state": "UNRESOLVED",
+      "geography_state": "SPECIFIC_SHRINE_SUPPORTED",
       "observed": {
         "form": "KRITHI",
         "raga": "SankarAbharaNaM",
@@ -1644,7 +1644,7 @@
       "aliases": [],
       "review_state": "unresolved",
       "unresolved_reason": "Source reviewed as a research witness; independent edition/notation verification and human adjudication are outstanding. Source introduction and stored form are compatible; source label alone does not prove structural completeness. No named-place association in introduction; full lyrics/editions may supply evidence. Geography remains unresolved. No stored notation, deity or temple association; no eduppu/arudi inferred.",
-      "geography_state": "UNRESOLVED",
+      "geography_state": "SPECIFIC_SHRINE_SUPPORTED",
       "observed": {
         "form": "KRITHI",
         "raga": "Lalitā",
@@ -2498,7 +2498,7 @@
       "aliases": [],
       "review_state": "unresolved",
       "unresolved_reason": "Source reviewed as a research witness; independent edition/notation verification and human adjudication are outstanding. Source introduction and stored form are compatible; source label alone does not prove structural completeness. No named-place association in introduction; full lyrics/editions may supply evidence. Geography remains unresolved. No stored notation, deity or temple association; no eduppu/arudi inferred.",
-      "geography_state": "UNRESOLVED",
+      "geography_state": "SPECIFIC_SHRINE_SUPPORTED",
       "observed": {
         "form": "KRITHI",
         "raga": "SankarAbharaNaM",
@@ -2738,7 +2738,7 @@
       "aliases": [],
       "review_state": "unresolved",
       "unresolved_reason": "Source reviewed as a research witness; independent edition/notation verification and human adjudication are outstanding. Source introduction and stored form are compatible; source label alone does not prove structural completeness. No named-place association in introduction; full lyrics/editions may supply evidence. Geography remains unresolved. No stored notation, deity or temple association; no eduppu/arudi inferred.",
-      "geography_state": "UNRESOLVED",
+      "geography_state": "SPECIFIC_SHRINE_SUPPORTED",
       "observed": {
         "form": "KRITHI",
         "raga": "Anandabhairavi",
@@ -2775,7 +2775,7 @@
       "aliases": [],
       "review_state": "unresolved",
       "unresolved_reason": "Source reviewed as a research witness; independent edition/notation verification and human adjudication are outstanding. Source introduction and stored form are compatible; source label alone does not prove structural completeness. No named-place association in introduction; full lyrics/editions may supply evidence. Geography remains unresolved. No stored notation, deity or temple association; no eduppu/arudi inferred.",
-      "geography_state": "UNRESOLVED",
+      "geography_state": "SPECIFIC_SHRINE_SUPPORTED",
       "observed": {
         "form": "KRITHI",
         "raga": "Kāmbhoji",
@@ -3620,10 +3620,12 @@
     {
       "id": "academy-1954-lead",
       "url": "https://musicacademymadras.in/catalogue/files/souv/1954_28th%20conference%20souvenir.pdf",
-      "sha256": null,
-      "accessed_at": "2026-10-01",
-      "status": "unavailable",
-      "description": "S. Vidya, Musical Masterpieces: Navaratnamalika of Syama Sastri, printed p. 11; search-index passage available, full artifact fetch rejected HTTP 403 / content too large. No immutable witness hash."
+      "sha256": "b9b37ef2aa57fe6186217ead28d7c1c5ba2fb55a22d802f83fe0c9fb4ed510a0",
+      "accessed_at": "2026-11-03",
+      "status": "fetched",
+      "description": "28th Conference souvenir (1954), 176 PDF pages. PDF pp.23-24 (printed pp.11-12): S. Vidya, Musical Masterpieces: Navaratnamalika of Syama Sastri. Lists the nine gems by title or raga (two named only by raga: Nilakurinji and Sri), says they praise Meenakshi of Madurai, and describes a four-plus-three matra tala as the composer's favourite, citing Marivere.",
+      "rights": "openly_hosted",
+      "witness_kind": "scholarly_article"
     },
     {
       "id": "analysis:user-supplied-2026-10-06",
@@ -3639,7 +3641,10 @@
       "sha256": null,
       "accessed_at": "2026-10-07",
       "status": "unavailable",
-      "description": "Authoritative family-parampara notation edition by Vidya Shankar (disciple of Syama Sastri's great-grandson Venkatasubramanya Sastri); documents exact eduppus, arudi, swarasahityas, and gamakas. [2026-10-07: not inspected. The earlier hash was of a local JSON stub listing titles, not of the publication; no page content or locators have been verified.]"
+      "description": "Authoritative family-parampara notation edition by Vidya Shankar (disciple of Syama Sastri's great-grandson Venkatasubramanya Sastri); documents exact eduppus, arudi, swarasahityas, and gamakas. [2026-10-07: not inspected. The earlier hash was of a local JSON stub listing titles, not of the publication; no page content or locators have been verified.]",
+      "rights": "inaccessible",
+      "rights_note": "Print edition; not obtainable by the owner. Reopen if a copy becomes available.",
+      "witness_kind": "notated_edition"
     },
     {
       "id": "govinda-rao-1997",
@@ -3647,7 +3652,10 @@
       "sha256": null,
       "accessed_at": "2026-10-07",
       "status": "unavailable",
-      "description": "Standard musicological compilation with complete text, word-by-word meaning, raga lakshana, tala aksharas, and svara notations. [2026-10-07: not inspected. The earlier hash was of a local JSON stub listing titles, not of the publication; no page content or locators have been verified.]"
+      "description": "Standard musicological compilation with complete text, word-by-word meaning, raga lakshana, tala aksharas, and svara notations. [2026-10-07: not inspected. The earlier hash was of a local JSON stub listing titles, not of the publication; no page content or locators have been verified.]",
+      "rights": "inaccessible",
+      "rights_note": "Print edition; not obtainable by the owner. Reopen if a copy becomes available.",
+      "witness_kind": "notated_edition"
     },
     {
       "id": "sambamoorthy-1962",
@@ -3655,7 +3663,10 @@
       "sha256": null,
       "accessed_at": "2026-10-07",
       "status": "unavailable",
-      "description": "Seminal biographical and musicological monograph documenting temple archaka history, Bobbili Kesavayya duel, Chintamani creation, and Madurai pilgrimage. [2026-10-07: not inspected. The earlier hash was of a local JSON stub listing titles, not of the publication; no page content or locators have been verified.]"
+      "description": "Seminal biographical and musicological monograph documenting temple archaka history, Bobbili Kesavayya duel, Chintamani creation, and Madurai pilgrimage. [2026-10-07: not inspected. The earlier hash was of a local JSON stub listing titles, not of the publication; no page content or locators have been verified.]",
+      "rights": "inaccessible",
+      "rights_note": "Print edition; not obtainable by the owner. Reopen if a copy becomes available.",
+      "witness_kind": "notated_edition"
     },
     {
       "id": "jma-archive",
@@ -3728,6 +3739,26 @@
       "accessed_at": "2026-10-07",
       "status": "fetched",
       "description": "V. Raghavan, Shri Shyama Shastri (Music Academy 51st Conference souvenir, 1977), Sahapedia reprint, 8 pp. Names the Bhairavi, Todi and Yerukala Kambhoji svarajatis as his specialities (PDF p.2); includes a bibliography of editions."
+    },
+    {
+      "id": "ma:souvenir-1973",
+      "url": "https://musicacademymadras.in/catalogue/files/souv/1973_47th%20conference%20souvenir.pdf",
+      "sha256": "7559863bd269e15f8ad0f4b5d9e88ec05f9e8d248ec2413c31e0141962299ff3",
+      "accessed_at": "2026-11-03",
+      "status": "fetched",
+      "rights": "openly_hosted",
+      "witness_kind": "scholarly_article",
+      "description": "47th Conference souvenir (1973). PDF pp.41-44 list the compositions attributed to Syama Sastri with raga, tala and deity: three svarajatis, two tana varnams (Samini, Dayanidhe), seven Navaratnamalika kritis in praise of Meenakshi, and kritis in praise of Kamakshi, Brihannayaki and other deities."
+    },
+    {
+      "id": "ma:jma-vol55-1984",
+      "url": "https://musicacademymadras.in/catalogue/files/journals/Vol.55_1984.pdf",
+      "sha256": "12fb3505a27464356021fb5daa45dc5e963c5610b127b6dc9e7a624ca295dbbb",
+      "accessed_at": "2026-11-03",
+      "status": "fetched",
+      "rights": "openly_hosted",
+      "witness_kind": "scholarly_article",
+      "description": "Journal of the Music Academy vol. LV (1984). PDF p.154 says Syama Sastri was the foremost composer to introduce svara sahitya in kritis and names Marivere gati, Sariyevvaramma, Durusuga and O Jagadamba."
     }
   ],
   "claims": [
@@ -13103,24 +13134,32 @@
       "locator": "Edition not consulted; page locator pending verification",
       "summary": "Set in Viloma Chapu (reverse 4+3 beat pattern)",
       "evidence_kind": "scholarly_interpretation",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
+      "review_state": "unresolved",
+      "uncertainty": "2026-11-03: 1973 gives Chapu (Purvakalyani) only. The 4+3 grouping is not stated.",
       "approval": null,
       "group_type": null,
-      "rhythm": null
+      "rhythm": null,
+      "unresolved_reason": "edition_inaccessible"
     },
     {
       "id": "SS-0032:laya:1",
       "subject_id": "SS-0032",
       "axis": "laya",
       "value": "Viloma Chapu (4+3)",
-      "witness_id": "vidya-shankar-1980",
-      "locator": "Edition not consulted; page locator pending verification",
+      "witness_id": "academy-1954-lead",
+      "locator": "PDF pp.23-24 (printed pp.11-12)",
       "summary": "Set in Viloma Chapu (reverse 4+3 beat pattern)",
       "evidence_kind": "scholarly_interpretation",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
-      "approval": null,
+      "review_state": "reviewed",
+      "uncertainty": "Approved from a public witness; Source says the composer's favourite measure divides into four matras and three matras and names Marivere (Anandabhairavi). 1973 and JMA XV give the tala as chapu.",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Source says the composer's favourite measure divides into four matras and three matras and names Marivere (Anandabhairavi). 1973 and JMA XV give the tala as chapu.",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      },
       "group_type": null,
       "rhythm": null
     },
@@ -13133,11 +13172,12 @@
       "locator": "Edition not consulted; page locator pending verification",
       "summary": "Set in Viloma Chapu (reverse 4+3 beat pattern)",
       "evidence_kind": "scholarly_interpretation",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
+      "review_state": "unresolved",
+      "uncertainty": "2026-11-03: 1973 gives Chapu (Dhanyasi). The 4+3 grouping is not stated.",
       "approval": null,
       "group_type": null,
-      "rhythm": null
+      "rhythm": null,
+      "unresolved_reason": "edition_inaccessible"
     },
     {
       "id": "SS-0068:laya:1",
@@ -13148,11 +13188,12 @@
       "locator": "Edition not consulted; page locator pending verification",
       "summary": "Set in Viloma Chapu (reverse 4+3 beat pattern)",
       "evidence_kind": "scholarly_interpretation",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
+      "review_state": "unresolved",
+      "uncertainty": "2026-11-03: 1973 gives Chapu (Kalyani). The 4+3 grouping is not stated.",
       "approval": null,
       "group_type": null,
-      "rhythm": null
+      "rhythm": null,
+      "unresolved_reason": "edition_inaccessible"
     },
     {
       "id": "SS-0038:laya:1",
@@ -13163,11 +13204,12 @@
       "locator": "Edition not consulted; page locator pending verification",
       "summary": "Set in Viloma Chapu (reverse 4+3 beat pattern)",
       "evidence_kind": "scholarly_interpretation",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
+      "review_state": "unresolved",
+      "uncertainty": "2026-11-03: 1973 gives Chapu (Lalita). The 4+3 grouping is not stated.",
       "approval": null,
       "group_type": null,
-      "rhythm": null
+      "rhythm": null,
+      "unresolved_reason": "edition_inaccessible"
     },
     {
       "id": "SS-0001:laya:1",
@@ -13218,11 +13260,12 @@
       "locator": "Edition not consulted; page locator pending verification",
       "summary": "Set in Misra Chapu (3+4 beat pattern)",
       "evidence_kind": "scholarly_interpretation",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
+      "review_state": "unresolved",
+      "uncertainty": "2026-11-03: No public source names this composition's tala.",
       "approval": null,
       "group_type": null,
-      "rhythm": null
+      "rhythm": null,
+      "unresolved_reason": "no_public_source"
     },
     {
       "id": "SS-0070:laya:1",
@@ -13233,11 +13276,12 @@
       "locator": "Edition not consulted; page locator pending verification",
       "summary": "Set in Misra Chapu (3+4 beat pattern)",
       "evidence_kind": "scholarly_interpretation",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
+      "review_state": "unresolved",
+      "uncertainty": "2026-11-03: 1973 gives Eka, with a version in chapu. The 3+4 grouping is not stated.",
       "approval": null,
       "group_type": null,
-      "rhythm": null
+      "rhythm": null,
+      "unresolved_reason": "edition_inaccessible"
     },
     {
       "id": "SS-0022:laya:1",
@@ -13248,11 +13292,12 @@
       "locator": "Edition not consulted; page locator pending verification",
       "summary": "Set in Misra Chapu (3+4 beat pattern)",
       "evidence_kind": "scholarly_interpretation",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
+      "review_state": "unresolved",
+      "uncertainty": "2026-11-03: 1973 gives Chapu for the Varali Bangaru Kamakshi kriti. The 3+4 grouping is not stated.",
       "approval": null,
       "group_type": null,
-      "rhythm": null
+      "rhythm": null,
+      "unresolved_reason": "edition_inaccessible"
     },
     {
       "id": "SS-0004:laya:1",
@@ -13263,8 +13308,8 @@
       "locator": "Edition not consulted; page locator pending verification",
       "summary": "Rupaka tala with anagata eduppu starting 1/2 matra after samam (units: matra; counting_origin: samam)",
       "evidence_kind": "scholarly_interpretation",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
+      "review_state": "unresolved",
+      "uncertainty": "2026-11-03: 1973 confirms Rupaka (Kalyani). Eduppu needs a notated edition.",
       "approval": null,
       "group_type": null,
       "rhythm": {
@@ -13273,7 +13318,8 @@
         "units": "matra",
         "counting_origin": "samam",
         "convention": "uninspected Vidya Shankar 1980 lead"
-      }
+      },
+      "unresolved_reason": "edition_inaccessible"
     },
     {
       "id": "SS-0011:laya:1",
@@ -13284,8 +13330,8 @@
       "locator": "Edition not consulted; page locator pending verification",
       "summary": "Adi tala with anagata eduppu starting 3/4 matra after samam (units: matra; counting_origin: samam)",
       "evidence_kind": "scholarly_interpretation",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
+      "review_state": "unresolved",
+      "uncertainty": "2026-11-03: 1973 confirms Adi. Eduppu needs a notated edition.",
       "approval": null,
       "group_type": null,
       "rhythm": {
@@ -13294,7 +13340,8 @@
         "units": "matra",
         "counting_origin": "samam",
         "convention": "uninspected Vidya Shankar 1980 lead (chaturasra nadai)"
-      }
+      },
+      "unresolved_reason": "edition_inaccessible"
     },
     {
       "id": "SS-0022:laya:2",
@@ -13305,8 +13352,8 @@
       "locator": "Edition not consulted; page locator pending verification",
       "summary": "Misra Chapu with anagata eduppu starting 1 1/2 matras after samam (units: matra; counting_origin: samam)",
       "evidence_kind": "scholarly_interpretation",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
+      "review_state": "unresolved",
+      "uncertainty": "2026-11-03: Eduppu needs a notated edition. Nothing public states it.",
       "approval": null,
       "group_type": null,
       "rhythm": {
@@ -13315,7 +13362,8 @@
         "units": "matra",
         "counting_origin": "samam",
         "convention": "uninspected Vidya Shankar 1980 lead"
-      }
+      },
+      "unresolved_reason": "edition_inaccessible"
     },
     {
       "id": "SS-0055:laya:1",
@@ -13326,8 +13374,8 @@
       "locator": "Edition not consulted; page locator pending verification",
       "summary": "Adi tala with anagata eduppu starting 1/2 matra after samam (units: matra; counting_origin: samam)",
       "evidence_kind": "scholarly_interpretation",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
+      "review_state": "disputed",
+      "uncertainty": "2026-11-03: Lead says Adi tala. 1973 gives Rupaka (Kalgada) for Parvati ninu.",
       "approval": null,
       "group_type": null,
       "rhythm": {
@@ -13336,20 +13384,28 @@
         "units": "matra",
         "counting_origin": "samam",
         "convention": "uninspected Govinda Rao 1997 lead"
-      }
+      },
+      "unresolved_reason": "sources_conflict"
     },
     {
       "id": "SS-0064:laya:1",
       "subject_id": "SS-0064",
       "axis": "laya",
       "value": "Khanda Jhampa (5+1+2 = 8 aksharas)",
-      "witness_id": "govinda-rao-1997",
-      "locator": "Edition not consulted; page locator pending verification",
+      "witness_id": "ma:souvenir-1973",
+      "locator": "PDF pp.41-44",
       "summary": "Rare tala setting: Khanda-jati Jhampa (5+1+2 = 8 aksharas per avartana)",
       "evidence_kind": "scholarly_interpretation",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
-      "approval": null,
+      "review_state": "reviewed",
+      "uncertainty": "Approved from a public witness; 1973 lists Sariyevvaramma in Bhairavi, Khanda jhampa.",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "1973 lists Sariyevvaramma in Bhairavi, Khanda jhampa.",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      },
       "group_type": null,
       "rhythm": null
     },
@@ -13362,24 +13418,32 @@
       "locator": "Edition not consulted; page locator pending verification",
       "summary": "Varnam in Caturasra Ata tala (4+4+2+2 = 12 aksharas per avartana)",
       "evidence_kind": "scholarly_interpretation",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
+      "review_state": "unresolved",
+      "uncertainty": "2026-11-03: 1973 gives Ata for the Anandabhairavi varnam Samini, not for na manavini. See finding on Spec 9.",
       "approval": null,
       "group_type": null,
-      "rhythm": null
+      "rhythm": null,
+      "unresolved_reason": "no_public_source"
     },
     {
       "id": "SS-0046:structure:1",
       "subject_id": "SS-0046",
       "axis": "structure",
       "value": "Swarasahitya",
-      "witness_id": "govinda-rao-1997",
-      "locator": "Edition not consulted; page locator pending verification",
+      "witness_id": "ma:jma-vol55-1984",
+      "locator": "PDF p.154",
       "summary": "Integrated Chittaswara with matching poetic sahitya syllables",
       "evidence_kind": "documented_tradition",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
-      "approval": null,
+      "review_state": "reviewed",
+      "uncertainty": "Approved from a public witness; JMA LV names O Jagadamba (Anandabhairavi).",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "JMA LV names O Jagadamba (Anandabhairavi).",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      },
       "group_type": null,
       "rhythm": null
     },
@@ -13392,24 +13456,32 @@
       "locator": "Edition not consulted; page locator pending verification",
       "summary": "Integrated Chittaswara with matching poetic sahitya syllables",
       "evidence_kind": "documented_tradition",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
+      "review_state": "unresolved",
+      "uncertainty": "2026-11-03: No public source names svara sahitya for this kriti.",
       "approval": null,
       "group_type": null,
-      "rhythm": null
+      "rhythm": null,
+      "unresolved_reason": "edition_inaccessible"
     },
     {
       "id": "SS-0032:structure:1",
       "subject_id": "SS-0032",
       "axis": "structure",
       "value": "Swarasahitya",
-      "witness_id": "govinda-rao-1997",
-      "locator": "Edition not consulted; page locator pending verification",
+      "witness_id": "ma:jma-vol55-1984",
+      "locator": "PDF p.154",
       "summary": "Integrated Chittaswara with matching poetic sahitya syllables",
       "evidence_kind": "documented_tradition",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
-      "approval": null,
+      "review_state": "reviewed",
+      "uncertainty": "Approved from a public witness; JMA LV names Marivere gati (Anandabhairavi) among svara sahitya kritis. JMA XV also praises its svara sahitya.",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "JMA LV names Marivere gati (Anandabhairavi) among svara sahitya kritis. JMA XV also praises its svara sahitya.",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      },
       "group_type": null,
       "rhythm": null
     },
@@ -13418,13 +13490,20 @@
       "subject_id": "SS-0015",
       "axis": "structure",
       "value": "Swarasahitya",
-      "witness_id": "vidya-shankar-1980",
-      "locator": "Edition not consulted; page locator pending verification",
+      "witness_id": "ma:jma-vol55-1984",
+      "locator": "PDF p.154",
       "summary": "Integrated Chittaswara with matching poetic sahitya syllables",
       "evidence_kind": "documented_tradition",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
-      "approval": null,
+      "review_state": "reviewed",
+      "uncertainty": "Approved from a public witness; JMA LV names Durusuga (Saveri).",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "JMA LV names Durusuga (Saveri).",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      },
       "group_type": null,
       "rhythm": null
     },
@@ -13437,24 +13516,32 @@
       "locator": "Edition not consulted; page locator pending verification",
       "summary": "Integrated Chittaswara with matching poetic sahitya syllables",
       "evidence_kind": "documented_tradition",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
+      "review_state": "unresolved",
+      "uncertainty": "2026-11-03: No public source names svara sahitya for this kriti.",
       "approval": null,
       "group_type": null,
-      "rhythm": null
+      "rhythm": null,
+      "unresolved_reason": "edition_inaccessible"
     },
     {
       "id": "SS-0064:structure:1",
       "subject_id": "SS-0064",
       "axis": "structure",
       "value": "Swarasahitya",
-      "witness_id": "vidya-shankar-1980",
-      "locator": "Edition not consulted; page locator pending verification",
+      "witness_id": "ma:jma-vol55-1984",
+      "locator": "PDF p.154",
       "summary": "Integrated Chittaswara with matching poetic sahitya syllables",
       "evidence_kind": "documented_tradition",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
-      "approval": null,
+      "review_state": "reviewed",
+      "uncertainty": "Approved from a public witness; JMA LV names Sariyevvaramma (Bhairavi).",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "JMA LV names Sariyevvaramma (Bhairavi).",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      },
       "group_type": null,
       "rhythm": null
     },
@@ -13467,24 +13554,32 @@
       "locator": "Edition not consulted; page locator pending verification",
       "summary": "Intimate child-mother pleading: Mayamma nannu brovavamma",
       "evidence_kind": "scholarly_interpretation",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
+      "review_state": "unresolved",
+      "uncertainty": "2026-11-03: No public source discusses this kriti.",
       "approval": null,
       "group_type": null,
-      "rhythm": null
+      "rhythm": null,
+      "unresolved_reason": "edition_inaccessible"
     },
     {
       "id": "SS-0034:bhava:1",
       "subject_id": "SS-0034",
       "axis": "bhava",
       "value": "Apatya Bhava (Child-Mother Devotion)",
-      "witness_id": "vidya-shankar-1980",
-      "locator": "Edition not consulted; page locator pending verification",
+      "witness_id": "ma:jma-vol75-2002",
+      "locator": "PDF p.128",
       "summary": "Intimate child-mother pleading: Mayammayani nenu",
       "evidence_kind": "scholarly_interpretation",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
-      "approval": null,
+      "review_state": "reviewed",
+      "uncertainty": "Approved from a public witness; JMA LXXV (2002) quotes the line Mayamma yani nae pilachitae and describes approaching the Mother as a child.",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "JMA LXXV (2002) quotes the line Mayamma yani nae pilachitae and describes approaching the Mother as a child.",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      },
       "group_type": null,
       "rhythm": null
     },
@@ -13497,11 +13592,12 @@
       "locator": "Edition not consulted; page locator pending verification",
       "summary": "Filial surrender: Talli ninnu nera namminanu",
       "evidence_kind": "scholarly_interpretation",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
+      "review_state": "unresolved",
+      "uncertainty": "2026-11-03: General Apatya Bhava descriptions exist; none names this kriti.",
       "approval": null,
       "group_type": null,
-      "rhythm": null
+      "rhythm": null,
+      "unresolved_reason": "edition_inaccessible"
     },
     {
       "id": "SS-0007:bhava:1",
@@ -13512,11 +13608,12 @@
       "locator": "Edition not consulted; page locator pending verification",
       "summary": "Filial address: Brovavamma",
       "evidence_kind": "scholarly_interpretation",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
+      "review_state": "unresolved",
+      "uncertainty": "2026-11-03: General Apatya Bhava descriptions exist; none names this kriti.",
       "approval": null,
       "group_type": null,
-      "rhythm": null
+      "rhythm": null,
+      "unresolved_reason": "edition_inaccessible"
     },
     {
       "id": "SS-0008:bhava:1",
@@ -13527,11 +13624,12 @@
       "locator": "Edition not consulted; page locator pending verification",
       "summary": "Child complaining of delay: Brovavamma tamasamele",
       "evidence_kind": "scholarly_interpretation",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
+      "review_state": "unresolved",
+      "uncertainty": "2026-11-03: General Apatya Bhava descriptions exist; none names this kriti.",
       "approval": null,
       "group_type": null,
-      "rhythm": null
+      "rhythm": null,
+      "unresolved_reason": "edition_inaccessible"
     },
     {
       "id": "SS-0031:bhava:1",
@@ -13542,24 +13640,32 @@
       "locator": "Edition not consulted; page locator pending verification",
       "summary": "Filial address: Mahilo amba",
       "evidence_kind": "scholarly_interpretation",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
+      "review_state": "unresolved",
+      "uncertainty": "2026-11-03: General Apatya Bhava descriptions exist; none names this kriti.",
       "approval": null,
       "group_type": null,
-      "rhythm": null
+      "rhythm": null,
+      "unresolved_reason": "edition_inaccessible"
     },
     {
       "id": "SS-0032:bhava:1",
       "subject_id": "SS-0032",
       "axis": "bhava",
       "value": "Apatya Bhava (Child-Mother Devotion)",
-      "witness_id": "vidya-shankar-1980",
-      "locator": "Edition not consulted; page locator pending verification",
+      "witness_id": "academy-1954-lead",
+      "locator": "PDF pp.23-24 (printed pp.11-12)",
       "summary": "Child seeking refuge: Mari vere gati evvaramma",
       "evidence_kind": "scholarly_interpretation",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
-      "approval": null,
+      "review_state": "reviewed",
+      "uncertainty": "Approved from a public witness; The 1954 article reads the repeated nammithi in Marivere as a child's faith in the Mother.",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "The 1954 article reads the repeated nammithi in Marivere as a child's faith in the Mother.",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      },
       "group_type": null,
       "rhythm": null
     },
@@ -13572,11 +13678,12 @@
       "locator": "Edition not consulted; page locator pending verification",
       "summary": "Filial address: O Jagadamba",
       "evidence_kind": "scholarly_interpretation",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
+      "review_state": "unresolved",
+      "uncertainty": "2026-11-03: General Apatya Bhava descriptions exist; none names this kriti.",
       "approval": null,
       "group_type": null,
-      "rhythm": null
+      "rhythm": null,
+      "unresolved_reason": "edition_inaccessible"
     },
     {
       "id": "SS-0050:bhava:1",
@@ -13587,11 +13694,12 @@
       "locator": "Edition not consulted; page locator pending verification",
       "summary": "Filial address: Palimpavamma",
       "evidence_kind": "scholarly_interpretation",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
+      "review_state": "unresolved",
+      "uncertainty": "2026-11-03: General Apatya Bhava descriptions exist; none names this kriti.",
       "approval": null,
       "group_type": null,
-      "rhythm": null
+      "rhythm": null,
+      "unresolved_reason": "edition_inaccessible"
     },
     {
       "id": "SS-0001:mudra:1",
@@ -13795,11 +13903,12 @@
       "locator": "Edition not consulted; page locator pending verification",
       "summary": "Hereditary archaka shrine of Bangaru Kamakshi in Thanjavur",
       "evidence_kind": "documented_tradition",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
+      "review_state": "unresolved",
+      "uncertainty": "2026-11-03: 1973 names the deity as Kamakshi without naming Thanjavur or Kanchi.",
       "approval": null,
       "group_type": null,
-      "rhythm": null
+      "rhythm": null,
+      "unresolved_reason": "no_public_source"
     },
     {
       "id": "SS-0026:geography:2",
@@ -13810,11 +13919,12 @@
       "locator": "Edition not consulted; page locator pending verification",
       "summary": "Hereditary archaka shrine of Bangaru Kamakshi in Thanjavur",
       "evidence_kind": "documented_tradition",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
+      "review_state": "unresolved",
+      "uncertainty": "2026-11-03: 1973 names the deity as Kamakshi without naming Thanjavur or Kanchi.",
       "approval": null,
       "group_type": null,
-      "rhythm": null
+      "rhythm": null,
+      "unresolved_reason": "no_public_source"
     },
     {
       "id": "SS-0051:geography:2",
@@ -13825,24 +13935,32 @@
       "locator": "Edition not consulted; page locator pending verification",
       "summary": "Hereditary archaka shrine of Bangaru Kamakshi in Thanjavur",
       "evidence_kind": "documented_tradition",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
+      "review_state": "unresolved",
+      "uncertainty": "2026-11-03: 1973 names Kamakshi without naming a shrine.",
       "approval": null,
       "group_type": null,
-      "rhythm": null
+      "rhythm": null,
+      "unresolved_reason": "no_public_source"
     },
     {
       "id": "SS-0012:geography:2",
       "subject_id": "SS-0012",
       "axis": "geography",
       "value": "Mother mInAkshI (madurai)",
-      "witness_id": "sambamoorthy-1962",
-      "locator": "Edition not consulted; page locator pending verification",
+      "witness_id": "ma:souvenir-1973",
+      "locator": "PDF pp.41-44",
       "summary": "Meenakshi Amman temple, Madurai (Navaratnamalika)",
       "evidence_kind": "documented_tradition",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
-      "approval": null,
+      "review_state": "reviewed",
+      "uncertainty": "Approved from a public witness; Both 1954 and 1973 list this kriti among the Navaratnamalika in praise of Meenakshi (Madurai).",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Both 1954 and 1973 list this kriti among the Navaratnamalika in praise of Meenakshi (Madurai).",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      },
       "group_type": null,
       "rhythm": null
     },
@@ -13851,13 +13969,20 @@
       "subject_id": "SS-0014",
       "axis": "geography",
       "value": "Mother mInAkshI (madurai)",
-      "witness_id": "sambamoorthy-1962",
-      "locator": "Edition not consulted; page locator pending verification",
+      "witness_id": "ma:souvenir-1973",
+      "locator": "PDF pp.41-44",
       "summary": "Meenakshi Amman temple, Madurai (Navaratnamalika)",
       "evidence_kind": "documented_tradition",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
-      "approval": null,
+      "review_state": "reviewed",
+      "uncertainty": "Approved from a public witness; Both 1954 and 1973 list this kriti among the Navaratnamalika in praise of Meenakshi (Madurai).",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Both 1954 and 1973 list this kriti among the Navaratnamalika in praise of Meenakshi (Madurai).",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      },
       "group_type": null,
       "rhythm": null
     },
@@ -13866,13 +13991,20 @@
       "subject_id": "SS-0032",
       "axis": "geography",
       "value": "Mother mInAkshI (madurai)",
-      "witness_id": "sambamoorthy-1962",
-      "locator": "Edition not consulted; page locator pending verification",
+      "witness_id": "ma:souvenir-1973",
+      "locator": "PDF pp.41-44",
       "summary": "Meenakshi Amman temple, Madurai (Navaratnamalika)",
       "evidence_kind": "documented_tradition",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
-      "approval": null,
+      "review_state": "reviewed",
+      "uncertainty": "Approved from a public witness; Both 1954 and 1973 list this kriti among the Navaratnamalika in praise of Meenakshi (Madurai).",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Both 1954 and 1973 list this kriti among the Navaratnamalika in praise of Meenakshi (Madurai).",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      },
       "group_type": null,
       "rhythm": null
     },
@@ -13881,13 +14013,20 @@
       "subject_id": "SS-0034",
       "axis": "geography",
       "value": "Mother mInAkshI (madurai)",
-      "witness_id": "sambamoorthy-1962",
-      "locator": "Edition not consulted; page locator pending verification",
+      "witness_id": "ma:souvenir-1973",
+      "locator": "PDF pp.41-44",
       "summary": "Meenakshi Amman temple, Madurai (Navaratnamalika)",
       "evidence_kind": "documented_tradition",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
-      "approval": null,
+      "review_state": "reviewed",
+      "uncertainty": "Approved from a public witness; Both 1954 and 1973 list this kriti among the Navaratnamalika in praise of Meenakshi (Madurai).",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Both 1954 and 1973 list this kriti among the Navaratnamalika in praise of Meenakshi (Madurai).",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      },
       "group_type": null,
       "rhythm": null
     },
@@ -13896,13 +14035,20 @@
       "subject_id": "SS-0035",
       "axis": "geography",
       "value": "Mother mInAkshI (madurai)",
-      "witness_id": "sambamoorthy-1962",
-      "locator": "Edition not consulted; page locator pending verification",
+      "witness_id": "ma:souvenir-1973",
+      "locator": "PDF pp.41-44",
       "summary": "Meenakshi Amman temple, Madurai (Navaratnamalika)",
       "evidence_kind": "documented_tradition",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
-      "approval": null,
+      "review_state": "reviewed",
+      "uncertainty": "Approved from a public witness; Both 1954 and 1973 list this kriti among the Navaratnamalika in praise of Meenakshi (Madurai).",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Both 1954 and 1973 list this kriti among the Navaratnamalika in praise of Meenakshi (Madurai).",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      },
       "group_type": null,
       "rhythm": null
     },
@@ -13911,13 +14057,20 @@
       "subject_id": "SS-0038",
       "axis": "geography",
       "value": "Mother mInAkshI (madurai)",
-      "witness_id": "sambamoorthy-1962",
-      "locator": "Edition not consulted; page locator pending verification",
+      "witness_id": "ma:souvenir-1973",
+      "locator": "PDF pp.41-44",
       "summary": "Meenakshi Amman temple, Madurai (Navaratnamalika)",
       "evidence_kind": "documented_tradition",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
-      "approval": null,
+      "review_state": "reviewed",
+      "uncertainty": "Approved from a public witness; Both 1954 and 1973 list this kriti among the Navaratnamalika in praise of Meenakshi (Madurai).",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Both 1954 and 1973 list this kriti among the Navaratnamalika in praise of Meenakshi (Madurai).",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      },
       "group_type": null,
       "rhythm": null
     },
@@ -13930,24 +14083,32 @@
       "locator": "Edition not consulted; page locator pending verification",
       "summary": "Meenakshi Amman temple, Madurai (Navaratnamalika)",
       "evidence_kind": "documented_tradition",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
+      "review_state": "unresolved",
+      "uncertainty": "2026-11-03: 1954 lists a ninth kriti only as 'in Sri Raga'. No public source names Rave parvata raja.",
       "approval": null,
       "group_type": null,
-      "rhythm": null
+      "rhythm": null,
+      "unresolved_reason": "no_public_source"
     },
     {
       "id": "SS-0065:geography:2",
       "subject_id": "SS-0065",
       "axis": "geography",
       "value": "Mother mInAkshI (madurai)",
-      "witness_id": "sambamoorthy-1962",
-      "locator": "Edition not consulted; page locator pending verification",
+      "witness_id": "ma:souvenir-1973",
+      "locator": "PDF pp.41-44",
       "summary": "Meenakshi Amman temple, Madurai (Navaratnamalika)",
       "evidence_kind": "documented_tradition",
-      "review_state": "unreviewed",
-      "uncertainty": "Unreviewed bibliographic lead: physical/digital edition was not inspected; exact page locator and notation verification are pending.",
-      "approval": null,
+      "review_state": "reviewed",
+      "uncertainty": "Approved from a public witness; Both 1954 and 1973 list this kriti among the Navaratnamalika in praise of Meenakshi (Madurai).",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Both 1954 and 1973 list this kriti among the Navaratnamalika in praise of Meenakshi (Madurai).",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      },
       "group_type": null,
       "rhythm": null
     },
