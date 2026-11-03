@@ -3892,14 +3892,12 @@
       "deity_id": null,
       "temple_id": null,
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 0,
         "charanam_count": 17,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "pallavi_excerpt": "SrI rAma jaya rAma SRngAra rAma",
       "imports": [
         {

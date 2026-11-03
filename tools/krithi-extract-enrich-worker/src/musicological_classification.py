@@ -55,12 +55,27 @@ class Witness(Record):
     accessed_at: str
     status: Literal["fetched", "unavailable", "database_snapshot"]
     description: str
+    # TRACK-148: informational only. Public availability is what matters; copyright is not a gate.
+    rights: Literal["public_domain", "openly_hosted", "inaccessible"] | None = None
+    rights_note: str | None = None
+    witness_kind: Literal["notated_edition", "scholarly_article", "secondary_text"] | None = None
 
     @model_validator(mode="after")
     def content_hash(self) -> Self:
         if self.status != "unavailable" and not self.sha256:
             raise ValueError("available witnesses require artifact SHA-256")
+        if self.rights == "inaccessible" and self.status != "unavailable":
+            raise ValueError("an inaccessible witness cannot carry a fetched artifact")
+        if self.rights in ("public_domain", "openly_hosted") and self.status == "unavailable":
+            raise ValueError("an unavailable witness cannot be marked publicly accessible")
         return self
+
+    @property
+    def effective_rights(self) -> str:
+        """Declared rights, else derived from status so existing witnesses need no edit."""
+        if self.rights:
+            return self.rights
+        return "inaccessible" if self.status == "unavailable" else "openly_hosted"
 
 
 class RhythmObservation(Record):
@@ -72,6 +87,9 @@ class RhythmObservation(Record):
     units: str | None = None
     counting_origin: str | None = None
     convention: str | None = None
+    jati: str | None = None
+    akshara_count: int | None = Field(default=None, gt=0)
+    grouping: str | None = None
 
     @model_validator(mode="after")
     def explicit_convention(self) -> Self:
@@ -111,9 +129,13 @@ class Claim(Record):
     approval: Approval | None = None
     group_type: Literal["formal_group", "thematic_collection", "related_musical_setting"] | None = None
     rhythm: RhythmObservation | None = None
+    # TRACK-148: why a claim ended unresolved or disputed instead of approved.
+    unresolved_reason: Literal["edition_inaccessible", "no_public_source", "sources_conflict"] | None = None
 
     @model_validator(mode="after")
     def adjudication(self) -> Self:
+        if self.unresolved_reason and self.review_state not in ("unresolved", "disputed"):
+            raise ValueError("an unresolved reason belongs only on unresolved or disputed claims")
         if self.review_state == "reviewed" and (not self.approval or self.approval.decision != "approve"):
             raise ValueError("reviewed requires explicit human approval")
         if self.approval and self.approval.decision == "approve" and self.review_state != "reviewed":
@@ -261,6 +283,17 @@ class ClassificationMaster(Record):
                     raise ValueError("approved claim requires canonical identity and hashed witness")
                 if witnesses[claim.witness_id].status == "unavailable":
                     raise ValueError("unavailable witness cannot approve claim")
+                if witnesses[claim.witness_id].effective_rights == "inaccessible":
+                    raise ValueError("inaccessible witness cannot approve claim")
+                if (
+                    claim.rhythm is not None
+                    and any(
+                        x is not None
+                        for x in (claim.rhythm.eduppu, claim.rhythm.arudi, claim.rhythm.kalai, claim.rhythm.subdivision)
+                    )
+                    and witnesses[claim.witness_id].witness_kind != "notated_edition"
+                ):
+                    raise ValueError("eduppu, arudi, kalai and subdivision need a notated-edition witness")
                 if claim.axis == "form":
                     approved_forms.setdefault(claim.subject_id, set()).add(claim.value)
         if any(len(forms) > 1 for forms in approved_forms.values()):

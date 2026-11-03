@@ -3620,10 +3620,12 @@
     {
       "id": "academy-1954-lead",
       "url": "https://musicacademymadras.in/catalogue/files/souv/1954_28th%20conference%20souvenir.pdf",
-      "sha256": null,
-      "accessed_at": "2026-10-01",
-      "status": "unavailable",
-      "description": "S. Vidya, Musical Masterpieces: Navaratnamalika of Syama Sastri, printed p. 11; search-index passage available, full artifact fetch rejected HTTP 403 / content too large. No immutable witness hash."
+      "sha256": "b9b37ef2aa57fe6186217ead28d7c1c5ba2fb55a22d802f83fe0c9fb4ed510a0",
+      "accessed_at": "2026-11-03",
+      "status": "fetched",
+      "description": "28th Conference souvenir (1954), 176 PDF pages. PDF pp.23-24 (printed pp.11-12): S. Vidya, Musical Masterpieces: Navaratnamalika of Syama Sastri. Lists the nine gems by title or raga (two named only by raga: Nilakurinji and Sri), says they praise Meenakshi of Madurai, and describes a four-plus-three matra tala as the composer's favourite, citing Marivere.",
+      "rights": "openly_hosted",
+      "witness_kind": "scholarly_article"
     },
     {
       "id": "analysis:user-supplied-2026-10-06",
@@ -3639,7 +3641,10 @@
       "sha256": null,
       "accessed_at": "2026-10-07",
       "status": "unavailable",
-      "description": "Authoritative family-parampara notation edition by Vidya Shankar (disciple of Syama Sastri's great-grandson Venkatasubramanya Sastri); documents exact eduppus, arudi, swarasahityas, and gamakas. [2026-10-07: not inspected. The earlier hash was of a local JSON stub listing titles, not of the publication; no page content or locators have been verified.]"
+      "description": "Authoritative family-parampara notation edition by Vidya Shankar (disciple of Syama Sastri's great-grandson Venkatasubramanya Sastri); documents exact eduppus, arudi, swarasahityas, and gamakas. [2026-10-07: not inspected. The earlier hash was of a local JSON stub listing titles, not of the publication; no page content or locators have been verified.]",
+      "rights": "inaccessible",
+      "rights_note": "Print edition; not obtainable by the owner. Reopen if a copy becomes available.",
+      "witness_kind": "notated_edition"
     },
     {
       "id": "govinda-rao-1997",
@@ -3647,7 +3652,10 @@
       "sha256": null,
       "accessed_at": "2026-10-07",
       "status": "unavailable",
-      "description": "Standard musicological compilation with complete text, word-by-word meaning, raga lakshana, tala aksharas, and svara notations. [2026-10-07: not inspected. The earlier hash was of a local JSON stub listing titles, not of the publication; no page content or locators have been verified.]"
+      "description": "Standard musicological compilation with complete text, word-by-word meaning, raga lakshana, tala aksharas, and svara notations. [2026-10-07: not inspected. The earlier hash was of a local JSON stub listing titles, not of the publication; no page content or locators have been verified.]",
+      "rights": "inaccessible",
+      "rights_note": "Print edition; not obtainable by the owner. Reopen if a copy becomes available.",
+      "witness_kind": "notated_edition"
     },
     {
       "id": "sambamoorthy-1962",
@@ -3655,7 +3663,10 @@
       "sha256": null,
       "accessed_at": "2026-10-07",
       "status": "unavailable",
-      "description": "Seminal biographical and musicological monograph documenting temple archaka history, Bobbili Kesavayya duel, Chintamani creation, and Madurai pilgrimage. [2026-10-07: not inspected. The earlier hash was of a local JSON stub listing titles, not of the publication; no page content or locators have been verified.]"
+      "description": "Seminal biographical and musicological monograph documenting temple archaka history, Bobbili Kesavayya duel, Chintamani creation, and Madurai pilgrimage. [2026-10-07: not inspected. The earlier hash was of a local JSON stub listing titles, not of the publication; no page content or locators have been verified.]",
+      "rights": "inaccessible",
+      "rights_note": "Print edition; not obtainable by the owner. Reopen if a copy becomes available.",
+      "witness_kind": "notated_edition"
     },
     {
       "id": "jma-archive",
@@ -3728,6 +3739,26 @@
       "accessed_at": "2026-10-07",
       "status": "fetched",
       "description": "V. Raghavan, Shri Shyama Shastri (Music Academy 51st Conference souvenir, 1977), Sahapedia reprint, 8 pp. Names the Bhairavi, Todi and Yerukala Kambhoji svarajatis as his specialities (PDF p.2); includes a bibliography of editions."
+    },
+    {
+      "id": "ma:souvenir-1973",
+      "url": "https://musicacademymadras.in/catalogue/files/souv/1973_47th%20conference%20souvenir.pdf",
+      "sha256": "7559863bd269e15f8ad0f4b5d9e88ec05f9e8d248ec2413c31e0141962299ff3",
+      "accessed_at": "2026-11-03",
+      "status": "fetched",
+      "rights": "openly_hosted",
+      "witness_kind": "scholarly_article",
+      "description": "47th Conference souvenir (1973). PDF pp.41-44 list the compositions attributed to Syama Sastri with raga, tala and deity: three svarajatis, two tana varnams (Samini, Dayanidhe), seven Navaratnamalika kritis in praise of Meenakshi, and kritis in praise of Kamakshi, Brihannayaki and other deities."
+    },
+    {
+      "id": "ma:jma-vol55-1984",
+      "url": "https://musicacademymadras.in/catalogue/files/journals/Vol.55_1984.pdf",
+      "sha256": "12fb3505a27464356021fb5daa45dc5e963c5610b127b6dc9e7a624ca295dbbb",
+      "accessed_at": "2026-11-03",
+      "status": "fetched",
+      "rights": "openly_hosted",
+      "witness_kind": "scholarly_article",
+      "description": "Journal of the Music Academy vol. LV (1984). PDF p.154 says Syama Sastri was the foremost composer to introduce svara sahitya in kritis and names Marivere gati, Sariyevvaramma, Durusuga and O Jagadamba."
     }
   ],
   "claims": [

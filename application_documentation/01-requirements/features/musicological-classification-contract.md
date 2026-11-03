@@ -15,6 +15,10 @@ A composition receives a persistent master ID of the form `PREFIX-NNNN` (Syama S
 
 A collapsed identity can be split once the owner approves it (TRACK-149). The register entry becomes `split_executed`; its witnesses become catalogue identities, the witness chosen to retain the original krithi keeps that `krithi_id`, and every other witness gets a krithi row created through the audited unmap and `forceNew` review path. Subject and claim IDs of the former witnesses are re-minted from their new krithi ids once, at the split.
 
+Witnesses carry optional informational fields. `rights` (`public_domain`, `openly_hosted`, `inaccessible`) records availability; copyright is not a gate, public availability is. When absent it is derived from status (`fetched` is `openly_hosted`, `unavailable` is `inaccessible`). `witness_kind` (`notated_edition`, `scholarly_article`, `secondary_text`) separates what a source can prove: eduppu, arudi, kalai and subdivision claims need a `notated_edition` witness, and no claim is approved from an `inaccessible` witness. A claim left unresolved or disputed carries an `unresolved_reason` (`edition_inaccessible`, `no_public_source`, `sources_conflict`) so a future owner with edition access can reopen it. Rhythm observations may also record `jati`, `akshara_count` and `grouping`.
+
+Owner decisions on unreviewed leads live in a decision file, made by a named reviewer from a proposal file (`src/lead_decisions.py`, `scripts/apply_lead_decisions.py`). Proposals recommend; they approve nothing. Approvals made this way are `application: deferred` until the non-cycle application path (manifest-driven search metadata) or a membership seed exists.
+
 Report source rows, distinct composition identities, approved group membership claims and witness artifacts separately. The 71 Syama Sastri CSV rows map to 70 master identities because two labels (rows 1 and 22, `SS-0001`) share one witness and UUID. Canonical URL mappings are repository observations, not human musicological approval.
 
 ## Witnesses and claims

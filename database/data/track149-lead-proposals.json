@@ -1,0 +1,660 @@
+{
+ "tyagaraja:krithi:00d7ec02-dd0c-423b-8862-3fe5e24923e2:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:01166b8b-a60b-4eac-9895-1d3feae3f94f:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:09216653-9ebd-4df0-82db-c374e18068d7:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:0931f98a-64fa-403f-967c-941677395832:geography": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "ma:jma-vol54-1983",
+  "locator": "PDF p.40",
+  "note": "Named in the Srirangam Pancharatnam list."
+ },
+ "tyagaraja:krithi:0931f98a-64fa-403f-967c-941677395832:group": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "ma:jma-vol54-1983",
+  "locator": "PDF p.40",
+  "note": "Named in the Srirangam Pancharatnam list."
+ },
+ "tyagaraja:krithi:0df490a3-9675-4f43-b370-3c0b42ee933f:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:0f06796a-2f9a-489b-9b41-18a659c30754:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:191c44c1-9744-4afe-9f90-5a9cb45ade22:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:1b751137-9e78-4a63-9036-2f648bf2dcec:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:1b7baaeb-ee79-408c-b860-3a4c72e127b3:dramatic": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "No public passage found; the print editions that would settle this are inaccessible."
+ },
+ "tyagaraja:krithi:1d3c167b-d5ae-4f4b-8e55-8f11ab9c39e4:geography": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "hindupedia-thyagaraja-compilation",
+  "locator": "PDF pp.109, 188, 251, 448",
+  "note": "Labelled as a Kovur Pancharatna item in a secondary translation compilation."
+ },
+ "tyagaraja:krithi:1d3c167b-d5ae-4f4b-8e55-8f11ab9c39e4:group": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "hindupedia-thyagaraja-compilation",
+  "locator": "PDF pp.109, 188, 251, 448",
+  "note": "Labelled as a Kovur Pancharatna item in a secondary translation compilation."
+ },
+ "tyagaraja:krithi:1dfe4864-6224-460a-845a-5328aed9b638:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:2192caff-da11-4a23-81ad-3036d3cdd173:geography": {
+  "disposition": "unresolved",
+  "unresolved_reason": "no_public_source",
+  "witness_id": null,
+  "locator": null,
+  "note": "Sanskrit Documents (PDF p.2) names a Tiruvottiyur Pancharatnam on Tripurasundari but lists no members; no public passage ties this kriti to it."
+ },
+ "tyagaraja:krithi:2192caff-da11-4a23-81ad-3036d3cdd173:group": {
+  "disposition": "unresolved",
+  "unresolved_reason": "no_public_source",
+  "witness_id": null,
+  "locator": null,
+  "note": "Sanskrit Documents (PDF p.2) names a Tiruvottiyur Pancharatnam on Tripurasundari but lists no members; no public passage ties this kriti to it."
+ },
+ "tyagaraja:krithi:271a1479-c84d-4c22-af76-040f659fce2b:geography": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "ma:jma-vol69-1998",
+  "locator": "PDF p.39",
+  "note": "Named in the Lalgudi Pancharatnam list."
+ },
+ "tyagaraja:krithi:271a1479-c84d-4c22-af76-040f659fce2b:group": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "ma:jma-vol69-1998",
+  "locator": "PDF p.39",
+  "note": "Named in the Lalgudi Pancharatnam list."
+ },
+ "tyagaraja:krithi:29542e1b-7e94-438c-ab5c-381853d8ee4e:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:3be08780-f3f2-4ac2-acde-818f8438ed3e:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:3c94b2b6-27fa-430e-8c67-8211f0428a6d:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:40792364-1527-4e70-804d-00e1323c621c:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:4215e9b5-17dd-4730-a140-55d48014b034:geography": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "ma:jma-vol69-1998",
+  "locator": "PDF p.39",
+  "note": "Named in the Lalgudi Pancharatnam list."
+ },
+ "tyagaraja:krithi:4215e9b5-17dd-4730-a140-55d48014b034:group": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "ma:jma-vol69-1998",
+  "locator": "PDF p.39",
+  "note": "Named in the Lalgudi Pancharatnam list."
+ },
+ "tyagaraja:krithi:4215e9b5-17dd-4730-a140-55d48014b034:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:42d35ca5-4110-4fd8-bece-9ced6a37014e:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:44d9e846-50b1-43dd-bc7e-9f82994d953c:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:474faeba-0c01-4688-a1e1-1ad41b536ee3:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:498f50fb-3632-498c-888d-2c04e78f771d:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:4cae5d72-c291-465d-b117-242dff25e96c:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:4eb527cc-5ea7-4ff5-a6f8-364b3e599613:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:501d0f9a-35b4-4ae6-a31e-042f70e0b0fe:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:503b3c2f-cfc0-418c-a914-0f313291a9b4:ritual": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "ma:jma-vol18-1947",
+  "locator": "PDF p.53",
+  "note": "Named as Utsava Sampradaya in the journal."
+ },
+ "tyagaraja:krithi:550a03c3-991c-435f-b1b5-439c16e98183:geography": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "ma:jma-vol69-1998",
+  "locator": "PDF p.39",
+  "note": "Named in the Lalgudi Pancharatnam list."
+ },
+ "tyagaraja:krithi:550a03c3-991c-435f-b1b5-439c16e98183:group": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "ma:jma-vol69-1998",
+  "locator": "PDF p.39",
+  "note": "Named in the Lalgudi Pancharatnam list."
+ },
+ "tyagaraja:krithi:5e240d77-d99b-46f1-8c96-6fb183bf9734:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:5e53b603-eb35-474f-8372-807702423ae7:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:60064fdb-4bb7-45ff-afd4-e0ace0677e29:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:62af415e-cd50-4a02-8d86-8a5f39c24bc5:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:64e3ccdf-ec93-422b-969c-6ccfd2f3e43c:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:673807ed-af4c-4334-827d-da1083587b88:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:6ddd3f36-022a-4a78-9a63-c769c5941508:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:72407711-358e-4764-a291-15c7fbbb90ad:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:7253c9f5-6903-4ad3-b63f-1eb6b9f01052:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:756f894a-790a-4e3b-9fe1-a01600723782:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:77e3a868-f451-4028-bc8f-ff9fb696ef15:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:7914b699-b204-42b1-9057-72f4ff5db6d4:geography": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "ma:jma-vol69-1998",
+  "locator": "PDF p.39",
+  "note": "Named in the Lalgudi Pancharatnam list."
+ },
+ "tyagaraja:krithi:7914b699-b204-42b1-9057-72f4ff5db6d4:group": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "ma:jma-vol69-1998",
+  "locator": "PDF p.39",
+  "note": "Named in the Lalgudi Pancharatnam list."
+ },
+ "tyagaraja:krithi:7ad8d15d-8260-46b7-bc02-2ef448f61842:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:7d556895-a35c-4b48-b922-e2815fa492e9:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:7d7ffdc6-fe9f-4864-a630-a418679f4753:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:7e7529c6-93ee-46fe-890e-c491854fbeee:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:82b9fd7a-bf48-472e-8971-c509c3e6f0fc:dramatic": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "ma:jma-vol42-1971",
+  "locator": "PDF p.41",
+  "note": "Discussed in a lecture on the Prahlada opera."
+ },
+ "tyagaraja:krithi:8300ca9e-eca0-4d3a-8a93-0c54c3715baf:geography": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "hindupedia-thyagaraja-compilation",
+  "locator": "PDF pp.109, 188, 251, 448",
+  "note": "Labelled as a Kovur Pancharatna item in a secondary translation compilation."
+ },
+ "tyagaraja:krithi:8300ca9e-eca0-4d3a-8a93-0c54c3715baf:group": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "hindupedia-thyagaraja-compilation",
+  "locator": "PDF pp.109, 188, 251, 448",
+  "note": "Labelled as a Kovur Pancharatna item in a secondary translation compilation."
+ },
+ "tyagaraja:krithi:848fe8eb-0b6e-423d-9b37-f0ce62ceffa5:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:8ea31119-0764-4ab4-8f99-92264ba34d3f:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:8f631948-3af9-471c-9ca7-499daad07c76:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:9b867d71-cc42-4dab-b712-ff8af6848c39:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:9c89d2d5-c211-4790-8577-90bfccbf697e:geography": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "ma:jma-vol66-1995",
+  "locator": "PDF p.107",
+  "note": "Journal names the kriti and the Tiruvottiyur shrine."
+ },
+ "tyagaraja:krithi:9c89d2d5-c211-4790-8577-90bfccbf697e:group": {
+  "disposition": "unresolved",
+  "unresolved_reason": "no_public_source",
+  "witness_id": null,
+  "locator": null,
+  "note": "Sanskrit Documents (PDF p.2) names a Tiruvottiyur Pancharatnam on Tripurasundari but lists no members; no public passage ties this kriti to it."
+ },
+ "tyagaraja:krithi:9ccd7f15-0aac-4df4-8057-c9868e7a3fad:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:a018529d-c3a4-4b90-808b-b2168626750f:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:a170a743-39a8-4546-ae2d-954265d6ee51:dramatic": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "No public passage found; the print editions that would settle this are inaccessible."
+ },
+ "tyagaraja:krithi:a525487e-f906-4e61-a600-3a2694b96bbb:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:a9971f1e-8715-4ff9-8ad4-e62079e74abe:geography": {
+  "disposition": "unresolved",
+  "unresolved_reason": "no_public_source",
+  "witness_id": null,
+  "locator": null,
+  "note": "No public passage ties this kriti to the named shrine or group."
+ },
+ "tyagaraja:krithi:b025bb22-3195-4d29-afe8-fe51b82a04f0:geography": {
+  "disposition": "unresolved",
+  "unresolved_reason": "no_public_source",
+  "witness_id": null,
+  "locator": null,
+  "note": "Sanskrit Documents (PDF p.2) names a Tiruvottiyur Pancharatnam on Tripurasundari but lists no members; no public passage ties this kriti to it."
+ },
+ "tyagaraja:krithi:b025bb22-3195-4d29-afe8-fe51b82a04f0:group": {
+  "disposition": "unresolved",
+  "unresolved_reason": "no_public_source",
+  "witness_id": null,
+  "locator": null,
+  "note": "Sanskrit Documents (PDF p.2) names a Tiruvottiyur Pancharatnam on Tripurasundari but lists no members; no public passage ties this kriti to it."
+ },
+ "tyagaraja:krithi:ba2ec6a9-1804-48f1-a379-0fc505078892:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:bbc8382b-a344-47c2-8b4d-fb831a541230:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:bd9c039b-d92d-4a05-8f0d-d9082a834b1e:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:c262739c-e7cc-492d-b248-3775fec24bfe:geography": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "ma:jma-vol54-1983",
+  "locator": "PDF p.40",
+  "note": "Named in the Srirangam Pancharatnam list."
+ },
+ "tyagaraja:krithi:c262739c-e7cc-492d-b248-3775fec24bfe:group": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "ma:jma-vol54-1983",
+  "locator": "PDF p.40",
+  "note": "Named in the Srirangam Pancharatnam list."
+ },
+ "tyagaraja:krithi:c5aee074-7a6b-4fd3-83ea-19fd6d9083eb:geography": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "ma:jma-vol54-1983",
+  "locator": "PDF p.40",
+  "note": "Named in the Srirangam Pancharatnam list."
+ },
+ "tyagaraja:krithi:c5aee074-7a6b-4fd3-83ea-19fd6d9083eb:group": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "ma:jma-vol54-1983",
+  "locator": "PDF p.40",
+  "note": "Named in the Srirangam Pancharatnam list."
+ },
+ "tyagaraja:krithi:cc45b4cc-c3ca-4a69-b3c5-efdeeecb8f85:dramatic": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "ma:souvenir-1969",
+  "locator": "PDF p.151",
+  "note": "Weak: a concert programme labels it Nowka Charitram."
+ },
+ "tyagaraja:krithi:cd283f28-6a3e-4d45-9db7-b885bee8dc60:geography": {
+  "disposition": "unresolved",
+  "unresolved_reason": "no_public_source",
+  "witness_id": null,
+  "locator": null,
+  "note": "Sanskrit Documents (PDF p.2) names a Tiruvottiyur Pancharatnam on Tripurasundari but lists no members; no public passage ties this kriti to it."
+ },
+ "tyagaraja:krithi:cd283f28-6a3e-4d45-9db7-b885bee8dc60:group": {
+  "disposition": "unresolved",
+  "unresolved_reason": "no_public_source",
+  "witness_id": null,
+  "locator": null,
+  "note": "Sanskrit Documents (PDF p.2) names a Tiruvottiyur Pancharatnam on Tripurasundari but lists no members; no public passage ties this kriti to it."
+ },
+ "tyagaraja:krithi:cedd6d75-244b-47c9-958e-726445428a99:geography": {
+  "disposition": "unresolved",
+  "unresolved_reason": "no_public_source",
+  "witness_id": null,
+  "locator": null,
+  "note": "Sanskrit Documents (PDF p.2) names a Tiruvottiyur Pancharatnam on Tripurasundari but lists no members; no public passage ties this kriti to it."
+ },
+ "tyagaraja:krithi:cedd6d75-244b-47c9-958e-726445428a99:group": {
+  "disposition": "unresolved",
+  "unresolved_reason": "no_public_source",
+  "witness_id": null,
+  "locator": null,
+  "note": "Sanskrit Documents (PDF p.2) names a Tiruvottiyur Pancharatnam on Tripurasundari but lists no members; no public passage ties this kriti to it."
+ },
+ "tyagaraja:krithi:cf46edfe-080f-4931-bf5d-7145e618a3bd:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:e0151a7a-e0d9-413d-b07a-4c1b2854971f:geography": {
+  "disposition": "unresolved",
+  "unresolved_reason": "no_public_source",
+  "witness_id": null,
+  "locator": null,
+  "note": "No public passage ties this kriti to the named shrine or group."
+ },
+ "tyagaraja:krithi:e0151a7a-e0d9-413d-b07a-4c1b2854971f:group": {
+  "disposition": "unresolved",
+  "unresolved_reason": "no_public_source",
+  "witness_id": null,
+  "locator": null,
+  "note": "No public passage ties this kriti to the named shrine or group."
+ },
+ "tyagaraja:krithi:e020bc69-086e-47b1-be97-d3d8294f0379:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:e144c7fb-3320-4168-9b65-bc120afa3a7d:ritual": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "ma:jma-vol18-1947",
+  "locator": "PDF p.53",
+  "note": "Named as Utsava Sampradaya in the journal."
+ },
+ "tyagaraja:krithi:e20e4215-c9ef-4f2a-b7d2-28c5aa43a1bb:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:e630e8f7-f8da-45b3-8e8b-fce0f91a74e9:geography": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "hindupedia-thyagaraja-compilation",
+  "locator": "PDF pp.109, 188, 251, 448",
+  "note": "Labelled as a Kovur Pancharatna item in a secondary translation compilation."
+ },
+ "tyagaraja:krithi:e630e8f7-f8da-45b3-8e8b-fce0f91a74e9:group": {
+  "disposition": "approve",
+  "unresolved_reason": null,
+  "witness_id": "hindupedia-thyagaraja-compilation",
+  "locator": "PDF pp.109, 188, 251, 448",
+  "note": "Labelled as a Kovur Pancharatna item in a secondary translation compilation."
+ },
+ "tyagaraja:krithi:e897a8c6-ef38-411f-8229-0b6f2ad13e3c:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:e9d91067-f4c7-4b2b-ae5c-06db11815ac2:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:eef82f61-9e42-4514-8142-e77b2cd0b68e:dramatic": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "No public passage found; the print editions that would settle this are inaccessible."
+ },
+ "tyagaraja:krithi:efd71f41-5405-402d-af29-c8fc6ddb6848:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:f2700b5a-d26a-498b-b5c7-61806ebbb729:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:f60c8d2f-7ac2-4ee8-9512-dec61c9cd6e0:ritual": {
+  "disposition": "unresolved",
+  "unresolved_reason": "edition_inaccessible",
+  "witness_id": null,
+  "locator": null,
+  "note": "The journal names only a few examples of each; this kriti is not among them."
+ },
+ "tyagaraja:krithi:fcd026e0-0056-48c3-af9f-a8a55c400077:geography": {
+  "disposition": "unresolved",
+  "unresolved_reason": "no_public_source",
+  "witness_id": null,
+  "locator": null,
+  "note": "No public passage ties this kriti to the named shrine or group."
+ }
+}

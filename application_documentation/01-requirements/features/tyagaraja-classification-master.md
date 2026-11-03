@@ -9,7 +9,7 @@
 
 ---
 
-Generated deterministically from the TRACK-147 structured master (`2026-10-01` snapshot). Covers 684 distinct catalogue identities, 684 classification subjects (684 single-source identities and 0 collision source witnesses), 4104 structured claims (53 human-approved: 5 applied group memberships, 15 supporting cycle claims, 33 deferred non-cycle approvals; 1991 source-observed `unresolved` claims; 94 edition-dependent `unreviewed` leads), and 694 registered witnesses.
+Generated deterministically from the TRACK-147 structured master (`2026-10-01` snapshot). Covers 684 distinct catalogue identities, 684 classification subjects (684 single-source identities and 0 collision source witnesses), 4104 structured claims (53 human-approved: 5 applied group memberships, 15 supporting cycle claims, 33 deferred non-cycle approvals; 1991 source-observed `unresolved` claims; 94 edition-dependent `unreviewed` leads), and 700 registered witnesses.
 
 Related track: [TRACK-147](../../../conductor/tracks/TRACK-147-tyagaraja-musicological-classification.md). Shared contract: [musicological-classification-contract.md](./musicological-classification-contract.md). Structured master: [track147-tyagaraja-master.json](../../../database/data/track147-tyagaraja-master.json). Application manifest: [track147-tyagaraja-application-manifest.json](../../../database/data/track147-tyagaraja-application-manifest.json).
 
@@ -28,7 +28,7 @@ Snapshot date: 2026-10-01. Composer id `b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6`.
 | Collision subjects | 0 |
 | Collision identities, not classified | 0 |
 | Classification subjects | 684 |
-| Registered witnesses | 694 |
+| Registered witnesses | 700 |
 | Total classification claims | 4104 |
 | Approved (`reviewed`) claims | 53 |
 | Source-observed (`unresolved`) claims | 1991 |
@@ -872,7 +872,7 @@ Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi
 | daa5d57d-b320-4a8b-a1c5-598c4bbdfda1 | fetched | `ba9b6a5c472b5be8…` | http://thyagaraja-vaibhavam.blogspot.com/2008/11/thyagaraja-kriti-proddu-poyyenu-raga.html — Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for proddu poyyenu (tODi). |
 | dacd74bf-f973-4826-81b3-ef1c5a2be312 | fetched | `d840368962bb1e89…` | http://thyagaraja-vaibhavam.blogspot.com/2008/10/thyagaraja-kriti-vasudevayani-raga.html — Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for vAsudEvayani (kalyANi). |
 | dafb9fd2-c59d-4015-873b-e4c8e7460745 | fetched | `252e14df289b821d…` | http://thyagaraja-vaibhavam.blogspot.com/2008/04/thyagaraja-kriti-ninne-nera-namminanu.html — Cached thyagaraja-vaibhavam HTML witness for ninnE nera namminAnu (Arabhi). |
-| db-snapshot | database_snapshot | `b8fd67bad2d843ab…` | database/data/track147-catalogue-snapshot.json — Hashed database census and stored pallavi/section/evidence snapshot for 675 Tyagaraja catalogue identities and 684 source imports. |
+| db-snapshot | database_snapshot | `e6a8b25a5709df8a…` | database/data/track147-catalogue-snapshot.json — Hashed database census and stored pallavi/section/evidence snapshot for 684 Tyagaraja catalogue identities (after the TRACK-149 splits) and 684 source imports. |
 | db1b5c0c-ad3f-4ab6-9746-5afead381ab2 | fetched | `4ee1255b0d333fcb…` | http://thyagaraja-vaibhavam.blogspot.com/2007/05/thyagaraja-kriti-meluko-dayaa-nidhi.html — Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for mElukO dayA nidhi (saurAshTraM). |
 | db273d0e-8386-4544-9bd7-9dd962372c7e | fetched | `c95860b20e335af2…` | http://thyagaraja-vaibhavam.blogspot.com/2007/07/thyagaraja-kriti-jo-jo-rama-raga-reethi.html — Cached thyagaraja-vaibhavam HTML witness for Jo Jo Rama (Riti Gaula). |
 | db53e339-8b5f-4e05-97f9-e4a62633924d | fetched | `fbe5a3ecd1095468…` | http://thyagaraja-vaibhavam.blogspot.com/2007/05/thyagaraja-kriti-kalugunaa-raga-poorna.html — Cached thyagaraja-vaibhavam HTML witness for Kalugunaa (Purna Lalita). |
@@ -964,12 +964,18 @@ Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi
 | ff56375a-dc25-4888-a346-aa2986589bb4 | fetched | `eea3ae2590990d45…` | http://thyagaraja-vaibhavam.blogspot.com/2008/05/thyagaraja-kriti-ksheera-sagara-sayana.html — Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for kshIra sAgara Sayana (deva gAndhAri). |
 | ffdc7ddb-cfdd-421a-a432-50155237ea47 | fetched | `d4a97a80e49ec14e…` | http://thyagaraja-vaibhavam.blogspot.com/2007/04/thyagaraja-kriti-paraasakti-manupa-raga.html — Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for parA Sakti manupa (sAvEri). |
 | govinda-rao-tyagaraja | unavailable | unavailable | Sangeetha Kalanidhi T.K. Govinda Rao, Compositions of Tyagaraja (Ganamandir Publications — edition not consulted) — Primary print authority for Tyagaraja sahitya, notation, and Kshetra Pancharatnam sets (deferred to TRACK-149). |
-| ma:jma-2017 | unavailable | unavailable | https://musicacademymadras.in/catalogue/files/journals/Music%20Academy%20Journal%202017.pdf — Journal of the Music Academy (2017): dramatic-work daru, padya, and vacana analysis lead (not consulted). |
-| ma:jma-vol18-1947 | unavailable | unavailable | https://musicacademymadras.in/catalogue/files/journals/Vol.18_1947.pdf — Journal of the Music Academy Vol. XVIII (1947): Walajapet manuscript collection research lead (not consulted). |
-| ma:jma-vol39-1968 | unavailable | unavailable | https://musicacademymadras.in/catalogue/files/journals/Vol.39_1968.pdf — Journal of the Music Academy Vol. XXXIX (1968): Tyagaraja transmission research lead (not consulted). |
+| hindupedia-thyagaraja-compilation | fetched | `36026409b9db63fa…` | https://www.hindupedia.com/images/0/08/Compositions_of_Thyagaraja.pdf — Hindupedia, Compositions of Thyagaraja (P.R. Ramachander translations of 627 kritis and the two operas). A secondary compilation that labels Kovur Pancharatna items 1 (Shambho mahadeva), 2 (Kori sevimparare), 4 (Nammi vachi) and 5 (Eeva sutha) at PDF pp.448, 188, 251 and 109. |
+| ma:jma-2017 | fetched | `28b17dcfddd6e0c5…` | https://musicacademymadras.in/catalogue/files/journals/Music%20Academy%20Journal%202017.pdf — Journal of the Music Academy (2017), 123 PDF pages. Searched for Nauka Charitam, Prahlada Bhakti Vijayam, Utsava and Divyanama; nothing relevant found. |
+| ma:jma-vol18-1947 | fetched | `07a04f4c09be7108…` | https://musicacademymadras.in/catalogue/files/journals/Vol.18_1947.pdf — Journal of the Music Academy vol. XVIII (1947), 220 PDF pages. PDF p.53 names Melukovayya and Patikiharatire among Utsava Sampradaya kritis and Jaya jaya Sitaram as a Divyanama kriti. |
+| ma:jma-vol39-1968 | fetched | `93ec095c2be73d69…` | https://musicacademymadras.in/catalogue/files/journals/Vol.39_1968.pdf — Journal of the Music Academy vol. XXXIX (1968), 174 PDF pages. PDF pp.139-170 print an alphabetical index of Tyagaraja kritis from two manuscript books with a footnote key for Nauka Charitam (N.C.) and Utsava Sampradaya Kirtanam (U.S.K.); the OCR does not preserve the per-song markers, so no claim rests on it. |
+| ma:jma-vol42-1971 | fetched | `9c6da9a7818d2e0f…` | https://musicacademymadras.in/catalogue/files/journals/Vol.42-1971.pdf — Journal of the Music Academy vol. XLII (1971). PDF p.41 summarises a lecture on the Prahlada opera and mentions Varali (Eti janmamidi). |
+| ma:jma-vol54-1983 | fetched | `ae8c9a073ed860ea…` | https://musicacademymadras.in/catalogue/files/journals/Vol.54_1983.pdf — Journal of the Music Academy vol. LIV (1983). PDF p.40 reports a performance of the Srirangam Pancharatnam naming Chutamu (Arabhi), O Rangasayi (Kambhoji), Karuna judavayya (Saranga), Rajuvedale (Todi) and Vinarada (Devagandhari). |
+| ma:jma-vol66-1995 | fetched | `7aec25157102916d…` | https://musicacademymadras.in/catalogue/files/journals/Vol.66_1995.pdf — Journal of the Music Academy vol. LXVI (1995). PDF p.107 names Sundari ninu (Arabhi) on Tripurasundari of Tiruvottiyur and kritis on Dharmasamvardhini of Tiruvaiyaru and Pravridha Srimati of Lalgudi. |
+| ma:jma-vol69-1998 | fetched | `3e735fb6fb89cdec…` | https://musicacademymadras.in/catalogue/files/journals/Vol.69_1998.pdf — Journal of the Music Academy vol. LXIX (1998). PDF p.39 reports a lecture naming the Lalgudi Pancharatnam as Isa pahimam, Lalite sri pravruddhe, Mahita pravruddha, Gati neevani and Deva sri tapastirtha. |
+| ma:souvenir-1969 | fetched | `b6cf97d3c8c6705f…` | https://musicacademymadras.in/catalogue/files/souv/1969_43rd%20conference%20souvenir.pdf — 43rd Conference souvenir (1969). PDF p.151 is a concert programme that lists Odanu jaripe (Saranga) as Nowka Charitram. |
 | ramanujachari-spiritual-heritage | unavailable | unavailable | C. Ramanujachari & Dr. V. Raghavan, The Spiritual Heritage of Tyagaraja (Sri Ramakrishna Math — edition not consulted) — Thematic classification and translation authority by Dr. V. Raghavan (deferred to TRACK-149). |
 | sambamoorthy-tyagaraja | unavailable | unavailable | Prof. P. Sambamoorthy, Great Composers Book II: Tyagaraja & Nowka Charitram / Prahlada Bhakti Vijayam (edition not consulted) — Scholarly authority for Tyagaraja's dramatic operas and kshetra pilgrimage biography (deferred to TRACK-149). |
-| sanskrit-docs-tyagaraja | unavailable | unavailable | https://sanskritdocuments.org/doc_deities_misc/tyAgarAjakRRitayaH.pdf — Compiled Sanskrit compositions of Tyagaraja group inventory lead (not consulted). |
+| sanskrit-docs-tyagaraja | fetched | `7f07dfe5956eb92b…` | https://sanskritdocuments.org/doc_deities_misc/tyAgarAjakRRitayaH.pdf — Sanskrit Documents, Sanskrit compositions of Tyagaraja (46 pp.). PDF p.2 introduction names the Ghana Raga, Tiruvottiyur, Kovur, Srirangam and Lalgudi pancharatnams, the Divyanama and Utsava Sampradaya kritis and the two operas, without listing members of the kshetra groups. |
 | track144-tala-pallavi-dossier | fetched | `3de518d6488d058b…` | database/data/track144-tala-evidence-tyagaraja-complete.json — Reviewed Tyagaraja tala and pallavi verification dossier (268 compositions cross-checked against Karnatik.com, Shivkumar archive, and Tyagaraja Vaibhavam). |
 
 ## Unresolved register
@@ -979,7 +985,7 @@ Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi
 - 33 non-cycle approved claims are marked `application: deferred` pending a non-cycle attribute application path.
 - 1991 source-backed claims remain `unresolved` pending multi-edition comparison.
 - 94 claims on Kovur, Tiruvottiyur, Lalgudi, Srirangam, Utsava Sampradaya, Divyanama, *Nauka Charitram*, and *Prahlada Bhakti Vijayam* remain `unreviewed` leads attributed to unconsulted print editions.
-- 26 identities have no pallavi section and 4 have no charanam. Lyric text was not invented.
+- 25 identities have no pallavi section and 4 have no charanam. Lyric text was not invented.
 - 11 subjects preserve a `desadi` source tala stored as Adi.
 
 ## Concordance
@@ -1072,7 +1078,7 @@ Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi
 | tyagaraja:krithi:1ccbd525-96aa-4e90-a999-ff7b2ec7ce7f | identity | daSaratha nandana | Asāveri | Adi | asAvEri | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:1d2d8060-66e8-48e4-933b-62a7ff17cb28 | identity | Rama Paahi | Kāpi | Misra Capu | Kapi | Unknown | Rama (unresolved) / UNRESOLVED | Surrender (Saranagati) & Appeal for Grace | approved |  |
 | tyagaraja:krithi:1d3c167b-d5ae-4f4b-8e55-8f11ab9c39e4 | identity | Ivasudha Neevanti | Sahāna | Adi | Sahana | Unknown | Siva (Kovur Sundareswara) (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise; group:tyagaraja-kovur-pancharatnam | approved |  |
-| tyagaraja:krithi:1dfe4864-6224-460a-845a-5328aed9b638 | identity | Sri Rama Jaya Rama | Madhyamāvathi | Adi | Madhyamavati | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise; ritual:tyagaraja-divyanama-sankirtana | mapped | missing_pallavi |
+| tyagaraja:krithi:1dfe4864-6224-460a-845a-5328aed9b638 | identity | Sri Rama Jaya Rama | Madhyamāvathi | Adi | Madhyamavati | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise; ritual:tyagaraja-divyanama-sankirtana | mapped |  |
 | tyagaraja:krithi:1e8717c9-7316-4de5-9ed4-5a026a9722bc | identity | ninu bAsi | Bālahamsa | Adi | balahamsa | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:1eb54ff8-6e91-4195-aa3b-e11360ecdfdb | identity | enta bhAgyamu | Sāranga | Adi | sAranga | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | mapped |  |
 | tyagaraja:krithi:1ebf6bb3-f892-417d-aecd-cf8011706d3f | identity | mummUrtulu | Atāna | Adi | aThANa | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |

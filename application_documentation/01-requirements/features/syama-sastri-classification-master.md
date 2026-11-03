@@ -9,7 +9,7 @@
 
 Snapshot: `2026-10-01`. Input SHA-256: `ce6d7019d3c7fb63a0edd6b6135281eaf4fbed226dbabaec13fc1bec586dd7b7`.
 
-71 source rows; 70 distinct catalogue identities; 3 approved group membership claims; 85 witnesses. Catalogue values below are observations, not approved claims.
+71 source rows; 70 distinct catalogue identities; 3 approved group membership claims; 87 witnesses. Catalogue values below are observations, not approved claims.
 
 ## Limitations
 
@@ -968,7 +968,7 @@ Source-stated tala is not eduppu, arudi, kalai or subdivision evidence.
 
 | Witness | Source | Artifact SHA-256 | Status |
 |:---|:---|:---|:---|
-| academy-1954-lead | https://musicacademymadras.in/catalogue/files/souv/1954_28th%20conference%20souvenir.pdf | unavailable | unavailable |
+| academy-1954-lead | https://musicacademymadras.in/catalogue/files/souv/1954_28th%20conference%20souvenir.pdf | b9b37ef2aa57fe6186217ead28d7c1c5ba2fb55a22d802f83fe0c9fb4ed510a0 | fetched |
 | analysis:user-supplied-2026-10-06 | user-supplied analysis (chat, 2026-10-06); cites JMA 1954/1970/1983/2002, Vidya Shankar, T.K. Govinda Rao, P. Sambamoorthy - none inspected | unavailable | unavailable |
 | blog:00a52f06e677f283 | https://syamakrishnavaibhavam.blogspot.com/2011/06/syama-sastry-kriti-brovavamma-raga.html | 57a285f0481592cdff6042b50019945e241f79893e838a8a0f71d4da5fc22623 | fetched |
 | blog:016ec5689e383d2b | https://syamakrishnavaibhavam.blogspot.com/2011/06/syama-sastry-kriti-birana-varalicchi.html | b985f812b0c9159fd129b5b32ac8bb4aa187f0c9864beddb5b01cd1598f1a229 | fetched |
@@ -1048,7 +1048,9 @@ Source-stated tala is not eduppu, arudi, kalai or subdivision evidence.
 | ma:jma-vol23-1952 | https://www.musicacademymadras.in/catalogue/files/journals/Vol.23_1952.pdf | 77049a3126d518cd1b57164974fcc5ad8152c4d8baee072cc5106f09be48a4c8 | fetched |
 | ma:jma-vol40-1969 | https://www.musicacademymadras.in/catalogue/files/journals/Vol.40_1969.pdf | f59fbfdfe498f2be996d3785c476c5815ea2c0e37902ccdcb8f96debfcb6f940 | fetched |
 | ma:jma-vol54-1983 | https://www.musicacademymadras.in/catalogue/files/journals/Vol.54_1983.pdf | ae8c9a073ed860ead24d392103e99cb8a51767a569a4fad6c0ba1794f5268d0e | fetched |
+| ma:jma-vol55-1984 | https://musicacademymadras.in/catalogue/files/journals/Vol.55_1984.pdf | 12fb3505a27464356021fb5daa45dc5e963c5610b127b6dc9e7a624ca295dbbb | fetched |
 | ma:jma-vol75-2002 | https://www.musicacademymadras.in/catalogue/files/journals/Vol.73_2002.pdf | ba709843452c07f794e7f6b3c7472d9e178757f4a93846845c2b3f470fe24c7e | fetched |
+| ma:souvenir-1973 | https://musicacademymadras.in/catalogue/files/souv/1973_47th%20conference%20souvenir.pdf | 7559863bd269e15f8ad0f4b5d9e88ec05f9e8d248ec2413c31e0141962299ff3 | fetched |
 | ma:souvenir-1983 | https://musicacademymadras.in/catalogue/files/souv/1983_57th%20conference%20souvenir%2C%20programme.pdf | 3580befa06466f7c126d47815987097c582e8837602903db131b5d20cb6bb81f | fetched |
 | sahapedia-raghavan-1977 | https://www.sahapedia.org/sites/default/files/Shri%20Shyama%20Shastri.pdf | 8cff51a54cf58dace9f9267acddc5e96ace902f14e8f2fbf848e2a429925461f | fetched |
 | sambamoorthy-1962 | Prof. P. Sambamoorthy, Great Composers: Syama Sastri (The Indian Music Publishing House, Chennai, 1962 — edition not consulted) | unavailable | unavailable |

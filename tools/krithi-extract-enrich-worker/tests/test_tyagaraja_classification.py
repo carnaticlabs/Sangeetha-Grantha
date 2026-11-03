@@ -22,6 +22,7 @@ from src.tyagaraja_classification import (
     ReviewState,
     SubjectKind,
     TyagarajaClassificationError,
+    Witness,
     WitnessStatus,
     assert_track147_census,
     build_application_manifest,
@@ -339,3 +340,25 @@ def test_live_master_accounts_for_every_source_row_and_witness() -> None:
                 assert claim.witness_id in witnesses_by_id
                 assert witnesses_by_id[claim.witness_id].status != WitnessStatus.UNAVAILABLE
                 assert witnesses_by_id[claim.witness_id].sha256 is not None
+
+
+def test_witness_rights_rules_and_defaults() -> None:
+    kwargs = {"id": "w", "url": "u", "accessed_at": "2026-11-03", "description": "d"}
+    fetched = Witness(**kwargs, status=WitnessStatus.FETCHED, sha256="a" * 64)
+    assert fetched.effective_rights == "openly_hosted"
+    assert Witness(**kwargs, status=WitnessStatus.UNAVAILABLE).effective_rights == "inaccessible"
+    with pytest.raises(ValueError):
+        Witness(**kwargs, status=WitnessStatus.FETCHED, sha256="a" * 64, rights="inaccessible")
+    with pytest.raises(ValueError):
+        Witness(**kwargs, status=WitnessStatus.UNAVAILABLE, rights="public_domain")
+
+
+def test_unresolved_reason_only_on_unresolved_or_disputed_claims() -> None:
+    ok = ClassificationClaim(
+        id="c", axis=ClaimAxis.DEITY, review_state=ReviewState.UNRESOLVED, unresolved_reason="no_public_source"
+    )
+    assert ok.unresolved_reason == "no_public_source"
+    with pytest.raises(ValueError):
+        ClassificationClaim(
+            id="c", axis=ClaimAxis.DEITY, review_state=ReviewState.UNREVIEWED, unresolved_reason="no_public_source"
+        )
