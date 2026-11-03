@@ -11,6 +11,8 @@ import re
 import unicodedata
 from typing import Any
 
+from .claim_metadata import ClaimValues, claim_clauses
+
 BOILERPLATE_PATTERNS = [
     re.compile(r"^Transliteration[–-].*$", re.IGNORECASE),
     re.compile(r"^Transliteration as per.*$", re.IGNORECASE),
@@ -220,6 +222,7 @@ def _lakshana_headers(
     occasion_note: str | None = None,
     structural_features: list[str] | None = None,
     yati_pattern: str | None = None,
+    approved_claims: dict[str, ClaimValues] | None = None,
 ) -> list[str]:
     """Generates structured micro-clauses with strict token budget enforcement."""
     core_parts: list[str] = [f"[Composition: {title.strip()}]", f"[Composer: {composer.strip()}]"]
@@ -271,6 +274,9 @@ def _lakshana_headers(
 
     # Optional / lower priority clauses
     secondary_parts: list[str] = []
+    # TRACK-148 D1: approved non-cycle claims from the manifests; no approved claim, no clause.
+    already = " ".join(core_parts)
+    secondary_parts.extend(c for c in claim_clauses(composer, approved_claims) if c[1:-1] not in already)
     if occasion_note:
         secondary_parts.append(f"[Occasion: {occasion_note.strip()}]")
 
@@ -326,6 +332,7 @@ def format_composition_overview(
     occasion_note: str | None = None,
     structural_features: list[str] | None = None,
     yati_pattern: str | None = None,
+    approved_claims: dict[str, ClaimValues] | None = None,
 ) -> str:
     """Formats a macro-level overview document representing the entire composition.
 
@@ -350,6 +357,7 @@ def format_composition_overview(
         occasion_note=occasion_note,
         structural_features=structural_features,
         yati_pattern=yati_pattern,
+        approved_claims=approved_claims,
     )
     header = " ".join(headers)
 
@@ -387,6 +395,7 @@ def format_section_passage(
     mandalam: str | None = None,
     bhuta: str | None = None,
     cycle_info: dict[str, Any] | None = None,
+    approved_claims: dict[str, ClaimValues] | None = None,
 ) -> str:
     """Formats an individual section passage (e.g., Pallavi, Anupallavi, Charanam).
 
@@ -406,6 +415,7 @@ def format_section_passage(
         mandalam=mandalam,
         bhuta=bhuta,
         cycle_info=cycle_info,
+        approved_claims=approved_claims,
     )
     if language:
         header_parts.append(f"[Language: {language.strip()}]")
