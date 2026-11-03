@@ -41,6 +41,8 @@ These operations are mounted under **both** `/v1/catalogue` and `/v2/catalogue`:
 | `GET /composers` | Paged composer directory with published-composition counts |
 | `GET /composers/{id}` | Composer metadata and aliases |
 
+The admin-gated Mobile Preview mounts the same V2 reads twice more (TRACK-158): `/v1/admin/preview/catalogue/*` (draft and in-review krithis visible) and `/v1/admin/preview/mobile/*` (identical to `/v2/catalogue/*`), plus preview search and index status. See [Mobile Preview](../05-frontend/admin-web/mobile-preview.md).
+
 V2 additionally mounts **`GET /v2/catalogue/discovery`**. It accepts no query parameters.
 
 V2 also mounts reviewed cycle collections (TRACK-150), both anonymous and published-only, accepting no query parameters:
@@ -100,7 +102,7 @@ Five facets exist; wire keys equal the query-parameter names. Each is derived on
 
 | Parameter | Accepted by | Contract |
 |:---|:---|:---|
-| `query` | Composition and directory lists | Optional; trimmed; at most 200 Unicode code points |
+| `query` | Composition and directory lists | Optional; trimmed; at most 200 Unicode code points. On the composition list it matches title, incipit, composer and raga names and aliases, and the stored lyrics of every script (a case-insensitive substring; each run of spaces also matches a line break, so a phrase can span lines) |
 | `composerId` | Composition list | Optional UUID |
 | `ragaId` | Composition list | Optional UUID |
 | `page` | Lists | Zero-based; default `0`; integer ≥ 0 |

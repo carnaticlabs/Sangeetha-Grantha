@@ -388,3 +388,14 @@ body {
 [data-theme="dark"] .ring-white {
   --tw-ring-color: var(--color-on-dark, #fff6e8);
 }
+
+/*
+ * Mobile Preview text size (TRACK-158). Tailwind's text-* utilities are rem-based, so a font-size set on the phone
+ * frame alone never reached them. The frame sets --preview-px (14, 16 or 19) and these unlayered rules, which beat the
+ * utility layer, size every step of the scale from it. Ratios match Tailwind's own (0.75, 0.875, 1.125, 1.25 rem).
+ */
+.preview-scale .text-xs { font-size: calc(var(--preview-px) * 0.75); line-height: 1.35; }
+.preview-scale .text-sm { font-size: calc(var(--preview-px) * 0.875); line-height: 1.45; }
+.preview-scale .text-base { font-size: var(--preview-px); line-height: 1.5; }
+.preview-scale .text-lg { font-size: calc(var(--preview-px) * 1.125); line-height: 1.4; }
+.preview-scale .text-xl { font-size: calc(var(--preview-px) * 1.25); line-height: 1.35; }

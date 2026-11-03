@@ -64,6 +64,7 @@ fun appModule(env: ApiEnvironment, metricsRegistry: PrometheusMeterRegistry) = m
         )
     }
     single { RasikaSearchService(dal = get(), search = get()) }
+    single { com.sangita.grantha.backend.api.services.PreviewSearchService(dal = get(), rasika = get()) }
     single<ITransliterator> { TransliterationServiceImpl(get()) }
     single { NameNormalizationService() }
     single<IEntityResolver> { EntityResolutionServiceImpl(get(), get()) }

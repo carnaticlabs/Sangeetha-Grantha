@@ -12,7 +12,7 @@ import {
 
 /** Editor tabs, in render order. Also the accepted values of the `?tab=` deep link. */
 export const EDITOR_TABS = [
-    'Metadata', 'Structure', 'Lyrics', 'Notation', 'Tags', 'Audit', 'Source Evidence', 'Lyric Variants',
+    'Metadata', 'Structure', 'Lyrics', 'Notation', 'Tags', 'Audit', 'Source Evidence', 'Lyric Variants', 'Mobile Preview',
 ] as const;
 
 export type EditorTab = typeof EDITOR_TABS[number];

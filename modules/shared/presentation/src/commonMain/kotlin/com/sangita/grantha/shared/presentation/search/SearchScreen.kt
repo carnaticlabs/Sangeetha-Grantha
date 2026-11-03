@@ -7,6 +7,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -226,6 +230,7 @@ private fun FilterSheet(state: SearchUiState, presenter: SearchPresenter) {
     Column(
         Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(horizontal = RasikaTokens.screen, vertical = RasikaTokens.md),
     ) {
         Text(RasikaCopy.FILTERS, style = MaterialTheme.typography.titleLarge)
@@ -236,8 +241,15 @@ private fun FilterSheet(state: SearchUiState, presenter: SearchPresenter) {
             modifier = Modifier.padding(top = RasikaTokens.xs, bottom = RasikaTokens.md),
         )
         Text(RasikaCopy.BROWSE_RAGAS, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+        RasikaSearchField(
+            value = state.filterRagaText,
+            onValueChange = presenter::onFilterRagaTextChange,
+            placeholder = RasikaCopy.FIND_RAGA,
+            onSearch = { presenter.searchFilterRagas() },
+            modifier = Modifier.padding(top = RasikaTokens.xs),
+        )
         FlowRow(
-            modifier = Modifier.padding(top = RasikaTokens.xs, bottom = RasikaTokens.md),
+            modifier = Modifier.padding(top = RasikaTokens.xs, bottom = RasikaTokens.xs),
             horizontalArrangement = Arrangement.spacedBy(RasikaTokens.xs),
             verticalArrangement = Arrangement.spacedBy(RasikaTokens.xs),
         ) {
@@ -246,6 +258,12 @@ private fun FilterSheet(state: SearchUiState, presenter: SearchPresenter) {
                 onClick = { presenter.draftRaga(null, null) },
                 label = RasikaCopy.ALL_RAGAS,
             )
+            // A raga chosen earlier stays visible and selected even when the current search or page does not list it.
+            val chosenId = state.draftFacets.ragaId
+            val chosenLabel = state.draftFacets.ragaLabel
+            if (chosenId != null && chosenLabel != null && state.filterRagas.none { it.id == chosenId }) {
+                RasikaChip(selected = true, onClick = { presenter.draftRaga(null, null) }, label = chosenLabel)
+            }
             state.filterRagas.forEach { raga ->
                 RasikaChip(
                     selected = state.draftFacets.ragaId == raga.id,
@@ -254,9 +272,26 @@ private fun FilterSheet(state: SearchUiState, presenter: SearchPresenter) {
                 )
             }
         }
-        Text(RasikaCopy.BROWSE_COMPOSERS, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+        if (state.filterRagaQuery.isNotEmpty() && state.filterRagas.isEmpty()) {
+            Text(RasikaCopy.NO_RAGA_MATCH, style = MaterialTheme.typography.bodyLarge, color = RasikaTheme.colors.inkMuted)
+        } else if (state.filterRagasTotal > 0) {
+            Text(
+                RasikaCopy.showingOf(state.filterRagas.size, state.filterRagasTotal),
+                style = MaterialTheme.typography.labelMedium,
+                color = RasikaTheme.colors.inkMuted,
+            )
+        }
+        if (state.hasMoreFilterRagas) {
+            TextButton(onClick = presenter::loadMoreFilterRagas) { Text(RasikaCopy.LOAD_MORE) }
+        }
+        Text(
+            RasikaCopy.BROWSE_COMPOSERS,
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(top = RasikaTokens.md),
+        )
         FlowRow(
-            modifier = Modifier.padding(top = RasikaTokens.xs, bottom = RasikaTokens.lg),
+            modifier = Modifier.padding(top = RasikaTokens.xs, bottom = RasikaTokens.xs),
             horizontalArrangement = Arrangement.spacedBy(RasikaTokens.xs),
             verticalArrangement = Arrangement.spacedBy(RasikaTokens.xs),
         ) {
@@ -273,6 +308,10 @@ private fun FilterSheet(state: SearchUiState, presenter: SearchPresenter) {
                 )
             }
         }
+        if (state.hasMoreFilterComposers) {
+            TextButton(onClick = presenter::loadMoreFilterComposers) { Text(RasikaCopy.LOAD_MORE) }
+        }
+        Spacer(Modifier.height(RasikaTokens.md))
         RasikaPrimaryButton(label = RasikaCopy.APPLY_FILTERS, onClick = presenter::applyFilters)
         RasikaPrimaryButton(
             label = RasikaCopy.CANCEL,

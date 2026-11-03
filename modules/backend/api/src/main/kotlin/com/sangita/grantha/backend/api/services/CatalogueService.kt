@@ -3,6 +3,7 @@ package com.sangita.grantha.backend.api.services
 import com.sangita.grantha.backend.api.catalogue.CatalogueParameters
 import com.sangita.grantha.backend.api.catalogue.CatalogueParseResult
 import com.sangita.grantha.backend.dal.SangitaDal
+import com.sangita.grantha.backend.dal.repositories.CatalogueRepository
 import com.sangita.grantha.backend.dal.repositories.FacetSelection
 import com.sangita.grantha.backend.dal.models.CatalogueVisibility
 import com.sangita.grantha.backend.dal.support.toJavaUuid
@@ -32,7 +33,17 @@ sealed class CatalogueResult<out T> {
 
 class CatalogueService(
     private val dal: SangitaDal,
+    private val catalogueOverride: CatalogueRepository? = null,
 ) {
+    // Resolved per call, not at construction, so a mocked `dal` is only touched when a read happens.
+    private val catalogue: CatalogueRepository get() = catalogueOverride ?: dal.catalogue
+
+    /**
+     * The same service over a repository that also shows draft and in-review compositions. Only the
+     * admin-gated preview routes use it (TRACK-158); every other caller keeps the published-only default.
+     */
+    fun previewing(): CatalogueService = CatalogueService(dal, catalogue.previewing())
+
     suspend fun searchKrithis(
         params: Parameters,
         visibility: CatalogueVisibility = CatalogueVisibility.LEGACY_KNOWN_FORMS,
@@ -47,7 +58,7 @@ class CatalogueService(
             is CatalogueParseResult.Ok -> offeredFacetsError(parsed.value.facets)?.let { CatalogueResult.Invalid(it) }
                 ?: CatalogueResult.Ok(
                 if (visibility == CatalogueVisibility.LEGACY_KNOWN_FORMS) {
-                    dal.catalogue.searchKrithis(
+                    catalogue.searchKrithis(
                         query = parsed.value.query,
                         composerId = parsed.value.composerId?.toJavaUuid(),
                         ragaId = parsed.value.ragaId?.toJavaUuid(),
@@ -55,7 +66,7 @@ class CatalogueService(
                         pageSize = parsed.value.pageSize,
                     )
                 } else {
-                    dal.catalogue.searchKrithis(
+                    catalogue.searchKrithis(
                         query = parsed.value.query,
                         composerId = parsed.value.composerId?.toJavaUuid(),
                         ragaId = parsed.value.ragaId?.toJavaUuid(),
@@ -77,7 +88,7 @@ class CatalogueService(
             is CatalogueParseResult.Invalid -> CatalogueResult.Invalid(parsed.message)
             is CatalogueParseResult.Ok -> offeredFacetsError(parsed.value.facets)?.let { CatalogueResult.Invalid(it) }
                 ?: CatalogueResult.Ok(
-                    dal.catalogue.listFacets(
+                    catalogue.listFacets(
                         query = parsed.value.query,
                         composerId = parsed.value.composerId?.toJavaUuid(),
                         ragaId = parsed.value.ragaId?.toJavaUuid(),
@@ -94,7 +105,7 @@ class CatalogueService(
      */
     private suspend fun offeredFacetsError(selection: FacetSelection): String? {
         if (selection.isEmpty) return null
-        val offered = dal.catalogue.facetValueSets()
+        val offered = catalogue.facetValueSets()
         return CatalogueFacetKeyDto.entries.firstNotNullOfOrNull { key ->
             val value = selection[key] ?: return@firstNotNullOfOrNull null
             val valid = offered[key].orEmpty()
@@ -110,9 +121,9 @@ class CatalogueService(
         rejectExtra(params)?.let { return it }
         val id = pathUuid(idRaw, "id") ?: return pathInvalid("id")
         val reader = if (visibility == CatalogueVisibility.LEGACY_KNOWN_FORMS) {
-            dal.catalogue.findPublishedReader(id)
+            catalogue.findPublishedReader(id)
         } else {
-            dal.catalogue.findPublishedReader(id, visibility)
+            catalogue.findPublishedReader(id, visibility)
         }
         return reader?.let { CatalogueResult.Ok(it) } ?: CatalogueResult.NotFound
     }
@@ -127,9 +138,9 @@ class CatalogueService(
         val krithiId = pathUuid(krithiIdRaw, "id") ?: return pathInvalid("id")
         val variantId = pathUuid(variantIdRaw, "variantId") ?: return pathInvalid("variantId")
         val lyrics = if (visibility == CatalogueVisibility.LEGACY_KNOWN_FORMS) {
-            dal.catalogue.findPublishedLyrics(krithiId, variantId)
+            catalogue.findPublishedLyrics(krithiId, variantId)
         } else {
-            dal.catalogue.findPublishedLyrics(krithiId, variantId, visibility)
+            catalogue.findPublishedLyrics(krithiId, variantId, visibility)
         }
         return lyrics?.let { CatalogueResult.Ok(it) } ?: CatalogueResult.NotFound
     }
@@ -142,9 +153,9 @@ class CatalogueService(
             is CatalogueParseResult.Invalid -> CatalogueResult.Invalid(parsed.message)
             is CatalogueParseResult.Ok -> CatalogueResult.Ok(
                 if (visibility == CatalogueVisibility.LEGACY_KNOWN_FORMS) {
-                    dal.catalogue.searchRagas(parsed.value.query, parsed.value.page, parsed.value.pageSize)
+                    catalogue.searchRagas(parsed.value.query, parsed.value.page, parsed.value.pageSize)
                 } else {
-                    dal.catalogue.searchRagas(
+                    catalogue.searchRagas(
                         parsed.value.query,
                         parsed.value.page,
                         parsed.value.pageSize,
@@ -162,9 +173,9 @@ class CatalogueService(
         rejectExtra(params)?.let { return it }
         val id = pathUuid(idRaw, "id") ?: return pathInvalid("id")
         val detail = if (visibility == CatalogueVisibility.LEGACY_KNOWN_FORMS) {
-            dal.catalogue.findRaga(id)
+            catalogue.findRaga(id)
         } else {
-            dal.catalogue.findRaga(id, visibility)
+            catalogue.findRaga(id, visibility)
         }
         return detail?.let { CatalogueResult.Ok(it) } ?: CatalogueResult.NotFound
     }
@@ -177,9 +188,9 @@ class CatalogueService(
             is CatalogueParseResult.Invalid -> CatalogueResult.Invalid(parsed.message)
             is CatalogueParseResult.Ok -> CatalogueResult.Ok(
                 if (visibility == CatalogueVisibility.LEGACY_KNOWN_FORMS) {
-                    dal.catalogue.searchComposers(parsed.value.query, parsed.value.page, parsed.value.pageSize)
+                    catalogue.searchComposers(parsed.value.query, parsed.value.page, parsed.value.pageSize)
                 } else {
-                    dal.catalogue.searchComposers(
+                    catalogue.searchComposers(
                         parsed.value.query,
                         parsed.value.page,
                         parsed.value.pageSize,
@@ -197,9 +208,9 @@ class CatalogueService(
         rejectExtra(params)?.let { return it }
         val id = pathUuid(idRaw, "id") ?: return pathInvalid("id")
         val detail = if (visibility == CatalogueVisibility.LEGACY_KNOWN_FORMS) {
-            dal.catalogue.findComposer(id)
+            catalogue.findComposer(id)
         } else {
-            dal.catalogue.findComposer(id, visibility)
+            catalogue.findComposer(id, visibility)
         }
         return detail?.let { CatalogueResult.Ok(it) } ?: CatalogueResult.NotFound
     }
@@ -209,20 +220,20 @@ class CatalogueService(
         visibility: CatalogueVisibility = CatalogueVisibility.ALL_PUBLISHED,
     ): CatalogueResult<CatalogueDiscoveryDto> {
         rejectExtra(params)?.let { return it }
-        return CatalogueResult.Ok(dal.catalogue.findDiscovery(visibility))
+        return CatalogueResult.Ok(catalogue.findDiscovery(visibility))
     }
 
     /** Reviewed cycle collections (TRACK-150). V2 only; unreviewed memberships never appear. */
     suspend fun listCollections(params: Parameters): CatalogueResult<CatalogueCollectionListDto> {
         rejectExtra(params)?.let { return it }
-        return CatalogueResult.Ok(CatalogueCollectionListDto(dal.catalogue.listCollections()))
+        return CatalogueResult.Ok(CatalogueCollectionListDto(catalogue.listCollections()))
     }
 
     suspend fun getCollection(slugRaw: String?, params: Parameters): CatalogueResult<CatalogueCollectionDetailDto> {
         rejectExtra(params)?.let { return it }
         val slug = slugRaw?.takeIf { it.length <= SLUG_MAX && SLUG_PATTERN.matches(it) }
             ?: return CatalogueResult.Invalid("slug must be lowercase letters, digits and hyphens")
-        return dal.catalogue.findCollection(slug)?.let { CatalogueResult.Ok(it) } ?: CatalogueResult.NotFound
+        return catalogue.findCollection(slug)?.let { CatalogueResult.Ok(it) } ?: CatalogueResult.NotFound
     }
 
     /** Eligible root kshetras (TRACK-151). Eligibility is decided only by `TempleEligibility`. */
@@ -231,14 +242,14 @@ class CatalogueService(
             is CatalogueParseResult.Invalid -> CatalogueResult.Invalid(parsed.message)
             is CatalogueParseResult.Ok ->
                 CatalogueResult.Ok(
-                    CatalogueTempleListDto(dal.catalogue.listTemples(parsed.value.element, parsed.value.mandalam)),
+                    CatalogueTempleListDto(catalogue.listTemples(parsed.value.element, parsed.value.mandalam)),
                 )
         }
 
     suspend fun getTemple(idRaw: String?, params: Parameters): CatalogueResult<CatalogueTempleDetailDto> {
         rejectExtra(params)?.let { return it }
         val id = pathUuid(idRaw, "id") ?: return pathInvalid("id")
-        return dal.catalogue.findTemple(id.toJavaUuid())?.let { CatalogueResult.Ok(it) } ?: CatalogueResult.NotFound
+        return catalogue.findTemple(id.toJavaUuid())?.let { CatalogueResult.Ok(it) } ?: CatalogueResult.NotFound
     }
 
     private fun rejectExtra(params: Parameters): CatalogueResult.Invalid? =

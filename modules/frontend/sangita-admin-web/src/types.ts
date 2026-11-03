@@ -9,6 +9,7 @@ export enum ViewState {
   SOURCING = 'SOURCING',
   TAGS = 'TAGS',
   CURATOR_REVIEW = 'CURATOR_REVIEW',
+  MOBILE_PREVIEW = 'MOBILE_PREVIEW',
 }
 
 export enum MusicalForm {

@@ -4,6 +4,7 @@ import com.sangita.grantha.backend.dal.SangitaDal
 import com.sangita.grantha.backend.dal.repositories.CollectionSearchFacts
 import com.sangita.grantha.backend.dal.repositories.MacroAnchorKind
 import com.sangita.grantha.backend.dal.repositories.MacroCandidate
+import com.sangita.grantha.backend.dal.models.PreviewScope
 import com.sangita.grantha.backend.dal.repositories.TempleSearchFacts
 import com.sangita.grantha.backend.dal.support.toKotlinUuid
 import com.sangita.grantha.shared.domain.model.SemanticSearchRequest
@@ -41,6 +42,27 @@ class ProfileFloors(private val byProfile: Map<ProfileKey, MacroFloorPair>) : Ma
 enum class RasikaSearchMode { HYBRID, SEMANTIC }
 
 /**
+ * Collects what the macro retrieval saw, for the curator preview (TRACK-158). Absent on every V2 call, so the
+ * mobile path does no extra work and its results cannot depend on it.
+ */
+class MacroExplainCollector {
+    var profile: ProfileKey? = null
+    var floor: MacroFloor? = null
+    var floorCalibrated: Boolean = true
+    val candidates = mutableListOf<ExplainedCandidate>()
+}
+
+data class ExplainedCandidate(
+    val kind: MacroAnchorKind,
+    val title: String,
+    val similarity: Double?,
+    val gap: Double?,
+    val lexicalScore: Double?,
+    val cleared: Boolean,
+    val reason: String?,
+)
+
+/**
  * V2 search (TRACK-152): the unchanged kriti retrieval plus a separate, capped group of
  * collection and kshetra cards. Kriti items are produced by [HybridSearchService] exactly as for V1
  * (published only), so macro hits can never move kriti ranking.
@@ -52,18 +74,29 @@ class RasikaSearchService(
 ) {
     private val warnedProfiles = java.util.concurrent.ConcurrentHashMap.newKeySet<ProfileKey>()
 
-    suspend fun search(request: SemanticSearchRequest, mode: RasikaSearchMode): CatalogueSearchResponseDto {
+    /**
+     * [scope] and [explain] exist for the admin-gated Mobile Preview (TRACK-158). The defaults are what the V2
+     * routes use: published only, nothing collected. `publishedOnly` reaches only the kriti retrieval; macro
+     * cards and `exactTitleMatchId` follow their own published rules in both scopes.
+     */
+    suspend fun search(
+        request: SemanticSearchRequest,
+        mode: RasikaSearchMode,
+        scope: PreviewScope = PreviewScope.PUBLISHED_ONLY,
+        explain: MacroExplainCollector? = null,
+    ): CatalogueSearchResponseDto {
         val query = request.query.trim()
         if (query.isEmpty()) return CatalogueSearchResponseDto(query = query, totalMatches = 0, items = emptyList())
 
+        val publishedOnly = scope == PreviewScope.PUBLISHED_ONLY
         val prepared = search.prepareQuery(query)
         val items = when (mode) {
-            RasikaSearchMode.HYBRID -> search.searchHybridItems(request, prepared, publishedOnly = true)
-            RasikaSearchMode.SEMANTIC -> search.searchSemanticItems(request, prepared, publishedOnly = true)
+            RasikaSearchMode.HYBRID -> search.searchHybridItems(request, prepared, publishedOnly = publishedOnly)
+            RasikaSearchMode.SEMANTIC -> search.searchSemanticItems(request, prepared, publishedOnly = publishedOnly)
         }
         // composerId / ragaId are kriti-scoped filters (Spec 16).
         val kritiScoped = request.composerId != null || request.ragaId != null
-        val macroHits = if (kritiScoped) emptyList() else macroHits(query, mode, prepared)
+        val macroHits = if (kritiScoped) emptyList() else macroHits(query, mode, prepared, explain)
         return CatalogueSearchResponseDto(
             query = query,
             totalMatches = items.size + macroHits.size,
@@ -77,6 +110,7 @@ class RasikaSearchService(
         query: String,
         mode: RasikaSearchMode,
         prepared: HybridSearchService.PreparedQuery,
+        explain: MacroExplainCollector?,
     ): List<CatalogueMacroHitDto> {
         val profile = prepared.profile
         val vector = prepared.vector
@@ -100,7 +134,27 @@ class RasikaSearchService(
                 templeIds = temples.keys,
             )
         }
-        val floor = floorFor(mode, profile?.let { ProfileKey(it.modelName, it.dimensions) }) ?: return emptyList()
+        val profileKey = profile?.let { ProfileKey(it.modelName, it.dimensions) }
+        explain?.profile = profileKey
+        val floor = floorFor(mode, profileKey)
+        if (floor == null) {
+            explain?.floorCalibrated = false
+            return emptyList()
+        }
+        explain?.let { sink ->
+            sink.floor = floor
+            candidates.forEach { c ->
+                sink.candidates += ExplainedCandidate(
+                    kind = c.kind,
+                    title = titleOf(c, collections, temples),
+                    similarity = c.similarity,
+                    gap = c.similarityGap,
+                    lexicalScore = c.lexicalScore,
+                    cleared = Companion.clearsFloor(c, floor),
+                    reason = if (Companion.clearsFloor(c, floor)) null else Companion.failedCondition(c, floor),
+                )
+            }
+        }
         return candidates
             .filter { Companion.clearsFloor(it, floor) }
             .mapNotNull { toHit(it, collections, temples) }
@@ -126,6 +180,15 @@ class RasikaSearchService(
         }
         return if (mode == RasikaSearchMode.HYBRID) pair.hybrid else pair.semantic
     }
+
+    private fun titleOf(
+        c: MacroCandidate,
+        collections: Map<java.util.UUID, CollectionSearchFacts>,
+        temples: Map<java.util.UUID, TempleSearchFacts>,
+    ): String = when (c.kind) {
+        MacroAnchorKind.COLLECTION -> collections[c.anchorId]?.name
+        MacroAnchorKind.KSHETRA -> temples[c.anchorId]?.name
+    } ?: c.anchorId.toString()
 
     private fun toHit(
         c: MacroCandidate,
@@ -191,6 +254,25 @@ class RasikaSearchService(
             val vectorRoute = (c.similarity ?: -1.0) >= floor.minSimilarity &&
                 (c.similarityGap ?: -1.0) >= floor.minGap
             return vectorRoute || (c.lexicalScore ?: -1.0) >= floor.minLexical
+        }
+
+        /** Which part of the floor kept [c] out, in words a curator can act on. */
+        fun failedCondition(c: MacroCandidate, floor: MacroFloor): String {
+            val parts = mutableListOf<String>()
+            val sim = c.similarity
+            if (floor.minSimilarity == Double.MAX_VALUE) {
+                // Lexical-only floor (no active embedding profile): no vector condition to report.
+            } else if (sim == null) {
+                parts += "no vector score"
+            } else {
+                if (sim < floor.minSimilarity) parts += "similarity %.3f is below %.3f".format(sim, floor.minSimilarity)
+                val gap = c.similarityGap
+                if (gap != null && gap < floor.minGap) parts += "gap %.3f is below %.3f".format(gap, floor.minGap)
+            }
+            if (floor.minLexical != Double.MAX_VALUE) {
+                parts += "lexical %.3f is below %.3f".format(c.lexicalScore ?: 0.0, floor.minLexical)
+            }
+            return parts.joinToString("; ")
         }
 
         /** A stored overview shorter than this mostly repeats the temple's name and place. */

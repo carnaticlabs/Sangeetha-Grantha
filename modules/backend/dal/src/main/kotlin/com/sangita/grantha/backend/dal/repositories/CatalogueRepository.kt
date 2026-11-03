@@ -7,9 +7,12 @@ import com.sangita.grantha.backend.dal.enums.PlaceKind
 import com.sangita.grantha.backend.dal.enums.PlaceReviewState
 import com.sangita.grantha.backend.dal.enums.WorkflowState
 import com.sangita.grantha.backend.dal.models.CatalogueLike
+import org.jetbrains.exposed.v1.core.Column
+import org.jetbrains.exposed.v1.core.QueryBuilder
 import com.sangita.grantha.backend.dal.models.CatalogueReadingDefaults
 import com.sangita.grantha.backend.dal.models.RasikaCatalogueMappers
 import com.sangita.grantha.backend.dal.models.CatalogueVisibility
+import com.sangita.grantha.backend.dal.models.PreviewScope
 import com.sangita.grantha.backend.dal.models.toDto
 import com.sangita.grantha.backend.dal.support.toJavaUuid
 import com.sangita.grantha.backend.dal.support.toKotlinUuid
@@ -120,7 +123,10 @@ data class TempleSearchFacts(
  * Published-only Rasika catalogue reads (TRACK-138). Raga membership is always
  * the `krithi_ragas` junction, including repeated ragamalika rows.
  */
-class CatalogueRepository {
+class CatalogueRepository(private val scope: PreviewScope = PreviewScope.PUBLISHED_ONLY) {
+
+    /** The same reads with draft and in-review compositions visible, for the curator preview (TRACK-158). */
+    fun previewing(): CatalogueRepository = CatalogueRepository(PreviewScope.INCLUDE_UNPUBLISHED)
 
     suspend fun searchKrithis(
         query: String?,
@@ -840,7 +846,11 @@ class CatalogueRepository {
 
 
     private fun publishedComposition(visibility: CatalogueVisibility): Op<Boolean> {
-        val published = KrithisTable.workflowState eq WorkflowState.PUBLISHED
+        val published = if (scope == PreviewScope.INCLUDE_UNPUBLISHED) {
+            KrithisTable.workflowState neq WorkflowState.ARCHIVED
+        } else {
+            KrithisTable.workflowState eq WorkflowState.PUBLISHED
+        }
         return if (visibility == CatalogueVisibility.LEGACY_KNOWN_FORMS) {
             published and (KrithisTable.musicalForm neq MusicalForm.UNESTABLISHED)
         } else {
@@ -869,6 +879,12 @@ class CatalogueRepository {
             val ragaByAlias = RagaAliasesTable
                 .select(RagaAliasesTable.ragaId)
                 .where { RagaAliasesTable.alias.lowerCase() like pattern }
+            // TRACK-159: "Titles & lyrics" must find lyrics. Full lyric text of every script lives on the variant row,
+            // which idx_krithi_lyrics_trgm serves for ILIKE; the whitespace-tolerant pattern spans line breaks.
+            val lyricPattern = CatalogueLike.lyricPhrasePattern(raw)
+            val krithiByLyric = KrithiLyricVariantsTable
+                .select(KrithiLyricVariantsTable.krithiId)
+                .where { IlikeOp(KrithiLyricVariantsTable.lyrics, lyricPattern) }
             val krithiByRaga = KrithiRagasTable
                 .select(KrithiRagasTable.krithiId)
                 .where {
@@ -880,7 +896,8 @@ class CatalogueRepository {
                     (KrithisTable.incipitNormalized like pattern) or
                     (KrithisTable.composerId inSubQuery composerByName) or
                     (KrithisTable.composerId inSubQuery composerByAlias) or
-                    (KrithisTable.id inSubQuery krithiByRaga)
+                    (KrithisTable.id inSubQuery krithiByRaga) or
+                    (KrithisTable.id inSubQuery krithiByLyric)
                 )
         }
         composerId?.let { condition = condition and (KrithisTable.composerId eq it) }
@@ -1158,5 +1175,17 @@ class CatalogueRepository {
 
         /** Reviewed attribute keys safe to show; everything else in the stored JSON stays private. */
         val ALLOWED_ATTRIBUTE_KEYS = listOf("avarana", "yogini", "laya", "structure", "mudra", "theme")
+    }
+}
+
+/**
+ * `column ILIKE ?` with the pattern as a bound parameter. Exposed core has no ILIKE operator, and `lower(column) LIKE`
+ * would not use the plain trigram index on `krithi_lyric_variants.lyrics`, so the operator is spelled out here.
+ */
+private class IlikeOp(private val column: Column<String>, private val pattern: String) : Op<Boolean>() {
+    override fun toQueryBuilder(queryBuilder: QueryBuilder) {
+        queryBuilder.append(column)
+        queryBuilder.append(" ILIKE ")
+        queryBuilder.registerArgument(column, pattern)
     }
 }

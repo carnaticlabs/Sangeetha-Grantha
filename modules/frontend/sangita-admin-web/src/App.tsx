@@ -16,6 +16,7 @@ import BulkImportPage from './pages/BulkImport';
 import ImportReviewPage from './pages/ImportReview';
 import CuratorReviewPage from './pages/CuratorReviewPage';
 import Login from './pages/Login';
+import MobilePreview from './pages/MobilePreview';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from './hooks/useTheme';
 
@@ -61,6 +62,7 @@ const App: React.FC = () => {
                   <Route path="/krithis" element={<KrithiList />} />
                   <Route path="/krithis/new" element={<KrithiEditor />} />
                   <Route path="/krithis/:id" element={<KrithiEditor />} />
+                  <Route path="/mobile-preview" element={<MobilePreview />} />
                   <Route path="/reference" element={<ReferenceData />} />
                   <Route path="/imports" element={<ImportsPage />} />
                   <Route path="/bulk-import" element={<BulkImportPage />} />

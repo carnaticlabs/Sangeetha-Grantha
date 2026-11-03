@@ -16,6 +16,7 @@ const Sidebar: React.FC<SidebarProps> = () => {
 { id: ViewState.CURATOR_REVIEW, label: 'Curator Review', icon: 'fact_check' },
     { id: ViewState.SOURCING, label: 'Collection Review', icon: 'hub' },
     { id: ViewState.TAGS, label: 'Tags', icon: 'label' },
+    { id: ViewState.MOBILE_PREVIEW, label: 'Mobile Preview', icon: 'smartphone' },
   ];
 
 
@@ -43,6 +44,7 @@ const Sidebar: React.FC<SidebarProps> = () => {
             case ViewState.CURATOR_REVIEW: path = '/curator-review'; break;
             case ViewState.SOURCING: path = '/admin/sourcing'; break;
             case ViewState.TAGS: path = '/tags'; break;
+            case ViewState.MOBILE_PREVIEW: path = '/mobile-preview'; break;
           }
 
           return (

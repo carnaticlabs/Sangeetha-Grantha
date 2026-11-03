@@ -12,6 +12,8 @@ import com.sangita.grantha.backend.api.models.UserUpdateRequest
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
+import com.sangita.grantha.backend.api.routes.PREVIEW_SEARCH_RATE_LIMIT
+import com.sangita.grantha.backend.api.routes.previewRateLimitKey
 import io.ktor.server.application.createApplicationPlugin
 import io.ktor.server.plugins.requestvalidation.RequestValidation
 import io.ktor.server.plugins.requestvalidation.ValidationResult
@@ -22,6 +24,7 @@ import io.ktor.server.application.install
 
 private const val MAX_BODY_SIZE_BYTES: Long = 15 * 1024 * 1024 // 15MB
 private const val GLOBAL_RATE_LIMIT = 100
+internal const val PREVIEW_SEARCH_LIMIT_PER_MINUTE = 20
 
 private class BodySizeLimitConfig {
     var maxBytes: Long = MAX_BODY_SIZE_BYTES
@@ -44,6 +47,12 @@ fun Application.configureRequestValidation() {
     }
 
     install(RateLimit) {
+        // TRACK-158: a curator's preview searches each may embed a query (a paid call), so they get their own
+        // per-user allowance on top of the global per-IP one. Repeated queries are served from the query-vector cache.
+        register(PREVIEW_SEARCH_RATE_LIMIT) {
+            rateLimiter(limit = PREVIEW_SEARCH_LIMIT_PER_MINUTE, refillPeriod = 1.minutes)
+            requestKey { call -> call.previewRateLimitKey() }
+        }
         global {
             rateLimiter(limit = GLOBAL_RATE_LIMIT, refillPeriod = 1.minutes)
             requestKey { call -> call.request.local.remoteHost }

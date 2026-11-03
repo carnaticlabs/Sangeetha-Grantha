@@ -14,4 +14,16 @@ object CatalogueLike {
             .replace("_", "\\_")
         return "%$escaped%"
     }
+
+    /**
+     * Pattern for matching a phrase inside stored lyrics (TRACK-159). Lyrics break lines with newlines, so each
+     * whitespace run in the query matches exactly one character (space or newline) instead of a literal space.
+     * Everything else is escaped as in [containsPattern].
+     */
+    fun lyricPhrasePattern(raw: String): String =
+        raw.trim().lowercase().split(Regex("\\s+")).filter { it.isNotEmpty() }
+            .joinToString("_") { token ->
+                token.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+            }
+            .let { "%$it%" }
 }
