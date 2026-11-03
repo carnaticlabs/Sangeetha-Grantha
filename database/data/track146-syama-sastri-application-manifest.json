@@ -85,6 +85,57 @@
       }
     },
     {
+      "claim_id": "SS-0012:geography:2",
+      "subject_id": "SS-0012",
+      "canonical_id": "60aa1036-9063-41b0-bdf6-dd049d2fc620",
+      "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+      "axis": "geography",
+      "value": "Mother mInAkshI (madurai)",
+      "witness_id": "ma:souvenir-1973",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Both 1954 and 1973 list this kriti among the Navaratnamalika in praise of Meenakshi (Madurai).",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      }
+    },
+    {
+      "claim_id": "SS-0014:geography:2",
+      "subject_id": "SS-0014",
+      "canonical_id": "d292a5d8-8b3b-480b-bd16-d514d970f56c",
+      "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+      "axis": "geography",
+      "value": "Mother mInAkshI (madurai)",
+      "witness_id": "ma:souvenir-1973",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Both 1954 and 1973 list this kriti among the Navaratnamalika in praise of Meenakshi (Madurai).",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      }
+    },
+    {
+      "claim_id": "SS-0015:structure:1",
+      "subject_id": "SS-0015",
+      "canonical_id": "c205a192-f29e-47de-b652-3fdc395f3bee",
+      "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+      "axis": "structure",
+      "value": "Swarasahitya",
+      "witness_id": "ma:jma-vol55-1984",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "JMA LV names Durusuga (Saveri).",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      }
+    },
+    {
       "claim_id": "SS-0026:form:1",
       "subject_id": "SS-0026",
       "canonical_id": "7c15e1c9-5c30-4f68-8ab4-a414847e06be",
@@ -165,6 +216,57 @@
       }
     },
     {
+      "claim_id": "SS-0032:bhava:1",
+      "subject_id": "SS-0032",
+      "canonical_id": "d14d643b-bfc5-4e39-b2c5-d4433e5be9bf",
+      "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+      "axis": "bhava",
+      "value": "Apatya Bhava (Child-Mother Devotion)",
+      "witness_id": "academy-1954-lead",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "The 1954 article reads the repeated nammithi in Marivere as a child's faith in the Mother.",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      }
+    },
+    {
+      "claim_id": "SS-0032:geography:2",
+      "subject_id": "SS-0032",
+      "canonical_id": "d14d643b-bfc5-4e39-b2c5-d4433e5be9bf",
+      "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+      "axis": "geography",
+      "value": "Mother mInAkshI (madurai)",
+      "witness_id": "ma:souvenir-1973",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Both 1954 and 1973 list this kriti among the Navaratnamalika in praise of Meenakshi (Madurai).",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      }
+    },
+    {
+      "claim_id": "SS-0032:laya:1",
+      "subject_id": "SS-0032",
+      "canonical_id": "d14d643b-bfc5-4e39-b2c5-d4433e5be9bf",
+      "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+      "axis": "laya",
+      "value": "Viloma Chapu (4+3)",
+      "witness_id": "academy-1954-lead",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Source says the composer's favourite measure divides into four matras and three matras and names Marivere (Anandabhairavi). 1973 and JMA XV give the tala as chapu.",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      }
+    },
+    {
       "claim_id": "SS-0032:mudra:1",
       "subject_id": "SS-0032",
       "canonical_id": "d14d643b-bfc5-4e39-b2c5-d4433e5be9bf",
@@ -179,6 +281,57 @@
         "note": "Approved Syama Krishna mudra directly attested in the fetched blog witness sahitya.",
         "application": "deferred",
         "deferral_reason": "TRACK-146 closure (2026-10-15): approved, but no reviewed cycle membership carries this composition, so no seed or search path applies it. Application deferred to TRACK-148."
+      }
+    },
+    {
+      "claim_id": "SS-0032:structure:1",
+      "subject_id": "SS-0032",
+      "canonical_id": "d14d643b-bfc5-4e39-b2c5-d4433e5be9bf",
+      "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+      "axis": "structure",
+      "value": "Swarasahitya",
+      "witness_id": "ma:jma-vol55-1984",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "JMA LV names Marivere gati (Anandabhairavi) among svara sahitya kritis. JMA XV also praises its svara sahitya.",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      }
+    },
+    {
+      "claim_id": "SS-0034:bhava:1",
+      "subject_id": "SS-0034",
+      "canonical_id": "0c251190-3cde-4d05-b584-19930220924c",
+      "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+      "axis": "bhava",
+      "value": "Apatya Bhava (Child-Mother Devotion)",
+      "witness_id": "ma:jma-vol75-2002",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "JMA LXXV (2002) quotes the line Mayamma yani nae pilachitae and describes approaching the Mother as a child.",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      }
+    },
+    {
+      "claim_id": "SS-0034:geography:2",
+      "subject_id": "SS-0034",
+      "canonical_id": "0c251190-3cde-4d05-b584-19930220924c",
+      "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+      "axis": "geography",
+      "value": "Mother mInAkshI (madurai)",
+      "witness_id": "ma:souvenir-1973",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Both 1954 and 1973 list this kriti among the Navaratnamalika in praise of Meenakshi (Madurai).",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
       }
     },
     {
@@ -199,6 +352,40 @@
       }
     },
     {
+      "claim_id": "SS-0035:geography:2",
+      "subject_id": "SS-0035",
+      "canonical_id": "1c7e43c2-e2b7-4b22-bdf3-7bf3e590e4a9",
+      "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+      "axis": "geography",
+      "value": "Mother mInAkshI (madurai)",
+      "witness_id": "ma:souvenir-1973",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Both 1954 and 1973 list this kriti among the Navaratnamalika in praise of Meenakshi (Madurai).",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      }
+    },
+    {
+      "claim_id": "SS-0038:geography:2",
+      "subject_id": "SS-0038",
+      "canonical_id": "63b6c905-8a50-433f-8310-20a60158fd9e",
+      "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+      "axis": "geography",
+      "value": "Mother mInAkshI (madurai)",
+      "witness_id": "ma:souvenir-1973",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Both 1954 and 1973 list this kriti among the Navaratnamalika in praise of Meenakshi (Madurai).",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      }
+    },
+    {
       "claim_id": "SS-0046:mudra:1",
       "subject_id": "SS-0046",
       "canonical_id": "688daebb-ee8b-4d91-bd14-d42b9827af0d",
@@ -213,6 +400,23 @@
         "note": "Approved Syama Krishna mudra directly attested in the fetched blog witness sahitya.",
         "application": "deferred",
         "deferral_reason": "TRACK-146 closure (2026-10-15): approved, but no reviewed cycle membership carries this composition, so no seed or search path applies it. Application deferred to TRACK-148."
+      }
+    },
+    {
+      "claim_id": "SS-0046:structure:1",
+      "subject_id": "SS-0046",
+      "canonical_id": "688daebb-ee8b-4d91-bd14-d42b9827af0d",
+      "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+      "axis": "structure",
+      "value": "Swarasahitya",
+      "witness_id": "ma:jma-vol55-1984",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "JMA LV names O Jagadamba (Anandabhairavi).",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
       }
     },
     {
@@ -294,6 +498,57 @@
         "decision": "approve",
         "note": "Approved canonical Swarajathi form and numbered swara-sahitya unit count attested in the fetched witness and corroborated by V. Raghavan (1977) and JMA Vol. LXXV (2002).",
         "application": "apply"
+      }
+    },
+    {
+      "claim_id": "SS-0064:laya:1",
+      "subject_id": "SS-0064",
+      "canonical_id": "ed01af31-6aed-4f81-8d25-27acc81f7100",
+      "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+      "axis": "laya",
+      "value": "Khanda Jhampa (5+1+2 = 8 aksharas)",
+      "witness_id": "ma:souvenir-1973",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "1973 lists Sariyevvaramma in Bhairavi, Khanda jhampa.",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      }
+    },
+    {
+      "claim_id": "SS-0064:structure:1",
+      "subject_id": "SS-0064",
+      "canonical_id": "ed01af31-6aed-4f81-8d25-27acc81f7100",
+      "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+      "axis": "structure",
+      "value": "Swarasahitya",
+      "witness_id": "ma:jma-vol55-1984",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "JMA LV names Sariyevvaramma (Bhairavi).",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      }
+    },
+    {
+      "claim_id": "SS-0065:geography:2",
+      "subject_id": "SS-0065",
+      "canonical_id": "b1f06cf0-96ed-4b99-9f90-9de28a029b7d",
+      "composer_id": "c259e3ea-a85c-41b8-951a-19bb3d0d2392",
+      "axis": "geography",
+      "value": "Mother mInAkshI (madurai)",
+      "witness_id": "ma:souvenir-1973",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Both 1954 and 1973 list this kriti among the Navaratnamalika in praise of Meenakshi (Madurai).",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
       }
     }
   ]

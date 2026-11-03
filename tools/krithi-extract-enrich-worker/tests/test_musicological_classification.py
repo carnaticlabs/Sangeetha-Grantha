@@ -20,9 +20,9 @@ def test_complete_accounting_and_no_unapproved_application():
     assert master.rows[0].subject_id == master.rows[21].subject_id
     manifest = master.application_manifest()
     assert manifest["status"] == "ready"
-    assert len(manifest["changes"]) == 18
-    assert sum(c.review_state == "reviewed" for c in master.claims) == 18
-    assert sum(c.review_state == "unreviewed" for c in master.claims) == 40
+    assert len(manifest["changes"]) == 33
+    assert sum(c.review_state == "reviewed" for c in master.claims) == 33
+    assert sum(c.review_state == "unreviewed" for c in master.claims) == 0
     assert all(c.approval is not None for c in master.claims if c.review_state == "reviewed")
     assert all(c.approval is None for c in master.claims if c.review_state in ("unresolved", "unreviewed", "disputed"))
     assert len([w for w in master.witnesses if w.status == "fetched"]) == 81

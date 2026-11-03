@@ -4,6 +4,12 @@
   "status": "ready",
   "provenance_owner": "TRACK-147",
   "approvals": [
+    "tyagaraja:krithi:0931f98a-64fa-403f-967c-941677395832:geography",
+    "tyagaraja:krithi:0931f98a-64fa-403f-967c-941677395832:group",
+    "tyagaraja:krithi:1d3c167b-d5ae-4f4b-8e55-8f11ab9c39e4:geography",
+    "tyagaraja:krithi:1d3c167b-d5ae-4f4b-8e55-8f11ab9c39e4:group",
+    "tyagaraja:krithi:271a1479-c84d-4c22-af76-040f659fce2b:geography",
+    "tyagaraja:krithi:271a1479-c84d-4c22-af76-040f659fce2b:group",
     "tyagaraja:krithi:2b65609e-9fbf-4232-baae-096cafdf4e79:deity",
     "tyagaraja:krithi:2b65609e-9fbf-4232-baae-096cafdf4e79:geography",
     "tyagaraja:krithi:2b65609e-9fbf-4232-baae-096cafdf4e79:group",
@@ -12,6 +18,11 @@
     "tyagaraja:krithi:2e115182-dcc2-4a41-962c-8381821a7489:geography",
     "tyagaraja:krithi:2e115182-dcc2-4a41-962c-8381821a7489:group",
     "tyagaraja:krithi:2e115182-dcc2-4a41-962c-8381821a7489:theme",
+    "tyagaraja:krithi:4215e9b5-17dd-4730-a140-55d48014b034:geography",
+    "tyagaraja:krithi:4215e9b5-17dd-4730-a140-55d48014b034:group",
+    "tyagaraja:krithi:503b3c2f-cfc0-418c-a914-0f313291a9b4:ritual",
+    "tyagaraja:krithi:550a03c3-991c-435f-b1b5-439c16e98183:geography",
+    "tyagaraja:krithi:550a03c3-991c-435f-b1b5-439c16e98183:group",
     "tyagaraja:krithi:6c9d0ab2-70a2-4c6b-a0df-c4a925bf8ae9:deity",
     "tyagaraja:krithi:6c9d0ab2-70a2-4c6b-a0df-c4a925bf8ae9:theme",
     "tyagaraja:krithi:6fd7860c-0e5d-428f-af9f-cd02c3ad2da8:deity",
@@ -25,6 +36,12 @@
     "tyagaraja:krithi:78b86c5a-7c6e-4797-a4ab-0be561979065:deity",
     "tyagaraja:krithi:78b86c5a-7c6e-4797-a4ab-0be561979065:dramatic",
     "tyagaraja:krithi:78b86c5a-7c6e-4797-a4ab-0be561979065:theme",
+    "tyagaraja:krithi:7914b699-b204-42b1-9057-72f4ff5db6d4:geography",
+    "tyagaraja:krithi:7914b699-b204-42b1-9057-72f4ff5db6d4:group",
+    "tyagaraja:krithi:82b9fd7a-bf48-472e-8971-c509c3e6f0fc:dramatic",
+    "tyagaraja:krithi:8300ca9e-eca0-4d3a-8a93-0c54c3715baf:geography",
+    "tyagaraja:krithi:8300ca9e-eca0-4d3a-8a93-0c54c3715baf:group",
+    "tyagaraja:krithi:9c89d2d5-c211-4790-8577-90bfccbf697e:geography",
     "tyagaraja:krithi:9e06c13c-2bbb-47a7-b580-1de7365754cc:deity",
     "tyagaraja:krithi:9e06c13c-2bbb-47a7-b580-1de7365754cc:ritual",
     "tyagaraja:krithi:9e06c13c-2bbb-47a7-b580-1de7365754cc:theme",
@@ -32,6 +49,11 @@
     "tyagaraja:krithi:b4029df0-a209-470b-ba56-3d64fa8aebc4:geography",
     "tyagaraja:krithi:b4029df0-a209-470b-ba56-3d64fa8aebc4:group",
     "tyagaraja:krithi:b4029df0-a209-470b-ba56-3d64fa8aebc4:theme",
+    "tyagaraja:krithi:c262739c-e7cc-492d-b248-3775fec24bfe:geography",
+    "tyagaraja:krithi:c262739c-e7cc-492d-b248-3775fec24bfe:group",
+    "tyagaraja:krithi:c5aee074-7a6b-4fd3-83ea-19fd6d9083eb:geography",
+    "tyagaraja:krithi:c5aee074-7a6b-4fd3-83ea-19fd6d9083eb:group",
+    "tyagaraja:krithi:cc45b4cc-c3ca-4a69-b3c5-efdeeecb8f85:dramatic",
     "tyagaraja:krithi:d4579215-90be-47f8-8410-44020f815417:deity",
     "tyagaraja:krithi:d4579215-90be-47f8-8410-44020f815417:dramatic",
     "tyagaraja:krithi:d4579215-90be-47f8-8410-44020f815417:theme",
@@ -45,6 +67,9 @@
     "tyagaraja:krithi:da47bd3e-75ff-4227-8d7f-174aa3bb0d87:theme",
     "tyagaraja:krithi:e0151a7a-e0d9-413d-b07a-4c1b2854971f:deity",
     "tyagaraja:krithi:e0151a7a-e0d9-413d-b07a-4c1b2854971f:theme",
+    "tyagaraja:krithi:e144c7fb-3320-4168-9b65-bc120afa3a7d:ritual",
+    "tyagaraja:krithi:e630e8f7-f8da-45b3-8e8b-fce0f91a74e9:geography",
+    "tyagaraja:krithi:e630e8f7-f8da-45b3-8e8b-fce0f91a74e9:group",
     "tyagaraja:krithi:e8de604f-1086-4bb5-bb70-cc9b7b21828e:deity",
     "tyagaraja:krithi:e8de604f-1086-4bb5-bb70-cc9b7b21828e:theme",
     "tyagaraja:krithi:f0fd6665-d378-48fd-8772-6610a997c34d:deity",
@@ -59,6 +84,108 @@
     "tyagaraja:krithi:f885a354-b961-400f-ac3f-df5fee309d0c:theme"
   ],
   "changes": [
+    {
+      "claim_id": "tyagaraja:krithi:0931f98a-64fa-403f-967c-941677395832:geography",
+      "subject_id": "tyagaraja:krithi:0931f98a-64fa-403f-967c-941677395832",
+      "canonical_id": "0931f98a-64fa-403f-967c-941677395832",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "geography",
+      "value": "Srirangam Ranganathaswamy Temple",
+      "witness_id": "ma:jma-vol54-1983",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Named in the Srirangam Pancharatnam list.",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      }
+    },
+    {
+      "claim_id": "tyagaraja:krithi:0931f98a-64fa-403f-967c-941677395832:group",
+      "subject_id": "tyagaraja:krithi:0931f98a-64fa-403f-967c-941677395832",
+      "canonical_id": "0931f98a-64fa-403f-967c-941677395832",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "group",
+      "value": "tyagaraja-srirangam-pancharatnam",
+      "witness_id": "ma:jma-vol54-1983",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Named in the Srirangam Pancharatnam list.",
+        "application": "deferred",
+        "deferral_reason": "Kshetra Pancharatnam membership needs a reviewed seed (R__seed successor); not yet written."
+      }
+    },
+    {
+      "claim_id": "tyagaraja:krithi:1d3c167b-d5ae-4f4b-8e55-8f11ab9c39e4:geography",
+      "subject_id": "tyagaraja:krithi:1d3c167b-d5ae-4f4b-8e55-8f11ab9c39e4",
+      "canonical_id": "1d3c167b-d5ae-4f4b-8e55-8f11ab9c39e4",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "geography",
+      "value": "Kovur Sundareswara Temple",
+      "witness_id": "hindupedia-thyagaraja-compilation",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Labelled as a Kovur Pancharatna item in a secondary translation compilation.",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      }
+    },
+    {
+      "claim_id": "tyagaraja:krithi:1d3c167b-d5ae-4f4b-8e55-8f11ab9c39e4:group",
+      "subject_id": "tyagaraja:krithi:1d3c167b-d5ae-4f4b-8e55-8f11ab9c39e4",
+      "canonical_id": "1d3c167b-d5ae-4f4b-8e55-8f11ab9c39e4",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "group",
+      "value": "tyagaraja-kovur-pancharatnam",
+      "witness_id": "hindupedia-thyagaraja-compilation",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Labelled as a Kovur Pancharatna item in a secondary translation compilation.",
+        "application": "deferred",
+        "deferral_reason": "Kshetra Pancharatnam membership needs a reviewed seed (R__seed successor); not yet written."
+      }
+    },
+    {
+      "claim_id": "tyagaraja:krithi:271a1479-c84d-4c22-af76-040f659fce2b:geography",
+      "subject_id": "tyagaraja:krithi:271a1479-c84d-4c22-af76-040f659fce2b",
+      "canonical_id": "271a1479-c84d-4c22-af76-040f659fce2b",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "geography",
+      "value": "Lalgudi Saptarishiswara Temple",
+      "witness_id": "ma:jma-vol69-1998",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Named in the Lalgudi Pancharatnam list.",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      }
+    },
+    {
+      "claim_id": "tyagaraja:krithi:271a1479-c84d-4c22-af76-040f659fce2b:group",
+      "subject_id": "tyagaraja:krithi:271a1479-c84d-4c22-af76-040f659fce2b",
+      "canonical_id": "271a1479-c84d-4c22-af76-040f659fce2b",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "group",
+      "value": "tyagaraja-lalgudi-pancharatnam",
+      "witness_id": "ma:jma-vol69-1998",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Named in the Lalgudi Pancharatnam list.",
+        "application": "deferred",
+        "deferral_reason": "Kshetra Pancharatnam membership needs a reviewed seed (R__seed successor); not yet written."
+      }
+    },
     {
       "claim_id": "tyagaraja:krithi:2b65609e-9fbf-4232-baae-096cafdf4e79:deity",
       "subject_id": "tyagaraja:krithi:2b65609e-9fbf-4232-baae-096cafdf4e79",
@@ -194,6 +321,92 @@
         "application": "apply"
       },
       "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:4215e9b5-17dd-4730-a140-55d48014b034:geography",
+      "subject_id": "tyagaraja:krithi:4215e9b5-17dd-4730-a140-55d48014b034",
+      "canonical_id": "4215e9b5-17dd-4730-a140-55d48014b034",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "geography",
+      "value": "Lalgudi Saptarishiswara Temple",
+      "witness_id": "ma:jma-vol69-1998",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Named in the Lalgudi Pancharatnam list.",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      }
+    },
+    {
+      "claim_id": "tyagaraja:krithi:4215e9b5-17dd-4730-a140-55d48014b034:group",
+      "subject_id": "tyagaraja:krithi:4215e9b5-17dd-4730-a140-55d48014b034",
+      "canonical_id": "4215e9b5-17dd-4730-a140-55d48014b034",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "group",
+      "value": "tyagaraja-lalgudi-pancharatnam",
+      "witness_id": "ma:jma-vol69-1998",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Named in the Lalgudi Pancharatnam list.",
+        "application": "deferred",
+        "deferral_reason": "Kshetra Pancharatnam membership needs a reviewed seed (R__seed successor); not yet written."
+      }
+    },
+    {
+      "claim_id": "tyagaraja:krithi:503b3c2f-cfc0-418c-a914-0f313291a9b4:ritual",
+      "subject_id": "tyagaraja:krithi:503b3c2f-cfc0-418c-a914-0f313291a9b4",
+      "canonical_id": "503b3c2f-cfc0-418c-a914-0f313291a9b4",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "ritual",
+      "value": "tyagaraja-utsava-sampradaya",
+      "witness_id": "ma:jma-vol18-1947",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Named as Utsava Sampradaya in the journal.",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      },
+      "ritual_function": "benediction_mangalam"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:550a03c3-991c-435f-b1b5-439c16e98183:geography",
+      "subject_id": "tyagaraja:krithi:550a03c3-991c-435f-b1b5-439c16e98183",
+      "canonical_id": "550a03c3-991c-435f-b1b5-439c16e98183",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "geography",
+      "value": "Lalgudi Saptarishiswara Temple",
+      "witness_id": "ma:jma-vol69-1998",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Named in the Lalgudi Pancharatnam list.",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      }
+    },
+    {
+      "claim_id": "tyagaraja:krithi:550a03c3-991c-435f-b1b5-439c16e98183:group",
+      "subject_id": "tyagaraja:krithi:550a03c3-991c-435f-b1b5-439c16e98183",
+      "canonical_id": "550a03c3-991c-435f-b1b5-439c16e98183",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "group",
+      "value": "tyagaraja-lalgudi-pancharatnam",
+      "witness_id": "ma:jma-vol69-1998",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Named in the Lalgudi Pancharatnam list.",
+        "application": "deferred",
+        "deferral_reason": "Kshetra Pancharatnam membership needs a reviewed seed (R__seed successor); not yet written."
+      }
     },
     {
       "claim_id": "tyagaraja:krithi:6c9d0ab2-70a2-4c6b-a0df-c4a925bf8ae9:deity",
@@ -426,6 +639,109 @@
       "mudra": "Tyagaraja"
     },
     {
+      "claim_id": "tyagaraja:krithi:7914b699-b204-42b1-9057-72f4ff5db6d4:geography",
+      "subject_id": "tyagaraja:krithi:7914b699-b204-42b1-9057-72f4ff5db6d4",
+      "canonical_id": "7914b699-b204-42b1-9057-72f4ff5db6d4",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "geography",
+      "value": "Lalgudi Saptarishiswara Temple",
+      "witness_id": "ma:jma-vol69-1998",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Named in the Lalgudi Pancharatnam list.",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      }
+    },
+    {
+      "claim_id": "tyagaraja:krithi:7914b699-b204-42b1-9057-72f4ff5db6d4:group",
+      "subject_id": "tyagaraja:krithi:7914b699-b204-42b1-9057-72f4ff5db6d4",
+      "canonical_id": "7914b699-b204-42b1-9057-72f4ff5db6d4",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "group",
+      "value": "tyagaraja-lalgudi-pancharatnam",
+      "witness_id": "ma:jma-vol69-1998",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Named in the Lalgudi Pancharatnam list.",
+        "application": "deferred",
+        "deferral_reason": "Kshetra Pancharatnam membership needs a reviewed seed (R__seed successor); not yet written."
+      }
+    },
+    {
+      "claim_id": "tyagaraja:krithi:82b9fd7a-bf48-472e-8971-c509c3e6f0fc:dramatic",
+      "subject_id": "tyagaraja:krithi:82b9fd7a-bf48-472e-8971-c509c3e6f0fc",
+      "canonical_id": "82b9fd7a-bf48-472e-8971-c509c3e6f0fc",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "dramatic",
+      "value": "tyagaraja-prahlada-bhakti-vijayam",
+      "witness_id": "ma:jma-vol42-1971",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Discussed in a lecture on the Prahlada opera.",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      },
+      "dramatic_work": "Prahlada Bhakti Vijayam"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:8300ca9e-eca0-4d3a-8a93-0c54c3715baf:geography",
+      "subject_id": "tyagaraja:krithi:8300ca9e-eca0-4d3a-8a93-0c54c3715baf",
+      "canonical_id": "8300ca9e-eca0-4d3a-8a93-0c54c3715baf",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "geography",
+      "value": "Kovur Sundareswara Temple",
+      "witness_id": "hindupedia-thyagaraja-compilation",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Labelled as a Kovur Pancharatna item in a secondary translation compilation.",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      }
+    },
+    {
+      "claim_id": "tyagaraja:krithi:8300ca9e-eca0-4d3a-8a93-0c54c3715baf:group",
+      "subject_id": "tyagaraja:krithi:8300ca9e-eca0-4d3a-8a93-0c54c3715baf",
+      "canonical_id": "8300ca9e-eca0-4d3a-8a93-0c54c3715baf",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "group",
+      "value": "tyagaraja-kovur-pancharatnam",
+      "witness_id": "hindupedia-thyagaraja-compilation",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Labelled as a Kovur Pancharatna item in a secondary translation compilation.",
+        "application": "deferred",
+        "deferral_reason": "Kshetra Pancharatnam membership needs a reviewed seed (R__seed successor); not yet written."
+      }
+    },
+    {
+      "claim_id": "tyagaraja:krithi:9c89d2d5-c211-4790-8577-90bfccbf697e:geography",
+      "subject_id": "tyagaraja:krithi:9c89d2d5-c211-4790-8577-90bfccbf697e",
+      "canonical_id": "9c89d2d5-c211-4790-8577-90bfccbf697e",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "geography",
+      "value": "Tiruvottiyur Tripurasundari Temple",
+      "witness_id": "ma:jma-vol66-1995",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Journal names the kriti and the Tiruvottiyur shrine.",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      }
+    },
+    {
       "claim_id": "tyagaraja:krithi:9e06c13c-2bbb-47a7-b580-1de7365754cc:deity",
       "subject_id": "tyagaraja:krithi:9e06c13c-2bbb-47a7-b580-1de7365754cc",
       "canonical_id": "9e06c13c-2bbb-47a7-b580-1de7365754cc",
@@ -546,6 +862,92 @@
         "application": "apply"
       },
       "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:c262739c-e7cc-492d-b248-3775fec24bfe:geography",
+      "subject_id": "tyagaraja:krithi:c262739c-e7cc-492d-b248-3775fec24bfe",
+      "canonical_id": "c262739c-e7cc-492d-b248-3775fec24bfe",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "geography",
+      "value": "Srirangam Ranganathaswamy Temple",
+      "witness_id": "ma:jma-vol54-1983",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Named in the Srirangam Pancharatnam list.",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      }
+    },
+    {
+      "claim_id": "tyagaraja:krithi:c262739c-e7cc-492d-b248-3775fec24bfe:group",
+      "subject_id": "tyagaraja:krithi:c262739c-e7cc-492d-b248-3775fec24bfe",
+      "canonical_id": "c262739c-e7cc-492d-b248-3775fec24bfe",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "group",
+      "value": "tyagaraja-srirangam-pancharatnam",
+      "witness_id": "ma:jma-vol54-1983",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Named in the Srirangam Pancharatnam list.",
+        "application": "deferred",
+        "deferral_reason": "Kshetra Pancharatnam membership needs a reviewed seed (R__seed successor); not yet written."
+      }
+    },
+    {
+      "claim_id": "tyagaraja:krithi:c5aee074-7a6b-4fd3-83ea-19fd6d9083eb:geography",
+      "subject_id": "tyagaraja:krithi:c5aee074-7a6b-4fd3-83ea-19fd6d9083eb",
+      "canonical_id": "c5aee074-7a6b-4fd3-83ea-19fd6d9083eb",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "geography",
+      "value": "Srirangam Ranganathaswamy Temple",
+      "witness_id": "ma:jma-vol54-1983",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Named in the Srirangam Pancharatnam list.",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      }
+    },
+    {
+      "claim_id": "tyagaraja:krithi:c5aee074-7a6b-4fd3-83ea-19fd6d9083eb:group",
+      "subject_id": "tyagaraja:krithi:c5aee074-7a6b-4fd3-83ea-19fd6d9083eb",
+      "canonical_id": "c5aee074-7a6b-4fd3-83ea-19fd6d9083eb",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "group",
+      "value": "tyagaraja-srirangam-pancharatnam",
+      "witness_id": "ma:jma-vol54-1983",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Named in the Srirangam Pancharatnam list.",
+        "application": "deferred",
+        "deferral_reason": "Kshetra Pancharatnam membership needs a reviewed seed (R__seed successor); not yet written."
+      }
+    },
+    {
+      "claim_id": "tyagaraja:krithi:cc45b4cc-c3ca-4a69-b3c5-efdeeecb8f85:dramatic",
+      "subject_id": "tyagaraja:krithi:cc45b4cc-c3ca-4a69-b3c5-efdeeecb8f85",
+      "canonical_id": "cc45b4cc-c3ca-4a69-b3c5-efdeeecb8f85",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "dramatic",
+      "value": "tyagaraja-nauka-charitram",
+      "witness_id": "ma:souvenir-1969",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Weak: a concert programme labels it Nowka Charitram.",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      },
+      "dramatic_work": "Nauka Charitram"
     },
     {
       "claim_id": "tyagaraja:krithi:d4579215-90be-47f8-8410-44020f815417:deity",
@@ -776,6 +1178,58 @@
         "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
       },
       "mudra": "Tyagaraja"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:e144c7fb-3320-4168-9b65-bc120afa3a7d:ritual",
+      "subject_id": "tyagaraja:krithi:e144c7fb-3320-4168-9b65-bc120afa3a7d",
+      "canonical_id": "e144c7fb-3320-4168-9b65-bc120afa3a7d",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "ritual",
+      "value": "tyagaraja-utsava-sampradaya",
+      "witness_id": "ma:jma-vol18-1947",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Named as Utsava Sampradaya in the journal.",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      },
+      "ritual_function": "awakening_melukolupu"
+    },
+    {
+      "claim_id": "tyagaraja:krithi:e630e8f7-f8da-45b3-8e8b-fce0f91a74e9:geography",
+      "subject_id": "tyagaraja:krithi:e630e8f7-f8da-45b3-8e8b-fce0f91a74e9",
+      "canonical_id": "e630e8f7-f8da-45b3-8e8b-fce0f91a74e9",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "geography",
+      "value": "Kovur Sundareswara Temple",
+      "witness_id": "hindupedia-thyagaraja-compilation",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Labelled as a Kovur Pancharatna item in a secondary translation compilation.",
+        "application": "deferred",
+        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+      }
+    },
+    {
+      "claim_id": "tyagaraja:krithi:e630e8f7-f8da-45b3-8e8b-fce0f91a74e9:group",
+      "subject_id": "tyagaraja:krithi:e630e8f7-f8da-45b3-8e8b-fce0f91a74e9",
+      "canonical_id": "e630e8f7-f8da-45b3-8e8b-fce0f91a74e9",
+      "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
+      "axis": "group",
+      "value": "tyagaraja-kovur-pancharatnam",
+      "witness_id": "hindupedia-thyagaraja-compilation",
+      "approval": {
+        "reviewer": "Seshadri",
+        "accepted_at": "2026-11-03",
+        "decision": "approve",
+        "note": "Labelled as a Kovur Pancharatna item in a secondary translation compilation.",
+        "application": "deferred",
+        "deferral_reason": "Kshetra Pancharatnam membership needs a reviewed seed (R__seed successor); not yet written."
+      }
     },
     {
       "claim_id": "tyagaraja:krithi:e8de604f-1086-4bb5-bb70-cc9b7b21828e:deity",

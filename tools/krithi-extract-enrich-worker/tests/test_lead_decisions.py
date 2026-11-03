@@ -14,9 +14,15 @@ from src.lead_decisions import (
     apply_to_raw_syama,
     apply_to_tyagaraja,
     decisions_from_proposals,
+    load_decisions,
 )
 from src.musicological_classification import ClassificationMaster
-from src.tyagaraja_classification import ReviewState, load_master, validate_master
+from src.tyagaraja_classification import (
+    ReviewState,
+    TyagarajaClassificationMaster,
+    load_master,
+    validate_master,
+)
 
 ROOT = Path(__file__).resolve().parents[3]
 DATA = ROOT / "database/data"
@@ -28,46 +34,78 @@ def _proposals(name: str) -> dict[str, dict[str, Any]]:
     return json.loads((DATA / name).read_text(encoding="utf-8"))
 
 
-def test_every_unreviewed_lead_has_exactly_one_proposal():
-    syama = json.loads(SYAMA.read_text(encoding="utf-8"))
-    unreviewed = {c["id"] for c in syama["claims"] if c["review_state"] == "unreviewed"}
-    assert set(_proposals("track148-lead-proposals.json")) == unreviewed
-
-    tyagaraja = load_master(TYAGARAJA)
-    valued = {
-        c.id for s in tyagaraja.subjects for c in s.claims if c.review_state == ReviewState.UNREVIEWED and c.value
-    }
-    assert set(_proposals("track149-lead-proposals.json")) == valued
+def _decisions(name: str) -> LeadDecisionFile:
+    return load_decisions(DATA / name)
 
 
-def test_proposals_alone_approve_nothing():
+def _undecide_syama(raw: dict[str, Any], decided: set[str]) -> None:
+    """Return decided Syama claims to their pre-decision state so the mechanics can be exercised again."""
+    for claim in raw["claims"]:
+        if claim["id"] in decided:
+            claim.update(review_state="unreviewed", approval=None, unresolved_reason=None)
+
+
+def _undecide_tyagaraja(master: TyagarajaClassificationMaster, decided: set[str]) -> None:
+    for subject in master.subjects:
+        for claim in subject.claims:
+            if claim.id in decided:
+                claim.review_state = ReviewState.UNREVIEWED
+                claim.approval = None
+                claim.reviewer_decision = None
+                claim.unresolved_reason = None
+
+
+def test_decision_files_cover_exactly_the_proposals():
+    for proposals, decisions in (
+        ("track148-lead-proposals.json", "track148-lead-decisions.json"),
+        ("track149-lead-proposals.json", "track149-lead-decisions.json"),
+    ):
+        recorded = _decisions(decisions)
+        assert {d.claim_id for d in recorded.decisions} == set(_proposals(proposals))
+        assert recorded.reviewer == "Seshadri"
+
+
+def test_masters_hold_exactly_the_recorded_decisions():
     syama = ClassificationMaster.model_validate_json(SYAMA.read_text(encoding="utf-8"))
-    assert sum(c.review_state == "reviewed" for c in syama.claims) == 18
+    by_id = {c.id: c for c in syama.claims}
+    for d in _decisions("track148-lead-decisions.json").decisions:
+        claim = by_id[d.claim_id]
+        if d.disposition == "approve":
+            assert claim.review_state == "reviewed" and claim.approval is not None
+            assert claim.approval.reviewer == "Seshadri" and claim.approval.application == "deferred"
+            assert (claim.witness_id, claim.locator) == (d.witness_id, d.locator)
+        else:
+            assert claim.review_state == d.disposition and claim.unresolved_reason == d.unresolved_reason
+    assert not any(c.review_state == "unreviewed" for c in syama.claims)
+
     tyagaraja = load_master(TYAGARAJA)
-    assert not any(
-        c.review_state == ReviewState.REVIEWED and c.approval and c.approval.reviewer == "proposal"
-        for s in tyagaraja.subjects
-        for c in s.claims
-    )
+    claims = {c.id: c for s in tyagaraja.subjects for c in s.claims}
+    for d in _decisions("track149-lead-decisions.json").decisions:
+        tclaim = claims[d.claim_id]
+        if d.disposition == "approve":
+            assert tclaim.review_state == ReviewState.REVIEWED and tclaim.approval is not None
+            assert tclaim.approval.reviewer == "Seshadri" and tclaim.approval.application == "deferred"
+        else:
+            assert tclaim.review_state.value == d.disposition and tclaim.unresolved_reason == d.unresolved_reason
+    assert not any(c.review_state == ReviewState.UNREVIEWED and c.value for c in claims.values())
 
 
-def test_syama_decisions_validate_and_defer_application():
+def test_syama_mechanics_validate_and_defer_application():
     raw = json.loads(SYAMA.read_text(encoding="utf-8"))
     proposals = _proposals("track148-lead-proposals.json")
-    decisions = decisions_from_proposals(proposals, "Test Reviewer", "2026-11-04")
-    apply_to_raw_syama(raw, decisions)
+    _undecide_syama(raw, set(proposals))
+    apply_to_raw_syama(raw, decisions_from_proposals(proposals, "Test Reviewer", "2026-11-04"))
     master = ClassificationMaster.model_validate(raw)
     approved = [c for c in master.claims if c.approval and c.approval.reviewer == "Test Reviewer"]
     assert len(approved) == sum(p["disposition"] == "approve" for p in proposals.values())
     assert all(c.approval and c.approval.application == "deferred" for c in approved)
-    assert not any(c.review_state == "unreviewed" for c in master.claims)
-    # Madurai shrine approvals move the composition's derived geography state
     assert any(s.geography_state == "SPECIFIC_SHRINE_SUPPORTED" for s in master.compositions)
 
 
-def test_tyagaraja_decisions_validate_and_defer_application():
+def test_tyagaraja_mechanics_validate_and_defer_application():
     master = load_master(TYAGARAJA)
     proposals = _proposals("track149-lead-proposals.json")
+    _undecide_tyagaraja(master, set(proposals))
     apply_to_tyagaraja(master, decisions_from_proposals(proposals, "Test Reviewer", "2026-11-04"))
     validate_master(master)
     approved = [c for s in master.subjects for c in s.claims if c.approval and c.approval.reviewer == "Test Reviewer"]
@@ -80,6 +118,7 @@ def test_excluded_claims_stay_unreviewed():
     keep = next(k for k, v in proposals.items() if v["disposition"] == "approve")
     decisions = decisions_from_proposals(proposals, "Test Reviewer", "2026-11-04", {keep})
     raw = json.loads(SYAMA.read_text(encoding="utf-8"))
+    _undecide_syama(raw, set(proposals))
     apply_to_raw_syama(raw, decisions)
     assert next(c for c in raw["claims"] if c["id"] == keep)["review_state"] == "unreviewed"
     with pytest.raises(ValueError):
