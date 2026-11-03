@@ -151,8 +151,8 @@
 | [TRACK-145](./tracks/TRACK-145-dikshitar-kshetra-musicological-metadata.md) | Dikshitar Kshetra & Musicological Metadata Enrichment | Completed |
 | [TRACK-146](./tracks/TRACK-146-syama-sastri-musicological-classification.md) | Syama Sastri Corpus Concordance & Musicological Classification | Completed |
 | [TRACK-147](./tracks/TRACK-147-tyagaraja-musicological-classification.md) | Tyagaraja Corpus Concordance & Musicological Classification | Completed |
-| [TRACK-148](./tracks/TRACK-148-syama-sastri-edition-consultation-adjudication.md) | Syama Sastri Edition Consultation & Musicological Adjudication | Proposed |
-| [TRACK-149](./tracks/TRACK-149-tyagaraja-edition-consultation-collision-split.md) | Tyagaraja Edition Consultation & Collision Canon Split | Proposed |
+| [TRACK-148](./tracks/TRACK-148-syama-sastri-edition-consultation-adjudication.md) | Syama Sastri Edition Consultation & Musicological Adjudication | In Progress |
+| [TRACK-149](./tracks/TRACK-149-tyagaraja-edition-consultation-collision-split.md) | Tyagaraja Edition Consultation & Collision Canon Split | In Progress |
 | [TRACK-150](./tracks/TRACK-150-rasika-collections-and-lakshana-reader.md) | Rasika Collections & Reader Cycle Context | Completed |
 | [TRACK-151](./tracks/TRACK-151-rasika-kshetra-exploration.md) | Rasika Kshetra Exploration | Completed |
 | [TRACK-152](./tracks/TRACK-152-rasika-search-over-cycles-and-kshetras.md) | Rasika Search over Cycles and Kshetras | Completed |
