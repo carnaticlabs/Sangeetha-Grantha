@@ -80,7 +80,6 @@ fun HomeScreen(
             FeatureSection(
                 feature = state.feature,
                 load = state.featureLoad,
-                onRetry = presenter::retryFeature,
                 onOpen = onOpenKrithi,
             )
             Text(
@@ -117,7 +116,6 @@ fun HomeScreen(
 private fun FeatureSection(
     feature: CatalogueDiscoveryFeatureDto?,
     load: LoadState,
-    onRetry: () -> Unit,
     onOpen: (Uuid) -> Unit,
 ) {
     when (load) {
@@ -127,20 +125,10 @@ private fun FeatureSection(
             color = RasikaTheme.colors.inkMuted,
             modifier = Modifier.padding(top = RasikaTokens.sm),
         )
-        is LoadState.Error -> Column(Modifier.padding(top = RasikaTokens.sm)) {
-            Text(
-                RasikaCopy.FEATURE_UNAVAILABLE,
-                style = MaterialTheme.typography.bodyLarge,
-                color = RasikaTheme.colors.inkMuted,
-            )
-            if (load.retryable) {
-                RasikaPrimaryButton(
-                    label = RasikaCopy.RETRY,
-                    onClick = onRetry,
-                    modifier = Modifier.padding(top = RasikaTokens.sm),
-                )
-            }
-        }
+        // The featured composition is a bonus, not something a rasika asked for. When it cannot load, Home shows
+        // nothing in its place instead of an error panel; search, Ragas and Composers stay available and the
+        // presenter tries again the next time Home appears.
+        is LoadState.Error -> Unit
         LoadState.Empty, LoadState.Idle -> {
             if (feature == null) return
             val colors = RasikaTheme.colors

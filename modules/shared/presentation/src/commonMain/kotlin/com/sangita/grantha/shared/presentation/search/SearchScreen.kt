@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Row
@@ -25,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
@@ -227,9 +229,12 @@ private fun KrithiSearchMode.hint(): String = when (this) {
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun FilterSheet(state: SearchUiState, presenter: SearchPresenter) {
+    val focusManager = LocalFocusManager.current
     Column(
         Modifier
             .fillMaxSize()
+            // Lift the sheet above the on-screen keyboard so Apply, Cancel and Reset stay reachable while a raga is typed.
+            .imePadding()
             .verticalScroll(rememberScrollState())
             .padding(horizontal = RasikaTokens.screen, vertical = RasikaTokens.md),
     ) {
@@ -245,7 +250,11 @@ private fun FilterSheet(state: SearchUiState, presenter: SearchPresenter) {
             value = state.filterRagaText,
             onValueChange = presenter::onFilterRagaTextChange,
             placeholder = RasikaCopy.FIND_RAGA,
-            onSearch = { presenter.searchFilterRagas() },
+            // Submitting the search also closes the keyboard, so the results and the buttons below them are visible.
+            onSearch = {
+                presenter.searchFilterRagas()
+                focusManager.clearFocus()
+            },
             modifier = Modifier.padding(top = RasikaTokens.xs),
         )
         FlowRow(
