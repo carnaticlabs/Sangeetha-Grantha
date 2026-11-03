@@ -31,16 +31,20 @@ describe('MobilePreview shell', () => {
         expect(await screen.findByRole('heading', { name: 'Aada Modi Galadae' })).toBeInTheDocument();
     });
 
-    it('shows an error state when the preview mount fails', async () => {
+    it('shows Home without an error panel when the featured composition cannot load', async () => {
         vi.mocked(getPreviewDiscovery).mockRejectedValue(new Error('API Error 403'));
         render(<MobilePreview />);
-        expect(await screen.findByRole('alert')).toHaveTextContent('API Error 403');
+        expect(await screen.findByText('Explore the tradition')).toBeInTheDocument();
+        expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+        expect(screen.queryByText(/Could not reach/)).not.toBeInTheDocument();
     });
 
     it('shows an empty state when there is nothing to feature', async () => {
         vi.mocked(getPreviewDiscovery).mockResolvedValue({ feature: null });
         render(<MobilePreview />);
-        expect(await screen.findByText(/featured composition could not be loaded/)).toBeInTheDocument();
+        expect(await screen.findByText('Explore the tradition')).toBeInTheDocument();
+        expect(screen.queryByText(/could not be loaded/)).not.toBeInTheDocument();
+        expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     });
 
     it('switches tabs, goes back to Home, and keeps preferences in this browser only', async () => {
@@ -56,7 +60,7 @@ describe('MobilePreview shell', () => {
     it('refetches what it shows when Refresh is pressed', async () => {
         vi.mocked(getPreviewDiscovery).mockResolvedValue({ feature: null });
         const { user } = render(<MobilePreview />);
-        await screen.findByText(/featured composition could not be loaded/);
+        await screen.findByText('Explore the tradition');
         const before = vi.mocked(getPreviewDiscovery).mock.calls.length;
         await user.click(screen.getByRole('button', { name: 'Refresh preview' }));
         await waitFor(() => expect(vi.mocked(getPreviewDiscovery).mock.calls.length).toBeGreaterThan(before));
