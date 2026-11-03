@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.2.0 |
-| **Last Updated** | 2026-09-10 |
+| **Version** | 1.3.0 |
+| **Last Updated** | 2026-11-03 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Current guide |
 
@@ -152,10 +152,14 @@ Before marking documentation as "Current":
 - **OpenAPI**: For API specifications
 - **Git**: Version control and history
 
+### Enforced Today
+
+- `make check-docs` fails on broken relative Markdown links (CI job `docs`).
+- `make check-doc-impact` fails when mapped code paths change without their docs, for example a new migration without `schema.md`/`migrations.md` or a catalog bump without `current-versions.md`. The path map lives in `tools/check-doc-impact.py`; CI runs it on pull requests. Waive it for a change with no doc surface with a `Docs-Impact: none` line in a commit message.
+
 ### Automation Goals
 
 - Validate markdown syntax (future)
-- Check for broken links (future)
 - Generate API docs from OpenAPI spec (future)
 
 ## Quality Metrics

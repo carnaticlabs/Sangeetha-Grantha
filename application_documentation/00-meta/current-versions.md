@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.8.0 |
-| **Last Updated** | 2026-09-20 |
+| **Version** | 1.9.0 |
+| **Last Updated** | 2026-11-03 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Current guide |
 
@@ -245,6 +245,8 @@ For current versions, see [Current Versions](./current-versions.md).
 1. Update the source file (`gradle/libs.versions.toml`, `package.json`, or `.mise.toml`)
 2. Update this file to match
 3. Commit both the source file and the updated `current-versions.md`
+
+To see which direct dependencies have newer stable releases (Gradle catalog, admin-web npm, worker Python), run `make check-library-versions`. It only reports and changes no file. CI requires this file to change in any pull request that edits `gradle/libs.versions.toml`, the admin-web `package.json`, or the worker `pyproject.toml` (`make check-doc-impact`).
 
 ---
 

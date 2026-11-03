@@ -1,0 +1,9 @@
+{
+  "id": "doc-impact-gate",
+  "file": "Makefile",
+  "must_contain": [
+    "check-doc-impact:",
+    "tools/check-doc-impact.py"
+  ],
+  "must_not_contain": []
+}

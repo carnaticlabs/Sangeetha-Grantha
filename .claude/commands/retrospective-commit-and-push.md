@@ -8,7 +8,8 @@ Follow [.agents/skills/retrospective-commit-and-push/SKILL.md](../../.agents/ski
 2. Confirm active branch matches convention (`track-<nnn>-<kebab-slug>` or `<type>/<kebab-slug>`). If on `main`, create the branch first. Never commit directly on `main`.
 3. Categorize uncommitted changes into logical, atomic changesets by feature/track/layer.
 4. Ensure corresponding Conductor track files (`conductor/tracks/TRACK-XXX-*.md`) and implementation summary docs (`application_documentation/10-implementations/track-XXX-*.md`) exist and are updated.
-5. Leave unrelated or leftover files unstaged. Never stage `.env`, `config/development.env`, `config/local.env`, credentials, or secrets.
+5. Update impacted docs: run `make check-doc-impact`, fix every reported doc per [documentation-guardian](../../.agents/skills/documentation-guardian/SKILL.md), scan the diff for doc impact the path map misses, then run `make check-docs` and `make check-doc-impact`. Stage doc edits with the changeset they describe. Use a `Docs-Impact: none` commit line only when the change has no doc surface.
+6. Leave unrelated or leftover files unstaged. Never stage `.env`, `config/development.env`, `config/local.env`, credentials, or secrets.
 
 ## 2. Commit with meaningful messages
 
@@ -49,7 +50,14 @@ Never force-push (`git push --force`). Never skip pre-push hooks. If `origin/mai
 
 ## 5. Merge into remote main
 
-When all automated checks pass, merge into remote `main` while preserving logical commits:
+Prefer GitHub auto-merge when the repository allows it and `main` has required checks; it merges the moment checks pass:
+
+```bash
+gh pr merge --auto --merge --delete-branch
+gh pr view --json state,mergedAt
+```
+
+Wait until the state is `MERGED` before syncing. If auto-merge is unavailable, watch checks and merge directly. When all automated checks pass, merge into remote `main` while preserving logical commits:
 
 ```bash
 gh pr merge --merge --delete-branch

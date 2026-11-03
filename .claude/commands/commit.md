@@ -7,7 +7,8 @@ Follow [commit-policy](../../.agents/skills/commit-policy/SKILL.md) and [git-con
 1. Inspect `git status`, `git diff`, and `git log` so the message matches the diff and recent style.
 2. Confirm the branch is `track-<nnn>-<kebab-slug>` or `<type>/<kebab-slug>`. Do not use a `cursor/` prefix unless the user asked. If the work is on `main`, create that branch before committing. Do not commit directly on `main`.
 3. Group every relevant change into logical changesets (one feature, fix, or track per commit). Stage each set with explicit paths. Never `git add .` or `git commit -a`.
-4. Leave unrelated files unstaged. Never stage `.env`, `config/local.env`, `config/development.env`, credentials, or secrets.
+4. Update impacted docs: run `make check-doc-impact`, update every reported doc, then run `make check-docs`. Use a `Docs-Impact: none` commit line only when the change has no doc surface.
+5. Leave unrelated files unstaged. Never stage `.env`, `config/local.env`, `config/development.env`, credentials, or secrets.
 
 ## 2. Commit
 
@@ -47,7 +48,7 @@ Read failing logs before doing anything else. Fix the failure on the same branch
 
 ## 5. Merge into remote main
 
-When every check has passed, merge with a merge commit so the logical commits stay on `main`:
+Prefer `gh pr merge --auto --merge --delete-branch` when the repository allows auto-merge and `main` has required checks, then confirm the PR state is `MERGED`. Otherwise, when every check has passed, merge with a merge commit so the logical commits stay on `main`:
 
 ```bash
 gh pr merge --merge --delete-branch

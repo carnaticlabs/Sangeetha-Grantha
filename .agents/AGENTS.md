@@ -85,6 +85,7 @@ Workflow skills (migrated from legacy workflows to `.agents/skills/`):
 - `start-application` — start the full stack (Database, Backend, Frontend) and redirect logs.
 - `test-troubleshooter` — systematically diagnose and fix test failures.
 - `verify-db-status` — verify the local database schema matches the Flyway migration files.
+- `library-version-audit` — compare the Gradle catalog, admin-web npm dependencies, and worker Python dependencies with upstream stable releases (`make check-library-versions`). Report only.
 
 ## Commands
 See [`CLAUDE.md` → Essential Commands](../CLAUDE.md#essential-commands). Slash commands live in `.claude/commands/` (Cursor mirrors under `.cursor/commands/`): `/spec-from-track` and `/plan-from-spec` write Spec/Plan on a conductor track and must not implement code until those sections are Accepted. The full stack runs via

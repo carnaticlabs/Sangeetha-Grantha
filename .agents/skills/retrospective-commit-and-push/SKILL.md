@@ -9,7 +9,7 @@ This skill automates the safe, end-to-end delivery of uncommitted changes across
 
 The lifecycle enforces:
 1. **Surgical Scan & Logical Categorization** by feature, track, or domain layer.
-2. **Synchronizing Documentation** (`application_documentation/10-implementations/` and `conductor/tracks/`).
+2. **Synchronizing Documentation** (impacted docs via `make check-doc-impact`, plus `application_documentation/10-implementations/` and `conductor/tracks/`).
 3. **Atomic Commits** with meaningful messages and mandatory `Ref:` lines.
 4. **Security Filtering** (excluding local `.env` and masking secrets).
 5. **Pushing** to the upstream remote branch.
@@ -71,6 +71,25 @@ Group changed and untracked files into distinct, atomic changesets using domain 
 For each identified changeset:
 1. **Track File**: Verify `conductor/tracks/TRACK-XXX-*.md` has up-to-date Progress Log entries and status. If new work, create the track file and update the index in `conductor/tracks.md`.
 2. **Implementation Summary**: Verify a markdown summary exists in `application_documentation/10-implementations/track-XXX-*.md` to serve as the commit's `Ref:` target.
+
+---
+
+## 3a. Update Impacted Documentation
+
+Code changes often make docs elsewhere stale. Before staging anything:
+
+```bash
+make check-doc-impact
+```
+
+For every rule it reports, open the listed doc, update it to match the change, and follow the [documentation-guardian](../documentation-guardian/SKILL.md) rules (header table, `Last Updated` date, relative links, fenced-code languages). Then also scan the diff for doc impact the path map cannot see (new env vars, ports, commands, behavior changes) and update those docs too. Finish with:
+
+```bash
+make check-docs
+make check-doc-impact
+```
+
+Stage doc edits with the changeset they describe. If a change truly has no doc surface, add a `Docs-Impact: none` line to that commit message instead of editing a doc for the sake of it.
 
 ---
 
@@ -176,6 +195,15 @@ Once all checks pass and requirements are satisfied, merge the PR into remote `m
 ```bash
 gh pr merge --merge --delete-branch
 ```
+
+**Auto-merge (preferred when available)**: if the repository allows auto-merge and `main` has required status checks, let GitHub merge the moment checks pass instead of blocking on `gh pr checks --watch`:
+
+```bash
+gh pr merge --auto --merge --delete-branch
+gh pr view --json state,mergedAt   # confirm state is MERGED before syncing
+```
+
+If `gh` reports that auto-merge is not allowed or the PR is already clean, fall back to watching checks and running the plain merge command above. Enabling auto-merge never bypasses required checks or reviews.
 
 *Notes*:
 - `--merge` keeps individual logical commits on `main`.
