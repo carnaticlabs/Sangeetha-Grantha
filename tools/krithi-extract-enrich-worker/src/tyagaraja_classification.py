@@ -19,15 +19,16 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 TRACK147_COMPOSER_ID = "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6"
 SNAPSHOT_DATE = "2026-10-01"
-EXPECTED_IDENTITIES = 675
+EXPECTED_IDENTITIES = 684
 EXPECTED_SOURCE_ROWS = 684
 EXPECTED_SUBJECTS = 684
-EXPECTED_SINGLE_SOURCE_SUBJECTS = 667
-EXPECTED_COLLISION_SUBJECTS = 17
-EXPECTED_COLLISION_IDENTITIES = 8
+EXPECTED_SINGLE_SOURCE_SUBJECTS = 684
+EXPECTED_COLLISION_SUBJECTS = 0
+EXPECTED_COLLISION_IDENTITIES = 0
+EXPECTED_SPLIT_COLLISIONS = 8
 EXPECTED_GHANA_CANDIDATES = 5
 EXPECTED_DESADI_WITNESSES = 11
-EXPECTED_MISSING_PALLAVI_IDENTITIES = 27
+EXPECTED_MISSING_PALLAVI_IDENTITIES = 26
 EXPECTED_MISSING_CHARANAM_IDENTITIES = 4
 SOURCE_CSV_PATH = "database/for_import/Thyagaraja-Krithi-For-Import.csv"
 SNAPSHOT_JSON_PATH = "database/data/track147-catalogue-snapshot.json"
@@ -281,9 +282,28 @@ class CollisionEntry(BaseModel):
 
     krithi_id: str
     title: str
-    disposition: Literal["collision_not_classified"]
+    disposition: Literal["collision_not_classified", "split_executed"]
     witness_subject_ids: list[str]
     source_settings: list[str]
+    # TRACK-149: owner decision on whether the collapsed identity is really several compositions.
+    decision: Literal["split_approved"] | None = None
+    retained_witness_subject_id: str | None = None
+    decided_by: str | None = None
+    decided_at: str | None = None
+    decision_note: str | None = None
+
+    @model_validator(mode="after")
+    def decision_is_complete(self) -> CollisionEntry:
+        fields = (self.retained_witness_subject_id, self.decided_by, self.decided_at, self.decision_note)
+        if (self.decision is None) != all(f is None for f in fields):
+            raise ValueError(f"collision {self.krithi_id} decision fields must be set together")
+        if self.decision and not all(fields):
+            raise ValueError(f"collision {self.krithi_id} decision is missing a field")
+        if self.disposition == "split_executed" and self.decision != "split_approved":
+            raise ValueError(f"collision {self.krithi_id} was split without an approved decision")
+        if self.retained_witness_subject_id and self.retained_witness_subject_id not in self.witness_subject_ids:
+            raise ValueError(f"collision {self.krithi_id} retains a witness that is not in its register")
+        return self
 
 
 class ExternalGap(BaseModel):
@@ -545,12 +565,13 @@ def validate_master(master: TyagarajaClassificationMaster) -> None:
             if snap_w is None or snap_w.status != WitnessStatus.DATABASE_SNAPSHOT:
                 raise TyagarajaClassificationError("missing or invalid database snapshot witness")
 
-    collision_ids = {entry.krithi_id for entry in master.collision_register}
-    if len(collision_ids) != len(master.collision_register):
+    register_ids = {entry.krithi_id for entry in master.collision_register}
+    if len(register_ids) != len(master.collision_register):
         raise TyagarajaClassificationError("collision register repeats a krithi id")
-    for entry in master.collision_register:
-        if entry.disposition != "collision_not_classified":
-            raise TyagarajaClassificationError(f"{entry.krithi_id} is not marked collision_not_classified")
+    active = [entry for entry in master.collision_register if entry.disposition == "collision_not_classified"]
+    resolved = [entry for entry in master.collision_register if entry.disposition == "split_executed"]
+    collision_ids = {entry.krithi_id for entry in active}
+    for entry in active:
         if catalogue_subject_id(entry.krithi_id) in ids:
             raise TyagarajaClassificationError(f"collapsed krithi {entry.krithi_id} is a classification subject")
 
@@ -563,13 +584,28 @@ def validate_master(master: TyagarajaClassificationMaster) -> None:
     if any(subject.krithi_id is not None or subject.mapped_krithi_id not in collision_ids for subject in witnesses):
         raise TyagarajaClassificationError("witness subjects must point at a collision identity")
 
+    # TRACK-149: an executed split leaves one catalogue identity per witness. The retained witness keeps the
+    # original krithi id; every other witness has a krithi row of its own.
+    subjects_by_id = {subject.id: subject for subject in subjects}
+    for entry in resolved:
+        members = [subjects_by_id.get(subject_id) for subject_id in entry.witness_subject_ids]
+        if len(members) < 2 or len(set(entry.witness_subject_ids)) != len(members):
+            raise TyagarajaClassificationError(f"split {entry.krithi_id} must list at least two distinct subjects")
+        if any(member is None or member.subject_kind != SubjectKind.CATALOGUE_IDENTITY for member in members):
+            raise TyagarajaClassificationError(f"split {entry.krithi_id} lists a subject that is not an identity")
+        if entry.retained_witness_subject_id != catalogue_subject_id(entry.krithi_id):
+            raise TyagarajaClassificationError(f"split {entry.krithi_id} does not retain its original krithi id")
+        member_krithi_ids = [member.krithi_id for member in members if member]
+        if len(set(member_krithi_ids)) != len(member_krithi_ids) or entry.krithi_id not in member_krithi_ids:
+            raise TyagarajaClassificationError(f"split {entry.krithi_id} does not give each witness its own krithi")
+
     witness_ids_by_krithi: dict[str, list[str]] = defaultdict(list)
     for subject in witnesses:
         mapped = subject.mapped_krithi_id
         if mapped is None:
             raise TyagarajaClassificationError(f"{subject.id} is missing mapped_krithi_id")
         witness_ids_by_krithi[mapped].append(subject.id)
-    for entry in master.collision_register:
+    for entry in active:
         if entry.witness_subject_ids != witness_ids_by_krithi.get(entry.krithi_id, []):
             raise TyagarajaClassificationError(f"collision witnesses do not match for {entry.krithi_id}")
 
@@ -717,6 +753,8 @@ def assert_track147_census(master: TyagarajaClassificationMaster) -> None:
         raise TyagarajaClassificationError("collision subject count drifted")
     if accounting.collision_identities != EXPECTED_COLLISION_IDENTITIES:
         raise TyagarajaClassificationError("collision identity count drifted")
+    if sum(entry.disposition == "split_executed" for entry in master.collision_register) != EXPECTED_SPLIT_COLLISIONS:
+        raise TyagarajaClassificationError("executed split count drifted")
 
     inventory = master.source_inventory
     if inventory is None or inventory.path != SOURCE_CSV_PATH:
@@ -770,6 +808,15 @@ def assert_track147_census(master: TyagarajaClassificationMaster) -> None:
     desadi = [subject for subject in master.subjects if subject.tala_witness_note]
     if len(desadi) != EXPECTED_DESADI_WITNESSES:
         raise TyagarajaClassificationError("desadi witness count drifted")
+
+
+def _collision_decision_cell(entry: CollisionEntry, witness_id: str) -> str:
+    if entry.decision is None:
+        return "undecided"
+    executed = "split executed" if entry.disposition == "split_executed" else "split approved"
+    if witness_id == entry.retained_witness_subject_id:
+        return f"{executed}: retains krithi id"
+    return f"{executed}: new krithi"
 
 
 def render_markdown(master: TyagarajaClassificationMaster) -> str:
@@ -834,9 +881,19 @@ def render_markdown(master: TyagarajaClassificationMaster) -> str:
         "(../../../database/data/track147-tyagaraja-application-manifest.json).",
         "",
         "> [!IMPORTANT]",
-        "> Eight catalogue identities are collisions. They are listed in the collision register "
-        "and are not classification subjects. "
-        "Their 17 source rows are the classification subjects.",
+        *(
+            [
+                "> Eight collided catalogue identities were split (TRACK-149). They stay in the collision "
+                "register as the record of that split; each of their 17 source rows is now its own "
+                "catalogue identity and classification subject."
+            ]
+            if accounting.collision_identities == 0
+            else [
+                "> Eight catalogue identities are collisions. They are listed in the collision register "
+                "and are not classification subjects. "
+                "Their 17 source rows are the classification subjects."
+            ]
+        ),
         "",
         "## Accounting",
         "",
@@ -872,10 +929,10 @@ def render_markdown(master: TyagarajaClassificationMaster) -> str:
             "",
             "## Collision register",
             "",
-            "Each row is one source page. The catalogue title is the current collapsed identity.",
+            "Each row is one source page. The catalogue title is the identity the pages were collapsed into.",
             "",
-            "| Catalogue title | Source setting | Subject | Import status |",
-            "|:---|:---|:---|:---|",
+            "| Catalogue title | Source setting | Subject | Import status | Decision |",
+            "|:---|:---|:---|:---|:---|",
         ]
     )
     witnesses_by_id = {subject.id: subject for subject in master.subjects}
@@ -890,6 +947,7 @@ def render_markdown(master: TyagarajaClassificationMaster) -> str:
                         _cell(f"{witness.raw_raga} / {witness.raw_tala}"),
                         _cell(witness.id),
                         _cell(witness.import_status),
+                        _cell(_collision_decision_cell(entry, witness_id)),
                     ]
                 )
                 + " |"
@@ -1168,8 +1226,14 @@ def render_markdown(master: TyagarajaClassificationMaster) -> str:
             "",
             "## Unresolved register",
             "",
-            f"- {accounting.collision_identities} collapsed identities stay `collision_not_classified` "
-            "(their 17 source witnesses are classified individually and await canon split remediation).",
+            *(
+                [
+                    f"- {accounting.collision_identities} collapsed identities stay `collision_not_classified` "
+                    "(their 17 source witnesses are classified individually and await canon split remediation)."
+                ]
+                if accounting.collision_identities
+                else []
+            ),
             *(
                 [
                     f"- {outside_rows} CSV rows are outside the Tyagaraja catalogue. "

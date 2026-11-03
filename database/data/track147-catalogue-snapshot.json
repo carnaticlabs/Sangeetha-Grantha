@@ -1,7 +1,7 @@
 {
   "snapshot_at": "2026-10-01",
   "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
-  "identity_count": 675,
+  "identity_count": 684,
   "source_row_count": 684,
   "records": [
     {
@@ -2421,15 +2421,6 @@
           "import_status": "mapped",
           "tala_witness_note": null,
           "payload_checksum": "6841381fbb9ee0b1491091fbf06eb6ff59d8627c59ca29359e12cd843c845879"
-        },
-        {
-          "id": "733ec39f-27a2-4f8e-a703-e88196a5ab09",
-          "raw_raga": "bilahari",
-          "raw_tala": "Isra Capu",
-          "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/06/thyagaraja-kriti-narasimha-raga.html",
-          "import_status": "mapped",
-          "tala_witness_note": null,
-          "payload_checksum": "ee02bf62a2d438bf74398d22a6b4aab6ba667c5b9959a57e4f6d0ffb1396919d"
         }
       ],
       "evidence": [
@@ -2443,17 +2434,6 @@
             "tala"
           ],
           "checksum": "9e697aedbfa21a6aaa6f4424042d051ee749531d925435ff68964243c8a81c49"
-        },
-        {
-          "id": "ffdf354c-f23a-4b6c-902b-92efe99c0ada",
-          "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/06/thyagaraja-kriti-narasimha-raga.html",
-          "fields": [
-            "title",
-            "composer",
-            "raga",
-            "tala"
-          ],
-          "checksum": "e0ad6d03d78e3958a20132db17e57d7ed5b44b63d993a17b552b768e53af2065"
         }
       ],
       "raga_rows": "1"
@@ -3179,6 +3159,51 @@
       "raga_rows": "1"
     },
     {
+      "id": "191c44c1-9744-4afe-9f90-5a9cb45ade22",
+      "title": "jaya mangaLaM",
+      "primary_language": "en",
+      "musical_form": "UNESTABLISHED",
+      "workflow_state": "draft",
+      "is_ragamalika": false,
+      "raga": "Ghanta",
+      "tala": "Jhampa",
+      "deity_id": null,
+      "temple_id": null,
+      "section_flags": {
+        "pallavi_count": 1,
+        "anupallavi_count": 0,
+        "charanam_count": 3,
+        "swara_sahitya_count": 0
+      },
+      "structure_audit": [],
+      "pallavi_excerpt": null,
+      "imports": [
+        {
+          "id": "5d70a340-0137-4dfd-baa8-596ccaebf89f",
+          "raw_raga": "ghaNTA",
+          "raw_tala": "Jhampa",
+          "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/12/thyagaraja-kriti-jaya-mangalam-raga.html",
+          "import_status": "approved",
+          "tala_witness_note": null,
+          "payload_checksum": "2ee57c03f6447cd0c342595c4a0d90d39f5cf7434e479a98760f3cf69498f2b6"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "35ab995b-60b6-4ced-b1bf-b522b76eca8b",
+          "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/12/thyagaraja-kriti-jaya-mangalam-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": "2ee57c03f6447cd0c342595c4a0d90d39f5cf7434e479a98760f3cf69498f2b6"
+        }
+      ],
+      "raga_rows": "1"
+    },
+    {
       "id": "195994c2-534a-4950-be10-ce9ba7a7f0cf",
       "title": "pAhi paramAtma",
       "primary_language": "en",
@@ -3885,15 +3910,6 @@
           "import_status": "mapped",
           "tala_witness_note": null,
           "payload_checksum": "8e62bac78e337d52f699fbad63102c73375ed394b5413095eecb95be4ee5be95"
-        },
-        {
-          "id": "3916fad4-5ef9-43ba-af21-5df0f233566c",
-          "raw_raga": "varALi",
-          "raw_tala": "Isra Capu",
-          "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/07/thyagaraja-kriti-sri-rama-jaya-rama.html",
-          "import_status": "mapped",
-          "tala_witness_note": null,
-          "payload_checksum": "9eed84af38cc0b116750a82022cc0cbb68a5b5933db284d4f4ac6271c67f4c40"
         }
       ],
       "evidence": [
@@ -3907,17 +3923,6 @@
             "tala"
           ],
           "checksum": "8b6a40453341bccc91ba1a9ac73fb8d4094d1815d7b94dec1bd362733227eb12"
-        },
-        {
-          "id": "72a2212c-e8e0-4a37-84cb-97f44c7d1786",
-          "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/07/thyagaraja-kriti-sri-rama-jaya-rama.html",
-          "fields": [
-            "title",
-            "composer",
-            "raga",
-            "tala"
-          ],
-          "checksum": "91ab184f4e3d170919dbd757cb3acbe3f8f1aa7701a77f112e6f9762cf9cbabc"
         }
       ],
       "raga_rows": "1"
@@ -4368,6 +4373,51 @@
             "tala"
           ],
           "checksum": "4cdfbea149b4dbd542add2ed104d65683dd81fb9996d6b28dd6b4aee0bc21310"
+        }
+      ],
+      "raga_rows": "1"
+    },
+    {
+      "id": "20fb3477-37b1-4a67-bf22-cfb57fd45192",
+      "title": "paripUrNa kAma",
+      "primary_language": "en",
+      "musical_form": "UNESTABLISHED",
+      "workflow_state": "draft",
+      "is_ragamalika": false,
+      "raga": "Hamsabhramari",
+      "tala": "Adi",
+      "deity_id": null,
+      "temple_id": null,
+      "section_flags": {
+        "pallavi_count": 1,
+        "anupallavi_count": 1,
+        "charanam_count": 1,
+        "swara_sahitya_count": 0
+      },
+      "structure_audit": [],
+      "pallavi_excerpt": null,
+      "imports": [
+        {
+          "id": "0082d54a-2341-48c0-9b54-d7039232b77c",
+          "raw_raga": "hamsa bhramari",
+          "raw_tala": "Adi",
+          "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/09/thyagaraja-kriti-paripoorna-kama-raga.html",
+          "import_status": "approved",
+          "tala_witness_note": null,
+          "payload_checksum": "719ed9b3f6e0553051bacca7589ef34ae08c344bc6b5002b46e686f8426373f6"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "ddef25d6-11bc-4652-b267-5b918fa70c50",
+          "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/09/thyagaraja-kriti-paripoorna-kama-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": "719ed9b3f6e0553051bacca7589ef34ae08c344bc6b5002b46e686f8426373f6"
         }
       ],
       "raga_rows": "1"
@@ -8451,15 +8501,6 @@
       "pallavi_excerpt": "1 SrI rAma rAma rAma sItA hRj-jaladhi sOma",
       "imports": [
         {
-          "id": "3115095a-36f9-4999-b32c-d8a063268cd9",
-          "raw_raga": "Huseni",
-          "raw_tala": "Unknown",
-          "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2007/10/thyagaraja-kriti-rama-rama-rama-sita.html",
-          "import_status": "mapped",
-          "tala_witness_note": null,
-          "payload_checksum": "2bbe458491b3748b9d458dc95df8f85516a357d80c1ca1d02d1b84ac7e9cb229"
-        },
-        {
           "id": "3946f1d2-2a27-4591-b504-5e334d51b53e",
           "raw_raga": "sAvEri",
           "raw_tala": "Adi",
@@ -8470,17 +8511,6 @@
         }
       ],
       "evidence": [
-        {
-          "id": "0a21cdc5-fd10-49af-90f6-b2e290d59a6a",
-          "url": "http://thyagaraja-vaibhavam.blogspot.com/2007/10/thyagaraja-kriti-rama-rama-rama-sita.html",
-          "fields": [
-            "title",
-            "composer",
-            "raga",
-            "tala"
-          ],
-          "checksum": "4173bfd7d0581c9b3cdb173ec486542330574d8f1ae5fecfc8ec59bf4dd02b18"
-        },
         {
           "id": "636b612a-ffac-4f99-bc1d-ea6b327d0d8a",
           "url": "http://thyagaraja-vaibhavam.blogspot.com/2007/04/thyagaraja-kriti-sri-rama-rama-rama.html",
@@ -8853,6 +8883,51 @@
             "tala"
           ],
           "checksum": "6c8fddb01d139ec922b0e720c179d692e49380d2683e4f09de5b532549784f57"
+        }
+      ],
+      "raga_rows": "1"
+    },
+    {
+      "id": "474faeba-0c01-4688-a1e1-1ad41b536ee3",
+      "title": "jaya mangaLaM",
+      "primary_language": "en",
+      "musical_form": "UNESTABLISHED",
+      "workflow_state": "draft",
+      "is_ragamalika": false,
+      "raga": "Mohanam",
+      "tala": "Unknown",
+      "deity_id": null,
+      "temple_id": null,
+      "section_flags": {
+        "pallavi_count": 1,
+        "anupallavi_count": 1,
+        "charanam_count": 3,
+        "swara_sahitya_count": 0
+      },
+      "structure_audit": [],
+      "pallavi_excerpt": null,
+      "imports": [
+        {
+          "id": "6eb15e4d-fcd0-45e1-9edd-969928695354",
+          "raw_raga": "mOhanaM",
+          "raw_tala": "Unknown",
+          "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/01/thyagaraja-kriti-jaya-mangalam-raga.html",
+          "import_status": "approved",
+          "tala_witness_note": null,
+          "payload_checksum": "c0c199a622ef336046cce3133a6737e8d69799af9fb9aeb249b4616f4de588b3"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "2ea79fc2-ffcf-439f-b187-5b5c73b17e64",
+          "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/01/thyagaraja-kriti-jaya-mangalam-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": "c0c199a622ef336046cce3133a6737e8d69799af9fb9aeb249b4616f4de588b3"
         }
       ],
       "raga_rows": "1"
@@ -9330,15 +9405,6 @@
       "pallavi_excerpt": null,
       "imports": [
         {
-          "id": "0082d54a-2341-48c0-9b54-d7039232b77c",
-          "raw_raga": "hamsa bhramari",
-          "raw_tala": "Adi",
-          "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/09/thyagaraja-kriti-paripoorna-kama-raga.html",
-          "import_status": "approved",
-          "tala_witness_note": null,
-          "payload_checksum": "719ed9b3f6e0553051bacca7589ef34ae08c344bc6b5002b46e686f8426373f6"
-        },
-        {
           "id": "4707048d-f06e-46f0-9202-3b985cee65b2",
           "raw_raga": "pUri kalyANi",
           "raw_tala": "Adi",
@@ -9349,17 +9415,6 @@
         }
       ],
       "evidence": [
-        {
-          "id": "dfa23e8a-f065-4c18-8bab-1b072195c99f",
-          "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/09/thyagaraja-kriti-paripoorna-kama-raga.html",
-          "fields": [
-            "title",
-            "composer",
-            "raga",
-            "tala"
-          ],
-          "checksum": "719ed9b3f6e0553051bacca7589ef34ae08c344bc6b5002b46e686f8426373f6"
-        },
         {
           "id": "770b46f6-5fde-494a-94b8-322545306ab7",
           "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/08/thyagaraja-kriti-paripoorna-kama-raga.html",
@@ -9800,15 +9855,6 @@
       "pallavi_excerpt": "1 rAma sItA rAma rAma rAma sItA rAma rAma",
       "imports": [
         {
-          "id": "1daabb05-6208-44a6-89c0-dc48be8fb187",
-          "raw_raga": "SankarAbharaNaM",
-          "raw_tala": "Unknown",
-          "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/03/thyagaraja-kriti-rama-sita-rama-rama.html",
-          "import_status": "approved",
-          "tala_witness_note": null,
-          "payload_checksum": "953a6c9d8daec6964f1bbc95e7afc5c936bf1c125965e6bf086ad33e371f7dca"
-        },
-        {
           "id": "ab6c4e31-d6a7-474d-ac72-e30adb14ecaf",
           "raw_raga": "balahamsa",
           "raw_tala": "Unknown",
@@ -9819,17 +9865,6 @@
         }
       ],
       "evidence": [
-        {
-          "id": "d1c2fd24-ff5e-4ff0-a19e-cf8006262004",
-          "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/03/thyagaraja-kriti-rama-sita-rama-rama.html",
-          "fields": [
-            "title",
-            "composer",
-            "raga",
-            "tala"
-          ],
-          "checksum": "9e6e7ad1a6da61e705661e581db1514f6334d3f904e49fca06ad7513dbfd4f68"
-        },
         {
           "id": "acc36b4d-2fe2-4a22-9ac6-5efd97688c47",
           "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/01/thyagaraja-kriti-rama-sita-rama-raga.html",
@@ -13048,6 +13083,51 @@
       "raga_rows": "1"
     },
     {
+      "id": "6d55561e-eedf-48c1-b1ea-2961a2750965",
+      "title": "nArada muni",
+      "primary_language": "en",
+      "musical_form": "UNESTABLISHED",
+      "workflow_state": "draft",
+      "is_ragamalika": false,
+      "raga": "Panthuvarāli",
+      "tala": "Rupaka",
+      "deity_id": null,
+      "temple_id": null,
+      "section_flags": {
+        "pallavi_count": 1,
+        "anupallavi_count": 1,
+        "charanam_count": 3,
+        "swara_sahitya_count": 0
+      },
+      "structure_audit": [],
+      "pallavi_excerpt": null,
+      "imports": [
+        {
+          "id": "c702d09d-b5a5-4b16-82ac-5fc01e265dd9",
+          "raw_raga": "pantuvarALi",
+          "raw_tala": "Rupakam",
+          "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/08/thyagaraja-kriti-narada-muni-raga.html",
+          "import_status": "approved",
+          "tala_witness_note": null,
+          "payload_checksum": "8f286e99099c9ef16d77b3f2829c5f61d687ebf2aa3ed3d7ef8cad023c71e06e"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "5b6a9d0b-5a7e-417b-b129-b10427478087",
+          "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/08/thyagaraja-kriti-narada-muni-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": "0f5ac45548b51f58487b9be0a61d6dc48c99212cb3bb0423c00ced01398a681b"
+        }
+      ],
+      "raga_rows": "1"
+    },
+    {
       "id": "6db8faab-0307-4ec1-aeba-debdcdf3de00",
       "title": "oka pAri jUDaga",
       "primary_language": "en",
@@ -13113,24 +13193,6 @@
       "pallavi_excerpt": null,
       "imports": [
         {
-          "id": "5d70a340-0137-4dfd-baa8-596ccaebf89f",
-          "raw_raga": "ghaNTA",
-          "raw_tala": "Jhampa",
-          "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/12/thyagaraja-kriti-jaya-mangalam-raga.html",
-          "import_status": "mapped",
-          "tala_witness_note": null,
-          "payload_checksum": "2ee57c03f6447cd0c342595c4a0d90d39f5cf7434e479a98760f3cf69498f2b6"
-        },
-        {
-          "id": "6eb15e4d-fcd0-45e1-9edd-969928695354",
-          "raw_raga": "mOhanaM",
-          "raw_tala": "Unknown",
-          "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/01/thyagaraja-kriti-jaya-mangalam-raga.html",
-          "import_status": "mapped",
-          "tala_witness_note": null,
-          "payload_checksum": "c0c199a622ef336046cce3133a6737e8d69799af9fb9aeb249b4616f4de588b3"
-        },
-        {
           "id": "b26f89a5-7924-43e8-8ee6-c50d0a8bb6f1",
           "raw_raga": "nAda nAmakriya",
           "raw_tala": "Adi",
@@ -13141,28 +13203,6 @@
         }
       ],
       "evidence": [
-        {
-          "id": "af06e3d0-f85a-4d33-a425-b81fc19413f1",
-          "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/12/thyagaraja-kriti-jaya-mangalam-raga.html",
-          "fields": [
-            "title",
-            "composer",
-            "raga",
-            "tala"
-          ],
-          "checksum": "2ee57c03f6447cd0c342595c4a0d90d39f5cf7434e479a98760f3cf69498f2b6"
-        },
-        {
-          "id": "1e5ee4d0-b531-4b21-a23c-c1b4a1ca2bc0",
-          "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/01/thyagaraja-kriti-jaya-mangalam-raga.html",
-          "fields": [
-            "title",
-            "composer",
-            "raga",
-            "tala"
-          ],
-          "checksum": "c0c199a622ef336046cce3133a6737e8d69799af9fb9aeb249b4616f4de588b3"
-        },
         {
           "id": "c66f4f9a-8841-4118-86c4-53aba1cfe0cc",
           "url": "http://thyagaraja-vaibhavam.blogspot.com/2007/03/thyagaraja-kriti-jaya-mangalam-raga.html",
@@ -14181,14 +14221,12 @@
       "deity_id": null,
       "temple_id": null,
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 0,
         "charanam_count": 4,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "pallavi_excerpt": "SrI nArada muni guru 1 rAya kaNTi-m(E) nATi tapamO guru rAya",
       "imports": [
         {
@@ -14199,15 +14237,6 @@
           "import_status": "mapped",
           "tala_witness_note": null,
           "payload_checksum": "aa6cfa72b2dd73f57c19e49104df9453bb42900a63866a24801de69291d09f88"
-        },
-        {
-          "id": "c702d09d-b5a5-4b16-82ac-5fc01e265dd9",
-          "raw_raga": "pantuvarALi",
-          "raw_tala": "Rupakam",
-          "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/08/thyagaraja-kriti-narada-muni-raga.html",
-          "import_status": "mapped",
-          "tala_witness_note": null,
-          "payload_checksum": "8f286e99099c9ef16d77b3f2829c5f61d687ebf2aa3ed3d7ef8cad023c71e06e"
         }
       ],
       "evidence": [
@@ -14221,17 +14250,6 @@
             "tala"
           ],
           "checksum": "6f157b146b6668ee217994d11d3c5e869757c078f436565df6666b89ef5569f7"
-        },
-        {
-          "id": "d960c172-7eef-4f6e-bc2c-954e13130d8a",
-          "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/08/thyagaraja-kriti-narada-muni-raga.html",
-          "fields": [
-            "title",
-            "composer",
-            "raga",
-            "tala"
-          ],
-          "checksum": "0f5ac45548b51f58487b9be0a61d6dc48c99212cb3bb0423c00ced01398a681b"
         }
       ],
       "raga_rows": "1"
@@ -15181,6 +15199,51 @@
             "tala"
           ],
           "checksum": "dff87dca1289b4ab36e43682865c899dd0fd6e02d5977465d4da9f88c915a9d9"
+        }
+      ],
+      "raga_rows": "1"
+    },
+    {
+      "id": "7e7529c6-93ee-46fe-890e-c491854fbeee",
+      "title": "pAhi rAma candra",
+      "primary_language": "en",
+      "musical_form": "UNESTABLISHED",
+      "workflow_state": "draft",
+      "is_ragamalika": false,
+      "raga": "SankarAbharaNaM",
+      "tala": "Unknown",
+      "deity_id": null,
+      "temple_id": null,
+      "section_flags": {
+        "pallavi_count": 1,
+        "anupallavi_count": 0,
+        "charanam_count": 4,
+        "swara_sahitya_count": 0
+      },
+      "structure_audit": [],
+      "pallavi_excerpt": null,
+      "imports": [
+        {
+          "id": "3943b77a-d7b2-4f7f-8715-03ba0e5e2eb7",
+          "raw_raga": "SankarAbharaNaM",
+          "raw_tala": "Unknown",
+          "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/03/thyagaraja-kriti-pahi-ramachandra-raga.html",
+          "import_status": "approved",
+          "tala_witness_note": null,
+          "payload_checksum": "9aac7b240da2f0c752c9eb018619cc00f26550b097dc4313f09123065348d9f5"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "0e7c8791-111a-4fe9-a820-7289695b61c6",
+          "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/03/thyagaraja-kriti-pahi-ramachandra-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": "3af9942e460598bc772278b5580adead706c65562e45cb5f85a769bad1177b50"
         }
       ],
       "raga_rows": "1"
@@ -22598,15 +22661,6 @@
       "pallavi_excerpt": "pAhi rAma candra rAghava 1 harE mAm\npAhi rAma candra rAghava",
       "imports": [
         {
-          "id": "3943b77a-d7b2-4f7f-8715-03ba0e5e2eb7",
-          "raw_raga": "SankarAbharaNaM",
-          "raw_tala": "Unknown",
-          "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/03/thyagaraja-kriti-pahi-ramachandra-raga.html",
-          "import_status": "approved",
-          "tala_witness_note": null,
-          "payload_checksum": "9aac7b240da2f0c752c9eb018619cc00f26550b097dc4313f09123065348d9f5"
-        },
-        {
           "id": "604a9623-f1b0-4efc-9486-ea415b219870",
           "raw_raga": "yadukula kAmbhOji",
           "raw_tala": "Unknown",
@@ -22617,17 +22671,6 @@
         }
       ],
       "evidence": [
-        {
-          "id": "dba24cab-5581-4b07-9233-3175b4c7ce99",
-          "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/03/thyagaraja-kriti-pahi-ramachandra-raga.html",
-          "fields": [
-            "title",
-            "composer",
-            "raga",
-            "tala"
-          ],
-          "checksum": "3af9942e460598bc772278b5580adead706c65562e45cb5f85a769bad1177b50"
-        },
         {
           "id": "adaa5b14-8121-4099-a5a1-93405a43f07e",
           "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/02/thyagaraja-kriti-paahi-ramachandra-raga.html",
@@ -26200,6 +26243,51 @@
       "raga_rows": "1"
     },
     {
+      "id": "db90b28a-2b7f-43ee-a6dc-078558b40cf9",
+      "title": "rAma sItA rAma",
+      "primary_language": "en",
+      "musical_form": "UNESTABLISHED",
+      "workflow_state": "draft",
+      "is_ragamalika": false,
+      "raga": "SankarAbharaNaM",
+      "tala": "Unknown",
+      "deity_id": null,
+      "temple_id": null,
+      "section_flags": {
+        "pallavi_count": 1,
+        "anupallavi_count": 0,
+        "charanam_count": 9,
+        "swara_sahitya_count": 0
+      },
+      "structure_audit": [],
+      "pallavi_excerpt": null,
+      "imports": [
+        {
+          "id": "1daabb05-6208-44a6-89c0-dc48be8fb187",
+          "raw_raga": "SankarAbharaNaM",
+          "raw_tala": "Unknown",
+          "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/03/thyagaraja-kriti-rama-sita-rama-rama.html",
+          "import_status": "approved",
+          "tala_witness_note": null,
+          "payload_checksum": "953a6c9d8daec6964f1bbc95e7afc5c936bf1c125965e6bf086ad33e371f7dca"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "f6051a1d-8e6a-49a8-94f9-8761a9c79918",
+          "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/03/thyagaraja-kriti-rama-sita-rama-rama.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": "9e6e7ad1a6da61e705661e581db1514f6334d3f904e49fca06ad7513dbfd4f68"
+        }
+      ],
+      "raga_rows": "1"
+    },
+    {
       "id": "dbc42cee-6859-4196-90ae-16e05f9a06d1",
       "title": "parama pAvana",
       "primary_language": "en",
@@ -28274,6 +28362,51 @@
       "raga_rows": "1"
     },
     {
+      "id": "e9d91067-f4c7-4b2b-ae5c-06db11815ac2",
+      "title": "SrI rAma jaya rAma",
+      "primary_language": "en",
+      "musical_form": "UNESTABLISHED",
+      "workflow_state": "draft",
+      "is_ragamalika": false,
+      "raga": "Varāli",
+      "tala": "Isra Capu",
+      "deity_id": null,
+      "temple_id": null,
+      "section_flags": {
+        "pallavi_count": 1,
+        "anupallavi_count": 0,
+        "charanam_count": 11,
+        "swara_sahitya_count": 0
+      },
+      "structure_audit": [],
+      "pallavi_excerpt": null,
+      "imports": [
+        {
+          "id": "3916fad4-5ef9-43ba-af21-5df0f233566c",
+          "raw_raga": "varALi",
+          "raw_tala": "Isra Capu",
+          "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/07/thyagaraja-kriti-sri-rama-jaya-rama.html",
+          "import_status": "approved",
+          "tala_witness_note": null,
+          "payload_checksum": "9eed84af38cc0b116750a82022cc0cbb68a5b5933db284d4f4ac6271c67f4c40"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "b5f889b4-6448-4546-affe-ded6fb3418ec",
+          "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/07/thyagaraja-kriti-sri-rama-jaya-rama.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": "91ab184f4e3d170919dbd757cb3acbe3f8f1aa7701a77f112e6f9762cf9cbabc"
+        }
+      ],
+      "raga_rows": "1"
+    },
+    {
       "id": "eb516533-8464-40c3-8c7c-86dcbce93129",
       "title": "manasA eTulOrtunE",
       "primary_language": "en",
@@ -28809,6 +28942,51 @@
             "tala"
           ],
           "checksum": "53f1b83f417181e098f18e993b8f9ac6c39fe5fa5025bbbc5b2a35a03c84d0b1"
+        }
+      ],
+      "raga_rows": "1"
+    },
+    {
+      "id": "f2700b5a-d26a-498b-b5c7-61806ebbb729",
+      "title": "Rama Rama Rama Sita",
+      "primary_language": "en",
+      "musical_form": "UNESTABLISHED",
+      "workflow_state": "draft",
+      "is_ragamalika": false,
+      "raga": "Huseni",
+      "tala": "Unknown",
+      "deity_id": null,
+      "temple_id": null,
+      "section_flags": {
+        "pallavi_count": 1,
+        "anupallavi_count": 0,
+        "charanam_count": 13,
+        "swara_sahitya_count": 0
+      },
+      "structure_audit": [],
+      "pallavi_excerpt": null,
+      "imports": [
+        {
+          "id": "3115095a-36f9-4999-b32c-d8a063268cd9",
+          "raw_raga": "Huseni",
+          "raw_tala": "Unknown",
+          "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2007/10/thyagaraja-kriti-rama-rama-rama-sita.html",
+          "import_status": "approved",
+          "tala_witness_note": null,
+          "payload_checksum": "2bbe458491b3748b9d458dc95df8f85516a357d80c1ca1d02d1b84ac7e9cb229"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "2b8a3db9-29d3-4190-a3d0-250e0aa55179",
+          "url": "http://thyagaraja-vaibhavam.blogspot.com/2007/10/thyagaraja-kriti-rama-rama-rama-sita.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": "4173bfd7d0581c9b3cdb173ec486542330574d8f1ae5fecfc8ec59bf4dd02b18"
         }
       ],
       "raga_rows": "1"
@@ -30390,6 +30568,51 @@
             "tala"
           ],
           "checksum": "68361691dfcccc0c7a949aa1dd9956108439ae703f2839a0e626ef0d53ff461c"
+        }
+      ],
+      "raga_rows": "1"
+    },
+    {
+      "id": "ff293925-2765-420a-831d-5d6314c456df",
+      "title": "narasiMha",
+      "primary_language": "en",
+      "musical_form": "UNESTABLISHED",
+      "workflow_state": "draft",
+      "is_ragamalika": false,
+      "raga": "Bilahari",
+      "tala": "Isra Capu",
+      "deity_id": null,
+      "temple_id": null,
+      "section_flags": {
+        "pallavi_count": 1,
+        "anupallavi_count": 1,
+        "charanam_count": 3,
+        "swara_sahitya_count": 0
+      },
+      "structure_audit": [],
+      "pallavi_excerpt": null,
+      "imports": [
+        {
+          "id": "733ec39f-27a2-4f8e-a703-e88196a5ab09",
+          "raw_raga": "bilahari",
+          "raw_tala": "Isra Capu",
+          "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/06/thyagaraja-kriti-narasimha-raga.html",
+          "import_status": "approved",
+          "tala_witness_note": null,
+          "payload_checksum": "ee02bf62a2d438bf74398d22a6b4aab6ba667c5b9959a57e4f6d0ffb1396919d"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "03ccabd9-1906-4a19-8e2f-88f52e0ce16e",
+          "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/06/thyagaraja-kriti-narasimha-raga.html",
+          "fields": [
+            "title",
+            "composer",
+            "raga",
+            "tala"
+          ],
+          "checksum": "e0ad6d03d78e3958a20132db17e57d7ed5b44b63d993a17b552b768e53af2065"
         }
       ],
       "raga_rows": "1"

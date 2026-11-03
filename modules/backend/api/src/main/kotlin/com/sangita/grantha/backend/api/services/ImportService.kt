@@ -83,6 +83,16 @@ interface IImportService {
     suspend fun reingestMappedKrithi(id: Uuid, reviewerUserId: Uuid?): ImportedKrithiDto
 
     /**
+     * TRACK-149: detach an import from the krithi it was merged into, returning it to PENDING so it
+     * can be promoted to a krithi of its own with `reviewImport(forceNew = true)`.
+     *
+     * Fails closed: refuses when the import is not mapped, when it is the krithi's last witness, or
+     * when the krithi's lyric variants came from this import. It removes only the source-evidence
+     * rows for this import's source URL; it never deletes lyrics, sections or the krithi itself.
+     */
+    suspend fun unmapImport(id: Uuid, reason: String, actorUserId: Uuid?): ImportedKrithiDto
+
+    /**
      * Calculate summary stats for a batch to decide if it can be finalized.
      */
     suspend fun finalizeBatch(batchId: Uuid): Map<String, Any>
@@ -435,7 +445,8 @@ class ImportServiceImpl(
 
                 val candidates = (composerCandidates + allCandidates).distinctBy { it.id }
 
-                val existingKrithi = candidates
+                // TRACK-149: forceNew bypasses the dedup so a split can mint a krithi of its own.
+                val existingKrithi = if (request.forceNew) null else candidates
                     .map { candidate ->
                         val titleScore = NameNormalizationService.ratio(normalizedTitle, candidate.titleNormalized)
                         val compressedScore = NameNormalizationService.ratio(
@@ -645,6 +656,56 @@ class ImportServiceImpl(
         )
 
         return updated
+    }
+
+    override suspend fun unmapImport(id: Uuid, reason: String, actorUserId: Uuid?): ImportedKrithiDto {
+        require(reason.isNotBlank()) { "A reason is required to unmap an import" }
+        // One transaction: evidence removal, status reset and audit commit together or not at all.
+        return DatabaseFactory.dbQuery {
+            val importData = dal.imports.findByIdForUpdate(id)
+                ?: throw NoSuchElementException("Import not found")
+            val krithiId = importData.mappedKrithiId
+                ?: throw IllegalArgumentException("Import $id is not mapped to a krithi")
+            val sourceKey = importData.sourceKey
+                ?: throw IllegalArgumentException("Import $id has no source key, so its evidence cannot be identified")
+
+            require(dal.imports.countMappedTo(krithiId.toJavaUuid(), id.toJavaUuid()) > 0) {
+                "Import $id is the only witness for krithi $krithiId; unmapping would orphan it"
+            }
+            require(dal.krithiLyrics.countVariantsBySourceReference(krithiId, sourceKey) == 0L) {
+                "Krithi $krithiId has lyric variants persisted from $sourceKey; refusing to unmap"
+            }
+
+            val evidenceRemoved = dal.sourceEvidence.deleteByKrithiAndSourceUrl(krithiId, sourceKey)
+            val updated = dal.imports.reviewImport(
+                id = id,
+                status = ImportStatus.PENDING,
+                mappedKrithiId = null,
+                reviewerNotes = reason,
+            ) ?: throw NoSuchElementException("Import not found")
+
+            val metadata = buildJsonObject {
+                put("importId", id.toString())
+                put("previousKrithiId", krithiId.toString())
+                put("evidenceRemoved", evidenceRemoved)
+                put("reason", reason)
+            }.toString()
+            dal.auditLogs.append(
+                action = "UNMAP_IMPORT",
+                entityTable = "imported_krithis",
+                entityId = id,
+                actorUserId = actorUserId,
+                metadata = metadata,
+            )
+            dal.auditLogs.append(
+                action = "IMPORT_UNMAPPED_FROM_KRITHI",
+                entityTable = "krithis",
+                entityId = krithiId,
+                actorUserId = actorUserId,
+                metadata = metadata,
+            )
+            updated
+        }
     }
 
     override suspend fun reingestMappedKrithi(id: Uuid, reviewerUserId: Uuid?): ImportedKrithiDto {

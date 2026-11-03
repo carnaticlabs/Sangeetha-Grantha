@@ -285,6 +285,20 @@ class KrithiLyricRepository {
      * TRACK-097: Delete all lyric variants and their lyric sections for a krithi.
      * Used before re-extraction to allow the backfill to re-persist from fresh data.
      */
+    /**
+     * Count a krithi's lyric variants that were persisted from one source reference.
+     * TRACK-149: unmap refuses to run while the krithi's lyrics came from the import being unmapped.
+     */
+    suspend fun countVariantsBySourceReference(krithiId: Uuid, sourceReference: String): Long = DatabaseFactory.dbQuery {
+        KrithiLyricVariantsTable
+            .selectAll()
+            .where {
+                (KrithiLyricVariantsTable.krithiId eq krithiId.toJavaUuid()) and
+                    (KrithiLyricVariantsTable.sourceReference eq sourceReference)
+            }
+            .count()
+    }
+
     suspend fun deleteAllVariants(krithiId: Uuid): Int = DatabaseFactory.dbQuery {
         val javaKrithiId = krithiId.toJavaUuid()
         val variantIds = KrithiLyricVariantsTable

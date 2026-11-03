@@ -251,6 +251,14 @@ class SourceEvidenceRepository {
     }
 
     /**
+     * Remove the evidence rows a krithi holds for one source URL. Returns the number removed.
+     * TRACK-149: used when an import is unmapped from a krithi it was wrongly merged into.
+     */
+    suspend fun deleteByKrithiAndSourceUrl(krithiId: Uuid, sourceUrl: String): Int = DatabaseFactory.dbQuery {
+        E.deleteWhere { (E.krithiId eq krithiId.toJavaUuid()) and (E.sourceUrl eq sourceUrl) }
+    }
+
+    /**
      * Resolve the import_source_id for a source evidence record.
      * Falls back to creating a new import_sources record if no match is found.
      */

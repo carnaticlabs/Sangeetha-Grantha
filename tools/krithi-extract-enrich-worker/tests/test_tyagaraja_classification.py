@@ -16,6 +16,7 @@ from src.tyagaraja_classification import (
     Approval,
     ClaimAxis,
     ClassificationClaim,
+    CollisionEntry,
     EvidenceKind,
     ImportCensusRow,
     ReviewState,
@@ -119,6 +120,43 @@ def test_disagreeing_imports_are_witnesses_not_one_identity() -> None:
     forged.collision_register[0].witness_subject_ids = []
     with pytest.raises(TyagarajaClassificationError):
         validate_master(forged)
+
+
+def test_live_master_records_all_eight_executed_splits() -> None:
+    master = load_master(MASTER_PATH)
+    assert master.accounting.collision_identities == 0
+    assert master.accounting.catalogue_identities == master.accounting.classification_subjects == 684
+    assert len(master.collision_register) == 8
+    by_id = {subject.id: subject for subject in master.subjects}
+    for entry in master.collision_register:
+        assert entry.disposition == "split_executed"
+        members = [by_id[subject_id] for subject_id in entry.witness_subject_ids]
+        assert all(member.subject_kind == SubjectKind.CATALOGUE_IDENTITY for member in members)
+        # the retained witness keeps the original krithi id; every other witness has a krithi of its own
+        assert entry.retained_witness_subject_id is not None
+        assert by_id[entry.retained_witness_subject_id].krithi_id == entry.krithi_id
+        assert len({member.krithi_id for member in members}) == len(members)
+
+
+def test_executed_split_must_retain_the_original_krithi_id() -> None:
+    master = load_master(MASTER_PATH)
+    forged = master.model_copy(deep=True)
+    entry = forged.collision_register[0]
+    other = next(
+        subject_id for subject_id in entry.witness_subject_ids if subject_id != entry.retained_witness_subject_id
+    )
+    entry.retained_witness_subject_id = other
+    with pytest.raises(TyagarajaClassificationError):
+        validate_master(forged)
+
+
+def test_executed_split_requires_an_approved_decision() -> None:
+    master = load_master(MASTER_PATH)
+    entry = master.collision_register[0].model_dump()
+    for field in ("decision", "retained_witness_subject_id", "decided_by", "decided_at", "decision_note"):
+        entry[field] = None
+    with pytest.raises(ValueError):
+        CollisionEntry.model_validate(entry)
 
 
 def test_ghana_raga_candidate_in_skeleton_is_not_seedable() -> None:
@@ -287,7 +325,9 @@ def test_live_master_accounts_for_every_source_row_and_witness() -> None:
     assert witnesses_by_id["db-snapshot"].status == WitnessStatus.DATABASE_SNAPSHOT
     assert any(w.status == WitnessStatus.UNAVAILABLE for w in master.witnesses)
 
-    collapsed = {entry.krithi_id for entry in master.collision_register}
+    collapsed = {
+        entry.krithi_id for entry in master.collision_register if entry.disposition == "collision_not_classified"
+    }
     for subject in master.subjects:
         assert subject.krithi_id not in collapsed
         assert subject.geography_state == derive_geography_state(subject.claims)

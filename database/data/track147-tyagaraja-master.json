@@ -4,18 +4,18 @@
   "composer_id": "b1bdccd8-8cb1-4a14-a9e6-7ffc843cd7b6",
   "database_snapshot_witness": "db-snapshot",
   "accounting": {
-    "catalogue_identities": 675,
+    "catalogue_identities": 684,
     "source_rows": 684,
-    "single_source_subjects": 667,
-    "collision_subjects": 17,
-    "collision_identities": 8,
+    "single_source_subjects": 684,
+    "collision_subjects": 0,
+    "collision_identities": 0,
     "classification_subjects": 684
   },
   "witnesses": [
     {
       "id": "db-snapshot",
       "url": "database/data/track147-catalogue-snapshot.json",
-      "sha256": "398df2e57213eb49c82368677a818bd3f8532740417e3be0156a515821bf0894",
+      "sha256": "b8fd67bad2d843ab6580d1298e9704929beb3bd277a1c201184b019656943bd1",
       "accessed_at": "2026-10-15",
       "status": "database_snapshot",
       "description": "Hashed database census and stored pallavi/section/evidence snapshot for 675 Tyagaraja catalogue identities and 684 source imports."
@@ -84,142 +84,6 @@
       "accessed_at": "2026-10-15",
       "status": "unavailable",
       "description": "Compiled Sanskrit compositions of Tyagaraja group inventory lead (not consulted)."
-    },
-    {
-      "id": "0082d54a-2341-48c0-9b54-d7039232b77c",
-      "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/09/thyagaraja-kriti-paripoorna-kama-raga.html",
-      "sha256": "719ed9b3f6e0553051bacca7589ef34ae08c344bc6b5002b46e686f8426373f6",
-      "accessed_at": "2026-10-01",
-      "status": "fetched",
-      "description": "Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for paripUrNa kAma (hamsa bhramari)."
-    },
-    {
-      "id": "1daabb05-6208-44a6-89c0-dc48be8fb187",
-      "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/03/thyagaraja-kriti-rama-sita-rama-rama.html",
-      "sha256": "9e6e7ad1a6da61e705661e581db1514f6334d3f904e49fca06ad7513dbfd4f68",
-      "accessed_at": "2026-09-24",
-      "status": "fetched",
-      "description": "Cached thyagaraja-vaibhavam HTML witness for rAma sItA rAma (SankarAbharaNaM)."
-    },
-    {
-      "id": "1f73ab63-0278-4b61-85ce-3fbacbce1ba0",
-      "url": "http://thyagaraja-vaibhavam.blogspot.com/2007/09/thyagaraja-kriti-sri-rama-jaya-rama.html",
-      "sha256": "8b6a40453341bccc91ba1a9ac73fb8d4094d1815d7b94dec1bd362733227eb12",
-      "accessed_at": "2026-09-24",
-      "status": "fetched",
-      "description": "Cached thyagaraja-vaibhavam HTML witness for Sri Rama Jaya Rama (Madhyamavati)."
-    },
-    {
-      "id": "3115095a-36f9-4999-b32c-d8a063268cd9",
-      "url": "http://thyagaraja-vaibhavam.blogspot.com/2007/10/thyagaraja-kriti-rama-rama-rama-sita.html",
-      "sha256": "4173bfd7d0581c9b3cdb173ec486542330574d8f1ae5fecfc8ec59bf4dd02b18",
-      "accessed_at": "2026-09-24",
-      "status": "fetched",
-      "description": "Cached thyagaraja-vaibhavam HTML witness for Rama Rama Rama Sita (Huseni)."
-    },
-    {
-      "id": "3916fad4-5ef9-43ba-af21-5df0f233566c",
-      "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/07/thyagaraja-kriti-sri-rama-jaya-rama.html",
-      "sha256": "91ab184f4e3d170919dbd757cb3acbe3f8f1aa7701a77f112e6f9762cf9cbabc",
-      "accessed_at": "2026-09-24",
-      "status": "fetched",
-      "description": "Cached thyagaraja-vaibhavam HTML witness for Sri Rama Jaya Rama (varALi)."
-    },
-    {
-      "id": "3943b77a-d7b2-4f7f-8715-03ba0e5e2eb7",
-      "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/03/thyagaraja-kriti-pahi-ramachandra-raga.html",
-      "sha256": "3af9942e460598bc772278b5580adead706c65562e45cb5f85a769bad1177b50",
-      "accessed_at": "2026-09-24",
-      "status": "fetched",
-      "description": "Cached thyagaraja-vaibhavam HTML witness for pAhi rAma candra (SankarAbharaNaM)."
-    },
-    {
-      "id": "3946f1d2-2a27-4591-b504-5e334d51b53e",
-      "url": "http://thyagaraja-vaibhavam.blogspot.com/2007/04/thyagaraja-kriti-sri-rama-rama-rama.html",
-      "sha256": "1bd3b316f96e2ec4c07cc651b8c0fcde23d3a4c9f9a18b2724e359996b2d7d79",
-      "accessed_at": "2026-09-24",
-      "status": "fetched",
-      "description": "Cached thyagaraja-vaibhavam HTML witness for Rama Rama Rama Sita (sAvEri)."
-    },
-    {
-      "id": "40e2d47b-a0c5-4e44-b301-8cdd05b9589d",
-      "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/01/thyagaraja-kriti-sri-naarasimha-raga.html",
-      "sha256": "9e697aedbfa21a6aaa6f4424042d051ee749531d925435ff68964243c8a81c49",
-      "accessed_at": "2026-09-24",
-      "status": "fetched",
-      "description": "Cached thyagaraja-vaibhavam HTML witness for SrI nArasiMha (phala ranjani)."
-    },
-    {
-      "id": "4707048d-f06e-46f0-9202-3b985cee65b2",
-      "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/08/thyagaraja-kriti-paripoorna-kama-raga.html",
-      "sha256": "fbb62278c3b8d468be15e1b1c13ee95e7ce71324c49966bc67ec94eca397527c",
-      "accessed_at": "2026-10-01",
-      "status": "fetched",
-      "description": "Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for paripUrNa kAma (pUri kalyANi)."
-    },
-    {
-      "id": "5d70a340-0137-4dfd-baa8-596ccaebf89f",
-      "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/12/thyagaraja-kriti-jaya-mangalam-raga.html",
-      "sha256": "2ee57c03f6447cd0c342595c4a0d90d39f5cf7434e479a98760f3cf69498f2b6",
-      "accessed_at": "2026-10-01",
-      "status": "fetched",
-      "description": "Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for jaya mangaLaM (ghaNTA)."
-    },
-    {
-      "id": "604a9623-f1b0-4efc-9486-ea415b219870",
-      "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/02/thyagaraja-kriti-paahi-ramachandra-raga.html",
-      "sha256": "02cb16682ed351601b49b6f4da31502737f9dbfdc380d4ecf78a4acfbb8e0a3d",
-      "accessed_at": "2026-09-24",
-      "status": "fetched",
-      "description": "Cached thyagaraja-vaibhavam HTML witness for pAhi rAma candra (yadukula kAmbhOji)."
-    },
-    {
-      "id": "6eb15e4d-fcd0-45e1-9edd-969928695354",
-      "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/01/thyagaraja-kriti-jaya-mangalam-raga.html",
-      "sha256": "c0c199a622ef336046cce3133a6737e8d69799af9fb9aeb249b4616f4de588b3",
-      "accessed_at": "2026-10-01",
-      "status": "fetched",
-      "description": "Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for jaya mangaLaM (mOhanaM)."
-    },
-    {
-      "id": "733ec39f-27a2-4f8e-a703-e88196a5ab09",
-      "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/06/thyagaraja-kriti-narasimha-raga.html",
-      "sha256": "e0ad6d03d78e3958a20132db17e57d7ed5b44b63d993a17b552b768e53af2065",
-      "accessed_at": "2026-09-24",
-      "status": "fetched",
-      "description": "Cached thyagaraja-vaibhavam HTML witness for SrI nArasiMha (bilahari)."
-    },
-    {
-      "id": "84ffdbb8-6845-4747-9127-b0a46cf65630",
-      "url": "http://thyagaraja-vaibhavam.blogspot.com/2007/06/thyagaraja-kriti-sri-narada-muni-raga.html",
-      "sha256": "6f157b146b6668ee217994d11d3c5e869757c078f436565df6666b89ef5569f7",
-      "accessed_at": "2026-09-24",
-      "status": "fetched",
-      "description": "Cached thyagaraja-vaibhavam HTML witness for Sri Narada Muni (Bhairavi)."
-    },
-    {
-      "id": "ab6c4e31-d6a7-474d-ac72-e30adb14ecaf",
-      "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/01/thyagaraja-kriti-rama-sita-rama-raga.html",
-      "sha256": "0e544adb9d84a5cd88f7a66aace5a94faab5a1f905d5936a1c4c93d132096027",
-      "accessed_at": "2026-09-24",
-      "status": "fetched",
-      "description": "Cached thyagaraja-vaibhavam HTML witness for rAma sItA rAma (balahamsa)."
-    },
-    {
-      "id": "b26f89a5-7924-43e8-8ee6-c50d0a8bb6f1",
-      "url": "http://thyagaraja-vaibhavam.blogspot.com/2007/03/thyagaraja-kriti-jaya-mangalam-raga.html",
-      "sha256": "67db418a87a7e9910be0e8a533ea17573c419abbc6dff517a4ff6ea9adce4e38",
-      "accessed_at": "2026-10-01",
-      "status": "fetched",
-      "description": "Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for jaya mangaLaM (nAda nAmakriya)."
-    },
-    {
-      "id": "c702d09d-b5a5-4b16-82ac-5fc01e265dd9",
-      "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/08/thyagaraja-kriti-narada-muni-raga.html",
-      "sha256": "0f5ac45548b51f58487b9be0a61d6dc48c99212cb3bb0423c00ced01398a681b",
-      "accessed_at": "2026-09-24",
-      "status": "fetched",
-      "description": "Cached thyagaraja-vaibhavam HTML witness for Sri Narada Muni (pantuvarALi)."
     },
     {
       "id": "cfd0c399-5b88-4979-9665-d9680a6b60d9",
@@ -646,6 +510,14 @@
       "description": "Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for aparAdhamulanOrva (rasALi-vanALi-vanAvaLi)."
     },
     {
+      "id": "40e2d47b-a0c5-4e44-b301-8cdd05b9589d",
+      "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/01/thyagaraja-kriti-sri-naarasimha-raga.html",
+      "sha256": "9e697aedbfa21a6aaa6f4424042d051ee749531d925435ff68964243c8a81c49",
+      "accessed_at": "2026-09-24",
+      "status": "fetched",
+      "description": "Cached thyagaraja-vaibhavam HTML witness for SrI nArasiMha (phala ranjani)."
+    },
+    {
       "id": "058fe957-663e-4b86-b27a-251887d0e8db",
       "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/09/thyagaraja-kriti-palintuvo-raga.html",
       "sha256": "4e9386d3137d16c9526a46fdcb72691dfee40f66ed4b39bf7247cea83827a5b6",
@@ -774,6 +646,14 @@
       "description": "Cached thyagaraja-vaibhavam HTML witness for Inkaa Daya (Narayana Gaula)."
     },
     {
+      "id": "5d70a340-0137-4dfd-baa8-596ccaebf89f",
+      "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/12/thyagaraja-kriti-jaya-mangalam-raga.html",
+      "sha256": "2ee57c03f6447cd0c342595c4a0d90d39f5cf7434e479a98760f3cf69498f2b6",
+      "accessed_at": "2026-10-01",
+      "status": "fetched",
+      "description": "Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for jaya mangaLaM (ghaNTA)."
+    },
+    {
       "id": "5267006e-d4b6-4614-afd1-48af5bbae2bc",
       "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/07/thyagaraja-kriti-pahi-paramatma-raga.html",
       "sha256": "ab7f7ed872137df9e15c44ea5183205d387639eb2f32cd4cc68895b903eb2881",
@@ -894,6 +774,14 @@
       "description": "Cached thyagaraja-vaibhavam HTML witness for Ivasudha Neevanti (Sahana)."
     },
     {
+      "id": "1f73ab63-0278-4b61-85ce-3fbacbce1ba0",
+      "url": "http://thyagaraja-vaibhavam.blogspot.com/2007/09/thyagaraja-kriti-sri-rama-jaya-rama.html",
+      "sha256": "8b6a40453341bccc91ba1a9ac73fb8d4094d1815d7b94dec1bd362733227eb12",
+      "accessed_at": "2026-09-24",
+      "status": "fetched",
+      "description": "Cached thyagaraja-vaibhavam HTML witness for Sri Rama Jaya Rama (Madhyamavati)."
+    },
+    {
       "id": "1fdced6d-2458-48b0-b0d4-385be4ad5252",
       "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/01/thyagaraja-kriti-ninu-baasi-raga.html",
       "sha256": "cb2d2752f8c672985305f680de02043f62287e0713063073b9088db9d8262508",
@@ -972,6 +860,14 @@
       "accessed_at": "2026-09-24",
       "status": "fetched",
       "description": "Cached thyagaraja-vaibhavam HTML witness for Manavini Vinumaa (Jaya Narayani)."
+    },
+    {
+      "id": "0082d54a-2341-48c0-9b54-d7039232b77c",
+      "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/09/thyagaraja-kriti-paripoorna-kama-raga.html",
+      "sha256": "719ed9b3f6e0553051bacca7589ef34ae08c344bc6b5002b46e686f8426373f6",
+      "accessed_at": "2026-10-01",
+      "status": "fetched",
+      "description": "Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for paripUrNa kAma (hamsa bhramari)."
     },
     {
       "id": "1fb2f01d-1d08-4256-86a6-391de7c7bc76",
@@ -1694,6 +1590,14 @@
       "description": "Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for sandEhamunu (rAma priya)."
     },
     {
+      "id": "3946f1d2-2a27-4591-b504-5e334d51b53e",
+      "url": "http://thyagaraja-vaibhavam.blogspot.com/2007/04/thyagaraja-kriti-sri-rama-rama-rama.html",
+      "sha256": "1bd3b316f96e2ec4c07cc651b8c0fcde23d3a4c9f9a18b2724e359996b2d7d79",
+      "accessed_at": "2026-09-24",
+      "status": "fetched",
+      "description": "Cached thyagaraja-vaibhavam HTML witness for Rama Rama Rama Sita (sAvEri)."
+    },
+    {
       "id": "b0c41545-1b62-4664-9a65-6105bc1e8917",
       "url": "http://thyagaraja-vaibhavam.blogspot.com/2007/12/thyagaraja-kriti-thulasi-bilva-raga.html",
       "sha256": "da91ccc7ae1a102496d3e1c662435e2ceb2ecfff6bdb7f18a36f4c4cc9f23684",
@@ -1756,6 +1660,14 @@
       "accessed_at": "2026-09-24",
       "status": "fetched",
       "description": "Cached thyagaraja-vaibhavam HTML witness for Sara Sara Samaraika (Kuntala Varali)."
+    },
+    {
+      "id": "6eb15e4d-fcd0-45e1-9edd-969928695354",
+      "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/01/thyagaraja-kriti-jaya-mangalam-raga.html",
+      "sha256": "c0c199a622ef336046cce3133a6737e8d69799af9fb9aeb249b4616f4de588b3",
+      "accessed_at": "2026-10-01",
+      "status": "fetched",
+      "description": "Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for jaya mangaLaM (mOhanaM)."
     },
     {
       "id": "50e549ce-ca27-4a5f-a1ea-722dc925e24a",
@@ -1838,6 +1750,14 @@
       "description": "Cached thyagaraja-vaibhavam HTML witness for Elaavataara (Mukhari)."
     },
     {
+      "id": "4707048d-f06e-46f0-9202-3b985cee65b2",
+      "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/08/thyagaraja-kriti-paripoorna-kama-raga.html",
+      "sha256": "fbb62278c3b8d468be15e1b1c13ee95e7ce71324c49966bc67ec94eca397527c",
+      "accessed_at": "2026-10-01",
+      "status": "fetched",
+      "description": "Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for paripUrNa kAma (pUri kalyANi)."
+    },
+    {
       "id": "ec8e3263-26c8-47f9-9ce0-c43c98bb8f22",
       "url": "http://thyagaraja-vaibhavam.blogspot.com/2007/11/thyagaraja-kriti-abhimaanamu-ledemi.html",
       "sha256": "8ea805ad20fad79f8d68fd822d441aac19ed690389939ea3dd1ad71b62255946",
@@ -1908,6 +1828,14 @@
       "accessed_at": "2026-09-24",
       "status": "fetched",
       "description": "Cached thyagaraja-vaibhavam HTML witness for Evarikai (Deva Manohari)."
+    },
+    {
+      "id": "ab6c4e31-d6a7-474d-ac72-e30adb14ecaf",
+      "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/01/thyagaraja-kriti-rama-sita-rama-raga.html",
+      "sha256": "0e544adb9d84a5cd88f7a66aace5a94faab5a1f905d5936a1c4c93d132096027",
+      "accessed_at": "2026-09-24",
+      "status": "fetched",
+      "description": "Cached thyagaraja-vaibhavam HTML witness for rAma sItA rAma (balahamsa)."
     },
     {
       "id": "4c665b70-2b98-47aa-8718-c7b3cb74fa52",
@@ -2478,12 +2406,28 @@
       "description": "Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for sAramE kAni (pantuvarALi)."
     },
     {
+      "id": "c702d09d-b5a5-4b16-82ac-5fc01e265dd9",
+      "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/08/thyagaraja-kriti-narada-muni-raga.html",
+      "sha256": "0f5ac45548b51f58487b9be0a61d6dc48c99212cb3bb0423c00ced01398a681b",
+      "accessed_at": "2026-09-24",
+      "status": "fetched",
+      "description": "Cached thyagaraja-vaibhavam HTML witness for nArada muni (pantuvarALi)."
+    },
+    {
       "id": "690ee5ae-4e9d-4946-bb9c-45265f7f453e",
       "url": "http://thyagaraja-vaibhavam.blogspot.com/2007/04/thyagaraja-kriti-oka-paari-joodaga-raga.html",
       "sha256": "03c690dccc26aed7b7d4c0810fcea6f3d28486d4c0eb5026a94ca0a5598e3449",
       "accessed_at": "2026-10-01",
       "status": "fetched",
       "description": "Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for oka pAri jUDaga (kalAvati)."
+    },
+    {
+      "id": "b26f89a5-7924-43e8-8ee6-c50d0a8bb6f1",
+      "url": "http://thyagaraja-vaibhavam.blogspot.com/2007/03/thyagaraja-kriti-jaya-mangalam-raga.html",
+      "sha256": "67db418a87a7e9910be0e8a533ea17573c419abbc6dff517a4ff6ea9adce4e38",
+      "accessed_at": "2026-10-01",
+      "status": "fetched",
+      "description": "Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for jaya mangaLaM (nAda nAmakriya)."
     },
     {
       "id": "3be3b62f-125f-43fd-b113-5f6bbcc1729b",
@@ -2662,6 +2606,14 @@
       "description": "Cached thyagaraja-vaibhavam HTML witness for Evari Maata (Kambhoji)."
     },
     {
+      "id": "84ffdbb8-6845-4747-9127-b0a46cf65630",
+      "url": "http://thyagaraja-vaibhavam.blogspot.com/2007/06/thyagaraja-kriti-sri-narada-muni-raga.html",
+      "sha256": "6f157b146b6668ee217994d11d3c5e869757c078f436565df6666b89ef5569f7",
+      "accessed_at": "2026-09-24",
+      "status": "fetched",
+      "description": "Cached thyagaraja-vaibhavam HTML witness for Sri Narada Muni (Bhairavi)."
+    },
+    {
       "id": "9ed9ccd3-c896-4284-83ac-f58a6229b69b",
       "url": "http://thyagaraja-vaibhavam.blogspot.com/2007/09/thyagaraja-kriti-mucchata-raga.html",
       "sha256": "a0207cf0e1091fd25f090dc02f0bb1ae6b9ae48eff24f31b5e8119d0b2f94f3e",
@@ -2828,6 +2780,14 @@
       "accessed_at": "2026-09-24",
       "status": "fetched",
       "description": "Cached thyagaraja-vaibhavam HTML witness for Laali Laalayya (Kedara Gaula)."
+    },
+    {
+      "id": "3943b77a-d7b2-4f7f-8715-03ba0e5e2eb7",
+      "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/03/thyagaraja-kriti-pahi-ramachandra-raga.html",
+      "sha256": "3af9942e460598bc772278b5580adead706c65562e45cb5f85a769bad1177b50",
+      "accessed_at": "2026-09-24",
+      "status": "fetched",
+      "description": "Cached thyagaraja-vaibhavam HTML witness for pAhi rAma candra (SankarAbharaNaM)."
     },
     {
       "id": "b0fcd13d-0ecb-4990-ab5e-a4c0442c3461",
@@ -4142,6 +4102,14 @@
       "description": "Cached thyagaraja-vaibhavam HTML witness for mOhana rAma (mOhanaM)."
     },
     {
+      "id": "604a9623-f1b0-4efc-9486-ea415b219870",
+      "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/02/thyagaraja-kriti-paahi-ramachandra-raga.html",
+      "sha256": "02cb16682ed351601b49b6f4da31502737f9dbfdc380d4ecf78a4acfbb8e0a3d",
+      "accessed_at": "2026-09-24",
+      "status": "fetched",
+      "description": "Cached thyagaraja-vaibhavam HTML witness for pAhi rAma candra (yadukula kAmbhOji)."
+    },
+    {
       "id": "fcc41145-48bf-4761-9534-63e5f2760ecc",
       "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/06/thyagaraja-kriti-gattiganu-raga-begada.html",
       "sha256": "0fdc5a4c0728cdb0a15a5deb37f70bc88afe9e0745c0c11e7046bd977ab4e075",
@@ -4774,6 +4742,14 @@
       "description": "Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for mahima taggincukO (rishabha priya)."
     },
     {
+      "id": "1daabb05-6208-44a6-89c0-dc48be8fb187",
+      "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/03/thyagaraja-kriti-rama-sita-rama-rama.html",
+      "sha256": "9e6e7ad1a6da61e705661e581db1514f6334d3f904e49fca06ad7513dbfd4f68",
+      "accessed_at": "2026-09-24",
+      "status": "fetched",
+      "description": "Cached thyagaraja-vaibhavam HTML witness for rAma sItA rAma (SankarAbharaNaM)."
+    },
+    {
       "id": "654fe488-fc0b-4e4e-be0e-3f2cde3f1a1c",
       "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/08/thyagaraja-kriti-parama-pavana-raga.html",
       "sha256": "d9ce194279da8537471321fe813bab69ff62c39aa11ea5fab78626a3c72270c4",
@@ -5142,6 +5118,14 @@
       "description": "Cached thyagaraja-vaibhavam HTML witness for Natha Brovavae (Bhairavi)."
     },
     {
+      "id": "3916fad4-5ef9-43ba-af21-5df0f233566c",
+      "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/07/thyagaraja-kriti-sri-rama-jaya-rama.html",
+      "sha256": "91ab184f4e3d170919dbd757cb3acbe3f8f1aa7701a77f112e6f9762cf9cbabc",
+      "accessed_at": "2026-09-24",
+      "status": "fetched",
+      "description": "Cached thyagaraja-vaibhavam HTML witness for SrI rAma jaya rAma (varALi)."
+    },
+    {
       "id": "72ca32df-7f38-4870-85c4-369c0ff97439",
       "url": "http://thyagaraja-vaibhavam.blogspot.com/2007/04/thyagaraja-kriti-manasaa-etulorthunae.html",
       "sha256": "355619eb11931da0ba7e8e2aa4292ddeb9cc5da090fa495d75d1acc79234fbf7",
@@ -5236,6 +5220,14 @@
       "accessed_at": "2026-10-01",
       "status": "fetched",
       "description": "Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for pAhi kalyANa sundara (punnAga varALi)."
+    },
+    {
+      "id": "3115095a-36f9-4999-b32c-d8a063268cd9",
+      "url": "http://thyagaraja-vaibhavam.blogspot.com/2007/10/thyagaraja-kriti-rama-rama-rama-sita.html",
+      "sha256": "4173bfd7d0581c9b3cdb173ec486542330574d8f1ae5fecfc8ec59bf4dd02b18",
+      "accessed_at": "2026-09-24",
+      "status": "fetched",
+      "description": "Cached thyagaraja-vaibhavam HTML witness for Rama Rama Rama Sita (Huseni)."
     },
     {
       "id": "bc8c2552-72e7-4c7a-b6b0-ab271ae11e96",
@@ -5518,6 +5510,14 @@
       "description": "Cached thyagaraja-vaibhavam HTML witness for rAmA ninu nammina (mOhanaM)."
     },
     {
+      "id": "733ec39f-27a2-4f8e-a703-e88196a5ab09",
+      "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/06/thyagaraja-kriti-narasimha-raga.html",
+      "sha256": "e0ad6d03d78e3958a20132db17e57d7ed5b44b63d993a17b552b768e53af2065",
+      "accessed_at": "2026-09-24",
+      "status": "fetched",
+      "description": "Cached thyagaraja-vaibhavam HTML witness for narasiMha (bilahari)."
+    },
+    {
       "id": "669fc39a-52c1-414a-9155-964b29fcd1ed",
       "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/07/thyagaraja-kriti-noremi-sri-rama-raga.html",
       "sha256": "150dedd8ee844f98e14a9640c9317488da290276cceb198da9df24e54b9584b5",
@@ -5559,1790 +5559,13 @@
     }
   ],
   "limitations": [
-    "Eight catalogue identities absorb 17 conflicting source imports and remain collision_not_classified; their 17 source witnesses (tyagaraja:import:*) are classified individually pending audited canon split in TRACK-149.",
+    "Eight catalogue identities that absorbed 17 conflicting source imports were split in TRACK-149 (owner-approved 2026-11-03, executed through the audited unmap and forceNew review path). Each of the 17 source witnesses is now its own catalogue identity; the 9 new krithi rows are draft / UNESTABLISHED.",
     "Print editions (T.K. Govinda Rao, C. Ramanujachari & V. Raghavan's The Spiritual Heritage of Tyagaraja, P. Sambamoorthy) and external JMA PDF volumes were not physically consulted and remain registered as unavailable witnesses. Edition-dependent Kshetra Pancharatnam sequences, Utsava/Divyanama paddhati orderings, and dramatic verse/prose divisions remain unreviewed leads for TRACK-149.",
     "Only the 5 Ghana-raga Pancharatnam memberships (with Aradhana concert order recorded separately from composer sequence) and their supporting claims are applied by R__seed_11. Non-cycle approved claims are marked application: deferred for TRACK-149.",
     "27 catalogue identities lack a PALLAVI section and 4 lack a CHARANAM section in current storage; no lyric text was invented.",
     "Eleven source witnesses with raw_tala Desadi are stored canonically as Adi; their raw Desadi witness notes are preserved explicitly."
   ],
   "subjects": [
-    {
-      "id": "tyagaraja:import:0082d54a-2341-48c0-9b54-d7039232b77c",
-      "subject_kind": "source_witness",
-      "mapped_krithi_id": "4abda836-1e15-4b0b-a7a7-58035712c55a",
-      "import_id": "0082d54a-2341-48c0-9b54-d7039232b77c",
-      "evidence_id": "dfa23e8a-f065-4c18-8bab-1b072195c99f",
-      "title": "paripUrNa kAma",
-      "canonical_raga": "pUri kalyANi",
-      "canonical_tala": "Adi",
-      "raw_raga": "hamsa bhramari",
-      "raw_tala": "Adi",
-      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/09/thyagaraja-kriti-paripoorna-kama-raga.html",
-      "import_status": "approved",
-      "primary_language": "en",
-      "musical_form": "KRITHI",
-      "workflow_state": "published",
-      "is_ragamalika": false,
-      "geography_state": "UNRESOLVED",
-      "deity_state": "UNRESOLVED",
-      "section_flags": {
-        "pallavi_count": 1,
-        "anupallavi_count": 1,
-        "charanam_count": 1,
-        "swara_sahitya_count": 0
-      },
-      "structure_audit": [],
-      "claims": [
-        {
-          "id": "tyagaraja:import:0082d54a-2341-48c0-9b54-d7039232b77c:deity",
-          "axis": "deity",
-          "value": "Rama",
-          "witness_id": "0082d54a-2341-48c0-9b54-d7039232b77c",
-          "locator": "Snapshot record 4abda836-1e15-4b0b-a7a7-58035712c55a; incipit / pallavi (paripUrNa kAma)",
-          "excerpt": "paripUrNa kAma",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:0082d54a-2341-48c0-9b54-d7039232b77c:geography",
-          "axis": "geography",
-          "value": "NO_PLACE_STATED",
-          "witness_id": "0082d54a-2341-48c0-9b54-d7039232b77c",
-          "locator": "Snapshot record 4abda836-1e15-4b0b-a7a7-58035712c55a; incipit & metadata",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
-          "excerpt": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:0082d54a-2341-48c0-9b54-d7039232b77c:theme",
-          "axis": "theme",
-          "value": "Rama Bhakti & Devotional Praise",
-          "witness_id": "0082d54a-2341-48c0-9b54-d7039232b77c",
-          "locator": "Snapshot record 4abda836-1e15-4b0b-a7a7-58035712c55a; incipit / pallavi (paripUrNa kAma)",
-          "excerpt": "paripUrNa kAma",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:0082d54a-2341-48c0-9b54-d7039232b77c:group",
-          "axis": "group",
-          "witness_id": "0082d54a-2341-48c0-9b54-d7039232b77c",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:0082d54a-2341-48c0-9b54-d7039232b77c:ritual",
-          "axis": "ritual",
-          "witness_id": "0082d54a-2341-48c0-9b54-d7039232b77c",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:0082d54a-2341-48c0-9b54-d7039232b77c:dramatic",
-          "axis": "dramatic",
-          "witness_id": "0082d54a-2341-48c0-9b54-d7039232b77c",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        }
-      ],
-      "krithi_id": null,
-      "tala_witness_note": null
-    },
-    {
-      "id": "tyagaraja:import:1daabb05-6208-44a6-89c0-dc48be8fb187",
-      "subject_kind": "source_witness",
-      "mapped_krithi_id": "4f90dd54-c76e-4cce-88f8-1c460cdb3566",
-      "import_id": "1daabb05-6208-44a6-89c0-dc48be8fb187",
-      "evidence_id": "d1c2fd24-ff5e-4ff0-a19e-cf8006262004",
-      "title": "rAma sItA rAma",
-      "canonical_raga": "Bālahamsa",
-      "canonical_tala": "Adi",
-      "raw_raga": "SankarAbharaNaM",
-      "raw_tala": "Unknown",
-      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/03/thyagaraja-kriti-rama-sita-rama-rama.html",
-      "import_status": "approved",
-      "primary_language": "en",
-      "musical_form": "KRITHI",
-      "workflow_state": "published",
-      "is_ragamalika": false,
-      "geography_state": "UNRESOLVED",
-      "deity_state": "UNRESOLVED",
-      "section_flags": {
-        "pallavi_count": 1,
-        "anupallavi_count": 0,
-        "charanam_count": 9,
-        "swara_sahitya_count": 0
-      },
-      "structure_audit": [],
-      "claims": [
-        {
-          "id": "tyagaraja:import:1daabb05-6208-44a6-89c0-dc48be8fb187:deity",
-          "axis": "deity",
-          "value": "Rama",
-          "witness_id": "1daabb05-6208-44a6-89c0-dc48be8fb187",
-          "locator": "Snapshot record 4f90dd54-c76e-4cce-88f8-1c460cdb3566; incipit / pallavi (rAma sItA rAma)",
-          "excerpt": "1 rAma sItA rAma rAma rAma sItA rAma rAma",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:1daabb05-6208-44a6-89c0-dc48be8fb187:geography",
-          "axis": "geography",
-          "value": "NO_PLACE_STATED",
-          "witness_id": "1daabb05-6208-44a6-89c0-dc48be8fb187",
-          "locator": "Snapshot record 4f90dd54-c76e-4cce-88f8-1c460cdb3566; incipit & metadata",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
-          "excerpt": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:1daabb05-6208-44a6-89c0-dc48be8fb187:theme",
-          "axis": "theme",
-          "value": "Rama Bhakti & Devotional Praise",
-          "witness_id": "1daabb05-6208-44a6-89c0-dc48be8fb187",
-          "locator": "Snapshot record 4f90dd54-c76e-4cce-88f8-1c460cdb3566; incipit / pallavi (rAma sItA rAma)",
-          "excerpt": "1 rAma sItA rAma rAma rAma sItA rAma rAma",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:1daabb05-6208-44a6-89c0-dc48be8fb187:group",
-          "axis": "group",
-          "witness_id": "1daabb05-6208-44a6-89c0-dc48be8fb187",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:1daabb05-6208-44a6-89c0-dc48be8fb187:ritual",
-          "axis": "ritual",
-          "witness_id": "1daabb05-6208-44a6-89c0-dc48be8fb187",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:1daabb05-6208-44a6-89c0-dc48be8fb187:dramatic",
-          "axis": "dramatic",
-          "witness_id": "1daabb05-6208-44a6-89c0-dc48be8fb187",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        }
-      ],
-      "krithi_id": null,
-      "tala_witness_note": null
-    },
-    {
-      "id": "tyagaraja:import:1f73ab63-0278-4b61-85ce-3fbacbce1ba0",
-      "subject_kind": "source_witness",
-      "mapped_krithi_id": "1dfe4864-6224-460a-845a-5328aed9b638",
-      "import_id": "1f73ab63-0278-4b61-85ce-3fbacbce1ba0",
-      "evidence_id": "ce44041b-56d2-441c-92fe-a0d555702070",
-      "title": "Sri Rama Jaya Rama",
-      "canonical_raga": "Madhyamāvathi",
-      "canonical_tala": "Adi",
-      "raw_raga": "Madhyamavati",
-      "raw_tala": "Unknown",
-      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2007/09/thyagaraja-kriti-sri-rama-jaya-rama.html",
-      "import_status": "mapped",
-      "primary_language": "en",
-      "musical_form": "KRITHI",
-      "workflow_state": "published",
-      "is_ragamalika": false,
-      "geography_state": "UNRESOLVED",
-      "deity_state": "UNRESOLVED",
-      "section_flags": {
-        "pallavi_count": 0,
-        "anupallavi_count": 0,
-        "charanam_count": 17,
-        "swara_sahitya_count": 0
-      },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
-      "claims": [
-        {
-          "id": "tyagaraja:import:1f73ab63-0278-4b61-85ce-3fbacbce1ba0:deity",
-          "axis": "deity",
-          "value": "Rama",
-          "witness_id": "1f73ab63-0278-4b61-85ce-3fbacbce1ba0",
-          "locator": "Snapshot record 1dfe4864-6224-460a-845a-5328aed9b638; incipit / pallavi (Sri Rama Jaya Rama)",
-          "excerpt": "SrI rAma jaya rAma SRngAra rAma",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:1f73ab63-0278-4b61-85ce-3fbacbce1ba0:geography",
-          "axis": "geography",
-          "value": "NO_PLACE_STATED",
-          "witness_id": "1f73ab63-0278-4b61-85ce-3fbacbce1ba0",
-          "locator": "Snapshot record 1dfe4864-6224-460a-845a-5328aed9b638; incipit & metadata",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
-          "excerpt": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:1f73ab63-0278-4b61-85ce-3fbacbce1ba0:theme",
-          "axis": "theme",
-          "value": "Rama Bhakti & Devotional Praise",
-          "witness_id": "1f73ab63-0278-4b61-85ce-3fbacbce1ba0",
-          "locator": "Snapshot record 1dfe4864-6224-460a-845a-5328aed9b638; incipit / pallavi (Sri Rama Jaya Rama)",
-          "excerpt": "SrI rAma jaya rAma SRngAra rAma",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:1f73ab63-0278-4b61-85ce-3fbacbce1ba0:group",
-          "axis": "group",
-          "witness_id": "1f73ab63-0278-4b61-85ce-3fbacbce1ba0",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:1f73ab63-0278-4b61-85ce-3fbacbce1ba0:ritual",
-          "axis": "ritual",
-          "value": "tyagaraja-divyanama-sankirtana",
-          "witness_id": "govinda-rao-tyagaraja",
-          "locator": "Edition not consulted",
-          "evidence_kind": "documented_tradition",
-          "review_state": "unreviewed",
-          "uncertainty": "Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed.",
-          "group_type": "ritual_collection",
-          "ritual_function": "congregational_namasankirtana",
-          "excerpt": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:1f73ab63-0278-4b61-85ce-3fbacbce1ba0:dramatic",
-          "axis": "dramatic",
-          "witness_id": "1f73ab63-0278-4b61-85ce-3fbacbce1ba0",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        }
-      ],
-      "krithi_id": null,
-      "tala_witness_note": null
-    },
-    {
-      "id": "tyagaraja:import:3115095a-36f9-4999-b32c-d8a063268cd9",
-      "subject_kind": "source_witness",
-      "mapped_krithi_id": "42d35ca5-4110-4fd8-bece-9ced6a37014e",
-      "import_id": "3115095a-36f9-4999-b32c-d8a063268cd9",
-      "evidence_id": "0a21cdc5-fd10-49af-90f6-b2e290d59a6a",
-      "title": "Rama Rama Rama Sita",
-      "canonical_raga": "Sāveri",
-      "canonical_tala": "Adi",
-      "raw_raga": "Huseni",
-      "raw_tala": "Unknown",
-      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2007/10/thyagaraja-kriti-rama-rama-rama-sita.html",
-      "import_status": "mapped",
-      "primary_language": "en",
-      "musical_form": "KRITHI",
-      "workflow_state": "published",
-      "is_ragamalika": false,
-      "geography_state": "UNRESOLVED",
-      "deity_state": "UNRESOLVED",
-      "section_flags": {
-        "pallavi_count": 1,
-        "anupallavi_count": 0,
-        "charanam_count": 5,
-        "swara_sahitya_count": 0
-      },
-      "structure_audit": [],
-      "claims": [
-        {
-          "id": "tyagaraja:import:3115095a-36f9-4999-b32c-d8a063268cd9:deity",
-          "axis": "deity",
-          "value": "Rama",
-          "witness_id": "3115095a-36f9-4999-b32c-d8a063268cd9",
-          "locator": "Snapshot record 42d35ca5-4110-4fd8-bece-9ced6a37014e; incipit / pallavi (Rama Rama Rama Sita)",
-          "excerpt": "1 SrI rAma rAma rAma sItA hRj-jaladhi sOma",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:3115095a-36f9-4999-b32c-d8a063268cd9:geography",
-          "axis": "geography",
-          "value": "NO_PLACE_STATED",
-          "witness_id": "3115095a-36f9-4999-b32c-d8a063268cd9",
-          "locator": "Snapshot record 42d35ca5-4110-4fd8-bece-9ced6a37014e; incipit & metadata",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
-          "excerpt": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:3115095a-36f9-4999-b32c-d8a063268cd9:theme",
-          "axis": "theme",
-          "value": "Rama Bhakti & Devotional Praise",
-          "witness_id": "3115095a-36f9-4999-b32c-d8a063268cd9",
-          "locator": "Snapshot record 42d35ca5-4110-4fd8-bece-9ced6a37014e; incipit / pallavi (Rama Rama Rama Sita)",
-          "excerpt": "1 SrI rAma rAma rAma sItA hRj-jaladhi sOma",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:3115095a-36f9-4999-b32c-d8a063268cd9:group",
-          "axis": "group",
-          "witness_id": "3115095a-36f9-4999-b32c-d8a063268cd9",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:3115095a-36f9-4999-b32c-d8a063268cd9:ritual",
-          "axis": "ritual",
-          "value": "tyagaraja-divyanama-sankirtana",
-          "witness_id": "govinda-rao-tyagaraja",
-          "locator": "Edition not consulted",
-          "evidence_kind": "documented_tradition",
-          "review_state": "unreviewed",
-          "uncertainty": "Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed.",
-          "group_type": "ritual_collection",
-          "ritual_function": "congregational_namasankirtana",
-          "excerpt": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:3115095a-36f9-4999-b32c-d8a063268cd9:dramatic",
-          "axis": "dramatic",
-          "witness_id": "3115095a-36f9-4999-b32c-d8a063268cd9",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        }
-      ],
-      "krithi_id": null,
-      "tala_witness_note": null
-    },
-    {
-      "id": "tyagaraja:import:3916fad4-5ef9-43ba-af21-5df0f233566c",
-      "subject_kind": "source_witness",
-      "mapped_krithi_id": "1dfe4864-6224-460a-845a-5328aed9b638",
-      "import_id": "3916fad4-5ef9-43ba-af21-5df0f233566c",
-      "evidence_id": "72a2212c-e8e0-4a37-84cb-97f44c7d1786",
-      "title": "Sri Rama Jaya Rama",
-      "canonical_raga": "Madhyamāvathi",
-      "canonical_tala": "Adi",
-      "raw_raga": "varALi",
-      "raw_tala": "Isra Capu",
-      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/07/thyagaraja-kriti-sri-rama-jaya-rama.html",
-      "import_status": "mapped",
-      "primary_language": "en",
-      "musical_form": "KRITHI",
-      "workflow_state": "published",
-      "is_ragamalika": false,
-      "geography_state": "UNRESOLVED",
-      "deity_state": "UNRESOLVED",
-      "section_flags": {
-        "pallavi_count": 0,
-        "anupallavi_count": 0,
-        "charanam_count": 17,
-        "swara_sahitya_count": 0
-      },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
-      "claims": [
-        {
-          "id": "tyagaraja:import:3916fad4-5ef9-43ba-af21-5df0f233566c:deity",
-          "axis": "deity",
-          "value": "Rama",
-          "witness_id": "3916fad4-5ef9-43ba-af21-5df0f233566c",
-          "locator": "Snapshot record 1dfe4864-6224-460a-845a-5328aed9b638; incipit / pallavi (Sri Rama Jaya Rama)",
-          "excerpt": "SrI rAma jaya rAma SRngAra rAma",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:3916fad4-5ef9-43ba-af21-5df0f233566c:geography",
-          "axis": "geography",
-          "value": "NO_PLACE_STATED",
-          "witness_id": "3916fad4-5ef9-43ba-af21-5df0f233566c",
-          "locator": "Snapshot record 1dfe4864-6224-460a-845a-5328aed9b638; incipit & metadata",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
-          "excerpt": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:3916fad4-5ef9-43ba-af21-5df0f233566c:theme",
-          "axis": "theme",
-          "value": "Rama Bhakti & Devotional Praise",
-          "witness_id": "3916fad4-5ef9-43ba-af21-5df0f233566c",
-          "locator": "Snapshot record 1dfe4864-6224-460a-845a-5328aed9b638; incipit / pallavi (Sri Rama Jaya Rama)",
-          "excerpt": "SrI rAma jaya rAma SRngAra rAma",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:3916fad4-5ef9-43ba-af21-5df0f233566c:group",
-          "axis": "group",
-          "witness_id": "3916fad4-5ef9-43ba-af21-5df0f233566c",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:3916fad4-5ef9-43ba-af21-5df0f233566c:ritual",
-          "axis": "ritual",
-          "value": "tyagaraja-divyanama-sankirtana",
-          "witness_id": "govinda-rao-tyagaraja",
-          "locator": "Edition not consulted",
-          "evidence_kind": "documented_tradition",
-          "review_state": "unreviewed",
-          "uncertainty": "Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed.",
-          "group_type": "ritual_collection",
-          "ritual_function": "congregational_namasankirtana",
-          "excerpt": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:3916fad4-5ef9-43ba-af21-5df0f233566c:dramatic",
-          "axis": "dramatic",
-          "witness_id": "3916fad4-5ef9-43ba-af21-5df0f233566c",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        }
-      ],
-      "krithi_id": null,
-      "tala_witness_note": null
-    },
-    {
-      "id": "tyagaraja:import:3943b77a-d7b2-4f7f-8715-03ba0e5e2eb7",
-      "subject_kind": "source_witness",
-      "mapped_krithi_id": "ba2ec6a9-1804-48f1-a379-0fc505078892",
-      "import_id": "3943b77a-d7b2-4f7f-8715-03ba0e5e2eb7",
-      "evidence_id": "dba24cab-5581-4b07-9233-3175b4c7ce99",
-      "title": "pAhi rAma candra",
-      "canonical_raga": "Yadukula Kāmbhoji",
-      "canonical_tala": "Adi",
-      "raw_raga": "SankarAbharaNaM",
-      "raw_tala": "Unknown",
-      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/03/thyagaraja-kriti-pahi-ramachandra-raga.html",
-      "import_status": "approved",
-      "primary_language": "en",
-      "musical_form": "KRITHI",
-      "workflow_state": "published",
-      "is_ragamalika": false,
-      "geography_state": "UNRESOLVED",
-      "deity_state": "UNRESOLVED",
-      "section_flags": {
-        "pallavi_count": 1,
-        "anupallavi_count": 0,
-        "charanam_count": 9,
-        "swara_sahitya_count": 0
-      },
-      "structure_audit": [],
-      "claims": [
-        {
-          "id": "tyagaraja:import:3943b77a-d7b2-4f7f-8715-03ba0e5e2eb7:deity",
-          "axis": "deity",
-          "value": "Rama",
-          "witness_id": "3943b77a-d7b2-4f7f-8715-03ba0e5e2eb7",
-          "locator": "Snapshot record ba2ec6a9-1804-48f1-a379-0fc505078892; incipit / pallavi (pAhi rAma candra)",
-          "excerpt": "pAhi rAma candra rAghava 1 harE mAm pAhi rAma candra rAghava",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:3943b77a-d7b2-4f7f-8715-03ba0e5e2eb7:geography",
-          "axis": "geography",
-          "value": "NO_PLACE_STATED",
-          "witness_id": "3943b77a-d7b2-4f7f-8715-03ba0e5e2eb7",
-          "locator": "Snapshot record ba2ec6a9-1804-48f1-a379-0fc505078892; incipit & metadata",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
-          "excerpt": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:3943b77a-d7b2-4f7f-8715-03ba0e5e2eb7:theme",
-          "axis": "theme",
-          "value": "Surrender (Saranagati) & Appeal for Grace",
-          "witness_id": "3943b77a-d7b2-4f7f-8715-03ba0e5e2eb7",
-          "locator": "Snapshot record ba2ec6a9-1804-48f1-a379-0fc505078892; incipit / pallavi (pAhi rAma candra)",
-          "excerpt": "pAhi rAma candra rAghava 1 harE mAm pAhi rAma candra rAghava",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:3943b77a-d7b2-4f7f-8715-03ba0e5e2eb7:group",
-          "axis": "group",
-          "witness_id": "3943b77a-d7b2-4f7f-8715-03ba0e5e2eb7",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:3943b77a-d7b2-4f7f-8715-03ba0e5e2eb7:ritual",
-          "axis": "ritual",
-          "value": "tyagaraja-divyanama-sankirtana",
-          "witness_id": "govinda-rao-tyagaraja",
-          "locator": "Edition not consulted",
-          "evidence_kind": "documented_tradition",
-          "review_state": "unreviewed",
-          "uncertainty": "Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed.",
-          "group_type": "ritual_collection",
-          "ritual_function": "congregational_namasankirtana",
-          "excerpt": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:3943b77a-d7b2-4f7f-8715-03ba0e5e2eb7:dramatic",
-          "axis": "dramatic",
-          "witness_id": "3943b77a-d7b2-4f7f-8715-03ba0e5e2eb7",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        }
-      ],
-      "krithi_id": null,
-      "tala_witness_note": null
-    },
-    {
-      "id": "tyagaraja:import:3946f1d2-2a27-4591-b504-5e334d51b53e",
-      "subject_kind": "source_witness",
-      "mapped_krithi_id": "42d35ca5-4110-4fd8-bece-9ced6a37014e",
-      "import_id": "3946f1d2-2a27-4591-b504-5e334d51b53e",
-      "evidence_id": "636b612a-ffac-4f99-bc1d-ea6b327d0d8a",
-      "title": "Rama Rama Rama Sita",
-      "canonical_raga": "Sāveri",
-      "canonical_tala": "Adi",
-      "raw_raga": "sAvEri",
-      "raw_tala": "Adi",
-      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2007/04/thyagaraja-kriti-sri-rama-rama-rama.html",
-      "import_status": "mapped",
-      "primary_language": "en",
-      "musical_form": "KRITHI",
-      "workflow_state": "published",
-      "is_ragamalika": false,
-      "geography_state": "UNRESOLVED",
-      "deity_state": "UNRESOLVED",
-      "section_flags": {
-        "pallavi_count": 1,
-        "anupallavi_count": 0,
-        "charanam_count": 5,
-        "swara_sahitya_count": 0
-      },
-      "structure_audit": [],
-      "claims": [
-        {
-          "id": "tyagaraja:import:3946f1d2-2a27-4591-b504-5e334d51b53e:deity",
-          "axis": "deity",
-          "value": "Rama",
-          "witness_id": "3946f1d2-2a27-4591-b504-5e334d51b53e",
-          "locator": "Snapshot record 42d35ca5-4110-4fd8-bece-9ced6a37014e; incipit / pallavi (Rama Rama Rama Sita)",
-          "excerpt": "1 SrI rAma rAma rAma sItA hRj-jaladhi sOma",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:3946f1d2-2a27-4591-b504-5e334d51b53e:geography",
-          "axis": "geography",
-          "value": "NO_PLACE_STATED",
-          "witness_id": "3946f1d2-2a27-4591-b504-5e334d51b53e",
-          "locator": "Snapshot record 42d35ca5-4110-4fd8-bece-9ced6a37014e; incipit & metadata",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
-          "excerpt": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:3946f1d2-2a27-4591-b504-5e334d51b53e:theme",
-          "axis": "theme",
-          "value": "Rama Bhakti & Devotional Praise",
-          "witness_id": "3946f1d2-2a27-4591-b504-5e334d51b53e",
-          "locator": "Snapshot record 42d35ca5-4110-4fd8-bece-9ced6a37014e; incipit / pallavi (Rama Rama Rama Sita)",
-          "excerpt": "1 SrI rAma rAma rAma sItA hRj-jaladhi sOma",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:3946f1d2-2a27-4591-b504-5e334d51b53e:group",
-          "axis": "group",
-          "witness_id": "3946f1d2-2a27-4591-b504-5e334d51b53e",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:3946f1d2-2a27-4591-b504-5e334d51b53e:ritual",
-          "axis": "ritual",
-          "value": "tyagaraja-divyanama-sankirtana",
-          "witness_id": "govinda-rao-tyagaraja",
-          "locator": "Edition not consulted",
-          "evidence_kind": "documented_tradition",
-          "review_state": "unreviewed",
-          "uncertainty": "Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed.",
-          "group_type": "ritual_collection",
-          "ritual_function": "congregational_namasankirtana",
-          "excerpt": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:3946f1d2-2a27-4591-b504-5e334d51b53e:dramatic",
-          "axis": "dramatic",
-          "witness_id": "3946f1d2-2a27-4591-b504-5e334d51b53e",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        }
-      ],
-      "krithi_id": null,
-      "tala_witness_note": null
-    },
-    {
-      "id": "tyagaraja:import:40e2d47b-a0c5-4e44-b301-8cdd05b9589d",
-      "subject_kind": "source_witness",
-      "mapped_krithi_id": "12058429-320a-4040-b682-78c26399e0ae",
-      "import_id": "40e2d47b-a0c5-4e44-b301-8cdd05b9589d",
-      "evidence_id": "affef771-2012-4907-b572-e06cad31f0dc",
-      "title": "SrI nArasiMha",
-      "canonical_raga": "Phalaranjani",
-      "canonical_tala": "Adi",
-      "raw_raga": "phala ranjani",
-      "raw_tala": "Unknown",
-      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/01/thyagaraja-kriti-sri-naarasimha-raga.html",
-      "import_status": "mapped",
-      "primary_language": "en",
-      "musical_form": "KRITHI",
-      "workflow_state": "published",
-      "is_ragamalika": false,
-      "geography_state": "UNRESOLVED",
-      "deity_state": "UNRESOLVED",
-      "section_flags": {
-        "pallavi_count": 1,
-        "anupallavi_count": 1,
-        "charanam_count": 1,
-        "swara_sahitya_count": 0
-      },
-      "structure_audit": [],
-      "claims": [
-        {
-          "id": "tyagaraja:import:40e2d47b-a0c5-4e44-b301-8cdd05b9589d:deity",
-          "axis": "deity",
-          "value": "Narasimha",
-          "witness_id": "40e2d47b-a0c5-4e44-b301-8cdd05b9589d",
-          "locator": "Snapshot record 12058429-320a-4040-b682-78c26399e0ae; incipit / pallavi (SrI nArasiMha)",
-          "excerpt": "SrI nArasiMha mAm pAhi kshIr(A)bdhi kanyakA ramaNa",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:40e2d47b-a0c5-4e44-b301-8cdd05b9589d:geography",
-          "axis": "geography",
-          "value": "NO_PLACE_STATED",
-          "witness_id": "40e2d47b-a0c5-4e44-b301-8cdd05b9589d",
-          "locator": "Snapshot record 12058429-320a-4040-b682-78c26399e0ae; incipit & metadata",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
-          "excerpt": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:40e2d47b-a0c5-4e44-b301-8cdd05b9589d:theme",
-          "axis": "theme",
-          "value": "Surrender (Saranagati) & Appeal for Grace",
-          "witness_id": "40e2d47b-a0c5-4e44-b301-8cdd05b9589d",
-          "locator": "Snapshot record 12058429-320a-4040-b682-78c26399e0ae; incipit / pallavi (SrI nArasiMha)",
-          "excerpt": "SrI nArasiMha mAm pAhi kshIr(A)bdhi kanyakA ramaNa",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:40e2d47b-a0c5-4e44-b301-8cdd05b9589d:group",
-          "axis": "group",
-          "witness_id": "40e2d47b-a0c5-4e44-b301-8cdd05b9589d",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:40e2d47b-a0c5-4e44-b301-8cdd05b9589d:ritual",
-          "axis": "ritual",
-          "witness_id": "40e2d47b-a0c5-4e44-b301-8cdd05b9589d",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:40e2d47b-a0c5-4e44-b301-8cdd05b9589d:dramatic",
-          "axis": "dramatic",
-          "witness_id": "40e2d47b-a0c5-4e44-b301-8cdd05b9589d",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        }
-      ],
-      "krithi_id": null,
-      "tala_witness_note": null
-    },
-    {
-      "id": "tyagaraja:import:4707048d-f06e-46f0-9202-3b985cee65b2",
-      "subject_kind": "source_witness",
-      "mapped_krithi_id": "4abda836-1e15-4b0b-a7a7-58035712c55a",
-      "import_id": "4707048d-f06e-46f0-9202-3b985cee65b2",
-      "evidence_id": "770b46f6-5fde-494a-94b8-322545306ab7",
-      "title": "paripUrNa kAma",
-      "canonical_raga": "pUri kalyANi",
-      "canonical_tala": "Adi",
-      "raw_raga": "pUri kalyANi",
-      "raw_tala": "Adi",
-      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/08/thyagaraja-kriti-paripoorna-kama-raga.html",
-      "import_status": "approved",
-      "primary_language": "en",
-      "musical_form": "KRITHI",
-      "workflow_state": "published",
-      "is_ragamalika": false,
-      "geography_state": "UNRESOLVED",
-      "deity_state": "UNRESOLVED",
-      "section_flags": {
-        "pallavi_count": 1,
-        "anupallavi_count": 1,
-        "charanam_count": 1,
-        "swara_sahitya_count": 0
-      },
-      "structure_audit": [],
-      "claims": [
-        {
-          "id": "tyagaraja:import:4707048d-f06e-46f0-9202-3b985cee65b2:deity",
-          "axis": "deity",
-          "value": "Rama",
-          "witness_id": "4707048d-f06e-46f0-9202-3b985cee65b2",
-          "locator": "Snapshot record 4abda836-1e15-4b0b-a7a7-58035712c55a; incipit / pallavi (paripUrNa kAma)",
-          "excerpt": "paripUrNa kAma",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:4707048d-f06e-46f0-9202-3b985cee65b2:geography",
-          "axis": "geography",
-          "value": "NO_PLACE_STATED",
-          "witness_id": "4707048d-f06e-46f0-9202-3b985cee65b2",
-          "locator": "Snapshot record 4abda836-1e15-4b0b-a7a7-58035712c55a; incipit & metadata",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
-          "excerpt": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:4707048d-f06e-46f0-9202-3b985cee65b2:theme",
-          "axis": "theme",
-          "value": "Rama Bhakti & Devotional Praise",
-          "witness_id": "4707048d-f06e-46f0-9202-3b985cee65b2",
-          "locator": "Snapshot record 4abda836-1e15-4b0b-a7a7-58035712c55a; incipit / pallavi (paripUrNa kAma)",
-          "excerpt": "paripUrNa kAma",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:4707048d-f06e-46f0-9202-3b985cee65b2:group",
-          "axis": "group",
-          "witness_id": "4707048d-f06e-46f0-9202-3b985cee65b2",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:4707048d-f06e-46f0-9202-3b985cee65b2:ritual",
-          "axis": "ritual",
-          "witness_id": "4707048d-f06e-46f0-9202-3b985cee65b2",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:4707048d-f06e-46f0-9202-3b985cee65b2:dramatic",
-          "axis": "dramatic",
-          "witness_id": "4707048d-f06e-46f0-9202-3b985cee65b2",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        }
-      ],
-      "krithi_id": null,
-      "tala_witness_note": null
-    },
-    {
-      "id": "tyagaraja:import:5d70a340-0137-4dfd-baa8-596ccaebf89f",
-      "subject_kind": "source_witness",
-      "mapped_krithi_id": "6ddd3f36-022a-4a78-9a63-c769c5941508",
-      "import_id": "5d70a340-0137-4dfd-baa8-596ccaebf89f",
-      "evidence_id": "af06e3d0-f85a-4d33-a425-b81fc19413f1",
-      "title": "jaya mangaLaM",
-      "canonical_raga": "Nadanamakriya",
-      "canonical_tala": "Adi",
-      "raw_raga": "ghaNTA",
-      "raw_tala": "Jhampa",
-      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/12/thyagaraja-kriti-jaya-mangalam-raga.html",
-      "import_status": "mapped",
-      "primary_language": "en",
-      "musical_form": "KRITHI",
-      "workflow_state": "published",
-      "is_ragamalika": false,
-      "geography_state": "UNRESOLVED",
-      "deity_state": "UNRESOLVED",
-      "section_flags": {
-        "pallavi_count": 1,
-        "anupallavi_count": 0,
-        "charanam_count": 6,
-        "swara_sahitya_count": 0
-      },
-      "structure_audit": [],
-      "claims": [
-        {
-          "id": "tyagaraja:import:5d70a340-0137-4dfd-baa8-596ccaebf89f:deity",
-          "axis": "deity",
-          "value": "Rama",
-          "witness_id": "5d70a340-0137-4dfd-baa8-596ccaebf89f",
-          "locator": "Snapshot record 6ddd3f36-022a-4a78-9a63-c769c5941508; incipit / pallavi (jaya mangaLaM)",
-          "excerpt": "jaya mangaLaM",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:5d70a340-0137-4dfd-baa8-596ccaebf89f:geography",
-          "axis": "geography",
-          "value": "NO_PLACE_STATED",
-          "witness_id": "5d70a340-0137-4dfd-baa8-596ccaebf89f",
-          "locator": "Snapshot record 6ddd3f36-022a-4a78-9a63-c769c5941508; incipit & metadata",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
-          "excerpt": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:5d70a340-0137-4dfd-baa8-596ccaebf89f:theme",
-          "axis": "theme",
-          "value": "Rama Bhakti & Devotional Praise",
-          "witness_id": "5d70a340-0137-4dfd-baa8-596ccaebf89f",
-          "locator": "Snapshot record 6ddd3f36-022a-4a78-9a63-c769c5941508; incipit / pallavi (jaya mangaLaM)",
-          "excerpt": "jaya mangaLaM",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:5d70a340-0137-4dfd-baa8-596ccaebf89f:group",
-          "axis": "group",
-          "witness_id": "5d70a340-0137-4dfd-baa8-596ccaebf89f",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:5d70a340-0137-4dfd-baa8-596ccaebf89f:ritual",
-          "axis": "ritual",
-          "value": "tyagaraja-utsava-sampradaya",
-          "witness_id": "govinda-rao-tyagaraja",
-          "locator": "Edition not consulted",
-          "evidence_kind": "documented_tradition",
-          "review_state": "unreviewed",
-          "uncertainty": "Utsava Sampradaya concluding harati / mangalam benediction; source setting preserved.",
-          "group_type": "ritual_collection",
-          "ritual_function": "benediction_mangalam",
-          "excerpt": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:5d70a340-0137-4dfd-baa8-596ccaebf89f:dramatic",
-          "axis": "dramatic",
-          "witness_id": "5d70a340-0137-4dfd-baa8-596ccaebf89f",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        }
-      ],
-      "krithi_id": null,
-      "tala_witness_note": null
-    },
-    {
-      "id": "tyagaraja:import:604a9623-f1b0-4efc-9486-ea415b219870",
-      "subject_kind": "source_witness",
-      "mapped_krithi_id": "ba2ec6a9-1804-48f1-a379-0fc505078892",
-      "import_id": "604a9623-f1b0-4efc-9486-ea415b219870",
-      "evidence_id": "adaa5b14-8121-4099-a5a1-93405a43f07e",
-      "title": "pAhi rAma candra",
-      "canonical_raga": "Yadukula Kāmbhoji",
-      "canonical_tala": "Adi",
-      "raw_raga": "yadukula kAmbhOji",
-      "raw_tala": "Unknown",
-      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/02/thyagaraja-kriti-paahi-ramachandra-raga.html",
-      "import_status": "in_review",
-      "primary_language": "en",
-      "musical_form": "KRITHI",
-      "workflow_state": "published",
-      "is_ragamalika": false,
-      "geography_state": "UNRESOLVED",
-      "deity_state": "UNRESOLVED",
-      "section_flags": {
-        "pallavi_count": 1,
-        "anupallavi_count": 0,
-        "charanam_count": 9,
-        "swara_sahitya_count": 0
-      },
-      "structure_audit": [],
-      "claims": [
-        {
-          "id": "tyagaraja:import:604a9623-f1b0-4efc-9486-ea415b219870:deity",
-          "axis": "deity",
-          "value": "Rama",
-          "witness_id": "604a9623-f1b0-4efc-9486-ea415b219870",
-          "locator": "Snapshot record ba2ec6a9-1804-48f1-a379-0fc505078892; incipit / pallavi (pAhi rAma candra)",
-          "excerpt": "pAhi rAma candra rAghava 1 harE mAm pAhi rAma candra rAghava",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:604a9623-f1b0-4efc-9486-ea415b219870:geography",
-          "axis": "geography",
-          "value": "NO_PLACE_STATED",
-          "witness_id": "604a9623-f1b0-4efc-9486-ea415b219870",
-          "locator": "Snapshot record ba2ec6a9-1804-48f1-a379-0fc505078892; incipit & metadata",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
-          "excerpt": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:604a9623-f1b0-4efc-9486-ea415b219870:theme",
-          "axis": "theme",
-          "value": "Surrender (Saranagati) & Appeal for Grace",
-          "witness_id": "604a9623-f1b0-4efc-9486-ea415b219870",
-          "locator": "Snapshot record ba2ec6a9-1804-48f1-a379-0fc505078892; incipit / pallavi (pAhi rAma candra)",
-          "excerpt": "pAhi rAma candra rAghava 1 harE mAm pAhi rAma candra rAghava",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:604a9623-f1b0-4efc-9486-ea415b219870:group",
-          "axis": "group",
-          "witness_id": "604a9623-f1b0-4efc-9486-ea415b219870",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:604a9623-f1b0-4efc-9486-ea415b219870:ritual",
-          "axis": "ritual",
-          "value": "tyagaraja-divyanama-sankirtana",
-          "witness_id": "govinda-rao-tyagaraja",
-          "locator": "Edition not consulted",
-          "evidence_kind": "documented_tradition",
-          "review_state": "unreviewed",
-          "uncertainty": "Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed.",
-          "group_type": "ritual_collection",
-          "ritual_function": "congregational_namasankirtana",
-          "excerpt": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:604a9623-f1b0-4efc-9486-ea415b219870:dramatic",
-          "axis": "dramatic",
-          "witness_id": "604a9623-f1b0-4efc-9486-ea415b219870",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        }
-      ],
-      "krithi_id": null,
-      "tala_witness_note": null
-    },
-    {
-      "id": "tyagaraja:import:6eb15e4d-fcd0-45e1-9edd-969928695354",
-      "subject_kind": "source_witness",
-      "mapped_krithi_id": "6ddd3f36-022a-4a78-9a63-c769c5941508",
-      "import_id": "6eb15e4d-fcd0-45e1-9edd-969928695354",
-      "evidence_id": "1e5ee4d0-b531-4b21-a23c-c1b4a1ca2bc0",
-      "title": "jaya mangaLaM",
-      "canonical_raga": "Nadanamakriya",
-      "canonical_tala": "Adi",
-      "raw_raga": "mOhanaM",
-      "raw_tala": "Unknown",
-      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/01/thyagaraja-kriti-jaya-mangalam-raga.html",
-      "import_status": "mapped",
-      "primary_language": "en",
-      "musical_form": "KRITHI",
-      "workflow_state": "published",
-      "is_ragamalika": false,
-      "geography_state": "UNRESOLVED",
-      "deity_state": "UNRESOLVED",
-      "section_flags": {
-        "pallavi_count": 1,
-        "anupallavi_count": 0,
-        "charanam_count": 6,
-        "swara_sahitya_count": 0
-      },
-      "structure_audit": [],
-      "claims": [
-        {
-          "id": "tyagaraja:import:6eb15e4d-fcd0-45e1-9edd-969928695354:deity",
-          "axis": "deity",
-          "value": "Rama",
-          "witness_id": "6eb15e4d-fcd0-45e1-9edd-969928695354",
-          "locator": "Snapshot record 6ddd3f36-022a-4a78-9a63-c769c5941508; incipit / pallavi (jaya mangaLaM)",
-          "excerpt": "jaya mangaLaM",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:6eb15e4d-fcd0-45e1-9edd-969928695354:geography",
-          "axis": "geography",
-          "value": "NO_PLACE_STATED",
-          "witness_id": "6eb15e4d-fcd0-45e1-9edd-969928695354",
-          "locator": "Snapshot record 6ddd3f36-022a-4a78-9a63-c769c5941508; incipit & metadata",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
-          "excerpt": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:6eb15e4d-fcd0-45e1-9edd-969928695354:theme",
-          "axis": "theme",
-          "value": "Rama Bhakti & Devotional Praise",
-          "witness_id": "6eb15e4d-fcd0-45e1-9edd-969928695354",
-          "locator": "Snapshot record 6ddd3f36-022a-4a78-9a63-c769c5941508; incipit / pallavi (jaya mangaLaM)",
-          "excerpt": "jaya mangaLaM",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:6eb15e4d-fcd0-45e1-9edd-969928695354:group",
-          "axis": "group",
-          "witness_id": "6eb15e4d-fcd0-45e1-9edd-969928695354",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:6eb15e4d-fcd0-45e1-9edd-969928695354:ritual",
-          "axis": "ritual",
-          "value": "tyagaraja-utsava-sampradaya",
-          "witness_id": "govinda-rao-tyagaraja",
-          "locator": "Edition not consulted",
-          "evidence_kind": "documented_tradition",
-          "review_state": "unreviewed",
-          "uncertainty": "Utsava Sampradaya concluding harati / mangalam benediction; source setting preserved.",
-          "group_type": "ritual_collection",
-          "ritual_function": "benediction_mangalam",
-          "excerpt": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:6eb15e4d-fcd0-45e1-9edd-969928695354:dramatic",
-          "axis": "dramatic",
-          "witness_id": "6eb15e4d-fcd0-45e1-9edd-969928695354",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        }
-      ],
-      "krithi_id": null,
-      "tala_witness_note": null
-    },
-    {
-      "id": "tyagaraja:import:733ec39f-27a2-4f8e-a703-e88196a5ab09",
-      "subject_kind": "source_witness",
-      "mapped_krithi_id": "12058429-320a-4040-b682-78c26399e0ae",
-      "import_id": "733ec39f-27a2-4f8e-a703-e88196a5ab09",
-      "evidence_id": "ffdf354c-f23a-4b6c-902b-92efe99c0ada",
-      "title": "SrI nArasiMha",
-      "canonical_raga": "Phalaranjani",
-      "canonical_tala": "Adi",
-      "raw_raga": "bilahari",
-      "raw_tala": "Isra Capu",
-      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/06/thyagaraja-kriti-narasimha-raga.html",
-      "import_status": "mapped",
-      "primary_language": "en",
-      "musical_form": "KRITHI",
-      "workflow_state": "published",
-      "is_ragamalika": false,
-      "geography_state": "UNRESOLVED",
-      "deity_state": "UNRESOLVED",
-      "section_flags": {
-        "pallavi_count": 1,
-        "anupallavi_count": 1,
-        "charanam_count": 1,
-        "swara_sahitya_count": 0
-      },
-      "structure_audit": [],
-      "claims": [
-        {
-          "id": "tyagaraja:import:733ec39f-27a2-4f8e-a703-e88196a5ab09:deity",
-          "axis": "deity",
-          "value": "Narasimha",
-          "witness_id": "733ec39f-27a2-4f8e-a703-e88196a5ab09",
-          "locator": "Snapshot record 12058429-320a-4040-b682-78c26399e0ae; incipit / pallavi (SrI nArasiMha)",
-          "excerpt": "SrI nArasiMha mAm pAhi kshIr(A)bdhi kanyakA ramaNa",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:733ec39f-27a2-4f8e-a703-e88196a5ab09:geography",
-          "axis": "geography",
-          "value": "NO_PLACE_STATED",
-          "witness_id": "733ec39f-27a2-4f8e-a703-e88196a5ab09",
-          "locator": "Snapshot record 12058429-320a-4040-b682-78c26399e0ae; incipit & metadata",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
-          "excerpt": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:733ec39f-27a2-4f8e-a703-e88196a5ab09:theme",
-          "axis": "theme",
-          "value": "Surrender (Saranagati) & Appeal for Grace",
-          "witness_id": "733ec39f-27a2-4f8e-a703-e88196a5ab09",
-          "locator": "Snapshot record 12058429-320a-4040-b682-78c26399e0ae; incipit / pallavi (SrI nArasiMha)",
-          "excerpt": "SrI nArasiMha mAm pAhi kshIr(A)bdhi kanyakA ramaNa",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:733ec39f-27a2-4f8e-a703-e88196a5ab09:group",
-          "axis": "group",
-          "witness_id": "733ec39f-27a2-4f8e-a703-e88196a5ab09",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:733ec39f-27a2-4f8e-a703-e88196a5ab09:ritual",
-          "axis": "ritual",
-          "witness_id": "733ec39f-27a2-4f8e-a703-e88196a5ab09",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:733ec39f-27a2-4f8e-a703-e88196a5ab09:dramatic",
-          "axis": "dramatic",
-          "witness_id": "733ec39f-27a2-4f8e-a703-e88196a5ab09",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        }
-      ],
-      "krithi_id": null,
-      "tala_witness_note": null
-    },
-    {
-      "id": "tyagaraja:import:84ffdbb8-6845-4747-9127-b0a46cf65630",
-      "subject_kind": "source_witness",
-      "mapped_krithi_id": "76706063-efdd-49a7-b091-4817afed5b57",
-      "import_id": "84ffdbb8-6845-4747-9127-b0a46cf65630",
-      "evidence_id": "d03d7e0b-971b-4edd-9b34-8f853f9d8ad3",
-      "title": "Sri Narada Muni",
-      "canonical_raga": "Bhairavi",
-      "canonical_tala": "Adi",
-      "raw_raga": "Bhairavi",
-      "raw_tala": "Unknown",
-      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2007/06/thyagaraja-kriti-sri-narada-muni-raga.html",
-      "import_status": "mapped",
-      "primary_language": "en",
-      "musical_form": "KRITHI",
-      "workflow_state": "published",
-      "is_ragamalika": false,
-      "geography_state": "UNRESOLVED",
-      "deity_state": "UNRESOLVED",
-      "section_flags": {
-        "pallavi_count": 0,
-        "anupallavi_count": 0,
-        "charanam_count": 4,
-        "swara_sahitya_count": 0
-      },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
-      "claims": [
-        {
-          "id": "tyagaraja:import:84ffdbb8-6845-4747-9127-b0a46cf65630:deity",
-          "axis": "deity",
-          "value": "Sage Narada",
-          "witness_id": "84ffdbb8-6845-4747-9127-b0a46cf65630",
-          "locator": "Snapshot record 76706063-efdd-49a7-b091-4817afed5b57; incipit / pallavi (Sri Narada Muni)",
-          "excerpt": "SrI nArada muni guru 1 rAya kaNTi-m(E) nATi tapamO guru rAya",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:84ffdbb8-6845-4747-9127-b0a46cf65630:geography",
-          "axis": "geography",
-          "value": "NO_PLACE_STATED",
-          "witness_id": "84ffdbb8-6845-4747-9127-b0a46cf65630",
-          "locator": "Snapshot record 76706063-efdd-49a7-b091-4817afed5b57; incipit & metadata",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
-          "excerpt": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:84ffdbb8-6845-4747-9127-b0a46cf65630:theme",
-          "axis": "theme",
-          "value": "Saints and Teachers",
-          "witness_id": "84ffdbb8-6845-4747-9127-b0a46cf65630",
-          "locator": "Snapshot record 76706063-efdd-49a7-b091-4817afed5b57; incipit / pallavi (Sri Narada Muni)",
-          "excerpt": "SrI nArada muni guru 1 rAya kaNTi-m(E) nATi tapamO guru rAya",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:84ffdbb8-6845-4747-9127-b0a46cf65630:group",
-          "axis": "group",
-          "witness_id": "84ffdbb8-6845-4747-9127-b0a46cf65630",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:84ffdbb8-6845-4747-9127-b0a46cf65630:ritual",
-          "axis": "ritual",
-          "witness_id": "84ffdbb8-6845-4747-9127-b0a46cf65630",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:84ffdbb8-6845-4747-9127-b0a46cf65630:dramatic",
-          "axis": "dramatic",
-          "witness_id": "84ffdbb8-6845-4747-9127-b0a46cf65630",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        }
-      ],
-      "krithi_id": null,
-      "tala_witness_note": null
-    },
-    {
-      "id": "tyagaraja:import:ab6c4e31-d6a7-474d-ac72-e30adb14ecaf",
-      "subject_kind": "source_witness",
-      "mapped_krithi_id": "4f90dd54-c76e-4cce-88f8-1c460cdb3566",
-      "import_id": "ab6c4e31-d6a7-474d-ac72-e30adb14ecaf",
-      "evidence_id": "acc36b4d-2fe2-4a22-9ac6-5efd97688c47",
-      "title": "rAma sItA rAma",
-      "canonical_raga": "Bālahamsa",
-      "canonical_tala": "Adi",
-      "raw_raga": "balahamsa",
-      "raw_tala": "Unknown",
-      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/01/thyagaraja-kriti-rama-sita-rama-raga.html",
-      "import_status": "mapped",
-      "primary_language": "en",
-      "musical_form": "KRITHI",
-      "workflow_state": "published",
-      "is_ragamalika": false,
-      "geography_state": "UNRESOLVED",
-      "deity_state": "UNRESOLVED",
-      "section_flags": {
-        "pallavi_count": 1,
-        "anupallavi_count": 0,
-        "charanam_count": 9,
-        "swara_sahitya_count": 0
-      },
-      "structure_audit": [],
-      "claims": [
-        {
-          "id": "tyagaraja:import:ab6c4e31-d6a7-474d-ac72-e30adb14ecaf:deity",
-          "axis": "deity",
-          "value": "Rama",
-          "witness_id": "ab6c4e31-d6a7-474d-ac72-e30adb14ecaf",
-          "locator": "Snapshot record 4f90dd54-c76e-4cce-88f8-1c460cdb3566; incipit / pallavi (rAma sItA rAma)",
-          "excerpt": "1 rAma sItA rAma rAma rAma sItA rAma rAma",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:ab6c4e31-d6a7-474d-ac72-e30adb14ecaf:geography",
-          "axis": "geography",
-          "value": "NO_PLACE_STATED",
-          "witness_id": "ab6c4e31-d6a7-474d-ac72-e30adb14ecaf",
-          "locator": "Snapshot record 4f90dd54-c76e-4cce-88f8-1c460cdb3566; incipit & metadata",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
-          "excerpt": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:ab6c4e31-d6a7-474d-ac72-e30adb14ecaf:theme",
-          "axis": "theme",
-          "value": "Rama Bhakti & Devotional Praise",
-          "witness_id": "ab6c4e31-d6a7-474d-ac72-e30adb14ecaf",
-          "locator": "Snapshot record 4f90dd54-c76e-4cce-88f8-1c460cdb3566; incipit / pallavi (rAma sItA rAma)",
-          "excerpt": "1 rAma sItA rAma rAma rAma sItA rAma rAma",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:ab6c4e31-d6a7-474d-ac72-e30adb14ecaf:group",
-          "axis": "group",
-          "witness_id": "ab6c4e31-d6a7-474d-ac72-e30adb14ecaf",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:ab6c4e31-d6a7-474d-ac72-e30adb14ecaf:ritual",
-          "axis": "ritual",
-          "witness_id": "ab6c4e31-d6a7-474d-ac72-e30adb14ecaf",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:ab6c4e31-d6a7-474d-ac72-e30adb14ecaf:dramatic",
-          "axis": "dramatic",
-          "witness_id": "ab6c4e31-d6a7-474d-ac72-e30adb14ecaf",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        }
-      ],
-      "krithi_id": null,
-      "tala_witness_note": null
-    },
-    {
-      "id": "tyagaraja:import:b26f89a5-7924-43e8-8ee6-c50d0a8bb6f1",
-      "subject_kind": "source_witness",
-      "mapped_krithi_id": "6ddd3f36-022a-4a78-9a63-c769c5941508",
-      "import_id": "b26f89a5-7924-43e8-8ee6-c50d0a8bb6f1",
-      "evidence_id": "c66f4f9a-8841-4118-86c4-53aba1cfe0cc",
-      "title": "jaya mangaLaM",
-      "canonical_raga": "Nadanamakriya",
-      "canonical_tala": "Adi",
-      "raw_raga": "nAda nAmakriya",
-      "raw_tala": "Adi",
-      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2007/03/thyagaraja-kriti-jaya-mangalam-raga.html",
-      "import_status": "mapped",
-      "primary_language": "en",
-      "musical_form": "KRITHI",
-      "workflow_state": "published",
-      "is_ragamalika": false,
-      "geography_state": "UNRESOLVED",
-      "deity_state": "UNRESOLVED",
-      "section_flags": {
-        "pallavi_count": 1,
-        "anupallavi_count": 0,
-        "charanam_count": 6,
-        "swara_sahitya_count": 0
-      },
-      "structure_audit": [],
-      "claims": [
-        {
-          "id": "tyagaraja:import:b26f89a5-7924-43e8-8ee6-c50d0a8bb6f1:deity",
-          "axis": "deity",
-          "value": "Rama",
-          "witness_id": "b26f89a5-7924-43e8-8ee6-c50d0a8bb6f1",
-          "locator": "Snapshot record 6ddd3f36-022a-4a78-9a63-c769c5941508; incipit / pallavi (jaya mangaLaM)",
-          "excerpt": "jaya mangaLaM",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:b26f89a5-7924-43e8-8ee6-c50d0a8bb6f1:geography",
-          "axis": "geography",
-          "value": "NO_PLACE_STATED",
-          "witness_id": "b26f89a5-7924-43e8-8ee6-c50d0a8bb6f1",
-          "locator": "Snapshot record 6ddd3f36-022a-4a78-9a63-c769c5941508; incipit & metadata",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
-          "excerpt": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:b26f89a5-7924-43e8-8ee6-c50d0a8bb6f1:theme",
-          "axis": "theme",
-          "value": "Rama Bhakti & Devotional Praise",
-          "witness_id": "b26f89a5-7924-43e8-8ee6-c50d0a8bb6f1",
-          "locator": "Snapshot record 6ddd3f36-022a-4a78-9a63-c769c5941508; incipit / pallavi (jaya mangaLaM)",
-          "excerpt": "jaya mangaLaM",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:b26f89a5-7924-43e8-8ee6-c50d0a8bb6f1:group",
-          "axis": "group",
-          "witness_id": "b26f89a5-7924-43e8-8ee6-c50d0a8bb6f1",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:b26f89a5-7924-43e8-8ee6-c50d0a8bb6f1:ritual",
-          "axis": "ritual",
-          "value": "tyagaraja-utsava-sampradaya",
-          "witness_id": "govinda-rao-tyagaraja",
-          "locator": "Edition not consulted",
-          "evidence_kind": "documented_tradition",
-          "review_state": "unreviewed",
-          "uncertainty": "Utsava Sampradaya concluding harati / mangalam benediction; source setting preserved.",
-          "group_type": "ritual_collection",
-          "ritual_function": "benediction_mangalam",
-          "excerpt": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:b26f89a5-7924-43e8-8ee6-c50d0a8bb6f1:dramatic",
-          "axis": "dramatic",
-          "witness_id": "b26f89a5-7924-43e8-8ee6-c50d0a8bb6f1",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        }
-      ],
-      "krithi_id": null,
-      "tala_witness_note": null
-    },
-    {
-      "id": "tyagaraja:import:c702d09d-b5a5-4b16-82ac-5fc01e265dd9",
-      "subject_kind": "source_witness",
-      "mapped_krithi_id": "76706063-efdd-49a7-b091-4817afed5b57",
-      "import_id": "c702d09d-b5a5-4b16-82ac-5fc01e265dd9",
-      "evidence_id": "d960c172-7eef-4f6e-bc2c-954e13130d8a",
-      "title": "Sri Narada Muni",
-      "canonical_raga": "Bhairavi",
-      "canonical_tala": "Adi",
-      "raw_raga": "pantuvarALi",
-      "raw_tala": "Rupakam",
-      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/08/thyagaraja-kriti-narada-muni-raga.html",
-      "import_status": "mapped",
-      "primary_language": "en",
-      "musical_form": "KRITHI",
-      "workflow_state": "published",
-      "is_ragamalika": false,
-      "geography_state": "UNRESOLVED",
-      "deity_state": "UNRESOLVED",
-      "section_flags": {
-        "pallavi_count": 0,
-        "anupallavi_count": 0,
-        "charanam_count": 4,
-        "swara_sahitya_count": 0
-      },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
-      "claims": [
-        {
-          "id": "tyagaraja:import:c702d09d-b5a5-4b16-82ac-5fc01e265dd9:deity",
-          "axis": "deity",
-          "value": "Sage Narada",
-          "witness_id": "c702d09d-b5a5-4b16-82ac-5fc01e265dd9",
-          "locator": "Snapshot record 76706063-efdd-49a7-b091-4817afed5b57; incipit / pallavi (Sri Narada Muni)",
-          "excerpt": "SrI nArada muni guru 1 rAya kaNTi-m(E) nATi tapamO guru rAya",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:c702d09d-b5a5-4b16-82ac-5fc01e265dd9:geography",
-          "axis": "geography",
-          "value": "NO_PLACE_STATED",
-          "witness_id": "c702d09d-b5a5-4b16-82ac-5fc01e265dd9",
-          "locator": "Snapshot record 76706063-efdd-49a7-b091-4817afed5b57; incipit & metadata",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
-          "excerpt": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:c702d09d-b5a5-4b16-82ac-5fc01e265dd9:theme",
-          "axis": "theme",
-          "value": "Saints and Teachers",
-          "witness_id": "c702d09d-b5a5-4b16-82ac-5fc01e265dd9",
-          "locator": "Snapshot record 76706063-efdd-49a7-b091-4817afed5b57; incipit / pallavi (Sri Narada Muni)",
-          "excerpt": "SrI nArada muni guru 1 rAya kaNTi-m(E) nATi tapamO guru rAya",
-          "evidence_kind": "textual_evidence",
-          "review_state": "unresolved",
-          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:c702d09d-b5a5-4b16-82ac-5fc01e265dd9:group",
-          "axis": "group",
-          "witness_id": "c702d09d-b5a5-4b16-82ac-5fc01e265dd9",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:c702d09d-b5a5-4b16-82ac-5fc01e265dd9:ritual",
-          "axis": "ritual",
-          "witness_id": "c702d09d-b5a5-4b16-82ac-5fc01e265dd9",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        },
-        {
-          "id": "tyagaraja:import:c702d09d-b5a5-4b16-82ac-5fc01e265dd9:dramatic",
-          "axis": "dramatic",
-          "witness_id": "c702d09d-b5a5-4b16-82ac-5fc01e265dd9",
-          "review_state": "unreviewed",
-          "value": null,
-          "locator": null,
-          "excerpt": null,
-          "evidence_kind": null,
-          "uncertainty": null,
-          "reviewer_decision": null
-        }
-      ],
-      "krithi_id": null,
-      "tala_witness_note": null
-    },
     {
       "id": "tyagaraja:krithi:0040c0f8-7f32-44f7-85ef-0eb0ec2e05f1",
       "subject_kind": "catalogue_identity",
@@ -12818,6 +11041,109 @@
       "tala_witness_note": null
     },
     {
+      "id": "tyagaraja:krithi:12058429-320a-4040-b682-78c26399e0ae",
+      "subject_kind": "catalogue_identity",
+      "krithi_id": "12058429-320a-4040-b682-78c26399e0ae",
+      "import_id": "40e2d47b-a0c5-4e44-b301-8cdd05b9589d",
+      "evidence_id": "affef771-2012-4907-b572-e06cad31f0dc",
+      "title": "SrI nArasiMha",
+      "canonical_raga": "Phalaranjani",
+      "canonical_tala": "Adi",
+      "raw_raga": "phala ranjani",
+      "raw_tala": "Unknown",
+      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/01/thyagaraja-kriti-sri-naarasimha-raga.html",
+      "import_status": "mapped",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "workflow_state": "published",
+      "is_ragamalika": false,
+      "geography_state": "UNRESOLVED",
+      "deity_state": "UNRESOLVED",
+      "section_flags": {
+        "pallavi_count": 1,
+        "anupallavi_count": 1,
+        "charanam_count": 1,
+        "swara_sahitya_count": 0
+      },
+      "structure_audit": [],
+      "claims": [
+        {
+          "id": "tyagaraja:krithi:12058429-320a-4040-b682-78c26399e0ae:deity",
+          "axis": "deity",
+          "value": "Narasimha",
+          "witness_id": "40e2d47b-a0c5-4e44-b301-8cdd05b9589d",
+          "locator": "Snapshot record 12058429-320a-4040-b682-78c26399e0ae; incipit / pallavi (SrI nArasiMha)",
+          "excerpt": "SrI nArasiMha mAm pAhi kshIr(A)bdhi kanyakA ramaNa",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:12058429-320a-4040-b682-78c26399e0ae:geography",
+          "axis": "geography",
+          "value": "NO_PLACE_STATED",
+          "witness_id": "40e2d47b-a0c5-4e44-b301-8cdd05b9589d",
+          "locator": "Snapshot record 12058429-320a-4040-b682-78c26399e0ae; incipit & metadata",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
+          "excerpt": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:12058429-320a-4040-b682-78c26399e0ae:theme",
+          "axis": "theme",
+          "value": "Surrender (Saranagati) & Appeal for Grace",
+          "witness_id": "40e2d47b-a0c5-4e44-b301-8cdd05b9589d",
+          "locator": "Snapshot record 12058429-320a-4040-b682-78c26399e0ae; incipit / pallavi (SrI nArasiMha)",
+          "excerpt": "SrI nArasiMha mAm pAhi kshIr(A)bdhi kanyakA ramaNa",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:12058429-320a-4040-b682-78c26399e0ae:group",
+          "axis": "group",
+          "witness_id": "40e2d47b-a0c5-4e44-b301-8cdd05b9589d",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:12058429-320a-4040-b682-78c26399e0ae:ritual",
+          "axis": "ritual",
+          "witness_id": "40e2d47b-a0c5-4e44-b301-8cdd05b9589d",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:12058429-320a-4040-b682-78c26399e0ae:dramatic",
+          "axis": "dramatic",
+          "witness_id": "40e2d47b-a0c5-4e44-b301-8cdd05b9589d",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        }
+      ],
+      "mapped_krithi_id": null,
+      "tala_witness_note": null
+    },
+    {
       "id": "tyagaraja:krithi:125e543a-cb8c-462a-9b51-fe981e8e4337",
       "subject_kind": "catalogue_identity",
       "krithi_id": "125e543a-cb8c-462a-9b51-fe981e8e4337",
@@ -14466,6 +12792,111 @@
       "tala_witness_note": null
     },
     {
+      "id": "tyagaraja:krithi:191c44c1-9744-4afe-9f90-5a9cb45ade22",
+      "subject_kind": "catalogue_identity",
+      "krithi_id": "191c44c1-9744-4afe-9f90-5a9cb45ade22",
+      "import_id": "5d70a340-0137-4dfd-baa8-596ccaebf89f",
+      "evidence_id": "35ab995b-60b6-4ced-b1bf-b522b76eca8b",
+      "title": "jaya mangaLaM",
+      "canonical_raga": "Ghanta",
+      "canonical_tala": "Jhampa",
+      "raw_raga": "ghaNTA",
+      "raw_tala": "Jhampa",
+      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/12/thyagaraja-kriti-jaya-mangalam-raga.html",
+      "import_status": "approved",
+      "primary_language": "en",
+      "musical_form": "UNESTABLISHED",
+      "workflow_state": "draft",
+      "is_ragamalika": false,
+      "geography_state": "UNRESOLVED",
+      "deity_state": "UNRESOLVED",
+      "section_flags": {
+        "pallavi_count": 1,
+        "anupallavi_count": 0,
+        "charanam_count": 3,
+        "swara_sahitya_count": 0
+      },
+      "structure_audit": [],
+      "claims": [
+        {
+          "id": "tyagaraja:krithi:191c44c1-9744-4afe-9f90-5a9cb45ade22:deity",
+          "axis": "deity",
+          "value": "Rama",
+          "witness_id": "5d70a340-0137-4dfd-baa8-596ccaebf89f",
+          "locator": "Snapshot record 191c44c1-9744-4afe-9f90-5a9cb45ade22; incipit / pallavi (jaya mangaLaM)",
+          "excerpt": "jaya mangaLaM",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:191c44c1-9744-4afe-9f90-5a9cb45ade22:geography",
+          "axis": "geography",
+          "value": "NO_PLACE_STATED",
+          "witness_id": "5d70a340-0137-4dfd-baa8-596ccaebf89f",
+          "locator": "Snapshot record 191c44c1-9744-4afe-9f90-5a9cb45ade22; incipit & metadata",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
+          "excerpt": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:191c44c1-9744-4afe-9f90-5a9cb45ade22:theme",
+          "axis": "theme",
+          "value": "Rama Bhakti & Devotional Praise",
+          "witness_id": "5d70a340-0137-4dfd-baa8-596ccaebf89f",
+          "locator": "Snapshot record 191c44c1-9744-4afe-9f90-5a9cb45ade22; incipit / pallavi (jaya mangaLaM)",
+          "excerpt": "jaya mangaLaM",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:191c44c1-9744-4afe-9f90-5a9cb45ade22:group",
+          "axis": "group",
+          "witness_id": "5d70a340-0137-4dfd-baa8-596ccaebf89f",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:191c44c1-9744-4afe-9f90-5a9cb45ade22:ritual",
+          "axis": "ritual",
+          "value": "tyagaraja-utsava-sampradaya",
+          "witness_id": "govinda-rao-tyagaraja",
+          "locator": "Edition not consulted",
+          "evidence_kind": "documented_tradition",
+          "review_state": "unreviewed",
+          "uncertainty": "Utsava Sampradaya concluding harati / mangalam benediction; source setting preserved.",
+          "group_type": "ritual_collection",
+          "ritual_function": "benediction_mangalam",
+          "excerpt": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:191c44c1-9744-4afe-9f90-5a9cb45ade22:dramatic",
+          "axis": "dramatic",
+          "witness_id": "5d70a340-0137-4dfd-baa8-596ccaebf89f",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        }
+      ],
+      "mapped_krithi_id": null,
+      "tala_witness_note": null
+    },
+    {
       "id": "tyagaraja:krithi:195994c2-534a-4950-be10-ce9ba7a7f0cf",
       "subject_kind": "catalogue_identity",
       "krithi_id": "195994c2-534a-4950-be10-ce9ba7a7f0cf",
@@ -16022,6 +14453,113 @@
       "tala_witness_note": null
     },
     {
+      "id": "tyagaraja:krithi:1dfe4864-6224-460a-845a-5328aed9b638",
+      "subject_kind": "catalogue_identity",
+      "krithi_id": "1dfe4864-6224-460a-845a-5328aed9b638",
+      "import_id": "1f73ab63-0278-4b61-85ce-3fbacbce1ba0",
+      "evidence_id": "ce44041b-56d2-441c-92fe-a0d555702070",
+      "title": "Sri Rama Jaya Rama",
+      "canonical_raga": "Madhyamāvathi",
+      "canonical_tala": "Adi",
+      "raw_raga": "Madhyamavati",
+      "raw_tala": "Unknown",
+      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2007/09/thyagaraja-kriti-sri-rama-jaya-rama.html",
+      "import_status": "mapped",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "workflow_state": "published",
+      "is_ragamalika": false,
+      "geography_state": "UNRESOLVED",
+      "deity_state": "UNRESOLVED",
+      "section_flags": {
+        "pallavi_count": 0,
+        "anupallavi_count": 0,
+        "charanam_count": 17,
+        "swara_sahitya_count": 0
+      },
+      "structure_audit": [
+        "missing_pallavi"
+      ],
+      "claims": [
+        {
+          "id": "tyagaraja:krithi:1dfe4864-6224-460a-845a-5328aed9b638:deity",
+          "axis": "deity",
+          "value": "Rama",
+          "witness_id": "1f73ab63-0278-4b61-85ce-3fbacbce1ba0",
+          "locator": "Snapshot record 1dfe4864-6224-460a-845a-5328aed9b638; incipit / pallavi (Sri Rama Jaya Rama)",
+          "excerpt": "SrI rAma jaya rAma SRngAra rAma",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:1dfe4864-6224-460a-845a-5328aed9b638:geography",
+          "axis": "geography",
+          "value": "NO_PLACE_STATED",
+          "witness_id": "1f73ab63-0278-4b61-85ce-3fbacbce1ba0",
+          "locator": "Snapshot record 1dfe4864-6224-460a-845a-5328aed9b638; incipit & metadata",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
+          "excerpt": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:1dfe4864-6224-460a-845a-5328aed9b638:theme",
+          "axis": "theme",
+          "value": "Rama Bhakti & Devotional Praise",
+          "witness_id": "1f73ab63-0278-4b61-85ce-3fbacbce1ba0",
+          "locator": "Snapshot record 1dfe4864-6224-460a-845a-5328aed9b638; incipit / pallavi (Sri Rama Jaya Rama)",
+          "excerpt": "SrI rAma jaya rAma SRngAra rAma",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:1dfe4864-6224-460a-845a-5328aed9b638:group",
+          "axis": "group",
+          "witness_id": "1f73ab63-0278-4b61-85ce-3fbacbce1ba0",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:1dfe4864-6224-460a-845a-5328aed9b638:ritual",
+          "axis": "ritual",
+          "value": "tyagaraja-divyanama-sankirtana",
+          "witness_id": "govinda-rao-tyagaraja",
+          "locator": "Edition not consulted",
+          "evidence_kind": "documented_tradition",
+          "review_state": "unreviewed",
+          "uncertainty": "Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed.",
+          "group_type": "ritual_collection",
+          "ritual_function": "congregational_namasankirtana",
+          "excerpt": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:1dfe4864-6224-460a-845a-5328aed9b638:dramatic",
+          "axis": "dramatic",
+          "witness_id": "1f73ab63-0278-4b61-85ce-3fbacbce1ba0",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        }
+      ],
+      "mapped_krithi_id": null,
+      "tala_witness_note": null
+    },
+    {
       "id": "tyagaraja:krithi:1e8717c9-7316-4de5-9ed4-5a026a9722bc",
       "subject_kind": "catalogue_identity",
       "krithi_id": "1e8717c9-7316-4de5-9ed4-5a026a9722bc",
@@ -17039,6 +15577,109 @@
           "id": "tyagaraja:krithi:209b89f7-44a8-4d47-a939-c70b8db7e919:dramatic",
           "axis": "dramatic",
           "witness_id": "5e939717-f6fc-4eed-afc1-e737281911a9",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        }
+      ],
+      "mapped_krithi_id": null,
+      "tala_witness_note": null
+    },
+    {
+      "id": "tyagaraja:krithi:20fb3477-37b1-4a67-bf22-cfb57fd45192",
+      "subject_kind": "catalogue_identity",
+      "krithi_id": "20fb3477-37b1-4a67-bf22-cfb57fd45192",
+      "import_id": "0082d54a-2341-48c0-9b54-d7039232b77c",
+      "evidence_id": "ddef25d6-11bc-4652-b267-5b918fa70c50",
+      "title": "paripUrNa kAma",
+      "canonical_raga": "Hamsabhramari",
+      "canonical_tala": "Adi",
+      "raw_raga": "hamsa bhramari",
+      "raw_tala": "Adi",
+      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/09/thyagaraja-kriti-paripoorna-kama-raga.html",
+      "import_status": "approved",
+      "primary_language": "en",
+      "musical_form": "UNESTABLISHED",
+      "workflow_state": "draft",
+      "is_ragamalika": false,
+      "geography_state": "UNRESOLVED",
+      "deity_state": "UNRESOLVED",
+      "section_flags": {
+        "pallavi_count": 1,
+        "anupallavi_count": 1,
+        "charanam_count": 1,
+        "swara_sahitya_count": 0
+      },
+      "structure_audit": [],
+      "claims": [
+        {
+          "id": "tyagaraja:krithi:20fb3477-37b1-4a67-bf22-cfb57fd45192:deity",
+          "axis": "deity",
+          "value": "Rama",
+          "witness_id": "0082d54a-2341-48c0-9b54-d7039232b77c",
+          "locator": "Snapshot record 20fb3477-37b1-4a67-bf22-cfb57fd45192; incipit / pallavi (paripUrNa kAma)",
+          "excerpt": "paripUrNa kAma",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:20fb3477-37b1-4a67-bf22-cfb57fd45192:geography",
+          "axis": "geography",
+          "value": "NO_PLACE_STATED",
+          "witness_id": "0082d54a-2341-48c0-9b54-d7039232b77c",
+          "locator": "Snapshot record 20fb3477-37b1-4a67-bf22-cfb57fd45192; incipit & metadata",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
+          "excerpt": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:20fb3477-37b1-4a67-bf22-cfb57fd45192:theme",
+          "axis": "theme",
+          "value": "Rama Bhakti & Devotional Praise",
+          "witness_id": "0082d54a-2341-48c0-9b54-d7039232b77c",
+          "locator": "Snapshot record 20fb3477-37b1-4a67-bf22-cfb57fd45192; incipit / pallavi (paripUrNa kAma)",
+          "excerpt": "paripUrNa kAma",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:20fb3477-37b1-4a67-bf22-cfb57fd45192:group",
+          "axis": "group",
+          "witness_id": "0082d54a-2341-48c0-9b54-d7039232b77c",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:20fb3477-37b1-4a67-bf22-cfb57fd45192:ritual",
+          "axis": "ritual",
+          "witness_id": "0082d54a-2341-48c0-9b54-d7039232b77c",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:20fb3477-37b1-4a67-bf22-cfb57fd45192:dramatic",
+          "axis": "dramatic",
+          "witness_id": "0082d54a-2341-48c0-9b54-d7039232b77c",
           "review_state": "unreviewed",
           "value": null,
           "locator": null,
@@ -26409,6 +25050,111 @@
       "tala_witness_note": null
     },
     {
+      "id": "tyagaraja:krithi:42d35ca5-4110-4fd8-bece-9ced6a37014e",
+      "subject_kind": "catalogue_identity",
+      "krithi_id": "42d35ca5-4110-4fd8-bece-9ced6a37014e",
+      "import_id": "3946f1d2-2a27-4591-b504-5e334d51b53e",
+      "evidence_id": "636b612a-ffac-4f99-bc1d-ea6b327d0d8a",
+      "title": "Rama Rama Rama Sita",
+      "canonical_raga": "Sāveri",
+      "canonical_tala": "Adi",
+      "raw_raga": "sAvEri",
+      "raw_tala": "Adi",
+      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2007/04/thyagaraja-kriti-sri-rama-rama-rama.html",
+      "import_status": "mapped",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "workflow_state": "published",
+      "is_ragamalika": false,
+      "geography_state": "UNRESOLVED",
+      "deity_state": "UNRESOLVED",
+      "section_flags": {
+        "pallavi_count": 1,
+        "anupallavi_count": 0,
+        "charanam_count": 5,
+        "swara_sahitya_count": 0
+      },
+      "structure_audit": [],
+      "claims": [
+        {
+          "id": "tyagaraja:krithi:42d35ca5-4110-4fd8-bece-9ced6a37014e:deity",
+          "axis": "deity",
+          "value": "Rama",
+          "witness_id": "3946f1d2-2a27-4591-b504-5e334d51b53e",
+          "locator": "Snapshot record 42d35ca5-4110-4fd8-bece-9ced6a37014e; incipit / pallavi (Rama Rama Rama Sita)",
+          "excerpt": "1 SrI rAma rAma rAma sItA hRj-jaladhi sOma",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:42d35ca5-4110-4fd8-bece-9ced6a37014e:geography",
+          "axis": "geography",
+          "value": "NO_PLACE_STATED",
+          "witness_id": "3946f1d2-2a27-4591-b504-5e334d51b53e",
+          "locator": "Snapshot record 42d35ca5-4110-4fd8-bece-9ced6a37014e; incipit & metadata",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
+          "excerpt": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:42d35ca5-4110-4fd8-bece-9ced6a37014e:theme",
+          "axis": "theme",
+          "value": "Rama Bhakti & Devotional Praise",
+          "witness_id": "3946f1d2-2a27-4591-b504-5e334d51b53e",
+          "locator": "Snapshot record 42d35ca5-4110-4fd8-bece-9ced6a37014e; incipit / pallavi (Rama Rama Rama Sita)",
+          "excerpt": "1 SrI rAma rAma rAma sItA hRj-jaladhi sOma",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:42d35ca5-4110-4fd8-bece-9ced6a37014e:group",
+          "axis": "group",
+          "witness_id": "3946f1d2-2a27-4591-b504-5e334d51b53e",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:42d35ca5-4110-4fd8-bece-9ced6a37014e:ritual",
+          "axis": "ritual",
+          "value": "tyagaraja-divyanama-sankirtana",
+          "witness_id": "govinda-rao-tyagaraja",
+          "locator": "Edition not consulted",
+          "evidence_kind": "documented_tradition",
+          "review_state": "unreviewed",
+          "uncertainty": "Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed.",
+          "group_type": "ritual_collection",
+          "ritual_function": "congregational_namasankirtana",
+          "excerpt": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:42d35ca5-4110-4fd8-bece-9ced6a37014e:dramatic",
+          "axis": "dramatic",
+          "witness_id": "3946f1d2-2a27-4591-b504-5e334d51b53e",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        }
+      ],
+      "mapped_krithi_id": null,
+      "tala_witness_note": null
+    },
+    {
       "id": "tyagaraja:krithi:44d9e846-50b1-43dd-bc7e-9f82994d953c",
       "subject_kind": "catalogue_identity",
       "krithi_id": "44d9e846-50b1-43dd-bc7e-9f82994d953c",
@@ -27224,6 +25970,111 @@
           "id": "tyagaraja:krithi:4749735b-6ccb-4892-a504-04df5716bde0:dramatic",
           "axis": "dramatic",
           "witness_id": "0f4641fb-265e-4c89-b520-f42f5a84d06d",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        }
+      ],
+      "mapped_krithi_id": null,
+      "tala_witness_note": null
+    },
+    {
+      "id": "tyagaraja:krithi:474faeba-0c01-4688-a1e1-1ad41b536ee3",
+      "subject_kind": "catalogue_identity",
+      "krithi_id": "474faeba-0c01-4688-a1e1-1ad41b536ee3",
+      "import_id": "6eb15e4d-fcd0-45e1-9edd-969928695354",
+      "evidence_id": "2ea79fc2-ffcf-439f-b187-5b5c73b17e64",
+      "title": "jaya mangaLaM",
+      "canonical_raga": "Mohanam",
+      "canonical_tala": "Unknown",
+      "raw_raga": "mOhanaM",
+      "raw_tala": "Unknown",
+      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/01/thyagaraja-kriti-jaya-mangalam-raga.html",
+      "import_status": "approved",
+      "primary_language": "en",
+      "musical_form": "UNESTABLISHED",
+      "workflow_state": "draft",
+      "is_ragamalika": false,
+      "geography_state": "UNRESOLVED",
+      "deity_state": "UNRESOLVED",
+      "section_flags": {
+        "pallavi_count": 1,
+        "anupallavi_count": 1,
+        "charanam_count": 3,
+        "swara_sahitya_count": 0
+      },
+      "structure_audit": [],
+      "claims": [
+        {
+          "id": "tyagaraja:krithi:474faeba-0c01-4688-a1e1-1ad41b536ee3:deity",
+          "axis": "deity",
+          "value": "Rama",
+          "witness_id": "6eb15e4d-fcd0-45e1-9edd-969928695354",
+          "locator": "Snapshot record 474faeba-0c01-4688-a1e1-1ad41b536ee3; incipit / pallavi (jaya mangaLaM)",
+          "excerpt": "jaya mangaLaM",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:474faeba-0c01-4688-a1e1-1ad41b536ee3:geography",
+          "axis": "geography",
+          "value": "NO_PLACE_STATED",
+          "witness_id": "6eb15e4d-fcd0-45e1-9edd-969928695354",
+          "locator": "Snapshot record 474faeba-0c01-4688-a1e1-1ad41b536ee3; incipit & metadata",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
+          "excerpt": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:474faeba-0c01-4688-a1e1-1ad41b536ee3:theme",
+          "axis": "theme",
+          "value": "Rama Bhakti & Devotional Praise",
+          "witness_id": "6eb15e4d-fcd0-45e1-9edd-969928695354",
+          "locator": "Snapshot record 474faeba-0c01-4688-a1e1-1ad41b536ee3; incipit / pallavi (jaya mangaLaM)",
+          "excerpt": "jaya mangaLaM",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:474faeba-0c01-4688-a1e1-1ad41b536ee3:group",
+          "axis": "group",
+          "witness_id": "6eb15e4d-fcd0-45e1-9edd-969928695354",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:474faeba-0c01-4688-a1e1-1ad41b536ee3:ritual",
+          "axis": "ritual",
+          "value": "tyagaraja-utsava-sampradaya",
+          "witness_id": "govinda-rao-tyagaraja",
+          "locator": "Edition not consulted",
+          "evidence_kind": "documented_tradition",
+          "review_state": "unreviewed",
+          "uncertainty": "Utsava Sampradaya concluding harati / mangalam benediction; source setting preserved.",
+          "group_type": "ritual_collection",
+          "ritual_function": "benediction_mangalam",
+          "excerpt": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:474faeba-0c01-4688-a1e1-1ad41b536ee3:dramatic",
+          "axis": "dramatic",
+          "witness_id": "6eb15e4d-fcd0-45e1-9edd-969928695354",
           "review_state": "unreviewed",
           "value": null,
           "locator": null,
@@ -28271,6 +27122,109 @@
       "tala_witness_note": null
     },
     {
+      "id": "tyagaraja:krithi:4abda836-1e15-4b0b-a7a7-58035712c55a",
+      "subject_kind": "catalogue_identity",
+      "krithi_id": "4abda836-1e15-4b0b-a7a7-58035712c55a",
+      "import_id": "4707048d-f06e-46f0-9202-3b985cee65b2",
+      "evidence_id": "770b46f6-5fde-494a-94b8-322545306ab7",
+      "title": "paripUrNa kAma",
+      "canonical_raga": "pUri kalyANi",
+      "canonical_tala": "Adi",
+      "raw_raga": "pUri kalyANi",
+      "raw_tala": "Adi",
+      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/08/thyagaraja-kriti-paripoorna-kama-raga.html",
+      "import_status": "approved",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "workflow_state": "published",
+      "is_ragamalika": false,
+      "geography_state": "UNRESOLVED",
+      "deity_state": "UNRESOLVED",
+      "section_flags": {
+        "pallavi_count": 1,
+        "anupallavi_count": 1,
+        "charanam_count": 1,
+        "swara_sahitya_count": 0
+      },
+      "structure_audit": [],
+      "claims": [
+        {
+          "id": "tyagaraja:krithi:4abda836-1e15-4b0b-a7a7-58035712c55a:deity",
+          "axis": "deity",
+          "value": "Rama",
+          "witness_id": "4707048d-f06e-46f0-9202-3b985cee65b2",
+          "locator": "Snapshot record 4abda836-1e15-4b0b-a7a7-58035712c55a; incipit / pallavi (paripUrNa kAma)",
+          "excerpt": "paripUrNa kAma",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:4abda836-1e15-4b0b-a7a7-58035712c55a:geography",
+          "axis": "geography",
+          "value": "NO_PLACE_STATED",
+          "witness_id": "4707048d-f06e-46f0-9202-3b985cee65b2",
+          "locator": "Snapshot record 4abda836-1e15-4b0b-a7a7-58035712c55a; incipit & metadata",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
+          "excerpt": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:4abda836-1e15-4b0b-a7a7-58035712c55a:theme",
+          "axis": "theme",
+          "value": "Rama Bhakti & Devotional Praise",
+          "witness_id": "4707048d-f06e-46f0-9202-3b985cee65b2",
+          "locator": "Snapshot record 4abda836-1e15-4b0b-a7a7-58035712c55a; incipit / pallavi (paripUrNa kAma)",
+          "excerpt": "paripUrNa kAma",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:4abda836-1e15-4b0b-a7a7-58035712c55a:group",
+          "axis": "group",
+          "witness_id": "4707048d-f06e-46f0-9202-3b985cee65b2",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:4abda836-1e15-4b0b-a7a7-58035712c55a:ritual",
+          "axis": "ritual",
+          "witness_id": "4707048d-f06e-46f0-9202-3b985cee65b2",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:4abda836-1e15-4b0b-a7a7-58035712c55a:dramatic",
+          "axis": "dramatic",
+          "witness_id": "4707048d-f06e-46f0-9202-3b985cee65b2",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        }
+      ],
+      "mapped_krithi_id": null,
+      "tala_witness_note": null
+    },
+    {
       "id": "tyagaraja:krithi:4b768a4c-4ef0-4cb4-a2e9-c8e76562063a",
       "subject_kind": "catalogue_identity",
       "krithi_id": "4b768a4c-4ef0-4cb4-a2e9-c8e76562063a",
@@ -29189,6 +28143,109 @@
           "id": "tyagaraja:krithi:4f0d4529-dc92-41e6-8532-edb311bddd4b:dramatic",
           "axis": "dramatic",
           "witness_id": "395d1cb2-4051-44d3-8307-049a4a4733e4",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        }
+      ],
+      "mapped_krithi_id": null,
+      "tala_witness_note": null
+    },
+    {
+      "id": "tyagaraja:krithi:4f90dd54-c76e-4cce-88f8-1c460cdb3566",
+      "subject_kind": "catalogue_identity",
+      "krithi_id": "4f90dd54-c76e-4cce-88f8-1c460cdb3566",
+      "import_id": "ab6c4e31-d6a7-474d-ac72-e30adb14ecaf",
+      "evidence_id": "acc36b4d-2fe2-4a22-9ac6-5efd97688c47",
+      "title": "rAma sItA rAma",
+      "canonical_raga": "Bālahamsa",
+      "canonical_tala": "Adi",
+      "raw_raga": "balahamsa",
+      "raw_tala": "Unknown",
+      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/01/thyagaraja-kriti-rama-sita-rama-raga.html",
+      "import_status": "mapped",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "workflow_state": "published",
+      "is_ragamalika": false,
+      "geography_state": "UNRESOLVED",
+      "deity_state": "UNRESOLVED",
+      "section_flags": {
+        "pallavi_count": 1,
+        "anupallavi_count": 0,
+        "charanam_count": 9,
+        "swara_sahitya_count": 0
+      },
+      "structure_audit": [],
+      "claims": [
+        {
+          "id": "tyagaraja:krithi:4f90dd54-c76e-4cce-88f8-1c460cdb3566:deity",
+          "axis": "deity",
+          "value": "Rama",
+          "witness_id": "ab6c4e31-d6a7-474d-ac72-e30adb14ecaf",
+          "locator": "Snapshot record 4f90dd54-c76e-4cce-88f8-1c460cdb3566; incipit / pallavi (rAma sItA rAma)",
+          "excerpt": "1 rAma sItA rAma rAma rAma sItA rAma rAma",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:4f90dd54-c76e-4cce-88f8-1c460cdb3566:geography",
+          "axis": "geography",
+          "value": "NO_PLACE_STATED",
+          "witness_id": "ab6c4e31-d6a7-474d-ac72-e30adb14ecaf",
+          "locator": "Snapshot record 4f90dd54-c76e-4cce-88f8-1c460cdb3566; incipit & metadata",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
+          "excerpt": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:4f90dd54-c76e-4cce-88f8-1c460cdb3566:theme",
+          "axis": "theme",
+          "value": "Rama Bhakti & Devotional Praise",
+          "witness_id": "ab6c4e31-d6a7-474d-ac72-e30adb14ecaf",
+          "locator": "Snapshot record 4f90dd54-c76e-4cce-88f8-1c460cdb3566; incipit / pallavi (rAma sItA rAma)",
+          "excerpt": "1 rAma sItA rAma rAma rAma sItA rAma rAma",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:4f90dd54-c76e-4cce-88f8-1c460cdb3566:group",
+          "axis": "group",
+          "witness_id": "ab6c4e31-d6a7-474d-ac72-e30adb14ecaf",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:4f90dd54-c76e-4cce-88f8-1c460cdb3566:ritual",
+          "axis": "ritual",
+          "witness_id": "ab6c4e31-d6a7-474d-ac72-e30adb14ecaf",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:4f90dd54-c76e-4cce-88f8-1c460cdb3566:dramatic",
+          "axis": "dramatic",
+          "witness_id": "ab6c4e31-d6a7-474d-ac72-e30adb14ecaf",
           "review_state": "unreviewed",
           "value": null,
           "locator": null,
@@ -36558,6 +35615,109 @@
       "tala_witness_note": null
     },
     {
+      "id": "tyagaraja:krithi:6d55561e-eedf-48c1-b1ea-2961a2750965",
+      "subject_kind": "catalogue_identity",
+      "krithi_id": "6d55561e-eedf-48c1-b1ea-2961a2750965",
+      "import_id": "c702d09d-b5a5-4b16-82ac-5fc01e265dd9",
+      "evidence_id": "5b6a9d0b-5a7e-417b-b129-b10427478087",
+      "title": "nArada muni",
+      "canonical_raga": "Panthuvarāli",
+      "canonical_tala": "Rupaka",
+      "raw_raga": "pantuvarALi",
+      "raw_tala": "Rupakam",
+      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/08/thyagaraja-kriti-narada-muni-raga.html",
+      "import_status": "approved",
+      "primary_language": "en",
+      "musical_form": "UNESTABLISHED",
+      "workflow_state": "draft",
+      "is_ragamalika": false,
+      "geography_state": "UNRESOLVED",
+      "deity_state": "UNRESOLVED",
+      "section_flags": {
+        "pallavi_count": 1,
+        "anupallavi_count": 1,
+        "charanam_count": 3,
+        "swara_sahitya_count": 0
+      },
+      "structure_audit": [],
+      "claims": [
+        {
+          "id": "tyagaraja:krithi:6d55561e-eedf-48c1-b1ea-2961a2750965:deity",
+          "axis": "deity",
+          "value": "Sage Narada",
+          "witness_id": "c702d09d-b5a5-4b16-82ac-5fc01e265dd9",
+          "locator": "Snapshot record 6d55561e-eedf-48c1-b1ea-2961a2750965; incipit / pallavi (nArada muni)",
+          "excerpt": "nArada muni",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:6d55561e-eedf-48c1-b1ea-2961a2750965:geography",
+          "axis": "geography",
+          "value": "NO_PLACE_STATED",
+          "witness_id": "c702d09d-b5a5-4b16-82ac-5fc01e265dd9",
+          "locator": "Snapshot record 6d55561e-eedf-48c1-b1ea-2961a2750965; incipit & metadata",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
+          "excerpt": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:6d55561e-eedf-48c1-b1ea-2961a2750965:theme",
+          "axis": "theme",
+          "value": "Saints and Teachers",
+          "witness_id": "c702d09d-b5a5-4b16-82ac-5fc01e265dd9",
+          "locator": "Snapshot record 6d55561e-eedf-48c1-b1ea-2961a2750965; incipit / pallavi (nArada muni)",
+          "excerpt": "nArada muni",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:6d55561e-eedf-48c1-b1ea-2961a2750965:group",
+          "axis": "group",
+          "witness_id": "c702d09d-b5a5-4b16-82ac-5fc01e265dd9",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:6d55561e-eedf-48c1-b1ea-2961a2750965:ritual",
+          "axis": "ritual",
+          "witness_id": "c702d09d-b5a5-4b16-82ac-5fc01e265dd9",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:6d55561e-eedf-48c1-b1ea-2961a2750965:dramatic",
+          "axis": "dramatic",
+          "witness_id": "c702d09d-b5a5-4b16-82ac-5fc01e265dd9",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        }
+      ],
+      "mapped_krithi_id": null,
+      "tala_witness_note": null
+    },
+    {
       "id": "tyagaraja:krithi:6db8faab-0307-4ec1-aeba-debdcdf3de00",
       "subject_kind": "catalogue_identity",
       "krithi_id": "6db8faab-0307-4ec1-aeba-debdcdf3de00",
@@ -36648,6 +35808,111 @@
           "id": "tyagaraja:krithi:6db8faab-0307-4ec1-aeba-debdcdf3de00:dramatic",
           "axis": "dramatic",
           "witness_id": "690ee5ae-4e9d-4946-bb9c-45265f7f453e",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        }
+      ],
+      "mapped_krithi_id": null,
+      "tala_witness_note": null
+    },
+    {
+      "id": "tyagaraja:krithi:6ddd3f36-022a-4a78-9a63-c769c5941508",
+      "subject_kind": "catalogue_identity",
+      "krithi_id": "6ddd3f36-022a-4a78-9a63-c769c5941508",
+      "import_id": "b26f89a5-7924-43e8-8ee6-c50d0a8bb6f1",
+      "evidence_id": "c66f4f9a-8841-4118-86c4-53aba1cfe0cc",
+      "title": "jaya mangaLaM",
+      "canonical_raga": "Nadanamakriya",
+      "canonical_tala": "Adi",
+      "raw_raga": "nAda nAmakriya",
+      "raw_tala": "Adi",
+      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2007/03/thyagaraja-kriti-jaya-mangalam-raga.html",
+      "import_status": "mapped",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "workflow_state": "published",
+      "is_ragamalika": false,
+      "geography_state": "UNRESOLVED",
+      "deity_state": "UNRESOLVED",
+      "section_flags": {
+        "pallavi_count": 1,
+        "anupallavi_count": 0,
+        "charanam_count": 6,
+        "swara_sahitya_count": 0
+      },
+      "structure_audit": [],
+      "claims": [
+        {
+          "id": "tyagaraja:krithi:6ddd3f36-022a-4a78-9a63-c769c5941508:deity",
+          "axis": "deity",
+          "value": "Rama",
+          "witness_id": "b26f89a5-7924-43e8-8ee6-c50d0a8bb6f1",
+          "locator": "Snapshot record 6ddd3f36-022a-4a78-9a63-c769c5941508; incipit / pallavi (jaya mangaLaM)",
+          "excerpt": "jaya mangaLaM",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:6ddd3f36-022a-4a78-9a63-c769c5941508:geography",
+          "axis": "geography",
+          "value": "NO_PLACE_STATED",
+          "witness_id": "b26f89a5-7924-43e8-8ee6-c50d0a8bb6f1",
+          "locator": "Snapshot record 6ddd3f36-022a-4a78-9a63-c769c5941508; incipit & metadata",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
+          "excerpt": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:6ddd3f36-022a-4a78-9a63-c769c5941508:theme",
+          "axis": "theme",
+          "value": "Rama Bhakti & Devotional Praise",
+          "witness_id": "b26f89a5-7924-43e8-8ee6-c50d0a8bb6f1",
+          "locator": "Snapshot record 6ddd3f36-022a-4a78-9a63-c769c5941508; incipit / pallavi (jaya mangaLaM)",
+          "excerpt": "jaya mangaLaM",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:6ddd3f36-022a-4a78-9a63-c769c5941508:group",
+          "axis": "group",
+          "witness_id": "b26f89a5-7924-43e8-8ee6-c50d0a8bb6f1",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:6ddd3f36-022a-4a78-9a63-c769c5941508:ritual",
+          "axis": "ritual",
+          "value": "tyagaraja-utsava-sampradaya",
+          "witness_id": "govinda-rao-tyagaraja",
+          "locator": "Edition not consulted",
+          "evidence_kind": "documented_tradition",
+          "review_state": "unreviewed",
+          "uncertainty": "Utsava Sampradaya concluding harati / mangalam benediction; source setting preserved.",
+          "group_type": "ritual_collection",
+          "ritual_function": "benediction_mangalam",
+          "excerpt": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:6ddd3f36-022a-4a78-9a63-c769c5941508:dramatic",
+          "axis": "dramatic",
+          "witness_id": "b26f89a5-7924-43e8-8ee6-c50d0a8bb6f1",
           "review_state": "unreviewed",
           "value": null,
           "locator": null,
@@ -38986,6 +38251,109 @@
       "tala_witness_note": null
     },
     {
+      "id": "tyagaraja:krithi:76706063-efdd-49a7-b091-4817afed5b57",
+      "subject_kind": "catalogue_identity",
+      "krithi_id": "76706063-efdd-49a7-b091-4817afed5b57",
+      "import_id": "84ffdbb8-6845-4747-9127-b0a46cf65630",
+      "evidence_id": "d03d7e0b-971b-4edd-9b34-8f853f9d8ad3",
+      "title": "Sri Narada Muni",
+      "canonical_raga": "Bhairavi",
+      "canonical_tala": "Adi",
+      "raw_raga": "Bhairavi",
+      "raw_tala": "Unknown",
+      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2007/06/thyagaraja-kriti-sri-narada-muni-raga.html",
+      "import_status": "mapped",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "workflow_state": "published",
+      "is_ragamalika": false,
+      "geography_state": "UNRESOLVED",
+      "deity_state": "UNRESOLVED",
+      "section_flags": {
+        "pallavi_count": 1,
+        "anupallavi_count": 0,
+        "charanam_count": 4,
+        "swara_sahitya_count": 0
+      },
+      "structure_audit": [],
+      "claims": [
+        {
+          "id": "tyagaraja:krithi:76706063-efdd-49a7-b091-4817afed5b57:deity",
+          "axis": "deity",
+          "value": "Sage Narada",
+          "witness_id": "84ffdbb8-6845-4747-9127-b0a46cf65630",
+          "locator": "Snapshot record 76706063-efdd-49a7-b091-4817afed5b57; incipit / pallavi (Sri Narada Muni)",
+          "excerpt": "SrI nArada muni guru 1 rAya kaNTi-m(E) nATi tapamO guru rAya",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:76706063-efdd-49a7-b091-4817afed5b57:geography",
+          "axis": "geography",
+          "value": "NO_PLACE_STATED",
+          "witness_id": "84ffdbb8-6845-4747-9127-b0a46cf65630",
+          "locator": "Snapshot record 76706063-efdd-49a7-b091-4817afed5b57; incipit & metadata",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
+          "excerpt": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:76706063-efdd-49a7-b091-4817afed5b57:theme",
+          "axis": "theme",
+          "value": "Saints and Teachers",
+          "witness_id": "84ffdbb8-6845-4747-9127-b0a46cf65630",
+          "locator": "Snapshot record 76706063-efdd-49a7-b091-4817afed5b57; incipit / pallavi (Sri Narada Muni)",
+          "excerpt": "SrI nArada muni guru 1 rAya kaNTi-m(E) nATi tapamO guru rAya",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:76706063-efdd-49a7-b091-4817afed5b57:group",
+          "axis": "group",
+          "witness_id": "84ffdbb8-6845-4747-9127-b0a46cf65630",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:76706063-efdd-49a7-b091-4817afed5b57:ritual",
+          "axis": "ritual",
+          "witness_id": "84ffdbb8-6845-4747-9127-b0a46cf65630",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:76706063-efdd-49a7-b091-4817afed5b57:dramatic",
+          "axis": "dramatic",
+          "witness_id": "84ffdbb8-6845-4747-9127-b0a46cf65630",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        }
+      ],
+      "mapped_krithi_id": null,
+      "tala_witness_note": null
+    },
+    {
       "id": "tyagaraja:krithi:76af1dff-ea85-4687-8238-27af5ac9dbc6",
       "subject_kind": "catalogue_identity",
       "krithi_id": "76af1dff-ea85-4687-8238-27af5ac9dbc6",
@@ -41199,6 +40567,111 @@
           "id": "tyagaraja:krithi:7e410ccb-66d7-48f4-adc2-2102b12681ad:dramatic",
           "axis": "dramatic",
           "witness_id": "30904ef4-0277-4007-a7dc-7971332d1853",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        }
+      ],
+      "mapped_krithi_id": null,
+      "tala_witness_note": null
+    },
+    {
+      "id": "tyagaraja:krithi:7e7529c6-93ee-46fe-890e-c491854fbeee",
+      "subject_kind": "catalogue_identity",
+      "krithi_id": "7e7529c6-93ee-46fe-890e-c491854fbeee",
+      "import_id": "3943b77a-d7b2-4f7f-8715-03ba0e5e2eb7",
+      "evidence_id": "0e7c8791-111a-4fe9-a820-7289695b61c6",
+      "title": "pAhi rAma candra",
+      "canonical_raga": "SankarAbharaNaM",
+      "canonical_tala": "Unknown",
+      "raw_raga": "SankarAbharaNaM",
+      "raw_tala": "Unknown",
+      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/03/thyagaraja-kriti-pahi-ramachandra-raga.html",
+      "import_status": "approved",
+      "primary_language": "en",
+      "musical_form": "UNESTABLISHED",
+      "workflow_state": "draft",
+      "is_ragamalika": false,
+      "geography_state": "UNRESOLVED",
+      "deity_state": "UNRESOLVED",
+      "section_flags": {
+        "pallavi_count": 1,
+        "anupallavi_count": 0,
+        "charanam_count": 4,
+        "swara_sahitya_count": 0
+      },
+      "structure_audit": [],
+      "claims": [
+        {
+          "id": "tyagaraja:krithi:7e7529c6-93ee-46fe-890e-c491854fbeee:deity",
+          "axis": "deity",
+          "value": "Rama",
+          "witness_id": "3943b77a-d7b2-4f7f-8715-03ba0e5e2eb7",
+          "locator": "Snapshot record 7e7529c6-93ee-46fe-890e-c491854fbeee; incipit / pallavi (pAhi rAma candra)",
+          "excerpt": "pAhi rAma candra",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:7e7529c6-93ee-46fe-890e-c491854fbeee:geography",
+          "axis": "geography",
+          "value": "NO_PLACE_STATED",
+          "witness_id": "3943b77a-d7b2-4f7f-8715-03ba0e5e2eb7",
+          "locator": "Snapshot record 7e7529c6-93ee-46fe-890e-c491854fbeee; incipit & metadata",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
+          "excerpt": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:7e7529c6-93ee-46fe-890e-c491854fbeee:theme",
+          "axis": "theme",
+          "value": "Surrender (Saranagati) & Appeal for Grace",
+          "witness_id": "3943b77a-d7b2-4f7f-8715-03ba0e5e2eb7",
+          "locator": "Snapshot record 7e7529c6-93ee-46fe-890e-c491854fbeee; incipit / pallavi (pAhi rAma candra)",
+          "excerpt": "pAhi rAma candra",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:7e7529c6-93ee-46fe-890e-c491854fbeee:group",
+          "axis": "group",
+          "witness_id": "3943b77a-d7b2-4f7f-8715-03ba0e5e2eb7",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:7e7529c6-93ee-46fe-890e-c491854fbeee:ritual",
+          "axis": "ritual",
+          "value": "tyagaraja-divyanama-sankirtana",
+          "witness_id": "govinda-rao-tyagaraja",
+          "locator": "Edition not consulted",
+          "evidence_kind": "documented_tradition",
+          "review_state": "unreviewed",
+          "uncertainty": "Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed.",
+          "group_type": "ritual_collection",
+          "ritual_function": "congregational_namasankirtana",
+          "excerpt": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:7e7529c6-93ee-46fe-890e-c491854fbeee:dramatic",
+          "axis": "dramatic",
+          "witness_id": "3943b77a-d7b2-4f7f-8715-03ba0e5e2eb7",
           "review_state": "unreviewed",
           "value": null,
           "locator": null,
@@ -58206,6 +57679,111 @@
       "tala_witness_note": null
     },
     {
+      "id": "tyagaraja:krithi:ba2ec6a9-1804-48f1-a379-0fc505078892",
+      "subject_kind": "catalogue_identity",
+      "krithi_id": "ba2ec6a9-1804-48f1-a379-0fc505078892",
+      "import_id": "604a9623-f1b0-4efc-9486-ea415b219870",
+      "evidence_id": "adaa5b14-8121-4099-a5a1-93405a43f07e",
+      "title": "pAhi rAma candra",
+      "canonical_raga": "Yadukula Kāmbhoji",
+      "canonical_tala": "Adi",
+      "raw_raga": "yadukula kAmbhOji",
+      "raw_tala": "Unknown",
+      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/02/thyagaraja-kriti-paahi-ramachandra-raga.html",
+      "import_status": "in_review",
+      "primary_language": "en",
+      "musical_form": "KRITHI",
+      "workflow_state": "published",
+      "is_ragamalika": false,
+      "geography_state": "UNRESOLVED",
+      "deity_state": "UNRESOLVED",
+      "section_flags": {
+        "pallavi_count": 1,
+        "anupallavi_count": 0,
+        "charanam_count": 9,
+        "swara_sahitya_count": 0
+      },
+      "structure_audit": [],
+      "claims": [
+        {
+          "id": "tyagaraja:krithi:ba2ec6a9-1804-48f1-a379-0fc505078892:deity",
+          "axis": "deity",
+          "value": "Rama",
+          "witness_id": "604a9623-f1b0-4efc-9486-ea415b219870",
+          "locator": "Snapshot record ba2ec6a9-1804-48f1-a379-0fc505078892; incipit / pallavi (pAhi rAma candra)",
+          "excerpt": "pAhi rAma candra rAghava 1 harE mAm pAhi rAma candra rAghava",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:ba2ec6a9-1804-48f1-a379-0fc505078892:geography",
+          "axis": "geography",
+          "value": "NO_PLACE_STATED",
+          "witness_id": "604a9623-f1b0-4efc-9486-ea415b219870",
+          "locator": "Snapshot record ba2ec6a9-1804-48f1-a379-0fc505078892; incipit & metadata",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
+          "excerpt": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:ba2ec6a9-1804-48f1-a379-0fc505078892:theme",
+          "axis": "theme",
+          "value": "Surrender (Saranagati) & Appeal for Grace",
+          "witness_id": "604a9623-f1b0-4efc-9486-ea415b219870",
+          "locator": "Snapshot record ba2ec6a9-1804-48f1-a379-0fc505078892; incipit / pallavi (pAhi rAma candra)",
+          "excerpt": "pAhi rAma candra rAghava 1 harE mAm pAhi rAma candra rAghava",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:ba2ec6a9-1804-48f1-a379-0fc505078892:group",
+          "axis": "group",
+          "witness_id": "604a9623-f1b0-4efc-9486-ea415b219870",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:ba2ec6a9-1804-48f1-a379-0fc505078892:ritual",
+          "axis": "ritual",
+          "value": "tyagaraja-divyanama-sankirtana",
+          "witness_id": "govinda-rao-tyagaraja",
+          "locator": "Edition not consulted",
+          "evidence_kind": "documented_tradition",
+          "review_state": "unreviewed",
+          "uncertainty": "Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed.",
+          "group_type": "ritual_collection",
+          "ritual_function": "congregational_namasankirtana",
+          "excerpt": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:ba2ec6a9-1804-48f1-a379-0fc505078892:dramatic",
+          "axis": "dramatic",
+          "witness_id": "604a9623-f1b0-4efc-9486-ea415b219870",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        }
+      ],
+      "mapped_krithi_id": null,
+      "tala_witness_note": null
+    },
+    {
       "id": "tyagaraja:krithi:bad7d739-4c2d-443d-a38e-02efe78777d7",
       "subject_kind": "catalogue_identity",
       "krithi_id": "bad7d739-4c2d-443d-a38e-02efe78777d7",
@@ -66462,6 +66040,109 @@
       "tala_witness_note": null
     },
     {
+      "id": "tyagaraja:krithi:db90b28a-2b7f-43ee-a6dc-078558b40cf9",
+      "subject_kind": "catalogue_identity",
+      "krithi_id": "db90b28a-2b7f-43ee-a6dc-078558b40cf9",
+      "import_id": "1daabb05-6208-44a6-89c0-dc48be8fb187",
+      "evidence_id": "f6051a1d-8e6a-49a8-94f9-8761a9c79918",
+      "title": "rAma sItA rAma",
+      "canonical_raga": "SankarAbharaNaM",
+      "canonical_tala": "Unknown",
+      "raw_raga": "SankarAbharaNaM",
+      "raw_tala": "Unknown",
+      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/03/thyagaraja-kriti-rama-sita-rama-rama.html",
+      "import_status": "approved",
+      "primary_language": "en",
+      "musical_form": "UNESTABLISHED",
+      "workflow_state": "draft",
+      "is_ragamalika": false,
+      "geography_state": "UNRESOLVED",
+      "deity_state": "UNRESOLVED",
+      "section_flags": {
+        "pallavi_count": 1,
+        "anupallavi_count": 0,
+        "charanam_count": 9,
+        "swara_sahitya_count": 0
+      },
+      "structure_audit": [],
+      "claims": [
+        {
+          "id": "tyagaraja:krithi:db90b28a-2b7f-43ee-a6dc-078558b40cf9:deity",
+          "axis": "deity",
+          "value": "Rama",
+          "witness_id": "1daabb05-6208-44a6-89c0-dc48be8fb187",
+          "locator": "Snapshot record db90b28a-2b7f-43ee-a6dc-078558b40cf9; incipit / pallavi (rAma sItA rAma)",
+          "excerpt": "rAma sItA rAma",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:db90b28a-2b7f-43ee-a6dc-078558b40cf9:geography",
+          "axis": "geography",
+          "value": "NO_PLACE_STATED",
+          "witness_id": "1daabb05-6208-44a6-89c0-dc48be8fb187",
+          "locator": "Snapshot record db90b28a-2b7f-43ee-a6dc-078558b40cf9; incipit & metadata",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
+          "excerpt": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:db90b28a-2b7f-43ee-a6dc-078558b40cf9:theme",
+          "axis": "theme",
+          "value": "Rama Bhakti & Devotional Praise",
+          "witness_id": "1daabb05-6208-44a6-89c0-dc48be8fb187",
+          "locator": "Snapshot record db90b28a-2b7f-43ee-a6dc-078558b40cf9; incipit / pallavi (rAma sItA rAma)",
+          "excerpt": "rAma sItA rAma",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:db90b28a-2b7f-43ee-a6dc-078558b40cf9:group",
+          "axis": "group",
+          "witness_id": "1daabb05-6208-44a6-89c0-dc48be8fb187",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:db90b28a-2b7f-43ee-a6dc-078558b40cf9:ritual",
+          "axis": "ritual",
+          "witness_id": "1daabb05-6208-44a6-89c0-dc48be8fb187",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:db90b28a-2b7f-43ee-a6dc-078558b40cf9:dramatic",
+          "axis": "dramatic",
+          "witness_id": "1daabb05-6208-44a6-89c0-dc48be8fb187",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        }
+      ],
+      "mapped_krithi_id": null,
+      "tala_witness_note": null
+    },
+    {
       "id": "tyagaraja:krithi:dbc42cee-6859-4196-90ae-16e05f9a06d1",
       "subject_kind": "catalogue_identity",
       "krithi_id": "dbc42cee-6859-4196-90ae-16e05f9a06d1",
@@ -71250,6 +70931,111 @@
       "tala_witness_note": null
     },
     {
+      "id": "tyagaraja:krithi:e9d91067-f4c7-4b2b-ae5c-06db11815ac2",
+      "subject_kind": "catalogue_identity",
+      "krithi_id": "e9d91067-f4c7-4b2b-ae5c-06db11815ac2",
+      "import_id": "3916fad4-5ef9-43ba-af21-5df0f233566c",
+      "evidence_id": "b5f889b4-6448-4546-affe-ded6fb3418ec",
+      "title": "SrI rAma jaya rAma",
+      "canonical_raga": "Varāli",
+      "canonical_tala": "Isra Capu",
+      "raw_raga": "varALi",
+      "raw_tala": "Isra Capu",
+      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/07/thyagaraja-kriti-sri-rama-jaya-rama.html",
+      "import_status": "approved",
+      "primary_language": "en",
+      "musical_form": "UNESTABLISHED",
+      "workflow_state": "draft",
+      "is_ragamalika": false,
+      "geography_state": "UNRESOLVED",
+      "deity_state": "UNRESOLVED",
+      "section_flags": {
+        "pallavi_count": 1,
+        "anupallavi_count": 0,
+        "charanam_count": 11,
+        "swara_sahitya_count": 0
+      },
+      "structure_audit": [],
+      "claims": [
+        {
+          "id": "tyagaraja:krithi:e9d91067-f4c7-4b2b-ae5c-06db11815ac2:deity",
+          "axis": "deity",
+          "value": "Rama",
+          "witness_id": "3916fad4-5ef9-43ba-af21-5df0f233566c",
+          "locator": "Snapshot record e9d91067-f4c7-4b2b-ae5c-06db11815ac2; incipit / pallavi (SrI rAma jaya rAma)",
+          "excerpt": "SrI rAma jaya rAma",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:e9d91067-f4c7-4b2b-ae5c-06db11815ac2:geography",
+          "axis": "geography",
+          "value": "NO_PLACE_STATED",
+          "witness_id": "3916fad4-5ef9-43ba-af21-5df0f233566c",
+          "locator": "Snapshot record e9d91067-f4c7-4b2b-ae5c-06db11815ac2; incipit & metadata",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
+          "excerpt": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:e9d91067-f4c7-4b2b-ae5c-06db11815ac2:theme",
+          "axis": "theme",
+          "value": "Rama Bhakti & Devotional Praise",
+          "witness_id": "3916fad4-5ef9-43ba-af21-5df0f233566c",
+          "locator": "Snapshot record e9d91067-f4c7-4b2b-ae5c-06db11815ac2; incipit / pallavi (SrI rAma jaya rAma)",
+          "excerpt": "SrI rAma jaya rAma",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:e9d91067-f4c7-4b2b-ae5c-06db11815ac2:group",
+          "axis": "group",
+          "witness_id": "3916fad4-5ef9-43ba-af21-5df0f233566c",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:e9d91067-f4c7-4b2b-ae5c-06db11815ac2:ritual",
+          "axis": "ritual",
+          "value": "tyagaraja-divyanama-sankirtana",
+          "witness_id": "govinda-rao-tyagaraja",
+          "locator": "Edition not consulted",
+          "evidence_kind": "documented_tradition",
+          "review_state": "unreviewed",
+          "uncertainty": "Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed.",
+          "group_type": "ritual_collection",
+          "ritual_function": "congregational_namasankirtana",
+          "excerpt": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:e9d91067-f4c7-4b2b-ae5c-06db11815ac2:dramatic",
+          "axis": "dramatic",
+          "witness_id": "3916fad4-5ef9-43ba-af21-5df0f233566c",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        }
+      ],
+      "mapped_krithi_id": null,
+      "tala_witness_note": null
+    },
+    {
       "id": "tyagaraja:krithi:eb516533-8464-40c3-8c7c-86dcbce93129",
       "subject_kind": "catalogue_identity",
       "krithi_id": "eb516533-8464-40c3-8c7c-86dcbce93129",
@@ -72499,6 +72285,111 @@
           "id": "tyagaraja:krithi:f2651795-4c95-40e8-8734-418fe059b2e3:dramatic",
           "axis": "dramatic",
           "witness_id": "96f18f44-2250-429a-90fb-2d996c5c2450",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        }
+      ],
+      "mapped_krithi_id": null,
+      "tala_witness_note": null
+    },
+    {
+      "id": "tyagaraja:krithi:f2700b5a-d26a-498b-b5c7-61806ebbb729",
+      "subject_kind": "catalogue_identity",
+      "krithi_id": "f2700b5a-d26a-498b-b5c7-61806ebbb729",
+      "import_id": "3115095a-36f9-4999-b32c-d8a063268cd9",
+      "evidence_id": "2b8a3db9-29d3-4190-a3d0-250e0aa55179",
+      "title": "Rama Rama Rama Sita",
+      "canonical_raga": "Huseni",
+      "canonical_tala": "Unknown",
+      "raw_raga": "Huseni",
+      "raw_tala": "Unknown",
+      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2007/10/thyagaraja-kriti-rama-rama-rama-sita.html",
+      "import_status": "approved",
+      "primary_language": "en",
+      "musical_form": "UNESTABLISHED",
+      "workflow_state": "draft",
+      "is_ragamalika": false,
+      "geography_state": "UNRESOLVED",
+      "deity_state": "UNRESOLVED",
+      "section_flags": {
+        "pallavi_count": 1,
+        "anupallavi_count": 0,
+        "charanam_count": 13,
+        "swara_sahitya_count": 0
+      },
+      "structure_audit": [],
+      "claims": [
+        {
+          "id": "tyagaraja:krithi:f2700b5a-d26a-498b-b5c7-61806ebbb729:deity",
+          "axis": "deity",
+          "value": "Rama",
+          "witness_id": "3115095a-36f9-4999-b32c-d8a063268cd9",
+          "locator": "Snapshot record f2700b5a-d26a-498b-b5c7-61806ebbb729; incipit / pallavi (Rama Rama Rama Sita)",
+          "excerpt": "Rama Rama Rama Sita",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:f2700b5a-d26a-498b-b5c7-61806ebbb729:geography",
+          "axis": "geography",
+          "value": "NO_PLACE_STATED",
+          "witness_id": "3115095a-36f9-4999-b32c-d8a063268cd9",
+          "locator": "Snapshot record f2700b5a-d26a-498b-b5c7-61806ebbb729; incipit & metadata",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
+          "excerpt": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:f2700b5a-d26a-498b-b5c7-61806ebbb729:theme",
+          "axis": "theme",
+          "value": "Rama Bhakti & Devotional Praise",
+          "witness_id": "3115095a-36f9-4999-b32c-d8a063268cd9",
+          "locator": "Snapshot record f2700b5a-d26a-498b-b5c7-61806ebbb729; incipit / pallavi (Rama Rama Rama Sita)",
+          "excerpt": "Rama Rama Rama Sita",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:f2700b5a-d26a-498b-b5c7-61806ebbb729:group",
+          "axis": "group",
+          "witness_id": "3115095a-36f9-4999-b32c-d8a063268cd9",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:f2700b5a-d26a-498b-b5c7-61806ebbb729:ritual",
+          "axis": "ritual",
+          "value": "tyagaraja-divyanama-sankirtana",
+          "witness_id": "govinda-rao-tyagaraja",
+          "locator": "Edition not consulted",
+          "evidence_kind": "documented_tradition",
+          "review_state": "unreviewed",
+          "uncertainty": "Divyanama Sankirtana congregational bhajana candidate; overlap with Utsava Sampradaya allowed.",
+          "group_type": "ritual_collection",
+          "ritual_function": "congregational_namasankirtana",
+          "excerpt": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:f2700b5a-d26a-498b-b5c7-61806ebbb729:dramatic",
+          "axis": "dramatic",
+          "witness_id": "3115095a-36f9-4999-b32c-d8a063268cd9",
           "review_state": "unreviewed",
           "value": null,
           "locator": null,
@@ -76203,6 +76094,109 @@
       "tala_witness_note": null
     },
     {
+      "id": "tyagaraja:krithi:ff293925-2765-420a-831d-5d6314c456df",
+      "subject_kind": "catalogue_identity",
+      "krithi_id": "ff293925-2765-420a-831d-5d6314c456df",
+      "import_id": "733ec39f-27a2-4f8e-a703-e88196a5ab09",
+      "evidence_id": "03ccabd9-1906-4a19-8e2f-88f52e0ce16e",
+      "title": "narasiMha",
+      "canonical_raga": "Bilahari",
+      "canonical_tala": "Isra Capu",
+      "raw_raga": "bilahari",
+      "raw_tala": "Isra Capu",
+      "source_url": "http://thyagaraja-vaibhavam.blogspot.com/2008/06/thyagaraja-kriti-narasimha-raga.html",
+      "import_status": "approved",
+      "primary_language": "en",
+      "musical_form": "UNESTABLISHED",
+      "workflow_state": "draft",
+      "is_ragamalika": false,
+      "geography_state": "UNRESOLVED",
+      "deity_state": "UNRESOLVED",
+      "section_flags": {
+        "pallavi_count": 1,
+        "anupallavi_count": 1,
+        "charanam_count": 3,
+        "swara_sahitya_count": 0
+      },
+      "structure_audit": [],
+      "claims": [
+        {
+          "id": "tyagaraja:krithi:ff293925-2765-420a-831d-5d6314c456df:deity",
+          "axis": "deity",
+          "value": "Narasimha",
+          "witness_id": "733ec39f-27a2-4f8e-a703-e88196a5ab09",
+          "locator": "Snapshot record ff293925-2765-420a-831d-5d6314c456df; incipit / pallavi (narasiMha)",
+          "excerpt": "narasiMha",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed addressee from incipit/pallavi; awaits multi-edition cross-check in TRACK-149.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:ff293925-2765-420a-831d-5d6314c456df:geography",
+          "axis": "geography",
+          "value": "NO_PLACE_STATED",
+          "witness_id": "733ec39f-27a2-4f8e-a703-e88196a5ab09",
+          "locator": "Snapshot record ff293925-2765-420a-831d-5d6314c456df; incipit & metadata",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "No temple shrine named in incipit/metadata; empty temple_id remains unresolved until edition review.",
+          "excerpt": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:ff293925-2765-420a-831d-5d6314c456df:theme",
+          "axis": "theme",
+          "value": "Deity Stuti & Devotional Praise",
+          "witness_id": "733ec39f-27a2-4f8e-a703-e88196a5ab09",
+          "locator": "Snapshot record ff293925-2765-420a-831d-5d6314c456df; incipit / pallavi (narasiMha)",
+          "excerpt": "narasiMha",
+          "evidence_kind": "textual_evidence",
+          "review_state": "unresolved",
+          "uncertainty": "Source-observed devotional/musicological theme; awaits Ramanujachari/Govinda Rao edition check.",
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:ff293925-2765-420a-831d-5d6314c456df:group",
+          "axis": "group",
+          "witness_id": "733ec39f-27a2-4f8e-a703-e88196a5ab09",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:ff293925-2765-420a-831d-5d6314c456df:ritual",
+          "axis": "ritual",
+          "witness_id": "733ec39f-27a2-4f8e-a703-e88196a5ab09",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        },
+        {
+          "id": "tyagaraja:krithi:ff293925-2765-420a-831d-5d6314c456df:dramatic",
+          "axis": "dramatic",
+          "witness_id": "733ec39f-27a2-4f8e-a703-e88196a5ab09",
+          "review_state": "unreviewed",
+          "value": null,
+          "locator": null,
+          "excerpt": null,
+          "evidence_kind": null,
+          "uncertainty": null,
+          "reviewer_decision": null
+        }
+      ],
+      "mapped_krithi_id": null,
+      "tala_witness_note": null
+    },
+    {
       "id": "tyagaraja:krithi:ff680a45-cadf-4566-b7f7-a5c74e513eda",
       "subject_kind": "catalogue_identity",
       "krithi_id": "ff680a45-cadf-4566-b7f7-a5c74e513eda",
@@ -76724,108 +76718,148 @@
     {
       "krithi_id": "12058429-320a-4040-b682-78c26399e0ae",
       "title": "SrI nArasiMha",
-      "disposition": "collision_not_classified",
+      "disposition": "split_executed",
       "witness_subject_ids": [
-        "tyagaraja:import:40e2d47b-a0c5-4e44-b301-8cdd05b9589d",
-        "tyagaraja:import:733ec39f-27a2-4f8e-a703-e88196a5ab09"
+        "tyagaraja:krithi:12058429-320a-4040-b682-78c26399e0ae",
+        "tyagaraja:krithi:ff293925-2765-420a-831d-5d6314c456df"
       ],
       "source_settings": [
         "phala ranjani / Unknown",
         "bilahari / Isra Capu"
-      ]
+      ],
+      "decision": "split_approved",
+      "retained_witness_subject_id": "tyagaraja:krithi:12058429-320a-4040-b682-78c26399e0ae",
+      "decided_by": "Seshadri",
+      "decided_at": "2026-11-03",
+      "decision_note": "Approved from database/data/track149-collision-decision-sheet.md: witnesses carry distinct section text; the witness already feeding the krithi keeps its id. Executed 2026-11-03 through POST /imports/{id}/unmap then /review with forceNew; see the Execution log in the decision sheet."
     },
     {
       "krithi_id": "1dfe4864-6224-460a-845a-5328aed9b638",
       "title": "Sri Rama Jaya Rama",
-      "disposition": "collision_not_classified",
+      "disposition": "split_executed",
       "witness_subject_ids": [
-        "tyagaraja:import:1f73ab63-0278-4b61-85ce-3fbacbce1ba0",
-        "tyagaraja:import:3916fad4-5ef9-43ba-af21-5df0f233566c"
+        "tyagaraja:krithi:1dfe4864-6224-460a-845a-5328aed9b638",
+        "tyagaraja:krithi:e9d91067-f4c7-4b2b-ae5c-06db11815ac2"
       ],
       "source_settings": [
         "Madhyamavati / Unknown",
         "varALi / Isra Capu"
-      ]
+      ],
+      "decision": "split_approved",
+      "retained_witness_subject_id": "tyagaraja:krithi:1dfe4864-6224-460a-845a-5328aed9b638",
+      "decided_by": "Seshadri",
+      "decided_at": "2026-11-03",
+      "decision_note": "Approved from database/data/track149-collision-decision-sheet.md: witnesses carry distinct section text; the witness already feeding the krithi keeps its id. Executed 2026-11-03 through POST /imports/{id}/unmap then /review with forceNew; see the Execution log in the decision sheet."
     },
     {
       "krithi_id": "42d35ca5-4110-4fd8-bece-9ced6a37014e",
       "title": "Rama Rama Rama Sita",
-      "disposition": "collision_not_classified",
+      "disposition": "split_executed",
       "witness_subject_ids": [
-        "tyagaraja:import:3115095a-36f9-4999-b32c-d8a063268cd9",
-        "tyagaraja:import:3946f1d2-2a27-4591-b504-5e334d51b53e"
+        "tyagaraja:krithi:f2700b5a-d26a-498b-b5c7-61806ebbb729",
+        "tyagaraja:krithi:42d35ca5-4110-4fd8-bece-9ced6a37014e"
       ],
       "source_settings": [
         "Huseni / Unknown",
         "sAvEri / Adi"
-      ]
+      ],
+      "decision": "split_approved",
+      "retained_witness_subject_id": "tyagaraja:krithi:42d35ca5-4110-4fd8-bece-9ced6a37014e",
+      "decided_by": "Seshadri",
+      "decided_at": "2026-11-03",
+      "decision_note": "Approved from database/data/track149-collision-decision-sheet.md: witnesses carry distinct section text; the witness already feeding the krithi keeps its id. Executed 2026-11-03 through POST /imports/{id}/unmap then /review with forceNew; see the Execution log in the decision sheet."
     },
     {
       "krithi_id": "4abda836-1e15-4b0b-a7a7-58035712c55a",
       "title": "paripUrNa kAma",
-      "disposition": "collision_not_classified",
+      "disposition": "split_executed",
       "witness_subject_ids": [
-        "tyagaraja:import:0082d54a-2341-48c0-9b54-d7039232b77c",
-        "tyagaraja:import:4707048d-f06e-46f0-9202-3b985cee65b2"
+        "tyagaraja:krithi:20fb3477-37b1-4a67-bf22-cfb57fd45192",
+        "tyagaraja:krithi:4abda836-1e15-4b0b-a7a7-58035712c55a"
       ],
       "source_settings": [
         "hamsa bhramari / Adi",
         "pUri kalyANi / Adi"
-      ]
+      ],
+      "decision": "split_approved",
+      "retained_witness_subject_id": "tyagaraja:krithi:4abda836-1e15-4b0b-a7a7-58035712c55a",
+      "decided_by": "Seshadri",
+      "decided_at": "2026-11-03",
+      "decision_note": "Approved from database/data/track149-collision-decision-sheet.md: witnesses carry distinct section text; the witness already feeding the krithi keeps its id. Executed 2026-11-03 through POST /imports/{id}/unmap then /review with forceNew; see the Execution log in the decision sheet."
     },
     {
       "krithi_id": "4f90dd54-c76e-4cce-88f8-1c460cdb3566",
       "title": "rAma sItA rAma",
-      "disposition": "collision_not_classified",
+      "disposition": "split_executed",
       "witness_subject_ids": [
-        "tyagaraja:import:1daabb05-6208-44a6-89c0-dc48be8fb187",
-        "tyagaraja:import:ab6c4e31-d6a7-474d-ac72-e30adb14ecaf"
+        "tyagaraja:krithi:db90b28a-2b7f-43ee-a6dc-078558b40cf9",
+        "tyagaraja:krithi:4f90dd54-c76e-4cce-88f8-1c460cdb3566"
       ],
       "source_settings": [
         "SankarAbharaNaM / Unknown",
         "balahamsa / Unknown"
-      ]
+      ],
+      "decision": "split_approved",
+      "retained_witness_subject_id": "tyagaraja:krithi:4f90dd54-c76e-4cce-88f8-1c460cdb3566",
+      "decided_by": "Seshadri",
+      "decided_at": "2026-11-03",
+      "decision_note": "Approved from database/data/track149-collision-decision-sheet.md: witnesses carry distinct section text; the witness already feeding the krithi keeps its id. Executed 2026-11-03 through POST /imports/{id}/unmap then /review with forceNew; see the Execution log in the decision sheet."
     },
     {
       "krithi_id": "6ddd3f36-022a-4a78-9a63-c769c5941508",
       "title": "jaya mangaLaM",
-      "disposition": "collision_not_classified",
+      "disposition": "split_executed",
       "witness_subject_ids": [
-        "tyagaraja:import:5d70a340-0137-4dfd-baa8-596ccaebf89f",
-        "tyagaraja:import:6eb15e4d-fcd0-45e1-9edd-969928695354",
-        "tyagaraja:import:b26f89a5-7924-43e8-8ee6-c50d0a8bb6f1"
+        "tyagaraja:krithi:191c44c1-9744-4afe-9f90-5a9cb45ade22",
+        "tyagaraja:krithi:474faeba-0c01-4688-a1e1-1ad41b536ee3",
+        "tyagaraja:krithi:6ddd3f36-022a-4a78-9a63-c769c5941508"
       ],
       "source_settings": [
         "ghaNTA / Jhampa",
         "mOhanaM / Unknown",
         "nAda nAmakriya / Adi"
-      ]
+      ],
+      "decision": "split_approved",
+      "retained_witness_subject_id": "tyagaraja:krithi:6ddd3f36-022a-4a78-9a63-c769c5941508",
+      "decided_by": "Seshadri",
+      "decided_at": "2026-11-03",
+      "decision_note": "Approved from database/data/track149-collision-decision-sheet.md: witnesses carry distinct section text; the witness already feeding the krithi keeps its id. Executed 2026-11-03 through POST /imports/{id}/unmap then /review with forceNew; see the Execution log in the decision sheet."
     },
     {
       "krithi_id": "76706063-efdd-49a7-b091-4817afed5b57",
       "title": "Sri Narada Muni",
-      "disposition": "collision_not_classified",
+      "disposition": "split_executed",
       "witness_subject_ids": [
-        "tyagaraja:import:84ffdbb8-6845-4747-9127-b0a46cf65630",
-        "tyagaraja:import:c702d09d-b5a5-4b16-82ac-5fc01e265dd9"
+        "tyagaraja:krithi:76706063-efdd-49a7-b091-4817afed5b57",
+        "tyagaraja:krithi:6d55561e-eedf-48c1-b1ea-2961a2750965"
       ],
       "source_settings": [
         "Bhairavi / Unknown",
         "pantuvarALi / Rupakam"
-      ]
+      ],
+      "decision": "split_approved",
+      "retained_witness_subject_id": "tyagaraja:krithi:76706063-efdd-49a7-b091-4817afed5b57",
+      "decided_by": "Seshadri",
+      "decided_at": "2026-11-03",
+      "decision_note": "Approved from database/data/track149-collision-decision-sheet.md: witnesses carry distinct section text; the witness already feeding the krithi keeps its id. Executed 2026-11-03 through POST /imports/{id}/unmap then /review with forceNew; see the Execution log in the decision sheet."
     },
     {
       "krithi_id": "ba2ec6a9-1804-48f1-a379-0fc505078892",
       "title": "pAhi rAma candra",
-      "disposition": "collision_not_classified",
+      "disposition": "split_executed",
       "witness_subject_ids": [
-        "tyagaraja:import:3943b77a-d7b2-4f7f-8715-03ba0e5e2eb7",
-        "tyagaraja:import:604a9623-f1b0-4efc-9486-ea415b219870"
+        "tyagaraja:krithi:7e7529c6-93ee-46fe-890e-c491854fbeee",
+        "tyagaraja:krithi:ba2ec6a9-1804-48f1-a379-0fc505078892"
       ],
       "source_settings": [
         "SankarAbharaNaM / Unknown",
         "yadukula kAmbhOji / Unknown"
-      ]
+      ],
+      "decision": "split_approved",
+      "retained_witness_subject_id": "tyagaraja:krithi:ba2ec6a9-1804-48f1-a379-0fc505078892",
+      "decided_by": "Seshadri",
+      "decided_at": "2026-11-03",
+      "decision_note": "Approved from database/data/track149-collision-decision-sheet.md: witnesses carry distinct section text; the witness already feeding the krithi keeps its id. Executed 2026-11-03 through POST /imports/{id}/unmap then /review with forceNew; see the Execution log in the decision sheet."
     }
   ],
   "source_inventory": {
@@ -78543,7 +78577,7 @@
         "raw_raga": "ghaNTA",
         "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/12/thyagaraja-kriti-jaya-mangalam-raga.html",
         "disposition": "classification_subject",
-        "subject_id": "tyagaraja:import:5d70a340-0137-4dfd-baa8-596ccaebf89f"
+        "subject_id": "tyagaraja:krithi:191c44c1-9744-4afe-9f90-5a9cb45ade22"
       },
       {
         "row": 215,
@@ -78551,7 +78585,7 @@
         "raw_raga": "mOhanaM",
         "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/01/thyagaraja-kriti-jaya-mangalam-raga.html",
         "disposition": "classification_subject",
-        "subject_id": "tyagaraja:import:6eb15e4d-fcd0-45e1-9edd-969928695354"
+        "subject_id": "tyagaraja:krithi:474faeba-0c01-4688-a1e1-1ad41b536ee3"
       },
       {
         "row": 216,
@@ -78559,7 +78593,7 @@
         "raw_raga": "nAda nAmakriya",
         "url": "http://thyagaraja-vaibhavam.blogspot.com/2007/03/thyagaraja-kriti-jaya-mangalam-raga.html",
         "disposition": "classification_subject",
-        "subject_id": "tyagaraja:import:b26f89a5-7924-43e8-8ee6-c50d0a8bb6f1"
+        "subject_id": "tyagaraja:krithi:6ddd3f36-022a-4a78-9a63-c769c5941508"
       },
       {
         "row": 217,
@@ -79546,7 +79580,7 @@
         "raw_raga": "bilahari",
         "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/06/thyagaraja-kriti-narasimha-raga.html",
         "disposition": "classification_subject",
-        "subject_id": "tyagaraja:import:733ec39f-27a2-4f8e-a703-e88196a5ab09"
+        "subject_id": "tyagaraja:krithi:ff293925-2765-420a-831d-5d6314c456df"
       },
       {
         "row": 340,
@@ -79666,7 +79700,7 @@
         "raw_raga": "pantuvarALi",
         "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/08/thyagaraja-kriti-narada-muni-raga.html",
         "disposition": "classification_subject",
-        "subject_id": "tyagaraja:import:c702d09d-b5a5-4b16-82ac-5fc01e265dd9"
+        "subject_id": "tyagaraja:krithi:6d55561e-eedf-48c1-b1ea-2961a2750965"
       },
       {
         "row": 355,
@@ -80290,7 +80324,7 @@
         "raw_raga": "hamsa bhramari",
         "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/09/thyagaraja-kriti-paripoorna-kama-raga.html",
         "disposition": "classification_subject",
-        "subject_id": "tyagaraja:import:0082d54a-2341-48c0-9b54-d7039232b77c"
+        "subject_id": "tyagaraja:krithi:20fb3477-37b1-4a67-bf22-cfb57fd45192"
       },
       {
         "row": 433,
@@ -80298,7 +80332,7 @@
         "raw_raga": "pUri kalyANi",
         "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/08/thyagaraja-kriti-paripoorna-kama-raga.html",
         "disposition": "classification_subject",
-        "subject_id": "tyagaraja:import:4707048d-f06e-46f0-9202-3b985cee65b2"
+        "subject_id": "tyagaraja:krithi:4abda836-1e15-4b0b-a7a7-58035712c55a"
       },
       {
         "row": 434,
@@ -80434,7 +80468,7 @@
         "raw_raga": "SankarAbharaNaM",
         "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/03/thyagaraja-kriti-pahi-ramachandra-raga.html",
         "disposition": "classification_subject",
-        "subject_id": "tyagaraja:import:3943b77a-d7b2-4f7f-8715-03ba0e5e2eb7"
+        "subject_id": "tyagaraja:krithi:7e7529c6-93ee-46fe-890e-c491854fbeee"
       },
       {
         "row": 451,
@@ -80442,7 +80476,7 @@
         "raw_raga": "yadukula kAmbhOji",
         "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/02/thyagaraja-kriti-paahi-ramachandra-raga.html",
         "disposition": "classification_subject",
-        "subject_id": "tyagaraja:import:604a9623-f1b0-4efc-9486-ea415b219870"
+        "subject_id": "tyagaraja:krithi:ba2ec6a9-1804-48f1-a379-0fc505078892"
       },
       {
         "row": 452,
@@ -80858,7 +80892,7 @@
         "raw_raga": "husEni",
         "url": "http://thyagaraja-vaibhavam.blogspot.com/2007/10/thyagaraja-kriti-rama-rama-rama-sita.html",
         "disposition": "classification_subject",
-        "subject_id": "tyagaraja:import:3115095a-36f9-4999-b32c-d8a063268cd9"
+        "subject_id": "tyagaraja:krithi:f2700b5a-d26a-498b-b5c7-61806ebbb729"
       },
       {
         "row": 504,
@@ -80882,7 +80916,7 @@
         "raw_raga": "balahamsa",
         "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/01/thyagaraja-kriti-rama-sita-rama-raga.html",
         "disposition": "classification_subject",
-        "subject_id": "tyagaraja:import:ab6c4e31-d6a7-474d-ac72-e30adb14ecaf"
+        "subject_id": "tyagaraja:krithi:4f90dd54-c76e-4cce-88f8-1c460cdb3566"
       },
       {
         "row": 507,
@@ -80890,7 +80924,7 @@
         "raw_raga": "SankarAbharaNaM",
         "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/03/thyagaraja-kriti-rama-sita-rama-rama.html",
         "disposition": "classification_subject",
-        "subject_id": "tyagaraja:import:1daabb05-6208-44a6-89c0-dc48be8fb187"
+        "subject_id": "tyagaraja:krithi:db90b28a-2b7f-43ee-a6dc-078558b40cf9"
       },
       {
         "row": 508,
@@ -81581,7 +81615,7 @@
         "raw_raga": "bhairavi",
         "url": "http://thyagaraja-vaibhavam.blogspot.com/2007/06/thyagaraja-kriti-sri-narada-muni-raga.html",
         "disposition": "classification_subject",
-        "subject_id": "tyagaraja:import:84ffdbb8-6845-4747-9127-b0a46cf65630"
+        "subject_id": "tyagaraja:krithi:76706063-efdd-49a7-b091-4817afed5b57"
       },
       {
         "row": 594,
@@ -81597,7 +81631,7 @@
         "raw_raga": "phala ranjani",
         "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/01/thyagaraja-kriti-sri-naarasimha-raga.html",
         "disposition": "classification_subject",
-        "subject_id": "tyagaraja:import:40e2d47b-a0c5-4e44-b301-8cdd05b9589d"
+        "subject_id": "tyagaraja:krithi:12058429-320a-4040-b682-78c26399e0ae"
       },
       {
         "row": 596,
@@ -81661,7 +81695,7 @@
         "raw_raga": "madhyamAvati",
         "url": "http://thyagaraja-vaibhavam.blogspot.com/2007/09/thyagaraja-kriti-sri-rama-jaya-rama.html",
         "disposition": "classification_subject",
-        "subject_id": "tyagaraja:import:1f73ab63-0278-4b61-85ce-3fbacbce1ba0"
+        "subject_id": "tyagaraja:krithi:1dfe4864-6224-460a-845a-5328aed9b638"
       },
       {
         "row": 604,
@@ -81669,7 +81703,7 @@
         "raw_raga": "varALi",
         "url": "http://thyagaraja-vaibhavam.blogspot.com/2008/07/thyagaraja-kriti-sri-rama-jaya-rama.html",
         "disposition": "classification_subject",
-        "subject_id": "tyagaraja:import:3916fad4-5ef9-43ba-af21-5df0f233566c"
+        "subject_id": "tyagaraja:krithi:e9d91067-f4c7-4b2b-ae5c-06db11815ac2"
       },
       {
         "row": 605,
@@ -81709,7 +81743,7 @@
         "raw_raga": "sAvEri",
         "url": "http://thyagaraja-vaibhavam.blogspot.com/2007/04/thyagaraja-kriti-sri-rama-rama-rama.html",
         "disposition": "classification_subject",
-        "subject_id": "tyagaraja:import:3946f1d2-2a27-4591-b504-5e334d51b53e"
+        "subject_id": "tyagaraja:krithi:42d35ca5-4110-4fd8-bece-9ced6a37014e"
       },
       {
         "row": 610,

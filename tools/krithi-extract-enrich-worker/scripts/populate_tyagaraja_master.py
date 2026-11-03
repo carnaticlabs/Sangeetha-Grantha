@@ -853,9 +853,9 @@ def main() -> None:
     master.database_snapshot_witness = "db-snapshot"
     master.witnesses = witnesses
     master.limitations = [
-        "Eight catalogue identities absorb 17 conflicting source imports and remain collision_not_classified; "
-        "their 17 source witnesses (tyagaraja:import:*) are classified individually pending audited canon split "
-        "in TRACK-149.",
+        "Eight catalogue identities that absorbed 17 conflicting source imports were split in TRACK-149 "
+        "(owner-approved 2026-11-03, executed through the audited unmap and forceNew review path). Each of the "
+        "17 source witnesses is now its own catalogue identity; the 9 new krithi rows are draft / UNESTABLISHED.",
         "Print editions (T.K. Govinda Rao, C. Ramanujachari & V. Raghavan's The Spiritual Heritage of Tyagaraja, "
         "P. Sambamoorthy) and external JMA PDF volumes were not physically consulted and remain registered as "
         "unavailable witnesses. Edition-dependent Kshetra Pancharatnam sequences, Utsava/Divyanama paddhati orderings, "
@@ -1035,7 +1035,7 @@ def main() -> None:
             subject.geography_state = derive_geography_state(subject.claims)
             continue
 
-        # Case 3: Remaining 665 subjects (648 single-source + 17 collision witnesses)
+        # Case 3: Remaining subjects (all single-source identities, including the 17 from the TRACK-149 split)
         kshetra_info = KSHETRA_LEADS.get(kid) or _match_kshetra_by_title(subject.title, subject.canonical_raga)
         if kshetra_info:
             deity_val = kshetra_info["deity"]
