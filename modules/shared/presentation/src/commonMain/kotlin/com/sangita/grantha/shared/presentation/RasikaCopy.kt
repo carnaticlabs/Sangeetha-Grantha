@@ -95,7 +95,6 @@ object RasikaCopy {
     const val HOME_LABEL = "HOME"
     const val HOME_INVITE = "Search a title, or open rāgas and composers from here. Continue reading appears after a composition is opened on this device."
     const val EXPLORE_SHORTCUTS = "Explore the tradition"
-    const val FEATURE_UNAVAILABLE = "The featured composition could not be loaded. Search and browse still work."
     const val FEATURE_PANEL = "From the collection"
     const val READ_COMPOSITION = "Read composition"
     const val APPEARANCE_GROUP = "Appearance"

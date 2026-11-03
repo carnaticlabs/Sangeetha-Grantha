@@ -32,9 +32,7 @@ export const HomeView: React.FC<{
                         Read composition
                     </button>
                 </section>
-            ) : (
-                <p className="text-sm" style={{ color: p.inkSoft }}>The featured composition could not be loaded. Search and browse still work.</p>
-            )}
+            ) : null /* The featured composition is a bonus: when it cannot load, show nothing in its place (as the app does). */}
             <p className="mt-6 text-xs font-semibold" style={{ color: p.primaryDeep }}>Explore the tradition</p>
             <div className="mt-2 flex flex-wrap gap-2">
                 <Chip label="Ragas" onClick={onOpenRagas} />

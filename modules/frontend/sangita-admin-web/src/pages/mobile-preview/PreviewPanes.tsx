@@ -14,18 +14,18 @@ export interface PaneProps {
 
 export const HomePane: React.FC<PaneProps> = ({ open }) => {
     const q = useQuery({ queryKey: previewKeys.discovery, queryFn: api.getPreviewDiscovery });
+    // As in the app, the featured composition is a bonus: if it cannot load, Home shows the rest without an error panel.
+    const discovery = q.data ?? { feature: null };
     return (
-        <LoadStateView isLoading={q.isLoading} error={q.error} isEmpty={false} emptyTitle="" onRetry={() => { void q.refetch(); }}>
-            {q.data ? (
-                <views.HomeView
-                    discovery={q.data}
-                    onOpenKrithi={(id) => open({ kind: 'KrithiReader', krithiId: id })}
-                    onOpenRagas={() => open({ kind: 'Browse' })}
-                    onOpenComposers={() => open({ kind: 'Browse' })}
-                    onOpenCollections={() => open({ kind: 'Collections' })}
-                    onOpenKshetras={() => open({ kind: 'Kshetras' })}
-                />
-            ) : null}
+        <LoadStateView isLoading={q.isLoading} error={null} isEmpty={false} emptyTitle="">
+            <views.HomeView
+                discovery={discovery}
+                onOpenKrithi={(id) => open({ kind: 'KrithiReader', krithiId: id })}
+                onOpenRagas={() => open({ kind: 'Browse' })}
+                onOpenComposers={() => open({ kind: 'Browse' })}
+                onOpenCollections={() => open({ kind: 'Collections' })}
+                onOpenKshetras={() => open({ kind: 'Kshetras' })}
+            />
         </LoadStateView>
     );
 };

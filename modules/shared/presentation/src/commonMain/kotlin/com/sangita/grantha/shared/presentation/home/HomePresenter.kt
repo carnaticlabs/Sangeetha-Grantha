@@ -59,6 +59,8 @@ class HomePresenter(
                 throw cancelled
             } catch (failure: CatalogueFailure) {
                 if (requested != generation) return@launch
+                // Quiet failure: allow the next visit to Home to try again without the user doing anything.
+                attempted = false
                 _state.update {
                     it.copy(
                         feature = null,

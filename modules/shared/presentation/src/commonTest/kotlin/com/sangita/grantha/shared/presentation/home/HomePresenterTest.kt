@@ -57,4 +57,33 @@ class HomePresenterTest {
         assertIs<LoadState.Error>(presenter.state.value.featureLoad)
         assertTrue((presenter.state.value.featureLoad as LoadState.Error).retryable)
     }
+
+    @Test
+    fun aFailedFeatureIsRetriedQuietlyTheNextTimeHomeAppears() = runTest {
+        var attempts = 0
+        val fixture = FixtureCatalogueApi()
+        val presenter = HomePresenter(
+            catalogue = CatalogueRepository(
+                object : CatalogueApi by fixture {
+                    override suspend fun getDiscovery(interaction: InteractionContext) =
+                        if (++attempts == 1) throw CatalogueFailure.Unavailable() else fixture.getDiscovery(interaction)
+                },
+            ),
+            session = MobileSession(clockMs = { 0L }),
+            scope = this,
+        )
+        presenter.loadIfNeeded()
+        advanceUntilIdle()
+        assertNull(presenter.state.value.feature)
+
+        presenter.loadIfNeeded()
+        advanceUntilIdle()
+        assertEquals(2, attempts)
+        assertEquals(LoadState.Idle, presenter.state.value.featureLoad)
+        assertTrue(presenter.state.value.feature != null)
+
+        presenter.loadIfNeeded()
+        advanceUntilIdle()
+        assertEquals(2, attempts, "a loaded feature is not fetched again")
+    }
 }
