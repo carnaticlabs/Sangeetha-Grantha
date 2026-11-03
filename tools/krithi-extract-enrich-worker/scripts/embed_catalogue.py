@@ -37,6 +37,7 @@ from src.embeddings.catalogue_index import (
     validate_dimensions,
     write_audit,
 )
+from src.embeddings.claim_metadata import load_approved_claims
 from src.embeddings.context_formatter import (
     format_composition_overview,
     format_section_passage,
@@ -64,6 +65,10 @@ DEFAULT_DB_URL = os.environ.get(
     "postgresql://postgres:postgres@localhost:5432/sangita_grantha",
 )
 SCRIPT_NAME = "embed_catalogue.py"
+
+
+# TRACK-148 D1: approved non-cycle claims from the manifests, loaded once. Empty when none are applicable.
+APPROVED_CLAIMS = load_approved_claims()
 
 
 def md5_hash(text: str) -> str:
@@ -270,6 +275,7 @@ def index_krithi(
             bhuta=krithi.get("bhuta"),
             deity_posture=krithi.get("deity_posture"),
             cycle_info=primary_cycle,
+            approved_claims=APPROVED_CLAIMS.get(krithi_id),
             occasion_note=krithi.get("occasion_note"),
             structural_features=structural_features,
             yati_pattern=krithi.get("yati_pattern"),
@@ -366,6 +372,7 @@ def index_krithi(
             mandalam=krithi.get("mandalam"),
             bhuta=krithi.get("bhuta"),
             cycle_info=primary_cycle,
+            approved_claims=APPROVED_CLAIMS.get(krithi_id),
         )
         content_hash = md5_hash(passage_text)
 

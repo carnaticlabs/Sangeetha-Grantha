@@ -243,7 +243,8 @@ Done when: each of the 8 identities has a recorded decision with evidence; the c
 - [x] Implementation, up to the owner gate: collision split, source sweep, lead proposals, structural-repair diagnosis and the first repair.
 - [x] Owner decisions on 94 lead proposals recorded 2026-11-03 (Seshadri): 25 approved (deferred), 69 unresolved; master regenerated.
 - [ ] Controlled re-extraction run to repair the remaining 29 structural records (needs go-ahead; starts the extraction worker).
-- [ ] Non-cycle application path (TRACK-148 D1) and a Kshetra Pancharatnam membership seed; both conditional on approvals.
+- [x] Non-cycle application path: TRACK-148 D1 adopted (shared formatter and manifest loader). The 25 Tyagaraja approvals stay deferred.
+- [ ] Kshetra Pancharatnam membership seed (R__seed successor) so the 15 approved group claims can be applied.
 
 ## Progress Log
 
@@ -263,3 +264,4 @@ Done when: each of the 8 identities has a recorded decision with evidence; the c
 - **2026-11-03**: Structural repair. The 30 records are not missing text: the sources carry the pallavi as an inline `P` label with a footnote digit, which an older parser dropped. The current parser finds it on all 25 cached pages after one fix (`1 P ...` form, with a test that fails without it). *Sri Rama Jaya Rama* was repaired through the audited reingest (missing_pallavi 26 to 25). The other 29 need a controlled re-extraction run; see `database/data/track149-structural-repair-report.md`.
 - **2026-11-03**: Dramatic works, Utsava, Divyanama and kshetra adjudication stay at recommendation stage. D1 search-metadata formatter not built, because it is conditional on approved non-cycle claims.
 - **2026-11-03**: Seshadri accepted the recommended outcomes on the lead sheet as their decisions. Recorded in `database/data/track149-lead-decisions.json`; the generator applies them. 25 claims are now `reviewed` with `application: deferred` (Srirangam, Lalgudi and Kovur kshetra group and geography claims, one Tiruvottiyur geography claim, two Utsava Sampradaya and two dramatic-work claims); 69 are `unresolved` with a reason. Approved application manifest changes: 53 to 78. Nothing reaches the catalogue until a membership seed (kshetra groups) and the D1 path exist.
+- **2026-11-03**: Adopted TRACK-148 D1 for Tyagaraja non-cycle claims (`[Mudra]`, `[Ritual Function]`, `[Dramatic Context]`, `[Theme]`), so both composers share one mechanism. The approvals recorded today stay `deferred`; lifting them needs an owner decision. Kshetra group approvals need a membership seed, not D1.

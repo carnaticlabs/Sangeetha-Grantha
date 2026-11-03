@@ -175,3 +175,23 @@ def apply_to_tyagaraja(master: TyagarajaClassificationMaster, decisions: LeadDec
     for subject in master.subjects:
         subject.geography_state = derive_tyagaraja_geography_state(subject.claims)
     return len(decisions.decisions)
+
+
+def lift_deferral_raw_syama(raw: dict[str, Any], claim_ids: list[str], reason: str) -> int:
+    """Move approved Syama claims from `application: deferred` to `apply`.
+
+    The approver, date and decision note stay as the reviewer recorded them. Only the application mode changes,
+    and the reason is appended to the note so the change is visible on the claim itself.
+    """
+    claims = {c["id"]: c for c in raw["claims"]}
+    for claim_id in claim_ids:
+        claim = claims.get(claim_id)
+        if claim is None:
+            raise ValueError(f"{claim_id}: no such claim")
+        approval = claim.get("approval")
+        if claim["review_state"] != "reviewed" or not approval or approval.get("application") != "deferred":
+            raise ValueError(f"{claim_id}: only an approved, deferred claim can have its deferral lifted")
+        approval["application"] = "apply"
+        approval.pop("deferral_reason", None)
+        approval["note"] = f"{approval['note']} Deferral lifted: {reason}"
+    return len(claim_ids)
