@@ -133,6 +133,7 @@ def test_live_master_records_all_eight_executed_splits() -> None:
         members = [by_id[subject_id] for subject_id in entry.witness_subject_ids]
         assert all(member.subject_kind == SubjectKind.CATALOGUE_IDENTITY for member in members)
         # the retained witness keeps the original krithi id; every other witness has a krithi of its own
+        assert entry.retained_witness_subject_id is not None
         assert by_id[entry.retained_witness_subject_id].krithi_id == entry.krithi_id
         assert len({member.krithi_id for member in members}) == len(members)
 
@@ -141,7 +142,9 @@ def test_executed_split_must_retain_the_original_krithi_id() -> None:
     master = load_master(MASTER_PATH)
     forged = master.model_copy(deep=True)
     entry = forged.collision_register[0]
-    other = next(subject_id for subject_id in entry.witness_subject_ids if subject_id != entry.retained_witness_subject_id)
+    other = next(
+        subject_id for subject_id in entry.witness_subject_ids if subject_id != entry.retained_witness_subject_id
+    )
     entry.retained_witness_subject_id = other
     with pytest.raises(TyagarajaClassificationError):
         validate_master(forged)

@@ -595,9 +595,8 @@ def validate_master(master: TyagarajaClassificationMaster) -> None:
             raise TyagarajaClassificationError(f"split {entry.krithi_id} lists a subject that is not an identity")
         if entry.retained_witness_subject_id != catalogue_subject_id(entry.krithi_id):
             raise TyagarajaClassificationError(f"split {entry.krithi_id} does not retain its original krithi id")
-        if sorted(member.krithi_id for member in members if member) != sorted(
-            {member.krithi_id for member in members if member}
-        ) or entry.krithi_id not in {member.krithi_id for member in members if member}:
+        member_krithi_ids = [member.krithi_id for member in members if member]
+        if len(set(member_krithi_ids)) != len(member_krithi_ids) or entry.krithi_id not in member_krithi_ids:
             raise TyagarajaClassificationError(f"split {entry.krithi_id} does not give each witness its own krithi")
 
     witness_ids_by_krithi: dict[str, list[str]] = defaultdict(list)
