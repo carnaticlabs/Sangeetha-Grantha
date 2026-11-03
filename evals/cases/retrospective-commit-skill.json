@@ -6,7 +6,10 @@
     "gh pr checks --watch",
     "gh pr merge --merge --delete-branch",
     "git pull --ff-only origin main",
-    "Never delete an unmerged branch"
+    "Never delete an unmerged branch",
+    "make check-doc-impact",
+    "gh pr merge --auto --merge --delete-branch",
+    "Docs-Impact: none"
   ],
   "must_not_contain": [
     "--admin",

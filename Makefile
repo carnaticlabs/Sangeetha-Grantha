@@ -1,4 +1,4 @@
-.PHONY: dev dev-down db db-reset seed seed-dev migrate migrate-status bootstrap-admin test test-integration test-frontend test-mobile mobile-android mobile-ios check-docs check-library-versions agent-evals steel-thread clean raga-lakshana-checks mint-guard
+.PHONY: dev dev-down db db-reset seed seed-dev migrate migrate-status bootstrap-admin test test-integration test-frontend test-mobile mobile-android mobile-ios check-docs check-doc-impact check-library-versions agent-evals steel-thread clean raga-lakshana-checks mint-guard
 
 COMPOSE := docker compose
 # Flyway runs as the compose `migrate` service (flyway/flyway image) on the db network.
@@ -77,6 +77,10 @@ mobile-ios:
 # Verify every relative Markdown link resolves (docs rot silently when files move)
 check-docs:
 	python3 tools/check-doc-links.py
+
+# Code paths changed without their mapped docs (waive with a `Docs-Impact: none` commit line)
+check-doc-impact:
+	python3 tools/check-doc-impact.py
 
 # Deterministic agent-config evals (CLAUDE.md, skills, hooks, REVIEW.md)
 agent-evals:

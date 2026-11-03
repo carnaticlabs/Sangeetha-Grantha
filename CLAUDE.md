@@ -29,6 +29,7 @@ make test-integration # Backend integration tests (Testcontainers)
 make test-frontend  # Frontend tests
 make steel-thread   # End-to-end steel thread test
 make check-docs     # Validate documentation links
+make check-doc-impact # Code paths changed without their mapped docs
 make check-library-versions # Newer stable Gradle, npm, and Python releases (report only)
 make agent-evals    # Deterministic agent-config evals (CLAUDE.md, skills, hooks)
 make clean          # Remove all containers and volumes
@@ -162,7 +163,7 @@ Cursor loads the same skills via symlinks under [`.cursor/skills/`](.cursor/skil
 
 ### Slash Commands (`.claude/commands/`)
 
-`/dev-start`, `/db-reset`, `/test-all`, `/steel-thread`, `/new-migration`, `/spec-from-track`, `/plan-from-spec`, `/commit` (organize logical commits, push, watch the PR, merge into `main`, sync local `main`, delete merged branches; message rules in commit-policy), `/retrospective-commit-and-push` (organize uncommitted changesets, atomic commits with Ref, push, watch PR, merge onto remote `main`, sync local `main`, delete stale branches), `/Sangeetha-Krithi-Analyser` (krithi section analysis). Cursor mirrors these files in [`.cursor/commands/`](.cursor/commands/).
+`/dev-start`, `/db-reset`, `/test-all`, `/steel-thread`, `/new-migration`, `/spec-from-track`, `/plan-from-spec`, `/commit` (organize logical commits, push, watch the PR, merge into `main`, sync local `main`, delete merged branches; message rules in commit-policy), `/retrospective-commit-and-push` (update impacted docs, organize uncommitted changesets, atomic commits with Ref, push, watch PR, merge onto remote `main`, sync local `main`, delete stale branches), `/Sangeetha-Krithi-Analyser` (krithi section analysis). Cursor mirrors these files in [`.cursor/commands/`](.cursor/commands/).
 
 ### Specialist Subagents (`.claude/agents/`)
 
