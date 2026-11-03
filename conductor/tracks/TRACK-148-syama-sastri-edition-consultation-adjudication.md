@@ -237,7 +237,9 @@ Done when: every one of the 40 leads has exactly one final disposition with a re
 - [x] Intent accepted (2026-11-03).
 - [x] Spec accepted (2026-11-03).
 - [x] Plan accepted (2026-11-03).
-- [ ] Implementation.
+- [x] Implementation, up to the owner gate: validator fields, source sweep, review sheet for the 40 leads, carried findings.
+- [ ] Owner decisions on the 40 lead proposals (15 recommended approve, 24 unresolved, 1 disputed), then regenerate.
+- [ ] D1 formatter and lifting `application: deferred` for the four mudras, conditional on approvals.
 
 ## Progress Log
 
@@ -247,3 +249,6 @@ Done when: every one of the 40 leads has exactly one final disposition with a re
 - **2026-11-03**: Plan drafted (Draft); awaits acceptance. No implementation started.
 - **2026-11-03**: Seshadri clarified that public domain means publicly accessible; copyright is not a gate. Plan stays Draft.
 - **2026-11-03**: Plan accepted by Seshadri. Implementation begins with the read-only steps.
+- **2026-11-03**: Implementation to the owner gate. `Witness` gains `rights`, `rights_note`, `witness_kind`; `Claim` gains `unresolved_reason`; `RhythmObservation` gains `jati`, `akshara_count`, `grouping`. Rhythm interpretation needs a `notated_edition` witness and no claim is approved from an inaccessible witness. The existing master validates unchanged. Added the deferred-validation test (one deliberate use of `SANGITA_ALLOW_TEST_EDITS=1`, plus an updated witness count).
+- **2026-11-03**: Source sweep (see `database/data/track148-149-source-sweep-ledger.md`). The 1954 souvenir (`academy-1954-lead`, now fetched) lists the nine Navaratnamalika gems, seven by title and two by raga only; the 1973 souvenir lists seven Navaratnamalika kritis for Meenakshi and the full set of attributed compositions with raga, tala and deity; JMA LV (1984) names four svara sahitya kritis. Review sheet `database/data/track148-lead-review-sheet.md`: of 40 leads, 15 recommended approve, 24 unresolved with a reason, 1 disputed. Nothing is approved.
+- **2026-11-03**: Spec 9 resolved from public evidence: *Samini* (Anandabhairavi, Ata) is a distinct tana varnam, not a mistitled SS-0036, and the catalogue holds no varnam by Syama Sastri; adding *Samini* or *Dayanidhe* is a separate audited import decision. Spec 6: a nine-member Navaratnamalika is not recorded; seven titled members agree across two sources. The six disputed Anandabhairavi raga-character claims have no new public evidence and stay disputed. D1 formatter not built (conditional on approvals); no re-index.
