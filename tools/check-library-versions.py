@@ -69,6 +69,20 @@ PLUGIN_REPOS = (
 
 BUMP_ORDER = {"major": 0, "minor": 1, "patch": 2, "other": 3}
 
+# Report order. Gradle covers the JVM catalog (Kotlin, Ktor, Android, and Java libraries).
+STACKS = (
+    ("gradle", "Java (including Kotlin)"),
+    ("npm", "Frontend"),
+    ("pypi", "Python"),
+)
+
+
+def stack_label(ecosystem: str) -> str:
+    for key, label in STACKS:
+        if key == ecosystem:
+            return label
+    return ecosystem
+
 
 @dataclass(frozen=True)
 class Item:
@@ -737,36 +751,39 @@ def _cell(value: str) -> str:
     return value.replace("|", "/").replace("\n", " ").strip() or "—"
 
 
+def _selected_stacks(ecosystem: str | None) -> tuple[tuple[str, str], ...]:
+    if ecosystem is None:
+        return STACKS
+    return tuple(pair for pair in STACKS if pair[0] == ecosystem)
+
+
+def _stack_source(ecosystem: str) -> str:
+    if ecosystem == "gradle":
+        return f"`{CATALOG.relative_to(ROOT)}`"
+    if ecosystem == "npm":
+        return f"`{PACKAGE_JSON.relative_to(ROOT)}` (resolved from bun.lock)"
+    if ecosystem == "pypi":
+        return f"`{PYPROJECT.relative_to(ROOT)}` (resolved from uv.lock)"
+    return ecosystem
+
+
+def _by_severity(rows: list[Row]) -> list[Row]:
+    return sorted(rows, key=lambda row: (BUMP_ORDER.get(row.bump, 9), row.library.lower()))
+
+
 def render_markdown(rows: list[Row], include_current: bool, ecosystem: str | None) -> str:
     updates = [row for row in rows if row.status == "update"]
     current = [row for row in rows if row.status == "current"]
     unchecked = [row for row in rows if row.status == "unchecked"]
-    updates.sort(key=lambda row: (BUMP_ORDER.get(row.bump, 9), row.ecosystem, row.library.lower()))
-    unchecked.sort(key=lambda row: (row.ecosystem, row.library.lower()))
-
-    def count(eco: str) -> int:
-        return sum(1 for row in rows if row.ecosystem == eco)
-
-    sources = []
-    if ecosystem in (None, "gradle"):
-        sources.append(f"- Gradle catalog: `{CATALOG.relative_to(ROOT)}` ({count('gradle')} keys)")
-    if ecosystem in (None, "npm"):
-        sources.append(
-            f"- npm: `{PACKAGE_JSON.relative_to(ROOT)}` ({count('npm')} packages, resolved from bun.lock)"
-        )
-    if ecosystem in (None, "pypi"):
-        sources.append(
-            f"- Python: `{PYPROJECT.relative_to(ROOT)}` ({count('pypi')} packages, resolved from uv.lock)"
-        )
+    stacks = _selected_stacks(ecosystem)
 
     lines = [
         "# Library version audit",
         "",
         f"Checked {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}. "
-        "Direct dependencies only. Latest is the newest stable release; pre-releases are ignored. "
+        "Direct dependencies only, grouped by tech stack. "
+        "Latest is the newest stable release; pre-releases are ignored. "
         "Manifests were not modified.",
-        "",
-        *sources,
         "",
         (
             f"Updates: {len(updates)} "
@@ -776,27 +793,66 @@ def render_markdown(rows: list[Row], include_current: bool, ecosystem: str | Non
             f"Up to date: {len(current)}. Unchecked: {len(unchecked)}."
         ),
         "",
+        "| Stack | Checked | Updates | Major | Minor | Patch | Up to date | Unchecked |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|",
     ]
-    if updates:
-        lines.extend(_table(updates))
-    else:
-        lines.append("No newer stable releases.")
+    for key, label in stacks:
+        stack_rows = [row for row in rows if row.ecosystem == key]
+        stack_updates = [row for row in stack_rows if row.status == "update"]
+        lines.append(
+            "| "
+            + " | ".join(
+                (
+                    label,
+                    str(len(stack_rows)),
+                    str(len(stack_updates)),
+                    str(sum(row.bump == "major" for row in stack_updates)),
+                    str(sum(row.bump == "minor" for row in stack_updates)),
+                    str(sum(row.bump == "patch" for row in stack_updates)),
+                    str(sum(row.status == "current" for row in stack_rows)),
+                    str(sum(row.status == "unchecked" for row in stack_rows)),
+                )
+            )
+            + " |"
+        )
+    lines.append("")
+
+    for key, label in stacks:
+        stack_rows = [row for row in rows if row.ecosystem == key]
+        stack_updates = _by_severity(row for row in stack_rows if row.status == "update")
+        stack_unchecked = sorted(
+            (row for row in stack_rows if row.status == "unchecked"),
+            key=lambda row: row.library.lower(),
+        )
+        stack_current = sorted(
+            (row for row in stack_rows if row.status == "current"),
+            key=lambda row: row.library.lower(),
+        )
+        lines.append(f"## {label}")
         lines.append("")
-    if unchecked:
-        lines.append("## Unchecked")
+        lines.append(f"{_stack_source(key)} — {len(stack_rows)} checked.")
         lines.append("")
-        lines.extend(_table(unchecked))
-    if include_current and current:
-        lines.append("## Up to date")
-        lines.append("")
-        current.sort(key=lambda row: (row.ecosystem, row.library.lower()))
-        lines.extend(_table(current))
-    elif current and not include_current:
+        if stack_updates:
+            lines.extend(_table(stack_updates))
+        else:
+            lines.append("No newer stable releases.")
+            lines.append("")
+        if stack_unchecked:
+            lines.append("### Unchecked")
+            lines.append("")
+            lines.extend(_table(stack_unchecked))
+        if include_current and stack_current:
+            lines.append("### Up to date")
+            lines.append("")
+            lines.extend(_table(stack_current))
+
+    if current and not include_current:
         lines.append("Up-to-date rows are hidden. Pass `--include-current` to list them.")
         lines.append("")
     lines.append(
-        "This command does not change files. A Gradle row is one catalog pin. "
-        "An npm in-range row can be refreshed with `bun update` in the admin web project; "
+        "This command does not change files. A Java row is one Gradle catalog pin, "
+        "including Kotlin. "
+        "A Frontend in-range row can be refreshed with `bun update` in the admin web project; "
         "an out-of-range row needs `package.json` edited. "
         "A Python row whose floor still allows the latest release is a lockfile refresh (`uv lock`)."
     )
@@ -806,15 +862,14 @@ def render_markdown(rows: list[Row], include_current: bool, ecosystem: str | Non
 
 def _table(rows: list[Row]) -> list[str]:
     header = (
-        "| Ecosystem | Library | Declared | Resolved | Latest | Bump | Update via | Notes |",
-        "|---|---|---|---|---|---|---|---|",
+        "| Library | Declared | Resolved | Latest | Bump | Update via | Notes |",
+        "|---|---|---|---|---|---|---|",
     )
     body = [
         "| "
         + " | ".join(
             _cell(value)
             for value in (
-                row.ecosystem,
                 row.library,
                 row.declared,
                 row.resolved,
@@ -831,8 +886,10 @@ def _table(rows: list[Row]) -> list[str]:
 
 
 def render_json(rows: list[Row]) -> str:
+    order = {key: index for index, (key, _label) in enumerate(STACKS)}
     payload = [
         {
+            "stack": stack_label(row.ecosystem),
             "ecosystem": row.ecosystem,
             "library": row.library,
             "declared": row.declared,
@@ -843,7 +900,7 @@ def render_json(rows: list[Row]) -> str:
             "notes": row.notes,
             "status": row.status,
         }
-        for row in sorted(rows, key=lambda row: (row.ecosystem, row.library.lower()))
+        for row in sorted(rows, key=lambda row: (order.get(row.ecosystem, 99), row.library.lower()))
     ]
     return json.dumps(payload, indent=2) + "\n"
 
@@ -906,6 +963,33 @@ def self_test() -> int:
         check(pypi["pymupdf"].declared.startswith(">="), "pymupdf floor")
         if UV_LOCK.is_file():
             check(bool(pypi["pydantic"].resolved), "pydantic resolved from uv.lock")
+
+    check(stack_label("gradle") == "Java (including Kotlin)", "java stack label")
+    check(stack_label("npm") == "Frontend", "frontend stack label")
+    check(stack_label("pypi") == "Python", "python stack label")
+    sample = [
+        Row("pypi", "ruff", ">=0.4.0", "0.17.2", "0.17.3", "patch", "uv lock", "", "update"),
+        Row("gradle", "kotlin", "2.4.21", "2.4.21", "2.4.22", "patch", "gradle/libs.versions.toml", "", "update"),
+        Row("npm", "react", "^19.3.1", "19.3.1", "19.4.0", "minor", "bun update (in range)", "", "update"),
+        Row("npm", "typescript", "~6.0.3", "6.0.3", "7.0.2", "major", "package.json (out of range)", "", "update"),
+    ]
+    rendered = render_markdown(sample, include_current=False, ecosystem=None)
+    java_at = rendered.find("## Java (including Kotlin)")
+    frontend_at = rendered.find("## Frontend")
+    python_at = rendered.find("## Python")
+    check(0 <= java_at < frontend_at < python_at, "stack section order")
+    frontend_body = rendered[frontend_at:python_at]
+    check("kotlin" in rendered[java_at:frontend_at], "kotlin is in the Java section")
+    check("kotlin" not in frontend_body, "kotlin is not in Frontend")
+    check(
+        "typescript" in frontend_body
+        and "react" in frontend_body
+        and frontend_body.find("typescript") < frontend_body.find("react"),
+        "frontend majors precede minors",
+    )
+    check("ruff" in rendered[python_at:], "python package stays in Python")
+    java_only = render_markdown(sample, include_current=False, ecosystem="gradle")
+    check("## Frontend" not in java_only and "## Python" not in java_only, "ecosystem filter keeps one stack")
 
     if failures:
         print("self-test failed:", file=sys.stderr)

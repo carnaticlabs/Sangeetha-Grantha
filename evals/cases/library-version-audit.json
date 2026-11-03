@@ -7,6 +7,8 @@
     "tools/krithi-extract-enrich-worker/pyproject.toml",
     "make check-library-versions",
     "Do not edit",
-    "archive/"
+    "archive/",
+    "library-version-audit.canvas.tsx",
+    "Every execution writes the canvas"
   ]
 }
