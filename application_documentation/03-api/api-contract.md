@@ -188,7 +188,7 @@ The following route families are mounted in the authenticated admin group. Reque
 | Users and roles | Account and role administration | [UserManagementRoutes](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/UserManagementRoutes.kt) |
 | Audit | Audit queries | [AuditRoutes](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/routes/AuditRoutes.kt) |
 
-Admin import review is `POST /v1/admin/imports/{id}/review`; reingestion is `POST /v1/admin/imports/{id}/reingest`. Older `/imports/krithis/{id}/map` and `/reject` sketches are not the mounted contract.
+Admin import review is `POST /v1/admin/imports/{id}/review`; reingestion is `POST /v1/admin/imports/{id}/reingest`. `POST /v1/admin/imports/{id}/unmap` (body `{"reason": "..."}`, audited) detaches a mapped import from its krithi and returns it to `PENDING`; a following `review` with `"forceNew": true` skips the title dedup and creates a krithi of its own (TRACK-149 collision split). Unmap refuses a sole witness, an unmapped import, or a krithi whose lyric variants came from that import. Older `/imports/krithis/{id}/map` and `/reject` sketches are not the mounted contract.
 
 Some sourcing quality coverage/audit endpoints return placeholder structures. An HTTP success from those routes is not proof of a completed quality scan; use the implemented quality audit routes and diagnostic checks described in [Quality](../07-quality/README.md).
 

@@ -2,6 +2,7 @@ package com.sangita.grantha.backend.api.routes
 
 import com.sangita.grantha.backend.api.models.ImportKrithiRequest
 import com.sangita.grantha.backend.api.models.ImportReviewRequest
+import com.sangita.grantha.backend.api.models.UnmapImportRequest
 import com.sangita.grantha.backend.api.models.ImportOverridesDto
 import com.sangita.grantha.backend.api.services.IImportService
 import com.sangita.grantha.backend.api.support.currentUserId
@@ -91,6 +92,15 @@ fun Route.importRoutes(
                 ?: return@post call.respondText("Missing import ID", status = HttpStatusCode.BadRequest)
             val updated = importService.reingestMappedKrithi(id, call.currentUserId())
             call.respond(updated)
+        }
+
+        // TRACK-149: detach an import from a krithi it was wrongly merged into (step 1 of a split;
+        // step 2 is POST /{id}/review with status APPROVED and forceNew = true).
+        post("/{id}/unmap") {
+            val id = parseUuidParam(call.parameters["id"], "importId")
+                ?: return@post call.respondText("Missing import ID", status = HttpStatusCode.BadRequest)
+            val request = call.receive<UnmapImportRequest>()
+            call.respond(importService.unmapImport(id, request.reason, call.currentUserId()))
         }
 
         post("/scrape") {

@@ -211,6 +211,20 @@ class ImportRepository {
     }
 
     /**
+     * Count imports mapped to a krithi, optionally leaving one import out.
+     * TRACK-149: lets unmap refuse to strip the last witness from a krithi.
+     */
+    suspend fun countMappedTo(krithiId: UUID, excludingImportId: UUID? = null): Long = DatabaseFactory.dbQuery {
+        ImportedKrithisTable
+            .selectAll()
+            .where {
+                val mapped = ImportedKrithisTable.mappedKrithiId eq krithiId
+                if (excludingImportId == null) mapped else mapped and (ImportedKrithisTable.id neq excludingImportId)
+            }
+            .count()
+    }
+
+    /**
      * Find an import by source and source key.
      */
     suspend fun findBySourceAndKey(sourceId: UUID, sourceKey: String): ImportedKrithiDto? = DatabaseFactory.dbQuery {

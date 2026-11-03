@@ -1651,6 +1651,10 @@ paths:
     post:
       tags: [Ingestion]
       summary: Review and promote imported krithi
+      description: >
+        Promotes the import. By default a title match against an existing krithi (TRACK-062 dedup)
+        re-links the import to that krithi. Set `forceNew: true` in the request body to skip the
+        dedup and create a krithi of its own (used after `unmap` to split a collapsed composition).
       security:
         - bearerAuth: []
       parameters:
@@ -1661,6 +1665,38 @@ paths:
       responses:
         "200":
           description: Imported krithi promoted
+
+  /v1/admin/imports/{id}/unmap:
+    post:
+      tags: [Ingestion]
+      summary: Detach a mapped import from its krithi (TRACK-149)
+      description: >
+        Admin only, audited. Removes the import's source evidence from the krithi and returns the
+        import to PENDING so it can be re-reviewed (normally with `forceNew`). Body: `{ "reason": "..." }`
+        (required). Refused with 400 when the import is not mapped, when it is the krithi's only
+        remaining witness, or when the krithi's lyric variants were persisted from this import's source.
+        Writes `UNMAP_IMPORT` (imported_krithis) and `IMPORT_UNMAPPED_FROM_KRITHI` (krithis) audit entries.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason: { type: string }
+      responses:
+        "200":
+          description: Import detached and returned to PENDING
+        "400":
+          description: Import not mapped, sole witness, or the krithi's lyrics came from this import
 
   /v1/krithis/{id}/notation:
     get:
