@@ -65,6 +65,10 @@ DEFERRAL_REASON = (
     "Database and search-header application deferred to TRACK-149."
 )
 
+# TRACK-149: the search-header (D1) path renders theme, ritual and dramatic claims, so those three axes are
+# applied; deity stays deferred because nothing consumes it yet.
+LIFT_REASON = "the TRACK-148 D1 search-metadata path now renders this axis; owner instructed the lift on 2026-11-11"
+
 # 5 Approved Ghana-raga Pancharatnam compositions
 GHANA_APPROVED: dict[str, dict[str, Any]] = {
     "2e115182-dcc2-4a41-962c-8381821a7489": {
@@ -1062,6 +1066,13 @@ def main() -> None:
                 application="deferred",
                 deferral_reason=DEFERRAL_REASON,
             )
+            app_apply = Approval(
+                reviewer="Seshadri",
+                accepted_at="2026-10-15",
+                decision="approve",
+                note=f"{dinfo['note']} Deferral lifted: {LIFT_REASON}",
+                application="apply",
+            )
             deity_claim.value = dinfo["deity"]
             deity_claim.witness_id = subject.import_id
             deity_claim.locator = f"Witness {subject.import_id} (Snapshot record {kid}); pallavi_excerpt"
@@ -1081,7 +1092,7 @@ def main() -> None:
             theme_claim.evidence_kind = EvidenceKind.TEXTUAL_EVIDENCE
             theme_claim.review_state = ReviewState.REVIEWED
             theme_claim.reviewer_decision = dinfo["note"]
-            theme_claim.approval = app_def
+            theme_claim.approval = app_apply
             theme_claim.mudra = "Tyagaraja"
             theme_claim.uncertainty = "Approved from witnessed pallavi excerpt; DB application deferred to TRACK-149."
 
@@ -1093,7 +1104,7 @@ def main() -> None:
                 ritual_claim.evidence_kind = EvidenceKind.TEXTUAL_EVIDENCE
                 ritual_claim.review_state = ReviewState.REVIEWED
                 ritual_claim.reviewer_decision = dinfo["note"]
-                ritual_claim.approval = app_def
+                ritual_claim.approval = app_apply
                 ritual_claim.group_type = GroupType.RITUAL_COLLECTION
                 ritual_claim.ritual_function = dinfo["ritual_function"]
                 ritual_claim.uncertainty = "Approved ritual function; cycle seeding deferred to TRACK-149."
@@ -1106,7 +1117,7 @@ def main() -> None:
                 dramatic_claim.evidence_kind = EvidenceKind.TEXTUAL_EVIDENCE
                 dramatic_claim.review_state = ReviewState.REVIEWED
                 dramatic_claim.reviewer_decision = dinfo["note"]
-                dramatic_claim.approval = app_def
+                dramatic_claim.approval = app_apply
                 dramatic_claim.group_type = GroupType.DRAMATIC_WORK
                 dramatic_claim.dramatic_work = dinfo["dramatic_work"]
                 dramatic_claim.dramatic_item_type = dinfo["dramatic_item_type"]

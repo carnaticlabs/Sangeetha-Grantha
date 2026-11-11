@@ -72,7 +72,10 @@ def test_masters_hold_exactly_the_recorded_decisions():
         claim = by_id[d.claim_id]
         if d.disposition == "approve":
             assert claim.review_state == "reviewed" and claim.approval is not None
-            assert claim.approval.reviewer == "Seshadri" and claim.approval.application == "deferred"
+            assert claim.approval.reviewer == "Seshadri"
+            # A lifted deferral must say so on the claim; otherwise the claim is still deferred.
+            lifted = claim.approval.application == "apply" and "Deferral lifted:" in claim.approval.note
+            assert claim.approval.application == "deferred" or lifted
             assert (claim.witness_id, claim.locator) == (d.witness_id, d.locator)
         else:
             assert claim.review_state == d.disposition and claim.unresolved_reason == d.unresolved_reason

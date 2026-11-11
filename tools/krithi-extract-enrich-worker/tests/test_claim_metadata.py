@@ -149,3 +149,16 @@ def test_both_embedding_scripts_pass_the_claims_to_both_formatters():
     for name in ("embed_catalogue.py", "batch_embed_catalogue.py"):
         text = (ROOT / "tools/krithi-extract-enrich-worker/scripts" / name).read_text(encoding="utf-8")
         assert text.count("approved_claims=APPROVED_CLAIMS.get(krithi_id)") == 2, name
+
+
+def test_tag_slugs_are_rendered_as_words():
+    claims = {"Tyagaraja": {"ritual": ["tyagaraja-utsava-sampradaya"], "dramatic": ["tyagaraja-nauka-charitram"]}}
+    assert claim_clauses("Tyagaraja", claims) == [
+        "[Ritual Function: Utsava Sampradaya]",
+        "[Dramatic Context: Nauka Charitram]",
+    ]
+
+
+def test_ordinary_values_are_left_alone():
+    claims = {"Tyagaraja": {"theme": ["Rama Bhakti & Nama Mahima"]}}
+    assert claim_clauses("Tyagaraja", claims) == ["[Theme: Rama Bhakti & Nama Mahima]"]
