@@ -1015,10 +1015,6 @@ VALUES (gen_random_uuid(), 'Pharaju  {Hindustani}', 'pharaju {hindustani}', (SEL
 ON CONFLICT ON CONSTRAINT ragas_identity_uq DO UPDATE SET name = EXCLUDED.name, melakarta_number = NULL, parent_raga_id = COALESCE(EXCLUDED.parent_raga_id, ragas.parent_raga_id), arohanam = COALESCE(EXCLUDED.arohanam, ragas.arohanam), avarohanam = COALESCE(EXCLUDED.avarohanam, ragas.avarohanam), updated_at = NOW();
 
 INSERT INTO ragas (id, name, name_normalized, parent_raga_id, arohanam, avarohanam, created_at, updated_at)
-VALUES (gen_random_uuid(), 'Poornalalita', 'poornalalita', (SELECT id FROM ragas WHERE name_normalized = 'mayamalavagoulai'), 'S R1 G3 M1 P D1 S', 'S D1 P M1 G3 R1 S', NOW(), NOW())
-ON CONFLICT ON CONSTRAINT ragas_identity_uq DO UPDATE SET name = EXCLUDED.name, melakarta_number = NULL, parent_raga_id = COALESCE(EXCLUDED.parent_raga_id, ragas.parent_raga_id), arohanam = COALESCE(EXCLUDED.arohanam, ragas.arohanam), avarohanam = COALESCE(EXCLUDED.avarohanam, ragas.avarohanam), updated_at = NOW();
-
-INSERT INTO ragas (id, name, name_normalized, parent_raga_id, arohanam, avarohanam, created_at, updated_at)
 VALUES (gen_random_uuid(), 'Poorvi', 'poorvi', (SELECT id FROM ragas WHERE name_normalized = 'mayamalavagoulai'), 'S R1 G3 M1 D1 N3 S', 'S N3 D1 P M1 G3 R1 S', NOW(), NOW())
 ON CONFLICT ON CONSTRAINT ragas_identity_uq DO UPDATE SET name = EXCLUDED.name, melakarta_number = NULL, parent_raga_id = COALESCE(EXCLUDED.parent_raga_id, ragas.parent_raga_id), arohanam = COALESCE(EXCLUDED.arohanam, ragas.arohanam), avarohanam = COALESCE(EXCLUDED.avarohanam, ragas.avarohanam), updated_at = NOW();
 
