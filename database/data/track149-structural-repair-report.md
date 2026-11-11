@@ -7,7 +7,7 @@
 
 # TRACK-149 structural repair report
 
-Owner: [TRACK-149](../../conductor/tracks/TRACK-149-tyagaraja-edition-consultation-collision-split.md), requirement 7. The classification master listed 27 `missing_pallavi` and 4 `missing_charanam` identities (26 and 4 after the Sri Narada Muni reingest, 25 and 4 now).
+Owner: [TRACK-149](../../conductor/tracks/TRACK-149-tyagaraja-edition-consultation-collision-split.md), requirement 7. The classification master listed 27 `missing_pallavi` and 4 `missing_charanam` identities (26 and 4 after the Sri Narada Muni reingest; **0 and 2 after the 2026-11-11 run**, see Outcome).
 
 **Finding.** These are not missing source text. The source pages carry the pallavi as an inline `P` label whose footnote digit sits before or after the label (`P 1cEra rAv(a)dEmirA`, `1 P paripAlaya`). Stored sections come from an older parser. The current parser finds the pallavi on all 25 cached pages, after one fix made in this track for the `1 P` form (`src/structure_parser.py`, test `tests/test_structure_parser_footnote_label.py`). The four missing-charanam records have the charanam merged into the anupallavi text (`3 caraNam` inside the anupallavi), and their pages are not cached.
 
@@ -45,3 +45,20 @@ Owner: [TRACK-149](../../conductor/tracks/TRACK-149-tyagaraja-edition-consultati
 | Sri Rama Jaya Rama | 1dfe4864 | published | P1 A0 C17 | none | P1 + C17 (payload) | repaired 2026-11-03 by audited reingest (REINGEST_MAPPED_KRITHI) |
 | Videmu Seyavae | 6a33383f | published | P0 A1 C1 | missing_pallavi | P1 A1 C1 | current parser finds the missing section; needs re-extract and reingest |
 | Yochanaa Kamala | 4a53d422 | published | P0 A1 C1 | missing_pallavi | P1 A1 C1 | current parser finds the missing section; needs re-extract and reingest |
+
+## Outcome (2026-11-11)
+
+All 29 records went through the existing audited path: `POST /v1/admin/imports/re-extract` (exact source URL, one at a time), the worker re-parse, then `POST /v1/admin/imports/{id}/reingest` (`REINGEST_MAPPED_KRITHI`). No lyric text was written by SQL. A `pg_dump` taken first (`storage/backups/track149-pre-reextract-20261111-0914.dump`, gitignored) restored cleanly into a scratch database (1235 krithis, 12255 audit rows).
+
+- **Repaired: 27 of 29** (25 to missing_pallavi 0; charanam gap closed for *kanugoNTini* and *madilOna yOcana*). Each kept its raga link, variant count and lyric-section rows, and gained the missing section.
+- **Two more parser gaps found and fixed in this run** (`src/structure_parser.py`, tests in `test_structure_parser_footnote_label.py`): a footnote digit glued to a plain header (`1 pallavi`, `3 caraNam`). These cleared *rAmaM bhajEhaM*, *kanugoNTini* and *madilOna yOcana*.
+- **One regression caught and reverted.** Re-extracting *Kalugunaa* gave raga "Purna Lalita", which the resolver found ambiguous between `Poornalalita` and `Poornalalitha`; it queued the case and the `krithi_ragas` row was dropped. Restored through the audited Curator `disambiguate` route to `Poornalalita` (the raga the krithi had before). The duplicate `Poornalalitha` raga row is an existing catalogue issue and is left for the owner.
+
+### Documented exceptions (2)
+
+| Composition | Reason | Action |
+|:---|:---|:---|
+| *duDuku gala* (b4029df0) | Pancharatna kriti with pallavi, anupallavi and `svara-sAhitya 1..n`; the source has **no charanam by form**. The svara-sAhitya blocks are not stored as sections, which is a separate completeness gap. | Not a charanam gap. Left unchanged; reclassify, and track svara-sAhitya capture separately. |
+| *munupE teliyaka* (3f6e3166) | The source page prints the heading as `cararaNam` (a typo). Teaching the parser that misspelling would be a one-page hack. | Left unchanged; needs an owner call (curator relabel with evidence, or accept the typo alias). |
+
+Verification: DB (section, raga, variant and lyric-section counts per krithi), API (`/v1/admin/krithis/{id}/variants` returns 5 sections for *rAmaM bhajEhaM*, 3 for *kanugoNTini*) and UI (Structure tab shows 5 sections with raga Sāveri, composer, tala).

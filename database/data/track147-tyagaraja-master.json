@@ -15,7 +15,7 @@
     {
       "id": "db-snapshot",
       "url": "database/data/track147-catalogue-snapshot.json",
-      "sha256": "e6a8b25a5709df8af78b2ce1e03e2fc041d8c0034108b09f6f5011cc44ff85b6",
+      "sha256": "fecc215785196a4945ca673c4b92a654627174f5cc9d00f39583a0fb72b913b8",
       "accessed_at": "2026-11-03",
       "status": "database_snapshot",
       "description": "Hashed database census and stored pallavi/section/evidence snapshot for 684 Tyagaraja catalogue identities (after the TRACK-149 splits) and 684 source imports."
@@ -7735,12 +7735,10 @@
       "section_flags": {
         "pallavi_count": 1,
         "anupallavi_count": 1,
-        "charanam_count": 0,
+        "charanam_count": 1,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_charanam"
-      ],
+      "structure_audit": [],
       "tala_witness_note": "Source tala desadi is stored as Adi.",
       "claims": [
         {
@@ -7941,14 +7939,12 @@
       "geography_state": "UNRESOLVED",
       "deity_state": "UNRESOLVED",
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 3,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "claims": [
         {
           "id": "tyagaraja:krithi:0879def4-4c65-4d11-9377-6be31e34d0cb:deity",
@@ -14059,14 +14055,12 @@
       "geography_state": "UNRESOLVED",
       "deity_state": "UNRESOLVED",
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 1,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "claims": [
         {
           "id": "tyagaraja:krithi:1cc1eb20-bad0-45d7-8688-b4d32f6edea7:deity",
@@ -16762,14 +16756,12 @@
       "geography_state": "UNRESOLVED",
       "deity_state": "UNRESOLVED",
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 1,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "claims": [
         {
           "id": "tyagaraja:krithi:24e54ad6-b8d5-4e7e-b015-6cbcfa1ccf38:deity",
@@ -19804,14 +19796,12 @@
       "geography_state": "UNRESOLVED",
       "deity_state": "UNRESOLVED",
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 3,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "claims": [
         {
           "id": "tyagaraja:krithi:2d0ab787-2a6c-414b-868b-c0512661b2d7:deity",
@@ -22208,14 +22198,12 @@
       "geography_state": "UNRESOLVED",
       "deity_state": "UNRESOLVED",
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 1,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "claims": [
         {
           "id": "tyagaraja:krithi:3747ba8d-2df1-4c7f-b272-20ba3c81a5d8:deity",
@@ -25749,14 +25737,12 @@
       "geography_state": "UNRESOLVED",
       "deity_state": "UNRESOLVED",
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 3,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "claims": [
         {
           "id": "tyagaraja:krithi:4629d110-e300-4557-b69d-a50aa9cdc0d8:deity",
@@ -27096,14 +27082,12 @@
       "geography_state": "UNRESOLVED",
       "deity_state": "UNRESOLVED",
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 1,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "claims": [
         {
           "id": "tyagaraja:krithi:4a53d422-1ce0-4895-a6d3-38f49d5df3a6:deity",
@@ -29074,14 +29058,12 @@
       "geography_state": "UNRESOLVED",
       "deity_state": "UNRESOLVED",
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 4,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "claims": [
         {
           "id": "tyagaraja:krithi:50942fd4-4ca3-421f-9555-a615685b5c43:deity",
@@ -30947,14 +30929,12 @@
       "geography_state": "UNRESOLVED",
       "deity_state": "UNRESOLVED",
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 4,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "claims": [
         {
           "id": "tyagaraja:krithi:5835ba5e-e094-4771-bb97-0b2463498899:deity",
@@ -34569,14 +34549,12 @@
       "geography_state": "UNRESOLVED",
       "deity_state": "UNRESOLVED",
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 1,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "claims": [
         {
           "id": "tyagaraja:krithi:6625f250-6e03-4ab2-950a-17ab43dc696b:deity",
@@ -35398,14 +35376,12 @@
       "geography_state": "UNRESOLVED",
       "deity_state": "UNRESOLVED",
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 1,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "claims": [
         {
           "id": "tyagaraja:krithi:6a33383f-2c7f-4c78-b86a-d2455e486456:deity",
@@ -36348,14 +36324,12 @@
       "geography_state": "UNRESOLVED",
       "deity_state": "UNRESOLVED",
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 1,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "claims": [
         {
           "id": "tyagaraja:krithi:6f1b9810-3b06-4d1f-88fb-d1f030844691:deity",
@@ -39570,14 +39544,12 @@
       "geography_state": "UNRESOLVED",
       "deity_state": "UNRESOLVED",
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 3,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "claims": [
         {
           "id": "tyagaraja:krithi:7a163c9f-1b45-410c-858e-6388391da0f4:deity",
@@ -40399,14 +40371,12 @@
       "geography_state": "UNRESOLVED",
       "deity_state": "UNRESOLVED",
       "section_flags": {
-        "pallavi_count": 0,
-        "anupallavi_count": 0,
+        "pallavi_count": 1,
+        "anupallavi_count": 1,
         "charanam_count": 3,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "claims": [
         {
           "id": "tyagaraja:krithi:7c4ff154-ff0d-4a4a-b261-6d9a5122b0bc:deity",
@@ -45697,14 +45667,12 @@
       "geography_state": "UNRESOLVED",
       "deity_state": "UNRESOLVED",
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 1,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "claims": [
         {
           "id": "tyagaraja:krithi:8d1452e5-ff2d-4bb3-998e-3f892fcfc1d8:deity",
@@ -47971,14 +47939,12 @@
       "geography_state": "UNRESOLVED",
       "deity_state": "UNRESOLVED",
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 0,
         "charanam_count": 10,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "claims": [
         {
           "id": "tyagaraja:krithi:947faba5-85b3-40ff-8d98-0c2a2eea9edc:deity",
@@ -48385,14 +48351,12 @@
       "geography_state": "UNRESOLVED",
       "deity_state": "UNRESOLVED",
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 1,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "claims": [
         {
           "id": "tyagaraja:krithi:97d3a36f-e933-4e17-81da-47907fb1a4fe:deity",
@@ -49842,14 +49806,12 @@
       "geography_state": "UNRESOLVED",
       "deity_state": "UNRESOLVED",
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 0,
         "charanam_count": 7,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "claims": [
         {
           "id": "tyagaraja:krithi:9ccd7f15-0aac-4df4-8057-c9868e7a3fad:deity",
@@ -56072,14 +56034,12 @@
       "geography_state": "UNRESOLVED",
       "deity_state": "UNRESOLVED",
       "section_flags": {
-        "pallavi_count": 0,
-        "anupallavi_count": 0,
+        "pallavi_count": 1,
+        "anupallavi_count": 1,
         "charanam_count": 3,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "claims": [
         {
           "id": "tyagaraja:krithi:b2626e28-503e-49cd-b5f6-6b8ab9cbd054:deity",
@@ -65837,14 +65797,12 @@
       "geography_state": "UNRESOLVED",
       "deity_state": "UNRESOLVED",
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 0,
         "charanam_count": 9,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "claims": [
         {
           "id": "tyagaraja:krithi:d9b7b93f-9c9f-47f8-94e0-23d6c05c1c75:deity",
@@ -69602,14 +69560,12 @@
       "geography_state": "UNRESOLVED",
       "deity_state": "UNRESOLVED",
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 0,
         "charanam_count": 9,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "claims": [
         {
           "id": "tyagaraja:krithi:e5f5a5ac-dd47-4b23-9d18-99d09ea95266:deity",
@@ -71086,12 +71042,10 @@
       "section_flags": {
         "pallavi_count": 1,
         "anupallavi_count": 1,
-        "charanam_count": 0,
+        "charanam_count": 1,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_charanam"
-      ],
+      "structure_audit": [],
       "tala_witness_note": "Source tala desadi is stored as Adi.",
       "claims": [
         {
@@ -73549,14 +73503,12 @@
       "geography_state": "UNRESOLVED",
       "deity_state": "UNRESOLVED",
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 1,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "claims": [
         {
           "id": "tyagaraja:krithi:f5e86fd2-05eb-4c88-99c4-7ef9214618a0:deity",
@@ -73760,14 +73712,12 @@
       "geography_state": "UNRESOLVED",
       "deity_state": "UNRESOLVED",
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 1,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "claims": [
         {
           "id": "tyagaraja:krithi:f6acd658-e5b4-44d8-b642-b1e74d95898a:deity",
@@ -75428,14 +75378,12 @@
       "geography_state": "UNRESOLVED",
       "deity_state": "UNRESOLVED",
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 1,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "claims": [
         {
           "id": "tyagaraja:krithi:fbbfd918-c7d6-4f72-a1aa-f27ef5065892:deity",
@@ -76976,14 +76924,12 @@
       "geography_state": "UNRESOLVED",
       "deity_state": "UNRESOLVED",
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 3,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "claims": [
         {
           "id": "tyagaraja:krithi:fff09e5d-b370-41d1-98db-4905b7902722:deity",
