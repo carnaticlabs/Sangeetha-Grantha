@@ -58,7 +58,7 @@ All 29 records went through the existing audited path: `POST /v1/admin/imports/r
 
 | Composition | Reason | Action |
 |:---|:---|:---|
-| *duDuku gala* (b4029df0) | Pancharatna kriti with pallavi, anupallavi and `svara-sAhitya 1..n`; the source has **no charanam by form**. The svara-sAhitya blocks are not stored as sections, which is a separate completeness gap. | Not a charanam gap. Left unchanged; reclassify, and track svara-sAhitya capture separately. |
+| *duDuku gala* (b4029df0) | **Corrected 2026-11-11.** The earlier reading ("no charanam by form") was wrong. Our source labels its ten verses `svara-sAhitya 1..10`; the public page `shivkumar.org/music/dudukugala-new.htm` prints the same verses as `Charanams 1..9` (with their svara passages). The verses are charanams that carry svara-sAhitya, so the record has a real charanam gap: 0 stored, 9 to 10 in the sources. | Not a form exception. Needs the parser to read `svara-sAhitya N` as charanam for this kriti, then an audited re-extract and reingest. Waiting on the owner's go-ahead. The sources differ by one verse (9 versus 10), to be checked at that point. |
 | *munupE teliyaka* (3f6e3166) | The source page prints the heading as `cararaNam` (a typo). Teaching the parser that misspelling would be a one-page hack. | Left unchanged; needs an owner call (curator relabel with evidence, or accept the typo alias). |
 
 Verification: DB (section, raga, variant and lyric-section counts per krithi), API (`/v1/admin/krithis/{id}/variants` returns 5 sections for *rAmaM bhajEhaM*, 3 for *kanugoNTini*) and UI (Structure tab shows 5 sections with raga Sāveri, composer, tala).
