@@ -225,6 +225,9 @@ SECTION_HEADER_PATTERNS: list[tuple[re.Pattern[str], str]] = [
         ),
         "CHARANAM",
     ),
+    # TRACK-149: one known source typo, a heading line that reads only "cararaNam" (munupE teliyaka on
+    # thyagaraja-vaibhavam; karnatik.com prints the same verse under "caraNam"). Standalone line only.
+    (re.compile(r"^\s*cararanam\s*$", re.IGNORECASE), "CHARANAM"),
     (
         re.compile(r"^\s*[\-–—•*()=\[\]]*\s*samashti\s+(?:ch|c)ara?nam(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE),
         "SAMASHTI_CHARANAM",

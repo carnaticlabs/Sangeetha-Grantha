@@ -102,3 +102,27 @@ def test_other_scripts_keep_every_charanam_of_a_hyphenated_svara_sahitya_page():
     result = StructureParser().parse(page)
     devanagari = next(v for v in result.lyric_variants if v.script.lower().startswith("deva"))
     assert [s.section_type.value for s in devanagari.sections] == ["PALLAVI", "ANUPALLAVI", "CHARANAM", "CHARANAM"]
+
+
+TYPO = """munupE teliyaka-bangALa
+pallavi
+munupE teliyaka pOyenA
+muni nuta daya lEd(A)yenA
+
+anupallavi
+1anuv(i)sum(a)nta lEd(a)nucunu
+nann(a)layinci vEDuka jUcuTaku (munu)
+
+cararaNam
+A nATi manci naDatanu jUci
+nIv(a)tyanta kRpa sEya lEdA (munu)
+"""
+
+
+def test_the_cararaNam_source_typo_heading_is_a_charanam():
+    assert _types(TYPO) == ["PALLAVI", "ANUPALLAVI", "CHARANAM"]
+
+
+def test_cararaNam_inside_a_lyric_line_is_not_a_heading():
+    text = TYPO.replace("cararaNam\n", "cararaNam bhava tAraNambu\n")
+    assert "CHARANAM" not in _types(text)
