@@ -211,16 +211,23 @@ def _raga_name_from_segment_header(line: str) -> str | None:
     return _strip_sri_honorific(match.group(1).strip())
 
 
+# TRACK-149: an optional footnote digit may be glued to the label ("1pallavi", "3caraNam").
 SECTION_HEADER_PATTERNS: list[tuple[re.Pattern[str], str]] = [
-    (re.compile(r"^\s*[\-–—•*()=\[\]]*\s*pallavi(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE), "PALLAVI"),
-    (re.compile(r"^\s*[\-–—•*()=\[\]]*\s*anupallavi(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE), "ANUPALLAVI"),
+    (re.compile(r"^\s*[\-–—•*()=\[\]]*\s*(?:\d{1,2}\s?)?pallavi(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE), "PALLAVI"),
+    (
+        re.compile(r"^\s*[\-–—•*()=\[\]]*\s*(?:\d{1,2}\s?)?anupallavi(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE),
+        "ANUPALLAVI",
+    ),
     (
         re.compile(
-            r"^\s*[\-–—•*()=\[\]]*\s*(?:(?:ch|c)ara?n(?:\.\s*am|am)|caraṇam)(?:\b|:|\.|\-|\)|]|=|$)",
+            r"^\s*[\-–—•*()=\[\]]*\s*(?:\d{1,2}\s?)?(?:(?:ch|c)ara?n(?:\.\s*am|am)|caraṇam)(?:\b|:|\.|\-|\)|]|=|$)",
             re.IGNORECASE,
         ),
         "CHARANAM",
     ),
+    # TRACK-149: one known source typo, a heading line that reads only "cararaNam" (munupE teliyaka on
+    # thyagaraja-vaibhavam; karnatik.com prints the same verse under "caraNam"). Standalone line only.
+    (re.compile(r"^\s*cararanam\s*$", re.IGNORECASE), "CHARANAM"),
     (
         re.compile(r"^\s*[\-–—•*()=\[\]]*\s*samashti\s+(?:ch|c)ara?nam(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE),
         "SAMASHTI_CHARANAM",
@@ -428,6 +435,16 @@ _INLINE_INDIC_PAC_PROBE = re.compile(r"(?m)^\s*(?:प|अ|च|ప|అ|చ|ಪ|�
 # The trailing period is the disambiguator — natural lyric lines do not begin "स्व<digit>.".
 # The optional "(A)" suffix mirrors the English "svara sAhitya 4A" continuation marker.
 _SVA_CLUSTERS = "स्व|ஸ்வ|స్వ|ಸ್ವ|സ്വ"  # Devanagari, Tamil, Telugu, Kannada, Malayalam
+# TRACK-149: some sources (thyagaraja-vaibhavam, Pancharatna "duDuku gala") print a krithi's charanam
+# stanzas as "svara-sAhitya 1..n" (hyphenated) and never use a charanam heading. Those stanzas are the
+# charanams (the public edition numbers the same verses "Charanams 1..9"). Read them as CHARANAM, but only
+# when the page has at least two such headers and no charanam header of its own, so a krithi that has real
+# charanams plus separate svara-sahitya blocks is left untouched.
+_HYPHEN_SVARA_HEADER = re.compile(r"(?im)^\s*svara-sahitya\s*\d+\s*$")
+_ANY_CHARANAM_HEADER = re.compile(r"(?im)^\s*[\-–—•*()=\[\]]*\s*(?:\d{1,2}\s?)?(?:ch|c)ara?n(?:\.\s*am|am)\b")
+HYPHEN_SVARA_AS_CHARANAM = (_HYPHEN_SVARA_HEADER, "CHARANAM")
+
+
 INLINE_INDIC_SWARA_PATTERNS: list[tuple[re.Pattern[str], str]] = [
     (re.compile(rf"^\s*(?:{_SVA_CLUSTERS})\d+(?:\([A-Za-z]\))?\s*\.\s*(?=\S)"), "SWARA_SAHITYA"),
 ]
@@ -674,6 +691,9 @@ class StructureParser:
         self._inline_pa_enabled = bool(_INLINE_CHARANAM_PROBE.search(raw_text))
         self._inline_indic_pac_enabled = bool(_INLINE_INDIC_PAC_PROBE.search(raw_text))
         self._inline_indic_swara_enabled = bool(_INLINE_INDIC_SWARA_PROBE.search(raw_text))
+        self._hyphen_svara_as_charanam = (
+            len(_HYPHEN_SVARA_HEADER.findall(raw_text)) >= 2 and _ANY_CHARANAM_HEADER.search(raw_text) is None
+        )
         self._inline_indic_digit_enabled = bool(_INLINE_INDIC_DIGIT_PROBE.search(raw_text))
         self._inline_indic_bare_enabled = bool(_INLINE_INDIC_BARE_CA_PROBE.search(raw_text))
         # Pure-ragamalika segmentation: multiple "<raga> rAgaM" headers and no
@@ -808,6 +828,8 @@ class StructureParser:
                 # TRACK-101: Strip residual numbers from "caraNam 1" / "svara sAhitya 2" headers
                 remainder = re.sub(r"^\d+\s*", "", remainder).strip()
                 return _HeaderMatch(label=label, remainder=remainder)
+        if getattr(self, "_hyphen_svara_as_charanam", False) and HYPHEN_SVARA_AS_CHARANAM[0].search(line):
+            return _HeaderMatch(label="CHARANAM", remainder="")
         if getattr(self, "_inline_pa_enabled", False):
             for pattern, label in INLINE_PAC_PATTERNS:
                 if pattern.search(line):
@@ -1332,6 +1354,39 @@ class StructureParser:
         logger.info("TRACK-133 pallavi-echo split: restored %d %s charanam boundary(s)", deficit, script)
         return repaired
 
+    @staticmethod
+    def _numbered_svara_blob_to_charanams(sections: list[DetectedSection]) -> list[DetectedSection]:
+        """Splits a SWARA_SAHITYA blob of numbered stanzas into CHARANAM sections (TRACK-149)."""
+        if any(sec.section_type == SectionType.CHARANAM for sec in sections):
+            return sections
+        marker = re.compile(r"^\s*\d{1,2}\s*[.)]\s*(?=\S)")
+        result: list[DetectedSection] = []
+        for sec in sections:
+            if sec.section_type != SectionType.SWARA_SAHITYA:
+                result.append(sec)
+                continue
+            stanzas: list[list[str]] = []
+            for line in sec.text.splitlines():
+                if marker.search(line):
+                    stanzas.append([marker.sub("", line, count=1)])
+                elif stanzas and line.strip():
+                    stanzas[-1].append(line)
+            if len(stanzas) < 2:
+                result.append(sec)
+                continue
+            for lines in stanzas:
+                result.append(
+                    DetectedSection(
+                        section_type=SectionType.CHARANAM,
+                        order=0,
+                        label="Charanam",
+                        text="\n".join(lines).strip(),
+                        start_pos=sec.start_pos,
+                        end_pos=sec.end_pos,
+                    )
+                )
+        return result
+
     def _sections_from_variant_blocks(
         self,
         blocks: list[_TextBlock],
@@ -1375,6 +1430,12 @@ class StructureParser:
         # Apply MKS demotion and dual-format merging to variant too
         raw_sections = self._demote_mks(raw_sections)
         raw_sections = self._merge_dual_format(raw_sections)
+
+        # TRACK-149: in the "svara-sAhitya N" pages the other scripts print one "svara sAhitya -"
+        # heading followed by numbered stanzas ("1. ...", "2. ..."). When the Latin text was read as
+        # charanams, split that blob the same way so every script keeps all of its charanams.
+        if getattr(self, "_hyphen_svara_as_charanam", False):
+            raw_sections = self._numbered_svara_blob_to_charanams(raw_sections)
 
         # Map to canonical structure by matching type and sequential occurrence
         if not canonical_sections:

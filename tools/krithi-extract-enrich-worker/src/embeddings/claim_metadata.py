@@ -11,6 +11,7 @@ returned. A claim marked `deferred` stays invisible, and a krithi with no such c
 from __future__ import annotations
 
 import json
+import re
 from collections import defaultdict
 from pathlib import Path
 
@@ -78,6 +79,16 @@ def load_approved_claims(manifests: tuple[Path, ...] = MANIFESTS) -> dict[str, d
     return {k: {c: dict(a) for c, a in v.items()} for k, v in found.items()}
 
 
+def _readable(value: str) -> str:
+    """Turns a tag slug such as `tyagaraja-nauka-charitram` into words the embedding model can use."""
+    if re.fullmatch(r"[a-z]+(?:-[a-z]+)+", value):
+        words = value.split("-")
+        if words[0] == "tyagaraja":
+            words = words[1:]
+        return " ".join(w.capitalize() for w in words)
+    return value
+
+
 def claim_clauses(composer: str, claims: dict[str, ClaimValues] | None) -> list[str]:
     """Labelled `[Label: value]` clauses for one krithi, abstaining when the composer has no approved claim."""
     if not claims:
@@ -89,5 +100,5 @@ def claim_clauses(composer: str, claims: dict[str, ClaimValues] | None) -> list[
     for axis, label in LABELS_BY_COMPOSER.get(composer, ()):
         values = by_axis.get(axis)
         if values:
-            clauses.append(f"[{label}: {'; '.join(values)}]")
+            clauses.append(f"[{label}: {'; '.join(_readable(v) for v in values)}]")
     return clauses

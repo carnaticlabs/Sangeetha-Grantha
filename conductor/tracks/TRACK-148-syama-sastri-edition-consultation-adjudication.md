@@ -1,17 +1,17 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | Proposed |
+| **Status** | In Progress |
 | **Version** | 1.0.0 |
-| **Last Updated** | 2026-10-15 |
+| **Last Updated** | 2026-11-11 |
 | **Author** | Sangeetha Grantha Team |
 
 # Track: Syama Sastri Edition Consultation & Musicological Adjudication
 
 **ID:** TRACK-148
-**Status:** Proposed — Intent Accepted, Spec Accepted, Plan Accepted (implementation in progress)
+**Status:** In Progress — Intent Accepted, Spec Accepted, Plan Accepted (implementation in progress)
 **Owner:** Seshadri
 **Created:** 2026-10-15
-**Updated:** 2026-11-03
+**Updated:** 2026-11-11
 
 ## Goal
 
@@ -240,7 +240,7 @@ Done when: every one of the 40 leads has exactly one final disposition with a re
 - [x] Implementation, up to the owner gate: validator fields, source sweep, review sheet for the 40 leads, carried findings.
 - [x] Owner decisions on the 40 lead proposals recorded 2026-11-03 (Seshadri): 15 approved (deferred), 24 unresolved, 1 disputed; master and manifest regenerated.
 - [x] D1 formatter built and tested; `application: deferred` lifted for the four mudras (SS-0032, SS-0034, SS-0046, SS-0051). The other 11 approved Syama claims stay deferred.
-- [ ] Re-index (separately authorised paid run) so search sees the new clauses.
+- [x] Re-index (separately authorised paid run) so search sees the new clauses (2026-11-11; 1 krithi failed on a timeout, see log).
 
 ## Progress Log
 
@@ -255,3 +255,6 @@ Done when: every one of the 40 leads has exactly one final disposition with a re
 - **2026-11-03**: Spec 9 resolved from public evidence: *Samini* (Anandabhairavi, Ata) is a distinct tana varnam, not a mistitled SS-0036, and the catalogue holds no varnam by Syama Sastri; adding *Samini* or *Dayanidhe* is a separate audited import decision. Spec 6: a nine-member Navaratnamalika is not recorded; seven titled members agree across two sources. The six disputed Anandabhairavi raga-character claims have no new public evidence and stay disputed. D1 formatter not built (conditional on approvals); no re-index.
 - **2026-11-03**: Seshadri accepted the recommended outcomes on the lead sheet as their decisions. Recorded in `database/data/track148-lead-decisions.json` and applied to the master. 15 claims are now `reviewed` with `application: deferred` (one Viloma chapu, one khanda jhampa, four svara sahitya, two Apatya Bhava and seven Meenakshi geography claims); 24 are `unresolved` with a reason and `SS-0055` laya is `disputed` (Adi lead versus Rupaka in the 1973 list). Approved manifest changes: 18 to 33. No `unreviewed` claims remain. The seven Meenakshi approvals make seven compositions SPECIFIC_SHRINE_SUPPORTED. The D1 formatter is now unblocked but not built; lifting `deferred` for the four mudras still needs it.
 - **2026-11-03**: Built option D1. `src/embeddings/claim_metadata.py` reads the manifests; the formatter adds `[Mudra]`, `[Laya]`, `[Raga Trait]` and `[Bhava]` clauses for Syama Sastri (and `[Mudra]`, `[Ritual Function]`, `[Dramatic Context]`, `[Theme]` for Tyagaraja) within the 60-word budget, with no clause when no `apply` claim exists. `embed_catalogue.py` and `batch_embed_catalogue.py` pass the claims through. Lifted the deferral on the four mudras with `scripts/lift_deferral.py`, which changes only `application` and records the reason on the claim. Twelve krithis now have an applicable claim. 10 new tests, one of which caught a duplicate clause when the cycle header already carries the value. No embeddings were run.
+- **2026-11-11**: Re-index done. One paid re-index on 2026-11-11 (Seshadri authorised it with a $5 cap), run once per composer with `batch_embed_catalogue.py` and the D1 claim-metadata formatter. Syama Sastri: 70 krithis, 142 embeddings created, 1,908 unchanged and skipped, 0 failed (~$0.004). Tyagaraja: 683 of 684 krithis, 9,797 embeddings created, 8,403 skipped, **1 failed** (*kAla haraNa*, a read timeout; failure file `reports/embedding_failures_20261111_112217.json`), ~1.96M tokens, ~$0.29. Total about $0.30 against the $5 cap. The one failed krithi was not retried because a second paid run was outside the authorisation; it was not re-embedded this run, so it may still carry the older header text. The run did not activate a new profile (activation is opt-in and was not requested). Before the run, header samples showed only `[Mudra]`, `[Laya]` and `[Theme]` clauses, at most 24 words against the 60-word budget. `[Raga Trait]`, `[Bhava]`, `[Ritual Function]` and `[Dramatic Context]` cannot appear yet because those claims are still `deferred`. Before/after search on 8 queries (hybrid and semantic, 16 result sets): 6 unchanged, 10 changed in the top 5. Evidence: `application_documentation/10-implementations/track148-149-reindex-search-evidence.md`. Backups taken earlier: `storage/backups/track149-pre-reextract-20261111-0914.dump` and `track149-pre-seed13-20261111-0939.dump` (gitignored). The track stays In Progress: the other 11 approved Syama claims remain deferred and 24 claims are unresolved.
+- **2026-11-11**: Lifted the deferral on the two Syama bhava claims (Apatya Bhava) and the two laya claims (Viloma chapu, khanda jhampa), which the D1 header renders. Re-embedded Syama Sastri: 105 created, 0 failed (about $0.003). Still deferred: seven Meenakshi geography claims and four swarasahitya structure claims, which have no application path yet.
+

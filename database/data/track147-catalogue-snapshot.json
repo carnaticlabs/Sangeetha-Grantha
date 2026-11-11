@@ -918,12 +918,10 @@
       "section_flags": {
         "pallavi_count": 1,
         "anupallavi_count": 1,
-        "charanam_count": 0,
+        "charanam_count": 1,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_charanam"
-      ],
+      "structure_audit": [],
       "pallavi_excerpt": null,
       "imports": [
         {
@@ -1008,14 +1006,12 @@
       "deity_id": null,
       "temple_id": null,
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 3,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "pallavi_excerpt": "nIraja nayana oka 2 mudd(I)ra dhIra mungala (rAra)",
       "imports": [
         {
@@ -3665,14 +3661,12 @@
       "deity_id": null,
       "temple_id": null,
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 1,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "pallavi_excerpt": null,
       "imports": [
         {
@@ -4837,14 +4831,12 @@
       "deity_id": null,
       "temple_id": null,
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 1,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "pallavi_excerpt": "sAkshAtkAra nI 3 sad-bhakti sangIta jnAna vihInulaku (mOkshamu)",
       "imports": [
         {
@@ -6144,14 +6136,12 @@
       "deity_id": null,
       "temple_id": null,
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 3,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "pallavi_excerpt": "ajuDaina hari hayuDaina nA bhaktiyu (nija)",
       "imports": [
         {
@@ -7181,14 +7171,12 @@
       "deity_id": null,
       "temple_id": null,
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 1,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "pallavi_excerpt": "mEra kAdurA ika mahA mEru dhIra SrI kara (cEra)",
       "imports": [
         {
@@ -8040,12 +8028,10 @@
       "section_flags": {
         "pallavi_count": 1,
         "anupallavi_count": 1,
-        "charanam_count": 0,
+        "charanam_count": 1,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_charanam"
-      ],
+      "structure_audit": [],
       "pallavi_excerpt": null,
       "imports": [
         {
@@ -8715,14 +8701,12 @@
       "deity_id": null,
       "temple_id": null,
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 3,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "pallavi_excerpt": "phAla lOcani SrI dharma saMvardhani 4 sakala lOka janani (bAle)",
       "imports": [
         {
@@ -9302,14 +9286,12 @@
       "deity_id": null,
       "temple_id": null,
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 1,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "pallavi_excerpt": "sUcana teliyakan(o)rula yAcana sEtun(a)nucu nIku tOcenA",
       "imports": [
         {
@@ -10159,14 +10141,12 @@
       "deity_id": null,
       "temple_id": null,
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 4,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "pallavi_excerpt": "vArini jUpavE SrI rAmayya (pEriDi)",
       "imports": [
         {
@@ -10971,14 +10951,12 @@
       "deity_id": null,
       "temple_id": null,
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 4,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "pallavi_excerpt": "tarAna lEni parAkul(E)Tiki birAna nanu brOvaga rAdA vAdA",
       "imports": [
         {
@@ -12548,14 +12526,12 @@
       "deity_id": null,
       "temple_id": null,
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 1,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "pallavi_excerpt": "vaksha sthalamuna velayu lakshmI ramaNuniki 2 sAya (raksha)",
       "imports": [
         {
@@ -12910,14 +12886,12 @@
       "deity_id": null,
       "temple_id": null,
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 1,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "pallavi_excerpt": "puDami tanaya cEti manci 4 maDupul(a)nucu talaci talaci (viDemu)",
       "imports": [
         {
@@ -13317,14 +13291,12 @@
       "deity_id": null,
       "temple_id": null,
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 1,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "pallavi_excerpt": "dAnta sItA kAnta karuNA svAnta prEm(A)dulakE telusunu kAni",
       "imports": [
         {
@@ -14669,14 +14641,12 @@
       "deity_id": null,
       "temple_id": null,
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 3,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "pallavi_excerpt": "bAla SaS(A)nka 3 kal(A)lankRta nuta nIla varNa suguN(A)laya",
       "imports": [
         {
@@ -15031,14 +15001,12 @@
       "deity_id": null,
       "temple_id": null,
       "section_flags": {
-        "pallavi_count": 0,
-        "anupallavi_count": 0,
+        "pallavi_count": 1,
+        "anupallavi_count": 1,
         "charanam_count": 3,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "pallavi_excerpt": "karamuna 1 merayu Sara cApamu Akali kona lEdA",
       "imports": [
         {
@@ -17328,14 +17296,12 @@
       "deity_id": null,
       "temple_id": null,
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 1,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "pallavi_excerpt": "mATi mATiki nApai 2 mannana jEyucu ETiki yOcana I bhAgyamu",
       "imports": [
         {
@@ -18320,14 +18286,12 @@
       "deity_id": null,
       "temple_id": null,
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 0,
         "charanam_count": 10,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "pallavi_excerpt": "tanuvE nIk(a)nuvaina sadanamaurA raghu nAtha (pari)",
       "imports": [
         {
@@ -18502,14 +18466,12 @@
       "deity_id": null,
       "temple_id": null,
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 1,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "pallavi_excerpt": "kAmini vEsha dhAriki sAdhvI naDatal-(E)maina telusunA A rIti",
       "imports": [
         {
@@ -19134,14 +19096,12 @@
       "deity_id": null,
       "temple_id": null,
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 0,
         "charanam_count": 7,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "pallavi_excerpt": "vEda Siramul(e)llan(A)daraNatO nIvE daivam(a)ni nammaga nammi",
       "imports": [
         {
@@ -21836,14 +21796,12 @@
       "deity_id": null,
       "temple_id": null,
       "section_flags": {
-        "pallavi_count": 0,
-        "anupallavi_count": 0,
+        "pallavi_count": 1,
+        "anupallavi_count": 1,
         "charanam_count": 3,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "pallavi_excerpt": null,
       "imports": [
         {
@@ -21930,12 +21888,10 @@
       "section_flags": {
         "pallavi_count": 1,
         "anupallavi_count": 1,
-        "charanam_count": 0,
+        "charanam_count": 10,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_charanam"
-      ],
+      "structure_audit": [],
       "pallavi_excerpt": "duDuku gala nannE dora koDuku brOcuentO",
       "imports": [
         {
@@ -26025,14 +25981,12 @@
       "deity_id": null,
       "temple_id": null,
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 0,
         "charanam_count": 9,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "pallavi_excerpt": "SrI rAma nE dhanyuDaitini Ananda nIradhilOn(I)danaitini rAma",
       "imports": [
         {
@@ -27647,14 +27601,12 @@
       "deity_id": null,
       "temple_id": null,
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 0,
         "charanam_count": 9,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "pallavi_excerpt": "akkaratO pAdamulaku mrokkiti Ela parAku (pAhi)",
       "imports": [
         {
@@ -28281,12 +28233,10 @@
       "section_flags": {
         "pallavi_count": 1,
         "anupallavi_count": 1,
-        "charanam_count": 0,
+        "charanam_count": 1,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_charanam"
-      ],
+      "structure_audit": [],
       "pallavi_excerpt": null,
       "imports": [
         {
@@ -29316,14 +29266,12 @@
       "deity_id": null,
       "temple_id": null,
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 1,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "pallavi_excerpt": "svAdu phala prada sapta svara rAga nicaya sahita (nAda)",
       "imports": [
         {
@@ -29408,14 +29356,12 @@
       "deity_id": null,
       "temple_id": null,
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 1,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "pallavi_excerpt": null,
       "imports": [
         {
@@ -30125,19 +30071,17 @@
       "musical_form": "KRITHI",
       "workflow_state": "published",
       "is_ragamalika": false,
-      "raga": "Poornalalita",
+      "raga": "Poornalalitha",
       "tala": "Adi",
       "deity_id": null,
       "temple_id": null,
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 1,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "pallavi_excerpt": "palumAru jUcucu brahmAnanduDai paragE bhakt(A)grEsara tanaku",
       "imports": [
         {
@@ -30807,14 +30751,12 @@
       "deity_id": null,
       "temple_id": null,
       "section_flags": {
-        "pallavi_count": 0,
+        "pallavi_count": 1,
         "anupallavi_count": 1,
         "charanam_count": 3,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_pallavi"
-      ],
+      "structure_audit": [],
       "pallavi_excerpt": null,
       "imports": [
         {

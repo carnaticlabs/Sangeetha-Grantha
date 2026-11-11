@@ -1171,7 +1171,14 @@ class CatalogueRepository(private val scope: PreviewScope = PreviewScope.PUBLISH
         const val DISPUTED_LABEL = "disputed"
 
         /** Open sets: membership is not a closed grid, so clients must not imply completeness. */
-        val OPEN_COLLECTION_SLUGS = setOf("shodasa-ganapati", "nottusvara-sahitya")
+        val OPEN_COLLECTION_SLUGS = setOf(
+            "shodasa-ganapati",
+            "nottusvara-sahitya",
+            // TRACK-149: partial kshetra Pancharatnam sets (not all five kritis are linked).
+            "tyagaraja-srirangam-pancharatnam",
+            "tyagaraja-kovur-pancharatnam",
+            "tyagaraja-lalgudi-pancharatnam",
+        )
 
         /** Reviewed attribute keys safe to show; everything else in the stored JSON stays private. */
         val ALLOWED_ATTRIBUTE_KEYS = listOf("avarana", "yogini", "laya", "structure", "mudra", "theme")

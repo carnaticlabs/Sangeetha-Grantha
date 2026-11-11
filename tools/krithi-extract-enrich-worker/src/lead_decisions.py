@@ -45,9 +45,15 @@ class LeadDecision(BaseModel):
     witness_id: str | None = None
     locator: str | None = None
     note: str = Field(min_length=1)
+    # An approval is `deferred` until its application path exists; the owner-visible lift is recorded here so the
+    # generator (which rebuilds the master from this file) keeps it.
+    application: Literal["apply", "deferred"] = "deferred"
+    lift_reason: str | None = None
 
     @model_validator(mode="after")
     def complete(self) -> LeadDecision:
+        if self.application == "apply" and not (self.disposition == "approve" and self.lift_reason):
+            raise ValueError(f"{self.claim_id}: lifting a deferral needs an approval and a reason")
         if self.disposition == "approve":
             if not (self.witness_id and self.locator):
                 raise ValueError(f"{self.claim_id}: approval needs a witness and an exact locator")
@@ -164,9 +170,9 @@ def apply_to_tyagaraja(master: TyagarajaClassificationMaster, decisions: LeadDec
                 reviewer=decisions.reviewer,
                 accepted_at=decisions.accepted_at,
                 decision="approve",
-                note=d.note,
-                application="deferred",
-                deferral_reason=_deferral(claim.axis.value),
+                note=d.note if d.application == "deferred" else f"{d.note} Deferral lifted: {d.lift_reason}",
+                application=d.application,
+                deferral_reason=_deferral(claim.axis.value) if d.application == "deferred" else None,
             )
         else:
             claim.review_state = ReviewState.UNRESOLVED if d.disposition == "unresolved" else ReviewState.DISPUTED
