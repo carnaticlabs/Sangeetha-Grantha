@@ -8028,12 +8028,10 @@
       "section_flags": {
         "pallavi_count": 1,
         "anupallavi_count": 1,
-        "charanam_count": 0,
+        "charanam_count": 1,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_charanam"
-      ],
+      "structure_audit": [],
       "pallavi_excerpt": null,
       "imports": [
         {

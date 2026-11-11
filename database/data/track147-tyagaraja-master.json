@@ -15,7 +15,7 @@
     {
       "id": "db-snapshot",
       "url": "database/data/track147-catalogue-snapshot.json",
-      "sha256": "278bf7c600ae7408aa873d136b58e94dd66a9b80461034e681b184cce88295eb",
+      "sha256": "84e111fa6e815eb507af0973e90530c60d88b26386486ac7ca4794ff4c853b84",
       "accessed_at": "2026-11-03",
       "status": "database_snapshot",
       "description": "Hashed database census and stored pallavi/section/evidence snapshot for 684 Tyagaraja catalogue identities (after the TRACK-149 splits) and 684 source imports."
@@ -24160,12 +24160,10 @@
       "section_flags": {
         "pallavi_count": 1,
         "anupallavi_count": 1,
-        "charanam_count": 0,
+        "charanam_count": 1,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_charanam"
-      ],
+      "structure_audit": [],
       "tala_witness_note": "Source tala desadi is stored as Adi.",
       "claims": [
         {
