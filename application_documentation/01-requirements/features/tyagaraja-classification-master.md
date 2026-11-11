@@ -873,7 +873,7 @@ Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi
 | daa5d57d-b320-4a8b-a1c5-598c4bbdfda1 | fetched | `ba9b6a5c472b5be8…` | http://thyagaraja-vaibhavam.blogspot.com/2008/11/thyagaraja-kriti-proddu-poyyenu-raga.html — Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for proddu poyyenu (tODi). |
 | dacd74bf-f973-4826-81b3-ef1c5a2be312 | fetched | `d840368962bb1e89…` | http://thyagaraja-vaibhavam.blogspot.com/2008/10/thyagaraja-kriti-vasudevayani-raga.html — Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for vAsudEvayani (kalyANi). |
 | dafb9fd2-c59d-4015-873b-e4c8e7460745 | fetched | `252e14df289b821d…` | http://thyagaraja-vaibhavam.blogspot.com/2008/04/thyagaraja-kriti-ninne-nera-namminanu.html — Cached thyagaraja-vaibhavam HTML witness for ninnE nera namminAnu (Arabhi). |
-| db-snapshot | database_snapshot | `fecc215785196a49…` | database/data/track147-catalogue-snapshot.json — Hashed database census and stored pallavi/section/evidence snapshot for 684 Tyagaraja catalogue identities (after the TRACK-149 splits) and 684 source imports. |
+| db-snapshot | database_snapshot | `278bf7c600ae7408…` | database/data/track147-catalogue-snapshot.json — Hashed database census and stored pallavi/section/evidence snapshot for 684 Tyagaraja catalogue identities (after the TRACK-149 splits) and 684 source imports. |
 | db1b5c0c-ad3f-4ab6-9746-5afead381ab2 | fetched | `4ee1255b0d333fcb…` | http://thyagaraja-vaibhavam.blogspot.com/2007/05/thyagaraja-kriti-meluko-dayaa-nidhi.html — Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for mElukO dayA nidhi (saurAshTraM). |
 | db273d0e-8386-4544-9bd7-9dd962372c7e | fetched | `c95860b20e335af2…` | http://thyagaraja-vaibhavam.blogspot.com/2007/07/thyagaraja-kriti-jo-jo-rama-raga-reethi.html — Cached thyagaraja-vaibhavam HTML witness for Jo Jo Rama (Riti Gaula). |
 | db53e339-8b5f-4e05-97f9-e4a62633924d | fetched | `fbe5a3ecd1095468…` | http://thyagaraja-vaibhavam.blogspot.com/2007/05/thyagaraja-kriti-kalugunaa-raga-poorna.html — Cached thyagaraja-vaibhavam HTML witness for Kalugunaa (Purna Lalita). |
@@ -986,7 +986,7 @@ Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi
 - 48 non-cycle approved claims are marked `application: deferred` pending a non-cycle attribute application path.
 - 2060 source-backed claims remain `unresolved` pending multi-edition comparison.
 - 0 claims on Kovur, Tiruvottiyur, Lalgudi, Srirangam, Utsava Sampradaya, Divyanama, *Nauka Charitram*, and *Prahlada Bhakti Vijayam* remain `unreviewed` leads attributed to unconsulted print editions.
-- 0 identities have no pallavi section and 2 have no charanam. Lyric text was not invented.
+- 0 identities have no pallavi section and 1 have no charanam. Lyric text was not invented.
 - 11 subjects preserve a `desadi` source tala stored as Adi.
 
 ## Concordance
@@ -1479,7 +1479,7 @@ Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi
 | tyagaraja:krithi:b1b80b45-404e-45dc-8994-7bc51d114780 | identity | toli janmamuna | Bilahari | Khanda Capu | bilahari | Khanda Capu | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:b2626e28-503e-49cd-b5f6-6b8ab9cbd054 | identity | Enaati Nomu | Bhairavi | Adi | Bhairavi | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:b3486e9f-fca1-4e77-bc15-11bddc79d381 | identity | amba ninu | Ārabhi | Adi | Arabhi | Unknown | Devi (Parvati / Tripurasundari / Dharmasamvardhani) (unresolved) / UNRESOLVED | Deity Stuti & Devotional Praise | approved |  |
-| tyagaraja:krithi:b4029df0-a209-470b-ba56-3d64fa8aebc4 | identity | duDuku gala | Gowla | Adi | gauLa | Adi | Rama (reviewed) / NON_SPECIFIC_ADDRESS | Ethical Reflection & Self-Reproach; group:tyagaraja-ghana-raga-pancharatnam | approved | missing_charanam |
+| tyagaraja:krithi:b4029df0-a209-470b-ba56-3d64fa8aebc4 | identity | duDuku gala | Gowla | Adi | gauLa | Adi | Rama (reviewed) / NON_SPECIFIC_ADDRESS | Ethical Reflection & Self-Reproach; group:tyagaraja-ghana-raga-pancharatnam | approved |  |
 | tyagaraja:krithi:b47eeeff-377e-4f6e-92ee-85af5ba16c1a | identity | Naama Kusuma | Sri | Adi | Sri Ragam | Unknown | Rama (unresolved) / UNRESOLVED | Instruction to the Mind (Manasa) | approved |  |
 | tyagaraja:krithi:b4c7cd33-23fc-43f7-a875-b0f55546b9e2 | identity | aTu kArAdani | Manoranjani | Adi | manO ranjani | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:b536b933-9088-4ca0-928e-2618ce2fae57 | identity | Sarasa Saama Daana | Kāpi Nārāyani | Adi | Kapi Narayani | Unknown | Rama (unresolved) / UNRESOLVED | Surrender (Saranagati) & Appeal for Grace | approved |  |

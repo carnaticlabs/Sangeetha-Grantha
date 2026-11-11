@@ -15,7 +15,7 @@
     {
       "id": "db-snapshot",
       "url": "database/data/track147-catalogue-snapshot.json",
-      "sha256": "fecc215785196a4945ca673c4b92a654627174f5cc9d00f39583a0fb72b913b8",
+      "sha256": "278bf7c600ae7408aa873d136b58e94dd66a9b80461034e681b184cce88295eb",
       "accessed_at": "2026-11-03",
       "status": "database_snapshot",
       "description": "Hashed database census and stored pallavi/section/evidence snapshot for 684 Tyagaraja catalogue identities (after the TRACK-149 splits) and 684 source imports."
@@ -56235,12 +56235,10 @@
       "section_flags": {
         "pallavi_count": 1,
         "anupallavi_count": 1,
-        "charanam_count": 0,
+        "charanam_count": 10,
         "swara_sahitya_count": 0
       },
-      "structure_audit": [
-        "missing_charanam"
-      ],
+      "structure_audit": [],
       "claims": [
         {
           "id": "tyagaraja:krithi:b4029df0-a209-470b-ba56-3d64fa8aebc4:deity",
