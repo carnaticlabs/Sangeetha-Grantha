@@ -209,7 +209,9 @@
       "disposition": "approve",
       "witness_id": "ma:jma-vol18-1947",
       "locator": "PDF p.53",
-      "note": "Named as Utsava Sampradaya in the journal."
+      "note": "Named as Utsava Sampradaya in the journal.",
+      "application": "apply",
+      "lift_reason": "the TRACK-148 D1 search-metadata path now renders this axis; owner instructed the lift on 2026-11-11"
     },
     {
       "claim_id": "tyagaraja:krithi:550a03c3-991c-435f-b1b5-439c16e98183:geography",
@@ -338,7 +340,9 @@
       "disposition": "approve",
       "witness_id": "ma:jma-vol42-1971",
       "locator": "PDF p.41",
-      "note": "Discussed in a lecture on the Prahlada opera."
+      "note": "Discussed in a lecture on the Prahlada opera.",
+      "application": "apply",
+      "lift_reason": "the TRACK-148 D1 search-metadata path now renders this axis; owner instructed the lift on 2026-11-11"
     },
     {
       "claim_id": "tyagaraja:krithi:8300ca9e-eca0-4d3a-8a93-0c54c3715baf:geography",
@@ -490,7 +494,9 @@
       "disposition": "approve",
       "witness_id": "ma:souvenir-1969",
       "locator": "PDF p.151",
-      "note": "Weak: a concert programme labels it Nowka Charitram."
+      "note": "Weak: a concert programme labels it Nowka Charitram.",
+      "application": "apply",
+      "lift_reason": "the TRACK-148 D1 search-metadata path now renders this axis; owner instructed the lift on 2026-11-11"
     },
     {
       "claim_id": "tyagaraja:krithi:cd283f28-6a3e-4d45-9db7-b885bee8dc60:geography",
@@ -545,7 +551,9 @@
       "disposition": "approve",
       "witness_id": "ma:jma-vol18-1947",
       "locator": "PDF p.53",
-      "note": "Named as Utsava Sampradaya in the journal."
+      "note": "Named as Utsava Sampradaya in the journal.",
+      "application": "apply",
+      "lift_reason": "the TRACK-148 D1 search-metadata path now renders this axis; owner instructed the lift on 2026-11-11"
     },
     {
       "claim_id": "tyagaraja:krithi:e20e4215-c9ef-4f2a-b7d2-28c5aa43a1bb:ritual",

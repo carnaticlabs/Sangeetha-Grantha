@@ -9,7 +9,7 @@
 
 ---
 
-Generated deterministically from the TRACK-147 structured master (`2026-10-01` snapshot). Covers 684 distinct catalogue identities, 684 classification subjects (684 single-source identities and 0 collision source witnesses), 4104 structured claims (78 human-approved: 15 applied group memberships, 15 supporting cycle claims, 48 deferred non-cycle approvals; 2060 source-observed `unresolved` claims; 0 edition-dependent `unreviewed` leads), and 700 registered witnesses.
+Generated deterministically from the TRACK-147 structured master (`2026-10-01` snapshot). Covers 684 distinct catalogue identities, 684 classification subjects (684 single-source identities and 0 collision source witnesses), 4104 structured claims (78 human-approved: 15 applied group memberships, 38 supporting cycle claims, 25 deferred non-cycle approvals; 2060 source-observed `unresolved` claims; 0 edition-dependent `unreviewed` leads), and 700 registered witnesses.
 
 Related track: [TRACK-147](../../../conductor/tracks/TRACK-147-tyagaraja-musicological-classification.md). Shared contract: [musicological-classification-contract.md](./musicological-classification-contract.md). Structured master: [track147-tyagaraja-master.json](../../../database/data/track147-tyagaraja-master.json). Application manifest: [track147-tyagaraja-application-manifest.json](../../../database/data/track147-tyagaraja-application-manifest.json).
 
@@ -873,7 +873,7 @@ Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi
 | daa5d57d-b320-4a8b-a1c5-598c4bbdfda1 | fetched | `ba9b6a5c472b5be8…` | http://thyagaraja-vaibhavam.blogspot.com/2008/11/thyagaraja-kriti-proddu-poyyenu-raga.html — Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for proddu poyyenu (tODi). |
 | dacd74bf-f973-4826-81b3-ef1c5a2be312 | fetched | `d840368962bb1e89…` | http://thyagaraja-vaibhavam.blogspot.com/2008/10/thyagaraja-kriti-vasudevayani-raga.html — Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for vAsudEvayani (kalyANi). |
 | dafb9fd2-c59d-4015-873b-e4c8e7460745 | fetched | `252e14df289b821d…` | http://thyagaraja-vaibhavam.blogspot.com/2008/04/thyagaraja-kriti-ninne-nera-namminanu.html — Cached thyagaraja-vaibhavam HTML witness for ninnE nera namminAnu (Arabhi). |
-| db-snapshot | database_snapshot | `84e111fa6e815eb5…` | database/data/track147-catalogue-snapshot.json — Hashed database census and stored pallavi/section/evidence snapshot for 684 Tyagaraja catalogue identities (after the TRACK-149 splits) and 684 source imports. |
+| db-snapshot | database_snapshot | `90fadf636a41cedd…` | database/data/track147-catalogue-snapshot.json — Hashed database census and stored pallavi/section/evidence snapshot for 684 Tyagaraja catalogue identities (after the TRACK-149 splits) and 684 source imports. |
 | db1b5c0c-ad3f-4ab6-9746-5afead381ab2 | fetched | `4ee1255b0d333fcb…` | http://thyagaraja-vaibhavam.blogspot.com/2007/05/thyagaraja-kriti-meluko-dayaa-nidhi.html — Imported thyagaraja-vaibhavam witness extraction hash recorded in imported_krithis.parsed_payload for mElukO dayA nidhi (saurAshTraM). |
 | db273d0e-8386-4544-9bd7-9dd962372c7e | fetched | `c95860b20e335af2…` | http://thyagaraja-vaibhavam.blogspot.com/2007/07/thyagaraja-kriti-jo-jo-rama-raga-reethi.html — Cached thyagaraja-vaibhavam HTML witness for Jo Jo Rama (Riti Gaula). |
 | db53e339-8b5f-4e05-97f9-e4a62633924d | fetched | `fbe5a3ecd1095468…` | http://thyagaraja-vaibhavam.blogspot.com/2007/05/thyagaraja-kriti-kalugunaa-raga-poorna.html — Cached thyagaraja-vaibhavam HTML witness for Kalugunaa (Purna Lalita). |
@@ -983,7 +983,7 @@ Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi
 
 - 3 CSV rows are outside the Tyagaraja catalogue. Their composer and identity stay unresolved.
 - 5 Ghana-raga Pancharatnam memberships are `reviewed` and human-approved with Aradhana concert order recorded separately from composer sequence.
-- 48 non-cycle approved claims are marked `application: deferred` pending a non-cycle attribute application path.
+- 25 non-cycle approved claims are marked `application: deferred` pending a non-cycle attribute application path.
 - 2060 source-backed claims remain `unresolved` pending multi-edition comparison.
 - 0 claims on Kovur, Tiruvottiyur, Lalgudi, Srirangam, Utsava Sampradaya, Divyanama, *Nauka Charitram*, and *Prahlada Bhakti Vijayam* remain `unreviewed` leads attributed to unconsulted print editions.
 - 0 identities have no pallavi section and 0 have no charanam. Lyric text was not invented.
@@ -1661,7 +1661,7 @@ Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi
 | tyagaraja:krithi:fa581380-0a7d-44a5-ac3f-35fcd907ea61 | identity | Sarva Loka Dayaanidhae | Huseni | Tisra Ekam | Huseni | Unknown | Rama (unresolved) / UNRESOLVED | Surrender (Saranagati) & Appeal for Grace | approved |  |
 | tyagaraja:krithi:fa5f98b6-119e-40eb-b50c-637f0284abaf | identity | Garuda Gamana | Gourimanohari | Rupaka | Gauri Manohari | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:fbbf74f2-3429-4c8c-be94-8e088034968b | identity | tava dAsOhaM | Punnagavarali | Adi | punnAga varALi | Adi | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
-| tyagaraja:krithi:fbbfd918-c7d6-4f72-a1aa-f27ef5065892 | identity | Kalugunaa | Poornalalita | Adi | Purna Lalita | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
+| tyagaraja:krithi:fbbfd918-c7d6-4f72-a1aa-f27ef5065892 | identity | Kalugunaa | Poornalalitha | Adi | Purna Lalita | Unknown | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:fc6630fc-1e9f-4b15-9530-f5f3371f8ef3 | identity | Menu Joochi | Sarasāngi | Adi | Sarasangi | Unknown | Rama (unresolved) / UNRESOLVED | Instruction to the Mind (Manasa) | approved |  |
 | tyagaraja:krithi:fc683216-fb66-4f4d-b349-b1fad0d07359 | identity | jaya jaya sItArAM | Sāveri | Capu | sAvEri | Capu | Rama (unresolved) / UNRESOLVED | Rama Bhakti & Devotional Praise | approved |  |
 | tyagaraja:krithi:fcd026e0-0056-48c3-af9f-a8a55c400077 | identity | Venkatesa | Madhyamāvathi | Adi | Madhyamavati | Unknown | Venkateswara (Vishnu) (unresolved) / UNRESOLVED | Deity Stuti & Devotional Praise | approved |  |

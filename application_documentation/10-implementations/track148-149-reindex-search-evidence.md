@@ -31,3 +31,8 @@ Eight queries against `POST /v2/catalogue/search/{hybrid|semantic}` on the local
 | semantic | viloma chapu laya Syama Sastri | unchanged |
 
 Reading: the Syama Krishna mudra query now surfaces *SyAma sundarAnga* (Tyagaraja) in the top 5, which is a literal match on the word and not a Syama Sastri mudra. Queries for the Lalgudi and Kovur sets still return unrelated Muthuswami Dikshitar items, because the kshetra membership claims are not in the embedded text.
+
+## After the second re-index (2026-11-11, claims lifted)
+
+The ritual, dramatic, theme, bhava and laya claims were lifted and both composers re-embedded (768 documents, 0 failed). Of the 16 result sets, 5 match the original baseline and 11 differ in the top 5. The "Utsava Sampradaya kriti" queries now return *sItA kalyANa*, *heccarikagA* and *patiki hArati* first, which carry the `[Ritual Function: Utsava Sampradaya]` clause. This is a change in ranking, not a measured improvement.
+

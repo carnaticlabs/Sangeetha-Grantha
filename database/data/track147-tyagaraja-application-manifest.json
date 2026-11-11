@@ -364,9 +364,8 @@
         "reviewer": "Seshadri",
         "accepted_at": "2026-11-03",
         "decision": "approve",
-        "note": "Named as Utsava Sampradaya in the journal.",
-        "application": "deferred",
-        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+        "note": "Named as Utsava Sampradaya in the journal. Deferral lifted: the TRACK-148 D1 search-metadata path now renders this axis; owner instructed the lift on 2026-11-11",
+        "application": "apply"
       },
       "ritual_function": "benediction_mangalam"
     },
@@ -433,9 +432,8 @@
         "reviewer": "Seshadri",
         "accepted_at": "2026-10-15",
         "decision": "approve",
-        "note": "Approved Shiva addressee and Nadopasana claim attested in snapshot pallavi.",
-        "application": "deferred",
-        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+        "note": "Approved Shiva addressee and Nadopasana claim attested in snapshot pallavi. Deferral lifted: the TRACK-148 D1 search-metadata path now renders this axis; owner instructed the lift on 2026-11-11",
+        "application": "apply"
       },
       "mudra": "Tyagaraja"
     },
@@ -537,9 +535,8 @@
         "reviewer": "Seshadri",
         "accepted_at": "2026-10-15",
         "decision": "approve",
-        "note": "Approved Nadopasana & Sangita Sastra hallmark claim attested in snapshot pallavi.",
-        "application": "deferred",
-        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+        "note": "Approved Nadopasana & Sangita Sastra hallmark claim attested in snapshot pallavi. Deferral lifted: the TRACK-148 D1 search-metadata path now renders this axis; owner instructed the lift on 2026-11-11",
+        "application": "apply"
       },
       "mudra": "Tyagaraja"
     },
@@ -573,9 +570,8 @@
         "reviewer": "Seshadri",
         "accepted_at": "2026-10-15",
         "decision": "approve",
-        "note": "Approved Nadopasana & Laya-Sahitya aesthetic claim attested in snapshot pallavi.",
-        "application": "deferred",
-        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+        "note": "Approved Nadopasana & Laya-Sahitya aesthetic claim attested in snapshot pallavi. Deferral lifted: the TRACK-148 D1 search-metadata path now renders this axis; owner instructed the lift on 2026-11-11",
+        "application": "apply"
       },
       "mudra": "Tyagaraja"
     },
@@ -609,9 +605,8 @@
         "reviewer": "Seshadri",
         "accepted_at": "2026-10-15",
         "decision": "approve",
-        "note": "Approved Prahlada Bhakti Vijayam invocatory kirtana attested in snapshot pallavi.",
-        "application": "deferred",
-        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+        "note": "Approved Prahlada Bhakti Vijayam invocatory kirtana attested in snapshot pallavi. Deferral lifted: the TRACK-148 D1 search-metadata path now renders this axis; owner instructed the lift on 2026-11-11",
+        "application": "apply"
       },
       "dramatic_work": "Prahlada Bhakti Vijayam"
     },
@@ -627,9 +622,8 @@
         "reviewer": "Seshadri",
         "accepted_at": "2026-10-15",
         "decision": "approve",
-        "note": "Approved Prahlada Bhakti Vijayam invocatory kirtana attested in snapshot pallavi.",
-        "application": "deferred",
-        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+        "note": "Approved Prahlada Bhakti Vijayam invocatory kirtana attested in snapshot pallavi. Deferral lifted: the TRACK-148 D1 search-metadata path now renders this axis; owner instructed the lift on 2026-11-11",
+        "application": "apply"
       },
       "mudra": "Tyagaraja"
     },
@@ -678,9 +672,8 @@
         "reviewer": "Seshadri",
         "accepted_at": "2026-11-03",
         "decision": "approve",
-        "note": "Discussed in a lecture on the Prahlada opera.",
-        "application": "deferred",
-        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+        "note": "Discussed in a lecture on the Prahlada opera. Deferral lifted: the TRACK-148 D1 search-metadata path now renders this axis; owner instructed the lift on 2026-11-11",
+        "application": "apply"
       },
       "dramatic_work": "Prahlada Bhakti Vijayam"
     },
@@ -764,9 +757,8 @@
         "reviewer": "Seshadri",
         "accepted_at": "2026-10-15",
         "decision": "approve",
-        "note": "Approved Utsava Sampradaya royal welcome (heccarika) function attested in snapshot pallavi.",
-        "application": "deferred",
-        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+        "note": "Approved Utsava Sampradaya royal welcome (heccarika) function attested in snapshot pallavi. Deferral lifted: the TRACK-148 D1 search-metadata path now renders this axis; owner instructed the lift on 2026-11-11",
+        "application": "apply"
       },
       "ritual_function": "invitation_heccarika"
     },
@@ -782,9 +774,8 @@
         "reviewer": "Seshadri",
         "accepted_at": "2026-10-15",
         "decision": "approve",
-        "note": "Approved Utsava Sampradaya royal welcome (heccarika) function attested in snapshot pallavi.",
-        "application": "deferred",
-        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+        "note": "Approved Utsava Sampradaya royal welcome (heccarika) function attested in snapshot pallavi. Deferral lifted: the TRACK-148 D1 search-metadata path now renders this axis; owner instructed the lift on 2026-11-11",
+        "application": "apply"
       },
       "mudra": "Tyagaraja"
     },
@@ -934,9 +925,8 @@
         "reviewer": "Seshadri",
         "accepted_at": "2026-11-03",
         "decision": "approve",
-        "note": "Weak: a concert programme labels it Nowka Charitram.",
-        "application": "deferred",
-        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+        "note": "Weak: a concert programme labels it Nowka Charitram. Deferral lifted: the TRACK-148 D1 search-metadata path now renders this axis; owner instructed the lift on 2026-11-11",
+        "application": "apply"
       },
       "dramatic_work": "Nauka Charitram"
     },
@@ -970,9 +960,8 @@
         "reviewer": "Seshadri",
         "accepted_at": "2026-10-15",
         "decision": "approve",
-        "note": "Approved Nauka Charitram opening daru attested in snapshot pallavi.",
-        "application": "deferred",
-        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+        "note": "Approved Nauka Charitram opening daru attested in snapshot pallavi. Deferral lifted: the TRACK-148 D1 search-metadata path now renders this axis; owner instructed the lift on 2026-11-11",
+        "application": "apply"
       },
       "dramatic_work": "Nauka Charitram"
     },
@@ -988,9 +977,8 @@
         "reviewer": "Seshadri",
         "accepted_at": "2026-10-15",
         "decision": "approve",
-        "note": "Approved Nauka Charitram opening daru attested in snapshot pallavi.",
-        "application": "deferred",
-        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+        "note": "Approved Nauka Charitram opening daru attested in snapshot pallavi. Deferral lifted: the TRACK-148 D1 search-metadata path now renders this axis; owner instructed the lift on 2026-11-11",
+        "application": "apply"
       },
       "mudra": "Tyagaraja"
     },
@@ -1024,9 +1012,8 @@
         "reviewer": "Seshadri",
         "accepted_at": "2026-10-15",
         "decision": "approve",
-        "note": "Approved Nadopasana (Raga Sudha Rasa) claim attested in snapshot pallavi.",
-        "application": "deferred",
-        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+        "note": "Approved Nadopasana (Raga Sudha Rasa) claim attested in snapshot pallavi. Deferral lifted: the TRACK-148 D1 search-metadata path now renders this axis; owner instructed the lift on 2026-11-11",
+        "application": "apply"
       },
       "mudra": "Tyagaraja"
     },
@@ -1128,9 +1115,8 @@
         "reviewer": "Seshadri",
         "accepted_at": "2026-10-15",
         "decision": "approve",
-        "note": "Approved Musical Knowledge (Sangita Sastra Jnanamu) claim attested in snapshot pallavi.",
-        "application": "deferred",
-        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+        "note": "Approved Musical Knowledge (Sangita Sastra Jnanamu) claim attested in snapshot pallavi. Deferral lifted: the TRACK-148 D1 search-metadata path now renders this axis; owner instructed the lift on 2026-11-11",
+        "application": "apply"
       },
       "mudra": "Tyagaraja"
     },
@@ -1164,9 +1150,8 @@
         "reviewer": "Seshadri",
         "accepted_at": "2026-10-15",
         "decision": "approve",
-        "note": "Approved Kovur Sundareswara Shiva addressee claim attested in snapshot pallavi.",
-        "application": "deferred",
-        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+        "note": "Approved Kovur Sundareswara Shiva addressee claim attested in snapshot pallavi. Deferral lifted: the TRACK-148 D1 search-metadata path now renders this axis; owner instructed the lift on 2026-11-11",
+        "application": "apply"
       },
       "mudra": "Tyagaraja"
     },
@@ -1182,9 +1167,8 @@
         "reviewer": "Seshadri",
         "accepted_at": "2026-11-03",
         "decision": "approve",
-        "note": "Named as Utsava Sampradaya in the journal.",
-        "application": "deferred",
-        "deferral_reason": "Non-cycle claim: no application path exists until the TRACK-148 D1 search-metadata path is built."
+        "note": "Named as Utsava Sampradaya in the journal. Deferral lifted: the TRACK-148 D1 search-metadata path now renders this axis; owner instructed the lift on 2026-11-11",
+        "application": "apply"
       },
       "ritual_function": "awakening_melukolupu"
     },
@@ -1251,9 +1235,8 @@
         "reviewer": "Seshadri",
         "accepted_at": "2026-10-15",
         "decision": "approve",
-        "note": "Approved Gita-artha & Sangita-ananda philosophical claim attested in snapshot pallavi.",
-        "application": "deferred",
-        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+        "note": "Approved Gita-artha & Sangita-ananda philosophical claim attested in snapshot pallavi. Deferral lifted: the TRACK-148 D1 search-metadata path now renders this axis; owner instructed the lift on 2026-11-11",
+        "application": "apply"
       },
       "mudra": "Tyagaraja"
     },
@@ -1287,9 +1270,8 @@
         "reviewer": "Seshadri",
         "accepted_at": "2026-10-15",
         "decision": "approve",
-        "note": "Approved Nadopasana claim attested in snapshot pallavi.",
-        "application": "deferred",
-        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+        "note": "Approved Nadopasana claim attested in snapshot pallavi. Deferral lifted: the TRACK-148 D1 search-metadata path now renders this axis; owner instructed the lift on 2026-11-11",
+        "application": "apply"
       },
       "mudra": "Tyagaraja"
     },
@@ -1323,9 +1305,8 @@
         "reviewer": "Seshadri",
         "accepted_at": "2026-10-15",
         "decision": "approve",
-        "note": "Approved Utsava Sampradaya divine marriage (kalyana utsavam) function attested in snapshot pallavi.",
-        "application": "deferred",
-        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+        "note": "Approved Utsava Sampradaya divine marriage (kalyana utsavam) function attested in snapshot pallavi. Deferral lifted: the TRACK-148 D1 search-metadata path now renders this axis; owner instructed the lift on 2026-11-11",
+        "application": "apply"
       },
       "ritual_function": "marriage_kalyanam"
     },
@@ -1341,9 +1322,8 @@
         "reviewer": "Seshadri",
         "accepted_at": "2026-10-15",
         "decision": "approve",
-        "note": "Approved Utsava Sampradaya divine marriage (kalyana utsavam) function attested in snapshot pallavi.",
-        "application": "deferred",
-        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+        "note": "Approved Utsava Sampradaya divine marriage (kalyana utsavam) function attested in snapshot pallavi. Deferral lifted: the TRACK-148 D1 search-metadata path now renders this axis; owner instructed the lift on 2026-11-11",
+        "application": "apply"
       },
       "mudra": "Tyagaraja"
     },
@@ -1377,9 +1357,8 @@
         "reviewer": "Seshadri",
         "accepted_at": "2026-10-15",
         "decision": "approve",
-        "note": "Approved Nauka Charitram dramatic daru (Gopis addressing Krishna) attested in snapshot pallavi.",
-        "application": "deferred",
-        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+        "note": "Approved Nauka Charitram dramatic daru (Gopis addressing Krishna) attested in snapshot pallavi. Deferral lifted: the TRACK-148 D1 search-metadata path now renders this axis; owner instructed the lift on 2026-11-11",
+        "application": "apply"
       },
       "dramatic_work": "Nauka Charitram"
     },
@@ -1395,9 +1374,8 @@
         "reviewer": "Seshadri",
         "accepted_at": "2026-10-15",
         "decision": "approve",
-        "note": "Approved Nauka Charitram dramatic daru (Gopis addressing Krishna) attested in snapshot pallavi.",
-        "application": "deferred",
-        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+        "note": "Approved Nauka Charitram dramatic daru (Gopis addressing Krishna) attested in snapshot pallavi. Deferral lifted: the TRACK-148 D1 search-metadata path now renders this axis; owner instructed the lift on 2026-11-11",
+        "application": "apply"
       },
       "mudra": "Tyagaraja"
     },
@@ -1431,9 +1409,8 @@
         "reviewer": "Seshadri",
         "accepted_at": "2026-10-15",
         "decision": "approve",
-        "note": "Approved Nama Mahima & Desadi tala witness claim attested in snapshot and import record.",
-        "application": "deferred",
-        "deferral_reason": "TRACK-147 completion (2026-10-15): approved from verified snapshot/witness sahitya, but no reviewed cycle membership row carries this composition in R__seed_11. Database and search-header application deferred to TRACK-149."
+        "note": "Approved Nama Mahima & Desadi tala witness claim attested in snapshot and import record. Deferral lifted: the TRACK-148 D1 search-metadata path now renders this axis; owner instructed the lift on 2026-11-11",
+        "application": "apply"
       },
       "mudra": "Tyagaraja"
     }
