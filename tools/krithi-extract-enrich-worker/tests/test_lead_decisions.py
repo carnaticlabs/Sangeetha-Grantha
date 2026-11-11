@@ -84,7 +84,7 @@ def test_masters_hold_exactly_the_recorded_decisions():
         tclaim = claims[d.claim_id]
         if d.disposition == "approve":
             assert tclaim.review_state == ReviewState.REVIEWED and tclaim.approval is not None
-            assert tclaim.approval.reviewer == "Seshadri" and tclaim.approval.application == "deferred"
+            assert tclaim.approval.reviewer == "Seshadri" and tclaim.approval.application == d.application
         else:
             assert tclaim.review_state.value == d.disposition and tclaim.unresolved_reason == d.unresolved_reason
     assert not any(c.review_state == ReviewState.UNREVIEWED and c.value for c in claims.values())
@@ -158,3 +158,14 @@ def test_only_unreviewed_leads_can_be_decided():
     )
     with pytest.raises(ValueError):
         apply_to_raw_syama(raw, decisions)
+
+
+def test_lifted_decision_needs_a_reason():
+    import pytest
+
+    from src.lead_decisions import LeadDecision
+
+    base = {"claim_id": "c", "disposition": "approve", "witness_id": "w", "locator": "l", "note": "n"}
+    with pytest.raises(ValueError):
+        LeadDecision(**base, application="apply")
+    assert LeadDecision(**base, application="apply", lift_reason="seed built").application == "apply"

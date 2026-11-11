@@ -32,7 +32,9 @@
       "disposition": "approve",
       "witness_id": "ma:jma-vol54-1983",
       "locator": "PDF p.40",
-      "note": "Named in the Srirangam Pancharatnam list."
+      "note": "Named in the Srirangam Pancharatnam list.",
+      "application": "apply",
+      "lift_reason": "TRACK-149 R__seed_13 kshetra membership seed built (2026-11-11)"
     },
     {
       "claim_id": "tyagaraja:krithi:0df490a3-9675-4f43-b370-3c0b42ee933f:ritual",
@@ -76,7 +78,9 @@
       "disposition": "approve",
       "witness_id": "hindupedia-thyagaraja-compilation",
       "locator": "PDF pp.109, 188, 251, 448",
-      "note": "Labelled as a Kovur Pancharatna item in a secondary translation compilation."
+      "note": "Labelled as a Kovur Pancharatna item in a secondary translation compilation.",
+      "application": "apply",
+      "lift_reason": "TRACK-149 R__seed_13 kshetra membership seed built (2026-11-11)"
     },
     {
       "claim_id": "tyagaraja:krithi:1dfe4864-6224-460a-845a-5328aed9b638:ritual",
@@ -108,7 +112,9 @@
       "disposition": "approve",
       "witness_id": "ma:jma-vol69-1998",
       "locator": "PDF p.39",
-      "note": "Named in the Lalgudi Pancharatnam list."
+      "note": "Named in the Lalgudi Pancharatnam list.",
+      "application": "apply",
+      "lift_reason": "TRACK-149 R__seed_13 kshetra membership seed built (2026-11-11)"
     },
     {
       "claim_id": "tyagaraja:krithi:29542e1b-7e94-438c-ab5c-381853d8ee4e:ritual",
@@ -146,7 +152,9 @@
       "disposition": "approve",
       "witness_id": "ma:jma-vol69-1998",
       "locator": "PDF p.39",
-      "note": "Named in the Lalgudi Pancharatnam list."
+      "note": "Named in the Lalgudi Pancharatnam list.",
+      "application": "apply",
+      "lift_reason": "TRACK-149 R__seed_13 kshetra membership seed built (2026-11-11)"
     },
     {
       "claim_id": "tyagaraja:krithi:4215e9b5-17dd-4730-a140-55d48014b034:ritual",
@@ -215,7 +223,9 @@
       "disposition": "approve",
       "witness_id": "ma:jma-vol69-1998",
       "locator": "PDF p.39",
-      "note": "Named in the Lalgudi Pancharatnam list."
+      "note": "Named in the Lalgudi Pancharatnam list.",
+      "application": "apply",
+      "lift_reason": "TRACK-149 R__seed_13 kshetra membership seed built (2026-11-11)"
     },
     {
       "claim_id": "tyagaraja:krithi:5e240d77-d99b-46f1-8c96-6fb183bf9734:ritual",
@@ -295,7 +305,9 @@
       "disposition": "approve",
       "witness_id": "ma:jma-vol69-1998",
       "locator": "PDF p.39",
-      "note": "Named in the Lalgudi Pancharatnam list."
+      "note": "Named in the Lalgudi Pancharatnam list.",
+      "application": "apply",
+      "lift_reason": "TRACK-149 R__seed_13 kshetra membership seed built (2026-11-11)"
     },
     {
       "claim_id": "tyagaraja:krithi:7ad8d15d-8260-46b7-bc02-2ef448f61842:ritual",
@@ -340,7 +352,9 @@
       "disposition": "approve",
       "witness_id": "hindupedia-thyagaraja-compilation",
       "locator": "PDF pp.109, 188, 251, 448",
-      "note": "Labelled as a Kovur Pancharatna item in a secondary translation compilation."
+      "note": "Labelled as a Kovur Pancharatna item in a secondary translation compilation.",
+      "application": "apply",
+      "lift_reason": "TRACK-149 R__seed_13 kshetra membership seed built (2026-11-11)"
     },
     {
       "claim_id": "tyagaraja:krithi:848fe8eb-0b6e-423d-9b37-f0ce62ceffa5:ritual",
@@ -451,7 +465,9 @@
       "disposition": "approve",
       "witness_id": "ma:jma-vol54-1983",
       "locator": "PDF p.40",
-      "note": "Named in the Srirangam Pancharatnam list."
+      "note": "Named in the Srirangam Pancharatnam list.",
+      "application": "apply",
+      "lift_reason": "TRACK-149 R__seed_13 kshetra membership seed built (2026-11-11)"
     },
     {
       "claim_id": "tyagaraja:krithi:c5aee074-7a6b-4fd3-83ea-19fd6d9083eb:geography",
@@ -465,7 +481,9 @@
       "disposition": "approve",
       "witness_id": "ma:jma-vol54-1983",
       "locator": "PDF p.40",
-      "note": "Named in the Srirangam Pancharatnam list."
+      "note": "Named in the Srirangam Pancharatnam list.",
+      "application": "apply",
+      "lift_reason": "TRACK-149 R__seed_13 kshetra membership seed built (2026-11-11)"
     },
     {
       "claim_id": "tyagaraja:krithi:cc45b4cc-c3ca-4a69-b3c5-efdeeecb8f85:dramatic",
@@ -547,7 +565,9 @@
       "disposition": "approve",
       "witness_id": "hindupedia-thyagaraja-compilation",
       "locator": "PDF pp.109, 188, 251, 448",
-      "note": "Labelled as a Kovur Pancharatna item in a secondary translation compilation."
+      "note": "Labelled as a Kovur Pancharatna item in a secondary translation compilation.",
+      "application": "apply",
+      "lift_reason": "TRACK-149 R__seed_13 kshetra membership seed built (2026-11-11)"
     },
     {
       "claim_id": "tyagaraja:krithi:e897a8c6-ef38-411f-8229-0b6f2ad13e3c:ritual",

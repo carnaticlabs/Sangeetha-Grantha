@@ -9,7 +9,7 @@
 
 ---
 
-Generated deterministically from the TRACK-147 structured master (`2026-10-01` snapshot). Covers 684 distinct catalogue identities, 684 classification subjects (684 single-source identities and 0 collision source witnesses), 4104 structured claims (78 human-approved: 5 applied group memberships, 15 supporting cycle claims, 58 deferred non-cycle approvals; 2060 source-observed `unresolved` claims; 0 edition-dependent `unreviewed` leads), and 700 registered witnesses.
+Generated deterministically from the TRACK-147 structured master (`2026-10-01` snapshot). Covers 684 distinct catalogue identities, 684 classification subjects (684 single-source identities and 0 collision source witnesses), 4104 structured claims (78 human-approved: 15 applied group memberships, 15 supporting cycle claims, 48 deferred non-cycle approvals; 2060 source-observed `unresolved` claims; 0 edition-dependent `unreviewed` leads), and 700 registered witnesses.
 
 Related track: [TRACK-147](../../../conductor/tracks/TRACK-147-tyagaraja-musicological-classification.md). Shared contract: [musicological-classification-contract.md](./musicological-classification-contract.md). Structured master: [track147-tyagaraja-master.json](../../../database/data/track147-tyagaraja-master.json). Application manifest: [track147-tyagaraja-application-manifest.json](../../../database/data/track147-tyagaraja-application-manifest.json).
 
@@ -983,7 +983,7 @@ Eleven source witnesses carry raw tala `Desadi` while stored canonically as `Adi
 
 - 3 CSV rows are outside the Tyagaraja catalogue. Their composer and identity stay unresolved.
 - 5 Ghana-raga Pancharatnam memberships are `reviewed` and human-approved with Aradhana concert order recorded separately from composer sequence.
-- 58 non-cycle approved claims are marked `application: deferred` pending a non-cycle attribute application path.
+- 48 non-cycle approved claims are marked `application: deferred` pending a non-cycle attribute application path.
 - 2060 source-backed claims remain `unresolved` pending multi-edition comparison.
 - 0 claims on Kovur, Tiruvottiyur, Lalgudi, Srirangam, Utsava Sampradaya, Divyanama, *Nauka Charitram*, and *Prahlada Bhakti Vijayam* remain `unreviewed` leads attributed to unconsulted print editions.
 - 0 identities have no pallavi section and 2 have no charanam. Lyric text was not invented.
