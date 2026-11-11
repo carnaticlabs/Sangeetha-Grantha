@@ -34,3 +34,25 @@ def test_footnote_after_the_label_is_unchanged():
 
 def test_digit_glued_to_the_label_is_also_accepted():
     assert _types(SOURCE.replace("1 P paripAlaya", "1P paripAlaya"))[:1] == ["PALLAVI"]
+
+
+GLUED = """rAmaM bhajEhaM-sAvEri
+1pallavi
+rAmam bhaj(E)ham sadA
+
+anupallavi
+SyAmam sakala sujana hRdaya jaladhi
+sOmam janaka sut(A)bhi(rAmam)
+
+3caraNam
+sundara mukham aravinda nayanam agha
+bRnda su-bhUshaNa vandita caritam (rAmam)
+"""
+
+
+def test_footnote_digit_glued_to_a_plain_pallavi_label():
+    assert _types(GLUED)[:3] == ["PALLAVI", "ANUPALLAVI", "CHARANAM"]
+
+
+def test_footnote_digit_glued_to_a_plain_caranam_label():
+    assert _types(GLUED).count("CHARANAM") == 1

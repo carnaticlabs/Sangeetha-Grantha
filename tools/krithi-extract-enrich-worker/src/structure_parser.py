@@ -211,12 +211,13 @@ def _raga_name_from_segment_header(line: str) -> str | None:
     return _strip_sri_honorific(match.group(1).strip())
 
 
+# TRACK-149: an optional footnote digit may be glued to the label ("1pallavi", "3caraNam").
 SECTION_HEADER_PATTERNS: list[tuple[re.Pattern[str], str]] = [
-    (re.compile(r"^\s*[\-–—•*()=\[\]]*\s*pallavi(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE), "PALLAVI"),
-    (re.compile(r"^\s*[\-–—•*()=\[\]]*\s*anupallavi(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE), "ANUPALLAVI"),
+    (re.compile(r"^\s*[\-–—•*()=\[\]]*\s*(?:\d{1,2}\s?)?pallavi(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE), "PALLAVI"),
+    (re.compile(r"^\s*[\-–—•*()=\[\]]*\s*(?:\d{1,2}\s?)?anupallavi(?:\b|:|\.|\-|\)|]|=|$)", re.IGNORECASE), "ANUPALLAVI"),
     (
         re.compile(
-            r"^\s*[\-–—•*()=\[\]]*\s*(?:(?:ch|c)ara?n(?:\.\s*am|am)|caraṇam)(?:\b|:|\.|\-|\)|]|=|$)",
+            r"^\s*[\-–—•*()=\[\]]*\s*(?:\d{1,2}\s?)?(?:(?:ch|c)ara?n(?:\.\s*am|am)|caraṇam)(?:\b|:|\.|\-|\)|]|=|$)",
             re.IGNORECASE,
         ),
         "CHARANAM",
