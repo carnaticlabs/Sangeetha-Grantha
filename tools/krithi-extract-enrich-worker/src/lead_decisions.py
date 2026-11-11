@@ -201,4 +201,3 @@ def lift_deferral_raw_syama(raw: dict[str, Any], claim_ids: list[str], reason: s
         approval.pop("deferral_reason", None)
         approval["note"] = f"{approval['note']} Deferral lifted: {reason}"
     return len(claim_ids)
-
