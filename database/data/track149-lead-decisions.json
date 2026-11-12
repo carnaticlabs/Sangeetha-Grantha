@@ -25,7 +25,9 @@
       "disposition": "approve",
       "witness_id": "ma:jma-vol54-1983",
       "locator": "PDF p.40",
-      "note": "Named in the Srirangam Pancharatnam list."
+      "note": "Named in the Srirangam Pancharatnam list.",
+      "application": "apply",
+      "lift_reason": "TRACK-149 R__seed_14 temple geography seed built (2026-11-12)"
     },
     {
       "claim_id": "tyagaraja:krithi:0931f98a-64fa-403f-967c-941677395832:group",
@@ -71,7 +73,9 @@
       "disposition": "approve",
       "witness_id": "hindupedia-thyagaraja-compilation",
       "locator": "PDF pp.109, 188, 251, 448",
-      "note": "Labelled as a Kovur Pancharatna item in a secondary translation compilation."
+      "note": "Labelled as a Kovur Pancharatna item in a secondary translation compilation.",
+      "application": "apply",
+      "lift_reason": "TRACK-149 R__seed_14 temple geography seed built (2026-11-12)"
     },
     {
       "claim_id": "tyagaraja:krithi:1d3c167b-d5ae-4f4b-8e55-8f11ab9c39e4:group",
@@ -105,7 +109,9 @@
       "disposition": "approve",
       "witness_id": "ma:jma-vol69-1998",
       "locator": "PDF p.39",
-      "note": "Named in the Lalgudi Pancharatnam list."
+      "note": "Named in the Lalgudi Pancharatnam list.",
+      "application": "apply",
+      "lift_reason": "TRACK-149 R__seed_14 temple geography seed built (2026-11-12)"
     },
     {
       "claim_id": "tyagaraja:krithi:271a1479-c84d-4c22-af76-040f659fce2b:group",
@@ -145,7 +151,9 @@
       "disposition": "approve",
       "witness_id": "ma:jma-vol69-1998",
       "locator": "PDF p.39",
-      "note": "Named in the Lalgudi Pancharatnam list."
+      "note": "Named in the Lalgudi Pancharatnam list.",
+      "application": "apply",
+      "lift_reason": "TRACK-149 R__seed_14 temple geography seed built (2026-11-12)"
     },
     {
       "claim_id": "tyagaraja:krithi:4215e9b5-17dd-4730-a140-55d48014b034:group",
@@ -218,7 +226,9 @@
       "disposition": "approve",
       "witness_id": "ma:jma-vol69-1998",
       "locator": "PDF p.39",
-      "note": "Named in the Lalgudi Pancharatnam list."
+      "note": "Named in the Lalgudi Pancharatnam list.",
+      "application": "apply",
+      "lift_reason": "TRACK-149 R__seed_14 temple geography seed built (2026-11-12)"
     },
     {
       "claim_id": "tyagaraja:krithi:550a03c3-991c-435f-b1b5-439c16e98183:group",
@@ -300,7 +310,9 @@
       "disposition": "approve",
       "witness_id": "ma:jma-vol69-1998",
       "locator": "PDF p.39",
-      "note": "Named in the Lalgudi Pancharatnam list."
+      "note": "Named in the Lalgudi Pancharatnam list.",
+      "application": "apply",
+      "lift_reason": "TRACK-149 R__seed_14 temple geography seed built (2026-11-12)"
     },
     {
       "claim_id": "tyagaraja:krithi:7914b699-b204-42b1-9057-72f4ff5db6d4:group",
@@ -349,7 +361,9 @@
       "disposition": "approve",
       "witness_id": "hindupedia-thyagaraja-compilation",
       "locator": "PDF pp.109, 188, 251, 448",
-      "note": "Labelled as a Kovur Pancharatna item in a secondary translation compilation."
+      "note": "Labelled as a Kovur Pancharatna item in a secondary translation compilation.",
+      "application": "apply",
+      "lift_reason": "TRACK-149 R__seed_14 temple geography seed built (2026-11-12)"
     },
     {
       "claim_id": "tyagaraja:krithi:8300ca9e-eca0-4d3a-8a93-0c54c3715baf:group",
@@ -389,7 +403,9 @@
       "disposition": "approve",
       "witness_id": "ma:jma-vol66-1995",
       "locator": "PDF p.107",
-      "note": "Journal names the kriti and the Tiruvottiyur shrine."
+      "note": "Journal names the kriti and the Tiruvottiyur shrine.",
+      "application": "apply",
+      "lift_reason": "TRACK-149 R__seed_14 temple geography seed built (2026-11-12)"
     },
     {
       "claim_id": "tyagaraja:krithi:9c89d2d5-c211-4790-8577-90bfccbf697e:group",
@@ -462,7 +478,9 @@
       "disposition": "approve",
       "witness_id": "ma:jma-vol54-1983",
       "locator": "PDF p.40",
-      "note": "Named in the Srirangam Pancharatnam list."
+      "note": "Named in the Srirangam Pancharatnam list.",
+      "application": "apply",
+      "lift_reason": "TRACK-149 R__seed_14 temple geography seed built (2026-11-12)"
     },
     {
       "claim_id": "tyagaraja:krithi:c262739c-e7cc-492d-b248-3775fec24bfe:group",
@@ -478,7 +496,9 @@
       "disposition": "approve",
       "witness_id": "ma:jma-vol54-1983",
       "locator": "PDF p.40",
-      "note": "Named in the Srirangam Pancharatnam list."
+      "note": "Named in the Srirangam Pancharatnam list.",
+      "application": "apply",
+      "lift_reason": "TRACK-149 R__seed_14 temple geography seed built (2026-11-12)"
     },
     {
       "claim_id": "tyagaraja:krithi:c5aee074-7a6b-4fd3-83ea-19fd6d9083eb:group",
@@ -566,7 +586,9 @@
       "disposition": "approve",
       "witness_id": "hindupedia-thyagaraja-compilation",
       "locator": "PDF pp.109, 188, 251, 448",
-      "note": "Labelled as a Kovur Pancharatna item in a secondary translation compilation."
+      "note": "Labelled as a Kovur Pancharatna item in a secondary translation compilation.",
+      "application": "apply",
+      "lift_reason": "TRACK-149 R__seed_14 temple geography seed built (2026-11-12)"
     },
     {
       "claim_id": "tyagaraja:krithi:e630e8f7-f8da-45b3-8e8b-fce0f91a74e9:group",
