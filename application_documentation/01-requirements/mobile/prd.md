@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.3.0 |
-| **Last Updated** | 2026-09-10 |
+| **Version** | 1.4.0 |
+| **Last Updated** | 2026-11-13 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Current guide |
 
@@ -27,10 +27,10 @@ This PRD describes the current discovery/reading release and separates later pro
 
 | Tab | Reader's purpose | Current behavior |
 |:---|:---|:---|
-| **Home** | Begin discovery | Search entry independent of discovery loading; available feature or collection content |
-| **Explore** | Find compositions and related entities | Compositions/Ragas/Composers under one submitted query; UUID filters and paging |
+| **Home** | Begin discovery | Search entry independent of discovery loading; featured composition, Collections shelf and Kshetras shelf as each loads |
+| **Explore** | Find compositions and related entities | Hybrid (default), semantic or lexical search; collection and kshetra cards; Ragas and Composers browse; UUID filters, lakshana facets and paging |
 | **Library** | Return to saved works | Device-local bookmarks persisted across restart |
-| **Settings** | Adjust reading environment | System/Light/Dark appearance with persistence |
+| **Settings** | Adjust reading environment | System/Light/Dark appearance, text size and preferred script, persisted |
 
 The implementation exists in shared Compose UI and native hosts. Native runtime journeys, TalkBack, and VoiceOver remain acceptance obligations; code presence is not store-release certification.
 
@@ -42,7 +42,9 @@ Paging must preserve loaded items when a later page fails and offer recovery. Op
 
 Raga pages may show aliases, melakarta/parent lineage, scales, and nomenclature links where supplied. Composer pages may show aliases and biographical metadata where available. Directory counts reflect published compositions visible under the current contract.
 
-**Later scope:** tala, deity, temple, language, and musical-form directories, richer thematic navigation, and conversational/semantic mobile experiences. Their presence in OpenAPI or DTO definitions is not evidence of a mounted V2 route or current Explore tab.
+**Reviewed cycles and places.** Collections (ordered reviewed cycles with overview and order basis) and Kshetras (temples by region with element filter, nested shrines, sung kritis, recorded gaps and an Open in Google Maps link where a place id is reviewed) are reachable from Home, search cards and the reader. **Lakshana facets** (Vibhakti, Cycle, Tune, Region, Element) filter results only where reviewed values exist. Search cards for collections and kshetras appear only above a documented relevance floor; see the [search guide](../../03-api/search.md).
+
+**Later scope:** tala, deity, language, and musical-form directories, and richer thematic navigation. Their presence in OpenAPI or DTO definitions is not evidence of a mounted V2 route or current Explore tab. Their presence in OpenAPI or DTO definitions is not evidence of a mounted V2 route or current Explore tab.
 
 ## 4. Source-faithful reader
 
@@ -50,7 +52,7 @@ The reader obtains metadata and available variants, then loads one selected vari
 
 During a variant switch, keep the previous text labeled until replacement lyrics load successfully. Preserve its state on failure. If the composition has no readable variant, present an informative empty state rather than fabricated text. If the composition becomes unavailable, handle that explicitly.
 
-Use stored section labels before fallback section-type labels. Show per-section raga association only when the response carries a real section link. A Ragamalika composition's ordered raga list is not enough to guess which raga belongs to each section.
+Use stored section labels before fallback section-type labels. Show a kriti's cycle context (collections, position, neighbours, vibhakti and occasion) and facet chips only where reviewed data exists. Show per-section raga association only when the response carries a real section link. A Ragamalika composition's ordered raga list is not enough to guess which raga belongs to each section.
 
 `UNESTABLISHED` means the composition's form has not been established. Show no guessed form badge. The public reader does not display editorial notes, internal author IDs, or workflow state.
 
@@ -62,7 +64,7 @@ Bookmarks are local to the device. Saving/removing a bookmark should be reflecte
 
 The local document store serializes writes and protects corrupt/future-version documents from silent overwrite. Persistence failures must be surfaced and UI state rolled back where appropriate.
 
-**Not promised:** a complete offline lyric cache, offline catalogue packs, cross-device sync, collections, or recently viewed history. Those are later releases, not consequences of having local bookmarks.
+**Not promised:** a complete offline lyric cache, offline catalogue packs, cross-device sync, user-created collections, or recently viewed history. Those are later releases, not consequences of having local bookmarks.
 
 ## 6. Appearance and accessibility
 
@@ -72,7 +74,7 @@ Shared tests and native automation validate supported state/semantics. They do n
 
 ## 7. Public data and transport
 
-Rasika uses `/v2/catalogue` exclusively for its current catalogue client. Core routes cover discovery, compositions, composition lyrics, ragas, and composers. Successful responses carry `Cache-Control: no-store`.
+Rasika uses `/v2/catalogue` for its catalogue client and the discovery search endpoints for hybrid and semantic search. Routes cover discovery, compositions, lyrics, ragas, composers, facets, collections and temples. Successful responses carry `Cache-Control: no-store`.
 
 V2 includes published `UNESTABLISHED` compositions; catalogue V1 retains its older exclusion. Public reads use allowlisted catalogue DTOs rather than editorial `KrithiDto`. List parameters are `query`, `composerId`, `ragaId`, zero-based `page`, and `pageSize` where applicable. Unsupported/repeated parameters are rejected.
 
@@ -109,9 +111,9 @@ Measure search outcomes and crashes only when appropriate instrumentation and a 
 
 ## 10. Deferred releases
 
-TRACK-140 later releases include additional metadata exploration, collections/recents, and broader editorial Home experiences. Public account sync, offline packs, media, public web, and store submission require additional scope and acceptance decisions.
+TRACK-140 later releases include additional metadata exploration (tala, deity, language, form), user collections and recents, and broader editorial Home experiences. Public account sync, offline packs, media, public web, and store submission require additional scope and acceptance decisions.
 
-[Main PRD](../product-requirements-document.md) · [Rasika discovery specification](../../05-frontend/mobile/rasika-discovery-experience.md) · [Quality](../../07-quality/README.md)
+[Main PRD](../product-requirements-document.md) · [Rasika experience guide](../../05-frontend/mobile/rasika-discovery-experience.md) · [Quality](../../07-quality/README.md)
 
 ---
 

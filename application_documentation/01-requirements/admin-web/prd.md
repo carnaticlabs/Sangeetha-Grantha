@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 2.1.0 |
-| **Last Updated** | 2026-09-10 |
+| **Version** | 2.3.0 |
+| **Last Updated** | 2026-11-13 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Current guide |
 
@@ -35,6 +35,7 @@ These are workflow personas. Current backend authorization uses `grp_sangita_adm
 | Bulk import | CSV manifests, batch/task/event monitoring, controls, review/finalize/export | Large-scale campaigns require operational verification |
 | Curator review | Review workflow, section issues, raga-resolution queue | Scholarly decisions remain human responsibilities |
 | Sourcing | Sources/processing, evidence/verification, quality workspace | Coverage and audit-summary responses include placeholders |
+| Mobile Preview | Read-only replica of Rasika inside the console, a tab in the editor, search with match reasons and card explanations, and a search-index freshness warning (TRACK-158, TRACK-159) | Admin-only and never writes. Index status compares timestamps and can over-report; hybrid and semantic searches can cost one embedding call |
 | Users and roles | Backend management endpoints exist | Browser pages are placeholders |
 | Settings and interactive authentication | Future work | No completed console settings or OAuth/OTP flow |
 
@@ -62,7 +63,8 @@ A badge is not an authorization rule. Server enforcement and route/service tests
 
 ## 4. Search requirements
 
-An editor should be able to locate a known title and also discover relevant passages. Lexical, Hybrid, and Semantic controls must make the selected mode clear. Ranked matches should identify the composition and the matched overview/passage context.
+
+An editor should be able to locate a known title and also discover relevant passages. Lexical, Hybrid, and Semantic controls must make the selected mode clear. Curators can check an edit against the Rasika experience in the read-only [Mobile Preview](../../05-frontend/admin-web/mobile-preview.md) (TRACK-158), which also warns when the search index is behind the edit. Ranked matches should identify the composition and the matched overview/passage context.
 
 An empty query browses. Without an active embedding profile, hybrid uses lexical retrieval and semantic returns no matches. Provider/profile failures should be distinguishable from valid no-result responses. Ranking confidence is not proof that a raga, deity, or interpretation is correct. See [search behavior](../../03-api/search.md).
 
@@ -111,6 +113,7 @@ Versions belong in [Current Versions](../../00-meta/current-versions.md). [ADR-0
 | Raga resolution | Correct identity/alias, queue transition, source attribution, collision handling |
 | Search | Known title, thematic passage, no matches, missing profile, provider failure, anonymous/admin visibility |
 | Sourcing | Run/task detail agrees with backend state; failed and incomplete cases remain actionable |
+| Mobile Preview | Preview matches the app for the same krithi; unpublished krithis are flagged; a stale index is reported after an edit; preview routes are admin-only (mounted under the admin role check) and write no audit rows |
 | UI integrity | Typecheck, component tests, build, and browser journeys across changed flows |
 
 Measure catalogue completeness, review backlog, correction rate, and editorial throughput on a dated dataset. Earlier targets such as 2,000 curated compositions or 80% mapped imports are product goals, not current verified counts or guarantees.

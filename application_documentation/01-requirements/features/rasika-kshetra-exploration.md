@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
-| **Status** | In Progress — mobile (Phase 2) implemented; map link (Phase 3) pending TRACK-154 |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-10-28 |
+| **Status** | Implemented — list, detail, search cards and Open in Google Maps link (TRACK-151, TRACK-154, TRACK-155) |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-11-13 |
 | **Author** | Sangita Grantha Team |
 
 # Rasika kshetra exploration
@@ -24,4 +24,4 @@ Only Dikshitar kritis currently carry a temple. Copy never claims the list cover
 
 ## Not here
 
-The "Open in Google Maps" link is Phase 3 and waits for TRACK-154 to land confirmed place ids; the detail DTO already carries an optional `place`, and the app ignores it until then. The embedded SDK map is a separate follow-up track.
+The detail page offers **Open in Google Maps** only for temples with a reviewed place id (TRACK-154); temples without one show no link and no pin. The embedded SDK map is a separate follow-up track. List scroll position survives back navigation and the Tiruvarur detail renders lazily (TRACK-155).

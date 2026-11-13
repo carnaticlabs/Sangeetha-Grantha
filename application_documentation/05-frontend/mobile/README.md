@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 2.1.0 |
-| **Last Updated** | 2026-09-10 |
+| **Version** | 2.2.0 |
+| **Last Updated** | 2026-11-13 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Navigation |
 
@@ -22,7 +22,7 @@ Rasika is the public Kotlin Multiplatform app for Android and iOS. It uses a sha
 | [mobile/androidApp](../../../modules/mobile/androidApp) | Android host and instrumentation |
 | [mobile/iosApp](../../../modules/mobile/iosApp) | iOS host and UI test targets |
 
-Home keeps search available independently of discovery. Explore searches compositions, ragas, and composers with submitted queries, UUID filters, and recoverable paging. Library stores bookmarks on the device. Settings includes persistent appearance; the reader preserves the chosen stored variant and source labels.
+Home keeps search available independently of discovery. Explore searches compositions, ragas, and composers with submitted queries, UUID filters, and recoverable paging. Library stores bookmarks on the device. Settings includes persistent appearance, text size and preferred script; the reader preserves the chosen stored variant and source labels. Rasika also ships reviewed collections, kshetras, lakshana facets and collection or kshetra cards in search; see the [experience guide](./rasika-discovery-experience.md).
 
 ## Build and verify
 
@@ -53,9 +53,9 @@ Local persistence protects future/corrupt documents and serializes writes. Bookm
 
 ## Design references
 
-- [Discovery and reading specification](./rasika-discovery-experience.md): current TRACK-140 behavior and later release requirements.
+- [Discovery and reading experience](./rasika-discovery-experience.md): current screens, search behavior, principles and the not-yet-built list.
 - [TRACK-138 visual design](./track-138-visual-design.md): foundation and token decisions.
-- [Broader UI proposal](./ui-specs.md): earlier intended experiences beyond the current release.
+- [UI reference](./ui-specs.md): navigation map, screen-to-source map, stack and conventions.
 - [Quality guide](../../07-quality/README.md): shared, native, browser, and live-data evidence boundaries.
 
 ---

@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.5.0 |
-| **Last Updated** | 2026-09-21 |
+| **Version** | 1.6.0 |
+| **Last Updated** | 2026-11-13 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Current guide |
 
@@ -22,7 +22,7 @@ Useful tasks are `:modules:backend:api:run`, API/DAL tests, and the shared `mobi
 
 Android Studio supplies the Android SDK and emulator environment for `modules/mobile/androidApp`. Use the existing app configuration and journey harness rather than inventing a new host.
 
-**AGP compatibility:** the repo pins Android Gradle Plugin `9.4.1` ([current versions](../00-meta/current-versions.md)). That requires **Android Studio Quail 4 (2026.1.4) or newer**. Quail 1–3 / Panda only support AGP through 9.1–9.3 and will refuse sync with a message like “Latest supported version is AGP 9.1.0”. Do **not** downgrade AGP to silence the IDE — upgrade Studio (or build/sync from the Gradle CLI / a compatible IDE). See [Android Studio & AGP compatibility](https://developer.android.com/build/releases/about-agp#android_gradle_plugin_and_android_studio_compatibility).
+**AGP compatibility:** the repo pins Android Gradle Plugin `9.5.1` ([current versions](../00-meta/current-versions.md)). That requires **Android Studio Rabbit 2 (2026.2.2) or newer**. Rabbit 1 and Quail 4 support AGP through 9.4 and will refuse sync. The Gradle wrapper is `9.7.1`, which meets AGP 9.5's Gradle 9.6.0 floor. Do **not** downgrade AGP to silence the IDE — upgrade Studio (or build/sync from the Gradle CLI / a compatible IDE). See [Android Studio & AGP compatibility](https://developer.android.com/build/releases/about-agp#android_gradle_plugin_and_android_studio_compatibility).
 
 On macOS, use Xcode for `modules/mobile/iosApp`. `make mobile-ios` runs the repository build wrapper; device journey tests additionally require an explicit target identifier. See [mobile implementation](../05-frontend/mobile/README.md).
 

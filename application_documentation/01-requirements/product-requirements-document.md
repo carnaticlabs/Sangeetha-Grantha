@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.3.0 |
-| **Last Updated** | 2026-09-10 |
+| **Version** | 1.4.0 |
+| **Last Updated** | 2026-11-13 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Current guide |
 
@@ -60,12 +60,13 @@ Raga identity uses canonical names, aliases, mela context, and controlled resolu
 
 | Journey | Current requirement and behavior | Release boundary |
 |:---|:---|:---|
-| Home | Search remains available independently of discovery; display available feature/collection content | Broader editorial features are later-release work |
-| Explore | Submit a query across compositions, ragas, composers; apply exact composer/raga filters; preserve paging state | Other metadata directories are not mounted in V2 yet |
+| Home | Search remains available independently of discovery; display a featured composition and Collections and Kshetras shelves when they load | Broader editorial features are later-release work |
+| Explore | Submit a query across compositions, ragas, composers using hybrid, semantic or lexical (stored lyrics included) search; collection and kshetra cards may lead results; apply exact composer/raga filters and reviewed lakshana facets; preserve paging state | Tala, deity, language and form directories are not mounted in V2 yet |
 | Entity detail | Explain available raga/composer metadata and open exact-ID related works | Missing reference fields remain absent rather than fabricated |
-| Read | Select a stored lyric variant; retain source and script identity; preserve labels, ordering, and justified section-raga links | No playback or mobile notation renderer |
-| Library | Save/remove device-local bookmarks and restore them after restart | No cross-device sync, recents, or collections yet |
-| Settings | Persist System/Light/Dark appearance and respect reduced-motion behavior | Public user accounts are unnecessary for these local preferences |
+| Collections and kshetras | Browse reviewed cycles in order; browse temples by region and element with nested shrines, sung kritis and recorded gaps; open a temple in Google Maps where a place id is reviewed | Embedded map and kshetra coverage beyond reviewed data are not promised |
+| Read | Select a stored lyric variant; retain source and script identity; preserve labels, ordering, and justified section-raga links; show cycle context and facet chips where reviewed | No playback or mobile notation renderer |
+| Library | Save/remove device-local bookmarks and restore them after restart | No cross-device sync, recents, or user-created collections yet |
+| Settings | Persist System/Light/Dark appearance, text size and preferred script; respect reduced-motion behavior | Public user accounts are unnecessary for these local preferences |
 
 Public reads use allowlisted catalogue DTOs. Rasika consumes `/v2/catalogue`, including published unclassified compositions. Catalogue V1 retains its older form boundary and excludes `UNESTABLISHED`. Both keep editorial fields out of reader payloads.
 
@@ -98,7 +99,7 @@ The new-feature baseline includes multilingual/source-aware parsing, ordered Rag
 
 Hybrid and semantic search operate over separately indexed composition overviews and lyric passages in PostgreSQL/pgvector. Profiles record model and dimensions; query vectors must match the active profile. With no active profile, hybrid falls back to lexical retrieval and semantic returns empty results. A mismatched active profile produces an availability failure.
 
-Retrieval scores are relevance signals, not scholarly validation. Rasika currently uses catalogue queries rather than these vector-search endpoints. See [search](../03-api/search.md).
+Retrieval scores are relevance signals, not scholarly validation. Rasika Explore uses hybrid search by default, with semantic and lexical options, and V2 search adds collection and kshetra cards above kritis. See [search](../03-api/search.md).
 
 ### Versioned canon
 
@@ -148,7 +149,7 @@ Dependency versions are maintained in [Current Versions](../00-meta/current-vers
 
 ## 11. Delivery priorities
 
-The working implementation includes Rasika's first discovery/reading release, curator/sourcing workflows, search, versioned canon, raga identity, and test infrastructure. Current release work focuses on native acceptance and remaining ingestion closure. Later work includes expanded discovery categories, collections/recents, interactive authentication, media experiences, and deployment.
+The working implementation includes Rasika's first discovery/reading release, curator/sourcing workflows, search, versioned canon, raga identity, and test infrastructure. Current release work focuses on native acceptance and remaining ingestion closure. Later work includes expanded discovery categories (tala, deity, language, form), recents and user collections, interactive authentication, media experiences, and deployment.
 
 Use [Conductor](../../conductor/tracks.md) for current node status. Do not infer release completion from a feature's code presence or an older “completed” report.
 

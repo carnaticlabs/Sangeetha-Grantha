@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.2.0 |
-| **Last Updated** | 2026-09-10 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-11-13 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Navigation |
 
@@ -14,7 +14,7 @@ The [admin PRD](./prd.md) defines curation and ingestion outcomes. For current s
 
 ## In this section
 
-- [Curator Console — product requirements](./prd.md)
+- [Curator Console — product requirements](./prd.md), including the Mobile Preview requirement
 
 ---
 

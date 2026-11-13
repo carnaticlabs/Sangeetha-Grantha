@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.3.0 |
-| **Last Updated** | 2026-09-22 |
+| **Version** | 1.4.0 |
+| **Last Updated** | 2026-11-13 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Current guide |
 
@@ -18,6 +18,10 @@ This map connects implemented user journeys to route families. It is not a subst
 | Rasika Explore compositions | `/v2/catalogue/krithis`; `POST /v1/search/hybrid`; `POST /v1/search/semantic` | Krithis Lexical: query, composer/raga UUID filters, zero-based paging. Hybrid and Semantic: trimmed query, null filter ids, limit 30, no paging. Initial mode Hybrid. Raga and Composer tabs stay catalogue GETs. |
 | Rasika raga/composer directories | `/v2/catalogue/ragas`, `/composers` | Directory query/paging; detail by ID |
 | Rasika reader | `/v2/catalogue/krithis/{id}` and `/lyrics/{variantId}` | Metadata followed by one stored variant |
+| Rasika search cards | `POST /v2/catalogue/search/hybrid`, `/semantic` | Collection and kshetra cards above kritis, with exact-title ordering |
+| Rasika Browse facets and reader chips | `GET /v2/catalogue/facets`; facet filters on `/v2/catalogue/krithis`; `facetChips` on the reader | Lakshana facets, V2 only |
+| Rasika collections | `/v2/catalogue/collections`, `/collections/{slug}`; `cycleContext` on the reader | Published reviewed cycles |
+| Rasika kshetras | `/v2/catalogue/temples`, `/temples/{id}` | Root temples by mandalam; detail with shrines, kritis and place id |
 | Rasika Library/Settings | Local repositories/store | No public account or sync endpoint |
 | Console login | `/v1/auth/token`, `/v1/auth/refresh` | Stored role claims |
 | Console lexical list/reference selectors | Legacy `/v1/krithis/search` and reference reads | Different DTOs from Rasika |
@@ -29,6 +33,7 @@ This map connects implemented user journeys to route families. It is not a subst
 | Console evidence/verification | `/v1/admin/sourcing/evidence`, `/voting`, `/variants` | Source evidence, structural decisions, variant matching |
 | Console curator issues | `/v1/admin/curator` | Section issues and raga-resolution queue |
 | Console quality | `/v1/admin/sourcing/quality`, dedicated `/v1/admin/quality` routes | Some sourcing responses are placeholders; dedicated audits are distinct |
+| Console Mobile Preview | `/v1/admin/preview/catalogue/*`, `/preview/mobile/*`, `POST /preview/search/{hybrid,semantic}`, `GET /preview/krithis/{id}/index-status` | Admin-only, read-only; see [Mobile Preview](../05-frontend/admin-web/mobile-preview.md) |
 | Console reference management | `/v1/admin/composers`, `/ragas`, `/talas`, `/deities`, `/temples`, `/tags` | Per-entity contracts |
 
 UI routes and API routes are different namespaces. The [console screen guide](../05-frontend/admin-web/ui-specs.md) documents redirects from older review/extraction/voting list pages. [App.tsx](../../modules/frontend/sangita-admin-web/src/App.tsx) and [Routing.kt](../../modules/backend/api/src/main/kotlin/com/sangita/grantha/backend/api/plugins/Routing.kt) are the executable maps.
