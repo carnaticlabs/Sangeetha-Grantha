@@ -1,16 +1,16 @@
 [versions]
 kotlin = "2.4.21"
-agp = "9.4.1"
+agp = "9.5.1"
 # CMP 1.12.x requires Kotlin language/API >= 2.2; paired with Kotlin 2.4.20 (TRACK-142)
 compose = "1.12.2"
 # material3 ships on its own release train since the CMP component split (1.9.0 still latest stable)
 composeMaterial3 = "1.9.0"
 # material-icons-extended is frozen upstream at 1.7.3 (migrate to Material Symbols eventually)
 composeMaterialIcons = "1.7.3"
-ktor = "3.6.0"
+ktor = "3.6.1"
 kotlinxCoroutinesCore = "1.11.0"
 kotlinxDatetime = "0.8.0"
-kotlinxSerializationJson = "1.12.0"
+kotlinxSerializationJson = "1.13.0"
 activityCompose = "1.13.0"
 androidxCoreKtx = "1.19.1"
 material = "1.14.0"
@@ -22,25 +22,24 @@ lifecycle = "2.11.0"
 navigationevent = "1.1.0"
 
 # Backend stack
-exposed = "1.6.0"
+exposed = "1.6.1"
 postgresql = "42.7.14"
 hikaricp = "7.1.0"
-logback = "1.6.5"
+logback = "1.6.6"
 logstashLogbackEncoder = "9.0"
 jwt = "4.6.2"
 commonsCsv = "1.14.1"
 koin = "4.2.2"
 micrometer = "1.17.2"
 shadow = "9.6.1"
-awsSdk = "2.57.3"
-googleAuth = "1.54.0"
+googleAuth = "1.57.0"
 dotenvKotlin = "6.5.1"
 
-mockk = "1.14.11"
+mockk = "1.14.12"
 password4j = "1.8.4"
 
 # Migrations + integration-test substrate (ADR-013 / TRACK-110). JUnit comes via kotlin-test-junit5.
-flyway = "13.11.1"
+flyway = "13.12.2"
 testcontainers = "2.0.5"
 
 [plugins]
@@ -83,7 +82,7 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 
-# --- Ktor Client (3.6.0) ---
+# --- Ktor Client (3.6.1) ---
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
@@ -92,7 +91,7 @@ ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negoti
 ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 
-# --- Ktor Server (3.6.0) ---
+# --- Ktor Server (3.6.1) ---
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
 ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
 ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
@@ -128,7 +127,6 @@ koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koin" }
 koin-logger-slf4j = { module = "io.insert-koin:koin-logger-slf4j", version.ref = "koin" }
 micrometer-registry-prometheus = { module = "io.micrometer:micrometer-registry-prometheus", version.ref = "micrometer" }
 google-auth = { module = "com.google.auth:google-auth-library-oauth2-http", version.ref = "googleAuth" }
-aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "awsSdk" }
 dotenv-kotlin = { module = "io.github.cdimascio:dotenv-kotlin", version.ref = "dotenvKotlin" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 micrometer-core = { module = "io.micrometer:micrometer-core", version.ref = "micrometer" }

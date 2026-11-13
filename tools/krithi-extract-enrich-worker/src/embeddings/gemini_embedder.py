@@ -19,6 +19,8 @@ from typing import Any
 from google import genai
 from google.genai import types
 
+from ..gemini_transport import developer_api_http_options, vertex_http_options
+
 try:
     from google.genai import errors as genai_errors
 except ImportError:
@@ -96,7 +98,6 @@ class GeminiEmbedder:
             return self._client
         client = getattr(self._local, "client", None)
         if client is None:
-            http_opts = types.HttpOptions(timeout=30000)  # 30-second socket timeout
             if self.vertexai or (self._project_id and not self._resolved_api_key):
                 logger.info(
                     "Initializing GeminiEmbedder using Vertex AI (project=%s, location=%s)",
@@ -107,7 +108,7 @@ class GeminiEmbedder:
                     vertexai=True,
                     project=self._project_id,
                     location=self._location,
-                    http_options=http_opts,
+                    http_options=vertex_http_options(timeout_ms=30000),
                 )
             else:
                 if not self._resolved_api_key:
@@ -117,7 +118,7 @@ class GeminiEmbedder:
                     )
                 client = genai.Client(
                     api_key=self._resolved_api_key,
-                    http_options=http_opts,
+                    http_options=developer_api_http_options(timeout_ms=30000),
                 )
             self._local.client = client
         return client

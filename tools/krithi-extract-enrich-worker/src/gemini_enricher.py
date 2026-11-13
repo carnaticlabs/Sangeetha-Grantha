@@ -23,6 +23,7 @@ from typing import Any, Protocol
 from pydantic import BaseModel, Field
 
 from .diacritic_normalizer import cleanup_raga_tala_name
+from .gemini_transport import developer_api_http_options
 from .schema import (
     CanonicalExtraction,
     CanonicalMetadataEnrichment,
@@ -109,7 +110,10 @@ class GeminiMetadataEnricher:
             try:
                 from google import genai
 
-                self._raw_client = genai.Client(api_key=self._config.api_key)
+                self._raw_client = genai.Client(
+                    api_key=self._config.api_key,
+                    http_options=developer_api_http_options(),
+                )
                 self._client = _GenaiClientWrapper(self._raw_client, self._config.model, _GeminiSuggestion)
             except ImportError:
                 logger.error("google-genai not installed")

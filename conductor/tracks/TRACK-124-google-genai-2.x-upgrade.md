@@ -35,3 +35,10 @@ Per the upstream changelog, google-genai 2.0's breaking changes are **Interactio
 drive the real 2.x SDK through respx-stubbed HTTP (client init → request → response parsing).
 Live-key smoke test not run — no `SG_GEMINI_API_KEY` available in this environment; the
 HTTP-stubbed round-trip is the deepest offline verification.
+
+# Follow-up (2026-11-13): google-genai 3.x
+3.0 defaults to httpx2 and Developer API `v1`. The worker now builds clients through
+`src/gemini_transport.py`, which passes an httpx client (so respx stubs still intercept) and
+`api_version="v1beta"` for the Developer API (Vertex keeps the SDK default). `pyproject.toml` declares
+`google-genai[httpx]>=2.0.0`, resolved `3.3.0`. `asyncio_default_fixture_loop_scope` is now set for
+pytest-asyncio 1.5.
