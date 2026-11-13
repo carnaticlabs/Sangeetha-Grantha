@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.2.0 |
-| **Last Updated** | 2026-09-10 |
+| **Version** | 1.3.0 |
+| **Last Updated** | 2026-11-13 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Navigation |
 
@@ -14,6 +14,7 @@ These investigations explain earlier source/import failures and repairs. Preserv
 
 ## In this section
 
+- [Critical Retrospective: July to November 2026](./platform-retrospective-2026-07-to-11.md)
 - [Extraction & Variant Pipeline Failure Analysis](./analysis-extraction-pipeline-failures.md)
 - [Analysis: Consolidating All Extraction Logic into the Python Service](./extraction-consolidation-analysis-2026-02.md)
 - [Import Pipeline Analysis & Remediation Report](./import-pipeline-analysis-report.md)

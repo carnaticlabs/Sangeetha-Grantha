@@ -171,7 +171,7 @@ Every Markdown page in the application documentation is listed here by area. **C
 | [Rasika: a living library of Carnatic music](./../05-frontend/mobile/rasika-discovery-experience.md) | Current guide |
 | [Rasika visual design](./../05-frontend/mobile/track-138-visual-design.md) | Current guide |
 | [Mobile UI Specification (KMP)](./../05-frontend/mobile/ui-specs.md) | Design reference |
-| [Frontend UI Libraries](./../05-frontend/ui-libraries.md) | Design reference |
+| [Frontend UI Libraries](./../05-frontend/ui-libraries.md) | Current guide |
 ## 06-backend
 
 | Document | Reading context |
@@ -304,6 +304,7 @@ Every Markdown page in the application documentation is listed here by area. **C
 | Document | Reading context |
 |:---|:---|
 | [Retrospectives and investigations](./../11-retrospective/README.md) | Navigation |
+| [Critical Retrospective: July to November 2026](./../11-retrospective/platform-retrospective-2026-07-to-11.md) | Evidence record |
 | [Extraction & Variant Pipeline Failure Analysis](./../11-retrospective/analysis-extraction-pipeline-failures.md) | Evidence record |
 | [Analysis: Consolidating All Extraction Logic into the Python Service](./../11-retrospective/extraction-consolidation-analysis-2026-02.md) | Evidence record |
 | [Import Pipeline Analysis & Remediation Report](./../11-retrospective/import-pipeline-analysis-report.md) | Evidence record |

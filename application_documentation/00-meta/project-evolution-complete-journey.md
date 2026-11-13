@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 4.0.0 |
-| **Last Updated** | 2026-09-10 |
+| **Version** | 4.1.0 |
+| **Last Updated** | 2026-11-13 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Evidence record |
 
@@ -144,7 +144,8 @@ While the rest of this document is structured thematically, it is useful to anch
   - Batch 2 (TRACK-121): Frontend major toolchain — TypeScript 6.0, ESLint 10, Vite 8.1.3 (Rolldown bundler), `bunfig.toml` for Bun runtime
   - Batch 3a (TRACK-122): Kotlin 2.4.0 + Compose Multiplatform 1.11.1 (material3 own train, iosX64 dropped)
   - Batch 3b (TRACK-123): Testcontainers 2.0.5 (artifact renamed, package moved)
-  - Batch 3c (TRACK-124): google-genai >=2.0.0 (resolved 2.9.0)
+  - Batch 3c (TRACK-124): google-genai >=2.0.0 (resolved 2.9.0); refreshed 2026-11-13 to 3.3.0 behind a worker transport module (httpx client, Developer API `v1beta`)
+  - Nov 2026 refresh: AGP 9.5.1, Ktor 3.6.1, Exposed 1.6.1, Flyway 13.12.2, Vite 8.3.8, Vitest 5.1.0, PyMuPDF 2.1; unused AWS SDK catalog entry removed (see [current versions](./current-versions.md))
 - **Parser & Data Fixes**: Ragamalika raga subsection detection without splitting into separate sections. Unlabeled leading variant section promotion. Off-by-one lyric section matching fix. Single-letter Indic abbreviation false positive prevention. Diacritic normalizer newline preservation. Bulk approval serialization fix with request chunking. V47 ragamalika demerge migration.
 - **PostgreSQL 18 Volume Layout**: Migrated compose volume to `/var/lib/postgresql` (pg18 single-mount layout, volume `pgdata18`).
 

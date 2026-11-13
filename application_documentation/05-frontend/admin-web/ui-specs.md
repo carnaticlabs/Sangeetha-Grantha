@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 2.3.0 |
-| **Last Updated** | 2026-09-10 |
+| **Version** | 2.5.0 |
+| **Last Updated** | 2026-11-13 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Current guide |
 
@@ -29,7 +29,9 @@ The backend enforces the admin role. A visible screen or navigation link does no
 | Imports | `/imports` | Request source scraping and inspect imported records |
 | Bulk import | `/bulk-import` | Upload manifests, monitor batches, control processing, export reports |
 | Curator review | `/curator-review` | Review incoming content, section issues, and unresolved raga identities |
+| Mobile Preview | `/mobile-preview` | Read-only replica of Rasika in a phone frame: Home, Explore, Browse, reader, ragas, composers, collections and kshetras, plus search with match reasons. Also a **Mobile Preview** tab in the composition editor. Admin-only; writes nothing ([guide](./mobile-preview.md)) |
 | Tags | `/tags` | Maintain the controlled tag catalogue |
+| Users, Roles | `/users`, `/roles` | Placeholder pages; see Implementation boundaries |
 | Sourcing overview | `/admin/sourcing` | Inspect source and extraction activity |
 | Sources and processing | `/admin/sourcing/sources` | Manage sources and monitor extraction requests |
 | Evidence and verification | `/admin/sourcing/evidence` | Inspect source contributions and structural voting |
@@ -57,6 +59,10 @@ Workflow states are Draft, In review, Published, and Archived. Public catalogue 
 
 The [domain model](../../01-requirements/domain-model.md) defines musical correctness. [Versioned canon](../../04-database/versioned-canon.md) explains accepted-change history.
 
+## Check how an edit looks on mobile
+
+After saving, open the **Mobile Preview** tab on the composition. It shows the reader as Rasika will, marks a krithi that is not published with a **Not published** banner, and warns when the search index is behind the edit. **Search for this krithi** runs the same search code the app calls, with the reason each result matched, and why a collection or kshetra card appeared or did not. Hybrid and semantic searches can cost one embedding call and run only on submit, with a limit of 20 a minute per curator. Details, limits and the differences from console search: [Mobile Preview](./mobile-preview.md).
+
 ## Import and review
 
 1. Register or select the source and submit a source URL or a manifest.
@@ -66,7 +72,7 @@ The [domain model](../../01-requirements/domain-model.md) defines musical correc
 5. Approve/map or reject the imported record; inspect the resulting composition.
 6. Verify publication visibility independently from extraction completion.
 
-Batches expose jobs, tasks, events, and pause/resume/cancel/retry controls. Review and finalization are distinct from worker processing. Follow the [ingestion guide](../../01-requirements/features/bulk-import/02-implementation/technical-implementation-guide.md) for ownership and troubleshooting.
+Batches expose jobs, tasks, events, and pause/resume/cancel/retry controls. Review and finalization are distinct from worker processing. Detaching a mapped import (`unmap`) and forcing a new composition on approval (`forceNew`) are audited API operations with no console screen yet; see the [API contract](../../03-api/api-contract.md). Follow the [ingestion guide](../../01-requirements/features/bulk-import/02-implementation/technical-implementation-guide.md) for ownership and troubleshooting.
 
 ## Source evidence and quality
 
@@ -86,7 +92,7 @@ Two consequences are worth knowing when adding UI. `--color-white` is a *surface
 
 ## Implementation boundaries
 
-User and role pages remain placeholders even though backend management endpoints exist. Settings is not a completed console preferences experience. OAuth/OTP, graph exploration, public read-only web, and media experiences are planned separately. Backend validation/transliteration operations are not a promise of automatic scholarly verification.
+User and role pages (`/users`, `/roles`) remain placeholders even though backend management endpoints exist. Mobile Preview shows what Rasika would show; it does not publish, edit or reindex anything. Settings is not a completed console preferences experience. OAuth/OTP, graph exploration, public read-only web, and media experiences are planned separately. Backend validation/transliteration operations are not a promise of automatic scholarly verification.
 
 ## Frontend implementation
 

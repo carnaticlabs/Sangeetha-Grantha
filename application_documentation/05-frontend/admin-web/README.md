@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.2.0 |
-| **Last Updated** | 2026-09-10 |
+| **Version** | 1.3.0 |
+| **Last Updated** | 2026-11-13 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Navigation |
 
@@ -14,8 +14,8 @@ The [screen guide](./ui-specs.md) explains navigation, search, editing, sourcing
 
 ## In this section
 
-- [Curator Console guide](./ui-specs.md)
-- [Mobile Preview](./mobile-preview.md)
+- [Curator Console guide](./ui-specs.md): routes, search, editing, import, sourcing, theming
+- [Mobile Preview](./mobile-preview.md): read-only replica of Rasika, search explanations and index freshness (TRACK-158, TRACK-159)
 
 ---
 

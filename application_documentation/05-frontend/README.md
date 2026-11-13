@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.3.0 |
-| **Last Updated** | 2026-09-10 |
+| **Version** | 1.4.0 |
+| **Last Updated** | 2026-11-13 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Navigation |
 
@@ -15,7 +15,8 @@ The Curator Console and Rasika serve different audiences and API contracts. Read
 ## In this section
 
 - [Admin Web](./admin-web/README.md)
-- [Rasika mobile implementation](./mobile/README.md)
+- [Rasika mobile implementation](./mobile/README.md) and [experience guide](./mobile/rasika-discovery-experience.md)
+- [Mobile Preview](./admin-web/mobile-preview.md) (curator replica of Rasika)
 - [Frontend UI Libraries](./ui-libraries.md)
 
 ---

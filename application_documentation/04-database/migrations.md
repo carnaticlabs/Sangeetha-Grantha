@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 3.5.1 |
-| **Last Updated** | 2026-09-20 |
+| **Version** | 3.6.0 |
+| **Last Updated** | 2026-11-13 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Current guide |
 
@@ -21,7 +21,7 @@ Files live in [database/migrations](../../database/migrations). Flyway executes 
 
 ## 2. Current schema landmarks
 
-At this documentation review, the directory contains `V01`–`V60` and six repeatable reference seeds. Inspect the directory before assigning a new number.
+At this documentation review, the directory contains `V01`–`V70` and fourteen repeatable reference seeds. Inspect the directory before assigning a new number.
 
 | Migration | Responsibility |
 |:---|:---|
@@ -33,6 +33,11 @@ At this documentation review, the directory contains `V01`–`V60` and six repea
 | [V58](../../database/migrations/V58__semantic_search_pgvector.sql) | pgvector search documents, profiles and embeddings |
 | [V59](../../database/migrations/V59__musical_form_unestablished.sql) | `UNESTABLISHED` musical-form enum value |
 | [V60](../../database/migrations/V60__musical_form_default_unestablished.sql) | Default unclassified form for new compositions |
+| V61–V65 | Catalogue raga and metadata repairs, corpus import sources, canonical tala harmonization, TRACK-144 audit and embedding-cohort repairs |
+| [V66](../../database/migrations/V66__dikshitar_musicological_enrichment.sql) | Dikshitar musicological enrichment (TRACK-145) |
+| V67 | Search-document anchor constraints |
+| [V68](../../database/migrations/V68__temple_google_place_review.sql) | Reviewed Google place-id columns on `temples` (TRACK-154) |
+| V69–V70 | Saraswati temple corrected to Basara; Poornalalita merged into Poornalalitha (TRACK-149) |
 
 Earlier TRACK-133 corpus-fix files also used numbers V58–V62 and were retired in TRACK-139. They are different files from the current V58–V60 schema migrations. Identify history by full filename/description/checksum before making any recovery decision. TRACK-139 later retired `V46__delete_incomplete_devanagari_amba_nilayatakshi.sql` the same way (file delete plus the matching history row keyed on version *and* description).
 
@@ -54,7 +59,7 @@ For reference-data changes, update the relevant repeatable and verify that it re
 
 | Data | Location / mechanism | Purpose |
 |:---|:---|:---|
-| Reference data | `R__seed_01` through `R__seed_06` | Roles, reference entities, aliases, source authority and raga reconciliation |
+| Reference data | `R__seed_01` through `R__seed_14` | Roles, reference entities, aliases, source authority and raga reconciliation (01–06); canonical cycle tags, musical-form updates and reviewed Dikshitar, Syama Sastri and Tyagaraja cycle memberships, temple place review, Kshetra Pancharatnam and temple geography (07–14) |
 | Environment account | `make bootstrap-admin` | Admin identity, argon2id password hash and role assignment |
 | Development samples | `make seed-dev` | Optional local sample compositions |
 | Test fixtures | Test-support builders and per-layer fixtures | Deterministic test data |

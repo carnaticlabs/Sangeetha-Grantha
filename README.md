@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 2.2.0 |
-| **Last Updated** | 2026-09-30 |
+| **Version** | 2.3.0 |
+| **Last Updated** | 2026-11-13 |
 | **Author** | Sangeetha Grantha Team |
 
 # Sangeetha Grantha
@@ -20,12 +20,13 @@ The project has two working applications: **Rasika**, a shared Kotlin app for An
 ## Discover and read with Rasika
 
 - **Home** puts search first, followed by available discovery content or a selection from the collection.
-- **Explore** searches compositions, ragas, and composers. Apply exact raga and composer filters, browse further pages, and open entity pages to discover related works.
-- **The reader** presents a stored lyric variant with its script, source reference, and section labels. Switching variants preserves the previous text until the replacement loads. Ordered raga associations preserve Ragamalika structure.
+- **Explore** searches compositions, ragas, and composers. Lexical search matches stored lyrics, raga and composer pickers reach every entry, and results can lead with collection and kshetra cards. Apply exact raga and composer filters and reviewed lakshana facets (such as vibhakti, tune and mandalam), browse further pages, and open entity pages to discover related works.
+- **Collections and kshetras** show reviewed cycles (Navavarana, Navagraha, Pancha Bhuta Sthala, Ratnatrayam, Ghana-raga Pancharatnam and others) in order, and temples grouped by mandalam with nested shrines and kritis. Open in Google Maps appears only for temples with a reviewed place id.
+- **The reader** presents a stored lyric variant with its script, source reference, and section labels, plus cycle context and facet chips where reviewed data exists. Switching variants preserves the previous text until the replacement loads. Ordered raga associations preserve Ragamalika structure.
 - **Library** stores bookmarks on the device. **Settings** offers System, Light, and Dark appearance.
 - Large-text layouts and reduced-motion behavior are implemented. Native journey tests exist; device execution and TalkBack/VoiceOver proof remain release gates.
 
-Rasika currently reads `/v2/catalogue`. It includes published compositions whose musical form is not yet established, without displaying a guessed form badge. Broader metadata directories, collections, recents, and later editorial Home features remain planned. See the [Rasika experience](./application_documentation/05-frontend/mobile/rasika-discovery-experience.md) and [release evidence](./application_documentation/10-implementations/track-140-rasika-discovery.md).
+Rasika currently reads `/v2/catalogue`. It includes published compositions whose musical form is not yet established, without displaying a guessed form badge. Broader metadata directories (tala, deity, language, form), recents, and later editorial Home features remain planned. See the [Rasika experience](./application_documentation/05-frontend/mobile/rasika-discovery-experience.md) and [release evidence](./application_documentation/10-implementations/track-140-rasika-discovery.md).
 
 ## Intelligent musicological search and retrieval
 
@@ -58,9 +59,11 @@ Through **Track 145** (Dikshitar Kshetra & Musicological Metadata Enrichment), t
 | **Subrahmanya at Kazhugumalai** | `"Muthuswami Dikshitar Subrahmanya kriti at Kazhugumalai shrine"` | *Subrahmanyena Rakshitoham* (Suddhadhanyasi; Kazhugumalai) |
 | **Tiruchendur Murugan** | `"Dikshitar kriti praising Lord Subrahmanya at sea-shore Tiruchendur"` | *Sri Subrahmanyo Mam Rakshatu* (Todi; Tiruchendur; Senthil Andavar) |
 
+Classification of the Syama Sastri and Tyagaraja corpora (TRACK-146 to TRACK-149) follows the same evidence-first approach: approved claims are applied through reviewed seeds, and Tyagaraja records that collide on raga and tala are split into distinct compositions through the audited import pipeline. Edition-consultation adjudication for both composers is still in progress.
+
 ## Build and curate the catalogue
 
-The Curator Console supports composition editing, section and lyric variants, notation, reference data, import review, and an audit history. Its sourcing workspace brings source registration, extraction monitoring, evidence, structural verification, and quality summaries together.
+The Curator Console supports composition editing, section and lyric variants, notation, reference data, import review, and an audit history. **Mobile Preview** replicates Rasika read-only inside the console, showing how an edit will look and what a search will return, with a warning when the search index is behind the edit ([guide](./application_documentation/05-frontend/admin-web/mobile-preview.md)). Its sourcing workspace brings source registration, extraction monitoring, evidence, structural verification, and quality summaries together.
 
 Search offers three modes: lexical matching for familiar titles and phrases, semantic retrieval for meaning, and hybrid retrieval combining both. Semantic and hybrid search use a separately populated embedding index; a fresh database does not contain indexed compositions.
 
@@ -86,7 +89,7 @@ flowchart LR
     B[Embedding indexing scripts] --> D
 ```
 
-Public catalogue DTOs expose a deliberate subset of editorial data. The catalogue V1 contract excludes `UNESTABLISHED`; V2 supports it. Successful catalogue reads use `Cache-Control: no-store`. Admin mutations require authorization and audit logging. Flyway owns schema evolution; source corrections belong in extraction, reingestion, and curation workflows.
+Rasika reads published data only; V2 adds discovery, collections, kshetras, facets and search cards, none of which exist on V1. Public catalogue DTOs expose a deliberate subset of editorial data. The catalogue V1 contract excludes `UNESTABLISHED`; V2 supports it. Successful catalogue reads use `Cache-Control: no-store`. Admin mutations require authorization and audit logging. Flyway owns schema evolution; source corrections belong in extraction, reingestion, and curation workflows.
 
 | Area | Location | Responsibility |
 |:---|:---|:---|
@@ -128,14 +131,15 @@ A new database contains schema and reference data. Import or load development sa
 | Shared mobile JVM tests | `make test-mobile` |
 | Android debug build / iOS simulator build | `make mobile-android` / `make mobile-ios` |
 | Check documentation links | `make check-docs` |
+| Find code changes whose docs did not move | `make check-doc-impact` |
 
 `make db-reset` deletes and recreates the local database. `make clean` removes Compose volumes. Neither is required for routine startup or documentation work.
 
 ## Project status and next steps
 
-Implemented capabilities include the public catalogue, Rasika browsing and reading, the curator and sourcing workflows, hybrid/semantic search, raga aliases and controlled resolution, versioned canon, and Flyway/Testcontainers infrastructure. “Implemented” describes repository behavior; it does not certify production deployment or native-device acceptance.
+Implemented capabilities include the public catalogue, Rasika browsing, reading, collections, kshetras and facets, Mobile Preview, the curator and sourcing workflows, hybrid/semantic search, raga aliases and controlled resolution, versioned canon, and Flyway/Testcontainers infrastructure. “Implemented” describes repository behavior; it does not certify production deployment or native-device acceptance.
 
-Open work includes Rasika's native release gate and later discovery releases, payload convergence, the remaining corpus-reingestion closure, interactive OAuth/OTP authentication, and production rollout. The [feature map](./application_documentation/01-requirements/features/README.md) explains the boundaries; [Conductor](./conductor/tracks.md) records execution status.
+Open work includes Rasika's native release gate and later discovery releases, completing the Syama Sastri and Tyagaraja edition adjudication (TRACK-148, TRACK-149), payload convergence, the remaining corpus-reingestion closure, interactive OAuth/OTP authentication, and production rollout. The [feature map](./application_documentation/01-requirements/features/README.md) explains the boundaries; [Conductor](./conductor/tracks.md) records execution status.
 
 ## Find your next document
 

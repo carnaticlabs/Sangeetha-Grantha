@@ -10,13 +10,14 @@ Architecture split: **Intelligence in Python, Ingestion in Kotlin, Review in Cur
 ## Paradigm: classes + Pydantic, no loose dicts
 
 - All data crossing a function boundary is a `pydantic.BaseModel` (schemas live in `src/schema.py`) — typed fields, defaults, validators. Passing raw dicts around or procedural top-level scripts is rejected; encapsulate logic in classes with narrow responsibilities.
-- Gemini calls (`gemini_enricher.py`, google-genai 2.x SDK) use structured outputs mapped to Pydantic schemas, never free-text parsing of model replies.
+- Gemini calls (`gemini_enricher.py`, google-genai 3.x SDK on the httpx transport and Developer API `v1beta`) use structured outputs mapped to Pydantic schemas, never free-text parsing of model replies.
 - Failures isolate per item: one unparseable PDF, page, or krithi is caught, logged with enough context to locate the source, and recorded as a failed unit — it must never abort the batch or silently drop the items that parsed cleanly. A batch result reports what succeeded *and* what failed; a partial run that looks like a clean run is the worst outcome.
 
 ## Key modules (src/)
 
 - `structure_parser.py` — section classification heuristics; must honour transliteration collapses (mirrored in Kotlin's `TransliterationCollapse`).
 - `velthuis_decoder.py` — Velthuis font mapping for Sanskrit; `diacritic_normalizer.py` / `normalizer.py` — diacritic and script normalization; `transliterator.py` — script conversion.
+- `gemini_transport.py` — google-genai client options (httpx client + Developer API `v1beta`, Vertex default); build every `genai.Client` through it so respx stubs keep intercepting and routes stay stable on 3.x.
 - `extractor.py` / `html_extractor.py` / `ocr_fallback.py` / `page_segmenter.py` — PDF/HTML/OCR extraction pipeline; `metadata_parser.py`, `identity_candidates.py` — metadata and entity resolution; `worker.py` / `cli.py` — entry points; `db.py` — psycopg access.
 
 ## Environment & dependencies

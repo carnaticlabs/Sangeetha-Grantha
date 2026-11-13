@@ -25,7 +25,7 @@ dependencies = [
     "psycopg[binary]>=3.1.0",   # PostgreSQL driver (async-capable)
 
     # LLM integration
-    "google-genai>=2.0.0",         # Unified Gemini SDK; 2.0 breaking changes are Interactions-only (TRACK-124)
+    "google-genai[httpx]>=2.0.0",  # 3.x defaults to httpx2 and Developer API v1; the extra keeps httpx so respx stubs still see the SDK (TRACK-124)
     "rapidfuzz>=3.9.0",            # Fast fuzzy matching for identity candidates
 
     # HTTP
@@ -75,6 +75,8 @@ select = ["E", "F", "I", "UP", "B"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
+# pytest-asyncio 1.5 warns when this is unset and will later default to function scope.
+asyncio_default_fixture_loop_scope = "fixture-scope"
 
 [tool.mypy]
 python_version = "3.14"

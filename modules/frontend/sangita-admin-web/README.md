@@ -1,15 +1,15 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.0.0 |
-| **Last Updated** | 2026-09-10 |
+| **Version** | 1.1.0 |
+| **Last Updated** | 2026-11-13 |
 | **Author** | Sangeetha Grantha Team |
 
 # Curator Console
 
 ---
 
-The React application for editing Sangeetha Grantha's catalogue, reviewing imports, managing references, and inspecting source evidence. It includes lexical/hybrid/semantic search, a composition editor, curator review, and a consolidated sourcing workspace.
+The React application for editing Sangeetha Grantha's catalogue, reviewing imports, managing references, and inspecting source evidence. It includes lexical/hybrid/semantic search, a composition editor, curator review, a consolidated sourcing workspace, and a read-only Mobile Preview of the Rasika app (`/mobile-preview` and an editor tab).
 
 [User and screen guide](../../../application_documentation/05-frontend/admin-web/ui-specs.md) · [API contract](../../../application_documentation/03-api/api-contract.md) · [Local setup](../../../application_documentation/00-onboarding/getting-started.md)
 
@@ -46,7 +46,7 @@ Additional scripts include `lint`, `test:e2e`, `test:e2e:money`, `test:e2e:heade
 
 - [App.tsx](./src/App.tsx): routes, application shell, lazy-loaded sourcing pages.
 - [api/client.ts](./src/api/client.ts): transport, authentication, editorial requests.
-- [pages](./src/pages): catalogue, editor, imports, references, curator, sourcing experiences.
+- [pages](./src/pages): catalogue, editor, imports, references, curator, sourcing experiences, and [mobile-preview](./src/pages/mobile-preview) with its [components](./src/components/mobile-preview) and the [preview API client](./src/api/previewApi.ts).
 - [components](./src/components): shared controls, editors, forms, and layout.
 - [e2e](./e2e): browser fixtures, page objects, and test journeys.
 

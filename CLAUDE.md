@@ -157,13 +157,14 @@ Load the matching skill before working in a layer instead of re-deriving its con
 - `python-extraction-worker` — `tools/krithi-extract-enrich-worker/` (Pydantic paradigm, module map, uv)
 - `monorepo-orchestration` — mise/Makefile/Compose workflows and layer ownership
 - `verify-import` — post-import data verification checklist
+- `update-documentation` — full sweep of `README.md` and `application_documentation/` for all changes so far (`/update-docs`)
 - `sangita-restart-on-kotlin-change` — bounce Compose after Kotlin or extraction-worker Python edits (`make dev-down` then `make dev`)
 
 Cursor loads the same skills via symlinks under [`.cursor/skills/`](.cursor/skills/). Canonical files stay in `.claude/skills/`. Do not copy the bodies into `.cursor/` or `.cursorrules`.
 
 ### Slash Commands (`.claude/commands/`)
 
-`/dev-start`, `/db-reset`, `/test-all`, `/steel-thread`, `/new-migration`, `/spec-from-track`, `/plan-from-spec`, `/commit` (organize logical commits, push, watch the PR, merge into `main`, sync local `main`, delete merged branches; message rules in commit-policy), `/retrospective-commit-and-push` (update impacted docs, organize uncommitted changesets, atomic commits with Ref, push, watch PR, merge onto remote `main`, sync local `main`, delete stale branches), `/Sangeetha-Krithi-Analyser` (krithi section analysis). Cursor mirrors these files in [`.cursor/commands/`](.cursor/commands/).
+`/dev-start`, `/update-docs` (full documentation sweep, no commit), `/db-reset`, `/test-all`, `/steel-thread`, `/new-migration`, `/spec-from-track`, `/plan-from-spec`, `/commit` (organize logical commits, push, watch the PR, merge into `main`, sync local `main`, delete merged branches; message rules in commit-policy), `/retrospective-commit-and-push` (update impacted docs, organize uncommitted changesets, atomic commits with Ref, push, watch PR, merge onto remote `main`, sync local `main`, delete stale branches), `/Sangeetha-Krithi-Analyser` (krithi section analysis). Cursor mirrors these files in [`.cursor/commands/`](.cursor/commands/).
 
 ### Specialist Subagents (`.claude/agents/`)
 

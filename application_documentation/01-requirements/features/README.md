@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.3.1 |
-| **Last Updated** | 2026-10-16 |
+| **Version** | 1.4.0 |
+| **Last Updated** | 2026-11-13 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Navigation |
 
@@ -10,7 +10,7 @@
 
 ---
 
-This is the current capability map for Sangeetha Grantha, reviewed against repository code on 2026-09-30. Use it to distinguish working behavior, operational prerequisites, and planned experiences. Track reports record past verification; they do not establish the state of a running deployment.
+This is the current capability map for Sangeetha Grantha, reviewed against the conductor registry and repository on 2026-11-13. Use it to distinguish working behavior, operational prerequisites, and planned experiences. Track reports record past verification; they do not establish the state of a running deployment.
 
 ## Listener and student experience
 
@@ -18,10 +18,12 @@ This is the current capability map for Sangeetha Grantha, reviewed against repos
 |:---|:---|:---|
 | Rasika shell | Home, Explore, Library, Settings; persistent appearance | Native-device acceptance remains open |
 | Catalogue discovery | V2 discovery response; published selection and available feature content | Expanded editorial Home features remain later-release work |
-| Search and browse | Explicit submitted query across compositions, ragas, composers; paging; UUID filters | Tala, deity, temple, language, and form directories are not mounted in V2 |
+| Search and browse | Explicit submitted query across compositions, ragas, composers; paging; UUID filters; V2 search returns collection and kshetra cards above kritis (TRACK-152); lexical search matches stored lyrics and the raga and composer pickers reach every entry (TRACK-159) | Tala, deity, temple, language, and form directories are not mounted in V2 |
 | Entity pages | Raga/composer detail and works lists; aliases and raga lineage where available | Displayed metadata depends on stored reference coverage |
 | Lyric reader | One source variant at a time; script/source selection; stored section labels; ordered ragas | No generated transliteration, playback, or notation renderer in the Rasika reader |
-| Kshetras | Home shelf; list grouped by mandalam with an element filter; detail with nested shrines, kritis and recorded-gap state; reader temple link; search cards ([details](rasika-kshetra-exploration.md)) | Maps link waits for TRACK-154 place ids; embedded map is a follow-up track |
+| Kshetras | Home shelf; list grouped by mandalam with an element filter; detail with nested shrines, kritis and recorded-gap state; reader temple link; search cards ([details](rasika-kshetra-exploration.md)) | Open in Google Maps appears only for temples with a reviewed place id (TRACK-154); embedded map is a follow-up track |
+| Collections and cycle context | Reviewed cycles (Navavarana, Navagraha, Pancha Bhuta Sthala, Ratnatrayam, Ghana-raga Pancharatnam and others) as ordered collections; reader shows a kriti's position, neighbours, vibhakti and occasion (TRACK-150) | Only reviewed Dikshitar, Syama Sastri and Tyagaraja cycles |
+| Lakshana facets | Browse and Explore filters and reader chips for vibhakti, tune, mandalam and the other reviewed discriminators (TRACK-153) | A facet is listed only where reviewed values exist |
 | Library | Device-local bookmarks across restart | Account sync, collections, and recents remain planned |
 | Accessibility | Large-text handling and reduced-motion behavior; native journey test targets | TalkBack, VoiceOver, and device runtime proof are still required |
 
@@ -36,6 +38,7 @@ Read the [mobile requirements](../mobile/README.md), [Rasika UI guide](../../05-
 | Bulk import | Manifest upload, batches, jobs/tasks/events, pause/resume/retry/cancel, review and finalization | Extraction success alone does not mean publication |
 | Sourcing workspace | Sources/extractions, evidence/verification, quality summary screens | Coverage and audit-summary endpoints include placeholder responses |
 | Curator review | Section issues and raga-resolution actions | Corpus corrections should be verified after reingestion |
+| Mobile Preview | Read-only replica of Rasika inside the Curator Console, with search order, match reasons and a stale-index warning ([guide](../../05-frontend/admin-web/mobile-preview.md), TRACK-158) | Never edits data; searches that cost an embedding are re-run only on request |
 | Reference data | Composer/raga/tala/deity/temple management; raga tree, aliases, identity rules | Ambiguous names are reviewed; similarity does not establish raga identity |
 | Authentication | Admin-token exchange for JWT, stored role checks, JWT refresh; argon2id provisioning | Password provisioning is not an interactive password login; OAuth/OTP is deferred |
 
@@ -49,6 +52,8 @@ Read the [curator guide](../../05-frontend/admin-web/ui-specs.md), [bulk-import 
 | Embedding profiles, overview/passage indexing, hybrid rank fusion | [Search guide](../../03-api/search.md) |
 | Dikshitar kshetra & musicological metadata, macro indexing | [TRACK-145 implementation](../../10-implementations/track-145-dikshitar-kshetra-musicological-metadata.md), [Search guide](../../03-api/search.md) |
 | Tyagaraja classification master and Ghana-raga Pancharatnam memberships | [TRACK-147 implementation](../../10-implementations/track-147-tyagaraja-musicological-classification.md), [concordance](./tyagaraja-classification-master.md) |
+| Syama Sastri classification and edition adjudication (in progress), Tyagaraja collision split and re-index (in progress) | [TRACK-148](../../../conductor/tracks/TRACK-148-syama-sastri-edition-consultation-adjudication.md), [TRACK-149](../../../conductor/tracks/TRACK-149-tyagaraja-edition-consultation-collision-split.md), [re-index evidence](../../10-implementations/track148-149-reindex-search-evidence.md), [contract](./musicological-classification-contract.md) |
+| Macro search floor and re-embed runbook | [Search guide](../../03-api/search.md), [TRACK-157](../../../conductor/tracks/TRACK-157-macro-search-followups.md) |
 | Append-only revisions and per-section source provenance | [Versioned canon](../../04-database/versioned-canon.md) |
 | Raga aliases, authority, match keys, resolution queue | [Raga identity](../../04-database/raga-identity.md) |
 | Python extraction, canonical payloads, Kotlin persistence | [Ingestion architecture](./bulk-import/02-implementation/technical-implementation-guide.md) |
