@@ -2,7 +2,7 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.6.0 |
-| **Last Updated** | 2026-11-13 |
+| **Last Updated** | 2026-11-24 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Current guide |
 
@@ -21,7 +21,7 @@ This guide explains why each part of the stack exists and where it is configured
 | Backend | Ktor, Koin, coroutines | HTTP, dependencies, orchestration in [backend/api](../../modules/backend/api) |
 | Persistence | Exposed DSL, JDBC, HikariCP | Transactional repositories in [backend/dal](../../modules/backend/dal) |
 | Database/search | PostgreSQL, pgvector, trigram indexes | Canonical data, queue, history, lexical/vector retrieval |
-| **Migrations** | **Flyway Community** | Versioned schema and repeatable reference seeds. The Compose `migrate` image, CI image, and worker `FLYWAY_IMAGE` stay on the catalog pin in [Current Versions](../00-meta/current-versions.md). JVM tests use the Flyway API. |
+| **Migrations** | **Flyway Community** | Versioned schema and repeatable reference seeds. The Compose `migrate` image, CI image, and worker `FLYWAY_IMAGE` stay on the catalog pin (Flyway 13.13.0 as of 2026-11-24) in [Current Versions](../00-meta/current-versions.md). JVM tests use the Flyway API. |
 | Admin web | React, TypeScript, Tailwind, Vite, TanStack Query | Editorial UI and server state in [admin module](../../modules/frontend/sangita-admin-web) |
 | Extraction | Python, Pydantic, source parsers, optional Gemini | [Worker](../../tools/krithi-extract-enrich-worker/README.md) |
 | Embeddings | Gemini embedding clients + profile-aware index tools | Overview/passage indexing and query vectors |

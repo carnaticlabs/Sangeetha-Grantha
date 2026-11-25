@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.10.0 |
-| **Last Updated** | 2026-11-13 |
+| **Version** | 1.11.0 |
+| **Last Updated** | 2026-11-25 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Current guide |
 
@@ -56,9 +56,9 @@
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| PostgreSQL Driver | `42.7.14` | JDBC driver (CVE-2026-54291 fix) |
+| PostgreSQL Driver | `42.7.15` | JDBC driver (CVE-2026-54291 fix) |
 | HikariCP | `7.1.0` | Connection pooling |
-| Logback | `1.6.6` | Logging framework |
+| Logback | `1.6.8` | Logging framework |
 | Logstash Encoder | `9.0` | JSON log formatting |
 | Commons CSV | `1.14.1` | CSV parsing |
 | dotenv-kotlin | `6.5.1` | Environment variable loading |
@@ -68,7 +68,7 @@
 | Library | Version | Purpose |
 |---------|---------|---------|
 | JWT (Auth0) | `4.6.2` | JWT token handling |
-| Google Auth | `1.57.0` | OAuth2 (future SSO) |
+| Google Auth | `1.58.0` | OAuth2 (future SSO) |
 | password4j | `1.8.4` | argon2id password hashing (TRACK-114) |
 
 ### Build & Packaging
@@ -76,7 +76,7 @@
 | Library | Version | Purpose |
 |---------|---------|---------|
 | Shadow Plugin | `9.6.1` | Fat JAR packaging |
-| Micrometer | `1.17.2` | Metrics & monitoring |
+| Micrometer | `1.18.0` | Metrics & monitoring |
 
 ### Testing
 
@@ -110,16 +110,16 @@
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| React Router | `7.18.5` | Client-side routing |
-| TanStack Query | `5.107.1` | Data fetching & caching |
+| React Router | `7.18.6` | Client-side routing |
+| TanStack Query | `5.108.4` | Data fetching & caching |
 
 ### Development & Testing
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| ESLint | `10.14.0` | Code linting (via `bun run`; needs Bun runtime). `eslint-plugin-react-hooks` pinned **7.0.1** — 7.1.1's `react-hooks/immutability` still errors on BulkImport/CuratorReview (TRACK-135 loading-loop). |
-| Vitest | `5.1.0` | Unit testing |
-| Playwright | `1.65.0` | E2E testing |
+| ESLint | `10.15.0` | Code linting (via `bun run`; needs Bun runtime). `eslint-plugin-react-hooks` pinned **7.0.1** — 7.1.1's `react-hooks/immutability` still errors on BulkImport/CuratorReview (TRACK-135 loading-loop). |
+| Vitest | `5.1.1` | Unit testing |
+| Playwright | `1.65.1` | E2E testing |
 
 ---
 
@@ -134,13 +134,13 @@
 | Library | Version | Purpose |
 |---------|---------|---------|
 | PyMuPDF | `2.1` | Primary PDF text extraction |
-| pdfplumber | `0.11.10` | Tabular PDF extraction fallback |
+| pdfplumber | `0.11.11` | Tabular PDF extraction fallback |
 | pytesseract | `0.3.13` | Tesseract OCR wrapper |
 | indic-transliteration | `2.3.82` | Script conversion (Devanagari ↔ Tamil/Telugu/etc.) |
-| Pydantic | `2.14.3` | Schema validation |
-| Pydantic Settings | `2.16.2` | Environment-based config validation |
+| Pydantic | `2.14.4` | Schema validation |
+| Pydantic Settings | `2.16.3` | Environment-based config validation |
 | psycopg | `3.3.9` | PostgreSQL driver (async-capable) |
-| google-genai | `>=2.0.0` (resolved `3.3.0`, extra `httpx`) | Unified Gemini SDK. 3.0 defaults to httpx2 and Developer API `v1`; the worker passes an httpx client and `api_version="v1beta"` so respx stubs and existing model routes stay in place (TRACK-124) |
+| google-genai | `>=2.0.0` (resolved `3.6.1`, extra `httpx`) | Unified Gemini SDK. 3.0 defaults to httpx2 and Developer API `v1`; the worker passes an httpx client and `api_version="v1beta"` so respx stubs and existing model routes stay in place (TRACK-124) |
 | RapidFuzz | `3.14.6` | Fast fuzzy matching |
 | HTTPX | `0.28.1` | Async HTTP client |
 | BeautifulSoup4 | `4.15.0` | HTML parsing |
@@ -152,14 +152,14 @@
 | Library | Version | Purpose |
 |---------|---------|---------|
 | pytest | `9.2.0` | Test framework |
-| Ruff | `0.17.5` | Linter & formatter |
+| Ruff | `0.17.6` | Linter & formatter |
 | mypy | `2.4.1` | Static type checker |
 
 ### Migration Tool
 
 | Component | Version | Notes |
 |---------|---------|---------|
-| Flyway Community | `13.12.2` | Single migration engine ([ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)). Make/dev/CI via `flyway/flyway:13.12.2-alpine`; Kotlin Testcontainers via the Flyway JVM API. Pinned in `gradle/libs.versions.toml` (`flyway`), `compose.yaml`, CI, and the worker integration `FLYWAY_IMAGE`. |
+| Flyway Community | `13.13.0` | Single migration engine ([ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)). Make/dev/CI via `flyway/flyway:13.13.0-alpine`; Kotlin Testcontainers via the Flyway JVM API. Pinned in `gradle/libs.versions.toml` (`flyway`), `compose.yaml`, CI, and the worker integration `FLYWAY_IMAGE`. |
 
 Migrations are standardized on **Flyway Community** ([ADR-013](../02-architecture/decisions/ADR-013-db-migration-with-flyway.md)). The previous Python tool (`tools/db-migrate`, psycopg `>=3.1`) is superseded and archived (`archive/tools/db-migrate/`, TRACK-110).
 
@@ -184,7 +184,7 @@ Shared integration-test infrastructure (`IntegrationTestBase`, `SangitaPostgres`
 | Compose Multiplatform | `1.12.2` | Cross-platform UI (material3 `1.9.0` own train; icons-extended frozen `1.7.3`; iosX64 dropped by CMP 1.11+; **compileSdk 37** required by AndroidX Compose 1.12) |
 | JetBrains Lifecycle (KMP) | `2.11.0` | `lifecycle-runtime-compose` / `lifecycle-viewmodel-compose` companion to CMP 1.12 (TRACK-138) |
 | JetBrains Navigation Event (KMP) | `1.1.0` | `navigationevent-compose` companion to CMP 1.12; `NavigationEventHandler` replaces deprecated Compose `BackHandler` (TRACK-142) |
-| Android Gradle Plugin | `9.5.1` | Android build (Gradle wrapper `9.7.1`, which meets AGP 9.5's Gradle 9.6.0 floor; Android Studio Rabbit 2 / 2026.2.2 or newer) |
+| Android Gradle Plugin | `9.5.2` | Android build (Gradle wrapper `9.7.1`, which meets AGP 9.5's Gradle 9.6.0 floor; Android Studio Rabbit 2 / 2026.2.2 or newer) |
 | Ktor Client | `3.6.1` | HTTP client |
 
 ---
@@ -195,7 +195,7 @@ Shared integration-test infrastructure (`IntegrationTestBase`, `SangitaPostgres`
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| Google Auth | `1.57.0` | SSO integration (future) |
+| Google Auth | `1.58.0` | SSO integration (future) |
 
 ---
 
@@ -211,6 +211,8 @@ Shared integration-test infrastructure (`IntegrationTestBase`, `SangitaPostgres`
 
 | Date | Change |
 |------|--------|
+| 2026-11-25 | Removed the JetBrains Space Compose repository (`maven.pkg.jetbrains.space`) from `settings.gradle.kts` and `tools/check-library-versions.py`: the host stopped resolving, which failed Gradle plugin resolution in CI. Stable Compose artifacts resolve from the remaining repositories. |
+| 2026-11-24 | Dependency refresh: AGP 9.5.1→9.5.2, Logback 1.6.6→1.6.8, PG JDBC 42.7.14→42.7.15, Micrometer 1.17.2→1.18.0, Google Auth 1.57.0→1.58.0, Flyway 13.12.2→13.13.0 (catalog + Compose + CI + worker `FLYWAY_IMAGE`). Frontend: React Router 7.18.6, TanStack Query 5.108.4, Playwright 1.65.1, Vitest 5.1.1, ESLint 10.15.0, typescript-eslint 8.74.0, autoprefixer 10.7.0, PostCSS 8.5.33, @testing-library/user-event 14.6.13, eslint-plugin-react-refresh 0.5.8, @testing-library/jest-dom 7.0.1→8.0.0. Worker: pdfplumber 0.11.11, pydantic 2.14.4, pydantic-settings 2.16.3, ruff 0.17.6, google-genai 3.6.1. Vitest runs with `pool: 'threads'` (Bun IPC has no `channel.unref`, which the 5.1.1 forks pool needs). Still held: TypeScript 7, jsdom 30.0.1, eslint-plugin-react-hooks 7.0.1. |
 | 2026-11-13 | Dependency refresh: AGP 9.4.1→9.5.1 (Studio Rabbit 2 / 2026.2.2; wrapper stays 9.7.1), Ktor 3.6.1, Exposed 1.6.1, Logback 1.6.6, MockK 1.14.12, serialization 1.12.0→1.13.0, Google Auth 1.57.0, Flyway 13.12.2 (catalog + Compose + CI + worker `FLYWAY_IMAGE`). AWS SDK removed from the catalog: `aws-s3` was declared and never added to a classpath. Frontend: Vite 8.3.8, Vitest 5.1.0, ESLint 10.14.0, Tailwind 4.3.5, React Router 7.18.5, TanStack Query 5.107.1, Playwright 1.65.0, plus in-range patches. Worker: PyMuPDF 2.1, google-genai 3.3.0 (httpx transport, Developer API `v1beta`), pydantic 2.14.3, pydantic-settings 2.16.2, psycopg 3.3.9, pytest 9.2.0, ruff 0.17.5. Still held: TypeScript 7, jsdom 30.0.1, eslint-plugin-react-hooks 7.0.1. |
 | 2026-10-24 | Dependency refresh: Kotlin 2.4.21, CMP 1.12.2, Exposed 1.6.0, serialization 1.12.0, Flyway 13.11.1 (catalog + Compose/CI/worker image), PG JDBC 42.7.14, Logback 1.6.5, java-jwt 4.6.2, Micrometer 1.17.2, AWS SDK 2.57.3, Google Auth 1.54.0; frontend React 19.3.1, Vite 8.3.5 (clears dev-server advisories), Vitest 5.0.5, TanStack Query 5.104.5, Playwright 1.64.1, ESLint 10.13.0 (`bun audit` clean); worker PyMuPDF 1.28.2→2.0, google-genai 2.33.0, pydantic 2.14.1, ruff 0.17.2. Held back: TypeScript 7 (typescript-eslint rejects it), jsdom 30.1.x (breaks Vitest workers), eslint-plugin-react-hooks 7.1.1 (8 `immutability` lint errors). |
 | 2026-09-20 | TRACK-142 Batch 4: AGP 9.4.0→9.4.1, Ktor 3.5.2→3.6.0 (`receiveNullable` → `receive<T?>()`), AWS SDK 2.54.15→2.55.1, Flyway 13.5.0→13.7.0 (catalog + Compose/CI/worker image), Vite 8.2.2→8.3.0, Vitest 5.0.0→5.0.1, React Router 7.18.4, TanStack Query 5.103.1, ESLint 10.11.0, plus frontend patch/minor and worker psycopg 3.3.6 / google-genai 2.24.0 / Ruff 0.16.8. jsdom stays **30.0.1** — 30.1.0 fails Vitest 5.0.1 worker startup (`addEventListener` EventTarget brand check). TypeScript 7 / CMP 1.13-alpha / serialization 1.12-RC / Gradle 9.8-rc / eslint-plugin-react-hooks 7.1.1 still deferred. |

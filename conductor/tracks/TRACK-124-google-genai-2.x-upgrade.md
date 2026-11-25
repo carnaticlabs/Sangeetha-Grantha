@@ -40,5 +40,5 @@ HTTP-stubbed round-trip is the deepest offline verification.
 3.0 defaults to httpx2 and Developer API `v1`. The worker now builds clients through
 `src/gemini_transport.py`, which passes an httpx client (so respx stubs still intercept) and
 `api_version="v1beta"` for the Developer API (Vertex keeps the SDK default). `pyproject.toml` declares
-`google-genai[httpx]>=2.0.0`, resolved `3.3.0`. `asyncio_default_fixture_loop_scope` is now set for
+`google-genai[httpx]>=2.0.0`, resolved `3.6.1` as of 2026-11-24 (first resolved `3.3.0`). `asyncio_default_fixture_loop_scope` is now set for
 pytest-asyncio 1.5.
