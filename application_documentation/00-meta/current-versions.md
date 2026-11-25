@@ -2,7 +2,7 @@
 |:---|:---|
 | **Status** | Active |
 | **Version** | 1.11.0 |
-| **Last Updated** | 2026-11-24 |
+| **Last Updated** | 2026-11-25 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Current guide |
 
@@ -211,6 +211,7 @@ Shared integration-test infrastructure (`IntegrationTestBase`, `SangitaPostgres`
 
 | Date | Change |
 |------|--------|
+| 2026-11-25 | Removed the JetBrains Space Compose repository (`maven.pkg.jetbrains.space`) from `settings.gradle.kts` and `tools/check-library-versions.py`: the host stopped resolving, which failed Gradle plugin resolution in CI. Stable Compose artifacts resolve from the remaining repositories. |
 | 2026-11-24 | Dependency refresh: AGP 9.5.1→9.5.2, Logback 1.6.6→1.6.8, PG JDBC 42.7.14→42.7.15, Micrometer 1.17.2→1.18.0, Google Auth 1.57.0→1.58.0, Flyway 13.12.2→13.13.0 (catalog + Compose + CI + worker `FLYWAY_IMAGE`). Frontend: React Router 7.18.6, TanStack Query 5.108.4, Playwright 1.65.1, Vitest 5.1.1, ESLint 10.15.0, typescript-eslint 8.74.0, autoprefixer 10.7.0, PostCSS 8.5.33, @testing-library/user-event 14.6.13, eslint-plugin-react-refresh 0.5.8, @testing-library/jest-dom 7.0.1→8.0.0. Worker: pdfplumber 0.11.11, pydantic 2.14.4, pydantic-settings 2.16.3, ruff 0.17.6, google-genai 3.6.1. Vitest runs with `pool: 'threads'` (Bun IPC has no `channel.unref`, which the 5.1.1 forks pool needs). Still held: TypeScript 7, jsdom 30.0.1, eslint-plugin-react-hooks 7.0.1. |
 | 2026-11-13 | Dependency refresh: AGP 9.4.1→9.5.1 (Studio Rabbit 2 / 2026.2.2; wrapper stays 9.7.1), Ktor 3.6.1, Exposed 1.6.1, Logback 1.6.6, MockK 1.14.12, serialization 1.12.0→1.13.0, Google Auth 1.57.0, Flyway 13.12.2 (catalog + Compose + CI + worker `FLYWAY_IMAGE`). AWS SDK removed from the catalog: `aws-s3` was declared and never added to a classpath. Frontend: Vite 8.3.8, Vitest 5.1.0, ESLint 10.14.0, Tailwind 4.3.5, React Router 7.18.5, TanStack Query 5.107.1, Playwright 1.65.0, plus in-range patches. Worker: PyMuPDF 2.1, google-genai 3.3.0 (httpx transport, Developer API `v1beta`), pydantic 2.14.3, pydantic-settings 2.16.2, psycopg 3.3.9, pytest 9.2.0, ruff 0.17.5. Still held: TypeScript 7, jsdom 30.0.1, eslint-plugin-react-hooks 7.0.1. |
 | 2026-10-24 | Dependency refresh: Kotlin 2.4.21, CMP 1.12.2, Exposed 1.6.0, serialization 1.12.0, Flyway 13.11.1 (catalog + Compose/CI/worker image), PG JDBC 42.7.14, Logback 1.6.5, java-jwt 4.6.2, Micrometer 1.17.2, AWS SDK 2.57.3, Google Auth 1.54.0; frontend React 19.3.1, Vite 8.3.5 (clears dev-server advisories), Vitest 5.0.5, TanStack Query 5.104.5, Playwright 1.64.1, ESLint 10.13.0 (`bun audit` clean); worker PyMuPDF 1.28.2→2.0, google-genai 2.33.0, pydantic 2.14.1, ruff 0.17.2. Held back: TypeScript 7 (typescript-eslint rejects it), jsdom 30.1.x (breaks Vitest workers), eslint-plugin-react-hooks 7.1.1 (8 `immutability` lint errors). |

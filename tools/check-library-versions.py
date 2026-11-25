@@ -59,7 +59,6 @@ MAX_BODY = 20_000_000
 LIBRARY_REPOS = (
     "https://repo1.maven.org/maven2",
     "https://dl.google.com/dl/android/maven2",
-    "https://maven.pkg.jetbrains.space/public/p/compose/dev",
 )
 PLUGIN_REPOS = (
     "https://plugins.gradle.org/m2",
