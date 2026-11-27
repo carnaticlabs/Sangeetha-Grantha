@@ -1,8 +1,8 @@
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
-| **Version** | 1.11.0 |
-| **Last Updated** | 2026-11-25 |
+| **Version** | 1.11.1 |
+| **Last Updated** | 2026-11-27 |
 | **Author** | Sangeetha Grantha Team |
 | **Document Type** | Current guide |
 
@@ -40,7 +40,7 @@
 | Library | Version | Purpose |
 |---------|---------|---------|
 | Kotlin | `2.4.21` | Language version |
-| Ktor | `3.6.1` | HTTP server & client framework |
+| Ktor | `3.6.2` | HTTP server & client framework |
 | Exposed | `1.6.1` | SQL ORM (DSL-based) |
 | Koin | `4.2.2` | Dependency injection |
 
@@ -98,7 +98,7 @@
 |---------|---------|---------|
 | React | `19.3.1` | UI framework |
 | TypeScript | `6.0.x` | Type-safe JavaScript (TypeScript 7 deferred — no programmatic API until 7.1) |
-| Vite | `8.3.8` | Build tool & dev server (Rolldown bundler) |
+| Vite | `8.4.0` | Build tool & dev server (Rolldown bundler) |
 
 ### Styling & UI
 
@@ -110,7 +110,7 @@
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| React Router | `7.18.6` | Client-side routing |
+| React Router | `7.18.7` | Client-side routing |
 | TanStack Query | `5.108.4` | Data fetching & caching |
 
 ### Development & Testing
@@ -118,7 +118,7 @@
 | Library | Version | Purpose |
 |---------|---------|---------|
 | ESLint | `10.15.0` | Code linting (via `bun run`; needs Bun runtime). `eslint-plugin-react-hooks` pinned **7.0.1** — 7.1.1's `react-hooks/immutability` still errors on BulkImport/CuratorReview (TRACK-135 loading-loop). |
-| Vitest | `5.1.1` | Unit testing |
+| Vitest | `5.1.2` | Unit testing |
 | Playwright | `1.65.1` | E2E testing |
 
 ---
@@ -133,16 +133,16 @@
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| PyMuPDF | `2.1` | Primary PDF text extraction |
+| PyMuPDF | `2.2` | Primary PDF text extraction |
 | pdfplumber | `0.11.11` | Tabular PDF extraction fallback |
 | pytesseract | `0.3.13` | Tesseract OCR wrapper |
-| indic-transliteration | `2.3.82` | Script conversion (Devanagari ↔ Tamil/Telugu/etc.) |
+| indic-transliteration | `2.3.83` | Script conversion (Devanagari ↔ Tamil/Telugu/etc.) |
 | Pydantic | `2.14.4` | Schema validation |
 | Pydantic Settings | `2.16.3` | Environment-based config validation |
 | psycopg | `3.3.9` | PostgreSQL driver (async-capable) |
 | google-genai | `>=2.0.0` (resolved `3.6.1`, extra `httpx`) | Unified Gemini SDK. 3.0 defaults to httpx2 and Developer API `v1`; the worker passes an httpx client and `api_version="v1beta"` so respx stubs and existing model routes stay in place (TRACK-124) |
 | RapidFuzz | `3.14.6` | Fast fuzzy matching |
-| HTTPX | `0.28.1` | Async HTTP client |
+| HTTPX | `0.29.0` | Async HTTP client |
 | BeautifulSoup4 | `4.15.0` | HTML parsing |
 | structlog | `26.1.0` | Structured JSON logging |
 | Click | `8.5.1` | CLI framework |
@@ -184,8 +184,8 @@ Shared integration-test infrastructure (`IntegrationTestBase`, `SangitaPostgres`
 | Compose Multiplatform | `1.12.2` | Cross-platform UI (material3 `1.9.0` own train; icons-extended frozen `1.7.3`; iosX64 dropped by CMP 1.11+; **compileSdk 37** required by AndroidX Compose 1.12) |
 | JetBrains Lifecycle (KMP) | `2.11.0` | `lifecycle-runtime-compose` / `lifecycle-viewmodel-compose` companion to CMP 1.12 (TRACK-138) |
 | JetBrains Navigation Event (KMP) | `1.1.0` | `navigationevent-compose` companion to CMP 1.12; `NavigationEventHandler` replaces deprecated Compose `BackHandler` (TRACK-142) |
-| Android Gradle Plugin | `9.5.2` | Android build (Gradle wrapper `9.7.1`, which meets AGP 9.5's Gradle 9.6.0 floor; Android Studio Rabbit 2 / 2026.2.2 or newer) |
-| Ktor Client | `3.6.1` | HTTP client |
+| Android Gradle Plugin | `9.5.3` | Android build (Gradle wrapper `9.7.1`, which meets AGP 9.5's Gradle 9.6.0 floor; Android Studio Rabbit 2 / 2026.2.2 or newer) |
+| Ktor Client | `3.6.2` | HTTP client |
 
 ---
 
@@ -211,6 +211,7 @@ Shared integration-test infrastructure (`IntegrationTestBase`, `SangitaPostgres`
 
 | Date | Change |
 |------|--------|
+| 2026-11-27 | Dependency refresh: AGP 9.5.2→9.5.3, Ktor 3.6.1→3.6.2 (catalog pin, 26 entries). Frontend: Vite 8.3.8→8.4.0, Vitest 5.1.1→5.1.2, React Router 7.18.6→7.18.7, PostCSS 8.5.33→8.5.34, @types/node 26.6.6→26.6.11, @types/react 19.3.0→19.3.3. Worker lock: indic-transliteration 2.3.82→2.3.83, httpx 0.28.1→0.29.0, PyMuPDF 2.1→2.2 (`pymupdf-layout` and `pymupdf4llm` followed to 2.2). Floors in `pyproject.toml` were unchanged. Vitest 5.1.2 guards the `channel.unref` call that failed under Bun; the `pool: 'threads'` override is retained but no longer required. Still held: TypeScript 7, jsdom 30.0.1, eslint-plugin-react-hooks 7.0.1. |
 | 2026-11-25 | Removed the JetBrains Space Compose repository (`maven.pkg.jetbrains.space`) from `settings.gradle.kts` and `tools/check-library-versions.py`: the host stopped resolving, which failed Gradle plugin resolution in CI. Stable Compose artifacts resolve from the remaining repositories. |
 | 2026-11-24 | Dependency refresh: AGP 9.5.1→9.5.2, Logback 1.6.6→1.6.8, PG JDBC 42.7.14→42.7.15, Micrometer 1.17.2→1.18.0, Google Auth 1.57.0→1.58.0, Flyway 13.12.2→13.13.0 (catalog + Compose + CI + worker `FLYWAY_IMAGE`). Frontend: React Router 7.18.6, TanStack Query 5.108.4, Playwright 1.65.1, Vitest 5.1.1, ESLint 10.15.0, typescript-eslint 8.74.0, autoprefixer 10.7.0, PostCSS 8.5.33, @testing-library/user-event 14.6.13, eslint-plugin-react-refresh 0.5.8, @testing-library/jest-dom 7.0.1→8.0.0. Worker: pdfplumber 0.11.11, pydantic 2.14.4, pydantic-settings 2.16.3, ruff 0.17.6, google-genai 3.6.1. Vitest runs with `pool: 'threads'` (Bun IPC has no `channel.unref`, which the 5.1.1 forks pool needs). Still held: TypeScript 7, jsdom 30.0.1, eslint-plugin-react-hooks 7.0.1. |
 | 2026-11-13 | Dependency refresh: AGP 9.4.1→9.5.1 (Studio Rabbit 2 / 2026.2.2; wrapper stays 9.7.1), Ktor 3.6.1, Exposed 1.6.1, Logback 1.6.6, MockK 1.14.12, serialization 1.12.0→1.13.0, Google Auth 1.57.0, Flyway 13.12.2 (catalog + Compose + CI + worker `FLYWAY_IMAGE`). AWS SDK removed from the catalog: `aws-s3` was declared and never added to a classpath. Frontend: Vite 8.3.8, Vitest 5.1.0, ESLint 10.14.0, Tailwind 4.3.5, React Router 7.18.5, TanStack Query 5.107.1, Playwright 1.65.0, plus in-range patches. Worker: PyMuPDF 2.1, google-genai 3.3.0 (httpx transport, Developer API `v1beta`), pydantic 2.14.3, pydantic-settings 2.16.2, psycopg 3.3.9, pytest 9.2.0, ruff 0.17.5. Still held: TypeScript 7, jsdom 30.0.1, eslint-plugin-react-hooks 7.0.1. |

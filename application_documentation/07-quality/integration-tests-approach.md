@@ -50,7 +50,7 @@ Use deterministic fixtures and controlled external-provider responses. Test a me
 
 Worker tests include parsing, schema/contract checks, provider failure handling, resource lifecycle, and database-backed indexing/queue scenarios. Run the [worker quality commands](../../tools/krithi-extract-enrich-worker/README.md) using frozen dependencies.
 
-Frontend component tests use Vitest, configured with `pool: 'threads'` in `vitest.config.ts` because Vitest 5.1.1's default forks pool calls `child.channel.unref()`, which Bun's IPC channel lacks. Browser journeys use Playwright against the configured Compose stack; [E2E testing](./qa/e2e-testing.md) explains stateful fixtures and source calls.
+Frontend component tests use Vitest, configured with `pool: 'threads'` in `vitest.config.ts`. The override was added because Vitest 5.1.1's default forks pool called `child.channel.unref()`, which Bun's IPC channel lacks; 5.1.2 guards that call and the suite also passes with `--pool=forks` (Bun 1.4.2, checked 2026-11-27), so the override is no longer required. Browser journeys use Playwright against the configured Compose stack; [E2E testing](./qa/e2e-testing.md) explains stateful fixtures and source calls.
 
 Mobile shared tests exercise the V2 client, storage, presenters, and state transitions on JVM. Android/iOS native builds and journey tests exercise platform hosts separately. TRACK-140's native runtime and manual accessibility gates remain distinct from shared test success.
 
