@@ -1,3 +1,8 @@
+---
+name: change-mapper
+description: Disentangles complex workspaces by scanning and categorizing uncommitted changes into logical, atomic changesets tied to documentation references. Use when preparing commits or cleaning up a workspace.
+---
+
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |

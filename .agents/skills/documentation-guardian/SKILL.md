@@ -1,3 +1,8 @@
+---
+name: documentation-guardian
+description: Maintains accuracy, consistency, header metadata, links, and formatting across application_documentation and persistent project documentation.
+---
+
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
