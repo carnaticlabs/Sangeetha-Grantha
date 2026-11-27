@@ -17,8 +17,9 @@ export default defineConfig({
     test: {
         environment: 'jsdom',
         globals: true,
-        // Vitest 5.1.1's forks watchdog calls child.channel.unref(). Bun's IPC
-        // channel has no unref, so the default forks pool never starts a worker.
+        // Added for Vitest 5.1.1, whose forks watchdog called child.channel.unref(),
+        // which Bun's IPC channel lacks. 5.1.2 guards that call and the forks pool
+        // runs again; threads is retained until the override is removed separately.
         pool: 'threads',
         setupFiles: ['src/test/setup.ts'],
         // Unit/component tests live under src/. The e2e/ directory is Playwright

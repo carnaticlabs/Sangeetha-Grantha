@@ -1,3 +1,8 @@
+---
+name: commit-policy
+description: Enforces repository commit rules, branch naming conventions, documentation traceability (Ref links), security guardrails, and PR/merge lifecycle standards.
+---
+
 | Metadata | Value |
 |:---|:---|
 | **Status** | Active |
